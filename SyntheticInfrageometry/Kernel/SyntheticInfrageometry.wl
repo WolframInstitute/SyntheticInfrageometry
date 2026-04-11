@@ -1,10 +1,30 @@
-(* ::Package:: *)
+Package["WolframInstitute`SyntheticInfrageometry`"]
 
-$SyntheticInfrageometryDirectory = DirectoryName[ $InputFileName ];
+(* Tools.wl — distance metrics, centrality, segment utilities, separating cycles *)
+PackageExport[HausdorffDistance]
+PackageExport[FrechetDistance]
+PackageExport[MinimalSeparationDistance]
+PackageExport[EmbeddingHausdorffDistance]
+PackageExport[EmbeddingCircleDistance]
+PackageExport[CentralElement]
+PackageExport[PeripheralElement]
+PackageExport[SegmentEndpoints]
+PackageExport[SeparatingCycleQ]
+PackageExport[FindSeparatingCycles]
 
-Get[ FileNameJoin[ { $SyntheticInfrageometryDirectory, "Tools.wl" } ] ]
-Get[ FileNameJoin[ { $SyntheticInfrageometryDirectory, "Postulates.wl" } ] ]
-Get[ FileNameJoin[ { $SyntheticInfrageometryDirectory, "Predicates.wl" } ] ]
-Get[ FileNameJoin[ { $SyntheticInfrageometryDirectory, "Constructions.wl" } ] ]
-Get[ FileNameJoin[ { $SyntheticInfrageometryDirectory, "Coordinatization.wl" } ] ]
-Get[ FileNameJoin[ { $SyntheticInfrageometryDirectory, "InfrageometricScene.wl" } ] ]
+(* Postulates.wl — primitive existence postulates *)
+PackageExport[FindPoint]
+PackageExport[FindSegment]
+PackageExport[FindLine]
+PackageExport[FindCircle]
+
+(* Predicates.wl — geometric predicates *)
+PackageExport[SegmentQ]
+PackageExport[CircleQ]
+PackageExport[LineQ]
+PackageExport[IntersectQ]
+PackageExport[ParallelQ]
+PackageExport[SegmentLineAngle]
+
+
+ClearAll["WolframInstitute`SyntheticInfrageometry`**`*", "WolframInstitute`SyntheticInfrageometry`*"]

@@ -1,8 +1,10 @@
-(* ::Package:: *)
+Package["WolframInstitute`SyntheticInfrageometry`"]
+
+PackageScope[findLineExtensions]
+
 
 (* ===================== Points ===================== *)
 
-FindPoint::usage = "FindPoint[graph] finds a random vertex. FindPoint[graph, n] finds up to n vertices. Options: \"From\" (\"Random\"|\"Center\"|\"Periphery\"), \"Distance\" (number, {min,max}, or \"Max\"), \"MaxCliques\".";
 Options[ FindPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
 
 FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
@@ -47,7 +49,6 @@ FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 (* ===================== Segments ===================== *)
 
-FindSegment::usage = "FindSegment[graph, p1, p2] finds all geodesics. FindSegment[graph, p1, p2, n] returns up to n. FindSegment[graph, {p1, p2}] also accepted. Option: \"Select\" sorts results by criterion.";
 Options[ FindSegment ] = { "Select" -> None };
 
 FindSegment[ graph_Graph, p1_, p2_, n : (_Integer | All) : 1, opts : OptionsPattern[] ] :=
@@ -125,7 +126,6 @@ findLineExtensions[ graph_Graph, segment_List ] :=
 
 (* ===================== Circles ===================== *)
 
-FindCircle::usage = "FindCircle[graph, p, r] finds separating cycles at distance r from p. FindCircle[graph, p, {rMin, rMax}] uses a distance range. FindCircle[graph, p, r, n] returns up to n. Option: \"Select\" sorts results by criterion.";
 Options[ FindCircle ] = { "Select" -> None };
 
 FindCircle[ graph_Graph, p_, r_, n : (_Integer | All) : 1, opts : OptionsPattern[] ] :=

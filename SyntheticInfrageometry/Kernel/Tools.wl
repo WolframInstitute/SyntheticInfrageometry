@@ -1,8 +1,11 @@
-(* ::Package:: *)
+Package["WolframInstitute`SyntheticInfrageometry`"]
+
+PackageScope[pathFilterPairwiseDistances]
+PackageScope[applySelect]
+
 
 (* ===================== Distance Metrics ===================== *)
 
-HausdorffDistance::usage = "HausdorffDistance[d, setX, setY] computes the Hausdorff distance between two sets using a distance matrix or graph.";
 HausdorffDistance[ d_List, setX_, setY_ ] :=
   With[ { distSubMatrix = d[[ setX, setY ]] },
     Max[ Max[ Min /@ distSubMatrix ], Max[ Min /@ Transpose @ distSubMatrix ] ]
@@ -13,14 +16,12 @@ HausdorffDistance[ g_Graph, setX_List, setY_List ] :=
     Max[ Max[ Min /@ distSubMatrix ], Max[ Min /@ Transpose @ distSubMatrix ] ]
   ]
 
-FrechetDistance::usage = "FrechetDistance[d, setX, setY, f] computes distances between point sets using function f (default Max for Frechet distance).";
 FrechetDistance[ d_List, setX_, setY_, f_ : Max ] :=
   f[ Diagonal[ d[[ setX, setY ]] ] ]
 
 FrechetDistance[ g_Graph, setX_List, setY_List, f_ : Max ] :=
   f[ Diagonal[ Outer[ GraphDistance[ g, #1, #2 ] &, setX, setY, 1 ] ] ]
 
-MinimalSeparationDistance::usage = "MinimalSeparationDistance[d, setX, setY] finds the minimum distance between two sets.";
 MinimalSeparationDistance[ d_List, setX_, setY_ ] :=
   Min[ d[[ setX, setY ]] ]
 
@@ -29,13 +30,11 @@ MinimalSeparationDistance[ g_Graph, setX_List, setY_List ] :=
 
 (* ===================== Embedding Distances ===================== *)
 
-EmbeddingHausdorffDistance::usage = "EmbeddingHausdorffDistance[coords, path, {p1, p2}] computes the Hausdorff distance between the piecewise-linear curve through coords[[path]] and the straight line segment from coords[[p1]] to coords[[p2]].";
 EmbeddingHausdorffDistance[ coords_List, path_List, { p1_, p2_ } ] /; Length[ path ] >= 2 :=
   RegionHausdorffDistance[ Line[ coords[[ path ]] ], Line[ { coords[[ p1 ]], coords[[ p2 ]] } ] ]
 
 EmbeddingHausdorffDistance[ _List, path_List, { _, _ } ] /; Length[ path ] < 2 := 0
 
-EmbeddingCircleDistance::usage = "EmbeddingCircleDistance[coords, cycle, center, radius] computes Hausdorff distance between a cycle's embedding and a perfect circle.";
 EmbeddingCircleDistance[ coords_List, cycle_List, centerIdx_Integer, radius_ ] /; Length[ cycle ] >= 3 :=
   Module[ { centerPt, cyclePts, cycleRegion, nPts, circlePoints, circleRegion },
     centerPt = coords[[ centerIdx ]];
@@ -54,7 +53,6 @@ EmbeddingCircleDistance[ _List, cycle_List, _Integer, _ ] /; Length[ cycle ] < 3
 
 (* ===================== Centrality ===================== *)
 
-CentralElement::usage = "CentralElement[distanceMatrix, n] finds n most central elements in a distance matrix using maxmin criterion.";
 CentralElement[ distanceMatrix_List, n_ : 1 ] :=
   Module[ { scores, minScore, pool, selected, remaining },
     scores = Max /@ distanceMatrix;
@@ -74,7 +72,6 @@ CentralElement[ distanceMatrix_List, n_ : 1 ] :=
     ]
   ]
 
-PeripheralElement::usage = "PeripheralElement[distanceMatrix, n] finds n most peripheral elements using maxmin criterion.";
 PeripheralElement[ distanceMatrix_List, n_ : 1 ] :=
   Module[ { scores, maxScore, pool, selected, remaining },
     scores = Max /@ distanceMatrix;
@@ -96,7 +93,6 @@ PeripheralElement[ distanceMatrix_List, n_ : 1 ] :=
 
 (* ===================== Segment Utilities ===================== *)
 
-SegmentEndpoints::usage = "SegmentEndpoints[segment] returns the first and last elements of a segment.";
 SegmentEndpoints[ segment_List ] := { First[ segment ], Last[ segment ] }
 
 (* ===================== Path Selection (internal) ===================== *)
@@ -166,7 +162,6 @@ applySelect[ graph_Graph, paths_List, method_String, context_Association ] :=
 
 (* ===================== Separating Cycles ===================== *)
 
-SeparatingCycleQ::usage = "SeparatingCycleQ[graph, cycle, center, radius] tests whether a cycle separates interior (distance <= radius from center) from exterior.";
 SeparatingCycleQ[ graph_Graph, cycle_List, center_, radius_ ] :=
   Module[ { rem, comps, centerComp },
     rem = VertexDelete[ graph, cycle ];
@@ -177,6 +172,5 @@ SeparatingCycleQ[ graph_Graph, cycle_List, center_, radius_ ] :=
     AllTrue[ Complement[ VertexList[ rem ], centerComp ], GraphDistance[ graph, center, # ] > radius & ]
   ]
 
-FindSeparatingCycles::usage = "FindSeparatingCycles[graph, cycles, center, radius] selects cycles that separate interior from exterior around center.";
 FindSeparatingCycles[ graph_Graph, cycles_List, center_, radius_ ] :=
   Select[ cycles, SeparatingCycleQ[ graph, #, center, radius ] & ]
