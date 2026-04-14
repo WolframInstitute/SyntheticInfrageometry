@@ -26,5 +26,41 @@ PackageExport[IntersectQ]
 PackageExport[ParallelQ]
 PackageExport[SegmentLineAngle]
 
+(* Coordinatization.wl — metric bases and coordinates *)
+PackageExport[FindMetricBasis]
+PackageExport[MetricBasisQ]
+PackageExport[MetricCoordinates]
+PackageExport[MetricBisector]
+
+(* Scenes.wl — declarative scene engine *)
+PackageExport[InfraScene]
+PackageExport[FindInfraScene]
+PackageExport[InfraInstance]
+PackageExport[InfraPoint]
+PackageExport[InfraSegment]
+PackageExport[InfraLine]
+PackageExport[InfraCircle]
+PackageExport[InfraIntersection]
+PackageExport[InfraIntersectionPoint]
+PackageExport[InfraDistance]
+PackageExport[InfraSegmentQ]
+PackageExport[InfraCircleQ]
+PackageExport[InfraLineQ]
+PackageExport[InfraParallelQ]
+PackageExport[InfraIntersectQ]
+
+(* Shared type colors for all viewers *)
+PackageScope[$InfraPointColor]
+PackageScope[$InfraSegmentColor]
+PackageScope[$InfraCircleColor]
+
+(* Viewers.wl — interactive visualization tools *)
+PackageExport[PointViewer]
+PackageExport[SegmentViewer]
+PackageExport[CircleViewer]
+
+(* InteractiveViewers.wl — advanced interactive viewers *)
+PackageExport[InfraSceneViewer]
+
 
 ClearAll["WolframInstitute`SyntheticInfrageometry`**`*", "WolframInstitute`SyntheticInfrageometry`*"]

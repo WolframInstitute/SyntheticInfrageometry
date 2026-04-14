@@ -25,3 +25,34 @@ LineQ::usage = "LineQ[graph, segment] tests whether a segment is maximal -- cann
 IntersectQ::usage = "IntersectQ[set1, set2] tests whether two sets have a non-empty intersection.";
 ParallelQ::usage = "ParallelQ[graph, l1, l2] tests whether two lines are parallel (constant distance). ParallelQ[graph, l1, l2, threshold] allows distance variation up to threshold.";
 SegmentLineAngle::usage = "SegmentLineAngle[graph, p1, p2, line] or SegmentLineAngle[graph, segment, line] measures the distance from segment endpoint to a line.";
+
+(* Coordinatization *)
+FindMetricBasis::usage = "FindMetricBasis[graph, n, m] finds up to n metric bases. m specifies which basis sizes to try: All (default), an integer (max size), {min, max}, or {exact}.";
+MetricBasisQ::usage = "MetricBasisQ[graph, basis] tests whether basis is a metric basis of graph.";
+MetricCoordinates::usage = "MetricCoordinates[graph, vertex, basis] gives the distance coordinates of vertex with respect to basis.";
+MetricBisector::usage = "MetricBisector[graph, {a, b}] returns the vertices equidistant from a and b.";
+
+(* Scenes *)
+InfraScene::usage = "InfraScene[objects, hypotheses] constructs a scene descriptor from symbolic objects and hypotheses (constructions and assertions). Access properties via scene[\"Steps\"], scene[\"Constructions\"], scene[\"Assertions\"], scene[\"DependencyGraph\"].";
+FindInfraScene::usage = "FindInfraScene[scene, graph] evaluates all construction steps and returns a list of InfraInstance objects. FindInfraScene[scene, graph, n] evaluates up to n steps. Option: \"PruningProbability\" (default 0).";
+InfraInstance::usage = "InfraInstance[bindings] wraps a solved binding association from FindInfraScene. Access bindings via instance[[1]][symbol].";
+InfraPoint::usage = "InfraPoint[] represents any vertex. InfraPoint[v] fixes a vertex. InfraPoint[\"Center\"] or InfraPoint[\"Periphery\"] selects from graph center/periphery. InfraPoint[origin, dist] selects vertices at given distance. InfraPoint[n] finds n mutually distant vertices.";
+InfraSegment::usage = "InfraSegment[p, q] represents geodesics between p and q. Used in InfraScene hypotheses.";
+InfraLine::usage = "InfraLine[p, q] represents maximal geodesic extensions through p and q. InfraLine[path] extends a given path. Used in InfraScene hypotheses.";
+InfraCircle::usage = "InfraCircle[center, radius] represents separating cycles at given radius from center. Used in InfraScene hypotheses.";
+InfraIntersection::usage = "InfraIntersection[obj1, obj2] represents the vertex set intersection of two geometric objects. Used in InfraScene hypotheses.";
+InfraIntersectionPoint::usage = "InfraIntersectionPoint[obj1, obj2] is an alias for InfraIntersection.";
+InfraDistance::usage = "InfraDistance[p, q] represents graph distance between p and q. Used in InfraScene assertions.";
+InfraSegmentQ::usage = "InfraSegmentQ[s] asserts that s is a valid geodesic segment. Used in InfraScene assertions.";
+InfraCircleQ::usage = "InfraCircleQ[c, center, r] asserts that c is a valid metric circle. Used in InfraScene assertions.";
+InfraLineQ::usage = "InfraLineQ[s] asserts that s is a maximal geodesic. Used in InfraScene assertions.";
+InfraParallelQ::usage = "InfraParallelQ[l1, l2] asserts that two lines are parallel. Used in InfraScene assertions.";
+InfraIntersectQ::usage = "InfraIntersectQ[s1, s2] asserts that two sets intersect. Used in InfraScene assertions.";
+
+(* Interactive Viewers *)
+InfraSceneViewer::usage = "InfraSceneViewer[scene, graph] creates an interactive visualization of an InfraScene on a graph. A step slider controls which construction steps are shown, a TogglerBar selects which objects to color, and vertex/edge coloring reflects branch frequency.";
+
+(* Viewers *)
+PointViewer::usage = "PointViewer[g] creates an interactive visualization of random selection of points in a graph given certain criteria. PointViewer[g, sym] stores the current selection in sym (updated dynamically).";
+SegmentViewer::usage = "SegmentViewer[g] creates an interactive visualization for exploring geodesic segments between points in a graph.";
+CircleViewer::usage = "CircleViewer[g] creates an interactive visualization for exploring circles (cycles) centered at a point in a graph.";
