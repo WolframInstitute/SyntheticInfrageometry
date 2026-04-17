@@ -13,6 +13,7 @@ PackageExport[SeparatingCycleQ]
 PackageExport[FindSeparatingCycles]
 
 (* Postulates.wl — primitive existence postulates *)
+PackageScope[iFindPoint]
 PackageExport[FindPoint]
 PackageExport[FindSegment]
 PackageExport[FindLine]
@@ -31,6 +32,11 @@ PackageExport[FindMetricBasis]
 PackageExport[MetricBasisQ]
 PackageExport[MetricCoordinates]
 PackageExport[MetricBisector]
+PackageExport[LaminarLayers]
+PackageExport[FindLineProjection]
+PackageExport[FindDAGProjection]
+PackageExport[LaminarCoordinates]
+PackageScope[laminarLayersFromSources]
 
 (* Scenes.wl — declarative scene engine *)
 PackageExport[InfraScene]
@@ -48,6 +54,7 @@ PackageExport[InfraCircleQ]
 PackageExport[InfraLineQ]
 PackageExport[InfraParallelQ]
 PackageExport[InfraIntersectQ]
+PackageExport[InfraGeometricStep]
 
 (* Shared type colors for all viewers *)
 PackageScope[$InfraPointColor]

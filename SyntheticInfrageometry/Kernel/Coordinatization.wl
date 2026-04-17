@@ -39,3 +39,56 @@ MetricBisector[ g_Graph, { a_, b_ } ] :=
 
 MetricBisector[ g_Graph, a_, b_ ] :=
   MetricBisector[ g, { a, b } ]
+
+
+LaminarLayers[ g_Graph, line_List ] :=
+  List /@ line
+
+LaminarLayers[ g_Graph, dag_Graph ] :=
+  laminarLayersFromSources[ dag, Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ]
+
+laminarLayersFromSources[ dag_Graph, sources_List ] :=
+  Module[ { depth, maxDepth },
+    depth = v |-> Min[ GraphDistance[ dag, #, v ] & /@ sources ];
+    maxDepth = Max[ depth /@ VertexList[ dag ] ];
+    Table[ Select[ VertexList[ dag ], depth[ # ] == k & ], { k, 0, maxDepth } ]
+  ]
+
+
+FindLineProjection[ g_Graph, line_List, v_ ] :=
+  Module[ { dists, minD },
+    dists = GraphDistance[ g, v, # ] & /@ line;
+    minD = Min[ dists ];
+    Pick[ line, dists, minD ]
+  ]
+
+
+FindDAGProjection[ g_Graph, dag_Graph, v_ ] :=
+  Module[ { verts, dists, minD },
+    verts = VertexList[ dag ];
+    dists = GraphDistance[ g, v, # ] & /@ verts;
+    minD = Min[ dists ];
+    Pick[ verts, dists, minD ]
+  ]
+
+
+LaminarCoordinates[ g_Graph, line_List, v_ ] :=
+  Module[ { proj, minLayer },
+    proj = FindLineProjection[ g, line, v ];
+    minLayer = Min[ Flatten[ FirstPosition[ line, # ] & /@ proj ] ] - 1;
+    { minLayer, GraphDistance[ g, v, First[ proj ] ] }
+  ]
+
+LaminarCoordinates[ g_Graph, dag_Graph, v_ ] :=
+  Module[ { layers, proj, layerIndex },
+    layers = LaminarLayers[ g, dag ];
+    proj = FindDAGProjection[ g, dag, v ];
+    layerIndex = Min @ Flatten @ Table[
+      Position[ layers, u ][[ All, 1 ]] - 1,
+      { u, proj }
+    ];
+    { layerIndex, GraphDistance[ g, v, First[ proj ] ] }
+  ]
+
+LaminarCoordinates[ g_Graph, line_ ] :=
+  Association[ # -> LaminarCoordinates[ g, line, # ] & /@ VertexList[ g ] ]

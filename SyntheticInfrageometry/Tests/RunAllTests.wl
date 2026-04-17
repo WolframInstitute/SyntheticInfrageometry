@@ -15,3 +15,6 @@ Print[TestReport[FileNameJoin[{$testDir, "PredicatesTests.wlt"}]]]
 
 Print["Running ScenesTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "ScenesTests.wlt"}]]]
+
+Print["Running CoordinatizationTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "CoordinatizationTests.wlt"}]]]

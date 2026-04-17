@@ -8,17 +8,12 @@ $InfraCircleColor = RGBColor[ 0.50, 0.86, 0.62 ];
 SetAttributes[ PointViewer, HoldRest ]
 
 PointViewer[ g_Graph, sym_: None ] :=
-  With[ { ptColor = $InfraPointColor },
+  With[ { ptColor = $InfraPointColor, diam = GraphDiameter[ g ] },
     Manipulate[
       seed;
       With[{
-        pts = FindPoint[ g, n, "From" -> from, "MaxCliques" -> 100, "Distance" -> Which[
-          useMax, "Max",
-          minD > 0 && maxD > 0, { minD, maxD },
-          minD > 0, minD,
-          maxD > 0, { 1, maxD },
-          True, None
-        ] ]
+        pts = FindPoint[ g, UpTo[ n ], "From" -> from, "MaxCliques" -> 100,
+          "Distance" -> Switch[ separation, "None", None, "Max", "Max", "Range", distRange ] ]
       },
         If[ sym =!= None, sym = pts ];
         HighlightGraph[ g,
@@ -26,15 +21,16 @@ PointViewer[ g_Graph, sym_: None ] :=
           ImageSize -> 600
         ]
       ],
-      { { n, 1, "Number of points" }, ControlType -> InputField },
-      { { from, "Random", "From" }, { "Random", "Center", "Periphery" } },
-      Delimiter,
-      { { useMax, False, "Max separation" }, { True, False } },
-      { { minD, 0, "Min distance" }, ControlType -> InputField },
-      { { maxD, 0, "Max distance" }, ControlType -> InputField },
+      Grid[ {
+        { Control[ { { n, 1, "Points" }, ControlType -> InputField } ],
+          Control[ { { from, "Random", "From" }, { "Random", "Center", "Periphery" } } ] },
+        { Control[ { { separation, "None", "Separation" }, { "None", "Max", "Range" } } ],
+          Control[ { { distRange, { 0, diam }, "Distance" }, 0, diam, 1,
+            ControlType -> IntervalSlider, Enabled -> Dynamic[ separation === "Range" ] } ] }
+      }, Alignment -> Center, ItemSize -> { { Scaled[ 0.5 ], Scaled[ 0.5 ] } } ],
       { { seed, 0 }, None },
       Button[ "Resample", seed++ ],
-      TrackedSymbols :> { seed, n, from, useMax, minD, maxD },
+      TrackedSymbols :> { seed, n, from, separation, distRange },
       SaveDefinitions -> True
     ]
   ]

@@ -7,7 +7,17 @@ PackageScope[findLineExtensions]
 
 Options[ FindPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
 
+FindPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+  iFindPoint[ graph, n, opts ]
+
 FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
+  With[ { result = iFindPoint[ graph, n, opts ] },
+    If[ Length[ result ] < n, $Failed, result ]
+  ]
+
+Options[ iFindPoint ] = Options[ FindPoint ];
+
+iFindPoint[ graph_Graph, n_Integer, opts : OptionsPattern[] ] :=
   Module[ { from, pool, dist, range, distMatrix, vertexIndex, auxiliaryGraph, cliques, thresholds, finiteMax, maxCl },
     from = OptionValue[ "From" ];
     pool = Which[

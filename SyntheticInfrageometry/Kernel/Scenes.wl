@@ -9,6 +9,7 @@ PackageScope[evaluateConstruction]
 PackageScope[evaluateStep]
 PackageScope[filterAssertions]
 PackageScope[pruneBranches]
+PackageScope[parseGeometricSteps]
 
 (* ===================== Helpers ===================== *)
 
@@ -42,14 +43,61 @@ extractBranches[ opts_List ] :=
 
 (* ===================== Scene ===================== *)
 
+isConstruction[ objects_List, h_ ] :=
+  MatchQ[ h, (key_ == _) /; MemberQ[ objects, key ] ||
+    (ListQ[ key ] && AllTrue[ key, MemberQ[ objects, # ] & ]) ]
+
+extractConstructions[ objects_List, hyps_List ] :=
+  Association @ Cases[ hyps, (key_ == rhs_) /;
+    MemberQ[ objects, key ] || (ListQ[ key ] && AllTrue[ key, MemberQ[ objects, # ] & ]) :> (key -> rhs) ]
+
+extractAssertions[ objects_List, hyps_List ] :=
+  Select[ hyps, h |-> !isConstruction[ objects, h ] ]
+
+parseGeometricSteps[ objects_List, hypotheses_List ] :=
+  Module[ { gSteps, globalAssertions, constructions, steps, labels },
+    gSteps = Cases[ hypotheses, _InfraGeometricStep ];
+    globalAssertions = Select[ hypotheses,
+      h |-> !MatchQ[ h, _InfraGeometricStep ] && !isConstruction[ objects, h ] ];
+    constructions = <||>;
+    steps = {};
+    labels = {};
+    Do[
+      Module[ { hyps, label, stepConstructions, stepObjects },
+        hyps = gStep[[ 1 ]];
+        label = If[ Length[ gStep ] >= 2, gStep[[ 2 ]], None ];
+        stepConstructions = extractConstructions[ objects, hyps ];
+        constructions = Join[ constructions, stepConstructions ];
+        stepObjects = Flatten[ If[ ListQ[ # ], #, { # } ] & /@ Keys[ stepConstructions ] ];
+        AppendTo[ steps, stepObjects ];
+        AppendTo[ labels, label ];
+        globalAssertions = Join[ globalAssertions, extractAssertions[ objects, hyps ] ]
+      ],
+      { gStep, gSteps }
+    ];
+    <| "Constructions" -> constructions, "Steps" -> steps,
+       "Assertions" -> globalAssertions, "Labels" -> labels |>
+  ]
+
+InfraScene[ objects_List, hypotheses_List ] /;
+  MemberQ[ hypotheses, _InfraGeometricStep ] :=
+  Module[ { parsed },
+    parsed = parseGeometricSteps[ objects, hypotheses ];
+    InfraScene[ <|
+      "Objects" -> objects,
+      "Constructions" -> parsed[ "Constructions" ],
+      "Assertions" -> parsed[ "Assertions" ],
+      "DependencyGraph" -> None,
+      "Steps" -> parsed[ "Steps" ],
+      "Labels" -> parsed[ "Labels" ],
+      "ManualSteps" -> True
+    |> ]
+  ]
+
 InfraScene[ objects_List, hypotheses_List ] :=
   Module[ { constructions, assertions, deps, edges, dag, steps },
-    constructions = Association @ Cases[ hypotheses,
-      (key_ == rhs_) /; MemberQ[ objects, key ] ||
-        (ListQ[ key ] && AllTrue[ key, MemberQ[ objects, # ] & ]) :> (key -> rhs) ];
-    assertions = Select[ hypotheses,
-      h |-> !MatchQ[ h, (key_ == _) /; MemberQ[ objects, key ] ||
-        (ListQ[ key ] && AllTrue[ key, MemberQ[ objects, # ] & ]) ] ];
+    constructions = extractConstructions[ objects, hypotheses ];
+    assertions = extractAssertions[ objects, hypotheses ];
     deps = Map[
       rhs |-> Intersection[ Cases[ rhs, Alternatives @@ objects, Infinity ], objects ],
       constructions
@@ -67,7 +115,9 @@ InfraScene[ objects_List, hypotheses_List ] :=
       "Constructions" -> constructions,
       "Assertions" -> assertions,
       "DependencyGraph" -> dag,
-      "Steps" -> steps
+      "Steps" -> steps,
+      "Labels" -> ConstantArray[ None, Length[ steps ] ],
+      "ManualSteps" -> False
     |> ]
   ]
 
@@ -214,21 +264,35 @@ pruneBranches[ branches_List, p_ ] :=
     If[ kept === {}, { RandomChoice[ branches ] }, kept ]
   ]
 
+skipBoundKeys[ step_List, bindings_Association ] :=
+  Select[ step, s |-> !KeyExistsQ[ bindings, s ] ]
+
 Options[ FindInfraScene ] = { "PruningProbability" -> 0 };
 
 FindInfraScene[ scene_InfraScene, graph_Graph, opts : OptionsPattern[] ] :=
-  FindInfraScene[ scene, graph, Length[ scene[ "Steps" ] ], opts ]
+  FindInfraScene[ scene, graph, Length[ scene[ "Steps" ] ], <||>, opts ]
 
 FindInfraScene[ scene_InfraScene, graph_Graph, nSteps_Integer, opts : OptionsPattern[] ] :=
+  FindInfraScene[ scene, graph, nSteps, <||>, opts ]
+
+FindInfraScene[ scene_InfraScene, graph_Graph, init_Association, opts : OptionsPattern[] ] :=
+  FindInfraScene[ scene, graph, Length[ scene[ "Steps" ] ], init, opts ]
+
+FindInfraScene[ scene_InfraScene, graph_Graph, nSteps_Integer, init_Association, opts : OptionsPattern[] ] :=
   Module[ { steps, constructions, assertions, branches, prob },
     steps = Take[ scene[ "Steps" ], UpTo[ nSteps ] ];
     constructions = scene[ "Constructions" ];
     assertions = scene[ "Assertions" ];
     prob = OptionValue[ "PruningProbability" ];
-    branches = { <||> };
+    branches = { init };
     Do[
-      branches = evaluateStep[ graph, step, constructions, branches ];
-      branches = pruneBranches[ branches, prob ],
+      Module[ { effective },
+        effective = skipBoundKeys[ step, First[ branches, <||> ] ];
+        If[ effective =!= {},
+          branches = evaluateStep[ graph, effective, constructions, branches ];
+          branches = pruneBranches[ branches, prob ]
+        ]
+      ],
       { step, steps }
     ];
     branches = filterAssertions[ graph, assertions, branches ];

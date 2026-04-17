@@ -141,4 +141,136 @@ VerificationTest[
   TestID -> "FindInfraScene-InfraCircle-FindCircle"
 ]
 
+(* ===== InfraGeometricStep ===== *)
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{a, b, s}, {
+      InfraGeometricStep[{a == InfraPoint[], b == InfraPoint[]}, "pick points"],
+      InfraGeometricStep[{s == InfraSegment[a, b]}, "draw segment"]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    scene["ManualSteps"] === True &&
+    scene["Steps"] === {{a, b}, {s}} &&
+    scene["Labels"] === {"pick points", "draw segment"}
+  ],
+  True,
+  TestID -> "InfraGeometricStep-scene-construction"
+]
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{a, b, s}, {
+      InfraGeometricStep[{a == InfraPoint[], b == InfraPoint[]}],
+      InfraGeometricStep[{s == InfraSegment[a, b]}]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    AllTrue[FindInfraScene[scene, g], MatchQ[InfraInstance[_Association]]]
+  ],
+  True,
+  TestID -> "InfraGeometricStep-FindInfraScene"
+]
+
+VerificationTest[
+  With[{
+    sceneManual = InfraScene[{p, q, s}, {
+      InfraGeometricStep[{p == InfraPoint[], q == InfraPoint[]}],
+      InfraGeometricStep[{s == InfraSegment[p, q]}]
+    }],
+    sceneAuto = InfraScene[{p, q, s}, {
+      p == InfraPoint[], q == InfraPoint[], s == InfraSegment[p, q]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    Length[FindInfraScene[sceneManual, g]] == Length[FindInfraScene[sceneAuto, g]]
+  ],
+  True,
+  TestID -> "InfraGeometricStep-same-results-as-auto"
+]
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{a, b, s}, {
+      InfraGeometricStep[{a == InfraPoint[], b == InfraPoint[]}],
+      InfraGeometricStep[{s == InfraSegment[a, b]}],
+      InfraDistance[a, b] >= 3
+    }],
+    g = PathGraph[Range[5]]
+  },
+    AllTrue[FindInfraScene[scene, g],
+      inst |-> GraphDistance[g, inst[[1]][a], inst[[1]][b]] >= 3]
+  ],
+  True,
+  TestID -> "InfraGeometricStep-global-assertion"
+]
+
+(* ===== Initial Bindings ===== *)
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{p, q, s}, {
+      p == InfraPoint[], q == InfraPoint[], s == InfraSegment[p, q]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    AllTrue[FindInfraScene[scene, g, <|p -> 1|>],
+      inst |-> inst[[1]][p] == 1]
+  ],
+  True,
+  TestID -> "FindInfraScene-initial-bindings-fix-point"
+]
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{p, q, s}, {
+      p == InfraPoint[], q == InfraPoint[], s == InfraSegment[p, q]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    Length[FindInfraScene[scene, g, <|p -> 1, q -> 5|>]] <
+    Length[FindInfraScene[scene, g]]
+  ],
+  True,
+  TestID -> "FindInfraScene-initial-bindings-reduce-branches"
+]
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{p, q, s}, {
+      p == InfraPoint[], q == InfraPoint[], s == InfraSegment[p, q]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    With[{instances = FindInfraScene[scene, g, <|p -> 1, q -> 5|>]},
+      Length[instances] >= 1 &&
+      AllTrue[instances, inst |-> inst[[1]][p] == 1 && inst[[1]][q] == 5]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraScene-initial-bindings-both-fixed"
+]
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{p, q, s}, {
+      p == InfraPoint[], q == InfraPoint[], s == InfraSegment[p, q]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    With[{
+      step1 = FindInfraScene[scene, g, 1],
+      fixed = FindInfraScene[scene, g, 1][[1, 1]]
+    },
+      With[{step2 = FindInfraScene[scene, g, 2, fixed]},
+        AllTrue[step2,
+          inst |-> inst[[1]][p] == fixed[p] && inst[[1]][q] == fixed[q]]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraScene-fix-and-advance"
+]
+
 EndTestSection[]

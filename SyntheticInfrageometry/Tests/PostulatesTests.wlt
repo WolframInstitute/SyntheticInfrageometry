@@ -68,6 +68,26 @@ VerificationTest[
   TestID -> "FindPoint-vertex-list-with-distance"
 ]
 
+VerificationTest[
+  FindPoint[PathGraph[Range[3]], 10],
+  $Failed,
+  TestID -> "FindPoint-exact-fails-when-too-few"
+]
+
+VerificationTest[
+  With[{pts = FindPoint[PathGraph[Range[3]], UpTo[10]]},
+    Length[pts] == 3 && SubsetQ[VertexList[PathGraph[Range[3]]], pts]
+  ],
+  True,
+  TestID -> "FindPoint-upto-returns-available"
+]
+
+VerificationTest[
+  FindPoint[PathGraph[Range[3]], 3, "Distance" -> 5],
+  $Failed,
+  TestID -> "FindPoint-exact-fails-impossible-distance"
+]
+
 (* ===== FindSegment ===== *)
 
 VerificationTest[
