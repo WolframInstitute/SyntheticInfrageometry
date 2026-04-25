@@ -1,8 +1,22 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-$InfraPointColor = RGBColor[ 0.93, 0.50, 0.50 ];
-$InfraSegmentColor = RGBColor[ 0.50, 0.60, 0.93 ];
-$InfraCircleColor = RGBColor[ 0.50, 0.86, 0.62 ];
+$InfraPointColor = RGBColor[ 0.90, 0.10, 0.15 ];
+$InfraSegmentColor = RGBColor[ 0.10, 0.30, 0.90 ];
+$InfraCircleColor = RGBColor[ 0.00, 0.60, 0.25 ];
+
+$InfraSegmentSelectOptions = { None, "FrechetCentral", "FrechetPeripheral",
+  "MeanFrechetCentral", "MeanFrechetPeripheral",
+  "HausdorffCentral", "HausdorffPeripheral", "EmbeddingClosest" };
+
+$InfraCircleSelectOptions = { None, "ShortestCircumference", "LongestCircumference",
+  "FrechetCentral", "FrechetPeripheral",
+  "MeanFrechetCentral", "MeanFrechetPeripheral",
+  "HausdorffCentral", "HausdorffPeripheral", "EmbeddingClosest" };
+
+instancePalette[ baseColor_, n_Integer ] :=
+  If[ n <= 1, { baseColor },
+    Table[ ColorData[ "DarkRainbow" ][ (i - 1) / (n - 1) ], { i, n } ]
+  ]
 
 
 SetAttributes[ PointViewer, HoldRest ]
@@ -41,7 +55,8 @@ SegmentViewer[ g_Graph ] :=
     initPts = RandomSample[ VertexList[ g ], 2 ],
     nearestFunc = Nearest[ GraphEmbedding[ g ] -> VertexList[ g ] ],
     ptColor = $InfraPointColor,
-    segColor = $InfraSegmentColor
+    segColor = $InfraSegmentColor,
+    selOpts = $InfraSegmentSelectOptions
   },
     Manipulate[
       seed;
@@ -51,22 +66,15 @@ SegmentViewer[ g_Graph ] :=
           FindSegment[ g, p1, p2, n, "Select" -> sel ]
         ];
         pathEdges = (UndirectedEdge @@@ Partition[ #, 2, 1 ]) & /@ segments;
-        colors = Table[
-          If[ Length[ segments ] == 1,
-            segColor,
-            Blend[ { Lighter[ segColor, 0.3 ], Darker[ segColor, 0.3 ] },
-              (i - 1) / Max[ Length[ segments ] - 1, 1 ] ]
-          ],
-          { i, Length[ segments ] }
-        ];
+        colors = instancePalette[ segColor, Length[ segments ] ];
         vertexHighlights = Join[
-          { Style[ p1, Directive[ ptColor, AbsolutePointSize[ 14 ] ] ],
-            Style[ p2, Directive[ ptColor, AbsolutePointSize[ 14 ] ] ] },
-          Style[ #, Directive[ segColor, AbsolutePointSize[ 10 ] ] ] & /@
+          { Style[ p1, Directive[ ptColor, AbsolutePointSize[ 16 ] ] ],
+            Style[ p2, Directive[ ptColor, AbsolutePointSize[ 16 ] ] ] },
+          Style[ #, Directive[ Darker[ segColor, 0.2 ], AbsolutePointSize[ 9 ] ] ] & /@
             DeleteDuplicates[ Flatten[ segments ] ]
         ];
         edgeHighlights = MapThread[
-          Style[ #1, Directive[ AbsoluteThickness[ 3 ], #2 ] ] &,
+          Style[ #1, Directive[ AbsoluteThickness[ 4 ], #2 ] ] &,
           { pathEdges, colors }
         ];
         highlights = Join[ edgeHighlights, vertexHighlights ];
@@ -85,8 +93,8 @@ SegmentViewer[ g_Graph ] :=
       { { p1, initPts[[ 1 ]] }, None },
       { { p2, initPts[[ 2 ]] }, None },
       { { seed, 0 }, None },
-      { { sel, None, "Select" }, ControlType -> InputField },
-      { { n, 1, "Segments" }, ControlType -> InputField },
+      { { n, 1, "Segments" }, 1, 12, 1, Appearance -> "Labeled" },
+      { { sel, None, "Select (ambiguity resolver)" }, selOpts, ControlType -> SetterBar },
       Button[ "Resample", With[ { pts = RandomSample[ VertexList[ g ], 2 ] },
         p1 = pts[[ 1 ]]; p2 = pts[[ 2 ]]; seed++ ] ],
       TrackedSymbols :> { p1, p2, seed, n, sel },
@@ -99,7 +107,10 @@ CircleViewer[ g_Graph ] :=
   With[{
     initPt = RandomChoice[ VertexList[ g ] ],
     nearestFunc = Nearest[ GraphEmbedding[ g ] -> VertexList[ g ] ],
-    circColor = $InfraCircleColor
+    circColor = $InfraCircleColor,
+    ptColor = $InfraPointColor,
+    selOpts = $InfraCircleSelectOptions,
+    diam = Max[ GraphDiameter[ g ], 2 ]
   },
     Manipulate[
       seed;
@@ -109,18 +120,14 @@ CircleViewer[ g_Graph ] :=
           FindCircle[ g, p, r, n, "Select" -> sel ]
         ];
         cycleEdges = (UndirectedEdge @@@ Partition[ Append[ #, First[ # ] ], 2, 1 ]) & /@ circles;
-        colors = Table[
-          If[ Length[ circles ] == 1,
-            circColor,
-            Blend[ { Lighter[ circColor, 0.3 ], Darker[ circColor, 0.3 ] },
-              (i - 1) / Max[ Length[ circles ] - 1, 1 ] ]
-          ],
-          { i, Length[ circles ] }
+        colors = instancePalette[ circColor, Length[ circles ] ];
+        vertexHighlights = Join[
+          { Style[ p, Directive[ ptColor, AbsolutePointSize[ 16 ] ] ] },
+          Style[ #, Directive[ Darker[ circColor, 0.2 ], AbsolutePointSize[ 9 ] ] ] & /@
+            DeleteDuplicates[ Flatten[ circles ] ]
         ];
-        vertexHighlights = Style[ #, Directive[ circColor, AbsolutePointSize[ 10 ] ] ] & /@
-          DeleteDuplicates[ Flatten[ circles ] ];
         edgeHighlights = MapThread[
-          Style[ #1, Directive[ AbsoluteThickness[ 3 ], #2 ] ] &,
+          Style[ #1, Directive[ AbsoluteThickness[ 4 ], #2 ] ] &,
           { cycleEdges, colors }
         ];
         highlights = Join[ edgeHighlights, vertexHighlights ];
@@ -138,9 +145,9 @@ CircleViewer[ g_Graph ] :=
       ],
       { { p, initPt }, None },
       { { seed, 0 }, None },
-      { { r, 3, "Radius" }, ControlType -> InputField },
-      { { n, 1, "Circles" }, ControlType -> InputField },
-      { { sel, None, "Select" }, ControlType -> InputField },
+      { { r, Max[ 1, Round[ diam / 3 ] ], "Radius" }, 1, diam, 1, Appearance -> "Labeled" },
+      { { n, 1, "Circles" }, 1, 12, 1, Appearance -> "Labeled" },
+      { { sel, None, "Select (ambiguity resolver)" }, selOpts, ControlType -> SetterBar },
       Button[ "Resample", p = RandomChoice[ VertexList[ g ] ]; seed++ ],
       TrackedSymbols :> { p, seed, r, n, sel },
       SaveDefinitions -> True

@@ -84,9 +84,9 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
           Delimiter,
           Row[ { "Aggregate ", Checkbox[ Dynamic[ aggregate ] ] } ],
           Row[ { "Instance ",
-            Slider[ Dynamic[ inst ], { 1, Dynamic[ Max[ nInst, 1 ] ], 1 } ],
-            " ", Dynamic[ Min[ inst, Max[ nInst, 1 ] ] ], "/", Dynamic[ nInst ] },
-            Enabled -> Dynamic[ !aggregate ] ],
+            Slider[ Dynamic[ inst ], { 1, Dynamic[ Max[ nInst, 1 ] ], 1 },
+              Enabled -> Dynamic[ !aggregate ] ],
+            " ", Dynamic[ Min[ inst, Max[ nInst, 1 ] ] ], "/", Dynamic[ nInst ] } ],
           Delimiter,
           Dynamic[
             TogglerBar[ Dynamic[ enabled ],
@@ -100,59 +100,45 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
 
 renderScene[ graph_, steps_, step_, palette_, typeOf_, objects_, enabled_,
              fixed_, instances_, nInst_, inst_, aggregate_ ] :=
-  Module[ { fixedObjects, currentObjects, vertexH, edgeH, label },
+  Module[ { fixedObjects, currentObjects, highlights },
     fixedObjects = Intersection[ enabled, Flatten[ Take[ steps, step - 1 ] ] ];
     currentObjects = Intersection[ enabled, steps[[ step ]] ];
-    vertexH = {};
-    edgeH = {};
 
-    Do[
-      addHighlights[ fixed[ o ], Lookup[ typeOf, o, "point" ], Darker[ palette[ o ], 0.2 ], 14, vertexH, edgeH ],
-      { o, Select[ fixedObjects, KeyExistsQ[ fixed, # ] & ] }
-    ];
+    highlights = Flatten @ Table[
+      highlightsFor[ fixed[ o ], Lookup[ typeOf, o, "point" ], Darker[ palette[ o ], 0.2 ], 14 ],
+      { o, Select[ fixedObjects, KeyExistsQ[ fixed, # ] & ] } ];
 
-    If[ nInst == 0,
-      Null,
-      If[ aggregate,
-        addAggregateHighlights[ instances, currentObjects, typeOf, palette, vertexH, edgeH ],
-        With[ { binding = instances[[ Min[ inst, nInst ], 1 ]] },
-          Do[
-            addHighlights[ binding[ o ], Lookup[ typeOf, o, "point" ], palette[ o ], 12, vertexH, edgeH ],
-            { o, Select[ currentObjects, KeyExistsQ[ binding, # ] & ] }
-          ]
-        ]
-      ]
-    ];
-
-    label = Row[ { "Step ", step, "/", Length[ steps ],
-      If[ nInst == 0, " \[LongDash] no instances",
+    If[ nInst > 0,
+      highlights = Join[ highlights,
         If[ aggregate,
-          Row[ { " \[LongDash] ", nInst, " instances (aggregate)" } ],
-          Row[ { " \[LongDash] instance ", Min[ inst, nInst ], "/", nInst } ] ] ] } ];
+          aggregateHighlights[ instances, currentObjects, typeOf, palette ],
+          With[ { binding = instances[[ Min[ inst, nInst ], 1 ]] },
+            Flatten @ Table[
+              highlightsFor[ binding[ o ], Lookup[ typeOf, o, "point" ], palette[ o ], 12 ],
+              { o, Select[ currentObjects, KeyExistsQ[ binding, # ] & ] } ] ] ] ] ];
 
-    Column[ {
-      HighlightGraph[ graph, Join[ edgeH, vertexH ], ImageSize -> 600 ],
-      Style[ label, Gray, 10 ]
-    }, Alignment -> Center ]
+    HighlightGraph[ graph, highlights, ImageSize -> 600 ]
   ]
 
 
-addHighlights[ val_, type_, color_, ptSize_, vertexH_, edgeH_ ] :=
-  If[ type === "point",
-    AppendTo[ vertexH, Style[ val, Directive[ color, AbsolutePointSize[ ptSize ] ] ] ],
-    Module[ { verts, edges },
-      verts = toVertexSet[ val ];
-      edges = If[ type === "circle",
-        UndirectedEdge @@@ Partition[ Append[ val, First[ val ] ], 2, 1 ],
-        UndirectedEdge @@@ Partition[ val, 2, 1 ] ];
-      Do[ AppendTo[ vertexH, Style[ v, Directive[ color, AbsolutePointSize[ ptSize - 2 ] ] ] ], { v, verts } ];
-      Do[ AppendTo[ edgeH, Style[ e, Directive[ AbsoluteThickness[ 3 ], color ] ] ], { e, edges } ]
+highlightsFor[ val_, "point", color_, ptSize_ ] :=
+  { Style[ val, Directive[ color, AbsolutePointSize[ ptSize ] ] ] }
+
+highlightsFor[ val_, type_, color_, ptSize_ ] :=
+  Module[ { verts, edges },
+    verts = toVertexSet[ val ];
+    edges = If[ type === "circle",
+      UndirectedEdge @@@ Partition[ Append[ val, First[ val ] ], 2, 1 ],
+      UndirectedEdge @@@ Partition[ val, 2, 1 ] ];
+    Join[
+      Style[ #, Directive[ color, AbsolutePointSize[ ptSize - 2 ] ] ] & /@ verts,
+      Style[ #, Directive[ AbsoluteThickness[ 3 ], color ] ] & /@ edges
     ]
   ]
 
 
-addAggregateHighlights[ instances_, currentObjects_, typeOf_, palette_, vertexH_, edgeH_ ] :=
-  Module[ { bnd, vertexFreqs, maxFreqs, edgeFreqs, vertexColorMap },
+aggregateHighlights[ instances_, currentObjects_, typeOf_, palette_ ] :=
+  Module[ { bnd, vertexFreqs, maxFreqs, edgeFreqs, vertexColorMap, vertexH, edgeH },
     bnd = instances[[ All, 1 ]];
     vertexFreqs = Association @ Table[
       o -> Counts @ Flatten[ toVertexSet[ #[ o ] ] & /@ bnd ],
@@ -171,25 +157,30 @@ addAggregateHighlights[ instances_, currentObjects_, typeOf_, palette_, vertexH_
     vertexColorMap = <||>;
     Do[
       KeyValueMap[
-        { vertex, freq } |->
-          ( vertexColorMap[ vertex ] = Append[
-              Lookup[ vertexColorMap, vertex, {} ],
-              Lighter[ palette[ o ], 1 - freq / maxFreqs[ o ] ] ] ),
+        Function[ { v, freq },
+          vertexColorMap[ v ] = Append[
+            Lookup[ vertexColorMap, v, {} ],
+            Lighter[ palette[ o ], 1 - freq / maxFreqs[ o ] ] ] ],
         vertexFreqs[ o ] ],
       { o, currentObjects } ];
-    Do[
-      AppendTo[ vertexH, Style[ vertex, Directive[
-        Switch[ Length[ colors ],
-          0, GrayLevel[ 0.8 ],
-          1, First[ colors ],
-          _, Blend[ colors ] ],
-        AbsolutePointSize[ 8 + 6 * Min[ Length[ colors ], Length[ currentObjects ] ] /
-          Max[ Length[ currentObjects ], 1 ] ] ] ] ],
-      { { vertex, colors }, Normal[ vertexColorMap ] } ];
-    Do[
-      With[ { maxF = Max[ Append[ Values[ counts ], 1 ] ] },
-        Do[
-          AppendTo[ edgeH, Style[ edge, Directive[ AbsoluteThickness[ 3 ], Opacity[ freq / maxF, palette[ o ] ] ] ] ],
-          { { edge, freq }, Normal[ counts ] } ] ],
-      { { o, counts }, Normal[ edgeFreqs ] } ]
+    vertexH = KeyValueMap[
+      Function[ { v, cs },
+        Style[ v, Directive[
+          Switch[ Length[ cs ],
+            0, GrayLevel[ 0.8 ],
+            1, First[ cs ],
+            _, Blend[ cs ] ],
+          AbsolutePointSize[ 8 + 6 * Min[ Length[ cs ], Length[ currentObjects ] ] /
+            Max[ Length[ currentObjects ], 1 ] ] ] ] ],
+      vertexColorMap ];
+    edgeH = Flatten @ Table[
+      With[ { counts = edgeFreqs[ o ],
+              maxF = Max[ Append[ Values[ edgeFreqs[ o ] ], 1 ] ] },
+        KeyValueMap[
+          Function[ { edge, freq },
+            Style[ edge, Directive[ AbsoluteThickness[ 3 ],
+              Opacity[ freq / maxF, palette[ o ] ] ] ] ],
+          counts ] ],
+      { o, Keys[ edgeFreqs ] } ];
+    Join[ edgeH, vertexH ]
   ]
