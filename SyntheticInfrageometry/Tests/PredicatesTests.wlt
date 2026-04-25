@@ -32,25 +32,6 @@ VerificationTest[
   TestID -> "SegmentQ-single-vertex"
 ]
 
-(* ===== CircleQ ===== *)
-
-VerificationTest[
-  With[{g = PetersenGraph[]},
-    CircleQ[g, {2, 5, 10, 9, 8, 7}, 1, 2]
-  ],
-  True,
-  TestID -> "CircleQ-valid-circle"
-]
-
-VerificationTest[
-  With[{g = PetersenGraph[]},
-    CircleQ[g, {2, 5, 10, 9, 8, 7}, 1, 3]
-  ],
-  False,
-  TestID -> "CircleQ-wrong-radius"
-]
-
-
 (* ===== LineQ ===== *)
 
 VerificationTest[
@@ -65,24 +46,42 @@ VerificationTest[
   TestID -> "LineQ-extendable-segment"
 ]
 
-(* ===== IntersectQ ===== *)
+(* ===== SphereQ ===== *)
 
 VerificationTest[
-  IntersectQ[{1, 2, 3}, {3, 4, 5}],
+  With[{g = PetersenGraph[]},
+    SphereQ[g, {2, 5, 10, 9, 8, 7}]
+  ],
   True,
-  TestID -> "IntersectQ-overlapping"
+  TestID -> "SphereQ-valid-cycle"
 ]
 
 VerificationTest[
-  IntersectQ[{1, 2}, {3, 4}],
+  With[{g = PathGraph[Range[5]]},
+    SphereQ[g, {1, 4}]
+  ],
   False,
-  TestID -> "IntersectQ-disjoint"
+  TestID -> "SphereQ-non-symmetric-pair-not-sphere"
+]
+
+(* ===== FindSphereParameters ===== *)
+
+VerificationTest[
+  With[{g = PetersenGraph[]},
+    Length[FindSphereParameters[g, {2, 5, 10, 9, 8, 7}]] >= 1
+  ],
+  True,
+  TestID -> "FindSphereParameters-finds-center"
 ]
 
 VerificationTest[
-  IntersectQ[{}, {1, 2}],
-  False,
-  TestID -> "IntersectQ-empty-set"
+  With[{g = PetersenGraph[]},
+    With[{params = FindSphereParameters[g, {2, 5, 10, 9, 8, 7}]},
+      AllTrue[params, MatchQ[{_, _Integer}]]
+    ]
+  ],
+  True,
+  TestID -> "FindSphereParameters-returns-pairs"
 ]
 
 (* ===== ParallelQ ===== *)
@@ -109,24 +108,6 @@ VerificationTest[
   ],
   True,
   TestID -> "ParallelQ-matrix-form"
-]
-
-(* ===== SegmentLineAngle ===== *)
-
-VerificationTest[
-  With[{g = PathGraph[Range[5]]},
-    SegmentLineAngle[g, {1, 2, 3}, {1, 2, 3, 4, 5}]
-  ],
-  0,
-  TestID -> "SegmentLineAngle-segment-on-line"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}]},
-    SegmentLineAngle[g, 1, 3, {1, 2, 3}]
-  ],
-  0,
-  TestID -> "SegmentLineAngle-endpoint-on-line"
 ]
 
 EndTestSection[]

@@ -122,13 +122,13 @@ VerificationTest[
   TestID -> "FindInfraScene-InfraSegmentQ-assertion"
 ]
 
-(* ===== InfraCircle with FindCircle ===== *)
+(* ===== InfraSphere with FindSphere ===== *)
 
 VerificationTest[
   With[{
     scene = InfraScene[{p, c}, {
       p == InfraPoint[1],
-      c == InfraCircle[p, 2]
+      c == InfraSphere[p, 2]
     }],
     g = PetersenGraph[]
   },
@@ -138,7 +138,7 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindInfraScene-InfraCircle-FindCircle"
+  TestID -> "FindInfraScene-InfraSphere-FindSphere"
 ]
 
 (* ===== InfraGeometricStep ===== *)

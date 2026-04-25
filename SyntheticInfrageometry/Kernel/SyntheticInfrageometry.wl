@@ -1,72 +1,48 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-(* Tools.wl — distance metrics, centrality, segment utilities, separating cycles *)
-PackageExport[HausdorffDistance]
-PackageExport[FrechetDistance]
-PackageExport[MinimalSeparationDistance]
-PackageExport[EmbeddingHausdorffDistance]
-PackageExport[EmbeddingCircleDistance]
-PackageExport[CentralElement]
-PackageExport[PeripheralElement]
-PackageExport[SegmentEndpoints]
-PackageExport[SeparatingCycleQ]
-PackageExport[FindSeparatingCycles]
-
-(* Postulates.wl — primitive existence postulates *)
-PackageScope[iFindPoint]
+(* Postulates.wl *)
 PackageExport[FindPoint]
 PackageExport[FindSegment]
 PackageExport[FindLine]
-PackageExport[FindCircle]
+PackageExport[FindSphere]
 
-(* Predicates.wl — geometric predicates *)
+(* Predicates.wl *)
 PackageExport[SegmentQ]
-PackageExport[CircleQ]
 PackageExport[LineQ]
-PackageExport[IntersectQ]
+PackageExport[SphereQ]
 PackageExport[ParallelQ]
-PackageExport[SegmentLineAngle]
+PackageExport[FindSphereParameters]
 
-(* Coordinatization.wl — metric bases and coordinates *)
-PackageExport[FindMetricBasis]
-PackageExport[MetricBasisQ]
-PackageExport[MetricCoordinates]
-PackageExport[MetricBisector]
-PackageExport[LaminarLayers]
-PackageExport[FindLineProjection]
-PackageExport[FindDAGProjection]
-PackageExport[LaminarCoordinates]
-PackageScope[laminarLayersFromSources]
+(* Coordinatization.wl *)
+PackageExport[FindRadarBasis]
+PackageExport[RadarBasisQ]
+PackageExport[RadarCoordinates]
+PackageExport[AxesCoordinates]
+PackageExport[FindOrthogonalAxes]
 
-(* Scenes.wl — declarative scene engine *)
+(* Scenes.wl *)
 PackageExport[InfraScene]
 PackageExport[FindInfraScene]
 PackageExport[InfraInstance]
+PackageExport[InfraGeometricStep]
 PackageExport[InfraPoint]
 PackageExport[InfraSegment]
 PackageExport[InfraLine]
-PackageExport[InfraCircle]
+PackageExport[InfraSphere]
 PackageExport[InfraIntersection]
-PackageExport[InfraIntersectionPoint]
 PackageExport[InfraDistance]
 PackageExport[InfraSegmentQ]
-PackageExport[InfraCircleQ]
+PackageExport[InfraSphereQ]
 PackageExport[InfraLineQ]
 PackageExport[InfraParallelQ]
 PackageExport[InfraIntersectQ]
-PackageExport[InfraGeometricStep]
 
-(* Shared type colors for all viewers *)
-PackageScope[$InfraPointColor]
-PackageScope[$InfraSegmentColor]
-PackageScope[$InfraCircleColor]
-
-(* Viewers.wl — interactive visualization tools *)
+(* Viewers.wl *)
 PackageExport[PointViewer]
 PackageExport[SegmentViewer]
-PackageExport[CircleViewer]
+PackageExport[SphereViewer]
 
-(* InteractiveViewers.wl — advanced interactive viewers *)
+(* InteractiveViewers.wl *)
 PackageExport[InfraSceneViewer]
 
 

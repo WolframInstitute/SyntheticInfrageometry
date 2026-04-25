@@ -1,5 +1,14 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+PackageScope[HausdorffDistance]
+PackageScope[FrechetDistance]
+PackageScope[MinimalSeparationDistance]
+PackageScope[EmbeddingHausdorffDistance]
+PackageScope[EmbeddingCircleDistance]
+PackageScope[CentralElement]
+PackageScope[PeripheralElement]
+PackageScope[SeparatingCycleQ]
+PackageScope[FindSeparatingCycles]
 PackageScope[pathFilterPairwiseDistances]
 PackageScope[applySelect]
 
@@ -91,10 +100,6 @@ PeripheralElement[ distanceMatrix_List, n_ : 1 ] :=
     ]
   ]
 
-(* ===================== Segment Utilities ===================== *)
-
-SegmentEndpoints[ segment_List ] := { First[ segment ], Last[ segment ] }
-
 (* ===================== Path Selection (internal) ===================== *)
 
 pathFilterPairwiseDistances[ graph_Graph, paths_List, baseDist_, cyclic_ ] :=
@@ -160,7 +165,7 @@ applySelect[ graph_Graph, paths_List, method_String, context_Association ] :=
     ]
   ]
 
-(* ===================== Separating Cycles ===================== *)
+(* ===================== Separating Cycles (internal) ===================== *)
 
 SeparatingCycleQ[ graph_Graph, cycle_List, center_, radius_ ] :=
   Module[ { rem, comps, centerComp },

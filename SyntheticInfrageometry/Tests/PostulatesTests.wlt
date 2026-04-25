@@ -92,7 +92,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    FindSegment[g, 1, 5, 1]
+    FindSegment[g, 1, 5]
   ],
   {{1, 2, 3, 4, 5}},
   TestID -> "FindSegment-unique-path"
@@ -139,7 +139,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindSegment[PathGraph[Range[5]], 1, 1],
+  FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1]],
   {},
   TestID -> "FindSegment-same-point-empty"
 ]
@@ -175,37 +175,45 @@ VerificationTest[
   TestID -> "FindSegment-chained-select"
 ]
 
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    With[{segs = FindSegment[g, 1, 9, UpTo[2]]},
+      Length[segs] <= 2 && AllTrue[segs, Length[#] == 5 &]
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-upto-soft-cap"
+]
+
 (* ===== FindLine ===== *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{ext = FindLine[g, {2, 3, 4}]},
-      Length[ext] >= 3
-    ]
+    FindLine[g, 2, 4]
   ],
-  True,
-  TestID -> "FindLine-at-least-as-long"
+  {{1, 2, 3, 4, 5}},
+  TestID -> "FindLine-extends-from-points"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    FindLine[g, {1, 2, 3, 4, 5}]
-  ],
-  {1, 2, 3, 4, 5},
-  TestID -> "FindLine-already-maximal"
-]
-
-VerificationTest[
-  With[{g = PathGraph[Range[5]]},
-    Length[FindLine[g, {2, 3}]]
+    Length[First @ FindLine[g, 2, 4]]
   ],
   5,
   TestID -> "FindLine-extends-to-full-path"
 ]
 
 VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    FindLine[g, 1, 5]
+  ],
+  {{1, 2, 3, 4, 5}},
+  TestID -> "FindLine-already-maximal"
+]
+
+VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{exts = FindLine[g, {5, 6}, 3, "Select" -> "FrechetCentral"]},
+    With[{exts = FindLine[g, 5, 6, 3, "Select" -> "FrechetCentral"]},
       Length[exts] >= 1 && AllTrue[exts, Length[#] > 2 &]
     ]
   ],
@@ -215,72 +223,82 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    FindLine[g, 2, 4]
-  ],
-  {{1, 2, 3, 4, 5}},
-  TestID -> "FindLine-from-points"
-]
-
-(* ===== FindCircle ===== *)
-
-VerificationTest[
-  With[{g = GridGraph[{4, 4}]},
-    With[{circles = FindCircle[g, 6, {1, 2}, 1, "Select" -> "LongestCircumference"]},
-      Length[circles] >= 1 && AllTrue[circles, ListQ]
+    With[{exts = FindLine[g, 2, 4, UpTo[5]]},
+      Length[exts] >= 1
     ]
   ],
   True,
-  TestID -> "FindCircle-returns-cycles"
+  TestID -> "FindLine-upto-soft"
+]
+
+(* ===== FindSphere ===== *)
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    With[{spheres = FindSphere[g, 6, {1, 2}, 1, "Select" -> "LongestCircumference"]},
+      Length[spheres] >= 1 && AllTrue[spheres, ListQ]
+    ]
+  ],
+  True,
+  TestID -> "FindSphere-returns-cycles"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = FindCircle[g, 6, {1, 2}, 1]},
-      AllTrue[circles, c |-> AllTrue[c, v |-> GraphDistance[g, 6, v] <= 2]]
+    With[{spheres = FindSphere[g, 6, {1, 2}, 1]},
+      AllTrue[spheres, c |-> AllTrue[c, v |-> GraphDistance[g, 6, v] <= 2]]
     ]
   ],
   True,
-  TestID -> "FindCircle-within-radius"
+  TestID -> "FindSphere-within-radius"
 ]
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    With[{circles = FindCircle[g, 1, {1, 2}, All]},
-      Length[circles] >= 1
+    With[{spheres = FindSphere[g, 1, {1, 2}, All]},
+      Length[spheres] >= 1
     ]
   ],
   True,
-  TestID -> "FindCircle-all-cycles"
+  TestID -> "FindSphere-all-cycles"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = FindCircle[g, 6, {1, 2}, All, "Select" -> "LongestCircumference"]},
-      Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
+    With[{spheres = FindSphere[g, 6, {1, 2}, All, "Select" -> "LongestCircumference"]},
+      Length[spheres] >= 1 && Length[Union[Length /@ spheres]] == 1
     ]
   ],
   True,
-  TestID -> "FindCircle-LongestCircumference-uniform"
+  TestID -> "FindSphere-LongestCircumference-uniform"
 ]
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    With[{circles = FindCircle[g, 1, {1, 2}, 2, "Select" -> {"LongestCircumference", "FrechetCentral"}]},
-      Length[circles] <= 2
+    With[{spheres = FindSphere[g, 1, {1, 2}, 2, "Select" -> {"LongestCircumference", "FrechetCentral"}]},
+      Length[spheres] <= 2
     ]
   ],
   True,
-  TestID -> "FindCircle-chained-select"
+  TestID -> "FindSphere-chained-select"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = FindCircle[g, 6, {1, 2}, All, "Select" -> "ShortestCircumference"]},
-      Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
+    With[{spheres = FindSphere[g, 6, {1, 2}, All, "Select" -> "ShortestCircumference"]},
+      Length[spheres] >= 1 && Length[Union[Length /@ spheres]] == 1
     ]
   ],
   True,
-  TestID -> "FindCircle-ShortestCircumference"
+  TestID -> "FindSphere-ShortestCircumference"
+]
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    Sort @ First @ FindSphere[g, 3, 2, Method -> "MetricCircle"]
+  ],
+  {1, 5},
+  TestID -> "FindSphere-MetricCircle-equidistant"
 ]
 
 EndTestSection[]

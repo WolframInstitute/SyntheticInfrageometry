@@ -1,14 +1,19 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+PackageScope[$InfraPointColor]
+PackageScope[$InfraSegmentColor]
+PackageScope[$InfraSphereColor]
+
+
 $InfraPointColor = RGBColor[ 0.90, 0.10, 0.15 ];
 $InfraSegmentColor = RGBColor[ 0.10, 0.30, 0.90 ];
-$InfraCircleColor = RGBColor[ 0.00, 0.60, 0.25 ];
+$InfraSphereColor = RGBColor[ 0.00, 0.60, 0.25 ];
 
 $InfraSegmentSelectOptions = { None, "FrechetCentral", "FrechetPeripheral",
   "MeanFrechetCentral", "MeanFrechetPeripheral",
   "HausdorffCentral", "HausdorffPeripheral", "EmbeddingClosest" };
 
-$InfraCircleSelectOptions = { None, "ShortestCircumference", "LongestCircumference",
+$InfraSphereSelectOptions = { None, "ShortestCircumference", "LongestCircumference",
   "FrechetCentral", "FrechetPeripheral",
   "MeanFrechetCentral", "MeanFrechetPeripheral",
   "HausdorffCentral", "HausdorffPeripheral", "EmbeddingClosest" };
@@ -63,7 +68,7 @@ SegmentViewer[ g_Graph ] :=
       Module[ { segments, pathEdges, colors, vertexHighlights, edgeHighlights, highlights },
         segments = If[ p1 === p2 || GraphDistance[ g, p1, p2 ] === Infinity,
           {},
-          FindSegment[ g, p1, p2, n, "Select" -> sel ]
+          FindSegment[ g, p1, p2, UpTo[ n ], "Select" -> sel ]
         ];
         pathEdges = (UndirectedEdge @@@ Partition[ #, 2, 1 ]) & /@ segments;
         colors = instancePalette[ segColor, Length[ segments ] ];
@@ -103,28 +108,28 @@ SegmentViewer[ g_Graph ] :=
   ]
 
 
-CircleViewer[ g_Graph ] :=
+SphereViewer[ g_Graph ] :=
   With[{
     initPt = RandomChoice[ VertexList[ g ] ],
     nearestFunc = Nearest[ GraphEmbedding[ g ] -> VertexList[ g ] ],
-    circColor = $InfraCircleColor,
+    sphColor = $InfraSphereColor,
     ptColor = $InfraPointColor,
-    selOpts = $InfraCircleSelectOptions,
+    selOpts = $InfraSphereSelectOptions,
     diam = Max[ GraphDiameter[ g ], 2 ]
   },
     Manipulate[
       seed;
-      Module[ { circles, cycleEdges, colors, vertexHighlights, edgeHighlights, highlights },
-        circles = If[ r < 1,
+      Module[ { spheres, cycleEdges, colors, vertexHighlights, edgeHighlights, highlights },
+        spheres = If[ r < 1,
           {},
-          FindCircle[ g, p, r, n, "Select" -> sel ]
+          FindSphere[ g, p, r, UpTo[ n ], "Select" -> sel ]
         ];
-        cycleEdges = (UndirectedEdge @@@ Partition[ Append[ #, First[ # ] ], 2, 1 ]) & /@ circles;
-        colors = instancePalette[ circColor, Length[ circles ] ];
+        cycleEdges = (UndirectedEdge @@@ Partition[ Append[ #, First[ # ] ], 2, 1 ]) & /@ spheres;
+        colors = instancePalette[ sphColor, Length[ spheres ] ];
         vertexHighlights = Join[
           { Style[ p, Directive[ ptColor, AbsolutePointSize[ 16 ] ] ] },
-          Style[ #, Directive[ Darker[ circColor, 0.2 ], AbsolutePointSize[ 9 ] ] ] & /@
-            DeleteDuplicates[ Flatten[ circles ] ]
+          Style[ #, Directive[ Darker[ sphColor, 0.2 ], AbsolutePointSize[ 9 ] ] ] & /@
+            DeleteDuplicates[ Flatten[ spheres ] ]
         ];
         edgeHighlights = MapThread[
           Style[ #1, Directive[ AbsoluteThickness[ 4 ], #2 ] ] &,
@@ -146,7 +151,7 @@ CircleViewer[ g_Graph ] :=
       { { p, initPt }, None },
       { { seed, 0 }, None },
       { { r, Max[ 1, Round[ diam / 3 ] ], "Radius" }, 1, diam, 1, Appearance -> "Labeled" },
-      { { n, 1, "Circles" }, 1, 12, 1, Appearance -> "Labeled" },
+      { { n, 1, "Spheres" }, 1, 12, 1, Appearance -> "Labeled" },
       { { sel, None, "Select (ambiguity resolver)" }, selOpts, ControlType -> SetterBar },
       Button[ "Resample", p = RandomChoice[ VertexList[ g ] ]; seed++ ],
       TrackedSymbols :> { p, seed, r, n, sel },

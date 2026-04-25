@@ -1,227 +1,190 @@
 BeginTestSection["Coordinatization"]
 
-(* ===== Metric Basis ===== *)
+(* ===== Radar Basis ===== *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    MetricBasisQ[g, First @ FindMetricBasis[g]]
+    RadarBasisQ[g, First @ FindRadarBasis[g]]
   ],
   True,
-  TestID -> "FindMetricBasis-path-returns-basis"
+  TestID -> "FindRadarBasis-path-returns-basis"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    Length[First @ FindMetricBasis[g]] == 1
+    Length[First @ FindRadarBasis[g]] == 1
   ],
   True,
-  TestID -> "MetricBasis-path-size-one"
+  TestID -> "RadarBasis-path-size-one"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    MetricBasisQ[g, First @ FindMetricBasis[g]]
+    RadarBasisQ[g, First @ FindRadarBasis[g]]
   ],
   True,
-  TestID -> "FindMetricBasis-cycle-returns-basis"
+  TestID -> "FindRadarBasis-cycle-returns-basis"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]], b = {1}},
-    MetricCoordinates[g, 3, b] == {2}
+    RadarCoordinates[g, 3, b] == {2}
   ],
   True,
-  TestID -> "MetricCoordinates-path-distance-vector"
+  TestID -> "RadarCoordinates-path-distance-vector"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]], b = {1, 5}},
-    Table[MetricCoordinates[g, v, b], {v, 1, 5}]
+    Table[RadarCoordinates[g, v, b], {v, 1, 5}]
   ],
   {{0, 4}, {1, 3}, {2, 2}, {3, 1}, {4, 0}},
-  TestID -> "MetricCoordinates-path-endpoints-basis"
+  TestID -> "RadarCoordinates-path-endpoints-basis"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]], b = {1}},
-    DuplicateFreeQ[Table[MetricCoordinates[g, v, b], {v, VertexList[g]}]]
+    DuplicateFreeQ[Table[RadarCoordinates[g, v, b], {v, VertexList[g]}]]
   ],
   True,
-  TestID -> "MetricBasis-roundtrip-distinguishes"
+  TestID -> "RadarBasis-roundtrip-distinguishes"
 ]
 
-VerificationTest[
-  With[{g = PathGraph[Range[5]]},
-    MetricBisector[g, 1, 5]
-  ],
-  {3},
-  TestID -> "MetricBisector-path-midpoint"
-]
+(* ===== AxesCoordinates ===== *)
 
 VerificationTest[
-  With[{g = PathGraph[Range[4]]},
-    MetricBisector[g, 1, 4]
-  ],
-  {},
-  TestID -> "MetricBisector-path-even-empty"
-]
-
-(* ===== LaminarLayers ===== *)
-
-VerificationTest[
-  With[{g = PathGraph[Range[5]], line = {1, 2, 3, 4, 5}},
-    LaminarLayers[g, line]
-  ],
-  {{1}, {2}, {3}, {4}, {5}},
-  TestID -> "LaminarLayers-line-singletons"
-]
-
-VerificationTest[
-  With[{g = PathGraph[Range[5]],
-        dag = Graph[{DirectedEdge[1, 2], DirectedEdge[2, 3]}]},
-    LaminarLayers[g, dag]
-  ],
-  {{1}, {2}, {3}},
-  TestID -> "LaminarLayers-simple-dag"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}],
-        dag = Graph[{DirectedEdge[1, 2], DirectedEdge[1, 4],
-                     DirectedEdge[2, 5], DirectedEdge[4, 5]}]},
-    Sort /@ LaminarLayers[g, dag]
-  ],
-  {{1}, {2, 4}, {5}},
-  TestID -> "LaminarLayers-dag-multiple-per-layer"
-]
-
-(* ===== Projection ===== *)
-
-VerificationTest[
-  With[{g = PathGraph[Range[5]], line = {1, 2, 3, 4, 5}},
-    FindLineProjection[g, line, 3]
-  ],
-  {3},
-  TestID -> "FindLineProjection-on-line"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}], line = {1, 2, 3}},
-    FindLineProjection[g, line, 4]
-  ],
-  {1},
-  TestID -> "FindLineProjection-grid-below-first"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}], line = {1, 2, 3}},
-    FindLineProjection[g, line, 5]
-  ],
-  {2},
-  TestID -> "FindLineProjection-grid-below-middle"
-]
-
-VerificationTest[
-  With[{g = CycleGraph[6], line = {1, 2, 3}},
-    Sort @ FindLineProjection[g, line, 5]
-  ],
-  {1, 3},
-  TestID -> "FindLineProjection-cycle-ties-both-endpoints"
-]
-
-VerificationTest[
-  With[{g = CycleGraph[6], line = {1, 2, 3}},
-    FindLineProjection[g, line, 4]
-  ],
-  {3},
-  TestID -> "FindLineProjection-cycle-adjacent-endpoint"
-]
-
-VerificationTest[
-  With[{g = PathGraph[Range[5]],
-        dag = Graph[{DirectedEdge[1, 2], DirectedEdge[2, 3]}]},
-    FindDAGProjection[g, dag, 4]
-  ],
-  {3},
-  TestID -> "FindDAGProjection-path-closest"
-]
-
-(* ===== LaminarCoordinates ===== *)
-
-VerificationTest[
-  With[{g = PathGraph[Range[5]], line = {1, 2, 3, 4, 5}},
-    Table[LaminarCoordinates[g, line, v], {v, 1, 5}]
-  ],
-  {{0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0}},
-  TestID -> "LaminarCoordinates-on-line-zero-orthogonal"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}], line = {1, 2, 3}},
-    LaminarCoordinates[g, line, 4]
-  ],
-  {0, 1},
-  TestID -> "LaminarCoordinates-grid-one-below-first"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}], line = {1, 2, 3}},
-    LaminarCoordinates[g, line, 5]
+  With[{g = GridGraph[{4, 4}], xAxis = {1, 2, 3, 4}, yAxis = {1, 5, 9, 13}},
+    AxesCoordinates[g, {xAxis, yAxis}, 6]
   ],
   {1, 1},
-  TestID -> "LaminarCoordinates-grid-one-below-middle"
+  TestID -> "AxesCoordinates-grid-2axes-vertex6"
 ]
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], line = {1, 2, 3}},
-    LaminarCoordinates[g, line, 9]
+  With[{g = GridGraph[{4, 4}], xAxis = {1, 2, 3, 4}, yAxis = {1, 5, 9, 13}},
+    AxesCoordinates[g, {xAxis, yAxis}, 11]
   ],
   {2, 2},
-  TestID -> "LaminarCoordinates-grid-far-corner"
+  TestID -> "AxesCoordinates-grid-2axes-vertex11"
 ]
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], line = {1, 2, 3}},
-    Length @ LaminarCoordinates[g, line]
+  With[{g = GridGraph[{4, 4}], xAxis = {1, 2, 3, 4}, yAxis = {1, 5, 9, 13}},
+    Length @ AxesCoordinates[g, {xAxis, yAxis}]
   ],
-  9,
-  TestID -> "LaminarCoordinates-bulk-returns-association"
+  16,
+  TestID -> "AxesCoordinates-grid-bulk-association"
 ]
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], line = {1, 2, 3}},
-    AssociationQ @ LaminarCoordinates[g, line]
+  With[{g = GridGraph[{4, 4}], xAxis = {1, 2, 3, 4}, yAxis = {1, 5, 9, 13}},
+    AssociationQ @ AxesCoordinates[g, {xAxis, yAxis}]
   ],
   True,
-  TestID -> "LaminarCoordinates-bulk-is-association"
+  TestID -> "AxesCoordinates-bulk-is-association"
+]
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]], axes = {{1, 2, 3, 4, 5}}},
+    Table[AxesCoordinates[g, axes, v], {v, 1, 5}]
+  ],
+  {{0}, {1}, {2}, {3}, {4}},
+  TestID -> "AxesCoordinates-single-axis-recovers-position"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]],
         dag = Graph[{DirectedEdge[1, 2], DirectedEdge[2, 3]}]},
-    LaminarCoordinates[g, dag, 4]
+    AxesCoordinates[g, {dag}, 4]
   ],
-  {2, 1},
-  TestID -> "LaminarCoordinates-dag-outside-reach"
+  {2},
+  TestID -> "AxesCoordinates-dag-axis-outside-reach"
 ]
 
-VerificationTest[
-  With[{g = GridGraph[{3, 3}],
-        dag = Graph[{DirectedEdge[1, 2], DirectedEdge[1, 4]}]},
-    LaminarCoordinates[g, dag, 5]
-  ],
-  {1, 1},
-  TestID -> "LaminarCoordinates-dag-ties-min-layer"
-]
-
-(* ===== Segment to Line extension (existing API) ===== *)
+(* ===== FindOrthogonalAxes ===== *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    FindLine[g, {2, 3, 4}] == {1, 2, 3, 4, 5}
+    Length @ FindOrthogonalAxes[g, 3, All]
+  ],
+  1,
+  TestID -> "FindOrthogonalAxes-path-through-center-one-axis"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    Length @ FindOrthogonalAxes[g, 1, All] >= 1
   ],
   True,
-  TestID -> "FindLine-extends-segment-to-full-path"
+  TestID -> "FindOrthogonalAxes-grid-through-corner-some-axes"
+]
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    With[{axes = FindOrthogonalAxes[g, 3, All]},
+      AllTrue[axes, MemberQ[#, 3] &]
+    ]
+  ],
+  True,
+  TestID -> "FindOrthogonalAxes-axes-pass-through-center"
+]
+
+VerificationTest[
+  FindOrthogonalAxes[PathGraph[Range[5]], 3, 5],
+  $Failed,
+  TestID -> "FindOrthogonalAxes-strict-fail-too-many"
+]
+
+(* ===== Z-valued AxesCoordinates from a center ===== *)
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    AxesCoordinates[g, 3, 3]
+  ],
+  {0},
+  TestID -> "AxesCoordinates-center-maps-to-origin"
+]
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    Sort @ Values @ AxesCoordinates[g, 3]
+  ],
+  Sort[{{-2}, {-1}, {0}, {1}, {2}}],
+  TestID -> "AxesCoordinates-path-Z-coords"
+]
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    AssociationQ @ AxesCoordinates[g, 3]
+  ],
+  True,
+  TestID -> "AxesCoordinates-center-bulk-association"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    AxesCoordinates[g, 1, 1]
+  ],
+  ConstantArray[0, Length @ FindOrthogonalAxes[GridGraph[{4, 4}], 1, All]],
+  TestID -> "AxesCoordinates-grid-center-self-zero"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}],
+        xAxis = {1, 2, 3, 4}, yAxis = {1, 5, 9, 13}},
+    AxesCoordinates[g, {xAxis, yAxis}, 11, "Origin" -> 6]
+  ],
+  {1, 1},
+  TestID -> "AxesCoordinates-explicit-Origin-signed"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}],
+        xAxis = {1, 2, 3, 4}, yAxis = {1, 5, 9, 13}},
+    AxesCoordinates[g, {xAxis, yAxis}, 1, "Origin" -> 6]
+  ],
+  {-1, -1},
+  TestID -> "AxesCoordinates-explicit-Origin-negative"
 ]
 
 EndTestSection[]

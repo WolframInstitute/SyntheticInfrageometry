@@ -6,7 +6,7 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph ] :=
 
 InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
   Module[ { objects, steps, constructions, nSteps,
-             ptColor, segColor, circColor, typeOf, typeColor, grouped, palette },
+             ptColor, segColor, sphColor, typeOf, typeColor, grouped, palette },
     objects = scene[ "Objects" ];
     steps = scene[ "Steps" ];
     constructions = scene[ "Constructions" ];
@@ -14,21 +14,20 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
 
     ptColor = RGBColor[ 0.93, 0.50, 0.50 ];
     segColor = RGBColor[ 0.50, 0.60, 0.93 ];
-    circColor = RGBColor[ 0.50, 0.86, 0.62 ];
+    sphColor = RGBColor[ 0.50, 0.86, 0.62 ];
 
     typeOf = Association @ Table[
       obj -> Switch[ Head[ constructions[ obj ] ],
         InfraPoint, "point",
         InfraIntersection, "point",
-        InfraIntersectionPoint, "point",
         InfraSegment, "segment",
         InfraLine, "segment",
-        InfraCircle, "circle",
+        InfraSphere, "sphere",
         _, "point"
       ],
       { obj, Select[ objects, KeyExistsQ[ constructions, # ] & ] }
     ];
-    typeColor = <| "point" -> ptColor, "segment" -> segColor, "circle" -> circColor |>;
+    typeColor = <| "point" -> ptColor, "segment" -> segColor, "sphere" -> sphColor |>;
     grouped = GroupBy[ objects, Lookup[ typeOf, #, "point" ] & ];
     palette = Association @ Table[
       With[ { tp = Lookup[ typeOf, obj, "point" ], grp = grouped[ Lookup[ typeOf, obj, "point" ] ] },
@@ -127,7 +126,7 @@ highlightsFor[ val_, "point", color_, ptSize_ ] :=
 highlightsFor[ val_, type_, color_, ptSize_ ] :=
   Module[ { verts, edges },
     verts = toVertexSet[ val ];
-    edges = If[ type === "circle",
+    edges = If[ type === "sphere",
       UndirectedEdge @@@ Partition[ Append[ val, First[ val ] ], 2, 1 ],
       UndirectedEdge @@@ Partition[ val, 2, 1 ] ];
     Join[
@@ -149,7 +148,7 @@ aggregateHighlights[ instances_, currentObjects_, typeOf_, palette_ ] :=
     edgeFreqs = Association @ Table[
       o -> Counts @ Flatten[
         With[ { path = #[ o ] },
-          If[ Lookup[ typeOf, o, "point" ] === "circle",
+          If[ Lookup[ typeOf, o, "point" ] === "sphere",
             UndirectedEdge @@@ Partition[ Append[ path, First[ path ] ], 2, 1 ],
             UndirectedEdge @@@ Partition[ path, 2, 1 ] ]
         ] & /@ bnd ],

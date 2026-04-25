@@ -8,16 +8,6 @@ PackageScope[findLineExtensions]
 Options[ FindPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
 
 FindPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  iFindPoint[ graph, n, opts ]
-
-FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
-  With[ { result = iFindPoint[ graph, n, opts ] },
-    If[ Length[ result ] < n, $Failed, result ]
-  ]
-
-Options[ iFindPoint ] = Options[ FindPoint ];
-
-iFindPoint[ graph_Graph, n_Integer, opts : OptionsPattern[] ] :=
   Module[ { from, pool, dist, range, distMatrix, vertexIndex, auxiliaryGraph, cliques, thresholds, finiteMax, maxCl },
     from = OptionValue[ "From" ];
     pool = Which[
@@ -57,46 +47,56 @@ iFindPoint[ graph_Graph, n_Integer, opts : OptionsPattern[] ] :=
     ]
   ]
 
+FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
+  With[ { result = FindPoint[ graph, UpTo[ n ], opts ] },
+    If[ Length[ result ] < n, $Failed, result ]
+  ]
+
+
 (* ===================== Segments ===================== *)
 
 Options[ FindSegment ] = { "Select" -> None };
 
-FindSegment[ graph_Graph, p1_, p2_, n : (_Integer | All) : 1, opts : OptionsPattern[] ] :=
+FindSegment[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] :=
   Module[ { d, paths, context },
     d = GraphDistance[ graph, p1, p2 ];
     If[ d === Infinity, Return[ {} ] ];
     paths = FindPath[ graph, p1, p2, { d }, All ];
     context = <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |>;
-    paths = applySelect[ graph, paths, OptionValue[ "Select" ], context ];
-    If[ n === All, paths, Take[ paths, UpTo[ n ] ] ]
+    applySelect[ graph, paths, OptionValue[ "Select" ], context ]
   ]
 
-FindSegment[ graph_Graph, { p1_, p2_ }, n_Integer : 1, opts : OptionsPattern[] ] :=
-  FindSegment[ graph, p1, p2, n, opts ]
+FindSegment[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+  Take[ FindSegment[ graph, p1, p2, All, opts ], UpTo[ n ] ]
+
+FindSegment[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] :=
+  With[ { result = FindSegment[ graph, p1, p2, UpTo[ n ], opts ] },
+    If[ Length[ result ] < n, $Failed, result ]
+  ]
+
+FindSegment[ graph_Graph, { p1_, p2_ }, args___ ] :=
+  FindSegment[ graph, p1, p2, args ]
+
 
 (* ===================== Lines ===================== *)
 
 Options[ FindLine ] = { "Select" -> None };
 
-FindLine[ graph_Graph, p1_, p2_, n : (_Integer | All) : 1, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
+FindLine[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
   Module[ { geodesics, allExtensions, context },
     geodesics = FindSegment[ graph, p1, p2, All ];
     allExtensions = Union @ Flatten[
       findLineExtensions[ graph, # ] & /@ geodesics, 1 ];
     context = <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |>;
-    allExtensions = applySelect[ graph, allExtensions, OptionValue[ "Select" ], context ];
-    If[ n === All, allExtensions, Take[ allExtensions, UpTo[ n ] ] ]
+    applySelect[ graph, allExtensions, OptionValue[ "Select" ], context ]
   ]
 
-FindLine[ graph_Graph, segment_List, opts : OptionsPattern[] ] :=
-  First @ FindLine[ graph, segment, 1, opts ]
+FindLine[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
+  Take[ FindLine[ graph, p1, p2, All, opts ], UpTo[ n ] ]
 
-FindLine[ graph_Graph, segment_List, n : (_Integer | All), opts : OptionsPattern[] ] :=
-  Module[ { allExtensions, context },
-    allExtensions = findLineExtensions[ graph, segment ];
-    context = <| "Cyclic" -> False, "Endpoints" -> SegmentEndpoints[ segment ] |>;
-    allExtensions = applySelect[ graph, allExtensions, OptionValue[ "Select" ], context ];
-    If[ n === All, allExtensions, Take[ allExtensions, UpTo[ n ] ] ]
+FindLine[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
+  With[ { result = FindLine[ graph, p1, p2, UpTo[ n ], opts ] },
+    If[ Length[ result ] < n, $Failed, result ]
   ]
 
 findLineExtensions[ graph_Graph, segment_List ] :=
@@ -134,20 +134,37 @@ findLineExtensions[ graph_Graph, segment_List ] :=
     Flatten[ Outer[ Join[ #1, segment, #2 ] &, beforePaths, afterPaths, 1 ], 1 ]
   ]
 
-(* ===================== Circles ===================== *)
 
-Options[ FindCircle ] = { "Select" -> None };
+(* ===================== Spheres ===================== *)
 
-FindCircle[ graph_Graph, p_, r_, n : (_Integer | All) : 1, opts : OptionsPattern[] ] :=
-  Module[ { range, cs, allCycles, vertexCycles, context },
+Options[ FindSphere ] = { "Select" -> None, Method -> "SeparatingCycle" };
+
+FindSphere[ graph_Graph, p_, r_, All, opts : OptionsPattern[] ] :=
+  Module[ { method, range, cs, allCycles, vertexCycles, context, equiSet },
+    method = OptionValue[ Method ];
     range = Replace[ r, d_?NumericQ :> { d, d } ];
-    cs = Subgraph[ graph, Select[ VertexList[ graph ],
-      range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ] ];
-    allCycles = FindCycle[ cs, Infinity, All ];
-    If[ allCycles === {}, Return[ {} ] ];
-    vertexCycles = (First /@ #) & /@ allCycles;
-    vertexCycles = FindSeparatingCycles[ graph, vertexCycles, p, If[ NumericQ[ r ], r, Mean[ r ] ] ];
-    context = <| "Cyclic" -> True, "Center" -> p, "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |>;
-    vertexCycles = applySelect[ graph, vertexCycles, OptionValue[ "Select" ], context ];
-    If[ n === All, vertexCycles, Take[ vertexCycles, UpTo[ n ] ] ]
+    Switch[ method,
+      "MetricCircle",
+        equiSet = Select[ VertexList[ graph ],
+          range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ];
+        { equiSet },
+      "SeparatingCycle",
+        cs = Subgraph[ graph, Select[ VertexList[ graph ],
+          range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ] ];
+        allCycles = FindCycle[ cs, Infinity, All ];
+        If[ allCycles === {}, Return[ {} ] ];
+        vertexCycles = (First /@ #) & /@ allCycles;
+        vertexCycles = FindSeparatingCycles[ graph, vertexCycles, p, If[ NumericQ[ r ], r, Mean[ r ] ] ];
+        context = <| "Cyclic" -> True, "Center" -> p, "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |>;
+        applySelect[ graph, vertexCycles, OptionValue[ "Select" ], context ],
+      _, $Failed
+    ]
+  ]
+
+FindSphere[ graph_Graph, p_, r_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+  Take[ FindSphere[ graph, p, r, All, opts ], UpTo[ n ] ]
+
+FindSphere[ graph_Graph, p_, r_, n_Integer : 1, opts : OptionsPattern[] ] :=
+  With[ { result = FindSphere[ graph, p, r, UpTo[ n ], opts ] },
+    If[ Length[ result ] < n, $Failed, result ]
   ]

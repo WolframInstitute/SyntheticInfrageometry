@@ -33,10 +33,10 @@ resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
   (expr /. Normal[ bindings ]) /.
     { InfraDistance[ x_, y_ ] :> GraphDistance[ graph, x, y ],
       InfraSegmentQ[ s_ ] :> SegmentQ[ graph, s ],
-      InfraCircleQ[ c_, center_, r_ ] :> CircleQ[ graph, c, center, r ],
+      InfraSphereQ[ c_ ] :> SphereQ[ graph, c ],
       InfraLineQ[ s_ ] :> LineQ[ graph, s ],
       InfraParallelQ[ l1_, l2_ ] :> ParallelQ[ graph, l1, l2 ],
-      InfraIntersectQ[ s1_, s2_ ] :> IntersectQ[ s1, s2 ] }
+      InfraIntersectQ[ s1_, s2_ ] :> IntersectingQ[ s1, s2 ] }
 
 extractBranches[ opts_List ] :=
   Lookup[ Association[ opts ], "Branches", All ]
@@ -183,10 +183,14 @@ dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
       First ] ]
 
 dispatchConstruction[ graph_Graph, InfraLine[ path_List, opts___Rule ] ] :=
-  FindLine[ graph, path, extractBranches[ {opts} ],
-    Sequence @@ DeleteDuplicatesBy[
-      Join[ FilterRules[ {opts}, Options[ FindLine ] ], { "Select" -> None } ],
-      First ] ]
+  Module[ { extensions, context, branches },
+    extensions = findLineExtensions[ graph, path ];
+    context = <| "Cyclic" -> False, "Endpoints" -> { First[ path ], Last[ path ] } |>;
+    extensions = applySelect[ graph, extensions,
+      "Select" /. {opts} /. "Select" -> None, context ];
+    branches = extractBranches[ {opts} ];
+    If[ branches === All, extensions, Take[ extensions, UpTo[ branches ] ] ]
+  ]
 
 dispatchConstruction[ graph_Graph, InfraLine[ p1_, p2_, opts___Rule ] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
   FindLine[ graph, p1, p2, extractBranches[ {opts} ],
@@ -194,15 +198,15 @@ dispatchConstruction[ graph_Graph, InfraLine[ p1_, p2_, opts___Rule ] ] /; Membe
       Join[ FilterRules[ {opts}, Options[ FindLine ] ], { "Select" -> None } ],
       First ] ]
 
-dispatchConstruction[ graph_Graph, InfraCircle[ center_, r_, opts___Rule ] ] :=
-  FindCircle[ graph, center, r, extractBranches[ {opts} ],
+dispatchConstruction[ graph_Graph, InfraSphere[ center_, r_, opts___Rule ] ] :=
+  FindSphere[ graph, center, r, extractBranches[ {opts} ],
     Sequence @@ DeleteDuplicatesBy[
-      Join[ FilterRules[ {opts}, Options[ FindCircle ] ], { "Select" -> None } ],
+      Join[ FilterRules[ {opts}, Options[ FindSphere ] ], { "Select" -> None } ],
       First ] ]
 
 (* ===================== Evaluation Engine ===================== *)
 
-evaluateConstruction[ graph_Graph, sym_, (InfraIntersectionPoint|InfraIntersection)[ obj1_, obj2_ ], bindings_Association ] :=
+evaluateConstruction[ graph_Graph, sym_, InfraIntersection[ obj1_, obj2_ ], bindings_Association ] :=
   With[ { common = Intersection[
       toVertexSet @ resolveExpression[ obj1, bindings, graph ],
       toVertexSet @ resolveExpression[ obj2, bindings, graph ] ] },
