@@ -1,4 +1,4 @@
-BeginTestSection["Predicates"]
+BeginTestSection["EuclideanPredicates"]
 
 (* ===== SegmentQ ===== *)
 

@@ -6,6 +6,8 @@ Classical geometry grew out of the measurement practices of a macro-observer, su
 
 Constructions in the discrete world are notoriously **ambiguous**, so the same infra-geometric construction may branch at every step, producing several valid final infrageometric scenes. This leads to novel questions about comparing the scenes, measuring their distance, and studying the stability of constructions.
 
+The natural visualization of an ambiguous construction is therefore not a single picture but a **diffuse** picture: each vertex and edge of the substrate shaded by how many candidates pass through it. The result is the discrete-geometry analogue of a quantum-mechanical superposition — a density over the substrate rather than a single classical curve. The paclet exposes this as a project-wide design pattern via `InfraDiffuseHighlight[graph, candidates]`.
+
 **Our goals include:**
 
 - defining infra-geometric primitives and postulates

@@ -24,6 +24,46 @@ instancePalette[ baseColor_, n_Integer ] :=
   ]
 
 
+Options[ InfraDiffuseHighlight ] = {
+  "Cyclic" -> False,
+  "OpacityRange" -> { 0.25, 1.0 },
+  "ThicknessRange" -> { 1.0, 5.0 },
+  "PointSizeRange" -> { 6, 14 }
+};
+
+InfraDiffuseHighlight[ graph_Graph, candidates_List, opts : OptionsPattern[] ] :=
+  InfraDiffuseHighlight[ graph, candidates, $InfraSegmentColor, opts ]
+
+InfraDiffuseHighlight[ graph_Graph, candidates_List, color_, opts : OptionsPattern[] ] :=
+  Module[ {
+    cyclic = TrueQ @ OptionValue[ "Cyclic" ],
+    oRange = OptionValue[ "OpacityRange" ],
+    tRange = OptionValue[ "ThicknessRange" ],
+    pRange = OptionValue[ "PointSizeRange" ],
+    flat, vertexCounts, edgeCounts, vMax, eMax, vSpecs, eSpecs },
+    flat = Replace[ candidates, x : Except[ _List ] :> { x }, { 1 } ];
+    vertexCounts = Counts @ Flatten[ flat ];
+    edgeCounts = Counts @ Flatten[
+      Map[
+        path |-> If[ Length[ path ] < 2, {},
+          Sort /@ Partition[ If[ cyclic && Length[ path ] >= 2, Append[ path, First[ path ] ], path ], 2, 1 ] ],
+        flat ], 1 ];
+    vMax = Max[ 1, Max @ Append[ Values @ vertexCounts, 1 ] ];
+    eMax = Max[ 1, Max @ Append[ Values @ edgeCounts, 1 ] ];
+    vSpecs = KeyValueMap[
+      { v, k } |-> Style[ v, Directive[ color,
+        Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) k / vMax ],
+        AbsolutePointSize[ pRange[[ 1 ]] + ( pRange[[ 2 ]] - pRange[[ 1 ]] ) k / vMax ] ] ],
+      vertexCounts ];
+    eSpecs = KeyValueMap[
+      { e, k } |-> Style[ UndirectedEdge @@ e, Directive[ color,
+        Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) k / eMax ],
+        AbsoluteThickness[ tRange[[ 1 ]] + ( tRange[[ 2 ]] - tRange[[ 1 ]] ) k / eMax ] ] ],
+      edgeCounts ];
+    HighlightGraph[ graph, Join[ eSpecs, vSpecs ] ]
+  ]
+
+
 SetAttributes[ PointViewer, HoldRest ]
 
 PointViewer[ g_Graph, sym_: None ] :=

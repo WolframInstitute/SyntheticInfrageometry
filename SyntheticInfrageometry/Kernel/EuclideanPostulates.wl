@@ -100,8 +100,7 @@ FindLine[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] /; Mem
   ]
 
 findLineExtensions[ graph_Graph, segment_List ] :=
-  Module[ { p1, p2, d, extendBefore, extendAfter, pairs, maxPairs,
-            startVertices, endVertices, beforePaths, afterPaths },
+  Module[ { p1, p2, d, extendBefore, extendAfter, pairs, maxPairs },
     If[ Length[ segment ] < 2, Return[ { segment } ] ];
     p1 = First[ segment ];
     p2 = Last[ segment ];
@@ -115,23 +114,17 @@ findLineExtensions[ graph_Graph, segment_List ] :=
     pairs = Tuples[ { extendBefore, extendAfter } ];
     maxPairs = MaximalBy[ pairs, GraphDistance[ graph, #[[ 1 ]], #[[ 2 ]] ] & ];
     If[ maxPairs === { { p1, p2 } }, Return[ { segment } ] ];
-    startVertices = Union[ maxPairs[[ All, 1 ]] ];
-    endVertices = Union[ maxPairs[[ All, 2 ]] ];
-    beforePaths = Flatten[ Table[
-      With[ { db = GraphDistance[ graph, s, p1 ] },
-        If[ db == 0, { {} }, Most /@ FindPath[ graph, s, p1, { db }, All ] ]
-      ],
-      { s, startVertices }
-    ], 1 ];
-    afterPaths = Flatten[ Table[
-      With[ { da = GraphDistance[ graph, p2, e ] },
-        If[ da == 0, { {} }, Rest /@ FindPath[ graph, p2, e, { da }, All ] ]
-      ],
-      { e, endVertices }
-    ], 1 ];
-    If[ beforePaths === {}, beforePaths = { {} } ];
-    If[ afterPaths === {}, afterPaths = { {} } ];
-    Flatten[ Outer[ Join[ #1, segment, #2 ] &, beforePaths, afterPaths, 1 ], 1 ]
+    Flatten[
+      With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
+        With[ { db = GraphDistance[ graph, s, p1 ], da = GraphDistance[ graph, p2, e ] },
+          With[ { bp = If[ db == 0, { {} }, Most /@ FindPath[ graph, s, p1, { db }, All ] ],
+                  ap = If[ da == 0, { {} }, Rest /@ FindPath[ graph, p2, e, { da }, All ] ] },
+            Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ]
+          ]
+        ]
+      ] & /@ maxPairs,
+      1
+    ]
   ]
 
 

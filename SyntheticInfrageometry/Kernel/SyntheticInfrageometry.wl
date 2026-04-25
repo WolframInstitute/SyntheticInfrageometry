@@ -1,12 +1,12 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-(* Postulates.wl *)
+(* EuclideanPostulates.wl *)
 PackageExport[FindPoint]
 PackageExport[FindSegment]
 PackageExport[FindLine]
 PackageExport[FindSphere]
 
-(* Predicates.wl *)
+(* EuclideanPredicates.wl *)
 PackageExport[SegmentQ]
 PackageExport[LineQ]
 PackageExport[SphereQ]
@@ -19,6 +19,25 @@ PackageExport[RadarBasisQ]
 PackageExport[RadarCoordinates]
 PackageExport[AxesCoordinates]
 PackageExport[FindOrthogonalAxes]
+
+(* ProjectivePostulates.wl *)
+PackageExport[FindPencil]
+PackageExport[PencilDirections]
+PackageExport[PencilCardinality]
+PackageExport[LineCount]
+PackageExport[FindCommonLine]
+PackageExport[FindCommonPoint]
+
+(* ProjectivePredicates.wl *)
+PackageExport[SameDirectionQ]
+PackageExport[CollinearQ]
+PackageExport[ConcurrentQ]
+PackageExport[UniquePencilQ]
+PackageExport[UniqueCollinearQ]
+PackageExport[WhiteheadW1Q]
+PackageExport[WhiteheadW2Q]
+PackageExport[WhiteheadW3Q]
+PackageExport[ProjectivePlaneGraphQ]
 
 (* Scenes.wl *)
 PackageExport[InfraScene]
@@ -38,6 +57,7 @@ PackageExport[InfraParallelQ]
 PackageExport[InfraIntersectQ]
 
 (* Viewers.wl *)
+PackageExport[InfraDiffuseHighlight]
 PackageExport[PointViewer]
 PackageExport[SegmentViewer]
 PackageExport[SphereViewer]
