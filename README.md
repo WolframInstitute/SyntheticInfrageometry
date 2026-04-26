@@ -18,6 +18,16 @@ The natural visualization of an ambiguous construction is therefore not a single
 - performing an empirical study of whether ambiguous infra-geometric constructions converge to a unique construction at macroscopic scale as the substrate is refined
 - incorporating hypergraphs and n-ary relations, or developing a new exotic infra-geometry for them
 
+## 🧭 Methodology
+
+Every direction (Euclidean, projective, tropical, ...) is organized in three tiers:
+
+- **Primitives** — `Find*` constructors that *generate* candidate geometric objects (segments, spheres, pencils, tropical hulls). Multi-valued by default; the final argument controls multiplicity (`n` strict, `UpTo[n]` soft, `All`).
+- **Postulates** — existence claims about those primitives, made operational through that multiplicity argument: `Find*[..., n]` returns `$Failed` when the postulate fails, a list when it holds.
+- **Predicates** — `*Q` Booleans that *test* whether a relation holds. Three flavours: pointwise / existential (e.g. `CollinearQ`), strict / unique (e.g. `UniqueCollinearQ`), and graph-level axiom checkers (e.g. `WhiteheadW1Q`, `ProjectivePlaneGraphQ`).
+
+A new geometric direction is opened by adding new `Find*` constructors and the corresponding `*Q` predicates; classification then asks **which graphs satisfy which predicates**. This is the project's central question, applied in turn to Euclidean, projective, and (planned) tropical geometry.
+
 ## ✨ Usage
 
 ```wolfram

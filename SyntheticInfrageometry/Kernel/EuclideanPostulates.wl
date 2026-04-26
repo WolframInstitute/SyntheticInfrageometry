@@ -67,7 +67,15 @@ FindSegment[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] :=
   ]
 
 FindSegment[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  Take[ FindSegment[ graph, p1, p2, All, opts ], UpTo[ n ] ]
+  Module[ { d, selector },
+    selector = OptionValue[ "Select" ];
+    If[ selector === None,
+      d = GraphDistance[ graph, p1, p2 ];
+      If[ d === Infinity, Return[ {} ] ];
+      FindPath[ graph, p1, p2, { d }, n ],
+      Take[ FindSegment[ graph, p1, p2, All, opts ], UpTo[ n ] ]
+    ]
+  ]
 
 FindSegment[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] :=
   With[ { result = FindSegment[ graph, p1, p2, UpTo[ n ], opts ] },
@@ -80,13 +88,17 @@ FindSegment[ graph_Graph, { p1_, p2_ }, args___ ] :=
 
 (* ===================== Lines ===================== *)
 
-Options[ FindLine ] = { "Select" -> None };
+Options[ FindLine ] = { "Select" -> None, "Maximality" -> "Extension" };
 
 FindLine[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
-  Module[ { geodesics, allExtensions, context },
+  Module[ { geodesics, allExtensions, context, diam },
     geodesics = FindSegment[ graph, p1, p2, All ];
     allExtensions = Union @ Flatten[
       findLineExtensions[ graph, # ] & /@ geodesics, 1 ];
+    If[ OptionValue[ "Maximality" ] === "Diameter",
+      diam = GraphDiameter[ graph ];
+      allExtensions = Select[ allExtensions, line |-> Length[ line ] - 1 == diam ]
+    ];
     context = <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |>;
     applySelect[ graph, allExtensions, OptionValue[ "Select" ], context ]
   ]

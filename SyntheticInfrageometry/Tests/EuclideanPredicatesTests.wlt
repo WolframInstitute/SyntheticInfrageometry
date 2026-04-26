@@ -110,4 +110,36 @@ VerificationTest[
   TestID -> "ParallelQ-matrix-form"
 ]
 
+(* ===== UniqueSegmentQ ===== *)
+
+VerificationTest[
+  UniqueSegmentQ[PathGraph[Range[5]], 1, 5],
+  True,
+  TestID -> "UniqueSegmentQ-PathGraph-pair-true"
+]
+
+VerificationTest[
+  UniqueSegmentQ[CycleGraph[4], 1, 3],
+  False,
+  TestID -> "UniqueSegmentQ-CycleGraph4-antipodes-false"
+]
+
+VerificationTest[
+  UniqueSegmentQ[PathGraph[Range[5]]],
+  True,
+  TestID -> "UniqueSegmentQ-PathGraph-whole-true"
+]
+
+VerificationTest[
+  UniqueSegmentQ[CycleGraph[4]],
+  False,
+  TestID -> "UniqueSegmentQ-CycleGraph4-whole-false"
+]
+
+VerificationTest[
+  UniqueSegmentQ[CompleteGraph[5]],
+  True,
+  TestID -> "UniqueSegmentQ-CompleteGraph-whole-true"
+]
+
 EndTestSection[]

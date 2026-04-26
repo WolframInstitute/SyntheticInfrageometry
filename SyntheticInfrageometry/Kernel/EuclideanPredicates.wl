@@ -52,3 +52,13 @@ ParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
       Max[ lineDistances ] - Min[ lineDistances ] <= threshold
     ]
   ]
+
+
+(* ===================== UniqueSegmentQ ===================== *)
+
+UniqueSegmentQ[ graph_Graph, u_, v_ ] := GeodesicCount[ graph, u, v ] == 1
+
+UniqueSegmentQ[ graph_Graph ] :=
+  AllTrue[ Subsets[ VertexList[ graph ], { 2 } ],
+    pair |-> UniqueSegmentQ[ graph, pair[[ 1 ]], pair[[ 2 ]] ]
+  ]

@@ -3,7 +3,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* EuclideanPostulates *)
 FindPoint::usage = "FindPoint[graph, n] finds exactly n vertices or returns $Failed. FindPoint[graph, UpTo[n]] returns up to n. FindPoint[graph] returns one vertex. Options: \"From\" (\"Random\"|\"Center\"|\"Periphery\"), \"Distance\" (number, {min,max}, or \"Max\"), \"MaxCliques\".";
 FindSegment::usage = "FindSegment[graph, p1, p2] returns one geodesic or $Failed. FindSegment[graph, p1, p2, n] returns exactly n or $Failed; FindSegment[graph, p1, p2, UpTo[n]] returns up to n; FindSegment[graph, p1, p2, All] returns all geodesics. Option: \"Select\" sorts results by criterion.";
-FindLine::usage = "FindLine[graph, p1, p2] returns one maximal geodesic extension through p1 and p2 or $Failed. FindLine[graph, p1, p2, n] returns exactly n or $Failed; FindLine[graph, p1, p2, UpTo[n]] returns up to n; FindLine[graph, p1, p2, All] returns all. Option: \"Select\" sorts results by criterion.";
+FindLine::usage = "FindLine[graph, p1, p2] returns one maximal geodesic extension through p1 and p2 or $Failed. FindLine[graph, p1, p2, n] returns exactly n or $Failed; FindLine[graph, p1, p2, UpTo[n]] returns up to n; FindLine[graph, p1, p2, All] returns all. Options: \"Select\" sorts results by criterion; \"Maximality\" controls what counts as a line -- \"Extension\" (default) keeps every triangle-equality maximal extension, \"Diameter\" keeps only those whose length equals GraphDiameter[graph].";
 FindSphere::usage = "FindSphere[graph, c, r] returns one separating cycle at distance r from c or $Failed. FindSphere[graph, c, r, n] returns exactly n or $Failed; FindSphere[graph, c, r, UpTo[n]] returns up to n; FindSphere[graph, c, r, All] returns all. Options: Method (\"MetricCircle\" returns the equidistant level set; \"SeparatingCycle\" (default) returns 2D-style separating cycles); \"Select\" sorts results.";
 
 (* EuclideanPredicates *)
@@ -12,6 +12,16 @@ LineQ::usage = "LineQ[graph, segment] tests whether a segment is maximal -- cann
 SphereQ::usage = "SphereQ[graph, vertexSet] tests whether vertexSet is a valid metric sphere -- equidistant from some center and separating its interior from its exterior. Center and radius are derived; use FindSphereParameters to obtain them.";
 ParallelQ::usage = "ParallelQ[graph, l1, l2] tests whether two lines are parallel (constant distance). ParallelQ[graph, l1, l2, threshold] allows distance variation up to threshold.";
 FindSphereParameters::usage = "FindSphereParameters[graph, vertexSet] returns the list of {center, radius} pairs consistent with vertexSet being a metric sphere.";
+UniqueSegmentQ::usage = "UniqueSegmentQ[graph, u, v] tests whether the geodesic from u to v is unique. UniqueSegmentQ[graph] tests whether every pair of distinct vertices admits a unique geodesic (geodetic graph).";
+
+(* MetricAlgebra *)
+MetricInterval::usage = "MetricInterval[graph, u, v] returns the vertex set { w : d(u, w) + d(w, v) == d(u, v) } -- the union of all geodesics from u to v. The master operation of the metric algebra layer.";
+BetweennessQ::usage = "BetweennessQ[graph, u, w, v] tests Tarski's betweenness B(u, w, v): w lies on a geodesic from u to v. Equivalently, d(u, w) + d(w, v) == d(u, v).";
+EquidistanceQ::usage = "EquidistanceQ[graph, a, b, c, d] tests Tarski's equidistance ab == cd: d(a, b) == d(c, d).";
+GeodesicCount::usage = "GeodesicCount[graph, u, v] returns the number of distinct geodesics from u to v. Computed in polynomial time as (A^d)[u, v] where A is the adjacency matrix and d = d(u, v).";
+DistanceMultiplicityMatrix::usage = "DistanceMultiplicityMatrix[graph] returns {D, M} where D is the graph distance matrix and M is the geodesic-count matrix (M[i, j] = number of geodesics from vertex i to vertex j).";
+DistanceMatrixQ::usage = "DistanceMatrixQ[M] tests whether the matrix M can be the distance matrix of some graph: square, symmetric, zero on the diagonal, non-negative entries, and tropical-idempotent (the matrix form of the triangle inequality).";
+MedianVertices::usage = "MedianVertices[graph, vs] returns the vertices minimising the sum of graph distances to the given vertex list vs. For a triple {a, b, c} this gives the metric median(s); a graph is a median graph iff every triple has a unique median.";
 
 (* Coordinatization *)
 FindRadarBasis::usage = "FindRadarBasis[graph, n, m] finds up to n spatial radar bases (resolving sets). m specifies which basis sizes to try: All (default), an integer (max size), {min, max}, or {exact}.";
@@ -38,6 +48,19 @@ WhiteheadW1Q::usage = "WhiteheadW1Q[graph] tests Whitehead axiom W1 for projecti
 WhiteheadW2Q::usage = "WhiteheadW2Q[graph] tests Whitehead axiom W2: through any two distinct vertices there is exactly one line. This is the geodetic-graph predicate.";
 WhiteheadW3Q::usage = "WhiteheadW3Q[graph] tests Whitehead axiom W3: for any four distinct vertices A, B, C, D, if some line through A,B meets some line through C,D then some line through A,C meets some line through B,D. O(|V|^4) -- use on small graphs.";
 ProjectivePlaneGraphQ::usage = "ProjectivePlaneGraphQ[graph] tests whether the graph is a projective plane in the synthetic-incidence sense: WhiteheadW1Q && WhiteheadW2Q && WhiteheadW3Q with non-degeneracy (some four vertices, no three collinear).";
+
+(* TropicalPostulates *)
+FindTropicalSegment::usage = "FindTropicalSegment[graph, u, v] returns one tropical segment from u to v as a sorted vertex set, or $Failed. FindTropicalSegment[graph, u, v, n] returns exactly n or $Failed; FindTropicalSegment[graph, u, v, UpTo[n]] returns up to n; FindTropicalSegment[graph, u, v, All] returns all. In the pure-metric reading each tropical segment is the vertex set of a graph geodesic.";
+FindGeodesicConvexHull::usage = "FindGeodesicConvexHull[graph, S] returns the smallest superset of S closed under FindSegment, as a sorted vertex list.";
+
+(* TropicalPredicates *)
+TropicalSegmentQ::usage = "TropicalSegmentQ[graph, S, u, v] tests whether the vertex set S realises a tropical segment from u to v.";
+GeodesicallyConvexQ::usage = "GeodesicallyConvexQ[graph, S] tests whether the vertex set S is closed under FindSegment.";
+UniqueTropicalSegmentQ::usage = "UniqueTropicalSegmentQ[graph, u, v] tests whether the tropical segment from u to v is single-valued.";
+TropicalT1Q::usage = "TropicalT1Q[graph] tests tropical axiom T1: every two vertices admit a tropical segment. Equivalent to ConnectedGraphQ in the pure-metric reading.";
+
+(* Enumeration *)
+EnumerateGraphs::usage = "EnumerateGraphs[n, predQ] returns all connected n-vertex graphs (from GraphData[\"Connected\", n], canonically sorted) for which predQ[graph] is True. EnumerateGraphs[n, predQ, k] returns exactly k or $Failed; EnumerateGraphs[n, predQ, UpTo[k]] returns up to k; EnumerateGraphs[n, predQ, All] returns all. Option: \"From\" -> graphList overrides the default GraphData generator with a user-supplied list (n is then ignored).";
 
 (* Scenes *)
 InfraScene::usage = "InfraScene[objects, hypotheses] constructs a scene descriptor from symbolic objects and hypotheses (constructions and assertions). Access properties via scene[\"Steps\"], scene[\"Constructions\"], scene[\"Assertions\"], scene[\"DependencyGraph\"].";

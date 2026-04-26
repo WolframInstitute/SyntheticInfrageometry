@@ -12,6 +12,16 @@ PackageExport[LineQ]
 PackageExport[SphereQ]
 PackageExport[ParallelQ]
 PackageExport[FindSphereParameters]
+PackageExport[UniqueSegmentQ]
+
+(* MetricAlgebra.wl *)
+PackageExport[MetricInterval]
+PackageExport[BetweennessQ]
+PackageExport[EquidistanceQ]
+PackageExport[GeodesicCount]
+PackageExport[DistanceMultiplicityMatrix]
+PackageExport[DistanceMatrixQ]
+PackageExport[MedianVertices]
 
 (* Coordinatization.wl *)
 PackageExport[FindRadarBasis]
@@ -38,6 +48,19 @@ PackageExport[WhiteheadW1Q]
 PackageExport[WhiteheadW2Q]
 PackageExport[WhiteheadW3Q]
 PackageExport[ProjectivePlaneGraphQ]
+
+(* TropicalPostulates.wl *)
+PackageExport[FindTropicalSegment]
+PackageExport[FindGeodesicConvexHull]
+
+(* TropicalPredicates.wl *)
+PackageExport[TropicalSegmentQ]
+PackageExport[GeodesicallyConvexQ]
+PackageExport[UniqueTropicalSegmentQ]
+PackageExport[TropicalT1Q]
+
+(* Enumeration.wl *)
+PackageExport[EnumerateGraphs]
 
 (* Scenes.wl *)
 PackageExport[InfraScene]

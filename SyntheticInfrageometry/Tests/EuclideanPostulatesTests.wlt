@@ -231,6 +231,30 @@ VerificationTest[
   TestID -> "FindLine-upto-soft"
 ]
 
+VerificationTest[
+  With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
+    FindLine[g, 1, 3, All, "Maximality" -> "Extension"]
+  ],
+  {{1, 2, 3}},
+  TestID -> "FindLine-Maximality-Extension-keeps-short-line"
+]
+
+VerificationTest[
+  With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
+    FindLine[g, 1, 3, All, "Maximality" -> "Diameter"]
+  ],
+  {},
+  TestID -> "FindLine-Maximality-Diameter-drops-short-line"
+]
+
+VerificationTest[
+  With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
+    FindLine[g, 1, 5, All, "Maximality" -> "Diameter"]
+  ],
+  {{1, 2, 4, 5}},
+  TestID -> "FindLine-Maximality-Diameter-keeps-diameter-line"
+]
+
 (* ===== FindSphere ===== *)
 
 VerificationTest[
