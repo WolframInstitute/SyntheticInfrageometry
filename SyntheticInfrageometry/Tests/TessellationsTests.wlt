@@ -1,67 +1,36 @@
 BeginTestSection["Tessellations"]
 
-(* ===== TorusTessellation Schlafli {p, q} dispatch ===== *)
+(* ===== TorusTessellation ===== *)
 
-(* {3, 6}: V = nm, E = 3 nm, F = 2 nm, valency 6 *)
+(* p = 3 (triangles): V = nm, E = 3 nm, F = 2 nm, valency 6 *)
 VerificationTest[
-  With[{g = TorusTessellation[{4, 5}, {3, 6}]},
+  With[{g = TorusTessellation[{4, 5}, 3]},
     {VertexCount[g], EdgeCount[g], Union[VertexDegree[g]]}
   ],
   {20, 60, {6}},
-  TestID -> "TorusTessellation-3-6-counts"
+  TestID -> "TorusTessellation-triangle-counts"
 ]
 
-(* {4, 4}: V = nm, E = 2 nm, F = nm, valency 4 *)
+(* p = 4 (squares): V = nm, E = 2 nm, F = nm, valency 4 *)
 VerificationTest[
-  With[{g = TorusTessellation[{4, 5}, {4, 4}]},
+  With[{g = TorusTessellation[{4, 5}, 4]},
     {VertexCount[g], EdgeCount[g], Union[VertexDegree[g]]}
   ],
   {20, 40, {4}},
-  TestID -> "TorusTessellation-4-4-counts"
+  TestID -> "TorusTessellation-square-counts"
 ]
 
-(* {6, 3}: V = 2 nm, E = 3 nm, F = nm, valency 3 *)
+(* p = 6 (hexagons): V = 2 nm, E = 3 nm, F = nm, valency 3 *)
 VerificationTest[
-  With[{g = TorusTessellation[{4, 5}, {6, 3}]},
+  With[{g = TorusTessellation[{4, 5}, 6]},
     {VertexCount[g], EdgeCount[g], Union[VertexDegree[g]]}
   ],
   {40, 60, {3}},
-  TestID -> "TorusTessellation-6-3-counts"
-]
-
-(* ===== Integer shorthand reads q from the Euclidean formula ===== *)
-
-VerificationTest[
-  IsomorphicGraphQ[
-    TorusTessellation[{4, 5}, 3],
-    TorusTessellation[{4, 5}, {3, 6}]
-  ],
-  True,
-  TestID -> "TorusTessellation-int-shorthand-3"
+  TestID -> "TorusTessellation-hexagon-counts"
 ]
 
 VerificationTest[
-  IsomorphicGraphQ[
-    TorusTessellation[{4, 5}, 4],
-    TorusTessellation[{4, 5}, {4, 4}]
-  ],
-  True,
-  TestID -> "TorusTessellation-int-shorthand-4"
-]
-
-VerificationTest[
-  IsomorphicGraphQ[
-    TorusTessellation[{4, 5}, 6],
-    TorusTessellation[{4, 5}, {6, 3}]
-  ],
-  True,
-  TestID -> "TorusTessellation-int-shorthand-6"
-]
-
-(* ===== Connectedness + vertex-transitivity ===== *)
-
-VerificationTest[
-  AllTrue[{{3, 6}, {4, 4}, {6, 3}},
+  AllTrue[{3, 4, 6},
     ConnectedGraphQ @ TorusTessellation[{4, 5}, #] &
   ],
   True,
@@ -69,17 +38,26 @@ VerificationTest[
 ]
 
 VerificationTest[
-  AllTrue[{{3, 6}, {4, 4}, {6, 3}},
+  AllTrue[{3, 4, 6},
     VertexTransitiveGraphQ @ TorusTessellation[{4, 5}, #] &
   ],
   True,
   TestID -> "TorusTessellation-vertex-transitive"
 ]
 
-(* ===== Pointwise constant 1-ball volume ===== *)
-
+(* Single-int alias = square fundamental-domain grid *)
 VerificationTest[
-  AllTrue[{{3, 6}, {4, 4}, {6, 3}},
+  IsomorphicGraphQ[
+    TorusTessellation[4, 4],
+    TorusTessellation[{4, 4}, 4]
+  ],
+  True,
+  TestID -> "TorusTessellation-int-shorthand"
+]
+
+(* Pointwise constant 1-ball volume *)
+VerificationTest[
+  AllTrue[{3, 4, 6},
     With[{g = TorusTessellation[{4, 5}, #]},
       Length @ Union[
         VertexCount @ NeighborhoodGraph[g, v, 1] & /@ VertexList[g]
@@ -90,47 +68,35 @@ VerificationTest[
   TestID -> "TorusTessellation-ball-volume-constant"
 ]
 
-(* ===== Single-int alias = square fundamental-domain grid ===== *)
-
-VerificationTest[
-  IsomorphicGraphQ[
-    TorusTessellation[4, {4, 4}],
-    TorusTessellation[{4, 4}, {4, 4}]
-  ],
-  True,
-  TestID -> "TorusTessellation-square-grid-alias"
-]
-
-(* ===== Non-torus Schlafli pairs rejected ===== *)
-
-VerificationTest[
-  TorusTessellation[{4, 5}, {5, 4}],
-  $Failed,
-  {TorusTessellation::nontorus},
-  TestID -> "TorusTessellation-hyperbolic-5-4-rejected"
-]
-
-VerificationTest[
-  TorusTessellation[{4, 5}, {7, 3}],
-  $Failed,
-  {TorusTessellation::nontorus},
-  TestID -> "TorusTessellation-hyperbolic-7-3-rejected"
-]
-
-VerificationTest[
-  TorusTessellation[{4, 5}, {3, 5}],
-  $Failed,
-  {TorusTessellation::nontorus},
-  TestID -> "TorusTessellation-spherical-3-5-rejected"
-]
-
-(* Integer shorthand for non-Euclidean p falls into the same trap *)
-
+(* Non-Euclidean p rejected *)
 VerificationTest[
   TorusTessellation[{4, 5}, 5],
   $Failed,
-  {TorusTessellation::nontorus},
-  TestID -> "TorusTessellation-int-5-rejected"
+  {TorusTessellation::badp},
+  TestID -> "TorusTessellation-pentagon-rejected"
+]
+
+VerificationTest[
+  TorusTessellation[{4, 5}, 7],
+  $Failed,
+  {TorusTessellation::badp},
+  TestID -> "TorusTessellation-heptagon-rejected"
+]
+
+(* ===== SchlafliTessellation placeholder ===== *)
+
+VerificationTest[
+  SchlafliTessellation[{5, 4}],
+  $Failed,
+  {SchlafliTessellation::nyi},
+  TestID -> "SchlafliTessellation-not-yet-implemented"
+]
+
+VerificationTest[
+  SchlafliTessellation[{4, 4}, 10],
+  $Failed,
+  {SchlafliTessellation::nyi},
+  TestID -> "SchlafliTessellation-placeholder-any-args"
 ]
 
 EndTestSection[]

@@ -11,6 +11,9 @@ PackageScope[SeparatingCycleQ]
 PackageScope[FindSeparatingCycles]
 PackageScope[pathFilterPairwiseDistances]
 PackageScope[applySelect]
+PackageScope[geodesicPaths]
+PackageScope[countLimit]
+PackageScope[takeUpTo]
 
 
 (* ===================== Distance Metrics ===================== *)
@@ -164,6 +167,61 @@ applySelect[ graph_Graph, paths_List, method_String, context_Association ] :=
       _, paths
     ]
   ]
+
+(* ===================== Count semantics (internal) ===================== *)
+
+(* Translate a count argument (Integer | UpTo[Integer] | All | Infinity) into
+   a numeric upper bound (Integer or Infinity) for use by enumerators. *)
+
+countLimit[ All ] = Infinity
+countLimit[ Infinity ] = Infinity
+countLimit[ UpTo[ n_Integer ] ] := n
+countLimit[ n_Integer ] := n
+
+takeUpTo[ list_, Infinity ] := list
+takeUpTo[ list_, n_Integer ] := Take[ list, UpTo[ n ] ]
+
+
+(* ===================== Geodesic Path Enumeration (internal) ===================== *)
+
+(* geodesicPaths[ graph, source, target, n ] returns up to n geodesic vertex
+   paths from source to target.  n may be Infinity.  For n = 1 it delegates
+   to FindShortestPath; otherwise it does a single BFS from each endpoint
+   and walks the source-target geodesic DAG depth-first, stopping after n
+   paths are collected. *)
+
+geodesicPaths[ _Graph, source_, target_, _ ] /; source === target := { }
+
+geodesicPaths[ graph_Graph, source_, target_, 1 ] :=
+  With[ { path = FindShortestPath[ graph, source, target ] },
+    If[ path === { }, { }, { path } ]
+  ]
+
+geodesicPaths[ graph_Graph, source_, target_, maxCount_ ] :=
+  Module[ { d, vertices, dm, count, walk, sown, distSrc, distTgt },
+    d = GraphDistance[ graph, source, target ];
+    If[ d === Infinity, Return[ { } ] ];
+    vertices = VertexList[ graph ];
+    dm = GraphDistanceMatrix[ graph ];
+    distSrc = AssociationThread[ vertices, dm[[ VertexIndex[ graph, source ] ]] ];
+    distTgt = AssociationThread[ vertices, dm[[ VertexIndex[ graph, target ] ]] ];
+    count = 0;
+    walk[ path_ ] := With[ { vertex = Last @ path, k = Length[ path ] - 1 },
+      If[ vertex === target,
+        Sow[ path ];
+        count++;
+        If[ count >= maxCount, Throw[ Null, "geodesicPaths" ] ],
+        Scan[
+          walk[ Append[ path, # ] ] &,
+          Select[ AdjacencyList[ graph, vertex ],
+            distSrc[ # ] === k + 1 && distTgt[ # ] === d - k - 1 & ]
+        ]
+      ]
+    ];
+    sown = Last @ Reap @ Catch[ walk[ { source } ], "geodesicPaths" ];
+    If[ sown === { }, { }, First @ sown ]
+  ]
+
 
 (* ===================== Separating Cycles (internal) ===================== *)
 

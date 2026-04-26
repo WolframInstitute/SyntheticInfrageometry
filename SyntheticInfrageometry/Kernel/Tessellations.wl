@@ -1,50 +1,39 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 
-(* TorusTessellation[{n, m}, {p, q}] glues copies of CycleGraph[p] into
-   a torus graph in which each vertex has q polygons meeting at it. We
-   are not embedding in any Riemannian surface; this is a purely
-   combinatorial gluing of cycle graphs.
+(* TorusTessellation[{n, m}, p] glues copies of CycleGraph[p] into a
+   torus graph along the rectangular fundamental-domain grid {n, m}.
+   This is a purely combinatorial gluing of cycle graphs - we are not
+   embedding in any Riemannian surface.
 
-   The pair (p, q) is the Schlafli symbol of a regular tessellation. For
-   F polygons on a torus the Euler relation V - E + F = 0 with 2 E = p F
-   and 2 E = q V forces 1/p + 1/q = 1/2. Over the integers this admits
-   exactly three solutions: (3, 6), (4, 4), (6, 3) - the three flat-
-   torus tessellations. Other (p, q) violate the Euler relation on a
-   torus and are rejected; spherical (1/p + 1/q > 1/2) cases tile finite
-   polyhedra and hyperbolic (1/p + 1/q < 1/2) cases tile higher-genus
-   surfaces - both lie outside the torus and so outside this constructor.
+   The polygon size p must be 3, 4, or 6: these are the only integer
+   solutions of the flat-torus Euler relation 1/p + 1/q = 1/2 (where
+   q = 2 p / (p - 2) is the number of polygons meeting at each vertex,
+   read off the regular {p, q} tessellation). Pentagons, heptagons and
+   the like require non-flat substrates; see SchlafliTessellation
+   (placeholder) and Wiki/Plans/SchlafliGluings.md.
 
-   The argument {n, m} is the rectangular fundamental-domain grid; the
-   resulting cell count depends on (p, q):
+   The (n, m) input is the rectangular fundamental-domain grid; the
+   resulting cell count depends on p:
 
-      (3, 6) triangles: F = 2 n m,  V = n m,    E = 3 n m
-      (4, 4) squares:   F =   n m,  V = n m,    E = 2 n m
-      (6, 3) hexagons:  F =   n m,  V = 2 n m,  E = 3 n m
+      p = 3 (triangles): V = n m,   E = 3 n m,  F = 2 n m,  valency 6
+      p = 4 (squares):   V = n m,   E = 2 n m,  F =   n m,  valency 4
+      p = 6 (hexagons):  V = 2 n m, E = 3 n m,  F =   n m,  valency 3
 
    Each output is connected and vertex-transitive, so any local-
    isomorphism-invariant graph quantity (ball volume, Wolfram-Hausdorff
    dimension, Wolfram-Ricci curvature based on volume growth) is
-   pointwise constant.
-
-   The integer-only form TorusTessellation[{n, m}, p] is shorthand for
-   TorusTessellation[{n, m}, {p, 2 p / (p - 2)}], i.e. q is read off the
-   Euclidean valency formula. *)
+   pointwise constant. *)
 
 
-TorusTessellation::nontorus =
-  "Schlafli symbol {`1`, `2`} does not satisfy the flat-torus Euler \
-relation 1/p + 1/q = 1/2; only {3, 6}, {4, 4}, {6, 3} are realised. \
-Spherical cases ({3,3}, {3,4}, {4,3}, {3,5}, {5,3}) tile finite \
-polyhedra; hyperbolic cases (e.g. {5,4}, {7,3}) tile higher-genus \
-surfaces.";
+TorusTessellation::badp =
+  "Polygon size `1` does not yield a flat-torus tessellation: q = 2 p / (p - 2) = `2` is not an integer. Pentagons, heptagons and the like tile spherical or hyperbolic surfaces and need the (placeholder) SchlafliTessellation generator instead.";
 
 
-(* {3, 6}: triangular lattice on an n x m rectangular grid of vertices,
-   each fundamental rectangle split into 2 triangles by the diagonal
-   {i,j}-{i+1,j+1}. *)
+(* p = 3: triangular lattice on the n x m vertex grid, each
+   fundamental rectangle split into 2 triangles by the diagonal. *)
 
-TorusTessellation[ { n_Integer, m_Integer }, { 3, 6 } ] :=
+TorusTessellation[ { n_Integer, m_Integer }, 3 ] :=
   With[ { wrap = { ii, jj } |-> { Mod[ ii - 1, n ] + 1, Mod[ jj - 1, m ] + 1 } },
     Graph[
       Flatten[ Table[ { i, j }, { i, n }, { j, m } ], 1 ],
@@ -58,9 +47,9 @@ TorusTessellation[ { n_Integer, m_Integer }, { 3, 6 } ] :=
   ]
 
 
-(* {4, 4}: square lattice on an n x m grid of vertices. *)
+(* p = 4: square lattice on the n x m vertex grid. *)
 
-TorusTessellation[ { n_Integer, m_Integer }, { 4, 4 } ] :=
+TorusTessellation[ { n_Integer, m_Integer }, 4 ] :=
   With[ { wrap = { ii, jj } |-> { Mod[ ii - 1, n ] + 1, Mod[ jj - 1, m ] + 1 } },
     Graph[
       Flatten[ Table[ { i, j }, { i, n }, { j, m } ], 1 ],
@@ -73,10 +62,9 @@ TorusTessellation[ { n_Integer, m_Integer }, { 4, 4 } ] :=
   ]
 
 
-(* {6, 3}: A/B sublattice honeycomb on an n x m grid of unit cells, each
-   unit cell carrying 2 vertices. *)
+(* p = 6: A/B sublattice honeycomb on the n x m unit-cell grid. *)
 
-TorusTessellation[ { n_Integer, m_Integer }, { 6, 3 } ] :=
+TorusTessellation[ { n_Integer, m_Integer }, 6 ] :=
   With[ {
     a = { ii, jj } |-> { "A", Mod[ ii - 1, n ] + 1, Mod[ jj - 1, m ] + 1 },
     b = { ii, jj } |-> { "B", Mod[ ii - 1, n ] + 1, Mod[ jj - 1, m ] + 1 }
@@ -96,26 +84,35 @@ TorusTessellation[ { n_Integer, m_Integer }, { 6, 3 } ] :=
   ]
 
 
-(* Reject every other Schlafli pair with the Euler explanation. *)
+(* Reject other p with the Euler explanation. *)
 
-TorusTessellation[ { _Integer, _Integer }, { p_Integer, q_Integer } ] /;
-    p >= 3 && q >= 3 :=
-  ( Message[ TorusTessellation::nontorus, p, q ]; $Failed )
-
-
-(* Shorthand: integer p reads q off the Euclidean valency formula
-   q = 2 p / (p - 2). When q is not an integer the resulting Schlafli
-   pair is not flat-torus; the dispatch above raises the message. *)
-
-TorusTessellation[ { n_Integer, m_Integer }, p_Integer ] /; p >= 3 :=
-  With[ { q = 2 p / ( p - 2 ) },
-    If[ IntegerQ[ q ],
-      TorusTessellation[ { n, m }, { p, q } ],
-      Message[ TorusTessellation::nontorus, p, q ]; $Failed
-    ]
-  ]
+TorusTessellation[ { _Integer, _Integer }, p_Integer ] /; p >= 3 :=
+  ( Message[ TorusTessellation::badp, p, 2 p / ( p - 2 ) ]; $Failed )
 
 
 (* Single-int alias: square fundamental-domain grid. *)
 
-TorusTessellation[ n_Integer, k_ ] := TorusTessellation[ { n, n }, k ]
+TorusTessellation[ n_Integer, p_Integer ] := TorusTessellation[ { n, n }, p ]
+
+
+(* SchlafliTessellation[{p, q}, ...] is a placeholder for the general
+   gluing of CycleGraph[p] copies into a graph in which q polygons meet
+   at each vertex, for any Schlafli pair {p, q} (not only the three
+   flat-torus ones). The construction is well-defined in principle:
+
+      - 1/p + 1/q > 1/2 (spherical):  the unique Platonic solid graph
+                                      ({3,3} = tetrahedron, {3,4} =
+                                      octahedron, {4,3} = cube, {3,5}
+                                      = icosahedron, {5,3} = dodecahedron)
+      - 1/p + 1/q = 1/2 (Euclidean):  forwards to TorusTessellation
+      - 1/p + 1/q < 1/2 (hyperbolic): finite-index torsion-free quotient
+                                      of the {p, q} triangle group; the
+                                      genuine open work
+
+   Not yet implemented. See Wiki/Plans/SchlafliGluings.md. *)
+
+SchlafliTessellation::nyi =
+  "SchlafliTessellation[{p, q}, ...] is a placeholder for the general regular gluing of CycleGraph[p] copies; not yet implemented. See Wiki/Plans/SchlafliGluings.md. For the three Euclidean cases use TorusTessellation[{n, m}, p] with p in {3, 4, 6} directly.";
+
+SchlafliTessellation[ ___ ] :=
+  ( Message[ SchlafliTessellation::nyi ]; $Failed )

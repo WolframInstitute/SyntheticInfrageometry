@@ -66,31 +66,22 @@ FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
    adjacent.  FindSegment enumerates such geodesics; the count argument
    selects strict / soft / exhaustive multiplicity. *)
 
-Options[ FindSegment ] = { "Select" -> None };
+Options[ FindSegment ] = { "Select" -> None, "PoolSize" -> All };
 
-FindSegment[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] :=
-  Module[ { d, paths, context },
-    d = GraphDistance[ graph, p1, p2 ];
-    If[ d === Infinity, Return[ {} ] ];
-    paths = FindPath[ graph, p1, p2, { d }, All ];
-    context = <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |>;
-    applySelect[ graph, paths, OptionValue[ "Select" ], context ]
-  ]
-
-FindSegment[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  Module[ { d, selector },
+FindSegment[ graph_Graph, p1_, p2_,
+    count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
+  Module[ { selector, paths, context },
     selector = OptionValue[ "Select" ];
-    If[ selector === None,
-      d = GraphDistance[ graph, p1, p2 ];
-      If[ d === Infinity, Return[ {} ] ];
-      FindPath[ graph, p1, p2, { d }, n ],
-      Take[ FindSegment[ graph, p1, p2, All, opts ], UpTo[ n ] ]
-    ]
-  ]
-
-FindSegment[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] :=
-  With[ { result = FindSegment[ graph, p1, p2, UpTo[ n ], opts ] },
-    If[ Length[ result ] < n, $Failed, result ]
+    paths = If[ selector === None,
+      geodesicPaths[ graph, p1, p2, countLimit[ count ] ],
+      context = <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |>;
+      takeUpTo[
+        applySelect[ graph,
+          geodesicPaths[ graph, p1, p2, countLimit @ OptionValue[ "PoolSize" ] ],
+          selector, context ],
+        countLimit[ count ] ]
+    ];
+    If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
   ]
 
 FindSegment[ graph_Graph, { p1_, p2_ }, args___ ] :=

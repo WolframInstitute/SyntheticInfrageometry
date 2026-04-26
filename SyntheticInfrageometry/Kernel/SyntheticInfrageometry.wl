@@ -72,6 +72,7 @@ PackageExport[EnumerateGraphs]
 
 (* Tessellations.wl *)
 PackageExport[TorusTessellation]
+PackageExport[SchlafliTessellation]
 
 (* Scenes.wl *)
 PackageExport[InfraScene]
