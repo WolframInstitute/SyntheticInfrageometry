@@ -15,6 +15,10 @@ tropicalPower[ A_?MatrixQ, k_Integer /; k > 1 ] :=
 
 (* ===================== MetricInterval ===================== *)
 
+(* The metric interval I(u, v) = { w : d(u, w) + d(w, v) = d(u, v) } -
+   the union of all geodesics from u to v.  Master operation of the
+   metric-algebra layer; every other primitive can be reduced to it. *)
+
 MetricInterval[ graph_Graph, u_, v_ ] :=
   With[ { d = GraphDistance[ graph, u, v ] },
     If[ d === Infinity, {},
@@ -26,6 +30,11 @@ MetricInterval[ graph_Graph, u_, v_ ] :=
 
 
 (* ===================== Tarski primitives ===================== *)
+
+(* Tarski's two primitive relations on a metric space, restated on graphs.
+   B(u, w, v): w lies on a geodesic u-v, i.e. d(u, w) + d(w, v) = d(u, v).
+   E(a, b, c, d): the unordered pairs are equidistant, d(a, b) = d(c, d).
+   Together they generate first-order metric geometry on the graph. *)
 
 BetweennessQ[ graph_Graph, u_, w_, v_ ] :=
   With[ { duw = GraphDistance[ graph, u, w ],
@@ -39,6 +48,11 @@ EquidistanceQ[ graph_Graph, a_, b_, c_, d_ ] :=
 
 
 (* ===================== GeodesicCount ===================== *)
+
+(* GeodesicCount[g, u, v] = (A^d)[u, v] where A is the adjacency matrix
+   and d = d(u, v).  Identity: a walk of length d(u, v) from u to v is
+   automatically a simple geodesic, so the (u, v) entry of A^d counts
+   geodesics.  Polynomial-time replacement for path enumeration. *)
 
 GeodesicCount[ graph_Graph, u_, v_ ] :=
   With[ { d = GraphDistance[ graph, u, v ], V = VertexList[ graph ] },
@@ -55,6 +69,10 @@ GeodesicCount[ graph_Graph, u_, v_ ] :=
 
 
 (* ===================== DistanceMultiplicityMatrix ===================== *)
+
+(* The pair (D, M): D is the graph distance matrix, M[i, j] is the number
+   of geodesics from vertex i to vertex j (= (A^{D[i,j]})[i, j]).  M is
+   the multiplicity counterpart of the metric. *)
 
 DistanceMultiplicityMatrix[ graph_Graph ] :=
   Module[ { V, n, dMat, A, mMat, powers, maxD, finiteD },
@@ -77,6 +95,11 @@ DistanceMultiplicityMatrix[ graph_Graph ] :=
 
 (* ===================== DistanceMatrixQ ===================== *)
 
+(* A square non-negative symmetric zero-diagonal matrix M is the distance
+   matrix of some graph iff it is tropical-idempotent: M (x)_min M = M
+   under (min, +) multiplication.  This is the matrix form of the
+   triangle inequality and saturates it. *)
+
 DistanceMatrixQ[ M_?MatrixQ ] :=
   And[
     SquareMatrixQ[ M ],
@@ -91,6 +114,10 @@ DistanceMatrixQ[ _ ] := False
 
 
 (* ===================== MedianVertices ===================== *)
+
+(* The metric medians of a vertex set vs are the argmin of total distance:
+   { w : Sum d(w, x) over x in vs is minimal }.  A graph is a median graph
+   iff every triple has a unique median. *)
 
 MedianVertices[ graph_Graph, vs_List ] :=
   With[ { V = VertexList[ graph ] },

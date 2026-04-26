@@ -3,26 +3,54 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== Pointwise predicates ===================== *)
 
+(* SameDirectionQ[g, O, v, w]: v and w lie in the same pencil-direction
+   at O - some maximal geodesic through O contains both. *)
+
 SameDirectionQ[ graph_Graph, O_, v_, w_ ] :=
   v === w || AnyTrue[ FindLine[ graph, O, v, All ], MemberQ[ #, w ] & ]
+
+
+(* CollinearQ: there exists a single canonical line containing every
+   listed vertex (the synthetic-incidence "lie on a common line"). *)
 
 CollinearQ[ graph_Graph, verts_List ] :=
   Length[ DeleteDuplicates @ verts ] <= 1 ||
     Length[ FindCommonLine[ graph, verts, UpTo[ 1 ] ] ] > 0
 
+
+(* ConcurrentQ: a set of lines shares a common vertex - the dual of
+   collinearity. *)
+
 ConcurrentQ[ graph_Graph, lines_List ] :=
   Length[ lines ] <= 1 ||
     Length[ FindCommonPoint[ graph, lines, UpTo[ 1 ] ] ] > 0
 
+
+(* UniquePencilQ[g, O]: every direction at O is single-valued - there is
+   exactly one maximal geodesic through O ending at v, for every v != O.
+   The pointwise-at-O version of the geodetic property. *)
+
 UniquePencilQ[ graph_Graph, O_ ] :=
   AllTrue[ DeleteCases[ VertexList[ graph ], O ],
     Length[ FindLine[ graph, O, #, All ] ] == 1 & ]
+
+
+(* UniqueCollinearQ: exactly one canonical line contains every listed
+   vertex; the unique-witness companion of CollinearQ. *)
 
 UniqueCollinearQ[ graph_Graph, verts_List ] :=
   Length[ FindCommonLine[ graph, verts, All ] ] == 1
 
 
 (* ===================== Whitehead axioms ===================== *)
+
+(* The three Whitehead incidence axioms for projective planes restated on
+   graphs.  W1: every line has at least three points.  W2: through any
+   two distinct vertices passes exactly one line (geodetic-graph
+   condition).  W3: if some line through {A, B} meets some line through
+   {C, D}, then some line through {A, C} meets some line through {B, D}
+   (Pasch / inner-Pappus form).  ProjectivePlaneGraphQ adds a
+   non-degeneracy clause (some four vertices in general position). *)
 
 WhiteheadW1Q[ graph_Graph ] :=
   AllTrue[ allCanonicalLines[ graph ], Length[ # ] >= 3 & ]
@@ -51,6 +79,10 @@ WhiteheadW3Q[ graph_Graph ] :=
       ]
     ]
   ]
+
+(* ProjectivePlaneGraphQ: graph satisfies W1 + W2 + W3 plus a
+   non-degeneracy witness (four vertices, no three collinear) - the
+   synthetic projective-plane conditions. *)
 
 ProjectivePlaneGraphQ[ graph_Graph ] :=
   Module[ { verts },

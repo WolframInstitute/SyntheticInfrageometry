@@ -15,6 +15,13 @@ PackageExport[ParallelQ]
 PackageExport[FindSphereParameters]
 PackageExport[UniqueSegmentQ]
 
+(* EuclideanConstructions.wl *)
+PackageExport[FindMidpoint]
+PackageExport[FindPerpendicular]
+PackageExport[FindBisector]
+PackageExport[CompleteEquilateralTriangle]
+PackageExport[SegmentLineAngle]
+
 (* MetricAlgebra.wl *)
 PackageExport[MetricInterval]
 PackageExport[BetweennessQ]

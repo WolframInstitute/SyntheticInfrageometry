@@ -7,6 +7,11 @@ PackageScope[findLongestPaths]
 PackageScope[findLongestGeodesicThrough]
 
 
+(* A spatial radar basis (resolving set) is a vertex set B such that the
+   distance vector v |-> (d(v, b))_{b in B} is injective.  FindRadarBasis
+   enumerates such bases by ascending size; m restricts the candidate
+   sizes (All, integer max, {min, max}, or {exact}). *)
+
 FindRadarBasis[ g_, n_ : 1, m_ : All ] :=
   Module[ { v = VertexList[ g ], dm = GraphDistanceMatrix[ g ], vc = VertexCount[ g ], found = {}, mask, last },
     Map[ v[[ # ]] &,
@@ -35,8 +40,15 @@ FindRadarBasis[ g_, n_ : 1, m_ : All ] :=
     ]
   ]
 
+(* RadarBasisQ tests whether a vertex list b resolves the graph: the
+   pointwise distance map v |-> (d(v, b1), ..., d(v, bk)) is injective. *)
+
 RadarBasisQ[ g_Graph, b_List ] :=
   DuplicateFreeQ[ GraphDistance[ g, # ] & /@ b ]
+
+
+(* RadarCoordinates of v with respect to b is its distance vector
+   (d(v, b1), ..., d(v, bk)). *)
 
 RadarCoordinates[ g_Graph, v_, b_List ] :=
   GraphDistance[ g, v, # ] & /@ b
@@ -78,6 +90,12 @@ axisLayerIndex[ g_Graph, dag_Graph, v_ ] :=
   ]
 
 
+(* AxesCoordinates projects a vertex onto each axis (a line or DAG) and
+   returns the tuple of layer indices.  With an "Origin" or a center
+   vertex c, the layers are signed - Z-valued displacements with c at
+   {0, ..., 0}.  The number of axes through c is the coordinatised
+   dimension at c. *)
+
 Options[ AxesCoordinates ] = { Method -> "ShortestPaths", "Origin" -> None };
 
 AxesCoordinates[ g_Graph, axes_List, v_, opts : OptionsPattern[] ] /; !MemberQ[ VertexList[ g ], axes ] :=
@@ -109,6 +127,13 @@ AxesCoordinates[ g_Graph, c_, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ 
 
 
 (* ===================== Orthogonal axes ===================== *)
+
+(* FindOrthogonalAxes selects a maximal mutually-separated set of longest
+   geodesics (or longest geodesics through a chosen center c).
+   "Orthogonality" is operationalised as a Hausdorff / endpoint
+   separation between axes; greedy selection.  When constrained to pass
+   through c as an interior point, each axis fixes a sign convention for
+   the corresponding signed AxesCoordinates layer. *)
 
 findLongestPaths[ g_Graph, n_, epsilon_ : 0 ] :=
   Module[ { vertices, distMatrix, maxDist, pairs, numPairs, counts },

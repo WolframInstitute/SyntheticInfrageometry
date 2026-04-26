@@ -16,6 +16,11 @@ allCanonicalLines[ graph_Graph ] :=
 
 (* ===================== FindPencil ===================== *)
 
+(* The pencil at a vertex O is the set of direction-classes through O,
+   each represented by a canonical maximal geodesic (line) through O.
+   FindPencil returns an Association keyed by these canonical lines.  In
+   the synthetic-projective layer, "lines through O" = pencil elements. *)
+
 FindPencil[ graph_Graph, O_ ] :=
   Module[ { vertices, allLines, canonicals },
     vertices = DeleteCases[ VertexList[ graph ], O ];
@@ -29,6 +34,10 @@ FindPencil[ graph_Graph, O_ ] :=
 
 (* ===================== PencilDirections, PencilCardinality ===================== *)
 
+(* PencilDirections lists the canonical lines through O, one per direction
+   class.  PencilCardinality is its size - the synthetic substitute for
+   "number of directions at O". *)
+
 PencilDirections[ graph_Graph, O_ ] := Keys @ FindPencil[ graph, O ]
 
 PencilCardinality[ graph_Graph, O_ ] := Length @ PencilDirections[ graph, O ]
@@ -36,10 +45,18 @@ PencilCardinality[ graph_Graph, O_ ] := Length @ PencilDirections[ graph, O ]
 
 (* ===================== LineCount ===================== *)
 
+(* Total number of distinct canonical maximal geodesics in the graph;
+   the projective-incidence "number of lines". *)
+
 LineCount[ graph_Graph ] := Length @ allCanonicalLines[ graph ]
 
 
 (* ===================== FindCommonLine ===================== *)
+
+(* Lines containing every vertex in the input list - i.e. canonical
+   maximal geodesics through the first two listed vertices that also pass
+   through every other listed vertex.  Constructive companion of
+   CollinearQ. *)
 
 FindCommonLine[ graph_Graph, verts_List, All ] :=
   Module[ { uverts, candidates },
@@ -59,6 +76,9 @@ FindCommonLine[ graph_Graph, verts_List, n_Integer : 1 ] :=
 
 
 (* ===================== FindCommonPoint ===================== *)
+
+(* Vertices common to every listed line - the intersection of the lines.
+   Constructive companion of ConcurrentQ. *)
 
 FindCommonPoint[ graph_Graph, lines_List, All ] :=
   If[ Length[ lines ] == 0, {}, Apply[ Intersection, lines ] ]

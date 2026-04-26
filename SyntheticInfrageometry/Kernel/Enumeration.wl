@@ -3,6 +3,12 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== Graph enumeration ===================== *)
 
+(* EnumerateGraphs[n, predQ] = { g in C_n : predQ[g] } where C_n is the
+   canonical sequence of connected n-vertex graphs (GraphData["Connected",
+   n], canonicalised).  Predicate-agnostic workhorse: any whole-graph
+   predicate composes via &&.  "From" -> graphList overrides the default
+   generator. *)
+
 Options[ EnumerateGraphs ] = { "From" -> Automatic };
 
 EnumerateGraphs[ n_, predQ_, All, opts : OptionsPattern[] ] :=

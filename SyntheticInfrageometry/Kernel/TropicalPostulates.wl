@@ -3,6 +3,11 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== FindTropicalSegment ===================== *)
 
+(* In the pure-metric reading of tropical convexity, the tropical segment
+   between u and v is the vertex set of a graph geodesic.
+   FindTropicalSegment returns these vertex sets (one per geodesic, each
+   sorted), deduplicated. *)
+
 FindTropicalSegment[ graph_Graph, u_, v_, All ] :=
   DeleteDuplicates[ Sort /@ FindSegment[ graph, u, v, All ] ]
 
@@ -16,6 +21,10 @@ FindTropicalSegment[ graph_Graph, u_, v_, n_Integer : 1 ] :=
 
 
 (* ===================== FindGeodesicConvexHull ===================== *)
+
+(* The geodesic-convex hull of a vertex set S is the smallest superset
+   closed under taking metric intervals: FixedPoint of S |-> S union
+   union over pairs of MetricInterval. *)
 
 FindGeodesicConvexHull[ graph_Graph, S_List ] :=
   FixedPoint[

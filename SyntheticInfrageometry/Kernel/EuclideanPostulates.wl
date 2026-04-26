@@ -5,6 +5,12 @@ PackageScope[findLineExtensions]
 
 (* ===================== Points ===================== *)
 
+(* FindPoint[g, n] returns n vertices of the graph (the existence postulate
+   for points).  With "Distance" -> r the n vertices form a clique in the
+   r-distance graph (mutually at least r apart), realising "n points spread
+   out by r"; with "From" the candidate pool is restricted (Center, Periphery,
+   a vertex list, or a single vertex). *)
+
 Options[ FindPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
 
 FindPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
@@ -55,6 +61,11 @@ FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 (* ===================== Segments ===================== *)
 
+(* A segment between p1 and p2 is a geodesic vertex sequence
+   (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2) and consecutive vi
+   adjacent.  FindSegment enumerates such geodesics; the count argument
+   selects strict / soft / exhaustive multiplicity. *)
+
 Options[ FindSegment ] = { "Select" -> None };
 
 FindSegment[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] :=
@@ -87,6 +98,13 @@ FindSegment[ graph_Graph, { p1_, p2_ }, args___ ] :=
 
 
 (* ===================== Lines ===================== *)
+
+(* A line through p1 and p2 is a maximal geodesic extension: a vertex
+   sequence (a, ..., p1, ..., p2, ..., b) every contiguous sub-sequence of
+   which is a geodesic and that cannot be extended at either end without
+   breaking the geodesic property.  FindLine enumerates such maximal
+   extensions; "Maximality" -> "Diameter" further restricts to those whose
+   length equals GraphDiameter[g]. *)
 
 Options[ FindLine ] = { "Select" -> None, "Maximality" -> "Extension" };
 
@@ -142,6 +160,12 @@ findLineExtensions[ graph_Graph, segment_List ] :=
 
 (* ===================== Spheres ===================== *)
 
+(* A sphere of radius r around c is a vertex set realising
+   { v : d(c, v) = r }.  Two recipes are offered: "MetricCircle" returns the
+   raw level set; "SeparatingCycle" (default) returns cycles in the
+   subgraph induced by the level set that separate c from the rest of the
+   graph (the 2D-style spheres). *)
+
 Options[ FindSphere ] = { "Select" -> None, Method -> "SeparatingCycle" };
 
 FindSphere[ graph_Graph, p_, r_, All, opts : OptionsPattern[] ] :=
@@ -177,41 +201,53 @@ FindSphere[ graph_Graph, p_, r_, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 (* ===================== Parallels ===================== *)
 
-(* FindParallel[g, line, p] constructs parallels to line through p purely
-   metrically.  A parallel is the maximal sub-segment of a maximal geodesic
-   through p whose vertices all lie at distance r = d(p, line) from line --
-   i.e., the local portion of a line-through-p that stays on the
-   distance-to-line level surface.  No perpendiculars, no auxiliary segments;
-   compare Code/Constructions.wl:MetricParallel which uses the Euclid I.31
-   double-perpendicular construction. *)
+(* FindParallel[g, line, p] constructs parallels to line through p.
+   Method -> "Metric" (default): a parallel is the maximal sub-segment of a
+   maximal geodesic through p whose vertices all lie at distance
+   r = d(p, line) from line -- the local portion of a line-through-p that
+   stays on the distance-to-line level surface.  No perpendiculars, no
+   auxiliary segments.  "Spectral" and "Resistance" are accepted by the
+   option but not yet implemented. *)
 
-FindParallel[ graph_Graph, line_List, p_, All ] :=
-  Module[ { lineDist, r, levelSet, linesThroughP, segments, dedup, maximalThrough },
-    maximalThrough = Function[ { l, q, S },
-      Module[ { idx = First @ FirstPosition[ l, q, { 0 } ], lo, hi },
-        If[ idx == 0, Return[ {} ] ];
-        lo = idx; hi = idx;
-        While[ lo > 1 && MemberQ[ S, l[[ lo - 1 ]] ], lo-- ];
-        While[ hi < Length[ l ] && MemberQ[ S, l[[ hi + 1 ]] ], hi++ ];
-        l[[ lo ;; hi ]]
-      ]
-    ];
-    lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ];
-    r = lineDist[ p ];
-    If[ r === Infinity, Return[ {} ] ];
-    levelSet = Select[ VertexList[ graph ], lineDist[ # ] == r & ];
-    linesThroughP = Keys @ FindPencil[ graph, p ];
-    segments = maximalThrough[ #, p, levelSet ] & /@ linesThroughP;
-    dedup = DeleteDuplicates[ canonicalLine /@ Select[ segments, Length[ # ] >= 2 & ] ];
-    Select[ dedup,
-      a |-> ! AnyTrue[ dedup, b |-> Length[ b ] > Length[ a ] && SubsetQ[ b, a ] ]
+FindParallel::nyi = "Method `1` is not yet implemented for FindParallel; only \"Metric\" is currently available.";
+FindParallel::badmethod = "Method `1` is not supported by FindParallel.";
+
+Options[ FindParallel ] = { Method -> "Metric" };
+
+FindParallel[ graph_Graph, line_List, p_, All, opts : OptionsPattern[] ] :=
+  Module[ { method = OptionValue[ Method ], lineDist, r, levelSet, linesThroughP, segments, dedup, maximalThrough },
+    Switch[ method,
+      "Metric",
+        maximalThrough = Function[ { l, q, S },
+          Module[ { idx = First @ FirstPosition[ l, q, { 0 } ], lo, hi },
+            If[ idx == 0, Return[ {} ] ];
+            lo = idx; hi = idx;
+            While[ lo > 1 && MemberQ[ S, l[[ lo - 1 ]] ], lo-- ];
+            While[ hi < Length[ l ] && MemberQ[ S, l[[ hi + 1 ]] ], hi++ ];
+            l[[ lo ;; hi ]]
+          ]
+        ];
+        lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ];
+        r = lineDist[ p ];
+        If[ r === Infinity, Return[ {} ] ];
+        levelSet = Select[ VertexList[ graph ], lineDist[ # ] == r & ];
+        linesThroughP = Keys @ FindPencil[ graph, p ];
+        segments = maximalThrough[ #, p, levelSet ] & /@ linesThroughP;
+        dedup = DeleteDuplicates[ canonicalLine /@ Select[ segments, Length[ # ] >= 2 & ] ];
+        Select[ dedup,
+          a |-> ! AnyTrue[ dedup, b |-> Length[ b ] > Length[ a ] && SubsetQ[ b, a ] ]
+        ],
+      "Spectral" | "Resistance", Message[ FindParallel::nyi, method ]; $Failed,
+      _, Message[ FindParallel::badmethod, method ]; $Failed
     ]
   ]
 
-FindParallel[ graph_Graph, line_List, p_, UpTo[ n_Integer ] ] :=
-  Take[ FindParallel[ graph, line, p, All ], UpTo[ n ] ]
+FindParallel[ graph_Graph, line_List, p_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+  With[ { result = FindParallel[ graph, line, p, All, opts ] },
+    If[ ListQ[ result ], Take[ result, UpTo[ n ] ], result ]
+  ]
 
-FindParallel[ graph_Graph, line_List, p_, n_Integer : 1 ] :=
-  With[ { result = FindParallel[ graph, line, p, UpTo[ n ] ] },
-    If[ Length[ result ] < n, $Failed, result ]
+FindParallel[ graph_Graph, line_List, p_, n_Integer : 1, opts : OptionsPattern[] ] :=
+  With[ { result = FindParallel[ graph, line, p, UpTo[ n ], opts ] },
+    Which[ ! ListQ[ result ], result, Length[ result ] < n, $Failed, True, result ]
   ]
