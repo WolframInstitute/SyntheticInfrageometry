@@ -63,28 +63,40 @@ FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 (* A segment between p1 and p2 is a geodesic vertex sequence
    (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2) and consecutive vi
-   adjacent.  Without "Select" the built-in single shortest path is returned
-   (count is ignored).  With a "Select" filter (a path-space-metric chooser),
-   a pool of geodesics is enumerated by the built-in FindPath, the filter is
-   applied, and the result is capped by count; "MaxShortestPaths" caps the pool. *)
+   adjacent.  Without "Select": count = 1 returns a single shortest path
+   via the built-in FindShortestPath; count > 1 (or UpTo[n] / All) enumerates
+   via the built-in FindPath at exact length d.  With a "Select" filter
+   (a path-space-metric chooser), a pool of geodesics (capped by
+   "MaxShortestPaths") is enumerated by FindPath, the filter is applied,
+   and the result is capped by count. *)
 
 Options[ FindSegment ] = { "Select" -> None, "MaxShortestPaths" -> All };
 
 FindSegment[ graph_Graph, p1_, p2_,
     count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
-  Module[ { selector, d, pool, paths, context },
+  Module[ { selector, d, paths, context, n },
     selector = OptionValue[ "Select" ];
     If[ p1 === p2, Return[ { } ] ];
-    If[ selector === None,
-      With[ { path = FindShortestPath[ graph, p1, p2 ] },
-        Return[ If[ path === { }, { }, { path } ] ]
-      ]
+    n = countLimit[ count ];
+    paths = If[ selector === None,
+      If[ n === 1,
+        With[ { path = FindShortestPath[ graph, p1, p2 ] },
+          If[ path === { }, { }, { path } ]
+        ],
+        d = GraphDistance[ graph, p1, p2 ];
+        If[ d === Infinity, { },
+          FindPath[ graph, p1, p2, { d }, count /. UpTo[ k_ ] :> k ]
+        ]
+      ],
+      d = GraphDistance[ graph, p1, p2 ];
+      If[ d === Infinity, Return[ { } ] ];
+      context = <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |>;
+      takeUpTo[
+        applySelect[ graph,
+          FindPath[ graph, p1, p2, { d }, OptionValue[ "MaxShortestPaths" ] ],
+          selector, context ],
+        n ]
     ];
-    d = GraphDistance[ graph, p1, p2 ];
-    If[ d === Infinity, Return[ { } ] ];
-    pool = FindPath[ graph, p1, p2, { d }, OptionValue[ "MaxShortestPaths" ] ];
-    context = <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |>;
-    paths = takeUpTo[ applySelect[ graph, pool, selector, context ], countLimit[ count ] ];
     If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
   ]
 
