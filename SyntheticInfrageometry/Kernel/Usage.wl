@@ -70,6 +70,9 @@ TropicalT1Q::usage = "TropicalT1Q[graph] tests tropical axiom T1: every two vert
 (* Enumeration *)
 EnumerateGraphs::usage = "EnumerateGraphs[n, predQ] returns all connected n-vertex graphs (from GraphData[\"Connected\", n], canonically sorted) for which predQ[graph] is True. EnumerateGraphs[n, predQ, k] returns exactly k or $Failed; EnumerateGraphs[n, predQ, UpTo[k]] returns up to k; EnumerateGraphs[n, predQ, All] returns all. Option: \"From\" -> graphList overrides the default GraphData generator with a user-supplied list (n is then ignored).";
 
+(* Tessellations *)
+TorusTessellation::usage = "TorusTessellation[shape, {n, m}] builds the graph of an n x m flat-torus tessellation by copies of the fundamental polygon shape, with opposite sides of the n x m grid identified periodically. Supported shapes: \"Square\" ({4,4} tiling, vertex degree 4, n m vertices), \"Triangle\" ({3,6} tiling, vertex degree 6, n m vertices), \"Hexagon\" ({6,3} tiling, vertex degree 3, 2 n m vertices). The result is vertex-transitive; pentagons, heptagons, and the like do not tessellate the flat torus and are not provided. TorusTessellation[shape, n] is shorthand for TorusTessellation[shape, {n, n}].";
+
 (* Scenes *)
 InfraScene::usage = "InfraScene[objects, hypotheses] constructs a scene descriptor from symbolic objects and hypotheses (constructions and assertions). Access properties via scene[\"Steps\"], scene[\"Constructions\"], scene[\"Assertions\"], scene[\"DependencyGraph\"].";
 FindInfraScene::usage = "FindInfraScene[scene, graph] evaluates all construction steps and returns a list of InfraInstance objects. FindInfraScene[scene, graph, n] evaluates up to n steps. FindInfraScene[scene, graph, <|p -> v, ...|>] starts with pre-fixed bindings. FindInfraScene[scene, graph, n, <|...|>] combines both. Option: \"PruningProbability\" (default 0).";

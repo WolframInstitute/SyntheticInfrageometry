@@ -70,6 +70,9 @@ PackageExport[TropicalT1Q]
 (* Enumeration.wl *)
 PackageExport[EnumerateGraphs]
 
+(* Tessellations.wl *)
+PackageExport[TorusTessellation]
+
 (* Scenes.wl *)
 PackageExport[InfraScene]
 PackageExport[FindInfraScene]

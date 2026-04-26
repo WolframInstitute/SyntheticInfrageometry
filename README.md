@@ -8,6 +8,8 @@ Constructions in the discrete world are notoriously **ambiguous**, so the same i
 
 The natural visualization of an ambiguous construction is therefore not a single picture but a **diffuse** picture: each vertex and edge of the substrate shaded by how many candidates pass through it. The result is the discrete-geometry analogue of a quantum-mechanical superposition — a density over the substrate rather than a single classical curve. The paclet exposes this as a project-wide design pattern via `InfraDiffuseHighlight[graph, candidates]`.
 
+Faced with a graph that *looks the same in every neighbourhood*, the infra-observer is naturally led to abstract that pattern **to infinity** — to assume the substrate is a regular tessellation by a single fundamental domain. The local cell shape then constrains the substrate's curvature: squares, triangles, and hexagons are consistent with a flat plane (or a flat torus, when the substrate is bounded), while pentagons or heptagons force a non-flat verdict. Bounded single-figure tessellations are vertex-transitive, so any local-isomorphism-invariant quantity — Wolfram-Hausdorff dimension and Wolfram-Ricci curvature based on volume growth in particular — is **pointwise constant**. The paclet provides `TorusTessellation[shape, {n, m}]` as a generator for the three flat-torus cases.
+
 **Our goals include:**
 
 - defining infra-geometric primitives and postulates
