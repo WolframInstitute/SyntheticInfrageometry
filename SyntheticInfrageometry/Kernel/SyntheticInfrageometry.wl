@@ -5,6 +5,7 @@ PackageExport[FindPoint]
 PackageExport[FindSegment]
 PackageExport[FindLine]
 PackageExport[FindSphere]
+PackageExport[FindParallel]
 
 (* EuclideanPredicates.wl *)
 PackageExport[SegmentQ]

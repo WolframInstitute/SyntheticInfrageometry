@@ -173,3 +173,45 @@ FindSphere[ graph_Graph, p_, r_, n_Integer : 1, opts : OptionsPattern[] ] :=
   With[ { result = FindSphere[ graph, p, r, UpTo[ n ], opts ] },
     If[ Length[ result ] < n, $Failed, result ]
   ]
+
+
+(* ===================== Parallels ===================== *)
+
+(* FindParallel[g, line, p] constructs parallels to line through p purely
+   metrically.  A parallel is the maximal sub-segment of a maximal geodesic
+   through p whose vertices all lie at distance r = d(p, line) from line --
+   i.e., the local portion of a line-through-p that stays on the
+   distance-to-line level surface.  No perpendiculars, no auxiliary segments;
+   compare Code/Constructions.wl:MetricParallel which uses the Euclid I.31
+   double-perpendicular construction. *)
+
+FindParallel[ graph_Graph, line_List, p_, All ] :=
+  Module[ { lineDist, r, levelSet, linesThroughP, segments, dedup, maximalThrough },
+    maximalThrough = Function[ { l, q, S },
+      Module[ { idx = First @ FirstPosition[ l, q, { 0 } ], lo, hi },
+        If[ idx == 0, Return[ {} ] ];
+        lo = idx; hi = idx;
+        While[ lo > 1 && MemberQ[ S, l[[ lo - 1 ]] ], lo-- ];
+        While[ hi < Length[ l ] && MemberQ[ S, l[[ hi + 1 ]] ], hi++ ];
+        l[[ lo ;; hi ]]
+      ]
+    ];
+    lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ];
+    r = lineDist[ p ];
+    If[ r === Infinity, Return[ {} ] ];
+    levelSet = Select[ VertexList[ graph ], lineDist[ # ] == r & ];
+    linesThroughP = Keys @ FindPencil[ graph, p ];
+    segments = maximalThrough[ #, p, levelSet ] & /@ linesThroughP;
+    dedup = DeleteDuplicates[ canonicalLine /@ Select[ segments, Length[ # ] >= 2 & ] ];
+    Select[ dedup,
+      a |-> ! AnyTrue[ dedup, b |-> Length[ b ] > Length[ a ] && SubsetQ[ b, a ] ]
+    ]
+  ]
+
+FindParallel[ graph_Graph, line_List, p_, UpTo[ n_Integer ] ] :=
+  Take[ FindParallel[ graph, line, p, All ], UpTo[ n ] ]
+
+FindParallel[ graph_Graph, line_List, p_, n_Integer : 1 ] :=
+  With[ { result = FindParallel[ graph, line, p, UpTo[ n ] ] },
+    If[ Length[ result ] < n, $Failed, result ]
+  ]

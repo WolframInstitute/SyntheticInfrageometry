@@ -325,4 +325,55 @@ VerificationTest[
   TestID -> "FindSphere-MetricCircle-equidistant"
 ]
 
+(* ===== FindParallel ===== *)
+
+VerificationTest[
+  FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All],
+  {{5, 6, 7, 8}},
+  TestID -> "FindParallel-GridGraph-row-from-row"
+]
+
+VerificationTest[
+  FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 6, All],
+  {{5, 6, 7, 8}},
+  TestID -> "FindParallel-GridGraph-row-interior-vertex"
+]
+
+VerificationTest[
+  FindParallel[PathGraph[Range[5]], {1, 2, 3, 4, 5}, 3, All],
+  {{1, 2, 3, 4, 5}},
+  TestID -> "FindParallel-self-on-line"
+]
+
+VerificationTest[
+  FindParallel[Graph[{1, 2, 3, 4}, {1 <-> 2, 3 <-> 4}], {1, 2}, 3, All],
+  {},
+  TestID -> "FindParallel-disconnected-empty"
+]
+
+VerificationTest[
+  FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, 1],
+  {{5, 6, 7, 8}},
+  TestID -> "FindParallel-strict-1"
+]
+
+VerificationTest[
+  FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, 2],
+  $Failed,
+  TestID -> "FindParallel-strict-fails-when-too-few"
+]
+
+VerificationTest[
+  FindParallel[CycleGraph[8], {1, 2, 3}, 6, All],
+  {},
+  TestID -> "FindParallel-CycleGraph-no-parallel"
+]
+
+VerificationTest[
+  ParallelQ[GridGraph[{4, 4}], {1, 2, 3, 4},
+    First @ FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5]],
+  True,
+  TestID -> "FindParallel-output-passes-ParallelQ"
+]
+
 EndTestSection[]
