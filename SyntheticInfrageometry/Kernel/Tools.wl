@@ -7,13 +7,14 @@ PackageScope[EmbeddingHausdorffDistance]
 PackageScope[EmbeddingCircleDistance]
 PackageScope[CentralElement]
 PackageScope[PeripheralElement]
-PackageScope[SeparatingCycleQ]
+PackageScope[SeparatingSetQ]
 PackageScope[FindSeparatingCycles]
+PackageScope[FindMinimalSeparatingSubgraphs]
 PackageScope[pathFilterPairwiseDistances]
 PackageScope[applySelect]
-PackageScope[geodesicPaths]
 PackageScope[countLimit]
 PackageScope[takeUpTo]
+PackageScope[allGeodesics]
 
 
 (* ===================== Distance Metrics ===================== *)
@@ -171,7 +172,7 @@ applySelect[ graph_Graph, paths_List, method_String, context_Association ] :=
 (* ===================== Count semantics (internal) ===================== *)
 
 (* Translate a count argument (Integer | UpTo[Integer] | All | Infinity) into
-   a numeric upper bound (Integer or Infinity) for use by enumerators. *)
+   a numeric upper bound (Integer or Infinity). *)
 
 countLimit[ All ] = Infinity
 countLimit[ Infinity ] = Infinity
@@ -181,53 +182,25 @@ countLimit[ n_Integer ] := n
 takeUpTo[ list_, Infinity ] := list
 takeUpTo[ list_, n_Integer ] := Take[ list, UpTo[ n ] ]
 
-
-(* ===================== Geodesic Path Enumeration (internal) ===================== *)
-
-(* geodesicPaths[ graph, source, target, n ] returns up to n geodesic vertex
-   paths from source to target.  n may be Infinity.  For n = 1 it delegates
-   to FindShortestPath; otherwise it does a single BFS from each endpoint
-   and walks the source-target geodesic DAG depth-first, stopping after n
-   paths are collected. *)
-
-geodesicPaths[ _Graph, source_, target_, _ ] /; source === target := { }
-
-geodesicPaths[ graph_Graph, source_, target_, 1 ] :=
-  With[ { path = FindShortestPath[ graph, source, target ] },
-    If[ path === { }, { }, { path } ]
-  ]
-
-geodesicPaths[ graph_Graph, source_, target_, maxCount_ ] :=
-  Module[ { d, vertices, dm, count, walk, sown, distSrc, distTgt },
-    d = GraphDistance[ graph, source, target ];
-    If[ d === Infinity, Return[ { } ] ];
-    vertices = VertexList[ graph ];
-    dm = GraphDistanceMatrix[ graph ];
-    distSrc = AssociationThread[ vertices, dm[[ VertexIndex[ graph, source ] ]] ];
-    distTgt = AssociationThread[ vertices, dm[[ VertexIndex[ graph, target ] ]] ];
-    count = 0;
-    walk[ path_ ] := With[ { vertex = Last @ path, k = Length[ path ] - 1 },
-      If[ vertex === target,
-        Sow[ path ];
-        count++;
-        If[ count >= maxCount, Throw[ Null, "geodesicPaths" ] ],
-        Scan[
-          walk[ Append[ path, # ] ] &,
-          Select[ AdjacencyList[ graph, vertex ],
-            distSrc[ # ] === k + 1 && distTgt[ # ] === d - k - 1 & ]
-        ]
-      ]
-    ];
-    sown = Last @ Reap @ Catch[ walk[ { source } ], "geodesicPaths" ];
-    If[ sown === { }, { }, First @ sown ]
+(* Enumerate every geodesic from u to v as a vertex sequence; the WL
+   built-in idiom for "all shortest paths". *)
+allGeodesics[ graph_Graph, u_, v_ ] :=
+  With[ { d = GraphDistance[ graph, u, v ] },
+    If[ d === Infinity, { }, FindPath[ graph, u, v, { d }, All ] ]
   ]
 
 
-(* ===================== Separating Cycles (internal) ===================== *)
+(* ===================== Separating Sets (internal) ===================== *)
 
-SeparatingCycleQ[ graph_Graph, cycle_List, center_, radius_ ] :=
+(* SeparatingSetQ tests that removing the vertex set vs from graph leaves a
+   component containing center, that this component is contained in the
+   closed ball of radius around center, and that all vertices outside the
+   component lie strictly beyond radius.  The vertex set is unrestricted -
+   typically a subset of the level surface { v : d(center, v) = radius }. *)
+
+SeparatingSetQ[ graph_Graph, vs_List, center_, radius_ ] :=
   Module[ { rem, comps, centerComp },
-    rem = VertexDelete[ graph, cycle ];
+    rem = VertexDelete[ graph, vs ];
     comps = ConnectedComponents[ rem ];
     centerComp = SelectFirst[ comps, MemberQ[ #, center ] & ];
     centerComp =!= Missing[ "NotFound" ] &&
@@ -236,4 +209,21 @@ SeparatingCycleQ[ graph_Graph, cycle_List, center_, radius_ ] :=
   ]
 
 FindSeparatingCycles[ graph_Graph, cycles_List, center_, radius_ ] :=
-  Select[ cycles, SeparatingCycleQ[ graph, #, center, radius ] & ]
+  Select[ cycles, SeparatingSetQ[ graph, #, center, radius ] & ]
+
+(* FindMinimalSeparatingSubgraphs enumerates subsets of levelSet that
+   (a) induce a connected subgraph of graph, (b) separate center from the
+   exterior of the closed radius-ball, and are minimal under set inclusion
+   among such subsets. *)
+
+FindMinimalSeparatingSubgraphs[ graph_Graph, levelSet_List, center_, radius_ ] :=
+  Module[ { levelGraph, separating },
+    levelGraph = Subgraph[ graph, levelSet ];
+    separating = Select[ Rest @ Subsets[ levelSet ],
+      subset |-> ConnectedGraphQ[ Subgraph[ levelGraph, subset ] ] &&
+                 SeparatingSetQ[ graph, subset, center, radius ]
+    ];
+    Select[ separating,
+      s |-> ! AnyTrue[ separating, t |-> Length[ t ] < Length[ s ] && SubsetQ[ s, t ] ]
+    ]
+  ]

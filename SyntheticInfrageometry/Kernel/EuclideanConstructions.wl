@@ -36,7 +36,7 @@ FindMidpoint[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] :=
   Module[ { method = OptionValue[ Method ], segs },
     Switch[ method,
       "Metric",
-        segs = FindSegment[ graph, p1, p2, All ];
+        segs = allGeodesics[ graph, p1, p2 ];
         If[ segs === {}, {},
           DeleteDuplicates[ #[[ Ceiling[ Length[ # ] / 2 ] ]] & /@ segs ]
         ],

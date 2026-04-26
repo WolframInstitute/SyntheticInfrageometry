@@ -257,72 +257,104 @@ VerificationTest[
 
 (* ===== FindSphere ===== *)
 
+(* Method -> "Metric" (default): level surface { v : d(c, v) = r }. *)
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    Sort @ First @ FindSphere[g, 3, 2]
+  ],
+  {1, 5},
+  TestID -> "FindSphere-Metric-default-equidistant"
+]
+
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{spheres = FindSphere[g, 6, {1, 2}, 1, "Select" -> "LongestCircumference"]},
+    With[{result = FindSphere[g, 6, {1, 2}, All]},
+      Length[result] == 1 &&
+      AllTrue[First[result], v |-> 1 <= GraphDistance[g, 6, v] <= 2]
+    ]
+  ],
+  True,
+  TestID -> "FindSphere-Metric-range-radius"
+]
+
+VerificationTest[
+  With[{g = PetersenGraph[]},
+    Length @ FindSphere[g, 1, 2, All]
+  ],
+  1,
+  TestID -> "FindSphere-Metric-single-result"
+]
+
+(* Method -> "SeparatingGraph": minimal connected separators within the level surface. *)
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    With[{spheres = FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingGraph"]},
+      Length[spheres] >= 1 &&
+      AllTrue[spheres, vs |-> AllTrue[vs, v |-> 1 <= GraphDistance[g, 6, v] <= 2]] &&
+      AllTrue[spheres, vs |-> ConnectedGraphQ[Subgraph[g, vs]]]
+    ]
+  ],
+  True,
+  TestID -> "FindSphere-SeparatingGraph-connected-within-range"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    With[{spheres = FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingGraph"]},
+      AllTrue[spheres, vs |-> AllTrue[spheres,
+        other |-> other === vs || ! (Length[other] < Length[vs] && SubsetQ[vs, other])
+      ]]
+    ]
+  ],
+  True,
+  TestID -> "FindSphere-SeparatingGraph-minimal"
+]
+
+(* Method -> "SeparatingCycle": cycles in the level-surface subgraph that separate. *)
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    With[{spheres = FindSphere[g, 6, {1, 2}, 1, Method -> "SeparatingCycle",
+                              "Select" -> "LongestCircumference"]},
       Length[spheres] >= 1 && AllTrue[spheres, ListQ]
     ]
   ],
   True,
-  TestID -> "FindSphere-returns-cycles"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{4, 4}]},
-    With[{spheres = FindSphere[g, 6, {1, 2}, 1]},
-      AllTrue[spheres, c |-> AllTrue[c, v |-> GraphDistance[g, 6, v] <= 2]]
-    ]
-  ],
-  True,
-  TestID -> "FindSphere-within-radius"
+  TestID -> "FindSphere-SeparatingCycle-returns-cycles"
 ]
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    With[{spheres = FindSphere[g, 1, {1, 2}, All]},
+    With[{spheres = FindSphere[g, 1, {1, 2}, All, Method -> "SeparatingCycle"]},
       Length[spheres] >= 1
     ]
   ],
   True,
-  TestID -> "FindSphere-all-cycles"
+  TestID -> "FindSphere-SeparatingCycle-all-cycles"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{spheres = FindSphere[g, 6, {1, 2}, All, "Select" -> "LongestCircumference"]},
+    With[{spheres = FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingCycle",
+                              "Select" -> "LongestCircumference"]},
       Length[spheres] >= 1 && Length[Union[Length /@ spheres]] == 1
     ]
   ],
   True,
-  TestID -> "FindSphere-LongestCircumference-uniform"
-]
-
-VerificationTest[
-  With[{g = PetersenGraph[]},
-    With[{spheres = FindSphere[g, 1, {1, 2}, 2, "Select" -> {"LongestCircumference", "FrechetCentral"}]},
-      Length[spheres] <= 2
-    ]
-  ],
-  True,
-  TestID -> "FindSphere-chained-select"
+  TestID -> "FindSphere-SeparatingCycle-LongestCircumference-uniform"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{spheres = FindSphere[g, 6, {1, 2}, All, "Select" -> "ShortestCircumference"]},
+    With[{spheres = FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingCycle",
+                              "Select" -> "ShortestCircumference"]},
       Length[spheres] >= 1 && Length[Union[Length /@ spheres]] == 1
     ]
   ],
   True,
-  TestID -> "FindSphere-ShortestCircumference"
-]
-
-VerificationTest[
-  With[{g = PathGraph[Range[5]]},
-    Sort @ First @ FindSphere[g, 3, 2, Method -> "MetricCircle"]
-  ],
-  {1, 5},
-  TestID -> "FindSphere-MetricCircle-equidistant"
+  TestID -> "FindSphere-SeparatingCycle-ShortestCircumference"
 ]
 
 (* ===== FindParallel ===== *)

@@ -129,10 +129,12 @@ VerificationTest[
 ]
 
 VerificationTest[
-  (* Sanity check: GeodesicCount agrees with explicit enumeration via FindSegment *)
-  GeodesicCount[GridGraph[{3, 3}], 1, 9] === Length[FindSegment[GridGraph[{3, 3}], 1, 9, All]],
+  (* Sanity check: GeodesicCount agrees with explicit enumeration via FindPath *)
+  With[{g = GridGraph[{3, 3}], d = GraphDistance[GridGraph[{3, 3}], 1, 9]},
+    GeodesicCount[g, 1, 9] === Length[FindPath[g, 1, 9, {d}, All]]
+  ],
   True,
-  TestID -> "GeodesicCount-matches-FindSegment"
+  TestID -> "GeodesicCount-matches-enumeration"
 ]
 
 (* ===== DistanceMultiplicityMatrix ===== *)

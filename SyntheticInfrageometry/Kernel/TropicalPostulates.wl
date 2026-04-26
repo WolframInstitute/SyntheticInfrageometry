@@ -9,7 +9,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
    sorted), deduplicated. *)
 
 FindTropicalSegment[ graph_Graph, u_, v_, All ] :=
-  DeleteDuplicates[ Sort /@ FindSegment[ graph, u, v, All ] ]
+  DeleteDuplicates[ Sort /@ allGeodesics[ graph, u, v ] ]
 
 FindTropicalSegment[ graph_Graph, u_, v_, UpTo[ n_Integer ] ] :=
   Take[ FindTropicalSegment[ graph, u, v, All ], UpTo[ n ] ]

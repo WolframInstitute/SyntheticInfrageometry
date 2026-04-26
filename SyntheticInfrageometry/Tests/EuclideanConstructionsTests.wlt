@@ -21,11 +21,14 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Sort @ FindMidpoint[GridGraph[{3, 3}], 1, 9, All],
-  Sort @ DeleteDuplicates[
-    #[[ Ceiling[ Length[#] / 2 ] ]] & /@ FindSegment[GridGraph[{3, 3}], 1, 9, All]
+  With[{g = GridGraph[{3, 3}], d = GraphDistance[GridGraph[{3, 3}], 1, 9]},
+    Sort @ FindMidpoint[g, 1, 9, All] ===
+      Sort @ DeleteDuplicates[
+        #[[ Ceiling[ Length[#] / 2 ] ]] & /@ FindPath[g, 1, 9, {d}, All]
+      ]
   ],
-  TestID -> "FindMidpoint-all-matches-segment-midpoints"
+  True,
+  TestID -> "FindMidpoint-all-matches-geodesic-midpoints"
 ]
 
 VerificationTest[
