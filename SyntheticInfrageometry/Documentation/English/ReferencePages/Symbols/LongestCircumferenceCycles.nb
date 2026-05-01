@@ -18,24 +18,24 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["LongestCircumferenceCycles", "Title",ExpressionUUID->"53af32c0-dd55-4750-83c6-64d85f7f8ecc"],
+Cell["LongestCircumferenceCycles", "Title",ExpressionUUID->"d745cfc3-0cf9-4f14-962f-a0f9d893284c"],
 
 Cell["\<\
 LongestCircumferenceCycles[cycles] keeps the cycles of maximum length. Pure \
 list operation, no graph required.\
-\>", "Text",ExpressionUUID->"24a4f35c-50f7-4130-959a-d20f21cd77ab"],
+\>", "Text",ExpressionUUID->"538875ec-753a-4566-9c96-f4f678d6a75c"],
 
-Cell["Setup", "Section",ExpressionUUID->"8e0a6a50-c288-4885-8e09-98ae807217e0"],
+Cell["Setup", "Section",ExpressionUUID->"e8de4030-130a-4eff-82a1-0ba2a34dddd2"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"23562ce5-35ac-4508-8506-a4fcd15b4cfb"],
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"a84394fd-30d7-4a77-aba7-2f0f4d3d3bba"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
-  "]"}]], "Code",ExpressionUUID->"7aeb1ae1-85be-4a97-826e-7ee0dfc1882a"],
+  "]"}]], "Code",ExpressionUUID->"5ae46029-8245-4c3f-bd3b-79838f987ea9"],
 
-Cell["Usage", "Section",ExpressionUUID->"b9cdad2c-71c6-4fdd-99a4-6ec8960d5323"],
+Cell["Usage", "Section",ExpressionUUID->"ec35fc7d-0be4-4dec-a4af-85687197b9cf"],
 
-Cell["Keep the longest cycles in a list.", "CodeText",ExpressionUUID->"199481b4-d742-4f32-8ddf-ce8e682335a4"],
+Cell["Keep the longest cycles in a list.", "CodeText",ExpressionUUID->"b9badfe2-88e8-49eb-8e71-15ce0fee11f3"],
 
 Cell[BoxData[
  RowBox[{"LongestCircumferenceCycles", "[", 
@@ -47,9 +47,9 @@ Cell[BoxData[
      RowBox[{"1", ",", "2", ",", "3"}], "}"}], ",", 
     RowBox[{"{", 
      RowBox[{"4", ",", "5", ",", "6"}], "}"}]}], "}"}], "]"}]], "Input",Expres\
-sionUUID->"42ac5e89-fb11-4c22-bfe7-0513f8fd61c4"],
+sionUUID->"8fd61da2-82a7-4179-b2c2-6b4dedac8cfe"],
 
-Cell["Apply the filter to a separating-cycle bundle.", "CodeText",ExpressionUUID->"592322bb-cba2-4e71-9a32-3f380b535fa2"],
+Cell["Apply the filter to a separating-cycle bundle.", "CodeText",ExpressionUUID->"ad7befa3-cec1-4652-872d-cbd2b898a4c7"],
 
 Cell[BoxData[
  RowBox[{"With", "[", 
@@ -65,12 +65,12 @@ Cell[BoxData[
       RowBox[{"{", 
        RowBox[{"1", ",", "2"}], "}"}], ",", "All", ",", 
       RowBox[{"Method", "\[Rule]", "\"\<SeparatingCycle\>\""}]}], "]"}], 
-    "]"}]}], "]"}]], "Input",ExpressionUUID->"d456ea7b-9c21-4084-ae51-\
-a26eae0ceb30"],
+    "]"}]}], "]"}]], "Input",ExpressionUUID->"87629849-651c-491f-b2dd-\
+2e9f049153f4"],
 
-Cell["Examples", "Section",ExpressionUUID->"24577aa6-ccbd-49b8-a0bf-46c0f8e8c43e"],
+Cell["Examples", "Section",ExpressionUUID->"a346efd4-7ebc-4a16-9846-50eb8718b06b"],
 
-Cell["Compose the filter with embedding closeness.", "CodeText",ExpressionUUID->"91678420-e7ce-4d53-88d9-c381a8cf8aff"],
+Cell["Compose the filter with embedding closeness.", "CodeText",ExpressionUUID->"f445aeb0-1bb7-41ad-87aa-9276656eda2c"],
 
 Cell[BoxData[
  RowBox[{"With", "[", 
@@ -91,10 +91,10 @@ Cell[BoxData[
        RowBox[{"{", 
         RowBox[{"1", ",", "2"}], "}"}], ",", "All", ",", 
        RowBox[{"Method", "\[Rule]", "\"\<SeparatingCycle\>\""}]}], "]"}], 
-     "]"}], "]"}]}], "]"}]], "Input",ExpressionUUID->"2af5fa18-f65a-4dfa-82a4-\
-2370f11e1c2f"],
+     "]"}], "]"}]}], "]"}]], "Input",ExpressionUUID->"b36021e2-fe8c-4a6c-bfa8-\
+9332509858d0"],
 
-Cell["Count how many maximum-length cycles survive a tie.", "CodeText",ExpressionUUID->"575a89da-c69d-4707-9f7c-b533733b417f"],
+Cell["Count how many maximum-length cycles survive a tie.", "CodeText",ExpressionUUID->"9e79678e-ea31-429d-9066-fc50067b7188"],
 
 Cell[BoxData[
  RowBox[{"Length", "[", 
@@ -107,27 +107,27 @@ Cell[BoxData[
       RowBox[{"6", ",", "7", ",", "8", ",", "9", ",", "10"}], "}"}], ",", 
      RowBox[{"{", 
       RowBox[{"1", ",", "2", ",", "3"}], "}"}]}], "}"}], "]"}], 
-  "]"}]], "Input",ExpressionUUID->"90788d02-e295-4cb6-883c-20b7f8aea9e8"],
+  "]"}]], "Input",ExpressionUUID->"aabcf070-1b20-439f-9e5b-66f3541bf45d"],
 
-Cell["See also", "Section",ExpressionUUID->"4c31b00e-2997-4c07-a73b-862e29cdc645"],
+Cell["See also", "Section",ExpressionUUID->"a2140200-7762-4aff-8992-ba49c8ff044f"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"7b731dea-7406-4a41-98ff-225ceb14dfaa"],
+Cell["FindSegment", "Item",ExpressionUUID->"3b509764-f302-44e2-982c-3ef661fb7302"],
 
-Cell["FindLine", "Item",ExpressionUUID->"5094f294-e156-4814-a096-5da25e3fba55"],
+Cell["FindLine", "Item",ExpressionUUID->"c71cb1d7-1001-45d4-9348-a8ed7f6e56e2"],
 
-Cell["FindSphere", "Item",ExpressionUUID->"f46b0df0-c821-4aff-955f-1a7bac545541"],
+Cell["FindSphere", "Item",ExpressionUUID->"e757d940-f0e6-4a5c-8d5e-6a7af6eb77ef"],
 
-Cell["CentralPaths", "Item",ExpressionUUID->"0ccff975-0163-4623-a822-364cb23fcd25"],
+Cell["CentralPaths", "Item",ExpressionUUID->"7459a4d4-c8d4-4955-813c-4db725b2b502"],
 
-Cell["CentralCycles", "Item",ExpressionUUID->"cc6883a1-b287-4f3f-a5d8-b2d795ad1fd3"],
+Cell["CentralCycles", "Item",ExpressionUUID->"1f409474-a3ff-4f24-a1a7-5075da4be5f7"],
 
-Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"31a31181-2681-41e0-97f9-7eed16083aec"],
+Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"3a17390c-4168-44bc-a0f4-ede4e43056d5"],
 
-Cell["EmbeddingClosestCycles", "Item",ExpressionUUID->"6635559f-e867-49a8-a21f-4856265a5509"]
+Cell["EmbeddingClosestCycles", "Item",ExpressionUUID->"68f2a894-5903-44bd-9f41-a2e8afe27618"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+ExpressionUUID->"44f98e3d-3313-40e3-9475-afdb24a065f6"
 ]
 (* End of Notebook Content *)
 
@@ -140,29 +140,29 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 98, 0, 70, "Title",ExpressionUUID->"53af32c0-dd55-4750-83c6-64d85f7f8ecc"],
-Cell[655, 22, 191, 3, 70, "Text",ExpressionUUID->"24a4f35c-50f7-4130-959a-d20f21cd77ab"],
-Cell[849, 27, 79, 0, 70, "Section",ExpressionUUID->"8e0a6a50-c288-4885-8e09-98ae807217e0"],
-Cell[931, 29, 132, 0, 70, "CodeText",ExpressionUUID->"23562ce5-35ac-4508-8506-a4fcd15b4cfb"],
-Cell[1066, 31, 162, 2, 70, "Code",ExpressionUUID->"7aeb1ae1-85be-4a97-826e-7ee0dfc1882a"],
-Cell[1231, 35, 79, 0, 70, "Section",ExpressionUUID->"b9cdad2c-71c6-4fdd-99a4-6ec8960d5323"],
-Cell[1313, 37, 109, 0, 70, "CodeText",ExpressionUUID->"199481b4-d742-4f32-8ddf-ce8e682335a4"],
-Cell[1425, 39, 396, 10, 70, "Input",ExpressionUUID->"42ac5e89-fb11-4c22-bfe7-0513f8fd61c4"],
-Cell[1824, 51, 121, 0, 70, "CodeText",ExpressionUUID->"592322bb-cba2-4e71-9a32-3f380b535fa2"],
-Cell[1948, 53, 551, 15, 70, "Input",ExpressionUUID->"d456ea7b-9c21-4084-ae51-a26eae0ceb30"],
-Cell[2502, 70, 82, 0, 70, "Section",ExpressionUUID->"24577aa6-ccbd-49b8-a0bf-46c0f8e8c43e"],
-Cell[2587, 72, 119, 0, 70, "CodeText",ExpressionUUID->"91678420-e7ce-4d53-88d9-c381a8cf8aff"],
-Cell[2709, 74, 722, 20, 70, "Input",ExpressionUUID->"2af5fa18-f65a-4dfa-82a4-2370f11e1c2f"],
-Cell[3434, 96, 126, 0, 70, "CodeText",ExpressionUUID->"575a89da-c69d-4707-9f7c-b533733b417f"],
-Cell[3563, 98, 459, 11, 70, "Input",ExpressionUUID->"90788d02-e295-4cb6-883c-20b7f8aea9e8"],
-Cell[4025, 111, 82, 0, 70, "Section",ExpressionUUID->"4c31b00e-2997-4c07-a73b-862e29cdc645"],
-Cell[4110, 113, 82, 0, 70, "Item",ExpressionUUID->"7b731dea-7406-4a41-98ff-225ceb14dfaa"],
-Cell[4195, 115, 79, 0, 70, "Item",ExpressionUUID->"5094f294-e156-4814-a096-5da25e3fba55"],
-Cell[4277, 117, 81, 0, 70, "Item",ExpressionUUID->"f46b0df0-c821-4aff-955f-1a7bac545541"],
-Cell[4361, 119, 83, 0, 70, "Item",ExpressionUUID->"0ccff975-0163-4623-a822-364cb23fcd25"],
-Cell[4447, 121, 84, 0, 70, "Item",ExpressionUUID->"cc6883a1-b287-4f3f-a5d8-b2d795ad1fd3"],
-Cell[4534, 123, 92, 0, 70, "Item",ExpressionUUID->"31a31181-2681-41e0-97f9-7eed16083aec"],
-Cell[4629, 125, 93, 0, 70, "Item",ExpressionUUID->"6635559f-e867-49a8-a21f-4856265a5509"]
+Cell[554, 20, 98, 0, 70, "Title",ExpressionUUID->"d745cfc3-0cf9-4f14-962f-a0f9d893284c"],
+Cell[655, 22, 191, 3, 70, "Text",ExpressionUUID->"538875ec-753a-4566-9c96-f4f678d6a75c"],
+Cell[849, 27, 79, 0, 70, "Section",ExpressionUUID->"e8de4030-130a-4eff-82a1-0ba2a34dddd2"],
+Cell[931, 29, 132, 0, 70, "CodeText",ExpressionUUID->"a84394fd-30d7-4a77-aba7-2f0f4d3d3bba"],
+Cell[1066, 31, 162, 2, 70, "Code",ExpressionUUID->"5ae46029-8245-4c3f-bd3b-79838f987ea9"],
+Cell[1231, 35, 79, 0, 70, "Section",ExpressionUUID->"ec35fc7d-0be4-4dec-a4af-85687197b9cf"],
+Cell[1313, 37, 109, 0, 70, "CodeText",ExpressionUUID->"b9badfe2-88e8-49eb-8e71-15ce0fee11f3"],
+Cell[1425, 39, 396, 10, 70, "Input",ExpressionUUID->"8fd61da2-82a7-4179-b2c2-6b4dedac8cfe"],
+Cell[1824, 51, 121, 0, 70, "CodeText",ExpressionUUID->"ad7befa3-cec1-4652-872d-cbd2b898a4c7"],
+Cell[1948, 53, 551, 15, 70, "Input",ExpressionUUID->"87629849-651c-491f-b2dd-2e9f049153f4"],
+Cell[2502, 70, 82, 0, 70, "Section",ExpressionUUID->"a346efd4-7ebc-4a16-9846-50eb8718b06b"],
+Cell[2587, 72, 119, 0, 70, "CodeText",ExpressionUUID->"f445aeb0-1bb7-41ad-87aa-9276656eda2c"],
+Cell[2709, 74, 722, 20, 70, "Input",ExpressionUUID->"b36021e2-fe8c-4a6c-bfa8-9332509858d0"],
+Cell[3434, 96, 126, 0, 70, "CodeText",ExpressionUUID->"9e79678e-ea31-429d-9066-fc50067b7188"],
+Cell[3563, 98, 459, 11, 70, "Input",ExpressionUUID->"aabcf070-1b20-439f-9e5b-66f3541bf45d"],
+Cell[4025, 111, 82, 0, 70, "Section",ExpressionUUID->"a2140200-7762-4aff-8992-ba49c8ff044f"],
+Cell[4110, 113, 82, 0, 70, "Item",ExpressionUUID->"3b509764-f302-44e2-982c-3ef661fb7302"],
+Cell[4195, 115, 79, 0, 70, "Item",ExpressionUUID->"c71cb1d7-1001-45d4-9348-a8ed7f6e56e2"],
+Cell[4277, 117, 81, 0, 70, "Item",ExpressionUUID->"e757d940-f0e6-4a5c-8d5e-6a7af6eb77ef"],
+Cell[4361, 119, 83, 0, 70, "Item",ExpressionUUID->"7459a4d4-c8d4-4955-813c-4db725b2b502"],
+Cell[4447, 121, 84, 0, 70, "Item",ExpressionUUID->"1f409474-a3ff-4f24-a1a7-5075da4be5f7"],
+Cell[4534, 123, 92, 0, 70, "Item",ExpressionUUID->"3a17390c-4168-44bc-a0f4-ede4e43056d5"],
+Cell[4629, 125, 93, 0, 70, "Item",ExpressionUUID->"68f2a894-5903-44bd-9f41-a2e8afe27618"]
 }
 ]
 *)

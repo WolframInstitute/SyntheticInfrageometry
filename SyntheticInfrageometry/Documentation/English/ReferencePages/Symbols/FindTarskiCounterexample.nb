@@ -18,7 +18,7 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindTarskiCounterexample", "Title",ExpressionUUID->"46ed3863-a072-4f96-9846-8fcd460cdd86"],
+Cell["FindTarskiCounterexample", "Title",ExpressionUUID->"ee6bb69f-3d42-43a1-a13a-f3f962fe508a"],
 
 Cell["\<\
 FindTarskiCounterexample[graph, predQ] returns one vertex tuple witnessing \
@@ -28,19 +28,19 @@ TarskiBetweennessIdentityQ, TarskiInnerPaschQ, TarskiLowerDimensionQ, \
 TarskiUpperDimensionQ. The calling triple n / UpTo[n] / All caps the witness \
 count. Returns $Failed for the always-True axioms and for TarskiContinuityQ \
 (whose failure has no finite vertex-tuple witness).\
-\>", "Text",ExpressionUUID->"0e060fc3-8c5b-4790-a789-f9953b3e5673"],
+\>", "Text",ExpressionUUID->"3053bd48-9575-4232-aabe-6927de6aac0f"],
 
-Cell["Setup", "Section",ExpressionUUID->"51d05ea4-511e-43c7-abca-90a751770852"],
+Cell["Setup", "Section",ExpressionUUID->"34e3460c-ff09-462d-b08a-eb5c77c83b87"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"2e44c60b-024b-4121-90ec-f4a6e5429e6f"],
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"7e48825d-c5ad-405c-96d8-cda4ad2ffcbe"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
-  "]"}]], "Code",ExpressionUUID->"b7b0777e-5720-46dc-b23e-41000b6d8183"],
+  "]"}]], "Code",ExpressionUUID->"c6508dea-419d-45c9-aa3a-f2faf1724207"],
 
-Cell["Usage", "Section",ExpressionUUID->"efd212da-1509-4157-a7ed-71b377608660"],
+Cell["Usage", "Section",ExpressionUUID->"009d3a25-9d1b-4447-8232-294cf7da3a37"],
 
-Cell["Find a witness that A4 fails on a finite path.", "CodeText",ExpressionUUID->"4efb0d71-6bca-4ab0-96e9-5a3ae73b27d3"],
+Cell["Find a witness that A4 fails on a finite path.", "CodeText",ExpressionUUID->"136bb95c-2d4a-45c8-9852-10318da4ac83"],
 
 Cell[BoxData[
  RowBox[{"FindTarskiCounterexample", "[", 
@@ -49,20 +49,20 @@ Cell[BoxData[
     RowBox[{"Range", "[", "5", "]"}], "]"}], ",", 
    "TarskiSegmentConstructionQ", ",", 
    RowBox[{"UpTo", "[", "2", "]"}]}], "]"}]], "Input",ExpressionUUID->\
-"197df63e-5292-4772-b764-2f6d9fd78887"],
+"ebd6a297-7732-439a-9915-a716962a84f9"],
 
-Cell["Find an Inner Pasch counterexample on the Petersen graph.", "CodeText",ExpressionUUID->"616a4068-1d0a-4023-9c35-b61ff06c1a4a"],
+Cell["Find an Inner Pasch counterexample on the Petersen graph.", "CodeText",ExpressionUUID->"c7fe1fcb-e8a3-44cd-816f-8bb704a688b2"],
 
 Cell[BoxData[
  RowBox[{"FindTarskiCounterexample", "[", 
   RowBox[{
    RowBox[{"PetersenGraph", "[", "]"}], ",", "TarskiInnerPaschQ", ",", 
    RowBox[{"UpTo", "[", "1", "]"}]}], "]"}]], "Input",ExpressionUUID->\
-"7b2435cd-e59d-465e-9ed9-5bf78c4fcea4"],
+"aa54b03a-4298-4ca7-a45e-e9cb6cd34316"],
 
-Cell["Examples", "Section",ExpressionUUID->"6bfd4175-529e-4692-95c1-7c97c2baa9d1"],
+Cell["Examples", "Section",ExpressionUUID->"41bc616f-cb2f-430a-8b28-d16113763cdf"],
 
-Cell["Always-true axioms return no witness list.", "CodeText",ExpressionUUID->"febaecb6-d69c-46be-97ad-73e5ae699491"],
+Cell["Always-true axioms return no witness list.", "CodeText",ExpressionUUID->"ddf4789c-d66c-4097-af48-4e95ddab55a9"],
 
 Cell[BoxData[
  RowBox[{"FindTarskiCounterexample", "[", 
@@ -70,9 +70,9 @@ Cell[BoxData[
    RowBox[{"PathGraph", "[", 
     RowBox[{"Range", "[", "5", "]"}], "]"}], ",", 
    "TarskiCongruenceReflexivityQ", ",", "All"}], "]"}]], "Input",ExpressionUUI\
-D->"2a44b06b-8219-4662-8e6b-027f86995f31"],
+D->"ead9a3d8-c82a-4594-a869-ae1f59890800"],
 
-Cell["Continuity has no finite witness and returns $Failed.", "CodeText",ExpressionUUID->"b7b2db71-40d4-4353-af4e-cecf7babc432"],
+Cell["Continuity has no finite witness and returns $Failed.", "CodeText",ExpressionUUID->"ac23048c-694a-426d-889a-d75b2a68d934"],
 
 Cell[BoxData[
  RowBox[{"Quiet", "[", 
@@ -81,28 +81,28 @@ Cell[BoxData[
     RowBox[{"GridGraph", "[", 
      RowBox[{"{", 
       RowBox[{"3", ",", "3"}], "}"}], "]"}], ",", "TarskiContinuityQ", ",", 
-    "All"}], "]"}], "]"}]], "Input",ExpressionUUID->"d541acd0-f4a9-4e11-9555-\
-850a5db73afb"],
+    "All"}], "]"}], "]"}]], "Input",ExpressionUUID->"d9132dd6-79d5-4d03-ad5c-\
+b556571806c7"],
 
-Cell["See also", "Section",ExpressionUUID->"3d764b47-db12-4de1-a457-0d2e09fdf603"],
+Cell["See also", "Section",ExpressionUUID->"028499b0-ef01-449b-b7cf-5712c81fc184"],
 
-Cell["BetweennessQ", "Item",ExpressionUUID->"746f0532-1ef6-4bdd-b4d6-90df03242464"],
+Cell["BetweennessQ", "Item",ExpressionUUID->"13a93ad3-00c6-4b05-82c8-46cc94103584"],
 
-Cell["EquidistanceQ", "Item",ExpressionUUID->"61d27795-0d04-450e-bbf5-5c117ac80df4"],
+Cell["EquidistanceQ", "Item",ExpressionUUID->"9cebae3d-bfca-402b-909a-21162e251a12"],
 
-Cell["TarskiStructure", "Item",ExpressionUUID->"f280849c-139a-42fb-8cff-d993d98da7a2"],
+Cell["TarskiStructure", "Item",ExpressionUUID->"565dd67f-4100-4d75-9cbc-98375be21428"],
 
-Cell["TarskiAxiomQ", "Item",ExpressionUUID->"22251895-4564-4c20-8794-d805b11af9e4"],
+Cell["TarskiAxiomQ", "Item",ExpressionUUID->"83bebfb0-bfb7-4e0f-916e-61882ae95fe8"],
 
-Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"9a6af722-eea8-4306-ab6e-9a43a4d26978"],
+Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"dfe8bb91-b306-478e-ac6f-fb41e53231b3"],
 
-Cell["FindTarskiReflection", "Item",ExpressionUUID->"f9bc2ac7-5447-4da9-86fe-507716ff6e78"],
+Cell["FindTarskiReflection", "Item",ExpressionUUID->"27a97e42-eed8-4473-b600-4d075133f978"],
 
-Cell["MetricInterval", "Item",ExpressionUUID->"12b70360-eae4-4c87-b409-3ef9b449e2d0"]
+Cell["MetricInterval", "Item",ExpressionUUID->"ed7704ce-4505-493c-b746-01a102d0eaa8"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+ExpressionUUID->"44f98e3d-3313-40e3-9475-afdb24a065f6"
 ]
 (* End of Notebook Content *)
 
@@ -115,29 +115,29 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 96, 0, 70, "Title",ExpressionUUID->"46ed3863-a072-4f96-9846-8fcd460cdd86"],
-Cell[653, 22, 592, 8, 70, "Text",ExpressionUUID->"0e060fc3-8c5b-4790-a789-f9953b3e5673"],
-Cell[1248, 32, 79, 0, 70, "Section",ExpressionUUID->"51d05ea4-511e-43c7-abca-90a751770852"],
-Cell[1330, 34, 132, 0, 70, "CodeText",ExpressionUUID->"2e44c60b-024b-4121-90ec-f4a6e5429e6f"],
-Cell[1465, 36, 162, 2, 70, "Code",ExpressionUUID->"b7b0777e-5720-46dc-b23e-41000b6d8183"],
-Cell[1630, 40, 79, 0, 70, "Section",ExpressionUUID->"efd212da-1509-4157-a7ed-71b377608660"],
-Cell[1712, 42, 121, 0, 70, "CodeText",ExpressionUUID->"4efb0d71-6bca-4ab0-96e9-5a3ae73b27d3"],
-Cell[1836, 44, 299, 7, 70, "Input",ExpressionUUID->"197df63e-5292-4772-b764-2f6d9fd78887"],
-Cell[2138, 53, 132, 0, 70, "CodeText",ExpressionUUID->"616a4068-1d0a-4023-9c35-b61ff06c1a4a"],
-Cell[2273, 55, 251, 5, 70, "Input",ExpressionUUID->"7b2435cd-e59d-465e-9ed9-5bf78c4fcea4"],
-Cell[2527, 62, 82, 0, 70, "Section",ExpressionUUID->"6bfd4175-529e-4692-95c1-7c97c2baa9d1"],
-Cell[2612, 64, 117, 0, 70, "CodeText",ExpressionUUID->"febaecb6-d69c-46be-97ad-73e5ae699491"],
-Cell[2732, 66, 271, 6, 70, "Input",ExpressionUUID->"2a44b06b-8219-4662-8e6b-027f86995f31"],
-Cell[3006, 74, 128, 0, 70, "CodeText",ExpressionUUID->"b7b2db71-40d4-4353-af4e-cecf7babc432"],
-Cell[3137, 76, 314, 8, 70, "Input",ExpressionUUID->"d541acd0-f4a9-4e11-9555-850a5db73afb"],
-Cell[3454, 86, 82, 0, 70, "Section",ExpressionUUID->"3d764b47-db12-4de1-a457-0d2e09fdf603"],
-Cell[3539, 88, 83, 0, 70, "Item",ExpressionUUID->"746f0532-1ef6-4bdd-b4d6-90df03242464"],
-Cell[3625, 90, 84, 0, 70, "Item",ExpressionUUID->"61d27795-0d04-450e-bbf5-5c117ac80df4"],
-Cell[3712, 92, 86, 0, 70, "Item",ExpressionUUID->"f280849c-139a-42fb-8cff-d993d98da7a2"],
-Cell[3801, 94, 83, 0, 70, "Item",ExpressionUUID->"22251895-4564-4c20-8794-d805b11af9e4"],
-Cell[3887, 96, 89, 0, 70, "Item",ExpressionUUID->"9a6af722-eea8-4306-ab6e-9a43a4d26978"],
-Cell[3979, 98, 91, 0, 70, "Item",ExpressionUUID->"f9bc2ac7-5447-4da9-86fe-507716ff6e78"],
-Cell[4073, 100, 85, 0, 70, "Item",ExpressionUUID->"12b70360-eae4-4c87-b409-3ef9b449e2d0"]
+Cell[554, 20, 96, 0, 70, "Title",ExpressionUUID->"ee6bb69f-3d42-43a1-a13a-f3f962fe508a"],
+Cell[653, 22, 592, 8, 70, "Text",ExpressionUUID->"3053bd48-9575-4232-aabe-6927de6aac0f"],
+Cell[1248, 32, 79, 0, 70, "Section",ExpressionUUID->"34e3460c-ff09-462d-b08a-eb5c77c83b87"],
+Cell[1330, 34, 132, 0, 70, "CodeText",ExpressionUUID->"7e48825d-c5ad-405c-96d8-cda4ad2ffcbe"],
+Cell[1465, 36, 162, 2, 70, "Code",ExpressionUUID->"c6508dea-419d-45c9-aa3a-f2faf1724207"],
+Cell[1630, 40, 79, 0, 70, "Section",ExpressionUUID->"009d3a25-9d1b-4447-8232-294cf7da3a37"],
+Cell[1712, 42, 121, 0, 70, "CodeText",ExpressionUUID->"136bb95c-2d4a-45c8-9852-10318da4ac83"],
+Cell[1836, 44, 299, 7, 70, "Input",ExpressionUUID->"ebd6a297-7732-439a-9915-a716962a84f9"],
+Cell[2138, 53, 132, 0, 70, "CodeText",ExpressionUUID->"c7fe1fcb-e8a3-44cd-816f-8bb704a688b2"],
+Cell[2273, 55, 251, 5, 70, "Input",ExpressionUUID->"aa54b03a-4298-4ca7-a45e-e9cb6cd34316"],
+Cell[2527, 62, 82, 0, 70, "Section",ExpressionUUID->"41bc616f-cb2f-430a-8b28-d16113763cdf"],
+Cell[2612, 64, 117, 0, 70, "CodeText",ExpressionUUID->"ddf4789c-d66c-4097-af48-4e95ddab55a9"],
+Cell[2732, 66, 271, 6, 70, "Input",ExpressionUUID->"ead9a3d8-c82a-4594-a869-ae1f59890800"],
+Cell[3006, 74, 128, 0, 70, "CodeText",ExpressionUUID->"ac23048c-694a-426d-889a-d75b2a68d934"],
+Cell[3137, 76, 314, 8, 70, "Input",ExpressionUUID->"d9132dd6-79d5-4d03-ad5c-b556571806c7"],
+Cell[3454, 86, 82, 0, 70, "Section",ExpressionUUID->"028499b0-ef01-449b-b7cf-5712c81fc184"],
+Cell[3539, 88, 83, 0, 70, "Item",ExpressionUUID->"13a93ad3-00c6-4b05-82c8-46cc94103584"],
+Cell[3625, 90, 84, 0, 70, "Item",ExpressionUUID->"9cebae3d-bfca-402b-909a-21162e251a12"],
+Cell[3712, 92, 86, 0, 70, "Item",ExpressionUUID->"565dd67f-4100-4d75-9cbc-98375be21428"],
+Cell[3801, 94, 83, 0, 70, "Item",ExpressionUUID->"83bebfb0-bfb7-4e0f-916e-61882ae95fe8"],
+Cell[3887, 96, 89, 0, 70, "Item",ExpressionUUID->"dfe8bb91-b306-478e-ac6f-fb41e53231b3"],
+Cell[3979, 98, 91, 0, 70, "Item",ExpressionUUID->"27a97e42-eed8-4473-b600-4d075133f978"],
+Cell[4073, 100, 85, 0, 70, "Item",ExpressionUUID->"ed7704ce-4505-493c-b746-01a102d0eaa8"]
 }
 ]
 *)
