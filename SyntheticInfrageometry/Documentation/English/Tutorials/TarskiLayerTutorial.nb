@@ -1,0 +1,177 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      7099,        168]
+NotebookOptionsPosition[      5054,        137]
+NotebookOutlinePosition[      5371,        151]
+CellTagsIndexPosition[      5328,        148]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["Tarski Layer Tutorial", "Title",ExpressionUUID->"ef8a1366-65c5-46a8-82b9-79e77ac5936b"],
+
+Cell["\<\
+A runnable tour of betweenness, equidistance, the Tarski substrate, the axiom \
+dashboard, and the two Tarski-only constructions.\
+\>", "Text",ExpressionUUID->"c1797e92-4476-4ebc-8bf4-529dc3238a74"],
+
+Cell["Setup", "Section",ExpressionUUID->"781a889b-094c-4485-8c4f-7a0e7c5d6e86"],
+
+Cell["Load the paclet and define a substrate panel.", "CodeText",ExpressionUUID->"e9c1855e-606e-4908-a858-e9c79901aef9"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",ExpressionUUID->"eac894ef-3f0e-4e8b-b77a-aaede662993c"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"substrate", "=", 
+   RowBox[{"Association", "[", 
+    RowBox[{
+     RowBox[{"\"\<Path\>\"", "\[Rule]", 
+      RowBox[{"PathGraph", "[", 
+       RowBox[{"Range", "[", "5", "]"}], "]"}]}], ",", 
+     RowBox[{"\"\<Cycle\>\"", "\[Rule]", 
+      RowBox[{"CycleGraph", "[", "6", "]"}]}], ",", 
+     RowBox[{"\"\<Grid\>\"", "\[Rule]", 
+      RowBox[{"GridGraph", "[", 
+       RowBox[{"{", 
+        RowBox[{"3", ",", "3"}], "}"}], "]"}]}], ",", 
+     RowBox[{"\"\<Cube\>\"", "\[Rule]", 
+      RowBox[{"HypercubeGraph", "[", "3", "]"}]}], ",", 
+     RowBox[{"\"\<Petersen\>\"", "\[Rule]", 
+      RowBox[{"PetersenGraph", "[", "]"}]}]}], "]"}]}], ";"}]], "Code",Express\
+ionUUID->"e5cc756f-918a-4a3b-8884-1ffa0c345906"],
+
+Cell["Primitive relations", "Section",ExpressionUUID->"57a9feec-a452-46e0-a710-f0814037f63c"],
+
+Cell["Betweenness and equidistance on small graphs.", "CodeText",ExpressionUUID->"13bb6f32-a647-4807-a336-8ea013670899"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"BetweennessQ", "[", 
+    RowBox[{
+     RowBox[{"CycleGraph", "[", "6", "]"}], ",", "1", ",", "2", ",", "4"}], 
+    "]"}], ",", 
+   RowBox[{"EquidistanceQ", "[", 
+    RowBox[{
+     RowBox[{"CycleGraph", "[", "6", "]"}], ",", "1", ",", "4", ",", "2", ",",
+      "5"}], "]"}]}], "}"}]], "Input",ExpressionUUID->"9d7804ea-5c51-4389-\
+9bc0-31a7ee7740bb"],
+
+Cell["Hypermatrix substrate", "Section",ExpressionUUID->"10a6d19c-febe-4b8b-9b78-28599500b6a2"],
+
+Cell["\<\
+Inspect the memoized Tarski bundle and one sparse tensor statistic.\
+\>", "CodeText",ExpressionUUID->"78711969-fe6f-40d5-b217-a2ad2a577f1d"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"Keys", "[", 
+    RowBox[{"TarskiStructure", "[", 
+     RowBox[{"HypercubeGraph", "[", "3", "]"}], "]"}], "]"}], ",", 
+   RowBox[{"Length", "[", 
+    RowBox[{
+     RowBox[{"TarskiBetweennessTensor", "[", 
+      RowBox[{"HypercubeGraph", "[", "3", "]"}], "]"}], 
+     "[", "\"\<NonzeroPositions\>\"", "]"}], "]"}]}], "}"}]], "Input",Expressi\
+onUUID->"437f0617-4d1f-4e60-b9f2-d21d15f5d658"],
+
+Cell["Axiom dashboard", "Section",ExpressionUUID->"095fe94d-1325-4e02-b068-3c70d2d45f1f"],
+
+Cell["Compare the dashboard on a grid and on the Petersen graph.", "CodeText",ExpressionUUID->"48e37665-d644-4023-afc7-12d25fb889d3"],
+
+Cell[BoxData[
+ RowBox[{"AssociationMap", "[", 
+  RowBox[{
+   RowBox[{"Quiet", "@*", "TarskiAxiomQ"}], ",", 
+   RowBox[{"Association", "[", 
+    RowBox[{
+     RowBox[{"\"\<Grid\>\"", "\[Rule]", 
+      RowBox[{"GridGraph", "[", 
+       RowBox[{"{", 
+        RowBox[{"3", ",", "3"}], "}"}], "]"}]}], ",", 
+     RowBox[{"\"\<Petersen\>\"", "\[Rule]", 
+      RowBox[{"PetersenGraph", "[", "]"}]}]}], "]"}]}], "]"}]], "Input",Expres\
+sionUUID->"c162751c-4a53-4f76-9004-11e6e286b03b"],
+
+Cell["Constructions", "Section",ExpressionUUID->"6e94c904-8f0c-416c-88be-ac1b80373ef6"],
+
+Cell["Compare the synthetic midpoint with the metric midpoint.", "CodeText",ExpressionUUID->"acbf1397-dc40-45c5-8ce5-19583fb1e4ed"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"FindTarskiMidpoint", "[", 
+    RowBox[{
+     RowBox[{"PathGraph", "[", 
+      RowBox[{"Range", "[", "5", "]"}], "]"}], ",", "1", ",", "4", ",", 
+     "All"}], "]"}], ",", 
+   RowBox[{"FindMidpoint", "[", 
+    RowBox[{
+     RowBox[{"PathGraph", "[", 
+      RowBox[{"Range", "[", "5", "]"}], "]"}], ",", "1", ",", "4", ",", 
+     "All"}], "]"}]}], "}"}]], "Input",ExpressionUUID->"0e3d5b92-9ada-4720-\
+bb17-be4add5c9768"],
+
+Cell["Reflect a point through another point on the cube.", "CodeText",ExpressionUUID->"529bcbed-9d35-4a9a-a136-e44d9d0b6af4"],
+
+Cell[BoxData[
+ RowBox[{"FindTarskiReflection", "[", 
+  RowBox[{
+   RowBox[{"HypercubeGraph", "[", "3", "]"}], ",", "1", ",", "2", ",", 
+   "All"}], "]"}]], "Input",ExpressionUUID->"71eccc0c-acdb-4dfc-b8f4-\
+c536d95957c7"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 93, 0, 70, "Title",ExpressionUUID->"ef8a1366-65c5-46a8-82b9-79e77ac5936b"],
+Cell[650, 22, 208, 3, 70, "Text",ExpressionUUID->"c1797e92-4476-4ebc-8bf4-529dc3238a74"],
+Cell[861, 27, 79, 0, 70, "Section",ExpressionUUID->"781a889b-094c-4485-8c4f-7a0e7c5d6e86"],
+Cell[943, 29, 120, 0, 70, "CodeText",ExpressionUUID->"e9c1855e-606e-4908-a858-e9c79901aef9"],
+Cell[1066, 31, 162, 2, 70, "Code",ExpressionUUID->"eac894ef-3f0e-4e8b-b77a-aaede662993c"],
+Cell[1231, 35, 744, 18, 70, "Code",ExpressionUUID->"e5cc756f-918a-4a3b-8884-1ffa0c345906"],
+Cell[1978, 55, 93, 0, 70, "Section",ExpressionUUID->"57a9feec-a452-46e0-a710-f0814037f63c"],
+Cell[2074, 57, 120, 0, 70, "CodeText",ExpressionUUID->"13bb6f32-a647-4807-a336-8ea013670899"],
+Cell[2197, 59, 401, 11, 70, "Input",ExpressionUUID->"9d7804ea-5c51-4389-9bc0-31a7ee7740bb"],
+Cell[2601, 72, 95, 0, 70, "Section",ExpressionUUID->"10a6d19c-febe-4b8b-9b78-28599500b6a2"],
+Cell[2699, 74, 150, 2, 70, "CodeText",ExpressionUUID->"78711969-fe6f-40d5-b217-a2ad2a577f1d"],
+Cell[2852, 78, 440, 11, 70, "Input",ExpressionUUID->"437f0617-4d1f-4e60-b9f2-d21d15f5d658"],
+Cell[3295, 91, 89, 0, 70, "Section",ExpressionUUID->"095fe94d-1325-4e02-b068-3c70d2d45f1f"],
+Cell[3387, 93, 133, 0, 70, "CodeText",ExpressionUUID->"48e37665-d644-4023-afc7-12d25fb889d3"],
+Cell[3523, 95, 477, 12, 70, "Input",ExpressionUUID->"c162751c-4a53-4f76-9004-11e6e286b03b"],
+Cell[4003, 109, 87, 0, 70, "Section",ExpressionUUID->"6e94c904-8f0c-416c-88be-ac1b80373ef6"],
+Cell[4093, 111, 131, 0, 70, "CodeText",ExpressionUUID->"acbf1397-dc40-45c5-8ce5-19583fb1e4ed"],
+Cell[4227, 113, 471, 13, 70, "Input",ExpressionUUID->"0e3d5b92-9ada-4720-bb17-be4add5c9768"],
+Cell[4701, 128, 125, 0, 70, "CodeText",ExpressionUUID->"529bcbed-9d35-4a9a-a136-e44d9d0b6af4"],
+Cell[4829, 130, 221, 5, 70, "Input",ExpressionUUID->"71eccc0c-acdb-4dfc-b8f4-c536d95957c7"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -86,37 +86,67 @@ VerificationTest[
   TestID -> "FindPerpendicular-spectral-stub"
 ]
 
-(* ===== FindBisector ===== *)
+(* ===== FindBisectingHyperplane ===== *)
 
+(* The bisector of 1 and 5 in PathGraph[5] is just {3}; removing it
+   disconnects 1 from 5 and is the only minimal hyperplane. *)
 VerificationTest[
-  FindBisector[PathGraph[Range[5]], 1, 5],
-  {3},
-  TestID -> "FindBisector-path-center"
+  FindBisectingHyperplane[PathGraph[Range[5]], 1, 5],
+  {{3}},
+  TestID -> "FindBisectingHyperplane-path-center"
 ]
 
 VerificationTest[
-  Sort @ FindBisector[CycleGraph[6], 1, 3],
-  Sort @ FindBisector[CycleGraph[6], {1, 3}],
-  TestID -> "FindBisector-list-form-equiv"
+  FindBisectingHyperplane[PathGraph[Range[5]], 1, 5, All],
+  FindBisectingHyperplane[PathGraph[Range[5]], {1, 5}, All],
+  TestID -> "FindBisectingHyperplane-list-form-equiv"
+]
+
+(* On the 3x3 grid, the antidiagonal {3, 5, 7} is the bisector of 1 and 9;
+   removing the entire antidiagonal is the only inclusion-minimal way to
+   disconnect them. *)
+VerificationTest[
+  FindBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All],
+  {{3, 5, 7}},
+  TestID -> "FindBisectingHyperplane-grid-antidiagonal"
+]
+
+(* PathGraph[6], 1 to 6 (odd distance): the strict bisector is empty,
+   so no hyperplane exists in the {0, 0} window. *)
+VerificationTest[
+  FindBisectingHyperplane[PathGraph[Range[6]], 1, 6, All],
+  {},
+  TestID -> "FindBisectingHyperplane-odd-distance-empty"
+]
+
+(* Widening to {-1, 1} thickens the bisector to {3, 4}; on a path each of
+   3 and 4 individually disconnects 1 from 6, giving two minimal
+   hyperplanes within the thickened bisector. *)
+VerificationTest[
+  Sort @ FindBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, All],
+  {{3}, {4}},
+  TestID -> "FindBisectingHyperplane-thickened-path"
+]
+
+(* CycleGraph[6], 1 to 4 (odd distance): the thickened {-1, 1} bisector
+   is {2, 3, 5, 6}; cutting either arc requires one vertex from {2, 3}
+   and one from {5, 6}, giving four minimal hyperplanes. *)
+VerificationTest[
+  Sort @ ( Sort /@ FindBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, All] ),
+  {{2, 5}, {2, 6}, {3, 5}, {3, 6}},
+  TestID -> "FindBisectingHyperplane-cycle-thickened"
 ]
 
 VerificationTest[
-  FindBisector[PathGraph[Range[5]], 1, 5, All],
-  {3},
-  TestID -> "FindBisector-all-matches-default"
+  Length @ FindBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, UpTo[2]],
+  2,
+  TestID -> "FindBisectingHyperplane-upto-soft"
 ]
 
 VerificationTest[
-  Length @ FindBisector[CycleGraph[6], 1, 3, UpTo[1]],
-  1,
-  TestID -> "FindBisector-upto-soft"
-]
-
-VerificationTest[
-  FindBisector[PathGraph[Range[5]], 1, 5, Method -> "Resistance"],
+  FindBisectingHyperplane[PathGraph[Range[5]], 1, 5, 5],
   $Failed,
-  {FindBisector::nyi},
-  TestID -> "FindBisector-resistance-stub"
+  TestID -> "FindBisectingHyperplane-strict-fails-when-too-few"
 ]
 
 (* ===== CompleteEquilateralTriangle ===== *)
@@ -144,6 +174,32 @@ VerificationTest[
   $Failed,
   {CompleteEquilateralTriangle::nyi},
   TestID -> "CompleteEquilateralTriangle-spectral-stub"
+]
+
+(* ===== GraphAngle ===== *)
+
+VerificationTest[
+  GraphAngle[CycleGraph[6], {1, 2, 3}],
+  4,
+  TestID -> "GraphAngle-cycle-local"
+]
+
+VerificationTest[
+  GraphAngle[PathGraph[Range[5]], {1, 3, 5}],
+  Infinity,
+  TestID -> "GraphAngle-path-infinite"
+]
+
+VerificationTest[
+  GraphAngle[CompleteGraph[4], {2, 1, 3}],
+  1,
+  TestID -> "GraphAngle-complete-graph"
+]
+
+VerificationTest[
+  GraphAngle[CycleGraph[6], {1, 2, 3}] == GraphAngle[CycleGraph[6], {3, 2, 1}],
+  True,
+  TestID -> "GraphAngle-symmetric"
 ]
 
 (* ===== SegmentLineAngle ===== *)

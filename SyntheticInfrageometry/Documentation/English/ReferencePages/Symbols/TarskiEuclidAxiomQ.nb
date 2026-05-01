@@ -1,0 +1,135 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5868,        126]
+NotebookOptionsPosition[      3574,         92]
+NotebookOutlinePosition[      3891,        106]
+CellTagsIndexPosition[      3848,        103]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["TarskiEuclidAxiomQ", "Title",ExpressionUUID->"da3b59c4-6702-4b0b-b313-98073fc72395"],
+
+Cell["\<\
+TarskiEuclidAxiomQ[graph] tests Tarski axiom A10 (Euclid's parallel-axiom \
+variant). Iteration-1 stub: returns Indeterminate and emits \
+TarskiEuclidAxiomQ::nyi.\
+\>", "Text",ExpressionUUID->"dd0cf572-c0ad-44c4-a237-abe32e188143"],
+
+Cell["Setup", "Section",ExpressionUUID->"042c6e25-ecc2-443d-9da8-7057c3aab0d8"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"b67fbfb3-c98b-43e0-ad69-8a5a36413ee5"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",ExpressionUUID->"7bde82b2-526b-4cf6-a9da-7d8f8ee405d6"],
+
+Cell["Usage", "Section",ExpressionUUID->"9f41eed1-c3a0-401c-a5a7-f6415a1c3e2d"],
+
+Cell["Evaluate the current iteration-1 stub on a path graph.", "CodeText",ExpressionUUID->"e406090a-6e8a-429f-ae8b-fa3913909842"],
+
+Cell[BoxData[
+ RowBox[{"Quiet", "[", 
+  RowBox[{"TarskiEuclidAxiomQ", "[", 
+   RowBox[{"PathGraph", "[", 
+    RowBox[{"Range", "[", "5", "]"}], "]"}], "]"}], "]"}]], "Input",Expression\
+UUID->"cf4eac7f-f269-4a70-9f84-901294fc6b0d"],
+
+Cell["Evaluate the same stub on a grid.", "CodeText",ExpressionUUID->"20fa4a27-d09a-43bd-97d4-de874a5dd958"],
+
+Cell[BoxData[
+ RowBox[{"Quiet", "[", 
+  RowBox[{"TarskiEuclidAxiomQ", "[", 
+   RowBox[{"GridGraph", "[", 
+    RowBox[{"{", 
+     RowBox[{"3", ",", "3"}], "}"}], "]"}], "]"}], "]"}]], "Input",ExpressionU\
+UID->"51d0fa83-fbb6-4727-a371-b1a281f333c8"],
+
+Cell["Examples", "Section",ExpressionUUID->"88f27ed3-7049-41d9-b4c4-657c08f2ee0c"],
+
+Cell["The dashboard also reports Indeterminate for Euclid.", "CodeText",ExpressionUUID->"c12f35f6-7685-41d1-9caa-fff374d51ab5"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"TarskiAxiomQ", "[", 
+   RowBox[{"PathGraph", "[", 
+    RowBox[{"Range", "[", "5", "]"}], "]"}], "]"}], "[", "\"\<Euclid\>\"", 
+  "]"}]], "Input",ExpressionUUID->"8d4a541d-3239-4e39-a045-f5371d1771c5"],
+
+Cell["Suppress the informational message while exploring.", "CodeText",ExpressionUUID->"9646df53-b47a-4672-9667-b0ad3e9f9d21"],
+
+Cell[BoxData[
+ RowBox[{"Quiet", "[", 
+  RowBox[{"TarskiEuclidAxiomQ", "[", 
+   RowBox[{"CycleGraph", "[", "6", "]"}], "]"}], "]"}]], "Input",ExpressionUUI\
+D->"5dc8f8c0-aab4-4575-a27e-d627fa8eff88"],
+
+Cell["See also", "Section",ExpressionUUID->"b3b46b38-83d9-446c-8e27-9aa2a4f3ca51"],
+
+Cell["BetweennessQ", "Item",ExpressionUUID->"e2657f82-b6c1-4fac-8d42-c75d193d5e75"],
+
+Cell["EquidistanceQ", "Item",ExpressionUUID->"de35dda8-bb54-4e64-ac4c-5d6759d9e80c"],
+
+Cell["TarskiStructure", "Item",ExpressionUUID->"abca8b65-7dc0-4c0f-9f63-bbd864090fca"],
+
+Cell["TarskiAxiomQ", "Item",ExpressionUUID->"79869fc1-9a93-444b-8290-6fa1b95988b6"],
+
+Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"9fc76bf6-a589-410a-a94f-d8c67885394d"],
+
+Cell["FindTarskiReflection", "Item",ExpressionUUID->"adca31c3-72bf-4c13-8b48-6a899322fb1b"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"4ef7bc44-b857-48fb-9be3-0179213d3cf6"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"da3b59c4-6702-4b0b-b313-98073fc72395"],
+Cell[647, 22, 241, 4, 70, "Text",ExpressionUUID->"dd0cf572-c0ad-44c4-a237-abe32e188143"],
+Cell[891, 28, 79, 0, 70, "Section",ExpressionUUID->"042c6e25-ecc2-443d-9da8-7057c3aab0d8"],
+Cell[973, 30, 132, 0, 70, "CodeText",ExpressionUUID->"b67fbfb3-c98b-43e0-ad69-8a5a36413ee5"],
+Cell[1108, 32, 162, 2, 70, "Code",ExpressionUUID->"7bde82b2-526b-4cf6-a9da-7d8f8ee405d6"],
+Cell[1273, 36, 79, 0, 70, "Section",ExpressionUUID->"9f41eed1-c3a0-401c-a5a7-f6415a1c3e2d"],
+Cell[1355, 38, 129, 0, 70, "CodeText",ExpressionUUID->"e406090a-6e8a-429f-ae8b-fa3913909842"],
+Cell[1487, 40, 231, 5, 70, "Input",ExpressionUUID->"cf4eac7f-f269-4a70-9f84-901294fc6b0d"],
+Cell[1721, 47, 108, 0, 70, "CodeText",ExpressionUUID->"20fa4a27-d09a-43bd-97d4-de874a5dd958"],
+Cell[1832, 49, 248, 6, 70, "Input",ExpressionUUID->"51d0fa83-fbb6-4727-a371-b1a281f333c8"],
+Cell[2083, 57, 82, 0, 70, "Section",ExpressionUUID->"88f27ed3-7049-41d9-b4c4-657c08f2ee0c"],
+Cell[2168, 59, 127, 0, 70, "CodeText",ExpressionUUID->"c12f35f6-7685-41d1-9caa-fff374d51ab5"],
+Cell[2298, 61, 235, 5, 70, "Input",ExpressionUUID->"8d4a541d-3239-4e39-a045-f5371d1771c5"],
+Cell[2536, 68, 126, 0, 70, "CodeText",ExpressionUUID->"9646df53-b47a-4672-9667-b0ad3e9f9d21"],
+Cell[2665, 70, 198, 4, 70, "Input",ExpressionUUID->"5dc8f8c0-aab4-4575-a27e-d627fa8eff88"],
+Cell[2866, 76, 82, 0, 70, "Section",ExpressionUUID->"b3b46b38-83d9-446c-8e27-9aa2a4f3ca51"],
+Cell[2951, 78, 83, 0, 70, "Item",ExpressionUUID->"e2657f82-b6c1-4fac-8d42-c75d193d5e75"],
+Cell[3037, 80, 84, 0, 70, "Item",ExpressionUUID->"de35dda8-bb54-4e64-ac4c-5d6759d9e80c"],
+Cell[3124, 82, 86, 0, 70, "Item",ExpressionUUID->"abca8b65-7dc0-4c0f-9f63-bbd864090fca"],
+Cell[3213, 84, 83, 0, 70, "Item",ExpressionUUID->"79869fc1-9a93-444b-8290-6fa1b95988b6"],
+Cell[3299, 86, 89, 0, 70, "Item",ExpressionUUID->"9fc76bf6-a589-410a-a94f-d8c67885394d"],
+Cell[3391, 88, 91, 0, 70, "Item",ExpressionUUID->"adca31c3-72bf-4c13-8b48-6a899322fb1b"],
+Cell[3485, 90, 85, 0, 70, "Item",ExpressionUUID->"4ef7bc44-b857-48fb-9be3-0179213d3cf6"]
+}
+]
+*)
+
+(* End of internal cache information *)

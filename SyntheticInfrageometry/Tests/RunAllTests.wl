@@ -16,6 +16,9 @@ Print[TestReport[FileNameJoin[{$testDir, "EuclideanPredicatesTests.wlt"}]]]
 Print["Running EuclideanConstructionsTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "EuclideanConstructionsTests.wlt"}]]]
 
+Print["Running PathSpaceTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "PathSpaceTests.wlt"}]]]
+
 Print["Running MetricAlgebraTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "MetricAlgebraTests.wlt"}]]]
 
@@ -33,6 +36,15 @@ Print[TestReport[FileNameJoin[{$testDir, "ProjectivePostulatesTests.wlt"}]]]
 
 Print["Running ProjectivePredicatesTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "ProjectivePredicatesTests.wlt"}]]]
+
+Print["Running TarskiPostulatesTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "TarskiPostulatesTests.wlt"}]]]
+
+Print["Running TarskiPredicatesTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "TarskiPredicatesTests.wlt"}]]]
+
+Print["Running TarskiConstructionsTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "TarskiConstructionsTests.wlt"}]]]
 
 Print["Running TropicalPostulatesTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "TropicalPostulatesTests.wlt"}]]]

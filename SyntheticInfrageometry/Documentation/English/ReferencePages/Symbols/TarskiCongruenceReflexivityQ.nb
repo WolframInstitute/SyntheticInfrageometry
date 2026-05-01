@@ -1,0 +1,131 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5763,        122]
+NotebookOptionsPosition[      3468,         88]
+NotebookOutlinePosition[      3785,        102]
+CellTagsIndexPosition[      3742,         99]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["TarskiCongruenceReflexivityQ", "Title",ExpressionUUID->"b9e47a29-5664-4100-9bb5-1bea8ce6b44f"],
+
+Cell["\<\
+TarskiCongruenceReflexivityQ[graph] tests Tarski axiom A1: for all a, b, ab \
+== ba. Always True on undirected simple graphs.\
+\>", "Text",ExpressionUUID->"a8ebc876-36b6-4c96-918d-f48d68c2fb6f"],
+
+Cell["Setup", "Section",ExpressionUUID->"635a7434-20df-4de8-b030-f990205d4f75"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"83189d95-bea4-4a32-baf0-f783ff4b0132"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",ExpressionUUID->"3159a74f-4ef3-47e5-bb62-1dbec82a7a14"],
+
+Cell["Usage", "Section",ExpressionUUID->"ccf8cab3-060f-4e70-9a32-be0f21b340c9"],
+
+Cell["Evaluate the axiom predicate on a path graph.", "CodeText",ExpressionUUID->"f9d1b2d3-8597-4ac9-92d3-4325f9e278e2"],
+
+Cell[BoxData[
+ RowBox[{"TarskiCongruenceReflexivityQ", "[", 
+  RowBox[{"PathGraph", "[", 
+   RowBox[{"Range", "[", "5", "]"}], "]"}], "]"}]], "Input",ExpressionUUID->\
+"280f0fa7-7186-4d1c-9061-9d41d6f7527d"],
+
+Cell["Evaluate the same predicate on a second substrate.", "CodeText",ExpressionUUID->"7bd89abc-0f9f-426f-a8f6-be720abd70a3"],
+
+Cell[BoxData[
+ RowBox[{"TarskiCongruenceReflexivityQ", "[", 
+  RowBox[{
+  "tarskiSecondExample", "[", "\"\<TarskiCongruenceReflexivityQ\>\"", "]"}], 
+  "]"}]], "Input",ExpressionUUID->"58c10f01-9ec3-47be-bf03-551a8637a8b7"],
+
+Cell["Examples", "Section",ExpressionUUID->"58bd6ff1-23ef-4852-9dd5-0d4cdd045229"],
+
+Cell["Compare with the dashboard entry.", "CodeText",ExpressionUUID->"311330c7-969c-48ad-9444-f34e7a0f28d4"],
+
+Cell[BoxData[
+ RowBox[{"TarskiAxiomQ", "[", 
+  RowBox[{"PathGraph", "[", 
+   RowBox[{"Range", "[", "5", "]"}], "]"}], "]"}]], "Input",ExpressionUUID->\
+"be92ae7c-8830-43d4-ae0f-f21246f4f835"],
+
+Cell["Evaluate the predicate on a grid as a second check.", "CodeText",ExpressionUUID->"a837ca2d-7976-47a1-91f2-8768f3d842da"],
+
+Cell[BoxData[
+ RowBox[{"TarskiCongruenceReflexivityQ", "[", 
+  RowBox[{"GridGraph", "[", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", "3"}], "}"}], "]"}], "]"}]], "Input",ExpressionUUID->\
+"fea9e03b-c0e5-4e43-80e9-1c95b71c8104"],
+
+Cell["See also", "Section",ExpressionUUID->"138eb859-c2e1-40f5-9815-32e8dd66bab1"],
+
+Cell["BetweennessQ", "Item",ExpressionUUID->"7c8a0158-d964-402d-b518-a66557741b10"],
+
+Cell["EquidistanceQ", "Item",ExpressionUUID->"ebce1a4c-afdb-4983-8a02-b54d21367cf7"],
+
+Cell["TarskiStructure", "Item",ExpressionUUID->"e664e215-2801-4902-b642-bc6a25a015b0"],
+
+Cell["TarskiAxiomQ", "Item",ExpressionUUID->"3dcf40ce-4b14-40a0-bbcc-f9bc7a69563c"],
+
+Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"84f4275d-052c-4926-9a09-bed32414265b"],
+
+Cell["FindTarskiReflection", "Item",ExpressionUUID->"a3690344-c20d-4fda-a348-5e5d51652090"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"5798cf72-e174-4d4f-99f0-92092294345f"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 100, 0, 70, "Title",ExpressionUUID->"b9e47a29-5664-4100-9bb5-1bea8ce6b44f"],
+Cell[657, 22, 204, 3, 70, "Text",ExpressionUUID->"a8ebc876-36b6-4c96-918d-f48d68c2fb6f"],
+Cell[864, 27, 79, 0, 70, "Section",ExpressionUUID->"635a7434-20df-4de8-b030-f990205d4f75"],
+Cell[946, 29, 132, 0, 70, "CodeText",ExpressionUUID->"83189d95-bea4-4a32-baf0-f783ff4b0132"],
+Cell[1081, 31, 162, 2, 70, "Code",ExpressionUUID->"3159a74f-4ef3-47e5-bb62-1dbec82a7a14"],
+Cell[1246, 35, 79, 0, 70, "Section",ExpressionUUID->"ccf8cab3-060f-4e70-9a32-be0f21b340c9"],
+Cell[1328, 37, 120, 0, 70, "CodeText",ExpressionUUID->"f9d1b2d3-8597-4ac9-92d3-4325f9e278e2"],
+Cell[1451, 39, 207, 4, 70, "Input",ExpressionUUID->"280f0fa7-7186-4d1c-9061-9d41d6f7527d"],
+Cell[1661, 45, 125, 0, 70, "CodeText",ExpressionUUID->"7bd89abc-0f9f-426f-a8f6-be720abd70a3"],
+Cell[1789, 47, 223, 4, 70, "Input",ExpressionUUID->"58c10f01-9ec3-47be-bf03-551a8637a8b7"],
+Cell[2015, 53, 82, 0, 70, "Section",ExpressionUUID->"58bd6ff1-23ef-4852-9dd5-0d4cdd045229"],
+Cell[2100, 55, 108, 0, 70, "CodeText",ExpressionUUID->"311330c7-969c-48ad-9444-f34e7a0f28d4"],
+Cell[2211, 57, 191, 4, 70, "Input",ExpressionUUID->"be92ae7c-8830-43d4-ae0f-f21246f4f835"],
+Cell[2405, 63, 126, 0, 70, "CodeText",ExpressionUUID->"a837ca2d-7976-47a1-91f2-8768f3d842da"],
+Cell[2534, 65, 223, 5, 70, "Input",ExpressionUUID->"fea9e03b-c0e5-4e43-80e9-1c95b71c8104"],
+Cell[2760, 72, 82, 0, 70, "Section",ExpressionUUID->"138eb859-c2e1-40f5-9815-32e8dd66bab1"],
+Cell[2845, 74, 83, 0, 70, "Item",ExpressionUUID->"7c8a0158-d964-402d-b518-a66557741b10"],
+Cell[2931, 76, 84, 0, 70, "Item",ExpressionUUID->"ebce1a4c-afdb-4983-8a02-b54d21367cf7"],
+Cell[3018, 78, 86, 0, 70, "Item",ExpressionUUID->"e664e215-2801-4902-b642-bc6a25a015b0"],
+Cell[3107, 80, 83, 0, 70, "Item",ExpressionUUID->"3dcf40ce-4b14-40a0-bbcc-f9bc7a69563c"],
+Cell[3193, 82, 89, 0, 70, "Item",ExpressionUUID->"84f4275d-052c-4926-9a09-bed32414265b"],
+Cell[3285, 84, 91, 0, 70, "Item",ExpressionUUID->"a3690344-c20d-4fda-a348-5e5d51652090"],
+Cell[3379, 86, 85, 0, 70, "Item",ExpressionUUID->"5798cf72-e174-4d4f-99f0-92092294345f"]
+}
+]
+*)
+
+(* End of internal cache information *)

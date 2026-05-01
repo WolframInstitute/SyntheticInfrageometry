@@ -1,0 +1,139 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5891,        130]
+NotebookOptionsPosition[      3686,         97]
+NotebookOutlinePosition[      4003,        111]
+CellTagsIndexPosition[      3960,        108]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["TarskiAxiomQ", "Title",ExpressionUUID->"f5fca3c9-a2a2-4f57-bd33-55c7de57323c"],
+
+Cell["\<\
+TarskiAxiomQ[graph] returns an Association keyed by descriptive axiom names \
+with the per-axiom result, composing all eleven Tarski*Q predicates into a \
+dashboard.\
+\>", "Text",ExpressionUUID->"f35ae874-f067-4d37-8ba5-61f5a72ff48d"],
+
+Cell["Setup", "Section",ExpressionUUID->"33334b54-1896-4a10-80e3-2b2a885801c0"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"79c0bc8f-b066-4172-9621-994af96723b0"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",ExpressionUUID->"32c748de-c112-46f2-b8d7-6b0bafb530ca"],
+
+Cell["Usage", "Section",ExpressionUUID->"4d19398b-537d-4fc9-b5c8-afaffc7c32ea"],
+
+Cell["Return the full axiom dashboard on a grid.", "CodeText",ExpressionUUID->"f9e4585d-4776-485f-bc3c-4bd858c2b1fd"],
+
+Cell[BoxData[
+ RowBox[{"Quiet", "[", 
+  RowBox[{"TarskiAxiomQ", "[", 
+   RowBox[{"GridGraph", "[", 
+    RowBox[{"{", 
+     RowBox[{"3", ",", "3"}], "}"}], "]"}], "]"}], "]"}]], "Input",ExpressionU\
+UID->"bb666018-b724-4863-a33b-24c8dd1898d5"],
+
+Cell["Return the dashboard on the Petersen graph.", "CodeText",ExpressionUUID->"343e3b75-55ed-420a-af18-b63d9583f872"],
+
+Cell[BoxData[
+ RowBox[{"Quiet", "[", 
+  RowBox[{"TarskiAxiomQ", "[", 
+   RowBox[{"PetersenGraph", "[", "]"}], "]"}], "]"}]], "Input",ExpressionUUID->\
+"f4d7d70a-3169-4a63-a75b-12a5cd9d24f3"],
+
+Cell["Examples", "Section",ExpressionUUID->"14f713c0-3f1d-4ba0-9081-224488bc9fac"],
+
+Cell["Extract one named entry from the dashboard.", "CodeText",ExpressionUUID->"d9010bec-f24e-4026-8450-bda3e6e796d1"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"TarskiAxiomQ", "[", 
+   RowBox[{"PathGraph", "[", 
+    RowBox[{"Range", "[", "5", "]"}], "]"}], "]"}], 
+  "[", "\"\<SegmentConstruction\>\"", "]"}]], "Input",ExpressionUUID->\
+"0cc070b0-7166-44fc-995d-91b5f02a7e7d"],
+
+Cell["Compare two dashboards side by side.", "CodeText",ExpressionUUID->"15203498-b481-4a7b-ac0b-dde0c44cd3d4"],
+
+Cell[BoxData[
+ RowBox[{"AssociationMap", "[", 
+  RowBox[{
+   RowBox[{"Quiet", "@*", "TarskiAxiomQ"}], ",", 
+   RowBox[{"Association", "[", 
+    RowBox[{
+     RowBox[{"\"\<Path\>\"", "\[Rule]", 
+      RowBox[{"PathGraph", "[", 
+       RowBox[{"Range", "[", "5", "]"}], "]"}]}], ",", 
+     RowBox[{"\"\<Petersen\>\"", "\[Rule]", 
+      RowBox[{"PetersenGraph", "[", "]"}]}]}], "]"}]}], "]"}]], "Input",Expres\
+sionUUID->"78f8997b-4333-4f7d-b61a-81b9b310d73a"],
+
+Cell["See also", "Section",ExpressionUUID->"27ccc3a6-e4a9-419d-9ee9-279972487c9e"],
+
+Cell["BetweennessQ", "Item",ExpressionUUID->"93da1736-8d98-4122-b0b4-c2fe08a8eb96"],
+
+Cell["EquidistanceQ", "Item",ExpressionUUID->"c4e4f87c-5680-4b22-af63-75fb67ad472d"],
+
+Cell["TarskiStructure", "Item",ExpressionUUID->"977504ad-819a-4a83-8a30-c5075cf7d476"],
+
+Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"e0060f55-e5b8-4bc6-afa4-6c58e8acc03e"],
+
+Cell["FindTarskiReflection", "Item",ExpressionUUID->"3b999847-1b68-4af9-8379-80f8b8edd488"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"0c6cc862-ab73-4a07-b5d1-db2663f6527a"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"f5fca3c9-a2a2-4f57-bd33-55c7de57323c"],
+Cell[641, 22, 244, 4, 70, "Text",ExpressionUUID->"f35ae874-f067-4d37-8ba5-61f5a72ff48d"],
+Cell[888, 28, 79, 0, 70, "Section",ExpressionUUID->"33334b54-1896-4a10-80e3-2b2a885801c0"],
+Cell[970, 30, 132, 0, 70, "CodeText",ExpressionUUID->"79c0bc8f-b066-4172-9621-994af96723b0"],
+Cell[1105, 32, 162, 2, 70, "Code",ExpressionUUID->"32c748de-c112-46f2-b8d7-6b0bafb530ca"],
+Cell[1270, 36, 79, 0, 70, "Section",ExpressionUUID->"4d19398b-537d-4fc9-b5c8-afaffc7c32ea"],
+Cell[1352, 38, 117, 0, 70, "CodeText",ExpressionUUID->"f9e4585d-4776-485f-bc3c-4bd858c2b1fd"],
+Cell[1472, 40, 242, 6, 70, "Input",ExpressionUUID->"bb666018-b724-4863-a33b-24c8dd1898d5"],
+Cell[1717, 48, 118, 0, 70, "CodeText",ExpressionUUID->"343e3b75-55ed-420a-af18-b63d9583f872"],
+Cell[1838, 50, 190, 4, 70, "Input",ExpressionUUID->"f4d7d70a-3169-4a63-a75b-12a5cd9d24f3"],
+Cell[2031, 56, 82, 0, 70, "Section",ExpressionUUID->"14f713c0-3f1d-4ba0-9081-224488bc9fac"],
+Cell[2116, 58, 118, 0, 70, "CodeText",ExpressionUUID->"d9010bec-f24e-4026-8450-bda3e6e796d1"],
+Cell[2237, 60, 250, 6, 70, "Input",ExpressionUUID->"0cc070b0-7166-44fc-995d-91b5f02a7e7d"],
+Cell[2490, 68, 111, 0, 70, "CodeText",ExpressionUUID->"15203498-b481-4a7b-ac0b-dde0c44cd3d4"],
+Cell[2604, 70, 457, 11, 70, "Input",ExpressionUUID->"78f8997b-4333-4f7d-b61a-81b9b310d73a"],
+Cell[3064, 83, 82, 0, 70, "Section",ExpressionUUID->"27ccc3a6-e4a9-419d-9ee9-279972487c9e"],
+Cell[3149, 85, 83, 0, 70, "Item",ExpressionUUID->"93da1736-8d98-4122-b0b4-c2fe08a8eb96"],
+Cell[3235, 87, 84, 0, 70, "Item",ExpressionUUID->"c4e4f87c-5680-4b22-af63-75fb67ad472d"],
+Cell[3322, 89, 86, 0, 70, "Item",ExpressionUUID->"977504ad-819a-4a83-8a30-c5075cf7d476"],
+Cell[3411, 91, 89, 0, 70, "Item",ExpressionUUID->"e0060f55-e5b8-4bc6-afa4-6c58e8acc03e"],
+Cell[3503, 93, 91, 0, 70, "Item",ExpressionUUID->"3b999847-1b68-4af9-8379-80f8b8edd488"],
+Cell[3597, 95, 85, 0, 70, "Item",ExpressionUUID->"0c6cc862-ab73-4a07-b5d1-db2663f6527a"]
+}
+]
+*)
+
+(* End of internal cache information *)

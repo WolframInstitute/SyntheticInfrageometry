@@ -63,39 +63,23 @@ FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 (* A segment between p1 and p2 is a geodesic vertex sequence
    (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2) and consecutive vi
-   adjacent.  Without "Select": count = 1 returns a single shortest path
-   via the built-in FindShortestPath; count > 1 (or UpTo[n] / All) enumerates
-   via the built-in FindPath at exact length d.  With a "Select" filter
-   (a path-space-metric chooser), a pool of geodesics (capped by
-   "MaxShortestPaths") is enumerated by FindPath, the filter is applied,
-   and the result is capped by count. *)
-
-Options[ FindSegment ] = { "Select" -> None, "MaxShortestPaths" -> All };
+   adjacent.  Count = 1 takes the built-in FindShortestPath; count > 1
+   (or UpTo[n] / All) enumerates via FindPath at exact length d.  Pipe
+   the result through CentralPaths / EmbeddingClosestPaths / ... to
+   filter by a path-space metric. *)
 
 FindSegment[ graph_Graph, p1_, p2_,
-    count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
-  Module[ { selector, d, paths, context, n },
-    selector = OptionValue[ "Select" ];
+    count : (_Integer | UpTo[ _Integer ] | All) : 1 ] :=
+  Module[ { d, paths },
     If[ p1 === p2, Return[ { } ] ];
-    n = countLimit[ count ];
-    paths = If[ selector === None,
-      If[ n === 1,
-        With[ { path = FindShortestPath[ graph, p1, p2 ] },
-          If[ path === { }, { }, { path } ]
-        ],
-        d = GraphDistance[ graph, p1, p2 ];
-        If[ d === Infinity, { },
-          FindPath[ graph, p1, p2, { d }, count /. UpTo[ k_ ] :> k ]
-        ]
+    paths = If[ count === 1,
+      With[ { path = FindShortestPath[ graph, p1, p2 ] },
+        If[ path === { }, { }, { path } ]
       ],
       d = GraphDistance[ graph, p1, p2 ];
-      If[ d === Infinity, Return[ { } ] ];
-      context = <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |>;
-      takeUpTo[
-        applySelect[ graph,
-          FindPath[ graph, p1, p2, { d }, OptionValue[ "MaxShortestPaths" ] ],
-          selector, context ],
-        n ]
+      If[ d === Infinity, { },
+        FindPath[ graph, p1, p2, { d }, count /. UpTo[ k_ ] :> k ]
+      ]
     ];
     If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
   ]
@@ -113,10 +97,10 @@ FindSegment[ graph_Graph, { p1_, p2_ }, args___ ] :=
    extensions; "Maximality" -> "Diameter" further restricts to those whose
    length equals GraphDiameter[g]. *)
 
-Options[ FindLine ] = { "Select" -> None, "Maximality" -> "Extension" };
+Options[ FindLine ] = { "Maximality" -> "Extension" };
 
 FindLine[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
-  Module[ { geodesics, allExtensions, context, diam },
+  Module[ { geodesics, allExtensions, diam },
     geodesics = allGeodesics[ graph, p1, p2 ];
     allExtensions = Union @ Flatten[
       findLineExtensions[ graph, # ] & /@ geodesics, 1 ];
@@ -124,8 +108,7 @@ FindLine[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] /; MemberQ[ Vert
       diam = GraphDiameter[ graph ];
       allExtensions = Select[ allExtensions, line |-> Length[ line ] - 1 == diam ]
     ];
-    context = <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |>;
-    applySelect[ graph, allExtensions, OptionValue[ "Select" ], context ]
+    allExtensions
   ]
 
 FindLine[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
@@ -175,10 +158,10 @@ findLineExtensions[ graph_Graph, segment_List ] :=
    "SeparatingCycle" further restricts to those that form a cycle in the
    level-surface subgraph (the 2D-style spheres). *)
 
-Options[ FindSphere ] = { "Select" -> None, Method -> "Metric" };
+Options[ FindSphere ] = { Method -> "Metric" };
 
 FindSphere[ graph_Graph, p_, r_, All, opts : OptionsPattern[] ] :=
-  Module[ { method, range, levelSet, radius, levelGraph, allCycles, vertexCycles, separators, context },
+  Module[ { method, range, levelSet, radius, levelGraph, allCycles, vertexCycles },
     method = OptionValue[ Method ];
     range = Replace[ r, d_?NumericQ :> { d, d } ];
     levelSet = Select[ VertexList[ graph ],
@@ -187,17 +170,13 @@ FindSphere[ graph_Graph, p_, r_, All, opts : OptionsPattern[] ] :=
     Switch[ method,
       "Metric", { levelSet },
       "SeparatingGraph",
-        separators = FindMinimalSeparatingSubgraphs[ graph, levelSet, p, radius ];
-        context = <| "Cyclic" -> False, "Center" -> p, "Radius" -> radius |>;
-        applySelect[ graph, separators, OptionValue[ "Select" ], context ],
+        FindMinimalSeparatingSubgraphs[ graph, levelSet, p, radius ],
       "SeparatingCycle",
         levelGraph = Subgraph[ graph, levelSet ];
         allCycles = FindCycle[ levelGraph, Infinity, All ];
         If[ allCycles === {}, Return[ {} ] ];
         vertexCycles = (First /@ #) & /@ allCycles;
-        vertexCycles = FindSeparatingCycles[ graph, vertexCycles, p, radius ];
-        context = <| "Cyclic" -> True, "Center" -> p, "Radius" -> radius |>;
-        applySelect[ graph, vertexCycles, OptionValue[ "Select" ], context ],
+        FindSeparatingCycles[ graph, vertexCycles, p, radius ],
       _, $Failed
     ]
   ]

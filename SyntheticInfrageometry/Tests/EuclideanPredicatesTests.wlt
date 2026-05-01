@@ -110,6 +110,34 @@ VerificationTest[
   TestID -> "ParallelQ-matrix-form"
 ]
 
+(* ===== SeparatesQ ===== *)
+
+VerificationTest[
+  SeparatesQ[PathGraph[Range[5]], {3}, 1, 5],
+  True,
+  TestID -> "SeparatesQ-path-center"
+]
+
+VerificationTest[
+  SeparatesQ[PathGraph[Range[5]], {2}, 4, 5],
+  False,
+  TestID -> "SeparatesQ-path-non-separating"
+]
+
+VerificationTest[
+  SeparatesQ[PathGraph[Range[5]], {1}, 1, 5],
+  False,
+  TestID -> "SeparatesQ-endpoint-deletion-false"
+]
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    AllTrue[FindBisectingHyperplane[g, 1, 5, All], h |-> SeparatesQ[g, h, 1, 5]]
+  ],
+  True,
+  TestID -> "SeparatesQ-bisecting-hyperplane-path"
+]
+
 (* ===== UniqueSegmentQ ===== *)
 
 VerificationTest[

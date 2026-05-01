@@ -1,0 +1,107 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      4694,         98]
+NotebookOptionsPosition[      2697,         67]
+NotebookOutlinePosition[      3014,         81]
+CellTagsIndexPosition[      2971,         78]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["SyntheticInfrageometry", "Title",ExpressionUUID->"69ad0cb3-eb6c-420c-b9d3-e1d78279d9d0"],
+
+Cell["\<\
+SyntheticInfrageometry organizes Euclidean, path-space, Tarski, projective, \
+tropical, and scene-building layers around multivalued constructions on \
+graphs. This guide points to the main entry points for the newly documented \
+Euclidean, PathSpace, and Tarski surfaces.\
+\>", "Text",ExpressionUUID->"57b97723-545f-40b0-ac81-2dad046083a5"],
+
+Cell["Setup", "Section",ExpressionUUID->"94a588ab-59c5-4d23-92d5-f438fabb3169"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"f8b7e4cf-76dd-4d66-8e97-7b4c8d265904"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",ExpressionUUID->"2666702e-a5ec-4db3-a678-1a72f52ec3b5"],
+
+Cell["Guides", "Section",ExpressionUUID->"bc0e2639-54a3-4c88-9390-0a6f46894946"],
+
+Cell["EuclideanLayerGuide", "Item",ExpressionUUID->"fbd39613-4dc2-4954-8f92-140087d60c69"],
+
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"6ebb920b-3ba2-45fa-b9af-8e94aafdeb2b"],
+
+Cell["TarskiLayerGuide", "Item",ExpressionUUID->"30ac9769-3f8c-4b49-baa9-9b908440decd"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"9b02bd39-4470-4206-a7ef-46e515c094fe"],
+
+Cell["EuclideanLayerTutorial", "Item",ExpressionUUID->"12669db4-2269-479d-83dd-809e67ecbdaa"],
+
+Cell["PathSpaceTutorial", "Item",ExpressionUUID->"2e5e7e5a-b956-4f87-9d03-93afc59763d0"],
+
+Cell["TarskiLayerTutorial", "Item",ExpressionUUID->"0a3bfef8-affc-41da-94dc-c292534fad9b"],
+
+Cell["Core symbols", "Section",ExpressionUUID->"86468590-1a34-4075-a05e-33f5b5983186"],
+
+Cell["InfraSceneHighlight", "Item",ExpressionUUID->"3ace05d6-964f-490e-9cc2-9f097feab24f"],
+
+Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"87d97361-ace4-4204-98cf-e2d3c5505efb"],
+
+Cell["CentralPaths", "Item",ExpressionUUID->"34e2ff12-4665-4769-8f8b-7627fcc5eaec"],
+
+Cell["CentralCycles", "Item",ExpressionUUID->"40ac54e3-0c8e-4d7c-a486-e4ef3ec0f52e"],
+
+Cell["TarskiAxiomQ", "Item",ExpressionUUID->"0593f604-0788-42fb-a80c-f640ac04242c"],
+
+Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"d039c1bf-c997-4100-ad3e-b86b6ca1e6dc"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 94, 0, 70, "Title",ExpressionUUID->"69ad0cb3-eb6c-420c-b9d3-e1d78279d9d0"],
+Cell[651, 22, 351, 5, 70, "Text",ExpressionUUID->"57b97723-545f-40b0-ac81-2dad046083a5"],
+Cell[1005, 29, 79, 0, 70, "Section",ExpressionUUID->"94a588ab-59c5-4d23-92d5-f438fabb3169"],
+Cell[1087, 31, 91, 0, 70, "CodeText",ExpressionUUID->"f8b7e4cf-76dd-4d66-8e97-7b4c8d265904"],
+Cell[1181, 33, 162, 2, 70, "Code",ExpressionUUID->"2666702e-a5ec-4db3-a678-1a72f52ec3b5"],
+Cell[1346, 37, 80, 0, 70, "Section",ExpressionUUID->"bc0e2639-54a3-4c88-9390-0a6f46894946"],
+Cell[1429, 39, 90, 0, 70, "Item",ExpressionUUID->"fbd39613-4dc2-4954-8f92-140087d60c69"],
+Cell[1522, 41, 85, 0, 70, "Item",ExpressionUUID->"6ebb920b-3ba2-45fa-b9af-8e94aafdeb2b"],
+Cell[1610, 43, 87, 0, 70, "Item",ExpressionUUID->"30ac9769-3f8c-4b49-baa9-9b908440decd"],
+Cell[1700, 45, 83, 0, 70, "Section",ExpressionUUID->"9b02bd39-4470-4206-a7ef-46e515c094fe"],
+Cell[1786, 47, 93, 0, 70, "Item",ExpressionUUID->"12669db4-2269-479d-83dd-809e67ecbdaa"],
+Cell[1882, 49, 88, 0, 70, "Item",ExpressionUUID->"2e5e7e5a-b956-4f87-9d03-93afc59763d0"],
+Cell[1973, 51, 90, 0, 70, "Item",ExpressionUUID->"0a3bfef8-affc-41da-94dc-c292534fad9b"],
+Cell[2066, 53, 86, 0, 70, "Section",ExpressionUUID->"86468590-1a34-4075-a05e-33f5b5983186"],
+Cell[2155, 55, 90, 0, 70, "Item",ExpressionUUID->"3ace05d6-964f-490e-9cc2-9f097feab24f"],
+Cell[2248, 57, 94, 0, 70, "Item",ExpressionUUID->"87d97361-ace4-4204-98cf-e2d3c5505efb"],
+Cell[2345, 59, 83, 0, 70, "Item",ExpressionUUID->"34e2ff12-4665-4769-8f8b-7627fcc5eaec"],
+Cell[2431, 61, 84, 0, 70, "Item",ExpressionUUID->"40ac54e3-0c8e-4d7c-a486-e4ef3ec0f52e"],
+Cell[2518, 63, 83, 0, 70, "Item",ExpressionUUID->"0593f604-0788-42fb-a80c-f640ac04242c"],
+Cell[2604, 65, 89, 0, 70, "Item",ExpressionUUID->"d039c1bf-c997-4100-ad3e-b86b6ca1e6dc"]
+}
+]
+*)
+
+(* End of internal cache information *)

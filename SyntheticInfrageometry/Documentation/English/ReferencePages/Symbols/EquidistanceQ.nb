@@ -1,0 +1,141 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5837,        132]
+NotebookOptionsPosition[      3632,         99]
+NotebookOutlinePosition[      3949,        113]
+CellTagsIndexPosition[      3906,        110]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["EquidistanceQ", "Title",ExpressionUUID->"2c56872d-a076-4ee6-88e1-12dbe6af3ca6"],
+
+Cell["\<\
+EquidistanceQ[graph, a, b, c, d] tests Tarski's equidistance ab == cd: d(a, \
+b) == d(c, d).\
+\>", "Text",ExpressionUUID->"ba0b4553-a9b4-4bbb-ad48-a7e059d4a70c"],
+
+Cell["Setup", "Section",ExpressionUUID->"e7ed919d-c52e-457a-9172-06c97daceaee"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"2407c015-fb55-48be-9fbc-5f500444b31b"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",ExpressionUUID->"25f927ce-8e06-4d10-824d-05701967fcfc"],
+
+Cell["Usage", "Section",ExpressionUUID->"04736e85-4103-4a19-87b2-dc6e1cc65453"],
+
+Cell["\<\
+Test whether two unordered pairs have the same graph distance.\
+\>", "CodeText",ExpressionUUID->"f0feed1f-a0b8-4088-ac82-b3a4acbeab5b"],
+
+Cell[BoxData[
+ RowBox[{"EquidistanceQ", "[", 
+  RowBox[{
+   RowBox[{"CycleGraph", "[", "6", "]"}], ",", "1", ",", "4", ",", "2", ",", 
+   "5"}], "]"}]], "Input",ExpressionUUID->"de3a1ac1-fb7e-4901-93f3-\
+04dc13f5ac42"],
+
+Cell["A negative example on a path.", "CodeText",ExpressionUUID->"320fc621-52e2-4a6b-9297-d28178367add"],
+
+Cell[BoxData[
+ RowBox[{"EquidistanceQ", "[", 
+  RowBox[{
+   RowBox[{"PathGraph", "[", 
+    RowBox[{"Range", "[", "5", "]"}], "]"}], ",", "1", ",", "3", ",", "2", ",",
+    "5"}], "]"}]], "Input",ExpressionUUID->"477a4bc9-b9a8-467a-b964-\
+7c03e6cf5840"],
+
+Cell["Examples", "Section",ExpressionUUID->"217d4c4d-8506-4a95-8647-5208a66622a8"],
+
+Cell["Use equidistance inside a midpoint check.", "CodeText",ExpressionUUID->"c8c781ab-c2ad-40e9-9c67-e44da52e7bf2"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"g", "=", 
+      RowBox[{"PathGraph", "[", 
+       RowBox[{"Range", "[", "5", "]"}], "]"}]}], ",", 
+     RowBox[{"m", "=", "3"}]}], "}"}], ",", 
+   RowBox[{"EquidistanceQ", "[", 
+    RowBox[{"g", ",", "1", ",", "m", ",", "m", ",", "5"}], "]"}]}], 
+  "]"}]], "Input",ExpressionUUID->"0c1f9f65-007e-463c-b732-42f94b50993b"],
+
+Cell["Check that adjacent edges are congruent on a path.", "CodeText",ExpressionUUID->"3c361773-c01a-4729-b66c-2a70384844cd"],
+
+Cell[BoxData[
+ RowBox[{"EquidistanceQ", "[", 
+  RowBox[{
+   RowBox[{"PathGraph", "[", 
+    RowBox[{"Range", "[", "5", "]"}], "]"}], ",", "1", ",", "2", ",", "3", ",",
+    "4"}], "]"}]], "Input",ExpressionUUID->"f4a9ff48-5f01-4ded-aae9-\
+722e6263fe38"],
+
+Cell["See also", "Section",ExpressionUUID->"3e78d550-2ad9-4155-b3fa-2a2f21dff736"],
+
+Cell["BetweennessQ", "Item",ExpressionUUID->"86ffeb2d-247b-402d-a74c-3dcc7bf6f185"],
+
+Cell["TarskiStructure", "Item",ExpressionUUID->"e2cb93b7-1a06-4f6e-a52e-40715791fbd7"],
+
+Cell["TarskiAxiomQ", "Item",ExpressionUUID->"6cef7d7b-e368-4c92-8ff4-bc0eb80b6fbe"],
+
+Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"4d260699-75a9-45e2-bc49-71fa51f75316"],
+
+Cell["FindTarskiReflection", "Item",ExpressionUUID->"8326c1b2-9aac-40aa-bbe3-3130c122facd"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"4806c98e-12cc-4dd6-8a94-939a0d1e2f4f"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"2c56872d-a076-4ee6-88e1-12dbe6af3ca6"],
+Cell[642, 22, 171, 3, 70, "Text",ExpressionUUID->"ba0b4553-a9b4-4bbb-ad48-a7e059d4a70c"],
+Cell[816, 27, 79, 0, 70, "Section",ExpressionUUID->"e7ed919d-c52e-457a-9172-06c97daceaee"],
+Cell[898, 29, 132, 0, 70, "CodeText",ExpressionUUID->"2407c015-fb55-48be-9fbc-5f500444b31b"],
+Cell[1033, 31, 162, 2, 70, "Code",ExpressionUUID->"25f927ce-8e06-4d10-824d-05701967fcfc"],
+Cell[1198, 35, 79, 0, 70, "Section",ExpressionUUID->"04736e85-4103-4a19-87b2-dc6e1cc65453"],
+Cell[1280, 37, 145, 2, 70, "CodeText",ExpressionUUID->"f0feed1f-a0b8-4088-ac82-b3a4acbeab5b"],
+Cell[1428, 41, 218, 5, 70, "Input",ExpressionUUID->"de3a1ac1-fb7e-4901-93f3-04dc13f5ac42"],
+Cell[1649, 48, 104, 0, 70, "CodeText",ExpressionUUID->"320fc621-52e2-4a6b-9297-d28178367add"],
+Cell[1756, 50, 251, 6, 70, "Input",ExpressionUUID->"477a4bc9-b9a8-467a-b964-7c03e6cf5840"],
+Cell[2010, 58, 82, 0, 70, "Section",ExpressionUUID->"217d4c4d-8506-4a95-8647-5208a66622a8"],
+Cell[2095, 60, 116, 0, 70, "CodeText",ExpressionUUID->"c8c781ab-c2ad-40e9-9c67-e44da52e7bf2"],
+Cell[2214, 62, 412, 11, 70, "Input",ExpressionUUID->"0c1f9f65-007e-463c-b732-42f94b50993b"],
+Cell[2629, 75, 125, 0, 70, "CodeText",ExpressionUUID->"3c361773-c01a-4729-b66c-2a70384844cd"],
+Cell[2757, 77, 251, 6, 70, "Input",ExpressionUUID->"f4a9ff48-5f01-4ded-aae9-722e6263fe38"],
+Cell[3011, 85, 82, 0, 70, "Section",ExpressionUUID->"3e78d550-2ad9-4155-b3fa-2a2f21dff736"],
+Cell[3096, 87, 83, 0, 70, "Item",ExpressionUUID->"86ffeb2d-247b-402d-a74c-3dcc7bf6f185"],
+Cell[3182, 89, 86, 0, 70, "Item",ExpressionUUID->"e2cb93b7-1a06-4f6e-a52e-40715791fbd7"],
+Cell[3271, 91, 83, 0, 70, "Item",ExpressionUUID->"6cef7d7b-e368-4c92-8ff4-bc0eb80b6fbe"],
+Cell[3357, 93, 89, 0, 70, "Item",ExpressionUUID->"4d260699-75a9-45e2-bc49-71fa51f75316"],
+Cell[3449, 95, 91, 0, 70, "Item",ExpressionUUID->"8326c1b2-9aac-40aa-bbe3-3130c122facd"],
+Cell[3543, 97, 85, 0, 70, "Item",ExpressionUUID->"4806c98e-12cc-4dd6-8a94-939a0d1e2f4f"]
+}
+]
+*)
+
+(* End of internal cache information *)

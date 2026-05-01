@@ -1,68 +1,21 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[HausdorffDistance]
-PackageScope[FrechetDistance]
-PackageScope[MinimalSeparationDistance]
-PackageScope[EmbeddingHausdorffDistance]
-PackageScope[EmbeddingCircleDistance]
 PackageScope[CentralElement]
 PackageScope[PeripheralElement]
 PackageScope[SeparatingSetQ]
 PackageScope[FindSeparatingCycles]
 PackageScope[FindMinimalSeparatingSubgraphs]
-PackageScope[pathFilterPairwiseDistances]
-PackageScope[applySelect]
+PackageScope[FindPairSeparators]
 PackageScope[countLimit]
 PackageScope[takeUpTo]
 PackageScope[allGeodesics]
 
 
-(* ===================== Distance Metrics ===================== *)
+(* Path-space distances and selectors (HausdorffDistance, FrechetDistance,
+   MinimalSeparationDistance, EmbeddingHausdorffDistance,
+   EmbeddingCircleDistance, pathFilterPairwiseDistances, applySelect)
+   live in PathSpace.wl. *)
 
-HausdorffDistance[ d_List, setX_, setY_ ] :=
-  With[ { distSubMatrix = d[[ setX, setY ]] },
-    Max[ Max[ Min /@ distSubMatrix ], Max[ Min /@ Transpose @ distSubMatrix ] ]
-  ]
-
-HausdorffDistance[ g_Graph, setX_List, setY_List ] :=
-  With[ { distSubMatrix = Outer[ GraphDistance[ g, #1, #2 ] &, setX, setY, 1 ] },
-    Max[ Max[ Min /@ distSubMatrix ], Max[ Min /@ Transpose @ distSubMatrix ] ]
-  ]
-
-FrechetDistance[ d_List, setX_, setY_, f_ : Max ] :=
-  f[ Diagonal[ d[[ setX, setY ]] ] ]
-
-FrechetDistance[ g_Graph, setX_List, setY_List, f_ : Max ] :=
-  f[ Diagonal[ Outer[ GraphDistance[ g, #1, #2 ] &, setX, setY, 1 ] ] ]
-
-MinimalSeparationDistance[ d_List, setX_, setY_ ] :=
-  Min[ d[[ setX, setY ]] ]
-
-MinimalSeparationDistance[ g_Graph, setX_List, setY_List ] :=
-  Min[ Outer[ GraphDistance[ g, #1, #2 ] &, setX, setY, 1 ] ]
-
-(* ===================== Embedding Distances ===================== *)
-
-EmbeddingHausdorffDistance[ coords_List, path_List, { p1_, p2_ } ] /; Length[ path ] >= 2 :=
-  RegionHausdorffDistance[ Line[ coords[[ path ]] ], Line[ { coords[[ p1 ]], coords[[ p2 ]] } ] ]
-
-EmbeddingHausdorffDistance[ _List, path_List, { _, _ } ] /; Length[ path ] < 2 := 0
-
-EmbeddingCircleDistance[ coords_List, cycle_List, centerIdx_Integer, radius_ ] /; Length[ cycle ] >= 3 :=
-  Module[ { centerPt, cyclePts, cycleRegion, nPts, circlePoints, circleRegion },
-    centerPt = coords[[ centerIdx ]];
-    cyclePts = coords[[ cycle ]];
-    cycleRegion = Line[ Append[ cyclePts, First[ cyclePts ] ] ];
-    nPts = Max[ 64, 4 * Length[ cycle ] ];
-    circlePoints = Table[
-      centerPt + radius * { Cos[ t ], Sin[ t ] },
-      { t, 0, 2 Pi - 2 Pi / nPts, 2 Pi / nPts }
-    ];
-    circleRegion = Line[ Append[ circlePoints, First[ circlePoints ] ] ];
-    RegionHausdorffDistance[ cycleRegion, circleRegion ]
-  ]
-
-EmbeddingCircleDistance[ _List, cycle_List, _Integer, _ ] /; Length[ cycle ] < 3 := Infinity
 
 (* ===================== Centrality ===================== *)
 
@@ -101,71 +54,6 @@ PeripheralElement[ distanceMatrix_List, n_ : 1 ] :=
         { n - 1 }
       ];
       selected
-    ]
-  ]
-
-(* ===================== Path Selection (internal) ===================== *)
-
-pathFilterPairwiseDistances[ graph_Graph, paths_List, baseDist_, cyclic_ ] :=
-  Module[ { distMatrix, vertexIndex, pathDistance },
-    distMatrix = GraphDistanceMatrix[ graph ];
-    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
-    pathDistance = If[ cyclic,
-      ( Min @ Table[ baseDist[ #1, RotateLeft[ #2, k ], #3 ], { k, 0, Length[ #2 ] - 1 } ] & ),
-      baseDist
-    ];
-    (# + Transpose[ # ]) & @ PadRight[ Table[
-      pathDistance[ distMatrix, Lookup[ vertexIndex, paths[[ i ]] ], Lookup[ vertexIndex, paths[[ j ]] ] ],
-      { i, Length[ paths ] }, { j, i - 1 } ], { Length[ paths ], Length[ paths ] } ]
-  ]
-
-applySelect[ _Graph, paths_List, None, _Association ] := paths
-
-applySelect[ graph_Graph, paths_List, methods_List, context_Association ] :=
-  Fold[ applySelect[ graph, #1, #2, context ] &, paths, methods ]
-
-applySelect[ graph_Graph, paths_List, method_String, context_Association ] :=
-  Module[ { cyclic, pd, scores, coords, vertexIndex },
-    If[ Length[ paths ] <= 1, Return[ paths ] ];
-    cyclic = TrueQ @ context[ "Cyclic" ];
-    Switch[ method,
-      "ShortestCircumference", MinimalBy[ paths, Length ],
-      "LongestCircumference", MaximalBy[ paths, Length ],
-      "FrechetCentral",
-        pd = pathFilterPairwiseDistances[ graph, paths, FrechetDistance, cyclic ];
-        scores = Max /@ pd;
-        Pick[ paths, scores, Min[ scores ] ],
-      "FrechetPeripheral",
-        pd = pathFilterPairwiseDistances[ graph, paths, FrechetDistance, cyclic ];
-        scores = Max /@ pd;
-        Pick[ paths, scores, Max[ scores ] ],
-      "MeanFrechetCentral",
-        pd = pathFilterPairwiseDistances[ graph, paths, FrechetDistance[ ##, Mean ] &, cyclic ];
-        scores = Max /@ pd;
-        Pick[ paths, scores, Min[ scores ] ],
-      "MeanFrechetPeripheral",
-        pd = pathFilterPairwiseDistances[ graph, paths, FrechetDistance[ ##, Mean ] &, cyclic ];
-        scores = Max /@ pd;
-        Pick[ paths, scores, Max[ scores ] ],
-      "HausdorffCentral",
-        pd = pathFilterPairwiseDistances[ graph, paths, HausdorffDistance, cyclic ];
-        scores = Max /@ pd;
-        Pick[ paths, scores, Min[ scores ] ],
-      "HausdorffPeripheral",
-        pd = pathFilterPairwiseDistances[ graph, paths, HausdorffDistance, cyclic ];
-        scores = Max /@ pd;
-        Pick[ paths, scores, Max[ scores ] ],
-      "EmbeddingClosest",
-        coords = GraphEmbedding[ graph ];
-        vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
-        If[ cyclic,
-          MinimalBy[ paths, cycle |-> EmbeddingCircleDistance[ coords, Lookup[ vertexIndex, cycle ],
-            vertexIndex @ context[ "Center" ], context[ "Radius" ] ] ],
-          With[ { ep = Lookup[ vertexIndex, context[ "Endpoints" ] ] },
-            MinimalBy[ paths, path |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, path ], ep ] ]
-          ]
-        ],
-      _, paths
     ]
   ]
 
@@ -226,4 +114,46 @@ FindMinimalSeparatingSubgraphs[ graph_Graph, levelSet_List, center_, radius_ ] :
     Select[ separating,
       s |-> ! AnyTrue[ separating, t |-> Length[ t ] < Length[ s ] && SubsetQ[ s, t ] ]
     ]
+  ]
+
+
+(* FindPairSeparators enumerates inclusion-minimal subsets of `set` whose
+   removal disconnects p1 from p2 in graph.  Reduces graph to an auxiliary
+   graph on {p1, p2} \[Union] set in which every component of graph \\
+   ({p1, p2} \[Union] set) contributes a clique on its boundary into those
+   nodes (plus all direct graph edges within those nodes); minimal p1-p2
+   separators within `set` coincide between graph and the auxiliary one,
+   while the latter is much smaller for thin sets in bulky graphs.
+   Subsets are tested in increasing size, skipping any superset of an
+   already-found minimal separator. *)
+
+FindPairSeparators[ graph_Graph, set_List, p1_, p2_ ] :=
+  Module[ { aux, found = {} },
+    aux = pairAuxiliaryGraph[ graph, set, p1, p2 ];
+    Do[
+      Do[
+        If[ ! AnyTrue[ found, prev |-> SubsetQ[ T, prev ] ] &&
+            GraphDistance[ VertexDelete[ aux, T ], p1, p2 ] === Infinity,
+          AppendTo[ found, T ]
+        ],
+        { T, Subsets[ set, { k } ] }
+      ],
+      { k, 0, Length[ set ] }
+    ];
+    found
+  ]
+
+pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
+  Module[ { nodes, components, paired, direct },
+    nodes = Union[ set, { p1, p2 } ];
+    components = ConnectedComponents @ Subgraph[ graph,
+      Complement[ VertexList[ graph ], nodes ] ];
+    paired = Flatten[
+      ( comp |-> UndirectedEdge @@@ Subsets[
+          Intersection[ nodes, Union @@ ( AdjacencyList[ graph, # ] & /@ comp ) ],
+          { 2 } ] ) /@ components, 1 ];
+    direct = Cases[ EdgeList[ graph ],
+      ( UndirectedEdge | DirectedEdge )[ u_, v_ ] /;
+        MemberQ[ nodes, u ] && MemberQ[ nodes, v ] :> UndirectedEdge[ u, v ] ];
+    Graph[ nodes, DeleteDuplicates[ Join[ paired, direct ] ] ]
   ]

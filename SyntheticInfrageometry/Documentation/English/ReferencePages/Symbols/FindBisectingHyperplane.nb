@@ -1,0 +1,158 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      6572,        149]
+NotebookOptionsPosition[      4539,        118]
+NotebookOutlinePosition[      4856,        132]
+CellTagsIndexPosition[      4813,        129]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindBisectingHyperplane", "Title",ExpressionUUID->"e37bce9c-2001-4d96-80bf-3a81b7513538"],
+
+Cell["\<\
+FindBisectingHyperplane[graph, p1, p2] returns one inclusion-minimal subset \
+of the bisector { v : d(p1, v) == d(p2, v) } whose removal disconnects p1 \
+from p2 -- the graph analog of a perpendicular bisecting hyperplane. \
+FindBisectingHyperplane[graph, p1, p2, n] returns exactly n or $Failed; \
+UpTo[n] returns up to n; All returns every minimal hyperplane. \
+FindBisectingHyperplane[graph, p1, p2, {lo, hi}, ...] widens the underlying \
+bisector to vertices with lo <= d(p1, v) - d(p2, v) <= hi (use {-1, 1} to \
+recover the parity-stranded middle pair when d(p1, p2) is odd). Accepts \
+FindBisectingHyperplane[graph, {p1, p2}, ...] equivalently.\
+\>", "Text",ExpressionUUID->"df7f2b86-6dfe-4b9a-b8d1-6b31bf869ad8"],
+
+Cell["Setup", "Section",ExpressionUUID->"9c0fe92a-6edc-4097-978a-32fcba79e69a"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"a5f121f8-db59-4bf1-9695-6b57ca289d1e"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",ExpressionUUID->"ee7b8542-deb7-4e9d-88e1-5d62daa36bfe"],
+
+Cell["Usage", "Section",ExpressionUUID->"4487de8d-6b8b-4447-84b5-a25589a9210f"],
+
+Cell["Find the unique minimal separator on an odd-length path.", "CodeText",ExpressionUUID->"af903474-e7b8-4318-8f52-d4cc2be8e82e"],
+
+Cell[BoxData[
+ RowBox[{"FindBisectingHyperplane", "[", 
+  RowBox[{
+   RowBox[{"PathGraph", "[", 
+    RowBox[{"Range", "[", "5", "]"}], "]"}], ",", "1", ",", "5"}], 
+  "]"}]], "Input",ExpressionUUID->"00f2d7dc-a5f8-4521-aa84-dccf4e57b11d"],
+
+Cell["\<\
+Widen the bisector window on an even path to recover parity-stranded cuts.\
+\>", "CodeText",ExpressionUUID->"e729410b-0186-479d-a69f-752d09bd5e46"],
+
+Cell[BoxData[
+ RowBox[{"FindBisectingHyperplane", "[", 
+  RowBox[{
+   RowBox[{"PathGraph", "[", 
+    RowBox[{"Range", "[", "6", "]"}], "]"}], ",", "1", ",", "6", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", "All"}], "]"}]], "Input",Expr\
+essionUUID->"d141a4f4-d88c-4141-9ee1-032a67a1c2a1"],
+
+Cell["Examples", "Section",ExpressionUUID->"df1f88c7-e9e6-4c39-860d-169c73265bcf"],
+
+Cell["\<\
+Inspect the grid antidiagonal separator between opposite corners.\
+\>", "CodeText",ExpressionUUID->"247ca670-f693-4a5f-9142-a058d905d0ea"],
+
+Cell[BoxData[
+ RowBox[{"FindBisectingHyperplane", "[", 
+  RowBox[{
+   RowBox[{"GridGraph", "[", 
+    RowBox[{"{", 
+     RowBox[{"3", ",", "3"}], "}"}], "]"}], ",", "1", ",", "9", ",", "All"}], 
+  "]"}]], "Input",ExpressionUUID->"c1f02c18-f05d-4824-96d2-0d99750b9a51"],
+
+Cell["\<\
+Check that every returned hyperplane really separates the endpoints.\
+\>", "CodeText",ExpressionUUID->"f96a5940-0952-4572-b5d1-65b3b5bd28f8"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"g", "=", 
+      RowBox[{"PathGraph", "[", 
+       RowBox[{"Range", "[", "5", "]"}], "]"}]}], ",", 
+     RowBox[{"hs", "=", 
+      RowBox[{"FindBisectingHyperplane", "[", 
+       RowBox[{
+        RowBox[{"PathGraph", "[", 
+         RowBox[{"Range", "[", "5", "]"}], "]"}], ",", "1", ",", "5", ",", 
+        "All"}], "]"}]}]}], "}"}], ",", 
+   RowBox[{"AllTrue", "[", 
+    RowBox[{"hs", ",", 
+     RowBox[{"Function", "[", 
+      RowBox[{"h", ",", 
+       RowBox[{"SeparatesQ", "[", 
+        RowBox[{"g", ",", "h", ",", "1", ",", "5"}], "]"}]}], "]"}]}], 
+    "]"}]}], "]"}]], "Input",ExpressionUUID->"c25f9d3c-f49a-4563-8833-\
+105f462a8bb2"],
+
+Cell["See also", "Section",ExpressionUUID->"49964569-b67d-48c2-9b8e-87b7d3581af6"],
+
+Cell["FindMidpoint", "Item",ExpressionUUID->"a27f9734-88ce-4ae6-a4ea-fabebd510882"],
+
+Cell["SeparatesQ", "Item",ExpressionUUID->"b736c2b5-e99f-4560-9cc3-19b5e9c7af89"],
+
+Cell["FindSphere", "Item",ExpressionUUID->"39500849-f972-465e-955e-2e0f0eb971f0"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"392f8e62-edbc-4367-bafc-bcd7d80be7fe"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 95, 0, 70, "Title",ExpressionUUID->"e37bce9c-2001-4d96-80bf-3a81b7513538"],
+Cell[652, 22, 730, 10, 70, "Text",ExpressionUUID->"df7f2b86-6dfe-4b9a-b8d1-6b31bf869ad8"],
+Cell[1385, 34, 79, 0, 70, "Section",ExpressionUUID->"9c0fe92a-6edc-4097-978a-32fcba79e69a"],
+Cell[1467, 36, 132, 0, 70, "CodeText",ExpressionUUID->"a5f121f8-db59-4bf1-9695-6b57ca289d1e"],
+Cell[1602, 38, 162, 2, 70, "Code",ExpressionUUID->"ee7b8542-deb7-4e9d-88e1-5d62daa36bfe"],
+Cell[1767, 42, 79, 0, 70, "Section",ExpressionUUID->"4487de8d-6b8b-4447-84b5-a25589a9210f"],
+Cell[1849, 44, 131, 0, 70, "CodeText",ExpressionUUID->"af903474-e7b8-4318-8f52-d4cc2be8e82e"],
+Cell[1983, 46, 238, 5, 70, "Input",ExpressionUUID->"00f2d7dc-a5f8-4521-aa84-dccf4e57b11d"],
+Cell[2224, 53, 157, 2, 70, "CodeText",ExpressionUUID->"e729410b-0186-479d-a69f-752d09bd5e46"],
+Cell[2384, 57, 329, 8, 70, "Input",ExpressionUUID->"d141a4f4-d88c-4141-9ee1-032a67a1c2a1"],
+Cell[2716, 67, 82, 0, 70, "Section",ExpressionUUID->"df1f88c7-e9e6-4c39-860d-169c73265bcf"],
+Cell[2801, 69, 148, 2, 70, "CodeText",ExpressionUUID->"247ca670-f693-4a5f-9142-a058d905d0ea"],
+Cell[2952, 73, 267, 6, 70, "Input",ExpressionUUID->"c1f02c18-f05d-4824-96d2-0d99750b9a51"],
+Cell[3222, 81, 151, 2, 70, "CodeText",ExpressionUUID->"f96a5940-0952-4572-b5d1-65b3b5bd28f8"],
+Cell[3376, 85, 732, 21, 70, "Input",ExpressionUUID->"c25f9d3c-f49a-4563-8833-105f462a8bb2"],
+Cell[4111, 108, 82, 0, 70, "Section",ExpressionUUID->"49964569-b67d-48c2-9b8e-87b7d3581af6"],
+Cell[4196, 110, 83, 0, 70, "Item",ExpressionUUID->"a27f9734-88ce-4ae6-a4ea-fabebd510882"],
+Cell[4282, 112, 81, 0, 70, "Item",ExpressionUUID->"b736c2b5-e99f-4560-9cc3-19b5e9c7af89"],
+Cell[4366, 114, 81, 0, 70, "Item",ExpressionUUID->"39500849-f972-465e-955e-2e0f0eb971f0"],
+Cell[4450, 116, 85, 0, 70, "Item",ExpressionUUID->"392f8e62-edbc-4367-bafc-bcd7d80be7fe"]
+}
+]
+*)
+
+(* End of internal cache information *)

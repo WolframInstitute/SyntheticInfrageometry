@@ -1,0 +1,180 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      7193,        171]
+NotebookOptionsPosition[      4975,        138]
+NotebookOutlinePosition[      5292,        152]
+CellTagsIndexPosition[      5249,        149]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["EmbeddingClosestPaths", "Title",ExpressionUUID->"328d8fca-3e1a-43cd-b0c3-d353b4a4f1e4"],
+
+Cell["\<\
+EmbeddingClosestPaths[graph, paths, {p1, p2}] keeps the paths whose drawing \
+under GraphEmbedding is closest (in plane Hausdorff distance) to the straight \
+Euclidean segment between p1 and p2. Operator form \
+EmbeddingClosestPaths[graph, {p1, p2}][paths].\
+\>", "Text",ExpressionUUID->"06daff5a-09da-4686-9b48-7e640a93cd33"],
+
+Cell["Setup", "Section",ExpressionUUID->"fd9f38b6-74a2-4b4f-ad24-a55790519691"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"b65a1ec3-77b5-481e-9a58-01188bb12410"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",ExpressionUUID->"00faba2a-81e6-4158-a2e9-50258a760724"],
+
+Cell["Usage", "Section",ExpressionUUID->"013f5a68-e41b-4200-bcf0-2f1ebb876023"],
+
+Cell["\<\
+Keep the paths closest to the Euclidean chord in the embedding.\
+\>", "CodeText",ExpressionUUID->"f7179e39-7469-4f42-8295-b90fa8b1af31"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{"EmbeddingClosestPaths", "[", 
+    RowBox[{"g", ",", 
+     RowBox[{"FindSegment", "[", 
+      RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "16"}], "}"}]}], "]"}]}], "]"}]], "Input",ExpressionUU\
+ID->"964d8ab6-2d95-4bae-80da-07ef10900032"],
+
+Cell["Use the operator form for chaining.", "CodeText",ExpressionUUID->"dea71fdc-efd1-457f-bf52-2cba73806864"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{
+    RowBox[{"EmbeddingClosestPaths", "[", 
+     RowBox[{"g", ",", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "16"}], "}"}]}], "]"}], "[", 
+    RowBox[{"FindSegment", "[", 
+     RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "]"}]}], 
+  "]"}]], "Input",ExpressionUUID->"7d396b04-0ecb-4f7a-9716-2f69e1d05329"],
+
+Cell["Examples", "Section",ExpressionUUID->"f5530223-d6dc-45ea-8664-e103ed712cc1"],
+
+Cell["Compose centrality and embedding closeness.", "CodeText",ExpressionUUID->"5908a69f-69e2-4b9b-90cc-ba72439c74e6"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{
+    RowBox[{"EmbeddingClosestPaths", "[", 
+     RowBox[{"g", ",", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "16"}], "}"}]}], "]"}], "[", 
+    RowBox[{
+     RowBox[{"CentralPaths", "[", "g", "]"}], "[", 
+     RowBox[{"FindSegment", "[", 
+      RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "]"}], "]"}]}], 
+  "]"}]], "Input",ExpressionUUID->"f4981ff3-3213-4b8f-9802-cb56daed40b7"],
+
+Cell["Render the embedding-closest subbundle.", "CodeText",ExpressionUUID->"eeee8133-e18c-4a54-a667-da70dbd4ac53"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{"InfraSceneHighlight", "[", 
+    RowBox[{"g", ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"EmbeddingClosestPaths", "[", 
+        RowBox[{"g", ",", 
+         RowBox[{"FindSegment", "[", 
+          RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"1", ",", "16"}], "}"}]}], "]"}], "\[Rule]", "Blue"}], 
+      "}"}]}], "]"}]}], "]"}]], "Input",ExpressionUUID->"86afdacf-c0da-49d1-\
+bbe8-aaf67d2a7822"],
+
+Cell["See also", "Section",ExpressionUUID->"16665220-99b3-4f89-967d-307c53e8ba24"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"dbe964a5-c52a-4b8b-9ec4-f788a8bd7f73"],
+
+Cell["FindLine", "Item",ExpressionUUID->"4941dceb-507c-45d9-9b81-6173b844583f"],
+
+Cell["FindSphere", "Item",ExpressionUUID->"10e3b35a-8a8e-4397-8ebb-7a225d07a639"],
+
+Cell["CentralPaths", "Item",ExpressionUUID->"35e8ed29-29be-477f-b347-6dfee967bd8b"],
+
+Cell["CentralCycles", "Item",ExpressionUUID->"0c3c8b2b-edec-49b7-8191-df583149a245"],
+
+Cell["EmbeddingClosestCycles", "Item",ExpressionUUID->"f1e7e19b-feca-42c6-841f-470948ff2048"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 93, 0, 70, "Title",ExpressionUUID->"328d8fca-3e1a-43cd-b0c3-d353b4a4f1e4"],
+Cell[650, 22, 336, 5, 70, "Text",ExpressionUUID->"06daff5a-09da-4686-9b48-7e640a93cd33"],
+Cell[989, 29, 79, 0, 70, "Section",ExpressionUUID->"fd9f38b6-74a2-4b4f-ad24-a55790519691"],
+Cell[1071, 31, 132, 0, 70, "CodeText",ExpressionUUID->"b65a1ec3-77b5-481e-9a58-01188bb12410"],
+Cell[1206, 33, 162, 2, 70, "Code",ExpressionUUID->"00faba2a-81e6-4158-a2e9-50258a760724"],
+Cell[1371, 37, 79, 0, 70, "Section",ExpressionUUID->"013f5a68-e41b-4200-bcf0-2f1ebb876023"],
+Cell[1453, 39, 146, 2, 70, "CodeText",ExpressionUUID->"f7179e39-7469-4f42-8295-b90fa8b1af31"],
+Cell[1602, 43, 509, 14, 70, "Input",ExpressionUUID->"964d8ab6-2d95-4bae-80da-07ef10900032"],
+Cell[2114, 59, 110, 0, 70, "CodeText",ExpressionUUID->"dea71fdc-efd1-457f-bf52-2cba73806864"],
+Cell[2227, 61, 531, 15, 70, "Input",ExpressionUUID->"7d396b04-0ecb-4f7a-9716-2f69e1d05329"],
+Cell[2761, 78, 82, 0, 70, "Section",ExpressionUUID->"f5530223-d6dc-45ea-8664-e103ed712cc1"],
+Cell[2846, 80, 118, 0, 70, "CodeText",ExpressionUUID->"5908a69f-69e2-4b9b-90cc-ba72439c74e6"],
+Cell[2967, 82, 605, 17, 70, "Input",ExpressionUUID->"f4981ff3-3213-4b8f-9802-cb56daed40b7"],
+Cell[3575, 101, 114, 0, 70, "CodeText",ExpressionUUID->"eeee8133-e18c-4a54-a667-da70dbd4ac53"],
+Cell[3692, 103, 674, 19, 70, "Input",ExpressionUUID->"86afdacf-c0da-49d1-bbe8-aaf67d2a7822"],
+Cell[4369, 124, 82, 0, 70, "Section",ExpressionUUID->"16665220-99b3-4f89-967d-307c53e8ba24"],
+Cell[4454, 126, 82, 0, 70, "Item",ExpressionUUID->"dbe964a5-c52a-4b8b-9ec4-f788a8bd7f73"],
+Cell[4539, 128, 79, 0, 70, "Item",ExpressionUUID->"4941dceb-507c-45d9-9b81-6173b844583f"],
+Cell[4621, 130, 81, 0, 70, "Item",ExpressionUUID->"10e3b35a-8a8e-4397-8ebb-7a225d07a639"],
+Cell[4705, 132, 83, 0, 70, "Item",ExpressionUUID->"35e8ed29-29be-477f-b347-6dfee967bd8b"],
+Cell[4791, 134, 84, 0, 70, "Item",ExpressionUUID->"0c3c8b2b-edec-49b7-8191-df583149a245"],
+Cell[4878, 136, 93, 0, 70, "Item",ExpressionUUID->"f1e7e19b-feca-42c6-841f-470948ff2048"]
+}
+]
+*)
+
+(* End of internal cache information *)

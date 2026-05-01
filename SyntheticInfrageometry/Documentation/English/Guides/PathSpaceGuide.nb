@@ -1,0 +1,114 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      4586,        105]
+NotebookOptionsPosition[      2857,         77]
+NotebookOutlinePosition[      3174,         91]
+CellTagsIndexPosition[      3131,         88]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["PathSpace Layer", "Title",ExpressionUUID->"25e27abd-212c-444a-a798-bcb894250302"],
+
+Cell["\<\
+PathSpace selectors are post-filters: enumerate full multiplicity first, then \
+keep central, peripheral, embedding-closest, shortest, or longest \
+representatives.\
+\>", "Text",ExpressionUUID->"ee1f7146-660f-45d0-b5e1-757be7a6cde1"],
+
+Cell["Path selectors", "Section",ExpressionUUID->"344af21f-6a97-4a83-9316-05c3baae8b1d"],
+
+Cell["CentralPaths", "Item",ExpressionUUID->"d8be6d33-d2a3-4a62-89a9-5a6edd997d62"],
+
+Cell["PeripheralPaths", "Item",ExpressionUUID->"c9cbf5a6-6d66-4f71-849a-f10d3479f492"],
+
+Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"4cc6c3cb-f1be-4b5f-a6b8-dbf5d5e4fb3d"],
+
+Cell["Cycle selectors", "Section",ExpressionUUID->"b05ab647-b759-4b58-ad1f-a34fe2c05200"],
+
+Cell["CentralCycles", "Item",ExpressionUUID->"1b4d933a-53c9-42ac-b2d6-236f1e600a40"],
+
+Cell["PeripheralCycles", "Item",ExpressionUUID->"72f7d7fb-b4cd-4a0c-b43e-a8e9ed39bc17"],
+
+Cell["EmbeddingClosestCycles", "Item",ExpressionUUID->"9d8a9285-d2c3-4d22-ac20-da13ca57e6e0"],
+
+Cell["ShortestCircumferenceCycles", "Item",ExpressionUUID->"d1f3d234-34ad-42bb-998e-6a85aeb5ef61"],
+
+Cell["LongestCircumferenceCycles", "Item",ExpressionUUID->"6d33b710-441b-4c2a-8cbb-3aea4ff28dcf"],
+
+Cell["Typical pipeline", "Section",ExpressionUUID->"5faa31db-ed7d-40e7-a0f1-59f494effadc"],
+
+Cell["Enumerate first, then filter.", "CodeText",ExpressionUUID->"48de0583-e5a8-4334-aa79-e45bba7e3472"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{
+    RowBox[{"EmbeddingClosestPaths", "[", 
+     RowBox[{"g", ",", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "16"}], "}"}]}], "]"}], "[", 
+    RowBox[{
+     RowBox[{"CentralPaths", "[", "g", "]"}], "[", 
+     RowBox[{"FindSegment", "[", 
+      RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "]"}], "]"}]}], 
+  "]"}]], "Input",ExpressionUUID->"b29bcc6b-66af-458e-acd3-1a0508d58b55"],
+
+Cell["Tutorial", "Section",ExpressionUUID->"1767363e-3e39-4b18-839f-4c743c10ebf6"],
+
+Cell["\<\
+See PathSpaceTutorial for end-to-end segment and cycle examples.\
+\>", "Item",ExpressionUUID->"52c62400-2285-4041-a724-6816bd9bda9d"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"25e27abd-212c-444a-a798-bcb894250302"],
+Cell[644, 22, 243, 4, 70, "Text",ExpressionUUID->"ee1f7146-660f-45d0-b5e1-757be7a6cde1"],
+Cell[890, 28, 88, 0, 70, "Section",ExpressionUUID->"344af21f-6a97-4a83-9316-05c3baae8b1d"],
+Cell[981, 30, 83, 0, 70, "Item",ExpressionUUID->"d8be6d33-d2a3-4a62-89a9-5a6edd997d62"],
+Cell[1067, 32, 86, 0, 70, "Item",ExpressionUUID->"c9cbf5a6-6d66-4f71-849a-f10d3479f492"],
+Cell[1156, 34, 92, 0, 70, "Item",ExpressionUUID->"4cc6c3cb-f1be-4b5f-a6b8-dbf5d5e4fb3d"],
+Cell[1251, 36, 89, 0, 70, "Section",ExpressionUUID->"b05ab647-b759-4b58-ad1f-a34fe2c05200"],
+Cell[1343, 38, 84, 0, 70, "Item",ExpressionUUID->"1b4d933a-53c9-42ac-b2d6-236f1e600a40"],
+Cell[1430, 40, 87, 0, 70, "Item",ExpressionUUID->"72f7d7fb-b4cd-4a0c-b43e-a8e9ed39bc17"],
+Cell[1520, 42, 93, 0, 70, "Item",ExpressionUUID->"9d8a9285-d2c3-4d22-ac20-da13ca57e6e0"],
+Cell[1616, 44, 98, 0, 70, "Item",ExpressionUUID->"d1f3d234-34ad-42bb-998e-6a85aeb5ef61"],
+Cell[1717, 46, 97, 0, 70, "Item",ExpressionUUID->"6d33b710-441b-4c2a-8cbb-3aea4ff28dcf"],
+Cell[1817, 48, 90, 0, 70, "Section",ExpressionUUID->"5faa31db-ed7d-40e7-a0f1-59f494effadc"],
+Cell[1910, 50, 104, 0, 70, "CodeText",ExpressionUUID->"48de0583-e5a8-4334-aa79-e45bba7e3472"],
+Cell[2017, 52, 605, 17, 70, "Input",ExpressionUUID->"b29bcc6b-66af-458e-acd3-1a0508d58b55"],
+Cell[2625, 71, 82, 0, 70, "Section",ExpressionUUID->"1767363e-3e39-4b18-839f-4c743c10ebf6"],
+Cell[2710, 73, 143, 2, 70, "Item",ExpressionUUID->"52c62400-2285-4041-a724-6816bd9bda9d"]
+}
+]
+*)
+
+(* End of internal cache information *)

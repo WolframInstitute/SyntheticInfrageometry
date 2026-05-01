@@ -1,0 +1,195 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      7820,        186]
+NotebookOptionsPosition[      5601,        153]
+NotebookOutlinePosition[      5918,        167]
+CellTagsIndexPosition[      5875,        164]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["EmbeddingClosestCycles", "Title",ExpressionUUID->"9912610e-38ad-4dfe-89ab-bb6fdb4f81d9"],
+
+Cell["\<\
+EmbeddingClosestCycles[graph, cycles, {center, radius}] keeps the cycles \
+whose drawing under GraphEmbedding is closest (in plane Hausdorff distance) \
+to the Euclidean circle of given centre and radius. Operator form \
+EmbeddingClosestCycles[graph, {center, radius}][cycles].\
+\>", "Text",ExpressionUUID->"3deec8db-d67f-464b-b527-e35ec8ef0856"],
+
+Cell["Setup", "Section",ExpressionUUID->"b17551a3-31cc-4d8a-a0e8-17d01d2a9b04"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"c88d66c4-109d-419c-8890-bc5fd1d842de"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",ExpressionUUID->"74d17d07-195f-4055-8350-8e76b69b4220"],
+
+Cell["Usage", "Section",ExpressionUUID->"b25cfd72-37db-4c8f-8423-f3ab2cc43d4a"],
+
+Cell["\<\
+Keep the cycles closest to a Euclidean circle in the embedding.\
+\>", "CodeText",ExpressionUUID->"a0eef984-9a86-4af0-8416-bf02f0fd2f68"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{"EmbeddingClosestCycles", "[", 
+    RowBox[{"g", ",", 
+     RowBox[{"FindSphere", "[", 
+      RowBox[{"g", ",", "6", ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "2"}], "}"}], ",", "All", ",", 
+       RowBox[{"Method", "\[Rule]", "\"\<SeparatingCycle\>\""}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"6", ",", "1.5`"}], "}"}]}], "]"}]}], "]"}]], "Input",Expression\
+UUID->"439fc156-b40b-4f2a-8f54-17fddf454d31"],
+
+Cell["Use the operator form for piping.", "CodeText",ExpressionUUID->"a0921d9a-9c42-4134-a004-87ee6a05af27"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{
+    RowBox[{"EmbeddingClosestCycles", "[", 
+     RowBox[{"g", ",", 
+      RowBox[{"{", 
+       RowBox[{"6", ",", "1.5`"}], "}"}]}], "]"}], "[", 
+    RowBox[{"FindSphere", "[", 
+     RowBox[{"g", ",", "6", ",", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "2"}], "}"}], ",", "All", ",", 
+      RowBox[{"Method", "\[Rule]", "\"\<SeparatingCycle\>\""}]}], "]"}], 
+    "]"}]}], "]"}]], "Input",ExpressionUUID->"719fef95-b689-480c-b658-\
+412174c64e3d"],
+
+Cell["Examples", "Section",ExpressionUUID->"7e57722a-796b-4e90-abba-05150981c518"],
+
+Cell["Compose circumference filtering with embedding closeness.", "CodeText",ExpressionUUID->"4e31e071-8123-4689-b417-17b21dc5903c"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{
+    RowBox[{"EmbeddingClosestCycles", "[", 
+     RowBox[{"g", ",", 
+      RowBox[{"{", 
+       RowBox[{"6", ",", "1.5`"}], "}"}]}], "]"}], "[", 
+    RowBox[{"ShortestCircumferenceCycles", "[", 
+     RowBox[{"FindSphere", "[", 
+      RowBox[{"g", ",", "6", ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "2"}], "}"}], ",", "All", ",", 
+       RowBox[{"Method", "\[Rule]", "\"\<SeparatingCycle\>\""}]}], "]"}], 
+     "]"}], "]"}]}], "]"}]], "Input",ExpressionUUID->"5b5861ed-2269-4fc2-8169-\
+d552153d6747"],
+
+Cell["Render the most circle-like separating cycles.", "CodeText",ExpressionUUID->"e5294372-dcdd-4376-97de-8f8c847cf3af"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{"InfraSceneHighlight", "[", 
+    RowBox[{"g", ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"EmbeddingClosestCycles", "[", 
+        RowBox[{"g", ",", 
+         RowBox[{"FindSphere", "[", 
+          RowBox[{"g", ",", "6", ",", 
+           RowBox[{"{", 
+            RowBox[{"1", ",", "2"}], "}"}], ",", "All", ",", 
+           RowBox[{"Method", "\[Rule]", "\"\<SeparatingCycle\>\""}]}], "]"}], 
+         ",", 
+         RowBox[{"{", 
+          RowBox[{"6", ",", "1.5`"}], "}"}]}], "]"}], "\[Rule]", "Green"}], 
+      "}"}], ",", 
+     RowBox[{"\"\<Cyclic\>\"", "\[Rule]", "True"}]}], "]"}]}], "]"}]], "Input",\
+ExpressionUUID->"0cca20ce-ab84-4c28-89d9-121ca5898cd0"],
+
+Cell["See also", "Section",ExpressionUUID->"f31f236b-a91a-4c4d-85ab-b18452418543"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"eef0e7bc-c2d7-4c98-847d-1164c8d229fc"],
+
+Cell["FindLine", "Item",ExpressionUUID->"15219661-33f3-4d2b-bd16-dec16ceff9a3"],
+
+Cell["FindSphere", "Item",ExpressionUUID->"e59e41c0-f521-484b-9dfe-89d9516b97c2"],
+
+Cell["CentralPaths", "Item",ExpressionUUID->"35d3ee5a-d25b-47a2-bf50-5920be7e69ba"],
+
+Cell["CentralCycles", "Item",ExpressionUUID->"71dc587c-6628-4428-819d-f5350fb94ed1"],
+
+Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"d6bfe06c-85f4-4131-a774-5554fbcff91e"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 94, 0, 70, "Title",ExpressionUUID->"9912610e-38ad-4dfe-89ab-bb6fdb4f81d9"],
+Cell[651, 22, 356, 5, 70, "Text",ExpressionUUID->"3deec8db-d67f-464b-b527-e35ec8ef0856"],
+Cell[1010, 29, 79, 0, 70, "Section",ExpressionUUID->"b17551a3-31cc-4d8a-a0e8-17d01d2a9b04"],
+Cell[1092, 31, 132, 0, 70, "CodeText",ExpressionUUID->"c88d66c4-109d-419c-8890-bc5fd1d842de"],
+Cell[1227, 33, 162, 2, 70, "Code",ExpressionUUID->"74d17d07-195f-4055-8350-8e76b69b4220"],
+Cell[1392, 37, 79, 0, 70, "Section",ExpressionUUID->"b25cfd72-37db-4c8f-8423-f3ab2cc43d4a"],
+Cell[1474, 39, 146, 2, 70, "CodeText",ExpressionUUID->"a0eef984-9a86-4af0-8416-bf02f0fd2f68"],
+Cell[1623, 43, 638, 17, 70, "Input",ExpressionUUID->"439fc156-b40b-4f2a-8f54-17fddf454d31"],
+Cell[2264, 62, 108, 0, 70, "CodeText",ExpressionUUID->"a0921d9a-9c42-4134-a004-87ee6a05af27"],
+Cell[2375, 64, 661, 19, 70, "Input",ExpressionUUID->"719fef95-b689-480c-b658-412174c64e3d"],
+Cell[3039, 85, 82, 0, 70, "Section",ExpressionUUID->"7e57722a-796b-4e90-abba-05150981c518"],
+Cell[3124, 87, 132, 0, 70, "CodeText",ExpressionUUID->"4e31e071-8123-4689-b417-17b21dc5903c"],
+Cell[3259, 89, 723, 20, 70, "Input",ExpressionUUID->"5b5861ed-2269-4fc2-8169-d552153d6747"],
+Cell[3985, 111, 121, 0, 70, "CodeText",ExpressionUUID->"e5294372-dcdd-4376-97de-8f8c847cf3af"],
+Cell[4109, 113, 884, 24, 70, "Input",ExpressionUUID->"0cca20ce-ab84-4c28-89d9-121ca5898cd0"],
+Cell[4996, 139, 82, 0, 70, "Section",ExpressionUUID->"f31f236b-a91a-4c4d-85ab-b18452418543"],
+Cell[5081, 141, 82, 0, 70, "Item",ExpressionUUID->"eef0e7bc-c2d7-4c98-847d-1164c8d229fc"],
+Cell[5166, 143, 79, 0, 70, "Item",ExpressionUUID->"15219661-33f3-4d2b-bd16-dec16ceff9a3"],
+Cell[5248, 145, 81, 0, 70, "Item",ExpressionUUID->"e59e41c0-f521-484b-9dfe-89d9516b97c2"],
+Cell[5332, 147, 83, 0, 70, "Item",ExpressionUUID->"35d3ee5a-d25b-47a2-bf50-5920be7e69ba"],
+Cell[5418, 149, 84, 0, 70, "Item",ExpressionUUID->"71dc587c-6628-4428-819d-f5350fb94ed1"],
+Cell[5505, 151, 92, 0, 70, "Item",ExpressionUUID->"d6bfe06c-85f4-4131-a774-5554fbcff91e"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -12,20 +12,30 @@ PackageExport[SegmentQ]
 PackageExport[LineQ]
 PackageExport[SphereQ]
 PackageExport[ParallelQ]
+PackageExport[SeparatesQ]
 PackageExport[FindSphereParameters]
 PackageExport[UniqueSegmentQ]
 
 (* EuclideanConstructions.wl *)
 PackageExport[FindMidpoint]
 PackageExport[FindPerpendicular]
-PackageExport[FindBisector]
+PackageExport[FindBisectingHyperplane]
 PackageExport[CompleteEquilateralTriangle]
+PackageExport[GraphAngle]
 PackageExport[SegmentLineAngle]
+
+(* PathSpace.wl *)
+PackageExport[CentralPaths]
+PackageExport[PeripheralPaths]
+PackageExport[EmbeddingClosestPaths]
+PackageExport[CentralCycles]
+PackageExport[PeripheralCycles]
+PackageExport[EmbeddingClosestCycles]
+PackageExport[ShortestCircumferenceCycles]
+PackageExport[LongestCircumferenceCycles]
 
 (* MetricAlgebra.wl *)
 PackageExport[MetricInterval]
-PackageExport[BetweennessQ]
-PackageExport[EquidistanceQ]
 PackageExport[GeodesicCount]
 PackageExport[DistanceMultiplicityMatrix]
 PackageExport[DistanceMatrixQ]
@@ -56,6 +66,33 @@ PackageExport[WhiteheadW1Q]
 PackageExport[WhiteheadW2Q]
 PackageExport[WhiteheadW3Q]
 PackageExport[ProjectivePlaneGraphQ]
+
+(* TarskiPostulates.wl *)
+PackageExport[FindTarskiSegmentExtension]
+PackageExport[FindTarskiCounterexample]
+
+(* TarskiPredicates.wl *)
+PackageExport[BetweennessQ]
+PackageExport[EquidistanceQ]
+PackageExport[TarskiStructure]
+PackageExport[TarskiBetweennessTensor]
+PackageExport[TarskiEquidistanceClasses]
+PackageExport[TarskiCongruenceReflexivityQ]
+PackageExport[TarskiCongruenceTransitivityQ]
+PackageExport[TarskiCongruenceIdentityQ]
+PackageExport[TarskiSegmentConstructionQ]
+PackageExport[TarskiFiveSegmentsQ]
+PackageExport[TarskiBetweennessIdentityQ]
+PackageExport[TarskiInnerPaschQ]
+PackageExport[TarskiLowerDimensionQ]
+PackageExport[TarskiUpperDimensionQ]
+PackageExport[TarskiEuclidAxiomQ]
+PackageExport[TarskiContinuityQ]
+PackageExport[TarskiAxiomQ]
+
+(* TarskiConstructions.wl *)
+PackageExport[FindTarskiReflection]
+PackageExport[FindTarskiMidpoint]
 
 (* TropicalPostulates.wl *)
 PackageExport[FindTropicalSegment]
@@ -92,7 +129,7 @@ PackageExport[InfraParallelQ]
 PackageExport[InfraIntersectQ]
 
 (* Viewers.wl *)
-PackageExport[InfraDiffuseHighlight]
+PackageExport[InfraSceneHighlight]
 PackageExport[PointViewer]
 PackageExport[SegmentViewer]
 PackageExport[SphereViewer]

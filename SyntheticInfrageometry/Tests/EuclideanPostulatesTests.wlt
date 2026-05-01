@@ -120,22 +120,22 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = FindSegment[g, 1, 9, All, "Select" -> "FrechetCentral"]},
+    With[{segs = CentralPaths[g, FindSegment[g, 1, 9, All]]},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
   True,
-  TestID -> "FindSegment-FrechetCentral"
+  TestID -> "FindSegment-CentralPaths-Frechet"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = FindSegment[g, 1, 9, All, "Select" -> "EmbeddingClosest"]},
+    With[{segs = EmbeddingClosestPaths[g, FindSegment[g, 1, 9, All], {1, 9}]},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
   True,
-  TestID -> "FindSegment-EmbeddingClosest"
+  TestID -> "FindSegment-EmbeddingClosestPaths"
 ]
 
 VerificationTest[
@@ -146,33 +146,32 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = FindSegment[g, 1, 9, All, "Select" -> "HausdorffCentral"]},
+    With[{segs = CentralPaths[g, FindSegment[g, 1, 9, All], Method -> "Hausdorff"]},
       Length[segs] >= 1
     ]
   ],
   True,
-  TestID -> "FindSegment-HausdorffCentral"
+  TestID -> "FindSegment-CentralPaths-Hausdorff"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = FindSegment[g, 1, 9, All, "Select" -> "FrechetPeripheral"]},
+    With[{segs = PeripheralPaths[g, FindSegment[g, 1, 9, All]]},
       Length[segs] >= 1
     ]
   ],
   True,
-  TestID -> "FindSegment-FrechetPeripheral"
+  TestID -> "FindSegment-PeripheralPaths-Frechet"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = FindSegment[g, 1, 9, All,
-        "Select" -> {"FrechetCentral", "EmbeddingClosest"}]},
+    With[{segs = EmbeddingClosestPaths[g, {1, 9}] @ CentralPaths[g] @ FindSegment[g, 1, 9, All]},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
   True,
-  TestID -> "FindSegment-chained-select"
+  TestID -> "FindSegment-chained-operator-form"
 ]
 
 VerificationTest[
@@ -213,12 +212,12 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{exts = FindLine[g, 5, 6, 3, "Select" -> "FrechetCentral"]},
+    With[{exts = Take[CentralPaths[g, FindLine[g, 5, 6, All]], UpTo[3]]},
       Length[exts] >= 1 && AllTrue[exts, Length[#] > 2 &]
     ]
   ],
   True,
-  TestID -> "FindLine-with-FrechetCentral"
+  TestID -> "FindLine-with-CentralPaths"
 ]
 
 VerificationTest[
@@ -316,8 +315,9 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{spheres = FindSphere[g, 6, {1, 2}, 1, Method -> "SeparatingCycle",
-                              "Select" -> "LongestCircumference"]},
+    With[{spheres = Take[
+        LongestCircumferenceCycles @ FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingCycle"],
+        UpTo[1]]},
       Length[spheres] >= 1 && AllTrue[spheres, ListQ]
     ]
   ],
@@ -337,24 +337,24 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{spheres = FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingCycle",
-                              "Select" -> "LongestCircumference"]},
+    With[{spheres = LongestCircumferenceCycles @
+        FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingCycle"]},
       Length[spheres] >= 1 && Length[Union[Length /@ spheres]] == 1
     ]
   ],
   True,
-  TestID -> "FindSphere-SeparatingCycle-LongestCircumference-uniform"
+  TestID -> "FindSphere-SeparatingCycle-LongestCircumferenceCycles-uniform"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{spheres = FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingCycle",
-                              "Select" -> "ShortestCircumference"]},
+    With[{spheres = ShortestCircumferenceCycles @
+        FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingCycle"]},
       Length[spheres] >= 1 && Length[Union[Length /@ spheres]] == 1
     ]
   ],
   True,
-  TestID -> "FindSphere-SeparatingCycle-ShortestCircumference"
+  TestID -> "FindSphere-SeparatingCycle-ShortestCircumferenceCycles"
 ]
 
 (* ===== FindParallel ===== *)

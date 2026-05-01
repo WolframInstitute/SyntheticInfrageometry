@@ -1,0 +1,171 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      7000,        162]
+NotebookOptionsPosition[      4693,        128]
+NotebookOutlinePosition[      5010,        142]
+CellTagsIndexPosition[      4967,        139]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["PeripheralPaths", "Title",ExpressionUUID->"be588f34-20a0-459f-92bd-1b2ab90e54ab"],
+
+Cell["\<\
+PeripheralPaths[graph, paths] keeps the paths whose maximum path-space \
+distance to the rest of the bundle is maximal -- the eccentric paths. Same \
+Method options as CentralPaths and the same operator form.\
+\>", "Text",ExpressionUUID->"1c1c5453-f0be-4df0-bf4f-a40f27fd7985"],
+
+Cell["Setup", "Section",ExpressionUUID->"75e1d0f3-c642-4059-bad5-25277aff0dd1"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"acd7f353-c725-41d7-998c-39e50389bdd0"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",ExpressionUUID->"9803cbc6-fff5-4035-b11f-057d44573514"],
+
+Cell["Usage", "Section",ExpressionUUID->"105475ff-7ebf-4b81-993a-de79ff4dc6a6"],
+
+Cell["Pick the eccentric paths in a geodesic bundle.", "CodeText",ExpressionUUID->"b6498640-1126-4a4b-94ae-d8da062eab64"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{"PeripheralPaths", "[", 
+    RowBox[{"g", ",", 
+     RowBox[{"FindSegment", "[", 
+      RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}]}], "]"}]}], 
+  "]"}]], "Input",ExpressionUUID->"dcd5c2c2-35e2-48e5-a4cb-91891868350a"],
+
+Cell["Use the operator form after FindLine.", "CodeText",ExpressionUUID->"ab95b150-ea41-4d9a-b0d8-fb4c2cc22804"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{
+    RowBox[{"PeripheralPaths", "[", "g", "]"}], "[", 
+    RowBox[{"FindLine", "[", 
+     RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "]"}]}], 
+  "]"}]], "Input",ExpressionUUID->"a0948160-44d7-421a-a171-fd6d6d9a3984"],
+
+Cell["Examples", "Section",ExpressionUUID->"437e6946-40b5-45ed-847d-d8b00d6b023d"],
+
+Cell["Use the MeanFrechet metric.", "CodeText",ExpressionUUID->"7892da7f-1d8e-4b94-bc57-36a99710f752"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", "=", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{"PeripheralPaths", "[", 
+    RowBox[{"g", ",", 
+     RowBox[{"FindSegment", "[", 
+      RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], ",", 
+     RowBox[{"Method", "\[Rule]", "\"\<MeanFrechet\>\""}]}], "]"}]}], 
+  "]"}]], "Input",ExpressionUUID->"f289fbc2-aa18-4d44-a923-96db29b8d82b"],
+
+Cell["Compare the bundle size before and after filtering.", "CodeText",ExpressionUUID->"fa9a24ce-8b29-4bbf-8198-14641ee40399"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"g", "=", 
+      RowBox[{"GridGraph", "[", 
+       RowBox[{"{", 
+        RowBox[{"4", ",", "4"}], "}"}], "]"}]}], ",", 
+     RowBox[{"paths", "=", 
+      RowBox[{"FindSegment", "[", 
+       RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}]}]}], "}"}], ",", 
+   
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"Length", "[", "paths", "]"}], ",", 
+     RowBox[{"Length", "[", 
+      RowBox[{"PeripheralPaths", "[", 
+       RowBox[{"g", ",", "paths"}], "]"}], "]"}]}], "}"}]}], "]"}]], "Input",E\
+xpressionUUID->"bff99288-9654-421b-bdba-1552fc8cb28f"],
+
+Cell["See also", "Section",ExpressionUUID->"50697ec2-75f1-4f2f-9776-f11d3538e25d"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"7cca2d12-5d50-4265-b452-c0376961d2e3"],
+
+Cell["FindLine", "Item",ExpressionUUID->"35d1b6be-3960-46b1-be97-80a833466734"],
+
+Cell["FindSphere", "Item",ExpressionUUID->"7dee704a-f228-4c72-ad33-534cf4382167"],
+
+Cell["CentralPaths", "Item",ExpressionUUID->"d1051e44-e72a-4a0f-9d76-6e942ae3aad5"],
+
+Cell["CentralCycles", "Item",ExpressionUUID->"5c8f1510-f6e8-4f5d-8800-fc2fbb74c22c"],
+
+Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"3d7fcab9-8e4a-4186-901f-85210bdda084"],
+
+Cell["EmbeddingClosestCycles", "Item",ExpressionUUID->"59dd911d-fe19-416e-81fa-e52ad3fd9fe4"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"be588f34-20a0-459f-92bd-1b2ab90e54ab"],
+Cell[644, 22, 287, 4, 70, "Text",ExpressionUUID->"1c1c5453-f0be-4df0-bf4f-a40f27fd7985"],
+Cell[934, 28, 79, 0, 70, "Section",ExpressionUUID->"75e1d0f3-c642-4059-bad5-25277aff0dd1"],
+Cell[1016, 30, 132, 0, 70, "CodeText",ExpressionUUID->"acd7f353-c725-41d7-998c-39e50389bdd0"],
+Cell[1151, 32, 162, 2, 70, "Code",ExpressionUUID->"9803cbc6-fff5-4035-b11f-057d44573514"],
+Cell[1316, 36, 79, 0, 70, "Section",ExpressionUUID->"105475ff-7ebf-4b81-993a-de79ff4dc6a6"],
+Cell[1398, 38, 121, 0, 70, "CodeText",ExpressionUUID->"b6498640-1126-4a4b-94ae-d8da062eab64"],
+Cell[1522, 40, 440, 12, 70, "Input",ExpressionUUID->"dcd5c2c2-35e2-48e5-a4cb-91891868350a"],
+Cell[1965, 54, 112, 0, 70, "CodeText",ExpressionUUID->"ab95b150-ea41-4d9a-b0d8-fb4c2cc22804"],
+Cell[2080, 56, 440, 12, 70, "Input",ExpressionUUID->"a0948160-44d7-421a-a171-fd6d6d9a3984"],
+Cell[2523, 70, 82, 0, 70, "Section",ExpressionUUID->"437e6946-40b5-45ed-847d-d8b00d6b023d"],
+Cell[2608, 72, 102, 0, 70, "CodeText",ExpressionUUID->"7892da7f-1d8e-4b94-bc57-36a99710f752"],
+Cell[2713, 74, 505, 13, 70, "Input",ExpressionUUID->"f289fbc2-aa18-4d44-a923-96db29b8d82b"],
+Cell[3221, 89, 126, 0, 70, "CodeText",ExpressionUUID->"fa9a24ce-8b29-4bbf-8198-14641ee40399"],
+Cell[3350, 91, 639, 19, 70, "Input",ExpressionUUID->"bff99288-9654-421b-bdba-1552fc8cb28f"],
+Cell[3992, 112, 82, 0, 70, "Section",ExpressionUUID->"50697ec2-75f1-4f2f-9776-f11d3538e25d"],
+Cell[4077, 114, 82, 0, 70, "Item",ExpressionUUID->"7cca2d12-5d50-4265-b452-c0376961d2e3"],
+Cell[4162, 116, 79, 0, 70, "Item",ExpressionUUID->"35d1b6be-3960-46b1-be97-80a833466734"],
+Cell[4244, 118, 81, 0, 70, "Item",ExpressionUUID->"7dee704a-f228-4c72-ad33-534cf4382167"],
+Cell[4328, 120, 83, 0, 70, "Item",ExpressionUUID->"d1051e44-e72a-4a0f-9d76-6e942ae3aad5"],
+Cell[4414, 122, 84, 0, 70, "Item",ExpressionUUID->"5c8f1510-f6e8-4f5d-8800-fc2fbb74c22c"],
+Cell[4501, 124, 92, 0, 70, "Item",ExpressionUUID->"3d7fcab9-8e4a-4186-901f-85210bdda084"],
+Cell[4596, 126, 93, 0, 70, "Item",ExpressionUUID->"59dd911d-fe19-416e-81fa-e52ad3fd9fe4"]
+}
+]
+*)
+
+(* End of internal cache information *)

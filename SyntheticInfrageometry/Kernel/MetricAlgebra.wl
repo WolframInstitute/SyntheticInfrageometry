@@ -29,24 +29,6 @@ MetricInterval[ graph_Graph, u_, v_ ] :=
   ]
 
 
-(* ===================== Tarski primitives ===================== *)
-
-(* Tarski's two primitive relations on a metric space, restated on graphs.
-   B(u, w, v): w lies on a geodesic u-v, i.e. d(u, w) + d(w, v) = d(u, v).
-   E(a, b, c, d): the unordered pairs are equidistant, d(a, b) = d(c, d).
-   Together they generate first-order metric geometry on the graph. *)
-
-BetweennessQ[ graph_Graph, u_, w_, v_ ] :=
-  With[ { duw = GraphDistance[ graph, u, w ],
-          dwv = GraphDistance[ graph, w, v ],
-          duv = GraphDistance[ graph, u, v ] },
-    duw =!= Infinity && dwv =!= Infinity && duv =!= Infinity && duw + dwv == duv
-  ]
-
-EquidistanceQ[ graph_Graph, a_, b_, c_, d_ ] :=
-  GraphDistance[ graph, a, b ] === GraphDistance[ graph, c, d ]
-
-
 (* ===================== GeodesicCount ===================== *)
 
 (* GeodesicCount[g, u, v] = (A^d)[u, v] where A is the adjacency matrix

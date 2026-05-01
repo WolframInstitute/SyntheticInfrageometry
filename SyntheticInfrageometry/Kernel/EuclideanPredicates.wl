@@ -79,6 +79,15 @@ ParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
   ]
 
 
+(* SeparatesQ tests whether deleting the vertex set vs disconnects u from v.
+   Endpoint deletion does not count as separation. *)
+
+SeparatesQ[ graph_Graph, vs_List, u_, v_ ] :=
+  If[ MemberQ[ vs, u ] || MemberQ[ vs, v ], False,
+    GraphDistance[ VertexDelete[ graph, vs ], u, v ] === Infinity
+  ]
+
+
 (* ===================== UniqueSegmentQ ===================== *)
 
 (* UniqueSegmentQ[g, u, v]: there is a unique geodesic from u to v

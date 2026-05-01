@@ -38,58 +38,6 @@ VerificationTest[
   TestID -> "MetricInterval-disconnected-empty"
 ]
 
-(* ===== BetweennessQ ===== *)
-
-VerificationTest[
-  BetweennessQ[PathGraph[Range[5]], 1, 3, 5],
-  True,
-  TestID -> "BetweennessQ-PathGraph-true"
-]
-
-VerificationTest[
-  BetweennessQ[PathGraph[Range[5]], 1, 4, 3],
-  False,
-  TestID -> "BetweennessQ-PathGraph-false"
-]
-
-VerificationTest[
-  BetweennessQ[CycleGraph[4], 1, 2, 3],
-  True,
-  TestID -> "BetweennessQ-CycleGraph4-via-2"
-]
-
-VerificationTest[
-  BetweennessQ[CycleGraph[4], 1, 4, 3],
-  True,
-  TestID -> "BetweennessQ-CycleGraph4-via-4"
-]
-
-VerificationTest[
-  BetweennessQ[Graph[{1, 2, 3, 4}, {1 <-> 2, 3 <-> 4}], 1, 2, 3],
-  False,
-  TestID -> "BetweennessQ-disconnected-false"
-]
-
-(* ===== EquidistanceQ ===== *)
-
-VerificationTest[
-  EquidistanceQ[PathGraph[Range[5]], 1, 2, 3, 4],
-  True,
-  TestID -> "EquidistanceQ-PathGraph-equal-edges"
-]
-
-VerificationTest[
-  EquidistanceQ[PathGraph[Range[5]], 1, 3, 2, 5],
-  False,
-  TestID -> "EquidistanceQ-PathGraph-unequal"
-]
-
-VerificationTest[
-  EquidistanceQ[CycleGraph[6], 1, 4, 2, 5],
-  True,
-  TestID -> "EquidistanceQ-CycleGraph6-antipodes-equal"
-]
-
 (* ===== GeodesicCount ===== *)
 
 VerificationTest[

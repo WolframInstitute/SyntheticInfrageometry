@@ -1,39 +1,59 @@
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Head @ InfraDiffuseHighlight[ g, FindSegment[ g, 1, 16, All ] ]
+    Head @ InfraSceneHighlight[ g, { FindSegment[ g, 1, 16, All ] } ]
   ],
   Graph,
-  TestID -> "InfraDiffuseHighlight-segments-returns-graph"
+  TestID -> "InfraSceneHighlight-single-multiobject"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    Head @ InfraDiffuseHighlight[ g, FindLine[ g, 1, 9, All ], RGBColor[ 0.8, 0.2, 0.2 ] ]
+    Head @ InfraSceneHighlight[ g,
+      { FindLine[ g, 1, 9, All ] -> RGBColor[ 0.8, 0.2, 0.2 ] } ]
   ],
   Graph,
-  TestID -> "InfraDiffuseHighlight-lines-explicit-color"
+  TestID -> "InfraSceneHighlight-explicit-color-rule"
 ]
 
 VerificationTest[
   With[ { g = CycleGraph[ 8 ] },
-    Head @ InfraDiffuseHighlight[ g, { VertexList[ g ] }, "Cyclic" -> True ]
+    Head @ InfraSceneHighlight[ g, { { VertexList[ g ] } }, "Cyclic" -> True ]
   ],
   Graph,
-  TestID -> "InfraDiffuseHighlight-cyclic-sphere"
+  TestID -> "InfraSceneHighlight-cyclic-sphere"
 ]
 
 VerificationTest[
-  With[ { g = PathGraph[ Range[ 5 ] ] },
-    Head @ InfraDiffuseHighlight[ g, { } ]
-  ],
+  Head @ InfraSceneHighlight[ PathGraph[ Range[ 5 ] ], { } ],
   Graph,
-  TestID -> "InfraDiffuseHighlight-empty-candidates-still-graph"
+  TestID -> "InfraSceneHighlight-empty-input-still-graph"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Head @ InfraDiffuseHighlight[ g, FindPoint[ g, 5 ] /. v_Integer :> { v } ]
+    Head @ InfraSceneHighlight[ g, { FindPoint[ g, 5 ] } ]
   ],
   Graph,
-  TestID -> "InfraDiffuseHighlight-singletons-as-vertex-clouds"
+  TestID -> "InfraSceneHighlight-vertex-singletons"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Head @ InfraSceneHighlight[ g,
+      { FindSegment[ g, 1, 16, All ] -> Blue,
+        { 1, 16 }                    -> Red } ]
+  ],
+  Graph,
+  TestID -> "InfraSceneHighlight-multiple-objects-blend"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Head @ InfraSceneHighlight[ g,
+      { FindSegment[ g, 1, 16, All ] -> Blue,
+        FindSphere[ g, 1, 2, All ]    -> Green },
+      "Cyclic" -> { False, True } ]
+  ],
+  Graph,
+  TestID -> "InfraSceneHighlight-per-object-cyclic"
 ]

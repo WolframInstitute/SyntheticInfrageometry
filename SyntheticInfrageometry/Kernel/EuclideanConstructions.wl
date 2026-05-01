@@ -7,8 +7,6 @@ FindMidpoint::nyi = "Method `1` is not yet implemented for FindMidpoint; only \"
 FindMidpoint::badmethod = "Method `1` is not supported by FindMidpoint.";
 FindPerpendicular::nyi = "Method `1` is not yet implemented for FindPerpendicular; only \"Metric\" is currently available.";
 FindPerpendicular::badmethod = "Method `1` is not supported by FindPerpendicular.";
-FindBisector::nyi = "Method `1` is not yet implemented for FindBisector; only \"Metric\" is currently available.";
-FindBisector::badmethod = "Method `1` is not supported by FindBisector.";
 CompleteEquilateralTriangle::nyi = "Method `1` is not yet implemented for CompleteEquilateralTriangle; only \"Metric\" is currently available.";
 CompleteEquilateralTriangle::badmethod = "Method `1` is not supported by CompleteEquilateralTriangle.";
 SegmentLineAngle::nyi = "Method `1` is not yet implemented for SegmentLineAngle; only \"Metric\" is currently available.";
@@ -101,39 +99,51 @@ FindPerpendicular[ graph_Graph, line_List, point_, n_Integer : 1, opts : Options
   ]
 
 
-(* ===================== FindBisector ===================== *)
+(* ===================== FindBisectingHyperplane ===================== *)
 
-(* The metric perpendicular bisector of {p1, p2} is the vertex set
-   { v : d(p1, v) == d(p2, v) }.  Returned as a set; the count argument
-   samples a sub-list of fixed size when given. *)
+(* A bisecting hyperplane between p1 and p2 is an inclusion-minimal vertex
+   subset of the (windowed) bisector { v : lo <= d(p1, v) - d(p2, v) <= hi }
+   whose removal disconnects p1 from p2 in graph -- the codim-1 graph
+   analog of the perpendicular bisector hyperplane.  Multiple such
+   hyperplanes can coexist (e.g. the four cuts of a thickened bisector
+   on an even cycle).  The default window {0, 0} is the strict equidistant
+   set; passing {-1, 1} thickens it to recover the parity-stranded middle
+   pair when d(p1, p2) is odd.  Returns a list of vertex sets (one per
+   hyperplane); n / UpTo[n] / All control how many.  Returns $Failed
+   when fewer than n are available; {} when none exist (under All). *)
 
-Options[ FindBisector ] = { Method -> "Metric" };
+FindBisectingHyperplane[ graph_Graph, { p1_, p2_ }, args___ ] :=
+  FindBisectingHyperplane[ graph, p1, p2, args ]
 
-FindBisector[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] :=
-  Module[ { method = OptionValue[ Method ] },
-    Switch[ method,
-      "Metric", Select[ VertexList[ graph ],
-        GraphDistance[ graph, p1, # ] == GraphDistance[ graph, p2, # ] & ],
-      "Spectral" | "Resistance", Message[ FindBisector::nyi, method ]; $Failed,
-      _, Message[ FindBisector::badmethod, method ]; $Failed
-    ]
+FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List] ] :=
+  FindBisectingHyperplane[ graph, p1, p2, { 0, 0 }, 1 ]
+
+FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List],
+    count : (_Integer | UpTo[_Integer] | All) ] :=
+  FindBisectingHyperplane[ graph, p1, p2, { 0, 0 }, count ]
+
+FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List],
+    window : { _Integer, _Integer } ] :=
+  FindBisectingHyperplane[ graph, p1, p2, window, 1 ]
+
+FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List],
+    { lo_Integer, hi_Integer }, All ] :=
+  Module[ { bisector },
+    bisector = Pick[ VertexList[ graph ],
+      MapThread[ { x, y } |-> lo <= x - y <= hi,
+        { GraphDistance[ graph, p1 ], GraphDistance[ graph, p2 ] } ] ];
+    FindPairSeparators[ graph, Complement[ bisector, { p1, p2 } ], p1, p2 ]
   ]
 
-FindBisector[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  With[ { result = FindBisector[ graph, p1, p2, All, opts ] },
-    If[ ListQ[ result ], Take[ result, UpTo[ n ] ], result ]
+FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List],
+    { lo_Integer, hi_Integer }, UpTo[ n_Integer ] ] :=
+  Take[ FindBisectingHyperplane[ graph, p1, p2, { lo, hi }, All ], UpTo[ n ] ]
+
+FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List],
+    { lo_Integer, hi_Integer }, n_Integer ] :=
+  With[ { result = FindBisectingHyperplane[ graph, p1, p2, { lo, hi }, UpTo[ n ] ] },
+    If[ Length[ result ] < n, $Failed, result ]
   ]
-
-FindBisector[ graph_Graph, p1_, p2_, n_Integer, opts : OptionsPattern[] ] :=
-  With[ { result = FindBisector[ graph, p1, p2, UpTo[ n ], opts ] },
-    Which[ ! ListQ[ result ], result, Length[ result ] < n, $Failed, True, result ]
-  ]
-
-FindBisector[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
-  FindBisector[ graph, p1, p2, All, opts ]
-
-FindBisector[ graph_Graph, { p1_, p2_ }, args___ ] :=
-  FindBisector[ graph, p1, p2, args ]
 
 
 (* ===================== CompleteEquilateralTriangle ===================== *)
@@ -168,6 +178,22 @@ CompleteEquilateralTriangle[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : Op
 CompleteEquilateralTriangle[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] :=
   With[ { result = CompleteEquilateralTriangle[ graph, p1, p2, UpTo[ n ], opts ] },
     Which[ ! ListQ[ result ], result, Length[ result ] < n, $Failed, True, result ]
+  ]
+
+
+(* ===================== GraphAngle ===================== *)
+
+(* GraphAngle[q1, p, q2] removes the open ball around p of radius
+   Min[d(p, q1), d(p, q2)], then measures how far q1 and q2 are forced
+   to travel outside that neighborhood, normalized by that radius. *)
+
+GraphAngle[ graph_Graph, { q1_, p_, q2_ } ] :=
+  Module[ { radius, rem },
+    radius = Min[ GraphDistance[ graph, p, q1 ], GraphDistance[ graph, p, q2 ] ];
+    rem = VertexDelete[ graph,
+      Select[ VertexList[ graph ], GraphDistance[ graph, p, # ] < radius & ]
+    ];
+    GraphDistance[ rem, q1, q2 ] / radius
   ]
 
 

@@ -1,0 +1,164 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      6579,        155]
+NotebookOptionsPosition[      4444,        123]
+NotebookOutlinePosition[      4761,        137]
+CellTagsIndexPosition[      4718,        134]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["Euclidean Layer Tutorial", "Title",ExpressionUUID->"2a7a4c26-6822-4aa8-9b97-6884c1cf38c8"],
+
+Cell["\<\
+A compact tour of the Euclidean layer on paths and grids: segments, spheres, \
+and the separating bisector.\
+\>", "Text",ExpressionUUID->"995612bf-afd9-4384-97c1-b21055446847"],
+
+Cell["Setup", "Section",ExpressionUUID->"b4c14247-69f0-47a4-a0fe-ee9464edf864"],
+
+Cell["Load the paclet and define a path and a grid.", "CodeText",ExpressionUUID->"d86ac6d6-8636-4f7b-ae25-41c8f25282e9"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",ExpressionUUID->"431ca564-4109-49d3-843f-07828b005f92"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g1", ",", "g2"}], "}"}], "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"PathGraph", "[", 
+      RowBox[{"Range", "[", "5", "]"}], "]"}], ",", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}]}], ";"}]], "Code",Expres\
+sionUUID->"137d77ad-5d39-43ec-a01f-c8bc309e3b19"],
+
+Cell["Segments", "Section",ExpressionUUID->"3916f884-8956-4a6e-8a38-21c93f24d144"],
+
+Cell["Enumerate all geodesics between opposite grid corners.", "CodeText",ExpressionUUID->"5b23b31a-a676-4626-a3de-38fdfa86f063"],
+
+Cell[BoxData[
+ RowBox[{"FindSegment", "[", 
+  RowBox[{"g2", ",", "1", ",", "16", ",", "All"}], "]"}]], "Input",ExpressionU\
+UID->"0755d46d-52cb-4b3d-98c5-d0a22f132779"],
+
+Cell["Render the geodesic bundle as a diffuse picture.", "CodeText",ExpressionUUID->"7d58d50a-5c64-4287-a254-fd0d5959aaeb"],
+
+Cell[BoxData[
+ RowBox[{"InfraSceneHighlight", "[", 
+  RowBox[{"g2", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"FindSegment", "[", 
+      RowBox[{"g2", ",", "1", ",", "16", ",", "All"}], "]"}], "\[Rule]", 
+     "Blue"}], "}"}]}], "]"}]], "Input",ExpressionUUID->"30a18da7-291d-43bc-\
+a566-5b6de0cd5ea8"],
+
+Cell["Spheres", "Section",ExpressionUUID->"7ae2ddc7-ab6a-4cbe-886c-a50451700bb8"],
+
+Cell["Compute separating cycles around the grid centre.", "CodeText",ExpressionUUID->"88683102-6a4d-4cdf-aa3a-b38a80a88fb8"],
+
+Cell[BoxData[
+ RowBox[{"FindSphere", "[", 
+  RowBox[{"g2", ",", "6", ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2"}], "}"}], ",", "All", ",", 
+   RowBox[{"Method", "\[Rule]", "\"\<SeparatingCycle\>\""}]}], "]"}]], "Input",\
+ExpressionUUID->"818c5658-e223-43b1-bf4a-a6d88e433551"],
+
+Cell["Render the separating-cycle bundle.", "CodeText",ExpressionUUID->"121e30d1-54ce-4176-b03c-427321b74702"],
+
+Cell[BoxData[
+ RowBox[{"InfraSceneHighlight", "[", 
+  RowBox[{"g2", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"FindSphere", "[", 
+      RowBox[{"g2", ",", "6", ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "2"}], "}"}], ",", "All", ",", 
+       RowBox[{"Method", "\[Rule]", "\"\<SeparatingCycle\>\""}]}], "]"}], "\[Rule]",
+      "Green"}], "}"}], ",", 
+   RowBox[{"\"\<Cyclic\>\"", "\[Rule]", "True"}]}], "]"}]], "Input",Expression\
+UUID->"14eef0bd-da32-4b25-b592-179e91fd4148"],
+
+Cell["Bisecting hyperplanes", "Section",ExpressionUUID->"300fffd0-4393-41fd-b934-c3273eee5842"],
+
+Cell["\<\
+On an odd path there is one separator in the strict bisector.\
+\>", "CodeText",ExpressionUUID->"c2cf9462-b295-4447-893e-7734a523cb46"],
+
+Cell[BoxData[
+ RowBox[{"FindBisectingHyperplane", "[", 
+  RowBox[{"g1", ",", "1", ",", "5", ",", "All"}], "]"}]], "Input",ExpressionUU\
+ID->"67ff7d6e-7b94-435f-ae27-9a22932b3561"],
+
+Cell["\<\
+On an even path, widen the window to recover the middle cuts.\
+\>", "CodeText",ExpressionUUID->"87c6e691-269a-4502-bda6-379e8adfdc8e"],
+
+Cell[BoxData[
+ RowBox[{"FindBisectingHyperplane", "[", 
+  RowBox[{
+   RowBox[{"PathGraph", "[", 
+    RowBox[{"Range", "[", "6", "]"}], "]"}], ",", "1", ",", "6", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", "All"}], "]"}]], "Input",Expr\
+essionUUID->"f2945b2f-dc6c-440a-8dc7-20844abaab41"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5a004e49-8cf7-433b-84af-5db8146de72f"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 96, 0, 70, "Title",ExpressionUUID->"2a7a4c26-6822-4aa8-9b97-6884c1cf38c8"],
+Cell[653, 22, 186, 3, 70, "Text",ExpressionUUID->"995612bf-afd9-4384-97c1-b21055446847"],
+Cell[842, 27, 79, 0, 70, "Section",ExpressionUUID->"b4c14247-69f0-47a4-a0fe-ee9464edf864"],
+Cell[924, 29, 120, 0, 70, "CodeText",ExpressionUUID->"d86ac6d6-8636-4f7b-ae25-41c8f25282e9"],
+Cell[1047, 31, 162, 2, 70, "Code",ExpressionUUID->"431ca564-4109-49d3-843f-07828b005f92"],
+Cell[1212, 35, 392, 12, 70, "Code",ExpressionUUID->"137d77ad-5d39-43ec-a01f-c8bc309e3b19"],
+Cell[1607, 49, 82, 0, 70, "Section",ExpressionUUID->"3916f884-8956-4a6e-8a38-21c93f24d144"],
+Cell[1692, 51, 129, 0, 70, "CodeText",ExpressionUUID->"5b23b31a-a676-4626-a3de-38fdfa86f063"],
+Cell[1824, 53, 168, 3, 70, "Input",ExpressionUUID->"0755d46d-52cb-4b3d-98c5-d0a22f132779"],
+Cell[1995, 58, 123, 0, 70, "CodeText",ExpressionUUID->"7d58d50a-5c64-4287-a254-fd0d5959aaeb"],
+Cell[2121, 60, 309, 8, 70, "Input",ExpressionUUID->"30a18da7-291d-43bc-a566-5b6de0cd5ea8"],
+Cell[2433, 70, 81, 0, 70, "Section",ExpressionUUID->"7ae2ddc7-ab6a-4cbe-886c-a50451700bb8"],
+Cell[2517, 72, 124, 0, 70, "CodeText",ExpressionUUID->"88683102-6a4d-4cdf-aa3a-b38a80a88fb8"],
+Cell[2644, 74, 282, 6, 70, "Input",ExpressionUUID->"818c5658-e223-43b1-bf4a-a6d88e433551"],
+Cell[2929, 82, 110, 0, 70, "CodeText",ExpressionUUID->"121e30d1-54ce-4176-b03c-427321b74702"],
+Cell[3042, 84, 492, 12, 70, "Input",ExpressionUUID->"14eef0bd-da32-4b25-b592-179e91fd4148"],
+Cell[3537, 98, 95, 0, 70, "Section",ExpressionUUID->"300fffd0-4393-41fd-b934-c3273eee5842"],
+Cell[3635, 100, 144, 2, 70, "CodeText",ExpressionUUID->"c2cf9462-b295-4447-893e-7734a523cb46"],
+Cell[3782, 104, 179, 3, 70, "Input",ExpressionUUID->"67ff7d6e-7b94-435f-ae27-9a22932b3561"],
+Cell[3964, 109, 144, 2, 70, "CodeText",ExpressionUUID->"87c6e691-269a-4502-bda6-379e8adfdc8e"],
+Cell[4111, 113, 329, 8, 70, "Input",ExpressionUUID->"f2945b2f-dc6c-440a-8dc7-20844abaab41"]
+}
+]
+*)
+
+(* End of internal cache information *)
