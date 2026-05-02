@@ -22,25 +22,55 @@ SegmentLineAngle::badmethod = "Method `1` is not supported by SegmentLineAngle."
 Options[ FindMidpoint ] = { Method -> "Metric" };
 
 FindMidpoint[ graph_Graph, segment_List, opts : OptionsPattern[] ] /; Length[ segment ] >= 2 :=
-  Module[ { method = OptionValue[ Method ] },
-    Switch[ method,
+  Module[ { spec = OptionValue[ Method ], methodName },
+    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
+    Switch[ methodName,
       "Metric", segment[[ Ceiling[ Length[ segment ] / 2 ] ]],
-      "Spectral" | "Resistance", Message[ FindMidpoint::nyi, method ]; $Failed,
-      _, Message[ FindMidpoint::badmethod, method ]; $Failed
+      "Embedding",
+        With[ { embOpts = parseEmbeddingMethod[ spec ] },
+          First @ embeddingRankMidpoints[ graph, First[ segment ], Last[ segment ], embOpts ]
+        ],
+      "Spectral" | "Resistance", Message[ FindMidpoint::nyi, methodName ]; $Failed,
+      _, Message[ FindMidpoint::badmethod, methodName ]; $Failed
     ]
   ]
 
 FindMidpoint[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] :=
-  Module[ { method = OptionValue[ Method ], segs },
-    Switch[ method,
+  Module[ { spec = OptionValue[ Method ], methodName, segs },
+    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
+    Switch[ methodName,
       "Metric",
         segs = allGeodesics[ graph, p1, p2 ];
         If[ segs === {}, {},
           DeleteDuplicates[ #[[ Ceiling[ Length[ # ] / 2 ] ]] & /@ segs ]
         ],
-      "Spectral" | "Resistance", Message[ FindMidpoint::nyi, method ]; $Failed,
-      _, Message[ FindMidpoint::badmethod, method ]; $Failed
+      "Embedding",
+        With[ { embOpts = parseEmbeddingMethod[ spec ] },
+          embeddingRankMidpoints[ graph, p1, p2, embOpts ]
+        ],
+      "Spectral" | "Resistance", Message[ FindMidpoint::nyi, methodName ]; $Failed,
+      _, Message[ FindMidpoint::badmethod, methodName ]; $Failed
     ]
+  ]
+
+
+(* embeddingRankMidpoints sorts vertices by their Euclidean distance to
+   (coord(p1) + coord(p2)) / 2.  Constraint "Geodesic" ranks only the
+   metric interval { w : d(p1, w) + d(w, p2) == d(p1, p2) } -- vertices
+   that lie on at least one geodesic; "Free" ranks every vertex. *)
+
+embeddingRankMidpoints[ graph_Graph, p1_, p2_, embOpts_Association ] :=
+  Module[ { coords, vertexIndex, target, pool, total },
+    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
+    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
+    target = ( coords[[ vertexIndex[ p1 ] ]] + coords[[ vertexIndex[ p2 ] ]] ) / 2;
+    pool = If[ embOpts[ "Constraint" ] === "Free", VertexList[ graph ],
+      total = GraphDistance[ graph, p1, p2 ];
+      Select[ VertexList[ graph ],
+        GraphDistance[ graph, p1, # ] + GraphDistance[ graph, #, p2 ] == total & ]
+    ];
+    SortBy[ pool,
+      v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ]
   ]
 
 FindMidpoint[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
@@ -65,8 +95,9 @@ FindMidpoint[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] :=
 Options[ FindPerpendicular ] = { Method -> "Metric" };
 
 FindPerpendicular[ graph_Graph, line_List, point_, All, opts : OptionsPattern[] ] :=
-  Module[ { method = OptionValue[ Method ], distances, byIndex, feet },
-    Switch[ method,
+  Module[ { spec = OptionValue[ Method ], methodName, distances, byIndex, feet },
+    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
+    Switch[ methodName,
       "Metric",
         distances = GraphDistance[ graph, point, # ] & /@ line;
         byIndex = Values @ GroupBy[ Range @ Length @ line, distances[[ # ]] & ];
@@ -83,9 +114,35 @@ FindPerpendicular[ graph_Graph, line_List, point_, All, opts : OptionsPattern[] 
           { group, byIndex }
         ];
         feet,
-      "Spectral" | "Resistance", Message[ FindPerpendicular::nyi, method ]; $Failed,
-      _, Message[ FindPerpendicular::badmethod, method ]; $Failed
+      "Embedding",
+        With[ { embOpts = parseEmbeddingMethod[ spec ] },
+          embeddingRankPerpendicularFeet[ graph, line, point, embOpts ]
+        ],
+      "Spectral" | "Resistance", Message[ FindPerpendicular::nyi, methodName ]; $Failed,
+      _, Message[ FindPerpendicular::badmethod, methodName ]; $Failed
     ]
+  ]
+
+
+(* embeddingRankPerpendicularFeet sorts line vertices by their proximity to
+   the foot of the Euclidean perpendicular dropped from coord(point) onto
+   the polyline of `line` under the embedding -- i.e. each line vertex's
+   distance from the projection of point onto the affine line through
+   coord(line[[1]]) -> coord(line[[-1]]). *)
+
+embeddingRankPerpendicularFeet[ graph_Graph, line_List, point_, embOpts_Association ] :=
+  Module[ { coords, vertexIndex, lineStart, lineEnd, dir, dirNorm, pointCoord, foot },
+    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
+    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
+    lineStart = coords[[ vertexIndex[ First[ line ] ] ]];
+    lineEnd   = coords[[ vertexIndex[ Last[ line ] ] ]];
+    dir = lineEnd - lineStart;
+    dirNorm = dir . dir;
+    pointCoord = coords[[ vertexIndex[ point ] ]];
+    foot = If[ dirNorm == 0, lineStart,
+      lineStart + ( ( pointCoord - lineStart ) . dir / dirNorm ) * dir ];
+    SortBy[ line,
+      v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], foot ] ]
   ]
 
 FindPerpendicular[ graph_Graph, line_List, point_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=

@@ -120,7 +120,7 @@ VerificationTest[
 (* ===== Cycle vs path distinction ===== *)
 
 VerificationTest[
-  With[{g = CycleGraph[6], cycles = FindSphere[CycleGraph[6], 1, {1, 2}, All, Method -> "SeparatingCycle"]},
+  With[{g = CycleGraph[6], cycles = FindCircle[CycleGraph[6], 1, {1, 2}, All]},
     SubsetQ[cycles, CentralCycles[g, cycles]]
   ],
   True,
@@ -128,7 +128,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  With[{g = GridGraph[{4, 4}], cycles = FindSphere[GridGraph[{4, 4}], 6, {1, 2}, All, Method -> "SeparatingCycle"]},
+  With[{g = GridGraph[{4, 4}], cycles = FindCircle[GridGraph[{4, 4}], 6, {1, 2}, All]},
     cycles =!= {} && SubsetQ[cycles, EmbeddingClosestCycles[g, cycles, {6, 1.5}]]
   ],
   True,

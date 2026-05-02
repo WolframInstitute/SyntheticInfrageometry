@@ -23,7 +23,8 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
     typeColor = <|
       "point"   -> RGBColor[ 0.93, 0.50, 0.50 ],
       "segment" -> RGBColor[ 0.50, 0.60, 0.93 ],
-      "sphere"  -> RGBColor[ 0.50, 0.86, 0.62 ] |>;
+      "shell"   -> RGBColor[ 0.50, 0.86, 0.62 ],
+      "circle"  -> RGBColor[ 0.30, 0.70, 0.85 ] |>;
 
     typeOf = AssociationMap[
       o |-> Switch[ Head @ Lookup[ constructions, o ],
@@ -31,7 +32,8 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
         InfraIntersection, "point",
         InfraSegment,      "segment",
         InfraLine,         "segment",
-        InfraSphere,       "sphere",
+        InfraShell,        "shell",
+        InfraCircle,       "circle",
         _,                 "point" ],
       Select[ objects, KeyExistsQ[ constructions, # ] & ] ];
 
@@ -65,15 +67,18 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
                   If[ aggregate, currentObjects,
                     Select[ currentObjects, KeyExistsQ[ instances[[ Min[ inst, nInst ], 1 ]], # ] & ] ] ] },
               With[ {
+                  wrap = obj |-> <| "point" -> InfraPoint, "segment" -> InfraSegment,
+                                    "shell" -> InfraShell, "circle" -> InfraCircle |>[
+                    Lookup[ typeOf, obj, "point" ] ] },
+                With[ {
                   multiObjs = Which[
                     nInst == 0, {},
                     aggregate,
-                      ( Through[ instances[[ All, 1 ]][ # ] ] -> palette[ # ] ) & /@ activeObjects,
+                      ( wrap[ # ][ Through[ instances[[ All, 1 ]][ # ] ] ] -> palette[ # ] ) & /@ activeObjects,
                     True,
-                      ( { instances[[ Min[ inst, nInst ], 1 ]][ # ] } -> palette[ # ] ) & /@ activeObjects ],
-                  cyclics = Lookup[ typeOf, #, "point" ] === "sphere" & /@ activeObjects },
+                      ( wrap[ # ][ { instances[[ Min[ inst, nInst ], 1 ]][ # ] } ] -> palette[ # ] ) & /@ activeObjects ] },
                 HighlightGraph[
-                  InfraSceneHighlight[ graph, multiObjs, "Cyclic" -> cyclics ],
+                  InfraSceneHighlight[ graph, multiObjs ],
                   Flatten @ Table[
                     With[ {
                         value = fixed[ o ],
@@ -84,11 +89,9 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
                         Join[
                           Style[ #, Directive[ color, AbsolutePointSize[ 12 ] ] ] & /@ toVertexSet @ value,
                           Style[ #, Directive[ AbsoluteThickness[ 3 ], color ] ] & /@
-                            If[ tp === "sphere",
-                              UndirectedEdge @@@ Partition[ Append[ value, First @ value ], 2, 1 ],
-                              UndirectedEdge @@@ Partition[ value, 2, 1 ] ] ] ] ],
+                            EdgeList @ Subgraph[ graph, toVertexSet @ value ] ] ] ],
                     { o, Select[ fixedObjects, KeyExistsQ[ fixed, # ] & ] } ],
-                  ImageSize -> 600 ] ] ] ],
+                  ImageSize -> 600 ] ] ] ] ],
           TrackedSymbols :> { step, inst, aggregate, enabled, fixed, instances, nInst } ],
 
         Delimiter,

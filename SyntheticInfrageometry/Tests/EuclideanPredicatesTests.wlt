@@ -46,42 +46,76 @@ VerificationTest[
   TestID -> "LineQ-extendable-segment"
 ]
 
-(* ===== SphereQ ===== *)
+(* ===== ShellQ ===== *)
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    SphereQ[g, {2, 5, 10, 9, 8, 7}]
+    ShellQ[g, {2, 5, 10, 9, 8, 7}]
   ],
   True,
-  TestID -> "SphereQ-valid-cycle"
+  TestID -> "ShellQ-valid-shell"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    SphereQ[g, {1, 4}]
+    ShellQ[g, {1, 4}]
   ],
   False,
-  TestID -> "SphereQ-non-symmetric-pair-not-sphere"
+  TestID -> "ShellQ-non-symmetric-pair-not-shell"
 ]
 
-(* ===== FindSphereParameters ===== *)
+(* ===== FindShellParameters ===== *)
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    Length[FindSphereParameters[g, {2, 5, 10, 9, 8, 7}]] >= 1
+    Length[FindShellParameters[g, {2, 5, 10, 9, 8, 7}]] >= 1
   ],
   True,
-  TestID -> "FindSphereParameters-finds-center"
+  TestID -> "FindShellParameters-finds-center"
 ]
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    With[{params = FindSphereParameters[g, {2, 5, 10, 9, 8, 7}]},
+    With[{params = FindShellParameters[g, {2, 5, 10, 9, 8, 7}]},
       AllTrue[params, MatchQ[{_, _Integer}]]
     ]
   ],
   True,
-  TestID -> "FindSphereParameters-returns-pairs"
+  TestID -> "FindShellParameters-returns-pairs"
+]
+
+(* ===== CircleQ ===== *)
+
+VerificationTest[
+  With[{g = PetersenGraph[]},
+    CircleQ[g, {2, 5, 10, 9, 8, 7}]
+  ],
+  True,
+  TestID -> "CircleQ-valid-cycle"
+]
+
+VerificationTest[
+  With[{g = PetersenGraph[]},
+    CircleQ[g, {2, 5, 10, 9, 8, 7, 2}]
+  ],
+  True,
+  TestID -> "CircleQ-accepts-closed-input"
+]
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    CircleQ[g, {1, 2, 3}]
+  ],
+  False,
+  TestID -> "CircleQ-no-wrap-around-edge"
+]
+
+VerificationTest[
+  With[{g = CycleGraph[6]},
+    CircleQ[g, {1, 2}]
+  ],
+  False,
+  TestID -> "CircleQ-too-short"
 ]
 
 (* ===== ParallelQ ===== *)

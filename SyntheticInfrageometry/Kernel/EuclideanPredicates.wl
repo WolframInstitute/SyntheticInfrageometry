@@ -20,31 +20,31 @@ LineQ[ graph_Graph, segment_List ] :=
   Length[ First @ findLineExtensions[ graph, segment ] ] == Length[ segment ]
 
 
-(* FindSphereParameters[g, cycle] returns the {center, radius} pairs for
-   which the cycle is a metric sphere: in some component of g \ cycle, a
-   center c is equidistant (= r) from every cycle vertex, dominates that
+(* FindShellParameters[g, vs] returns the {center, radius} pairs for
+   which the vertex set vs is a metric shell: in some component of g \ vs,
+   a center c is equidistant (= r) from every vertex of vs, dominates that
    component (d(c, w) <= r), and is strictly closer to the inside than to
    the outside (d(c, w) > r for w outside).  This is the constructive
-   companion of SphereQ. *)
+   companion of ShellQ. *)
 
-FindSphereParameters[ graph_Graph, cycle_List ] :=
+FindShellParameters[ graph_Graph, vs_List ] :=
   Module[ { rem, comps },
-    rem = VertexDelete[ graph, cycle ];
+    rem = VertexDelete[ graph, vs ];
     comps = ConnectedComponents[ rem ];
     Flatten[ Table[
-      Module[ { subgraph, distMatrix, scores, minScore, centers, otherVertices },
-        subgraph = Subgraph[ graph, comp ];
-        distMatrix = GraphDistanceMatrix[ subgraph ];
-        scores = Max /@ distMatrix;
-        minScore = Min[ scores ];
-        centers = Pick[ comp, scores, minScore ];
-        otherVertices = Complement[ VertexList[ rem ], comp ];
-        Select[
-          { #, GraphDistance[ graph, #, First[ cycle ] ] } & /@ centers,
-          pair |-> With[ { v = pair[[ 1 ]], r = pair[[ 2 ]] },
-            AllTrue[ cycle, GraphDistance[ graph, v, # ] == r & ] &&
-            AllTrue[ comp, GraphDistance[ graph, v, # ] <= r & ] &&
-            AllTrue[ otherVertices, GraphDistance[ graph, v, # ] > r & ]
+      With[ {
+          distMatrix = GraphDistanceMatrix[ Subgraph[ graph, comp ] ],
+          otherVertices = Complement[ VertexList[ rem ], comp ] },
+        With[ { scores = Max /@ distMatrix },
+          With[ { centers = Pick[ comp, scores, Min[ scores ] ] },
+            Select[
+              { #, GraphDistance[ graph, #, First[ vs ] ] } & /@ centers,
+              pair |-> With[ { v = pair[[ 1 ]], r = pair[[ 2 ]] },
+                AllTrue[ vs, GraphDistance[ graph, v, # ] == r & ] &&
+                AllTrue[ comp, GraphDistance[ graph, v, # ] <= r & ] &&
+                AllTrue[ otherVertices, GraphDistance[ graph, v, # ] > r & ]
+              ]
+            ]
           ]
         ]
       ],
@@ -52,11 +52,32 @@ FindSphereParameters[ graph_Graph, cycle_List ] :=
     ], 1 ]
   ]
 
-(* SphereQ[g, vs] : the vertex set vs is a metric sphere of g iff
-   FindSphereParameters returns at least one valid (center, radius). *)
+(* ShellQ[g, vs] : the vertex set vs is a metric shell of g iff
+   FindShellParameters returns at least one valid (center, radius). *)
 
-SphereQ[ graph_Graph, vs_List ] :=
-  Length[ FindSphereParameters[ graph, vs ] ] > 0
+ShellQ[ graph_Graph, vs_List ] :=
+  Length[ FindShellParameters[ graph, vs ] ] > 0
+
+
+(* CircleQ[g, cycle] : the vertex sequence cycle = (v0, ..., vk) is a
+   metric circle of g iff (a) consecutive vertices are adjacent and the
+   wrap-around edge (vk, v0) exists, (b) the vertex set is a metric shell.
+   Accepts both open ({v0, ..., vk}, vk != v0) and closed ({v0, ..., vk, v0})
+   input. *)
+
+CircleQ[ graph_Graph, cycle_List ] /; Length[ cycle ] >= 3 :=
+  With[ {
+      closed = If[ First @ cycle === Last @ cycle, cycle, Append[ cycle, First @ cycle ] ] },
+    With[ {
+        verts = Most @ closed,
+        pairs = Partition[ closed, 2, 1 ] },
+      DuplicateFreeQ[ verts ] &&
+      AllTrue[ pairs, EdgeQ[ graph, UndirectedEdge @@ # ] & ] &&
+      Length[ FindShellParameters[ graph, verts ] ] > 0
+    ]
+  ]
+
+CircleQ[ _Graph, cycle_List ] /; Length[ cycle ] < 3 := False
 
 
 (* ParallelQ tests definition-alpha parallelism: l1 and l2 are parallel iff

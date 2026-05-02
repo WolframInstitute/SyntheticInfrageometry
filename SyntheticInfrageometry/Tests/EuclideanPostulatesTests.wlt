@@ -569,4 +569,104 @@ VerificationTest[
   TestID -> "FindParallel-output-passes-ParallelQ"
 ]
 
+
+(* ===== FindSegment Method -> "Embedding" ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Sort @ FindSegment[ g, 1, 16, All, Method -> "Embedding" ] ===
+      Sort @ FindSegment[ g, 1, 16, All, Method -> "Shortest" ]
+  ],
+  True,
+  TestID -> "FindSegment-Embedding-Geodesic-All-equals-Shortest-set"
+]
+
+VerificationTest[
+  With[ { paths = FindSegment[ GridGraph[ { 4, 4 } ], 1, 16, All, Method -> "Embedding" ] },
+    Length[ paths ] >= 1 && AllTrue[ paths, First[ # ] === 1 && Last[ # ] === 16 & ]
+  ],
+  True,
+  TestID -> "FindSegment-Embedding-paths-have-correct-endpoints"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ], coords = GraphEmbedding[ GridGraph[ { 4, 4 } ] ] },
+    FindSegment[ g, 1, 16, 1, Method -> { "Embedding", "Coordinates" -> coords } ] ===
+      FindSegment[ g, 1, 16, 1, Method -> "Embedding" ]
+  ],
+  True,
+  TestID -> "FindSegment-Embedding-explicit-coords-matches-Automatic"
+]
+
+VerificationTest[
+  Length @ FindSegment[ GridGraph[ { 4, 4 } ], 1, 16, 1, Method -> { "Embedding", "Pruning" -> 1 } ],
+  1,
+  TestID -> "FindSegment-Embedding-Pruning-beam-one"
+]
+
+VerificationTest[
+  FindSegment[ PathGraph[ Range[ 5 ] ], 1, 5, 1, Method -> { "Embedding", "Constraint" -> "Free" } ],
+  { { 1, 2, 3, 4, 5 } },
+  TestID -> "FindSegment-Embedding-Free-PathGraph-unique-path"
+]
+
+
+(* ===== FindLine Method -> "Embedding" ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Sort @ FindLine[ g, 1, 16, All, Method -> "Embedding" ] === Sort @ FindLine[ g, 1, 16, All ]
+  ],
+  True,
+  TestID -> "FindLine-Embedding-set-equals-default"
+]
+
+
+(* ===== FindShell Method -> "Embedding" ===== *)
+
+VerificationTest[
+  Length @ Flatten @ FindShell[ GridGraph[ { 4, 4 } ], 6, 1, All, Method -> "Embedding" ],
+  Length @ Select[ VertexList[ GridGraph[ { 4, 4 } ] ],
+    GraphDistance[ GridGraph[ { 4, 4 } ], 6, # ] == 1 & ],
+  TestID -> "FindShell-Embedding-Geodesic-pool-equals-level-surface"
+]
+
+VerificationTest[
+  Length @ FindShell[ GridGraph[ { 4, 4 } ], 6, 1, All, Method -> { "Embedding", "Constraint" -> "Free" } ],
+  16,
+  TestID -> "FindShell-Embedding-Free-pool-equals-all-vertices"
+]
+
+
+(* ===== FindCircle Method -> "Embedding" ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Sort @ FindCircle[ g, 6, { 1, 2 }, All, Method -> "Embedding" ] ===
+      Sort @ FindCircle[ g, 6, { 1, 2 }, All ]
+  ],
+  True,
+  TestID -> "FindCircle-Embedding-set-equals-default"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Length @ FindCircle[ g, 6, { 1, 2 }, All, Method -> "Embedding" ] >= 1
+  ],
+  True,
+  TestID -> "FindCircle-Embedding-non-empty-on-grid-with-cycles"
+]
+
+
+(* ===== FindParallel Method -> "Embedding" ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Sort @ FindParallel[ g, { 1, 2, 3, 4 }, 5, All, Method -> "Embedding" ] ===
+      Sort @ FindParallel[ g, { 1, 2, 3, 4 }, 5, All ]
+  ],
+  True,
+  TestID -> "FindParallel-Embedding-set-equals-default"
+]
+
 EndTestSection[]

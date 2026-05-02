@@ -122,13 +122,13 @@ VerificationTest[
   TestID -> "FindInfraScene-InfraSegmentQ-assertion"
 ]
 
-(* ===== InfraSphere with FindSphere ===== *)
+(* ===== InfraShell with FindShell ===== *)
 
 VerificationTest[
   With[{
     scene = InfraScene[{p, c}, {
       p == InfraPoint[1],
-      c == InfraSphere[p, 2]
+      c == InfraShell[p, 2]
     }],
     g = PetersenGraph[]
   },
@@ -138,7 +138,26 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindInfraScene-InfraSphere-FindSphere"
+  TestID -> "FindInfraScene-InfraShell-FindShell"
+]
+
+(* ===== InfraCircle with FindCircle ===== *)
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{p, c}, {
+      p == InfraPoint[6],
+      c == InfraCircle[p, {1, 2}]
+    }],
+    g = GridGraph[{4, 4}]
+  },
+    With[{instances = FindInfraScene[scene, g]},
+      Length[instances] >= 1 &&
+      AllTrue[instances, inst |-> ListQ[inst[[1]][c]] && Length[inst[[1]][c]] >= 3]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraScene-InfraCircle-FindCircle"
 ]
 
 (* ===== InfraGeometricStep ===== *)

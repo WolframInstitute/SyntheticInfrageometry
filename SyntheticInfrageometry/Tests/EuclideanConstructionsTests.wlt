@@ -264,4 +264,43 @@ VerificationTest[
   TestID -> "FindParallel-bad-method"
 ]
 
+
+(* ===== FindMidpoint Method -> "Embedding" ===== *)
+
+VerificationTest[
+  MemberQ[ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> "Metric" ],
+           First @ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, 1, Method -> "Embedding" ] ],
+  True,
+  TestID -> "FindMidpoint-Embedding-Geodesic-in-metric-set"
+]
+
+VerificationTest[
+  Length @ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> { "Embedding", "Constraint" -> "Geodesic" } ],
+  Length @ Select[ VertexList[ GridGraph[ { 5, 5 } ] ],
+    GraphDistance[ GridGraph[ { 5, 5 } ], 1, # ] + GraphDistance[ GridGraph[ { 5, 5 } ], #, 25 ] ==
+      GraphDistance[ GridGraph[ { 5, 5 } ], 1, 25 ] & ],
+  TestID -> "FindMidpoint-Embedding-Geodesic-pool-equals-metric-interval"
+]
+
+VerificationTest[
+  Length @ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> { "Embedding", "Constraint" -> "Free" } ],
+  25,
+  TestID -> "FindMidpoint-Embedding-Free-pool-equals-all-vertices"
+]
+
+
+(* ===== FindPerpendicular Method -> "Embedding" ===== *)
+
+VerificationTest[
+  Sort @ FindPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ],
+  { 1, 2, 3, 4, 5 },
+  TestID -> "FindPerpendicular-Embedding-pool-equals-line"
+]
+
+VerificationTest[
+  First @ FindPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ],
+  3,
+  TestID -> "FindPerpendicular-Embedding-closest-foot-is-projection"
+]
+
 EndTestSection[]

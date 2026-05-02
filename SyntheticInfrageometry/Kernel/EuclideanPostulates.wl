@@ -8,6 +8,7 @@ PackageScope[findLineExtensions]
 FindSegment::badmethod = "Method `1` is not supported by FindSegment.";
 FindSegment::badpruning = "Pruning specification `1` is not supported; use Infinity, a positive integer (beam width), or a number 0 < p < 1 (Bernoulli keep probability).";
 FindSegment::badlookback = "Lookback specification `1` is not supported; use a positive integer or All.";
+FindSegment::badconstraint = "Constraint specification `1` is not supported; use \"Geodesic\" or \"Free\".";
 
 
 (* ===================== Points ===================== *)
@@ -99,14 +100,14 @@ FindSegment[ graph_Graph, p1_, p2_,
     count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
   Module[ { spec = OptionValue[ Method ], methodName, prune, lookback, d, paths },
     If[ p1 === p2, Return[ { } ] ];
-    { methodName, prune, lookback } = Replace[ spec, {
-      m_String :> { m, Infinity, 2 },
-      { m_String, subOpts___ } :> {
-        m,
+    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
+    { prune, lookback } = Replace[ spec, {
+      _String :> { Infinity, 2 },
+      { _String, subOpts___ } :> {
         "Pruning"  /. { subOpts } /. "Pruning"  -> Infinity,
         "Lookback" /. { subOpts } /. "Lookback" -> 2
       },
-      _ :> { spec, Infinity, 2 }
+      _ :> { Infinity, 2 }
     } ];
     Switch[ methodName,
       "Shortest",
@@ -132,8 +133,44 @@ FindSegment[ graph_Graph, p1_, p2_,
               If[ MatchQ[ count, _Integer ] && Length[ result ] < count, $Failed, result ]
             ]
         ],
+      "Embedding",
+        With[ { embOpts = parseEmbeddingMethod[ spec ] },
+          Which[
+            ! pruningSpecQ[ embOpts[ "Pruning" ] ],
+              Message[ FindSegment::badpruning, embOpts[ "Pruning" ] ]; $Failed,
+            ! MemberQ[ { "Geodesic", "Free" }, embOpts[ "Constraint" ] ],
+              Message[ FindSegment::badconstraint, embOpts[ "Constraint" ] ]; $Failed,
+            True,
+              paths = embeddingFindSegmentPaths[ graph, p1, p2, embOpts ];
+              With[ { result = takeUpTo[ paths, countLimit[ count ] ] },
+                If[ MatchQ[ count, _Integer ] && Length[ result ] < count, $Failed, result ]
+              ]
+          ]
+        ],
       _, Message[ FindSegment::badmethod, spec ]; $Failed
     ]
+  ]
+
+
+(* embeddingFindSegmentPaths returns paths from p1 to p2 sorted by their
+   embedding-Hausdorff distance to the straight Euclidean segment p1 p2.
+   Constraint "Geodesic" recurses through the geodesic DAG; "Free"
+   recurses through the whole graph along simple-path extensions. *)
+
+embeddingFindSegmentPaths[ graph_Graph, p1_, p2_, embOpts_Association ] :=
+  Module[ { coords, vertexIndex, dagNbrs, extendFn, prune, paths, ep },
+    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
+    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
+    prune = embOpts[ "Pruning" ];
+    extendFn = If[ embOpts[ "Constraint" ] === "Geodesic",
+      dagNbrs = geodesicDAGNeighbors[ graph, p1, p2 ];
+      ( path |-> Lookup[ dagNbrs, Last[ path ], { } ] ),
+      ( path |-> Complement[ AdjacencyList[ graph, Last[ path ] ], path ] )
+    ];
+    paths = generateEmbeddingPaths[ extendFn, { p1 }, ( Last[ # ] === p2 & ), prune ];
+    ep = Lookup[ vertexIndex, { p1, p2 } ];
+    SortBy[ paths,
+      path |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, path ], ep ] ]
   ]
 
 FindSegment[ graph_Graph, { p1_, p2_ }, args___ ] :=
@@ -147,12 +184,17 @@ FindSegment[ graph_Graph, { p1_, p2_ }, args___ ] :=
    which is a geodesic and that cannot be extended at either end without
    breaking the geodesic property.  FindLine enumerates such maximal
    extensions; "Maximality" -> "Diameter" further restricts to those whose
-   length equals GraphDiameter[g]. *)
+   length equals GraphDiameter[g].  Method -> "Embedding" ranks the
+   extensions by EmbeddingHausdorffDistance to the infinite Euclidean line
+   through p1 and p2 under the graph drawing. *)
 
-Options[ FindLine ] = { "Maximality" -> "Extension" };
+FindLine::badmethod = "Method `1` is not supported by FindLine.";
+FindLine::nyi = "Constraint `1` is not yet implemented for FindLine; use \"Geodesic\".";
+
+Options[ FindLine ] = { "Maximality" -> "Extension", Method -> Automatic };
 
 FindLine[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
-  Module[ { geodesics, allExtensions, diam },
+  Module[ { geodesics, allExtensions, diam, spec, methodName },
     geodesics = allGeodesics[ graph, p1, p2 ];
     allExtensions = Union @ Flatten[
       findLineExtensions[ graph, # ] & /@ geodesics, 1 ];
@@ -160,7 +202,36 @@ FindLine[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] /; MemberQ[ Vert
       diam = GraphDiameter[ graph ];
       allExtensions = Select[ allExtensions, line |-> Length[ line ] - 1 == diam ]
     ];
-    allExtensions
+    spec = OptionValue[ Method ];
+    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
+    Switch[ methodName,
+      Automatic, allExtensions,
+      "Embedding",
+        With[ { embOpts = parseEmbeddingMethod[ spec ] },
+          If[ embOpts[ "Constraint" ] =!= "Geodesic",
+            Message[ FindLine::nyi, embOpts[ "Constraint" ] ]; allExtensions,
+            embeddingRankLines[ graph, allExtensions, p1, p2, embOpts ]
+          ]
+        ],
+      _, Message[ FindLine::badmethod, spec ]; $Failed
+    ]
+  ]
+
+
+(* embeddingRankLines sorts maximal extensions by their Hausdorff distance
+   to the infinite Euclidean line through p1 and p2 under the supplied
+   embedding.  We use a Line[{coord(p1), coord(p2)}] segment as the
+   reference (RegionHausdorffDistance against an infinite line is the
+   same as against any segment containing both projection feet for our
+   bounded path). *)
+
+embeddingRankLines[ graph_Graph, lines_List, p1_, p2_, embOpts_Association ] :=
+  Module[ { coords, vertexIndex, ep },
+    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
+    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
+    ep = Lookup[ vertexIndex, { p1, p2 } ];
+    SortBy[ lines,
+      line |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, line ], ep ] ]
   ]
 
 FindLine[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
@@ -203,28 +274,51 @@ findLineExtensions[ graph_Graph, segment_List ] :=
 (* ===================== Shells ===================== *)
 
 (* A shell of radius r around c is a vertex set carved out of the level
-   surface { v : d(c, v) = r }.  Two recipes:
+   surface { v : d(c, v) = r }.  Three recipes:
    "Metric" (default) returns the level surface itself as a singleton;
    "Separating" returns connected subsets of the level surface whose
    removal disconnects c from { v : d(c, v) > r }, kept minimal under
-   inclusion.  The cyclic case (separating cycles, the 2D-style spheres)
-   has its own head, FindCircle, since cycles are vertex sequences rather
-   than vertex sets. *)
+   inclusion;
+   "Embedding" returns single-vertex sets ranked by how close each vertex
+   is to the Euclidean sphere of radius r around c under the graph
+   embedding, i.e. by | |coord(v) - coord(c)| - r |.
+   The cyclic case (separating cycles, the 2D-style spheres) has its
+   own head, FindCircle. *)
+
+FindShell::badmethod = "Method `1` is not supported by FindShell.";
 
 Options[ FindShell ] = { Method -> "Metric" };
 
 FindShell[ graph_Graph, p_, r_, All, opts : OptionsPattern[] ] :=
-  Module[ { method, range, levelSet, radius },
-    method = OptionValue[ Method ];
+  Module[ { spec, methodName, range, levelSet, radius },
+    spec = OptionValue[ Method ];
+    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
     range = Replace[ r, d_?NumericQ :> { d, d } ];
     levelSet = Select[ VertexList[ graph ],
       range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ];
     radius = If[ NumericQ[ r ], r, Mean[ r ] ];
-    Switch[ method,
+    Switch[ methodName,
       "Metric",     { levelSet },
       "Separating", FindMinimalSeparatingSubgraphs[ graph, levelSet, p, radius ],
-      _,            $Failed
+      "Embedding",  embeddingRankShellVertices[ graph, p, radius, levelSet, parseEmbeddingMethod[ spec ] ],
+      _,            Message[ FindShell::badmethod, spec ]; $Failed
     ]
+  ]
+
+
+(* embeddingRankShellVertices returns single-vertex sets {v}, ordered by
+   how close v is to the Euclidean sphere of radius r centred at coord(p):
+   score = | |coord(v) - coord(p)| - r |.  Constraint "Geodesic" restricts
+   to vertices on the metric level surface; "Free" ranks every vertex. *)
+
+embeddingRankShellVertices[ graph_Graph, p_, radius_, levelSet_, embOpts_Association ] :=
+  Module[ { coords, vertexIndex, centerPt, pool },
+    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
+    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
+    centerPt = coords[[ vertexIndex[ p ] ]];
+    pool = If[ embOpts[ "Constraint" ] === "Free", VertexList[ graph ], levelSet ];
+    List /@ SortBy[ pool,
+      v |-> Abs[ EuclideanDistance[ coords[[ vertexIndex[ v ] ]], centerPt ] - radius ] ]
   ]
 
 FindShell[ graph_Graph, p_, r_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
@@ -242,27 +336,62 @@ FindShell[ graph_Graph, p_, r_, n_Integer : 1, opts : OptionsPattern[] ] :=
    subgraph: a cyclic vertex sequence whose removal disconnects c from
    { v : d(c, v) > r }.  Returns open vertex sequences { v0, v1, ..., vk }
    (rotation-invariant via path-space selectors); the wrap-around edge
-   { vk, v0 } is implicit. *)
+   { vk, v0 } is implicit.  Method -> "Embedding" ranks the separating
+   cycles by EmbeddingCircleDistance to the Euclidean circle of radius r
+   centred at coord(p) under the graph drawing. *)
 
-FindCircle[ graph_Graph, p_, r_, All ] :=
-  Module[ { range, levelSet, radius, levelGraph, allCycles, vertexCycles },
+FindCircle::badmethod = "Method `1` is not supported by FindCircle.";
+FindCircle::nyi = "Constraint `1` is not yet implemented for FindCircle; use \"Geodesic\".";
+
+Options[ FindCircle ] = { Method -> "Metric" };
+
+FindCircle[ graph_Graph, p_, r_, All, opts : OptionsPattern[] ] :=
+  Module[ { range, levelSet, radius, levelGraph, allCycles, vertexCycles, separating, spec, methodName },
     range = Replace[ r, d_?NumericQ :> { d, d } ];
     levelSet = Select[ VertexList[ graph ],
       range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ];
     radius = If[ NumericQ[ r ], r, Mean[ r ] ];
     levelGraph = Subgraph[ graph, levelSet ];
     allCycles = FindCycle[ levelGraph, Infinity, All ];
-    If[ allCycles === {}, Return[ {} ] ];
-    vertexCycles = (First /@ #) & /@ allCycles;
-    FindSeparatingCycles[ graph, vertexCycles, p, radius ]
+    separating = If[ allCycles === {}, {},
+      vertexCycles = (First /@ #) & /@ allCycles;
+      FindSeparatingCycles[ graph, vertexCycles, p, radius ]
+    ];
+    spec = OptionValue[ Method ];
+    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
+    Switch[ methodName,
+      "Metric", separating,
+      "Embedding",
+        With[ { embOpts = parseEmbeddingMethod[ spec ] },
+          If[ embOpts[ "Constraint" ] =!= "Geodesic",
+            Message[ FindCircle::nyi, embOpts[ "Constraint" ] ]; separating,
+            embeddingRankCircles[ graph, separating, p, radius, embOpts ]
+          ]
+        ],
+      _, Message[ FindCircle::badmethod, spec ]; $Failed
+    ]
   ]
 
-FindCircle[ graph_Graph, p_, r_, UpTo[ n_Integer ] ] :=
-  Take[ FindCircle[ graph, p, r, All ], UpTo[ n ] ]
+FindCircle[ graph_Graph, p_, r_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+  Take[ FindCircle[ graph, p, r, All, opts ], UpTo[ n ] ]
 
-FindCircle[ graph_Graph, p_, r_, n_Integer : 1 ] :=
-  With[ { result = FindCircle[ graph, p, r, UpTo[ n ] ] },
+FindCircle[ graph_Graph, p_, r_, n_Integer : 1, opts : OptionsPattern[] ] :=
+  With[ { result = FindCircle[ graph, p, r, UpTo[ n ], opts ] },
     If[ Length[ result ] < n, $Failed, result ]
+  ]
+
+
+(* embeddingRankCircles sorts separating cycles by their Hausdorff distance
+   to the Euclidean circle of radius r centred at coord(center) under the
+   supplied embedding. *)
+
+embeddingRankCircles[ graph_Graph, cycles_List, center_, radius_, embOpts_Association ] :=
+  Module[ { coords, vertexIndex, centerIdx },
+    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
+    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
+    centerIdx = vertexIndex[ center ];
+    SortBy[ cycles,
+      cycle |-> EmbeddingCircleDistance[ coords, Lookup[ vertexIndex, cycle ], centerIdx, radius ] ]
   ]
 
 
@@ -282,31 +411,64 @@ FindParallel::badmethod = "Method `1` is not supported by FindParallel.";
 Options[ FindParallel ] = { Method -> "Metric" };
 
 FindParallel[ graph_Graph, line_List, p_, All, opts : OptionsPattern[] ] :=
-  Module[ { method = OptionValue[ Method ], lineDist, r, levelSet, linesThroughP, segments, dedup, maximalThrough },
-    Switch[ method,
-      "Metric",
-        maximalThrough = Function[ { l, q, S },
-          Module[ { idx = First @ FirstPosition[ l, q, { 0 } ], lo, hi },
-            If[ idx == 0, Return[ {} ] ];
-            lo = idx; hi = idx;
-            While[ lo > 1 && MemberQ[ S, l[[ lo - 1 ]] ], lo-- ];
-            While[ hi < Length[ l ] && MemberQ[ S, l[[ hi + 1 ]] ], hi++ ];
-            l[[ lo ;; hi ]]
-          ]
-        ];
-        lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ];
-        r = lineDist[ p ];
-        If[ r === Infinity, Return[ {} ] ];
-        levelSet = Select[ VertexList[ graph ], lineDist[ # ] == r & ];
-        linesThroughP = Keys @ FindPencil[ graph, p ];
-        segments = maximalThrough[ #, p, levelSet ] & /@ linesThroughP;
-        dedup = DeleteDuplicates[ canonicalLine /@ Select[ segments, Length[ # ] >= 2 & ] ];
-        Select[ dedup,
-          a |-> ! AnyTrue[ dedup, b |-> Length[ b ] > Length[ a ] && SubsetQ[ b, a ] ]
+  Module[ { spec = OptionValue[ Method ], methodName },
+    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
+    Switch[ methodName,
+      "Metric", findParallelMetric[ graph, line, p ],
+      "Embedding",
+        With[ { embOpts = parseEmbeddingMethod[ spec ] },
+          embeddingRankParallels[ graph, findParallelMetric[ graph, line, p ], line, p, embOpts ]
         ],
-      "Spectral" | "Resistance", Message[ FindParallel::nyi, method ]; $Failed,
-      _, Message[ FindParallel::badmethod, method ]; $Failed
+      "Spectral" | "Resistance", Message[ FindParallel::nyi, methodName ]; $Failed,
+      _, Message[ FindParallel::badmethod, methodName ]; $Failed
     ]
+  ]
+
+
+findParallelMetric[ graph_Graph, line_List, p_ ] :=
+  Module[ { lineDist, r, levelSet, linesThroughP, segments, dedup, maximalThrough },
+    maximalThrough = Function[ { l, q, S },
+      Module[ { idx = First @ FirstPosition[ l, q, { 0 } ], lo, hi },
+        If[ idx == 0, Return[ {} ] ];
+        lo = idx; hi = idx;
+        While[ lo > 1 && MemberQ[ S, l[[ lo - 1 ]] ], lo-- ];
+        While[ hi < Length[ l ] && MemberQ[ S, l[[ hi + 1 ]] ], hi++ ];
+        l[[ lo ;; hi ]]
+      ]
+    ];
+    lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ];
+    r = lineDist[ p ];
+    If[ r === Infinity, Return[ {} ] ];
+    levelSet = Select[ VertexList[ graph ], lineDist[ # ] == r & ];
+    linesThroughP = Keys @ FindPencil[ graph, p ];
+    segments = maximalThrough[ #, p, levelSet ] & /@ linesThroughP;
+    dedup = DeleteDuplicates[ canonicalLine /@ Select[ segments, Length[ # ] >= 2 & ] ];
+    Select[ dedup,
+      a |-> ! AnyTrue[ dedup, b |-> Length[ b ] > Length[ a ] && SubsetQ[ b, a ] ]
+    ]
+  ]
+
+
+(* embeddingRankParallels sorts parallel candidates by Hausdorff distance
+   to the Euclidean line that goes through coord(p) parallel to the line
+   coord(line[[1]]) -> coord(line[[-1]]).  Implemented by translating the
+   reference segment so it passes through p and using
+   EmbeddingHausdorffDistance against virtual endpoint indices appended to
+   the coordinate matrix. *)
+
+embeddingRankParallels[ graph_Graph, parallels_List, line_List, p_, embOpts_Association ] :=
+  Module[ { coords, vertexIndex, lineDir, pCoord, refStart, refEnd, augmented, n },
+    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
+    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
+    lineDir = coords[[ vertexIndex[ Last[ line ] ] ]] - coords[[ vertexIndex[ First[ line ] ] ]];
+    pCoord = coords[[ vertexIndex[ p ] ]];
+    refStart = pCoord - lineDir / 2;
+    refEnd   = pCoord + lineDir / 2;
+    augmented = Append[ Append[ coords, refStart ], refEnd ];
+    n = Length[ coords ];
+    SortBy[ parallels,
+      par |-> EmbeddingHausdorffDistance[ augmented,
+        Lookup[ vertexIndex, par ], { n + 1, n + 2 } ] ]
   ]
 
 FindParallel[ graph_Graph, line_List, p_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=

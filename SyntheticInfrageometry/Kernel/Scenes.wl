@@ -34,7 +34,8 @@ resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
   ( expr /. Normal[ bindings ] ) /.
     { InfraDistance[ x_, y_ ]      :> GraphDistance[ graph, x, y ],
       InfraSegmentQ[ s_ ]          :> SegmentQ[ graph, s ],
-      InfraSphereQ[ c_ ]           :> SphereQ[ graph, c ],
+      InfraShellQ[ vs_ ]           :> ShellQ[ graph, vs ],
+      InfraCircleQ[ c_ ]           :> CircleQ[ graph, c ],
       InfraLineQ[ s_ ]             :> LineQ[ graph, s ],
       InfraParallelQ[ l1_, l2_ ]   :> ParallelQ[ graph, l1, l2 ],
       InfraIntersectQ[ s1_, s2_ ]  :> IntersectingQ[ s1, s2 ] }
@@ -196,13 +197,23 @@ dispatchConstruction[ graph_Graph, InfraLine[ p1_, p2_, opts___Rule ] ] /;
       <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]
 
-dispatchConstruction[ graph_Graph, InfraSphere[ center_, r_, opts___Rule ] ] :=
+dispatchConstruction[ graph_Graph, InfraShell[ center_, r_, opts___Rule ] ] :=
   capBranches[
     applyPathSpaceSelector[ graph,
-      FindSphere[ graph, center, r, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindSphere ] ] ],
+      FindShell[ graph, center, r, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindShell ] ] ],
       "Select" /. { opts } /. "Select" -> None,
-      <| "Cyclic" -> ( ( Method /. { opts } /. Method -> "Metric" ) === "SeparatingCycle" ),
+      <| "Cyclic" -> False,
+         "Center" -> center,
+         "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
+    extractBranches[ { opts } ] ]
+
+dispatchConstruction[ graph_Graph, InfraCircle[ center_, r_, opts___Rule ] ] :=
+  capBranches[
+    applyPathSpaceSelector[ graph,
+      FindCircle[ graph, center, r, All ],
+      "Select" /. { opts } /. "Select" -> None,
+      <| "Cyclic" -> True,
          "Center" -> center,
          "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
     extractBranches[ { opts } ] ]

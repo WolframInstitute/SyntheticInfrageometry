@@ -7,6 +7,10 @@ PackageScope[EmbeddingHausdorffDistance]
 PackageScope[EmbeddingCircleDistance]
 PackageScope[pathFilterPairwiseDistances]
 PackageScope[applyPathSpaceSelector]
+PackageScope[geodesicDAGNeighbors]
+PackageScope[generateEmbeddingPaths]
+PackageScope[resolveEmbeddingCoords]
+PackageScope[parseEmbeddingMethod]
 
 
 (* ===================== Path-space distances ===================== *)
@@ -209,13 +213,82 @@ EmbeddingClosestCycles[ graph_Graph, { center_, radius_ } ] :=
 
 (* Combinatorial circumference filters: paths from FindSegment / FindLine
    are equilength so length filtering is degenerate there, but cycles from
-   FindSphere can vary. *)
+   FindCircle can vary. *)
 
 ShortestCircumferenceCycles[ cycles_List ] /; Length[ cycles ] <= 1 := cycles
 ShortestCircumferenceCycles[ cycles_List ] := MinimalBy[ cycles, Length ]
 
 LongestCircumferenceCycles[ cycles_List ] /; Length[ cycles ] <= 1 := cycles
 LongestCircumferenceCycles[ cycles_List ] := MaximalBy[ cycles, Length ]
+
+
+(* ===================== Embedding-method helpers ===================== *)
+
+(* parseEmbeddingMethod[spec] extracts the suboptions of Method -> "Embedding"
+   (or Method -> {"Embedding", ...}) into an Association with keys
+   "Coordinates", "Constraint", "Pruning". *)
+
+parseEmbeddingMethod[ spec_ ] :=
+  Replace[ spec, {
+    "Embedding" -> <| "Coordinates" -> Automatic, "Constraint" -> "Geodesic", "Pruning" -> Infinity |>,
+    { "Embedding", subOpts___ } :> <|
+      "Coordinates" -> ( "Coordinates" /. { subOpts } /. "Coordinates" -> Automatic ),
+      "Constraint"  -> ( "Constraint"  /. { subOpts } /. "Constraint"  -> "Geodesic" ),
+      "Pruning"     -> ( "Pruning"     /. { subOpts } /. "Pruning"     -> Infinity )
+    |>,
+    _ -> <| "Coordinates" -> Automatic, "Constraint" -> "Geodesic", "Pruning" -> Infinity |>
+  } ]
+
+
+(* resolveEmbeddingCoords[graph, spec] returns the coordinate matrix from the
+   Coordinates suboption value: Automatic -> GraphEmbedding[graph], else the
+   user-supplied matrix. *)
+
+resolveEmbeddingCoords[ graph_Graph, Automatic ] := GraphEmbedding[ graph ]
+resolveEmbeddingCoords[ _, coords_List ] := coords
+
+
+(* geodesicDAGNeighbors[graph, u, v] returns an Association
+   vertex -> {downstream DAG neighbors} for every vertex w on some geodesic
+   from u to v.  A vertex w is in the DAG iff dist(u, w) + dist(w, v) =
+   dist(u, v); edges go from layer k = dist(u, w) to layer k + 1.  Paths
+   from u to v through this DAG are exactly the geodesics. *)
+
+geodesicDAGNeighbors[ graph_Graph, u_, v_ ] :=
+  Module[ { du, dv, total, dagVerts, dagSet },
+    du = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, u ] ];
+    dv = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, v ] ];
+    total = du[ v ];
+    If[ total === Infinity, Return[ <||> ] ];
+    dagVerts = Select[ VertexList[ graph ], du[ # ] + dv[ # ] == total & ];
+    dagSet = AssociationThread[ dagVerts, True ];
+    AssociationMap[
+      w |-> Select[ AdjacencyList[ graph, w ],
+        TrueQ[ dagSet[ # ] ] && du[ # ] == du[ w ] + 1 & ],
+      dagVerts
+    ]
+  ]
+
+
+(* generateEmbeddingPaths[extendFn, startPath, goalQ, prune] runs a depth-first
+   recursion that extends each partial path via extendFn[path]; complete
+   candidates (those satisfying goalQ[path]) are collected.  At every
+   branching step the extension list is filtered by applyPruning, so the
+   same Pruning spec used by Method -> "Stretched" controls the search. *)
+
+generateEmbeddingPaths[ extendFn_, startPath_List, goalQ_, prune_ ] :=
+  Module[ { results = {}, recurse },
+    recurse[ path_ ] :=
+      If[ TrueQ[ goalQ[ path ] ],
+        AppendTo[ results, path ],
+        Scan[
+          candidate |-> recurse[ Append[ path, candidate ] ],
+          applyPruning[ extendFn[ path ], prune ]
+        ]
+      ];
+    recurse[ startPath ];
+    results
+  ]
 
 
 (* ===================== String-named selector dispatch (internal) ===================== *)
