@@ -113,6 +113,11 @@ PackageExport[EnumerateGraphs]
 PackageExport[TorusTessellation]
 PackageExport[SchlafliTessellation]
 
+(* Curvatures.wl *)
+PackageExport[FormanRicciCurvature]
+PackageExport[OllivierRicciCurvature]
+PackageExport[WolframRicciScalar]
+
 (* Scenes.wl *)
 PackageExport[InfraScene]
 PackageExport[FindInfraScene]

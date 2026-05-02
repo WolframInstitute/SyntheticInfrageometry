@@ -57,3 +57,6 @@ Print[TestReport[FileNameJoin[{$testDir, "EnumerationTests.wlt"}]]]
 
 Print["Running TessellationsTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "TessellationsTests.wlt"}]]]
+
+Print["Running CurvaturesTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "CurvaturesTests.wlt"}]]]
