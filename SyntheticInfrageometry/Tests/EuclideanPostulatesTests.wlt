@@ -347,6 +347,114 @@ VerificationTest[
   TestID -> "FindSegment-Stretched-same-point-empty"
 ]
 
+
+(* ===== FindSegment Method -> "Pulled" ===== *)
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    FindSegment[g, 1, 5, All, Method -> "Pulled"]
+  ],
+  {{1, 2, 3, 4, 5}},
+  TestID -> "FindSegment-Pulled-tree-unique-path"
+]
+
+VerificationTest[
+  With[{g = CycleGraph[6]},
+    Sort @ FindSegment[g, 1, 4, All, Method -> "Pulled"]
+  ],
+  Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
+  TestID -> "FindSegment-Pulled-cycle-symmetric"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[
+      FindSegment[g, 1, 9, All, Method -> "Pulled"],
+      walk |-> First[walk] === 1 && Last[walk] === 9 &&
+        DuplicateFreeQ[walk] &&
+        AllTrue[Partition[walk, 2, 1], EdgeQ[g, UndirectedEdge @@ #] &]
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Pulled-grid-walks-valid"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Length @ FindSegment[g, 1, 9, All, Method -> "Pulled"]
+  ],
+  6,
+  TestID -> "FindSegment-Pulled-grid-bundle-size"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[
+      FindSegment[g, 1, 9, All, Method -> "Pulled"],
+      walk |-> Length[walk] - 1 >= GraphDistance[g, 1, 9]
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Pulled-grid-walks-no-shorter-than-geodesic"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Sort @ FindSegment[g, 1, 9, All, Method -> "Pulled"] ===
+      Sort @ FindSegment[g, 1, 9, All, Method -> {"Pulled", "FormanMethod" -> "Simple"}]
+  ],
+  True,
+  TestID -> "FindSegment-Pulled-FormanMethod-default-is-Simple"
+]
+
+VerificationTest[
+  With[{g = Graph[{1 <-> 2, 1 <-> 3, 1 <-> 4, 2 <-> 3, 2 <-> 4}]},
+    Sort @ FindSegment[g, 1, 3, All, Method -> {"Pulled", "FormanMethod" -> "Simple"}] =!=
+      Sort @ FindSegment[g, 1, 3, All, Method -> {"Pulled", "FormanMethod" -> "Triangles"}]
+  ],
+  True,
+  TestID -> "FindSegment-Pulled-FormanMethod-Triangles-differs-on-triangulated"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Length @ FindSegment[g, 1, 9, UpTo[2], Method -> "Pulled"]
+  ],
+  2,
+  TestID -> "FindSegment-Pulled-UpTo-truncates"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Length @ FindSegment[g, 1, 9, 3, Method -> "Pulled"]
+  ],
+  3,
+  TestID -> "FindSegment-Pulled-Count-exact"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    CentralPaths[g] @ FindSegment[g, 1, 9, All, Method -> "Pulled"]
+  ],
+  _List,
+  SameTest -> MatchQ,
+  TestID -> "FindSegment-Pulled-chains-with-CentralPaths"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Pulled", "FormanMethod" -> "Quadrilaterals"}],
+    FindSegment::badforman],
+  $Failed,
+  TestID -> "FindSegment-Pulled-bad-FormanMethod"
+]
+
+VerificationTest[
+  FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "Pulled"],
+  {},
+  TestID -> "FindSegment-Pulled-same-point-empty"
+]
+
+
 (* ===== FindLine ===== *)
 
 VerificationTest[

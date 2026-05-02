@@ -10,9 +10,11 @@ PackageScope[countLimit]
 PackageScope[takeUpTo]
 PackageScope[allGeodesics]
 PackageScope[stretchedOutPaths]
+PackageScope[pulledPaths]
 PackageScope[applyPruning]
 PackageScope[pruningSpecQ]
 PackageScope[lookbackSpecQ]
+PackageScope[formanMethodSpecQ]
 
 
 (* Path-space distances and selectors (HausdorffDistance, FrechetDistance,
@@ -153,6 +155,55 @@ lookbackSpecQ[ All ] := True
 lookbackSpecQ[ Infinity ] := True
 lookbackSpecQ[ n_Integer ] /; n >= 1 := True
 lookbackSpecQ[ _ ] := False
+
+
+(* ===================== Pulled paths (internal) ===================== *)
+
+(* Enumerate paths from p1 to p2 by a frontier sweep that, at each step
+   v_i -> w, restricts the candidate set { w in N(v_i) \ path } to the
+   minimisers of the Forman-Ricci curvature F(v_i, w) of the new edge.
+   Mirrors stretchedOutPaths in shape; the per-step rule is MinimalBy on
+   F instead of MaximalBy on the recency-lex distance tuple.  Ties are
+   kept (frontier branches), so the procedure enumerates every walk
+   whose every step is curvature-minimal in its candidate set.
+   formanMethod is forwarded to FormanRicciCurvature ("Simple" or
+   "Triangles").  Returns vertex sequences in the same shape as
+   FindSegment / FindPath. *)
+
+pulledPaths[ graph_Graph, p1_, p2_, formanMethod_ ] :=
+  Module[ { fEdges, fSym, frontier, completed = { }, extended },
+    If[ p1 === p2, Return[ { } ] ];
+    If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
+    If[ GraphDistance[ graph, p1, p2 ] === Infinity, Return[ { } ] ];
+    fEdges = FormanRicciCurvature[ graph, Method -> formanMethod ];
+    fSym = Join[
+      fEdges,
+      AssociationThread[
+        ( UndirectedEdge[ #[[ 2 ]], #[[ 1 ]] ] & ) /@ Keys[ fEdges ],
+        Values[ fEdges ]
+      ]
+    ];
+    frontier = { { p1 } };
+    While[ frontier =!= { },
+      extended = Flatten[
+        ( path |-> With[
+            { v = Last[ path ],
+              candidates = Select[ AdjacencyList[ graph, Last[ path ] ],
+                ! MemberQ[ path, # ] & ] },
+            ( Append[ path, # ] & ) /@ If[ candidates === { }, { },
+              MinimalBy[ candidates, w |-> fSym[ UndirectedEdge[ v, w ] ] ] ]
+          ] ) /@ frontier,
+        1
+      ];
+      completed = Join[ completed, Select[ extended, Last[ # ] === p2 & ] ];
+      frontier  = Select[ extended, Last[ # ] =!= p2 & ]
+    ];
+    completed
+  ]
+
+formanMethodSpecQ[ "Simple" ] := True
+formanMethodSpecQ[ "Triangles" ] := True
+formanMethodSpecQ[ _ ] := False
 
 
 (* ===================== Separating Sets (internal) ===================== *)

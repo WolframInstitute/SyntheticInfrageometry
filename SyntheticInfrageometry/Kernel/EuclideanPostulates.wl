@@ -9,6 +9,7 @@ FindSegment::badmethod = "Method `1` is not supported by FindSegment.";
 FindSegment::badpruning = "Pruning specification `1` is not supported; use Infinity, a positive integer (beam width), or a number 0 < p < 1 (Bernoulli keep probability).";
 FindSegment::badlookback = "Lookback specification `1` is not supported; use a positive integer or All.";
 FindSegment::badconstraint = "Constraint specification `1` is not supported; use \"Geodesic\" or \"Free\".";
+FindSegment::badforman = "FormanMethod specification `1` is not supported; use \"Simple\" or \"Triangles\".";
 
 
 (* ===================== Points ===================== *)
@@ -92,22 +93,29 @@ FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
    K = 2 (default) excludes triangle shortcuts, K = All compares
    against every available predecessor and on most graphs collapses to
    geodesics.  Pruning spec is Infinity (default), a positive integer
-   beam width, or a Bernoulli keep probability. *)
+   beam width, or a Bernoulli keep probability.  Method -> "Pulled"
+   (or {"Pulled", "FormanMethod" -> "Simple" | "Triangles"}) traces the
+   rope being pulled tight from p1 toward p2 by a frontier sweep that
+   admits step v_i -> w iff w is unvisited and minimises the
+   Forman-Ricci edge curvature F(v_i, w) among unvisited neighbours of
+   v_i.  Ties branch the frontier; the result is every walk whose
+   every step is curvature-minimal in its candidate set. *)
 
 Options[ FindSegment ] = { Method -> "Shortest" };
 
 FindSegment[ graph_Graph, p1_, p2_,
     count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
-  Module[ { spec = OptionValue[ Method ], methodName, prune, lookback, d, paths },
+  Module[ { spec = OptionValue[ Method ], methodName, prune, lookback, formanMethod, d, paths },
     If[ p1 === p2, Return[ { } ] ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    { prune, lookback } = Replace[ spec, {
-      _String :> { Infinity, 2 },
+    { prune, lookback, formanMethod } = Replace[ spec, {
+      _String :> { Infinity, 2, "Simple" },
       { _String, subOpts___ } :> {
-        "Pruning"  /. { subOpts } /. "Pruning"  -> Infinity,
-        "Lookback" /. { subOpts } /. "Lookback" -> 2
+        "Pruning"      /. { subOpts } /. "Pruning"      -> Infinity,
+        "Lookback"     /. { subOpts } /. "Lookback"     -> 2,
+        "FormanMethod" /. { subOpts } /. "FormanMethod" -> "Simple"
       },
-      _ :> { Infinity, 2 }
+      _ :> { Infinity, 2, "Simple" }
     } ];
     Switch[ methodName,
       "Shortest",
@@ -129,6 +137,16 @@ FindSegment[ graph_Graph, p1_, p2_,
             Message[ FindSegment::badlookback, lookback ]; $Failed,
           True,
             paths = stretchedOutPaths[ graph, p1, p2, prune, lookback ];
+            With[ { result = takeUpTo[ paths, countLimit[ count ] ] },
+              If[ MatchQ[ count, _Integer ] && Length[ result ] < count, $Failed, result ]
+            ]
+        ],
+      "Pulled",
+        Which[
+          ! formanMethodSpecQ[ formanMethod ],
+            Message[ FindSegment::badforman, formanMethod ]; $Failed,
+          True,
+            paths = pulledPaths[ graph, p1, p2, formanMethod ];
             With[ { result = takeUpTo[ paths, countLimit[ count ] ] },
               If[ MatchQ[ count, _Integer ] && Length[ result ] < count, $Failed, result ]
             ]
