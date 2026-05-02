@@ -223,51 +223,75 @@ VerificationTest[
     FindSegment[g, 1, 5, All, Method -> "Stretched"]
   ],
   {{1, 2, 3, 4, 5}},
-  TestID -> "FindSegment-Stretched-unique-geodesic"
+  TestID -> "FindSegment-Stretched-unique-path"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    With[{segs = FindSegment[g, 1, 4, All, Method -> "Stretched"]},
-      Length[segs] == 2 && AllTrue[segs, Length[#] == 4 &]
-    ]
+    Sort @ FindSegment[g, 1, 4, All, Method -> "Stretched"]
   ],
-  True,
+  Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
   TestID -> "FindSegment-Stretched-cycle-symmetric"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{
-      all = FindSegment[g, 1, 9, All],
-      stretched = FindSegment[g, 1, 9, All, Method -> "Stretched"]
-    },
-      SubsetQ[all, stretched] &&
-      AllTrue[stretched,
-        path |-> AllTrue[
-          Range[2, Length[path] - 1],
-          i |-> With[{
-            v = path[[i]],
-            actual = path[[i + 1]],
-            history = Reverse @ path[[1 ;; i - 1]]
-          },
-            With[{
-              progress = Select[AdjacencyList[g, v],
-                GraphDistance[g, #, 9] === Length[path] - i - 1 &]
-            },
-              MemberQ[
-                MaximalBy[progress,
-                  w |-> GraphDistance[g, #, w] & /@ history],
-                actual
-              ]
-            ]
-          ]
-        ]
-      ]
+    Sort @ FindSegment[g, 1, 9, All, Method -> {"Stretched", "Lookback" -> 1}] ===
+      Sort @ FindPath[g, 1, 9, Infinity, All]
+  ],
+  True,
+  TestID -> "FindSegment-Stretched-K1-equals-FindPath"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    SubsetQ[
+      Sort @ FindSegment[g, 1, 9, All, Method -> {"Stretched", "Lookback" -> All}],
+      Sort @ FindSegment[g, 1, 9, All, Method -> "Shortest"]
     ]
   ],
   True,
-  TestID -> "FindSegment-Stretched-property-on-grid"
+  TestID -> "FindSegment-Stretched-KAll-superset-geodesics"
+]
+
+VerificationTest[
+  With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
+    With[{
+      k1   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 1}],
+      k2   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 2}],
+      kAll = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> All}]
+    },
+      Length[k1] == 4 &&
+      MemberQ[k1, {1, 2, 4, 3}] && MemberQ[k1, {1, 4, 2, 3}] &&
+      k2 === Sort[{{1, 2, 3}, {1, 4, 3}}] &&
+      kAll === k2
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Stretched-K2-strict-between"
+]
+
+VerificationTest[
+  With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
+    With[{
+      k1   = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 1}],
+      k2   = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 2}],
+      kAll = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> All}]
+    },
+      k1 >= k2 >= kAll
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Stretched-K-monotone"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Sort @ FindSegment[g, 1, 9, All, Method -> "Stretched"] ===
+      Sort @ FindSegment[g, 1, 9, All, Method -> {"Stretched", "Lookback" -> 2}]
+  ],
+  True,
+  TestID -> "FindSegment-Stretched-Lookback-default-is-2"
 ]
 
 VerificationTest[
@@ -294,6 +318,27 @@ VerificationTest[
     FindSegment::badpruning],
   $Failed,
   TestID -> "FindSegment-bad-pruning"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Stretched", "Lookback" -> 0}],
+    FindSegment::badlookback],
+  $Failed,
+  TestID -> "FindSegment-bad-lookback-zero"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Stretched", "Lookback" -> -1}],
+    FindSegment::badlookback],
+  $Failed,
+  TestID -> "FindSegment-bad-lookback-negative"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Stretched", "Lookback" -> 1.5}],
+    FindSegment::badlookback],
+  $Failed,
+  TestID -> "FindSegment-bad-lookback-fractional"
 ]
 
 VerificationTest[
@@ -372,107 +417,105 @@ VerificationTest[
   TestID -> "FindLine-Maximality-Diameter-keeps-diameter-line"
 ]
 
-(* ===== FindSphere ===== *)
+(* ===== FindShell ===== *)
 
 (* Method -> "Metric" (default): level surface { v : d(c, v) = r }. *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    Sort @ First @ FindSphere[g, 3, 2]
+    Sort @ First @ FindShell[g, 3, 2]
   ],
   {1, 5},
-  TestID -> "FindSphere-Metric-default-equidistant"
+  TestID -> "FindShell-Metric-default-equidistant"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{result = FindSphere[g, 6, {1, 2}, All]},
+    With[{result = FindShell[g, 6, {1, 2}, All]},
       Length[result] == 1 &&
       AllTrue[First[result], v |-> 1 <= GraphDistance[g, 6, v] <= 2]
     ]
   ],
   True,
-  TestID -> "FindSphere-Metric-range-radius"
+  TestID -> "FindShell-Metric-range-radius"
 ]
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    Length @ FindSphere[g, 1, 2, All]
+    Length @ FindShell[g, 1, 2, All]
   ],
   1,
-  TestID -> "FindSphere-Metric-single-result"
+  TestID -> "FindShell-Metric-single-result"
 ]
 
-(* Method -> "SeparatingGraph": minimal connected separators within the level surface. *)
+(* Method -> "Separating": minimal connected separators within the level surface. *)
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{spheres = FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingGraph"]},
-      Length[spheres] >= 1 &&
-      AllTrue[spheres, vs |-> AllTrue[vs, v |-> 1 <= GraphDistance[g, 6, v] <= 2]] &&
-      AllTrue[spheres, vs |-> ConnectedGraphQ[Subgraph[g, vs]]]
+    With[{shells = FindShell[g, 6, {1, 2}, All, Method -> "Separating"]},
+      Length[shells] >= 1 &&
+      AllTrue[shells, vs |-> AllTrue[vs, v |-> 1 <= GraphDistance[g, 6, v] <= 2]] &&
+      AllTrue[shells, vs |-> ConnectedGraphQ[Subgraph[g, vs]]]
     ]
   ],
   True,
-  TestID -> "FindSphere-SeparatingGraph-connected-within-range"
+  TestID -> "FindShell-Separating-connected-within-range"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{spheres = FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingGraph"]},
-      AllTrue[spheres, vs |-> AllTrue[spheres,
+    With[{shells = FindShell[g, 6, {1, 2}, All, Method -> "Separating"]},
+      AllTrue[shells, vs |-> AllTrue[shells,
         other |-> other === vs || ! (Length[other] < Length[vs] && SubsetQ[vs, other])
       ]]
     ]
   ],
   True,
-  TestID -> "FindSphere-SeparatingGraph-minimal"
+  TestID -> "FindShell-Separating-minimal"
 ]
 
-(* Method -> "SeparatingCycle": cycles in the level-surface subgraph that separate. *)
+(* ===== FindCircle ===== *)
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{spheres = Take[
-        LongestCircumferenceCycles @ FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingCycle"],
+    With[{circles = Take[
+        LongestCircumferenceCycles @ FindCircle[g, 6, {1, 2}, All],
         UpTo[1]]},
-      Length[spheres] >= 1 && AllTrue[spheres, ListQ]
+      Length[circles] >= 1 && AllTrue[circles, ListQ]
     ]
   ],
   True,
-  TestID -> "FindSphere-SeparatingCycle-returns-cycles"
+  TestID -> "FindCircle-returns-cycles"
 ]
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    With[{spheres = FindSphere[g, 1, {1, 2}, All, Method -> "SeparatingCycle"]},
-      Length[spheres] >= 1
+    With[{circles = FindCircle[g, 1, {1, 2}, All]},
+      Length[circles] >= 1
     ]
   ],
   True,
-  TestID -> "FindSphere-SeparatingCycle-all-cycles"
+  TestID -> "FindCircle-all-cycles"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{spheres = LongestCircumferenceCycles @
-        FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingCycle"]},
-      Length[spheres] >= 1 && Length[Union[Length /@ spheres]] == 1
+    With[{circles = LongestCircumferenceCycles @ FindCircle[g, 6, {1, 2}, All]},
+      Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
   True,
-  TestID -> "FindSphere-SeparatingCycle-LongestCircumferenceCycles-uniform"
+  TestID -> "FindCircle-LongestCircumferenceCycles-uniform"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{spheres = ShortestCircumferenceCycles @
-        FindSphere[g, 6, {1, 2}, All, Method -> "SeparatingCycle"]},
-      Length[spheres] >= 1 && Length[Union[Length /@ spheres]] == 1
+    With[{circles = ShortestCircumferenceCycles @ FindCircle[g, 6, {1, 2}, All]},
+      Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
   True,
-  TestID -> "FindSphere-SeparatingCycle-ShortestCircumferenceCycles"
+  TestID -> "FindCircle-ShortestCircumferenceCycles"
 ]
 
 (* ===== FindParallel ===== *)

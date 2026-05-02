@@ -7,6 +7,7 @@ PackageScope[findLineExtensions]
 
 FindSegment::badmethod = "Method `1` is not supported by FindSegment.";
 FindSegment::badpruning = "Pruning specification `1` is not supported; use Infinity, a positive integer (beam width), or a number 0 < p < 1 (Bernoulli keep probability).";
+FindSegment::badlookback = "Lookback specification `1` is not supported; use a positive integer or All.";
 
 
 (* ===================== Points ===================== *)
@@ -82,21 +83,30 @@ FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
    / All) enumerates via FindPath at exact length d, and the result
    pipes through CentralPaths / EmbeddingClosestPaths / ... for further
    path-space filtering.  Method -> "Stretched" (or {"Stretched",
-   "Pruning" -> spec}) keeps only those geodesics along which every
-   step picks a lex-max-distance neighbour of the current vertex,
-   recency-first; the optional pruning spec is Infinity (default), a
-   positive integer beam width, or a Bernoulli keep probability. *)
+   "Lookback" -> k, "Pruning" -> spec}) enumerates simple paths from p1
+   to p2 via a constructive frontier sweep that admits a step
+   v_i -> w iff w is unvisited and the recency-lex distance tuple
+   ( d(v_{i-1}, w), ..., d(v_{i-K+1}, w) ) is maximal among unvisited
+   neighbours.  K = 1 has empty tuple (no filter, all simple paths),
+   K = 2 (default) excludes triangle shortcuts, K = All compares
+   against every available predecessor and on most graphs collapses to
+   geodesics.  Pruning spec is Infinity (default), a positive integer
+   beam width, or a Bernoulli keep probability. *)
 
 Options[ FindSegment ] = { Method -> "Shortest" };
 
 FindSegment[ graph_Graph, p1_, p2_,
     count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
-  Module[ { spec = OptionValue[ Method ], methodName, prune, d, paths },
+  Module[ { spec = OptionValue[ Method ], methodName, prune, lookback, d, paths },
     If[ p1 === p2, Return[ { } ] ];
-    { methodName, prune } = Replace[ spec, {
-      m_String :> { m, Infinity },
-      { m_String, subOpts___ } :> { m, "Pruning" /. { subOpts } /. "Pruning" -> Infinity },
-      _ :> { spec, Infinity }
+    { methodName, prune, lookback } = Replace[ spec, {
+      m_String :> { m, Infinity, 2 },
+      { m_String, subOpts___ } :> {
+        m,
+        "Pruning"  /. { subOpts } /. "Pruning"  -> Infinity,
+        "Lookback" /. { subOpts } /. "Lookback" -> 2
+      },
+      _ :> { spec, Infinity, 2 }
     } ];
     Switch[ methodName,
       "Shortest",
@@ -111,12 +121,16 @@ FindSegment[ graph_Graph, p1_, p2_,
         ];
         If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ],
       "Stretched",
-        If[ ! pruningSpecQ[ prune ],
-          Message[ FindSegment::badpruning, prune ]; $Failed,
-          paths = stretchedOutSegments[ graph, p1, p2, prune ];
-          With[ { result = takeUpTo[ paths, countLimit[ count ] ] },
-            If[ MatchQ[ count, _Integer ] && Length[ result ] < count, $Failed, result ]
-          ]
+        Which[
+          ! pruningSpecQ[ prune ],
+            Message[ FindSegment::badpruning, prune ]; $Failed,
+          ! lookbackSpecQ[ lookback ],
+            Message[ FindSegment::badlookback, lookback ]; $Failed,
+          True,
+            paths = stretchedOutPaths[ graph, p1, p2, prune, lookback ];
+            With[ { result = takeUpTo[ paths, countLimit[ count ] ] },
+              If[ MatchQ[ count, _Integer ] && Length[ result ] < count, $Failed, result ]
+            ]
         ],
       _, Message[ FindSegment::badmethod, spec ]; $Failed
     ]
@@ -186,44 +200,68 @@ findLineExtensions[ graph_Graph, segment_List ] :=
   ]
 
 
-(* ===================== Spheres ===================== *)
+(* ===================== Shells ===================== *)
 
-(* A sphere of radius r around c is a vertex set carved out of the level
-   surface { v : d(c, v) = r }.  Three graded recipes are offered:
-   "Metric" (default) returns the level surface itself; "SeparatingGraph"
-   returns connected subsets of the level surface whose removal disconnects
-   c from { v : d(c, v) > r }, kept minimal under inclusion;
-   "SeparatingCycle" further restricts to those that form a cycle in the
-   level-surface subgraph (the 2D-style spheres). *)
+(* A shell of radius r around c is a vertex set carved out of the level
+   surface { v : d(c, v) = r }.  Two recipes:
+   "Metric" (default) returns the level surface itself as a singleton;
+   "Separating" returns connected subsets of the level surface whose
+   removal disconnects c from { v : d(c, v) > r }, kept minimal under
+   inclusion.  The cyclic case (separating cycles, the 2D-style spheres)
+   has its own head, FindCircle, since cycles are vertex sequences rather
+   than vertex sets. *)
 
-Options[ FindSphere ] = { Method -> "Metric" };
+Options[ FindShell ] = { Method -> "Metric" };
 
-FindSphere[ graph_Graph, p_, r_, All, opts : OptionsPattern[] ] :=
-  Module[ { method, range, levelSet, radius, levelGraph, allCycles, vertexCycles },
+FindShell[ graph_Graph, p_, r_, All, opts : OptionsPattern[] ] :=
+  Module[ { method, range, levelSet, radius },
     method = OptionValue[ Method ];
     range = Replace[ r, d_?NumericQ :> { d, d } ];
     levelSet = Select[ VertexList[ graph ],
       range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ];
     radius = If[ NumericQ[ r ], r, Mean[ r ] ];
     Switch[ method,
-      "Metric", { levelSet },
-      "SeparatingGraph",
-        FindMinimalSeparatingSubgraphs[ graph, levelSet, p, radius ],
-      "SeparatingCycle",
-        levelGraph = Subgraph[ graph, levelSet ];
-        allCycles = FindCycle[ levelGraph, Infinity, All ];
-        If[ allCycles === {}, Return[ {} ] ];
-        vertexCycles = (First /@ #) & /@ allCycles;
-        FindSeparatingCycles[ graph, vertexCycles, p, radius ],
-      _, $Failed
+      "Metric",     { levelSet },
+      "Separating", FindMinimalSeparatingSubgraphs[ graph, levelSet, p, radius ],
+      _,            $Failed
     ]
   ]
 
-FindSphere[ graph_Graph, p_, r_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  Take[ FindSphere[ graph, p, r, All, opts ], UpTo[ n ] ]
+FindShell[ graph_Graph, p_, r_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+  Take[ FindShell[ graph, p, r, All, opts ], UpTo[ n ] ]
 
-FindSphere[ graph_Graph, p_, r_, n_Integer : 1, opts : OptionsPattern[] ] :=
-  With[ { result = FindSphere[ graph, p, r, UpTo[ n ], opts ] },
+FindShell[ graph_Graph, p_, r_, n_Integer : 1, opts : OptionsPattern[] ] :=
+  With[ { result = FindShell[ graph, p, r, UpTo[ n ], opts ] },
+    If[ Length[ result ] < n, $Failed, result ]
+  ]
+
+
+(* ===================== Circles ===================== *)
+
+(* A circle of radius r around c is a separating cycle in the level-surface
+   subgraph: a cyclic vertex sequence whose removal disconnects c from
+   { v : d(c, v) > r }.  Returns open vertex sequences { v0, v1, ..., vk }
+   (rotation-invariant via path-space selectors); the wrap-around edge
+   { vk, v0 } is implicit. *)
+
+FindCircle[ graph_Graph, p_, r_, All ] :=
+  Module[ { range, levelSet, radius, levelGraph, allCycles, vertexCycles },
+    range = Replace[ r, d_?NumericQ :> { d, d } ];
+    levelSet = Select[ VertexList[ graph ],
+      range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ];
+    radius = If[ NumericQ[ r ], r, Mean[ r ] ];
+    levelGraph = Subgraph[ graph, levelSet ];
+    allCycles = FindCycle[ levelGraph, Infinity, All ];
+    If[ allCycles === {}, Return[ {} ] ];
+    vertexCycles = (First /@ #) & /@ allCycles;
+    FindSeparatingCycles[ graph, vertexCycles, p, radius ]
+  ]
+
+FindCircle[ graph_Graph, p_, r_, UpTo[ n_Integer ] ] :=
+  Take[ FindCircle[ graph, p, r, All ], UpTo[ n ] ]
+
+FindCircle[ graph_Graph, p_, r_, n_Integer : 1 ] :=
+  With[ { result = FindCircle[ graph, p, r, UpTo[ n ] ] },
     If[ Length[ result ] < n, $Failed, result ]
   ]
 

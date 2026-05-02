@@ -9,9 +9,10 @@ PackageScope[FindPairSeparators]
 PackageScope[countLimit]
 PackageScope[takeUpTo]
 PackageScope[allGeodesics]
-PackageScope[stretchedOutSegments]
+PackageScope[stretchedOutPaths]
 PackageScope[applyPruning]
 PackageScope[pruningSpecQ]
+PackageScope[lookbackSpecQ]
 
 
 (* Path-space distances and selectors (HausdorffDistance, FrechetDistance,
@@ -81,51 +82,52 @@ allGeodesics[ graph_Graph, u_, v_ ] :=
   ]
 
 
-(* ===================== Stretched-out segments (internal) ===================== *)
+(* ===================== Stretched paths (internal) ===================== *)
 
-(* A stretched-out geodesic from p1 to p2 is one along which every
-   step v_i -> v_{i+1} chooses v_{i+1} from among the lex-max-distance
-   neighbours of v_i, the lex tuple being (d(v_{i-1}, w), d(v_{i-2}, w),
-   ..., d(p1, w)) -- recency first.  Built constructively (frontier BFS
-   on geodesic-extension neighbours, lex-max ties at every step) so the
-   pruning sub-option can act per step.  Returns vertex sequences in the
-   same shape as FindSegment / FindPath. *)
+(* Enumerate simple paths from p1 to p2 certified by a recency-lex
+   distance rule with lookback K.  At each interior step v_i -> v_{i+1}
+   the candidate w must be an unvisited neighbour of v_i and lie in
+   MaximalBy[ candidates, w |-> ( d(v_{i-1}, w), d(v_{i-2}, w), ...,
+   d(v_{i-K+1}, w) ) ].  The trivial first entry d(v_i, w) = 1 is
+   omitted, so K = 1 yields an empty tuple (no filter) and produces
+   every simple path; K = 2 enforces no triangle shortcut; K = All
+   compares against every available predecessor and on most graphs
+   collapses to geodesics.  Built constructively (frontier sweep with
+   per-step filtering) so the pruning sub-option can act per step.
+   Returns vertex sequences in the same shape as FindSegment / FindPath. *)
 
-stretchedOutSegments[ graph_Graph, p1_, p2_, prune_ ] :=
-  Module[ { vidx, dmat, d, distP2, paths },
+stretchedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_ ] :=
+  Module[ { vidx, dmat, frontier, completed = { }, extended },
     If[ p1 === p2, Return[ { } ] ];
     If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
+    If[ GraphDistance[ graph, p1, p2 ] === Infinity, Return[ { } ] ];
     vidx = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
     dmat = GraphDistanceMatrix[ graph ];
-    d = dmat[[ vidx[ p1 ], vidx[ p2 ] ]];
-    If[ d === Infinity, Return[ { } ] ];
-    distP2 = dmat[[ All, vidx[ p2 ] ]];
-    paths = { { p1 } };
-    Do[
-      paths = applyPruning[
-        Flatten[
-          ( path |-> With[
-              { remaining = d - step,
-                historyIdx = vidx /@ Reverse @ Most[ path ] },
-              With[
-                { progress = Select[ AdjacencyList[ graph, Last[ path ] ],
-                    distP2[[ vidx[ # ] ]] === remaining & ] },
-                ( Append[ path, # ] & ) /@ Which[
-                  progress === { }, { },
-                  historyIdx === { }, progress,
-                  True, MaximalBy[ progress,
-                    w |-> dmat[[ historyIdx, vidx[ w ] ]] ]
-                ]
+    frontier = { { p1 } };
+    While[ frontier =!= { },
+      extended = Flatten[
+        ( path |-> With[
+            { v = Last[ path ],
+              historyIdx = With[ { rev = vidx /@ Reverse @ Most[ path ] },
+                If[ lookback === All || lookback === Infinity, rev,
+                  Take[ rev, UpTo[ lookback - 1 ] ] ] ] },
+            With[
+              { candidates = Select[ AdjacencyList[ graph, v ],
+                  ! MemberQ[ path, # ] & ] },
+              ( Append[ path, # ] & ) /@ Which[
+                candidates === { }, { },
+                historyIdx === { }, candidates,
+                True, MaximalBy[ candidates,
+                  w |-> dmat[[ historyIdx, vidx[ w ] ]] ]
               ]
-            ] ) /@ paths,
-          1
-        ],
-        prune
+            ]
+          ] ) /@ frontier,
+        1
       ];
-      If[ paths === { }, Break[] ],
-      { step, 1, d }
+      completed = Join[ completed, Select[ extended, Last[ # ] === p2 & ] ];
+      frontier = applyPruning[ Select[ extended, Last[ # ] =!= p2 & ], prune ]
     ];
-    paths
+    completed
   ]
 
 (* applyPruning trims a list of partial paths by either a beam width
@@ -147,6 +149,11 @@ pruningSpecQ[ n_Integer ] /; n >= 1 := True
 pruningSpecQ[ p_?NumericQ ] /; 0 < p < 1 := True
 pruningSpecQ[ _ ] := False
 
+lookbackSpecQ[ All ] := True
+lookbackSpecQ[ Infinity ] := True
+lookbackSpecQ[ n_Integer ] /; n >= 1 := True
+lookbackSpecQ[ _ ] := False
+
 
 (* ===================== Separating Sets (internal) ===================== *)
 
@@ -166,13 +173,17 @@ SeparatingSetQ[ graph_Graph, vs_List, center_, radius_ ] :=
     AllTrue[ Complement[ VertexList[ rem ], centerComp ], GraphDistance[ graph, center, # ] > radius & ]
   ]
 
+(* FindSeparatingCycles filters a list of vertex cycles down to those that
+   separate center from the exterior of the closed radius-ball.  Used by
+   FindCircle (the cyclic vertex-sequence sibling of FindShell). *)
+
 FindSeparatingCycles[ graph_Graph, cycles_List, center_, radius_ ] :=
   Select[ cycles, SeparatingSetQ[ graph, #, center, radius ] & ]
 
 (* FindMinimalSeparatingSubgraphs enumerates subsets of levelSet that
    (a) induce a connected subgraph of graph, (b) separate center from the
    exterior of the closed radius-ball, and are minimal under set inclusion
-   among such subsets. *)
+   among such subsets.  Used by FindShell with Method -> "Separating". *)
 
 FindMinimalSeparatingSubgraphs[ graph_Graph, levelSet_List, center_, radius_ ] :=
   Module[ { levelGraph, separating },
