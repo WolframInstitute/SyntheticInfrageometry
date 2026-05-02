@@ -88,6 +88,38 @@ VerificationTest[
   TestID -> "FindPoint-exact-fails-impossible-distance"
 ]
 
+VerificationTest[
+  With[{g = PathGraph[Range[7]]},
+    With[{pt = FindPoint[g, 1, "From" -> 3 -> 2]},
+      Length[pt] == 1 && GraphDistance[g, 3, First[pt]] == 2
+    ]
+  ],
+  True,
+  TestID -> "FindPoint-from-origin-exact-distance"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    With[{pts = FindPoint[g, UpTo[20], "From" -> 1 -> {2, 3}]},
+      AllTrue[pts, 2 <= GraphDistance[g, 1, #] <= 3 &]
+    ]
+  ],
+  True,
+  TestID -> "FindPoint-from-origin-distance-range"
+]
+
+VerificationTest[
+  With[{g = CycleGraph[8]},
+    With[{ecc = Max[GraphDistance[g, 1, #] & /@ VertexList[g]]},
+      With[{pts = FindPoint[g, UpTo[VertexCount[g]], "From" -> 1 -> "Max"]},
+        AllTrue[pts, GraphDistance[g, 1, #] == ecc &]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "FindPoint-from-origin-max-distance"
+]
+
 (* ===== FindSegment ===== *)
 
 VerificationTest[
@@ -182,6 +214,92 @@ VerificationTest[
   ],
   True,
   TestID -> "FindSegment-upto-soft-cap"
+]
+
+(* ===== FindSegment Method -> "Stretched" ===== *)
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    FindSegment[g, 1, 5, All, Method -> "Stretched"]
+  ],
+  {{1, 2, 3, 4, 5}},
+  TestID -> "FindSegment-Stretched-unique-geodesic"
+]
+
+VerificationTest[
+  With[{g = CycleGraph[6]},
+    With[{segs = FindSegment[g, 1, 4, All, Method -> "Stretched"]},
+      Length[segs] == 2 && AllTrue[segs, Length[#] == 4 &]
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Stretched-cycle-symmetric"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    With[{
+      all = FindSegment[g, 1, 9, All],
+      stretched = FindSegment[g, 1, 9, All, Method -> "Stretched"]
+    },
+      SubsetQ[all, stretched] &&
+      AllTrue[stretched,
+        path |-> AllTrue[
+          Range[2, Length[path] - 1],
+          i |-> With[{
+            v = path[[i]],
+            actual = path[[i + 1]],
+            history = Reverse @ path[[1 ;; i - 1]]
+          },
+            With[{
+              progress = Select[AdjacencyList[g, v],
+                GraphDistance[g, #, 9] === Length[path] - i - 1 &]
+            },
+              MemberQ[
+                MaximalBy[progress,
+                  w |-> GraphDistance[g, #, w] & /@ history],
+                actual
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Stretched-property-on-grid"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    BlockRandom[
+      Length[FindSegment[g, 1, 16, All,
+        Method -> {"Stretched", "Pruning" -> 1}]] == 1,
+      RandomSeeding -> 42
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Stretched-pruning-beam-1"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> "Bogus"],
+    FindSegment::badmethod],
+  $Failed,
+  TestID -> "FindSegment-bad-method"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Stretched", "Pruning" -> -1}],
+    FindSegment::badpruning],
+  $Failed,
+  TestID -> "FindSegment-bad-pruning"
+]
+
+VerificationTest[
+  FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "Stretched"],
+  {},
+  TestID -> "FindSegment-Stretched-same-point-empty"
 ]
 
 (* ===== FindLine ===== *)

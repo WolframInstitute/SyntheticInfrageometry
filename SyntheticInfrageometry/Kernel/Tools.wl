@@ -9,6 +9,9 @@ PackageScope[FindPairSeparators]
 PackageScope[countLimit]
 PackageScope[takeUpTo]
 PackageScope[allGeodesics]
+PackageScope[stretchedOutSegments]
+PackageScope[applyPruning]
+PackageScope[pruningSpecQ]
 
 
 (* Path-space distances and selectors (HausdorffDistance, FrechetDistance,
@@ -76,6 +79,73 @@ allGeodesics[ graph_Graph, u_, v_ ] :=
   With[ { d = GraphDistance[ graph, u, v ] },
     If[ d === Infinity, { }, FindPath[ graph, u, v, { d }, All ] ]
   ]
+
+
+(* ===================== Stretched-out segments (internal) ===================== *)
+
+(* A stretched-out geodesic from p1 to p2 is one along which every
+   step v_i -> v_{i+1} chooses v_{i+1} from among the lex-max-distance
+   neighbours of v_i, the lex tuple being (d(v_{i-1}, w), d(v_{i-2}, w),
+   ..., d(p1, w)) -- recency first.  Built constructively (frontier BFS
+   on geodesic-extension neighbours, lex-max ties at every step) so the
+   pruning sub-option can act per step.  Returns vertex sequences in the
+   same shape as FindSegment / FindPath. *)
+
+stretchedOutSegments[ graph_Graph, p1_, p2_, prune_ ] :=
+  Module[ { vidx, dmat, d, distP2, paths },
+    If[ p1 === p2, Return[ { } ] ];
+    If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
+    vidx = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
+    dmat = GraphDistanceMatrix[ graph ];
+    d = dmat[[ vidx[ p1 ], vidx[ p2 ] ]];
+    If[ d === Infinity, Return[ { } ] ];
+    distP2 = dmat[[ All, vidx[ p2 ] ]];
+    paths = { { p1 } };
+    Do[
+      paths = applyPruning[
+        Flatten[
+          ( path |-> With[
+              { remaining = d - step,
+                historyIdx = vidx /@ Reverse @ Most[ path ] },
+              With[
+                { progress = Select[ AdjacencyList[ graph, Last[ path ] ],
+                    distP2[[ vidx[ # ] ]] === remaining & ] },
+                ( Append[ path, # ] & ) /@ Which[
+                  progress === { }, { },
+                  historyIdx === { }, progress,
+                  True, MaximalBy[ progress,
+                    w |-> dmat[[ historyIdx, vidx[ w ] ]] ]
+                ]
+              ]
+            ] ) /@ paths,
+          1
+        ],
+        prune
+      ];
+      If[ paths === { }, Break[] ],
+      { step, 1, d }
+    ];
+    paths
+  ]
+
+(* applyPruning trims a list of partial paths by either a beam width
+   (integer cap, RandomSample if exceeded) or a Bernoulli keep
+   probability (with a one-element floor so the bundle never dies by
+   chance).  Caller must validate `prune` via pruningSpecQ first. *)
+
+applyPruning[ paths_List, Infinity ] := paths
+applyPruning[ paths_List, n_Integer /; n >= 1 ] :=
+  If[ Length[ paths ] <= n, paths, RandomSample[ paths, n ] ]
+applyPruning[ { }, p_?NumericQ /; 0 < p < 1 ] := { }
+applyPruning[ paths_List, p_?NumericQ /; 0 < p < 1 ] :=
+  With[ { kept = Select[ paths, RandomReal[ ] < p & ] },
+    If[ kept === { }, RandomSample[ paths, 1 ], kept ]
+  ]
+
+pruningSpecQ[ Infinity ] := True
+pruningSpecQ[ n_Integer ] /; n >= 1 := True
+pruningSpecQ[ p_?NumericQ ] /; 0 < p < 1 := True
+pruningSpecQ[ _ ] := False
 
 
 (* ===================== Separating Sets (internal) ===================== *)

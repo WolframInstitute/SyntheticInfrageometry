@@ -3,13 +3,20 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageScope[findLineExtensions]
 
 
+(* ===================== Messages ===================== *)
+
+FindSegment::badmethod = "Method `1` is not supported by FindSegment.";
+FindSegment::badpruning = "Pruning specification `1` is not supported; use Infinity, a positive integer (beam width), or a number 0 < p < 1 (Bernoulli keep probability).";
+
+
 (* ===================== Points ===================== *)
 
 (* FindPoint[g, n] returns n vertices of the graph (the existence postulate
    for points).  With "Distance" -> r the n vertices form a clique in the
    r-distance graph (mutually at least r apart), realising "n points spread
    out by r"; with "From" the candidate pool is restricted (Center, Periphery,
-   a vertex list, or a single vertex). *)
+   a vertex list, a single vertex, or origin -> dist where dist is a number,
+   {dMin, dMax} range, or "Max" -- vertices at that graph distance from origin). *)
 
 Options[ FindPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
 
@@ -21,6 +28,13 @@ FindPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
       StringQ[ from ] && from == "Periphery", GraphPeriphery[ graph ],
       StringQ[ from ], VertexList[ graph ],
       MemberQ[ VertexList[ graph ], from ], { from },
+      MatchQ[ from, _ -> (_?NumericQ | { _?NumericQ, _?NumericQ } | "Max") ] && MemberQ[ VertexList[ graph ], First[ from ] ],
+        With[ { allDists = GraphDistance[ graph, First[ from ] ] },
+          With[ { spec = Last[ from ] /. "Max" :> Max[ Select[ allDists, # < Infinity & ] ] },
+            Pick[ VertexList[ graph ],
+              Replace[ spec, { d_?NumericQ :> Map[ # == d &, allDists ], { lo_, hi_ } :> Map[ lo <= # <= hi &, allDists ] } ] ]
+          ]
+        ],
       ListQ[ from ], from,
       True, VertexList[ graph ]
     ];
@@ -63,25 +77,49 @@ FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 (* A segment between p1 and p2 is a geodesic vertex sequence
    (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2) and consecutive vi
-   adjacent.  Count = 1 takes the built-in FindShortestPath; count > 1
-   (or UpTo[n] / All) enumerates via FindPath at exact length d.  Pipe
-   the result through CentralPaths / EmbeddingClosestPaths / ... to
-   filter by a path-space metric. *)
+   adjacent.  Method -> "Shortest" (default) enumerates geodesics:
+   count = 1 takes the built-in FindShortestPath; count > 1 (or UpTo[n]
+   / All) enumerates via FindPath at exact length d, and the result
+   pipes through CentralPaths / EmbeddingClosestPaths / ... for further
+   path-space filtering.  Method -> "Stretched" (or {"Stretched",
+   "Pruning" -> spec}) keeps only those geodesics along which every
+   step picks a lex-max-distance neighbour of the current vertex,
+   recency-first; the optional pruning spec is Infinity (default), a
+   positive integer beam width, or a Bernoulli keep probability. *)
+
+Options[ FindSegment ] = { Method -> "Shortest" };
 
 FindSegment[ graph_Graph, p1_, p2_,
-    count : (_Integer | UpTo[ _Integer ] | All) : 1 ] :=
-  Module[ { d, paths },
+    count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
+  Module[ { spec = OptionValue[ Method ], methodName, prune, d, paths },
     If[ p1 === p2, Return[ { } ] ];
-    paths = If[ count === 1,
-      With[ { path = FindShortestPath[ graph, p1, p2 ] },
-        If[ path === { }, { }, { path } ]
-      ],
-      d = GraphDistance[ graph, p1, p2 ];
-      If[ d === Infinity, { },
-        FindPath[ graph, p1, p2, { d }, count /. UpTo[ k_ ] :> k ]
-      ]
-    ];
-    If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
+    { methodName, prune } = Replace[ spec, {
+      m_String :> { m, Infinity },
+      { m_String, subOpts___ } :> { m, "Pruning" /. { subOpts } /. "Pruning" -> Infinity },
+      _ :> { spec, Infinity }
+    } ];
+    Switch[ methodName,
+      "Shortest",
+        paths = If[ count === 1,
+          With[ { path = FindShortestPath[ graph, p1, p2 ] },
+            If[ path === { }, { }, { path } ]
+          ],
+          d = GraphDistance[ graph, p1, p2 ];
+          If[ d === Infinity, { },
+            FindPath[ graph, p1, p2, { d }, count /. UpTo[ k_ ] :> k ]
+          ]
+        ];
+        If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ],
+      "Stretched",
+        If[ ! pruningSpecQ[ prune ],
+          Message[ FindSegment::badpruning, prune ]; $Failed,
+          paths = stretchedOutSegments[ graph, p1, p2, prune ];
+          With[ { result = takeUpTo[ paths, countLimit[ count ] ] },
+            If[ MatchQ[ count, _Integer ] && Length[ result ] < count, $Failed, result ]
+          ]
+        ],
+      _, Message[ FindSegment::badmethod, spec ]; $Failed
+    ]
   ]
 
 FindSegment[ graph_Graph, { p1_, p2_ }, args___ ] :=
