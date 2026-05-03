@@ -136,20 +136,18 @@ FindSegment[ graph_Graph, p1_, p2_,
           ! lookbackSpecQ[ lookback ],
             Message[ FindSegment::badlookback, lookback ]; $Failed,
           True,
-            paths = stretchedOutPaths[ graph, p1, p2, prune, lookback ];
-            With[ { result = takeUpTo[ paths, countLimit[ count ] ] },
-              If[ MatchQ[ count, _Integer ] && Length[ result ] < count, $Failed, result ]
-            ]
+            paths = stretchedOutPaths[ graph, p1, p2, prune, lookback, countLimit[ count ] ];
+            If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
         ],
       "Pulled",
         Which[
           ! formanMethodSpecQ[ formanMethod ],
             Message[ FindSegment::badforman, formanMethod ]; $Failed,
+          ! pruningSpecQ[ prune ],
+            Message[ FindSegment::badpruning, prune ]; $Failed,
           True,
-            paths = pulledPaths[ graph, p1, p2, formanMethod ];
-            With[ { result = takeUpTo[ paths, countLimit[ count ] ] },
-              If[ MatchQ[ count, _Integer ] && Length[ result ] < count, $Failed, result ]
-            ]
+            paths = pulledPaths[ graph, p1, p2, formanMethod, prune, countLimit[ count ] ];
+            If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
         ],
       "Embedding",
         With[ { embOpts = parseEmbeddingMethod[ spec ] },

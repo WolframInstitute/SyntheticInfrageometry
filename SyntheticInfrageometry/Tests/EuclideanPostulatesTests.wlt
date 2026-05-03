@@ -449,6 +449,40 @@ VerificationTest[
 ]
 
 VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    BlockRandom[
+      Length[FindSegment[g, 1, 16, All, Method -> {"Pulled", "Pruning" -> 1}]] <= 1,
+      RandomSeeding -> 42
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Pulled-pruning-beam-1"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Pulled", "Pruning" -> -1}],
+    FindSegment::badpruning],
+  $Failed,
+  TestID -> "FindSegment-Pulled-bad-pruning"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{6, 6}]},
+    Length[FindSegment[g, 1, 36, 1, Method -> "Pulled"]]
+  ],
+  1,
+  TestID -> "FindSegment-Pulled-count-1-terminates-early"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{6, 6}]},
+    Length[FindSegment[g, 1, 36, 1, Method -> "Stretched"]]
+  ],
+  1,
+  TestID -> "FindSegment-Stretched-count-1-terminates-early"
+]
+
+VerificationTest[
   FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "Pulled"],
   {},
   TestID -> "FindSegment-Pulled-same-point-empty"

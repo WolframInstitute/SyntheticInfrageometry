@@ -96,9 +96,11 @@ allGeodesics[ graph_Graph, u_, v_ ] :=
    compares against every available predecessor and on most graphs
    collapses to geodesics.  Built constructively (frontier sweep with
    per-step filtering) so the pruning sub-option can act per step.
+   countLimit is an integer or Infinity; the sweep terminates as soon
+   as that many target-reaching paths have been collected.
    Returns vertex sequences in the same shape as FindSegment / FindPath. *)
 
-stretchedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_ ] :=
+stretchedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_, countLimit_ ] :=
   Module[ { vidx, dmat, frontier, completed = { }, extended },
     If[ p1 === p2, Return[ { } ] ];
     If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
@@ -106,7 +108,7 @@ stretchedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_ ] :=
     vidx = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
     dmat = GraphDistanceMatrix[ graph ];
     frontier = { { p1 } };
-    While[ frontier =!= { },
+    While[ frontier =!= { } && Length[ completed ] < countLimit,
       extended = Flatten[
         ( path |-> With[
             { v = Last[ path ],
@@ -129,7 +131,7 @@ stretchedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_ ] :=
       completed = Join[ completed, Select[ extended, Last[ # ] === p2 & ] ];
       frontier = applyPruning[ Select[ extended, Last[ # ] =!= p2 & ], prune ]
     ];
-    completed
+    Take[ completed, UpTo[ countLimit ] ]
   ]
 
 (* applyPruning trims a list of partial paths by either a beam width
@@ -167,10 +169,12 @@ lookbackSpecQ[ _ ] := False
    kept (frontier branches), so the procedure enumerates every walk
    whose every step is curvature-minimal in its candidate set.
    formanMethod is forwarded to FormanRicciCurvature ("Simple" or
-   "Triangles").  Returns vertex sequences in the same shape as
-   FindSegment / FindPath. *)
+   "Triangles"); prune matches the Stretched convention (Infinity, beam
+   width, or Bernoulli keep probability); countLimit is an integer or
+   Infinity, terminating the sweep early.  Returns vertex sequences in
+   the same shape as FindSegment / FindPath. *)
 
-pulledPaths[ graph_Graph, p1_, p2_, formanMethod_ ] :=
+pulledPaths[ graph_Graph, p1_, p2_, formanMethod_, prune_, countLimit_ ] :=
   Module[ { fEdges, fSym, frontier, completed = { }, extended },
     If[ p1 === p2, Return[ { } ] ];
     If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
@@ -184,7 +188,7 @@ pulledPaths[ graph_Graph, p1_, p2_, formanMethod_ ] :=
       ]
     ];
     frontier = { { p1 } };
-    While[ frontier =!= { },
+    While[ frontier =!= { } && Length[ completed ] < countLimit,
       extended = Flatten[
         ( path |-> With[
             { v = Last[ path ],
@@ -196,9 +200,9 @@ pulledPaths[ graph_Graph, p1_, p2_, formanMethod_ ] :=
         1
       ];
       completed = Join[ completed, Select[ extended, Last[ # ] === p2 & ] ];
-      frontier  = Select[ extended, Last[ # ] =!= p2 & ]
+      frontier  = applyPruning[ Select[ extended, Last[ # ] =!= p2 & ], prune ]
     ];
-    completed
+    Take[ completed, UpTo[ countLimit ] ]
   ]
 
 formanMethodSpecQ[ "Simple" ] := True
