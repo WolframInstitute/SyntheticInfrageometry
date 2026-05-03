@@ -139,14 +139,14 @@ PackageExport[InfraLineQ]
 PackageExport[InfraParallelQ]
 PackageExport[InfraIntersectQ]
 
-(* Viewers.wl *)
+(* Highlights.wl *)
 PackageExport[InfraSceneHighlight]
+
+(* Viewers.wl *)
 PackageExport[PointViewer]
 PackageExport[SegmentViewer]
 PackageExport[ShellViewer]
 PackageExport[CircleViewer]
-
-(* InteractiveViewers.wl *)
 PackageExport[InfraSceneViewer]
 
 

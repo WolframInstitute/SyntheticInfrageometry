@@ -20,6 +20,7 @@ This labelling hierarchy aligns with **physical scales**. The unlabeled graph is
 - performing a ruliological study of which postulates hold on which graphs
 - performing an empirical study of whether ambiguous infra-geometric constructions converge to a unique construction at macroscopic scale as the substrate is refined
 - incorporating hypergraphs and n-ary relations, or developing a new exotic infra-geometry for them
+- lifting the substrate to a **fibered graph** with a discrete connection, defining a combinatorial curvature 2-form via face holonomy, discretizing the Yang-Mills equation and the Lorentz-force trajectory of a charged particle, and recovering electromagnetism (U(1) gauge theory) and Levi-Civita curvature in the appropriate special cases
 
 ## ✨ Usage
 
