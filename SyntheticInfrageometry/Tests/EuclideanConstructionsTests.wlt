@@ -253,8 +253,8 @@ VerificationTest[
 VerificationTest[
   FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All, Method -> "Spectral"],
   $Failed,
-  {FindParallel::nyi},
-  TestID -> "FindParallel-spectral-stub"
+  {FindParallel::badmethod},
+  TestID -> "FindParallel-spectral-rejected"
 ]
 
 VerificationTest[

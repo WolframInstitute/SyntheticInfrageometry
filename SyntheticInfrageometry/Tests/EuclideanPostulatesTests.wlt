@@ -936,4 +936,130 @@ VerificationTest[
   TestID -> "FindParallel-Embedding-set-equals-default"
 ]
 
+
+(* ===== FindPoint All ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    Sort @ FindPoint[ g, All ] === VertexList[ g ]
+  ],
+  True,
+  TestID -> "FindPoint-All-returns-every-vertex"
+]
+
+VerificationTest[
+  With[ { g = PetersenGraph[ ] },
+    Length @ FindPoint[ g, All ] == VertexCount[ g ]
+  ],
+  True,
+  TestID -> "FindPoint-All-length-equals-vertex-count"
+]
+
+
+(* ===== FindLine unified Method axis ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Sort @ FindLine[ g, 1, 16, All, Method -> "Shortest" ] ===
+      Sort @ FindLine[ g, 1, 16, All, Method -> Automatic ]
+  ],
+  True,
+  TestID -> "FindLine-Shortest-equals-Automatic"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { lines = FindLine[ g, 1, 16, All, Method -> "Extended" ] },
+      ListQ[ lines ] && Length[ lines ] >= Length @ FindLine[ g, 1, 16, All, Method -> "Shortest" ]
+    ]
+  ],
+  True,
+  TestID -> "FindLine-Extended-superset-of-Shortest"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { lines = FindLine[ g, 1, 16, All, Method -> "Pulled" ] },
+      ListQ[ lines ] && Length[ lines ] >= 1
+    ]
+  ],
+  True,
+  TestID -> "FindLine-Pulled-non-empty"
+]
+
+
+(* ===== ExtendSegment ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = First @ FindSegment[ g, 1, 6, All ] },
+      With[ { lines = ExtendSegment[ g, seg, All ] },
+        ListQ[ lines ] && AllTrue[ lines,
+          lst |-> Length[ lst ] >= Length[ seg ] && MemberQ[ Partition[ lst, Length @ seg, 1 ], seg ] ]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "ExtendSegment-Shortest-contains-segment"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = First @ FindSegment[ g, 1, 6, All ] },
+      Sort @ ExtendSegment[ g, seg, All, Method -> "Shortest" ] ===
+        Sort @ Select[ FindLine[ g, 1, 6, All ],
+          lst |-> Length[ lst ] >= Length[ seg ] && MemberQ[ Partition[ lst, Length @ seg, 1 ], seg ] ]
+    ]
+  ],
+  True,
+  TestID -> "ExtendSegment-Shortest-matches-FindLine-filtered"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = First @ FindSegment[ g, 1, 6, All ] },
+      ListQ @ ExtendSegment[ g, seg, All, Method -> "Extended" ]
+    ]
+  ],
+  True,
+  TestID -> "ExtendSegment-Extended-returns-list"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = First @ FindSegment[ g, 1, 6, All ] },
+      ListQ @ ExtendSegment[ g, seg, All, Method -> "Pulled" ]
+    ]
+  ],
+  True,
+  TestID -> "ExtendSegment-Pulled-returns-list"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = First @ FindSegment[ g, 1, 6, All ] },
+      With[ { lines = ExtendSegment[ g, seg, 1, Method -> "Embedding" ] },
+        ListQ[ lines ] && Length[ lines ] == 1 &&
+          MemberQ[ Partition[ First @ lines, Length @ seg, 1 ], seg ]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "ExtendSegment-Embedding-contains-segment"
+]
+
+VerificationTest[
+  With[ { g = PathGraph[ Range[ 5 ] ] },
+    ExtendSegment[ g, { 2, 3 }, 1, Method -> "Shortest" ] === { { 1, 2, 3, 4, 5 } }
+  ],
+  True,
+  TestID -> "ExtendSegment-PathGraph-recovers-full-path"
+]
+
+VerificationTest[
+  ExtendSegment[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 99, Method -> "Shortest" ],
+  $Failed,
+  TestID -> "ExtendSegment-strict-undersupply-Failed"
+]
+
 EndTestSection[]

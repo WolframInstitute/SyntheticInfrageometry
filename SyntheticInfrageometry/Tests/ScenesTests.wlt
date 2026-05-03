@@ -292,4 +292,67 @@ VerificationTest[
   TestID -> "FindInfraScene-fix-and-advance"
 ]
 
+
+(* ===== InfraInstance accessor ===== *)
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{p, q, s}, {
+      p == InfraPoint[], q == InfraPoint[], s == InfraSegment[p, q]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    With[{inst = First @ FindInfraScene[scene, g]},
+      InfraInstance[inst, p] === inst[[1]][p]
+    ]
+  ],
+  True,
+  TestID -> "InfraInstance-accessor-wrapped-single-symbol"
+]
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{p, q, s}, {
+      p == InfraPoint[], q == InfraPoint[], s == InfraSegment[p, q]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    With[{inst = First @ FindInfraScene[scene, g]},
+      InfraInstance[inst, {p, q, s}] === {inst[[1]][p], inst[[1]][q], inst[[1]][s]}
+    ]
+  ],
+  True,
+  TestID -> "InfraInstance-accessor-wrapped-symbol-list"
+]
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{p, q, s}, {
+      p == InfraPoint[], q == InfraPoint[], s == InfraSegment[p, q]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    With[{inst = First @ FindInfraScene[scene, g]},
+      InfraInstance[inst[[1]], p] === inst[[1]][p]
+    ]
+  ],
+  True,
+  TestID -> "InfraInstance-accessor-bare-association-single-symbol"
+]
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{p, q, s}, {
+      p == InfraPoint[], q == InfraPoint[], s == InfraSegment[p, q]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    With[{inst = First @ FindInfraScene[scene, g]},
+      InfraInstance[inst[[1]], {p, q, s}] === {inst[[1]][p], inst[[1]][q], inst[[1]][s]}
+    ]
+  ],
+  True,
+  TestID -> "InfraInstance-accessor-bare-association-symbol-list"
+]
+
 EndTestSection[]

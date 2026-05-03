@@ -122,6 +122,24 @@ InfraScene[ objects_List, hypotheses_List ] :=
 InfraScene[ data_Association ][ prop_String ] := data[ prop ]
 
 
+(* ===================== Instance accessors =====================
+   InfraInstance[bindings] is the wrapper returned by FindInfraScene.
+   The two-argument forms read out one or several bindings; bare
+   instance[[1]] continues to work. *)
+
+InfraInstance[ inst_InfraInstance, sym_ ] /; ! ListQ[ sym ] :=
+  inst[[ 1 ]][ sym ]
+
+InfraInstance[ inst_InfraInstance, syms_List ] :=
+  inst[[ 1 ]] /@ syms
+
+InfraInstance[ bindings_Association, sym_ ] /; ! ListQ[ sym ] :=
+  bindings[ sym ]
+
+InfraInstance[ bindings_Association, syms_List ] :=
+  bindings /@ syms
+
+
 (* ===================== Construction Dispatch ===================== *)
 
 (* Each clause maps an InfraHead expression with bindings already substituted
@@ -273,7 +291,8 @@ FindInfraScene[ scene_InfraScene, graph_Graph, init_Association, opts : OptionsP
 
 FindInfraScene[ scene_InfraScene, graph_Graph, nSteps_Integer, init_Association,
     opts : OptionsPattern[] ] :=
-  Module[ { branches = { init }, prob = OptionValue[ "PruningProbability" ] },
+  Module[ { branches = { init }, prob = OptionValue[ "PruningProbability" ],
+            objects = scene[ "Objects" ] },
     Do[
       With[ { effective = Select[ step,
           ! KeyExistsQ[ First[ branches, <||> ], # ] & ] },
@@ -285,6 +304,9 @@ FindInfraScene[ scene_InfraScene, graph_Graph, nSteps_Integer, init_Association,
               If[ kept === {}, { RandomChoice @ branches }, kept ] ] ] ] ],
       { step, Take[ scene[ "Steps" ], UpTo[ nSteps ] ] } ];
     InfraInstance /@ If[ scene[ "Assertions" ] === {}, branches,
-      Select[ branches,
-        b |-> And @@ ( TrueQ[ resolveExpression[ #, b, graph ] ] & /@ scene[ "Assertions" ] ) ] ]
+      Select[ branches, b |-> And @@ (
+        With[ { vars = Intersection[
+              Cases[ #, Alternatives @@ objects, { 0, Infinity } ], objects ] },
+          ! SubsetQ[ Keys @ b, vars ] ||
+            TrueQ[ resolveExpression[ #, b, graph ] ] ] & /@ scene[ "Assertions" ] ) ] ]
   ]

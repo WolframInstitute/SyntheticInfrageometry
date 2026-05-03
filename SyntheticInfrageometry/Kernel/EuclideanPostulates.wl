@@ -73,6 +73,9 @@ FindPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
     ]
   ]
 
+FindPoint[ graph_Graph, All, opts : OptionsPattern[] ] :=
+  FindPoint[ graph, UpTo[ VertexCount[ graph ] ], opts ]
+
 FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
   With[ { result = FindPoint[ graph, UpTo[ n ], opts ] },
     If[ Length[ result ] < n, $Failed, result ]
@@ -248,36 +251,49 @@ FindSegment[ graph_Graph, { p1_, p2_ }, args___ ] :=
    which is a geodesic and that cannot be extended at either end without
    breaking the geodesic property.  FindLine enumerates such maximal
    extensions; "Maximality" -> "Diameter" further restricts to those whose
-   length equals GraphDiameter[g].  Method -> "Embedding" ranks the
-   extensions by EmbeddingHausdorffDistance to the infinite Euclidean line
-   through p1 and p2 under the graph drawing. *)
+   length equals GraphDiameter[g].
+     Method axis is shared with FindSegment / ExtendSegment.
+   "Shortest" (default) returns every maximal geodesic extension.
+   "Extended" returns every maximal geodesic extension of every
+   "Extended"-segment from p1 to p2 (the underlying middle path is then a
+   recency-lex-certified simple path, the prefix and suffix are still
+   geodesic).  "Pulled" does the same with curvature-pulled middle paths.
+   "Embedding" ranks the extensions by EmbeddingHausdorffDistance to the
+   infinite Euclidean line through p1 and p2 under the graph drawing.
+   To extend a given segment to a line, use ExtendSegment. *)
 
 FindLine::badmethod = "Method `1` is not supported by FindLine.";
 FindLine::nyi = "Constraint `1` is not yet implemented for FindLine; use \"Geodesic\".";
 
-Options[ FindLine ] = { "Maximality" -> "Extension", Method -> Automatic };
+Options[ FindLine ] = { "Maximality" -> "Extension", Method -> "Shortest" };
 
 FindLine[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
-  Module[ { geodesics, allExtensions, diam, spec, methodName },
-    geodesics = allGeodesics[ graph, p1, p2 ];
-    allExtensions = Union @ Flatten[
-      findLineExtensions[ graph, # ] & /@ geodesics, 1 ];
+  Module[ { spec, methodName, middles, allExtensions, diam },
+    spec = OptionValue[ Method ];
+    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, Automatic -> "Shortest", _ :> spec } ];
+    middles = Switch[ methodName,
+      "Shortest" | "Embedding", allGeodesics[ graph, p1, p2 ],
+      "Extended" | "Pulled",
+        With[ { paths = FindSegment[ graph, p1, p2, All, Method -> spec ] },
+          If[ paths === $Failed || ! ListQ[ paths ], { }, paths ]
+        ],
+      _, $Failed
+    ];
+    If[ middles === $Failed, Message[ FindLine::badmethod, spec ]; Return[ $Failed ] ];
+    allExtensions = Union @ Flatten[ findLineExtensions[ graph, # ] & /@ middles, 1 ];
     If[ OptionValue[ "Maximality" ] === "Diameter",
       diam = GraphDiameter[ graph ];
       allExtensions = Select[ allExtensions, line |-> Length[ line ] - 1 == diam ]
     ];
-    spec = OptionValue[ Method ];
-    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
     Switch[ methodName,
-      Automatic, allExtensions,
+      "Shortest" | "Extended" | "Pulled", allExtensions,
       "Embedding",
         With[ { embOpts = parseEmbeddingMethod[ spec ] },
           If[ embOpts[ "Constraint" ] =!= "Geodesic",
             Message[ FindLine::nyi, embOpts[ "Constraint" ] ]; allExtensions,
             embeddingRankLines[ graph, allExtensions, p1, p2, embOpts ]
           ]
-        ],
-      _, Message[ FindLine::badmethod, spec ]; $Failed
+        ]
     ]
   ]
 
@@ -307,6 +323,19 @@ FindLine[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] /; Mem
   ]
 
 findLineExtensions[ graph_Graph, segment_List ] :=
+  findLineExtensionsWith[ graph, segment,
+    { s, p, db } |-> FindPath[ graph, s, p, { db }, All ],
+    { p, e, da } |-> FindPath[ graph, p, e, { da }, All ] ]
+
+
+(* findLineExtensionsWith generalises findLineExtensions: candidate before /
+   after vertices are still found via the geodesic relation (so the
+   maximality target is graph distance), but the prefix / suffix path
+   enumeration is delegated to caller-supplied closures. Used by
+   ExtendSegment to swap geodesic FindPath for extended / pulled simple-path
+   enumeration. *)
+
+findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_ ] :=
   Module[ { p1, p2, d, extendBefore, extendAfter, pairs, maxPairs },
     If[ Length[ segment ] < 2, Return[ { segment } ] ];
     p1 = First[ segment ];
@@ -324,14 +353,156 @@ findLineExtensions[ graph_Graph, segment_List ] :=
     Flatten[
       With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
         With[ { db = GraphDistance[ graph, s, p1 ], da = GraphDistance[ graph, p2, e ] },
-          With[ { bp = If[ db == 0, { {} }, Most /@ FindPath[ graph, s, p1, { db }, All ] ],
-                  ap = If[ da == 0, { {} }, Rest /@ FindPath[ graph, p2, e, { da }, All ] ] },
+          With[ { bp = If[ db == 0, { {} }, Most /@ prefixFn[ s, p1, db ] ],
+                  ap = If[ da == 0, { {} }, Rest /@ suffixFn[ p2, e, da ] ] },
             Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ]
           ]
         ]
       ] & /@ maxPairs,
       1
     ]
+  ]
+
+
+(* ===================== Extend segment ===================== *)
+
+(* ExtendSegment[g, segment] takes a vertex sequence and extends it to a
+   line: a maximal vertex sequence containing segment as a contiguous
+   sub-sequence, every prefix / suffix of which is itself a path (geodesic
+   for "Shortest", recency-lex-certified for "Extended", curvature-pulled
+   for "Pulled", embedding-line-aligned for "Embedding"). The Method axis
+   matches FindSegment / FindLine: every method is a path-enumeration
+   strategy on the prefix and suffix; the candidate before / after vertices
+   are selected by the geodesic relation
+     d(s, p1) + d(p1, p2) == d(s, p2),  d(p2, e) + d(p1, p2) == d(p1, e)
+   so the line's outer endpoints are graph-distance-maximal from each
+   other regardless of method. *)
+
+ExtendSegment::badmethod = "Method `1` is not supported by ExtendSegment.";
+ExtendSegment::badpruning = "Pruning specification `1` is not supported; use Infinity, a positive integer (beam width), or a number 0 < p < 1 (Bernoulli keep probability).";
+ExtendSegment::badlookback = "Lookback specification `1` is not supported; use a positive integer or All.";
+ExtendSegment::badforman = "FormanMethod specification `1` is not supported; use \"Simple\" or \"Triangles\".";
+ExtendSegment::badcurvature = "CurvatureMethod specification `1` is not supported; use \"Forman\" or \"Wolfram\".";
+ExtendSegment::baddim = "Dimension specification `1` is not supported; use Automatic or a positive number.";
+ExtendSegment::badradii = "Radii specification `1` is not supported; use Automatic or {rmin, rmax} with 1 <= rmin <= rmax.";
+
+Options[ ExtendSegment ] = { Method -> "Shortest" };
+
+ExtendSegment[ graph_Graph, segment_List,
+    count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
+  Module[ { spec, methodName, prune, lookback, formanMethod, curvatureMethod, dim, radii, edgeKappa, paths },
+    If[ Length[ segment ] < 2, Return[ { segment } ] ];
+    spec = OptionValue[ Method ];
+    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, Automatic -> "Shortest", _ :> spec } ];
+    { prune, lookback, formanMethod, curvatureMethod, dim, radii } = Replace[ spec, {
+      _String :> { Infinity, 2, "Simple", "Forman", Automatic, Automatic },
+      { _String, subOpts___ } :> {
+        "Pruning"         /. { subOpts } /. "Pruning"         -> Infinity,
+        "Lookback"        /. { subOpts } /. "Lookback"        -> 2,
+        "FormanMethod"    /. { subOpts } /. "FormanMethod"    -> "Simple",
+        "CurvatureMethod" /. { subOpts } /. "CurvatureMethod" -> "Forman",
+        "Dimension"       /. { subOpts } /. "Dimension"       -> Automatic,
+        "Radii"           /. { subOpts } /. "Radii"           -> Automatic
+      },
+      _ :> { Infinity, 2, "Simple", "Forman", Automatic, Automatic }
+    } ];
+    paths = Switch[ methodName,
+      "Shortest",
+        findLineExtensions[ graph, segment ],
+      "Extended",
+        Which[
+          ! pruningSpecQ[ prune ],
+            Message[ ExtendSegment::badpruning, prune ]; $Failed,
+          ! lookbackSpecQ[ lookback ],
+            Message[ ExtendSegment::badlookback, lookback ]; $Failed,
+          True,
+            findLineExtensionsWith[ graph, segment,
+              { s, p, db } |-> extendedOutPaths[ graph, s, p, prune, lookback, Infinity ],
+              { p, e, da } |-> extendedOutPaths[ graph, p, e, prune, lookback, Infinity ] ]
+        ],
+      "Pulled",
+        Which[
+          ! curvatureMethodSpecQ[ curvatureMethod ],
+            Message[ ExtendSegment::badcurvature, curvatureMethod ]; $Failed,
+          ! formanMethodSpecQ[ formanMethod ],
+            Message[ ExtendSegment::badforman, formanMethod ]; $Failed,
+          ! dimensionSpecQ[ dim ],
+            Message[ ExtendSegment::baddim, dim ]; $Failed,
+          ! radiiSpecQ[ radii ],
+            Message[ ExtendSegment::badradii, radii ]; $Failed,
+          ! pruningSpecQ[ prune ],
+            Message[ ExtendSegment::badpruning, prune ]; $Failed,
+          True,
+            edgeKappa = buildEdgeKappa[ graph, curvatureMethod, formanMethod, dim, radii ];
+            findLineExtensionsWith[ graph, segment,
+              { s, p, db } |-> pulledPaths[ graph, s, p, edgeKappa, prune, Infinity, Automatic ],
+              { p, e, da } |-> pulledPaths[ graph, p, e, edgeKappa, prune, Infinity, Automatic ] ]
+        ],
+      "Embedding",
+        embeddingExtendSegment[ graph, segment, parseEmbeddingMethod[ spec ] ],
+      _, Message[ ExtendSegment::badmethod, spec ]; $Failed
+    ];
+    Which[
+      paths === $Failed, $Failed,
+      MatchQ[ count, _Integer ],
+        With[ { result = Take[ paths, UpTo[ count ] ] },
+          If[ Length[ result ] < count, $Failed, result ] ],
+      MatchQ[ count, UpTo[ _Integer ] ], Take[ paths, count ],
+      count === All, paths,
+      True, paths
+    ]
+  ]
+
+
+(* embeddingExtendSegment fits a regression line through the segment's
+   embedding coordinates (principal direction obtained from the SVD of the
+   centered point cloud, falling back to the endpoint-to-endpoint vector
+   when the segment is short or coplanar) and greedily walks outward from
+   each endpoint along that direction in the graph: at every step the
+   neighbour is chosen by maximum signed projection along the line, with
+   minimum perpendicular distance as the tie-breaker. The walk stops when
+   no unvisited neighbour advances the projection further. *)
+
+embeddingExtendSegment[ graph_Graph, segment_List, embOpts_Association ] :=
+  Module[ { coords, vertexIndex, segIdx, segCoords, centroid, centered, direction, basePoint, signedProj, perpDist, walkOut, walkIn, prefix, suffix },
+    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
+    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
+    segIdx = Lookup[ vertexIndex, segment ];
+    segCoords = coords[[ segIdx ]];
+    centroid = Mean[ segCoords ];
+    centered = ( # - centroid ) & /@ segCoords;
+    direction = With[ { diff = Last[ segCoords ] - First[ segCoords ] },
+      Which[
+        Length[ segCoords ] >= 3 && Norm[ diff ] > 0,
+          With[ { svd = SingularValueDecomposition[ centered ] },
+            Normalize @ svd[[ 3, All, 1 ]] * Sign[ diff . svd[[ 3, All, 1 ]] ] ],
+        Norm[ diff ] > 0, Normalize[ diff ],
+        True, ConstantArray[ 0., Length @ First @ segCoords ]
+      ] ];
+    If[ Norm[ direction ] == 0, Return[ { segment } ] ];
+    basePoint = First[ segCoords ];
+    signedProj = v |-> ( coords[[ vertexIndex[ v ] ]] - basePoint ) . direction;
+    perpDist = v |-> With[ { c = coords[[ vertexIndex[ v ] ]] - basePoint },
+      Norm[ c - ( c . direction ) direction ] ];
+    walkOut[ current_, visited_ ] :=
+      With[ { adj = Complement[ AdjacencyList[ graph, current ], visited ],
+              currentP = signedProj[ current ] },
+        With[ { candidates = Select[ adj, signedProj[ # ] > currentP & ] },
+          If[ candidates === { }, { },
+            With[ { best = First @ MinimalBy[
+                MaximalBy[ candidates, signedProj ], perpDist ] },
+              Prepend[ walkOut[ best, Append[ visited, best ] ], best ] ] ] ] ];
+    walkIn[ current_, visited_ ] :=
+      With[ { adj = Complement[ AdjacencyList[ graph, current ], visited ],
+              currentP = signedProj[ current ] },
+        With[ { candidates = Select[ adj, signedProj[ # ] < currentP & ] },
+          If[ candidates === { }, { },
+            With[ { best = First @ MinimalBy[
+                MinimalBy[ candidates, signedProj ], perpDist ] },
+              Prepend[ walkIn[ best, Append[ visited, best ] ], best ] ] ] ] ];
+    prefix = walkIn[ First[ segment ], segment ];
+    suffix = walkOut[ Last[ segment ], segment ];
+    { Join[ Reverse[ prefix ], segment, suffix ] }
   ]
 
 
@@ -466,10 +637,8 @@ embeddingRankCircles[ graph_Graph, cycles_List, center_, radius_, embOpts_Associ
    maximal geodesic through p whose vertices all lie at distance
    r = d(p, line) from line -- the local portion of a line-through-p that
    stays on the distance-to-line level surface.  No perpendiculars, no
-   auxiliary segments.  "Spectral" and "Resistance" are accepted by the
-   option but not yet implemented. *)
+   auxiliary segments. *)
 
-FindParallel::nyi = "Method `1` is not yet implemented for FindParallel; only \"Metric\" is currently available.";
 FindParallel::badmethod = "Method `1` is not supported by FindParallel.";
 
 Options[ FindParallel ] = { Method -> "Metric" };
@@ -483,7 +652,6 @@ FindParallel[ graph_Graph, line_List, p_, All, opts : OptionsPattern[] ] :=
         With[ { embOpts = parseEmbeddingMethod[ spec ] },
           embeddingRankParallels[ graph, findParallelMetric[ graph, line, p ], line, p, embOpts ]
         ],
-      "Spectral" | "Resistance", Message[ FindParallel::nyi, methodName ]; $Failed,
       _, Message[ FindParallel::badmethod, methodName ]; $Failed
     ]
   ]
