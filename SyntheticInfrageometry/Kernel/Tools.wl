@@ -15,6 +15,7 @@ PackageScope[applyPruning]
 PackageScope[pruningSpecQ]
 PackageScope[lookbackSpecQ]
 PackageScope[formanMethodSpecQ]
+PackageScope[constraintSpecQ]
 
 
 (* Path-space distances and selectors (HausdorffDistance, FrechetDistance,
@@ -100,7 +101,7 @@ allGeodesics[ graph_Graph, u_, v_ ] :=
    as that many target-reaching paths have been collected.
    Returns vertex sequences in the same shape as FindSegment / FindPath. *)
 
-stretchedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_, countLimit_ ] :=
+stretchedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_, countLimit_, dagNbrs_ ] :=
   Module[ { vidx, dmat, frontier, completed = { }, extended },
     If[ p1 === p2, Return[ { } ] ];
     If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
@@ -116,8 +117,9 @@ stretchedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_, countLimit_ ] :=
                 If[ lookback === All || lookback === Infinity, rev,
                   Take[ rev, UpTo[ lookback - 1 ] ] ] ] },
             With[
-              { candidates = Select[ AdjacencyList[ graph, v ],
-                  ! MemberQ[ path, # ] & ] },
+              { candidates = If[ dagNbrs === Automatic,
+                  Select[ AdjacencyList[ graph, v ], ! MemberQ[ path, # ] & ],
+                  Lookup[ dagNbrs, v, { } ] ] },
               ( Append[ path, # ] & ) /@ Which[
                 candidates === { }, { },
                 historyIdx === { }, candidates,
@@ -174,7 +176,7 @@ lookbackSpecQ[ _ ] := False
    Infinity, terminating the sweep early.  Returns vertex sequences in
    the same shape as FindSegment / FindPath. *)
 
-pulledPaths[ graph_Graph, p1_, p2_, formanMethod_, prune_, countLimit_ ] :=
+pulledPaths[ graph_Graph, p1_, p2_, formanMethod_, prune_, countLimit_, dagNbrs_ ] :=
   Module[ { fEdges, fSym, frontier, completed = { }, extended },
     If[ p1 === p2, Return[ { } ] ];
     If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
@@ -192,8 +194,9 @@ pulledPaths[ graph_Graph, p1_, p2_, formanMethod_, prune_, countLimit_ ] :=
       extended = Flatten[
         ( path |-> With[
             { v = Last[ path ],
-              candidates = Select[ AdjacencyList[ graph, Last[ path ] ],
-                ! MemberQ[ path, # ] & ] },
+              candidates = If[ dagNbrs === Automatic,
+                Select[ AdjacencyList[ graph, Last[ path ] ], ! MemberQ[ path, # ] & ],
+                Lookup[ dagNbrs, Last[ path ], { } ] ] },
             ( Append[ path, # ] & ) /@ If[ candidates === { }, { },
               MinimalBy[ candidates, w |-> fSym[ UndirectedEdge[ v, w ] ] ] ]
           ] ) /@ frontier,
@@ -208,6 +211,10 @@ pulledPaths[ graph_Graph, p1_, p2_, formanMethod_, prune_, countLimit_ ] :=
 formanMethodSpecQ[ "Simple" ] := True
 formanMethodSpecQ[ "Triangles" ] := True
 formanMethodSpecQ[ _ ] := False
+
+constraintSpecQ[ "Geodesic" ] := True
+constraintSpecQ[ "Free" ] := True
+constraintSpecQ[ _ ] := False
 
 
 (* ===================== Separating Sets (internal) ===================== *)

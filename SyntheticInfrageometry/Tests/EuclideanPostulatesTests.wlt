@@ -236,11 +236,11 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Sort @ FindSegment[g, 1, 9, All, Method -> {"Stretched", "Lookback" -> 1}] ===
+    Sort @ FindSegment[g, 1, 9, All, Method -> {"Stretched", "Lookback" -> 1, "Constraint" -> "Free"}] ===
       Sort @ FindPath[g, 1, 9, Infinity, All]
   ],
   True,
-  TestID -> "FindSegment-Stretched-K1-equals-FindPath"
+  TestID -> "FindSegment-Stretched-K1-Free-equals-FindPath"
 ]
 
 VerificationTest[
@@ -257,9 +257,9 @@ VerificationTest[
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
     With[{
-      k1   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 1}],
-      k2   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 2}],
-      kAll = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> All}]
+      k1   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 1, "Constraint" -> "Free"}],
+      k2   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 2, "Constraint" -> "Free"}],
+      kAll = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> All, "Constraint" -> "Free"}]
     },
       Length[k1] == 4 &&
       MemberQ[k1, {1, 2, 4, 3}] && MemberQ[k1, {1, 4, 2, 3}] &&
@@ -268,21 +268,21 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindSegment-Stretched-K2-strict-between"
+  TestID -> "FindSegment-Stretched-Free-K2-strict-between"
 ]
 
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
     With[{
-      k1   = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 1}],
-      k2   = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 2}],
-      kAll = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> All}]
+      k1   = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 1, "Constraint" -> "Free"}],
+      k2   = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 2, "Constraint" -> "Free"}],
+      kAll = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> All, "Constraint" -> "Free"}]
     },
       k1 >= k2 >= kAll
     ]
   ],
   True,
-  TestID -> "FindSegment-Stretched-K-monotone"
+  TestID -> "FindSegment-Stretched-Free-K-monotone"
 ]
 
 VerificationTest[
@@ -381,10 +381,10 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Length @ FindSegment[g, 1, 9, All, Method -> "Pulled"]
+    Length @ FindSegment[g, 1, 9, All, Method -> {"Pulled", "Constraint" -> "Free"}]
   ],
   6,
-  TestID -> "FindSegment-Pulled-grid-bundle-size"
+  TestID -> "FindSegment-Pulled-Free-grid-bundle-size"
 ]
 
 VerificationTest[
@@ -409,11 +409,11 @@ VerificationTest[
 
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 1 <-> 3, 1 <-> 4, 2 <-> 3, 2 <-> 4}]},
-    Sort @ FindSegment[g, 1, 3, All, Method -> {"Pulled", "FormanMethod" -> "Simple"}] =!=
-      Sort @ FindSegment[g, 1, 3, All, Method -> {"Pulled", "FormanMethod" -> "Triangles"}]
+    Sort @ FindSegment[g, 1, 3, All, Method -> {"Pulled", "FormanMethod" -> "Simple", "Constraint" -> "Free"}] =!=
+      Sort @ FindSegment[g, 1, 3, All, Method -> {"Pulled", "FormanMethod" -> "Triangles", "Constraint" -> "Free"}]
   ],
   True,
-  TestID -> "FindSegment-Pulled-FormanMethod-Triangles-differs-on-triangulated"
+  TestID -> "FindSegment-Pulled-Free-FormanMethod-Triangles-differs-on-triangulated"
 ]
 
 VerificationTest[
@@ -486,6 +486,64 @@ VerificationTest[
   FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "Pulled"],
   {},
   TestID -> "FindSegment-Pulled-same-point-empty"
+]
+
+
+(* ===== FindSegment Method -> "Pulled" / "Stretched": Constraint -> "Geodesic" (default) ===== *)
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[
+      FindSegment[g, 1, 9, All, Method -> "Pulled"],
+      walk |-> Length[walk] - 1 === GraphDistance[g, 1, 9]
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Pulled-Constraint-default-walks-are-geodesic"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    SubsetQ[
+      Sort @ FindSegment[g, 1, 9, All, Method -> "Shortest"],
+      Sort @ FindSegment[g, 1, 9, All, Method -> "Pulled"]
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Pulled-Constraint-default-subset-of-geodesics"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[
+      FindSegment[g, 1, 9, All, Method -> "Stretched"],
+      walk |-> Length[walk] - 1 === GraphDistance[g, 1, 9]
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Stretched-Constraint-default-walks-are-geodesic"
+]
+
+VerificationTest[
+  With[{g = Graph[{1 <-> 2, 1 <-> 3, 1 <-> 4, 2 <-> 3, 2 <-> 4}]},
+    FindSegment[g, 1, 3, All, Method -> "Pulled"]
+  ],
+  {{1, 3}},
+  TestID -> "FindSegment-Pulled-Constraint-default-target-adjacent"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Stretched", "Constraint" -> "Bogus"}],
+    FindSegment::badconstraint],
+  $Failed,
+  TestID -> "FindSegment-Stretched-bad-Constraint"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Pulled", "Constraint" -> "Bogus"}],
+    FindSegment::badconstraint],
+  $Failed,
+  TestID -> "FindSegment-Pulled-bad-Constraint"
 ]
 
 

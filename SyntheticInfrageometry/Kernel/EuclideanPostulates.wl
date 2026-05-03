@@ -105,17 +105,18 @@ Options[ FindSegment ] = { Method -> "Shortest" };
 
 FindSegment[ graph_Graph, p1_, p2_,
     count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
-  Module[ { spec = OptionValue[ Method ], methodName, prune, lookback, formanMethod, d, paths },
+  Module[ { spec = OptionValue[ Method ], methodName, prune, lookback, formanMethod, constraint, dagNbrs, d, paths },
     If[ p1 === p2, Return[ { } ] ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    { prune, lookback, formanMethod } = Replace[ spec, {
-      _String :> { Infinity, 2, "Simple" },
+    { prune, lookback, formanMethod, constraint } = Replace[ spec, {
+      _String :> { Infinity, 2, "Simple", "Geodesic" },
       { _String, subOpts___ } :> {
         "Pruning"      /. { subOpts } /. "Pruning"      -> Infinity,
         "Lookback"     /. { subOpts } /. "Lookback"     -> 2,
-        "FormanMethod" /. { subOpts } /. "FormanMethod" -> "Simple"
+        "FormanMethod" /. { subOpts } /. "FormanMethod" -> "Simple",
+        "Constraint"   /. { subOpts } /. "Constraint"   -> "Geodesic"
       },
-      _ :> { Infinity, 2, "Simple" }
+      _ :> { Infinity, 2, "Simple", "Geodesic" }
     } ];
     Switch[ methodName,
       "Shortest",
@@ -135,8 +136,11 @@ FindSegment[ graph_Graph, p1_, p2_,
             Message[ FindSegment::badpruning, prune ]; $Failed,
           ! lookbackSpecQ[ lookback ],
             Message[ FindSegment::badlookback, lookback ]; $Failed,
+          ! constraintSpecQ[ constraint ],
+            Message[ FindSegment::badconstraint, constraint ]; $Failed,
           True,
-            paths = stretchedOutPaths[ graph, p1, p2, prune, lookback, countLimit[ count ] ];
+            dagNbrs = If[ constraint === "Geodesic", geodesicDAGNeighbors[ graph, p1, p2 ], Automatic ];
+            paths = stretchedOutPaths[ graph, p1, p2, prune, lookback, countLimit[ count ], dagNbrs ];
             If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
         ],
       "Pulled",
@@ -145,8 +149,11 @@ FindSegment[ graph_Graph, p1_, p2_,
             Message[ FindSegment::badforman, formanMethod ]; $Failed,
           ! pruningSpecQ[ prune ],
             Message[ FindSegment::badpruning, prune ]; $Failed,
+          ! constraintSpecQ[ constraint ],
+            Message[ FindSegment::badconstraint, constraint ]; $Failed,
           True,
-            paths = pulledPaths[ graph, p1, p2, formanMethod, prune, countLimit[ count ] ];
+            dagNbrs = If[ constraint === "Geodesic", geodesicDAGNeighbors[ graph, p1, p2 ], Automatic ];
+            paths = pulledPaths[ graph, p1, p2, formanMethod, prune, countLimit[ count ], dagNbrs ];
             If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
         ],
       "Embedding",
