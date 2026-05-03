@@ -135,4 +135,86 @@ VerificationTest[
   TestID -> "EmbeddingClosestCycles-returns-sublist"
 ]
 
+(* ===== GeodesicSubgraph ===== *)
+
+VerificationTest[
+  GraphQ @ GeodesicSubgraph[ PathGraph[ Range[ 5 ] ], { { 1, 5 } } ],
+  True,
+  TestID -> "GeodesicSubgraph-returns-graph"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    EdgeCount @ GeodesicSubgraph[ g, { { 1, 9 } }, "PathThickness" -> Infinity ] >
+    EdgeCount @ GeodesicSubgraph[ g, { { 1, 9 } }, "PathThickness" -> 0 ]
+  ],
+  True,
+  TestID -> "GeodesicSubgraph-thickness-grows"
+]
+
+VerificationTest[
+  DirectedGraphQ @ GeodesicSubgraph[ CycleGraph[ 6 ], { { 1, 4 } }, "Directed" -> False ],
+  False,
+  TestID -> "GeodesicSubgraph-undirected"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    SubsetQ[ VertexList[ g ], VertexList @ GeodesicSubgraph[ g, { { 1, 9 }, { 3, 7 } } ] ]
+  ],
+  True,
+  TestID -> "GeodesicSubgraph-multi-pair"
+]
+
+(* ===== PathSubgraph ===== *)
+
+VerificationTest[
+  VertexCount @ PathSubgraph[ PathGraph[ Range[ 6 ] ], 1, 5 ],
+  5,
+  TestID -> "PathSubgraph-default-is-geodesic"
+]
+
+VerificationTest[
+  With[ { g = CycleGraph[ 6 ] },
+    EdgeCount @ PathSubgraph[ g, 1, 3, UpTo[ 2 ] ] <
+    EdgeCount @ PathSubgraph[ g, 1, 3, UpTo[ 4 ] ]
+  ],
+  True,
+  TestID -> "PathSubgraph-length-cap-monotone"
+]
+
+VerificationTest[
+  EdgeCount @ PathSubgraph[ CycleGraph[ 5 ], 1, 3, All ],
+  5,
+  TestID -> "PathSubgraph-all-on-2-connected"
+]
+
+VerificationTest[
+  With[ { g = GraphDisjointUnion[ PathGraph[ { 1, 2 } ], PathGraph[ { 3, 4 } ] ] },
+    EdgeCount @ PathSubgraph[ g, 1, 4 ]
+  ],
+  0,
+  TestID -> "PathSubgraph-disconnected-empty"
+]
+
+VerificationTest[
+  VertexList @ PathSubgraph[ PathGraph[ Range[ 4 ] ], 2, 2 ],
+  { 2 },
+  TestID -> "PathSubgraph-self-loop"
+]
+
+VerificationTest[
+  DirectedGraphQ @ PathSubgraph[ CycleGraph[ 6 ], 1, 4, All, "Directed" -> False ],
+  False,
+  TestID -> "PathSubgraph-undirected"
+]
+
+VerificationTest[
+  With[ { g = CycleGraph[ 6 ] },
+    EdgeCount @ PathSubgraph[ g, 1, 4, 3 ] === EdgeCount @ PathSubgraph[ g, 1, 4, UpTo[ 3 ] ]
+  ],
+  True,
+  TestID -> "PathSubgraph-integer-equals-UpTo"
+]
+
 EndTestSection[]

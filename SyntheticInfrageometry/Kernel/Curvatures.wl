@@ -121,7 +121,7 @@ WolframRicciScalar[ graph_Graph, v_, { rmin_Integer, rmax_Integer }, OptionsPatt
       ],
       Range[ rmin, rmax ]
     ]
-  ]
+  ] /; v =!= All
 
 WolframRicciScalar[ graph_Graph, v_, opts : OptionsPattern[] ] :=
   With[ {

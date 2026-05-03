@@ -179,7 +179,7 @@ EmbeddingClosestPaths[ graph_Graph, paths_List, { p1_, p2_ } ] /; Length[ paths 
 
 EmbeddingClosestPaths[ graph_Graph, paths_List, { p1_, p2_ } ] :=
   Module[ { coords, vertexIndex, ep },
-    coords = GraphEmbedding[ graph ];
+    coords = resolveEmbeddingCoords[ graph, Automatic ];
     vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
     ep = Lookup[ vertexIndex, { p1, p2 } ];
     MinimalBy[ paths,
@@ -198,7 +198,7 @@ EmbeddingClosestCycles[ graph_Graph, cycles_List, { center_, radius_ } ] /; Leng
 
 EmbeddingClosestCycles[ graph_Graph, cycles_List, { center_, radius_ } ] :=
   Module[ { coords, vertexIndex, centerIdx },
-    coords = GraphEmbedding[ graph ];
+    coords = resolveEmbeddingCoords[ graph, Automatic ];
     vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
     centerIdx = vertexIndex[ center ];
     MinimalBy[ cycles,
@@ -241,10 +241,14 @@ parseEmbeddingMethod[ spec_ ] :=
 
 
 (* resolveEmbeddingCoords[graph, spec] returns the coordinate matrix from the
-   Coordinates suboption value: Automatic -> GraphEmbedding[graph], else the
+   Coordinates suboption value: Automatic -> the unit-edge-faithful
+   GraphEmbedding under SpringEmbedding (the closest built-in to the
+   edge-length-preserving criterion that reflects intrinsic graph
+   geometry; see Wiki/Concepts/GraphEmbeddings.md), else the
    user-supplied matrix. *)
 
-resolveEmbeddingCoords[ graph_Graph, Automatic ] := GraphEmbedding[ graph ]
+resolveEmbeddingCoords[ graph_Graph, Automatic ] :=
+  GraphEmbedding[ Graph[ graph, GraphLayout -> "SpringEmbedding" ] ]
 resolveEmbeddingCoords[ _, coords_List ] := coords
 
 
@@ -274,7 +278,7 @@ geodesicDAGNeighbors[ graph_Graph, u_, v_ ] :=
    recursion that extends each partial path via extendFn[path]; complete
    candidates (those satisfying goalQ[path]) are collected.  At every
    branching step the extension list is filtered by applyPruning, so the
-   same Pruning spec used by Method -> "Stretched" controls the search. *)
+   same Pruning spec used by Method -> "Extended" controls the search. *)
 
 generateEmbeddingPaths[ extendFn_, startPath_List, goalQ_, prune_ ] :=
   Module[ { results = {}, recurse },
@@ -333,5 +337,70 @@ applyPathSpaceSelector[ graph_Graph, paths_List, name_String, ctx_Association ] 
           EmbeddingClosestCycles[ graph, paths, { ctx[ "Center" ], ctx[ "Radius" ] } ],
           EmbeddingClosestPaths [ graph, paths, ctx[ "Endpoints" ] ] ],
       _, paths
+    ]
+  ]
+
+
+(* ===================== Path-domain subgraph constructors ===================== *)
+
+(* GeodesicSubgraph[g, pairs] returns the union of geodesics between the
+   listed vertex pairs, as a single graph.  "PathThickness" -> 0 keeps one
+   shortest path per pair (the built-in FindPath); "PathThickness" -> Infinity
+   keeps every shortest path; a finite positive value keeps the geodesics
+   whose path-Hausdorff distance to the first geodesic is at most that
+   threshold.  "Directed" -> True orients each path from the first vertex
+   of the pair to the second. *)
+
+Options[ GeodesicSubgraph ] = { "PathThickness" -> 0, "Directed" -> True };
+
+GeodesicSubgraph[ g_Graph, pairs_List, OptionsPattern[] ] :=
+  Module[ { distMatrix, thickness, vertexToIndex, selectedPaths, directed, hausdorff },
+    thickness = OptionValue[ "PathThickness" ];
+    directed = OptionValue[ "Directed" ];
+    vertexToIndex = AssociationThread[ VertexList[ g ], Range @ VertexCount[ g ] ];
+    distMatrix = GraphDistanceMatrix[ g ];
+    hausdorff = With[ { dm = distMatrix[[ #1, #2 ]] },
+      Max[ Max[ Min /@ dm ], Max[ Min /@ Transpose @ dm ] ] ] &;
+    selectedPaths = Which[
+      thickness === 0,
+      ( First @ FindPath[ g, #1, #2, { distMatrix[[ vertexToIndex[ #1 ], vertexToIndex[ #2 ] ]] }, 1 ] & ) @@@ pairs,
+      thickness === Infinity,
+      Flatten[ ( FindPath[ g, #1, #2, { distMatrix[[ vertexToIndex[ #1 ], vertexToIndex[ #2 ] ]] }, All ] & ) @@@ pairs, 1 ],
+      True,
+      Flatten[
+        ( If[ # === { }, { },
+            With[ { ref = vertexToIndex /@ First[ # ] },
+              Select[ #, path |-> hausdorff[ vertexToIndex /@ path, ref ] <= thickness ]
+            ]
+          ] & ) /@
+        ( ( FindPath[ g, #1, #2, { distMatrix[[ vertexToIndex[ #1 ], vertexToIndex[ #2 ] ]] }, All ] & ) @@@ pairs ),
+        1
+      ]
+    ];
+    GraphUnion @@ ( PathGraph[ #, DirectedEdges -> directed ] & /@ selectedPaths )
+  ]
+
+
+(* PathSubgraph[g, u, v, lengthSpec] returns the union of all simple u-v paths
+   of length at most k -- the k-path subgraph.  At lengthSpec -> Automatic
+   (default) k = d(u, v), giving the geodesic subgraph; an integer or UpTo[k]
+   sets the cap; All gives every simple u-v path.  "Directed" -> True orients
+   each path u -> v. *)
+
+Options[ PathSubgraph ] = { "Directed" -> True };
+
+PathSubgraph[ g_Graph, u_, v_, lengthSpec : ( _Integer | UpTo[ _Integer ] | All ) : Automatic, OptionsPattern[] ] :=
+  Module[ { k, paths },
+    k = Replace[ lengthSpec, {
+      Automatic     :> GraphDistance[ g, u, v ],
+      UpTo[ n_Integer ] :> n,
+      All           -> Infinity,
+      n_Integer     :> n
+    } ];
+    If[ u === v, Return @ Graph[ { u }, { } ] ];
+    paths = FindPath[ g, u, v, k, All ];
+    If[ paths === { },
+      Graph[ { }, { } ],
+      GraphUnion @@ ( PathGraph[ #, DirectedEdges -> OptionValue[ "Directed" ] ] & /@ paths )
     ]
   ]

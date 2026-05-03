@@ -216,50 +216,39 @@ VerificationTest[
   TestID -> "FindSegment-upto-soft-cap"
 ]
 
-(* ===== FindSegment Method -> "Stretched" ===== *)
+(* ===== FindSegment Method -> "Extended" ===== *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    FindSegment[g, 1, 5, All, Method -> "Stretched"]
+    FindSegment[g, 1, 5, All, Method -> "Extended"]
   ],
   {{1, 2, 3, 4, 5}},
-  TestID -> "FindSegment-Stretched-unique-path"
+  TestID -> "FindSegment-Extended-unique-path"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ FindSegment[g, 1, 4, All, Method -> "Stretched"]
+    Sort @ FindSegment[g, 1, 4, All, Method -> "Extended"]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
-  TestID -> "FindSegment-Stretched-cycle-symmetric"
+  TestID -> "FindSegment-Extended-cycle-symmetric"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Sort @ FindSegment[g, 1, 9, All, Method -> {"Stretched", "Lookback" -> 1, "Constraint" -> "Free"}] ===
+    Sort @ FindSegment[g, 1, 9, All, Method -> {"Extended", "Lookback" -> 1}] ===
       Sort @ FindPath[g, 1, 9, Infinity, All]
   ],
   True,
-  TestID -> "FindSegment-Stretched-K1-Free-equals-FindPath"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}]},
-    SubsetQ[
-      Sort @ FindSegment[g, 1, 9, All, Method -> {"Stretched", "Lookback" -> All}],
-      Sort @ FindSegment[g, 1, 9, All, Method -> "Shortest"]
-    ]
-  ],
-  True,
-  TestID -> "FindSegment-Stretched-KAll-superset-geodesics"
+  TestID -> "FindSegment-Extended-K1-equals-FindPath"
 ]
 
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
     With[{
-      k1   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 1, "Constraint" -> "Free"}],
-      k2   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 2, "Constraint" -> "Free"}],
-      kAll = Sort @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> All, "Constraint" -> "Free"}]
+      k1   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> 1}],
+      k2   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> 2}],
+      kAll = Sort @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> All}]
     },
       Length[k1] == 4 &&
       MemberQ[k1, {1, 2, 4, 3}] && MemberQ[k1, {1, 4, 2, 3}] &&
@@ -268,42 +257,42 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindSegment-Stretched-Free-K2-strict-between"
+  TestID -> "FindSegment-Extended-K2-strict-between"
 ]
 
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
     With[{
-      k1   = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 1, "Constraint" -> "Free"}],
-      k2   = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> 2, "Constraint" -> "Free"}],
-      kAll = Length @ FindSegment[g, 1, 3, All, Method -> {"Stretched", "Lookback" -> All, "Constraint" -> "Free"}]
+      k1   = Length @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> 1}],
+      k2   = Length @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> 2}],
+      kAll = Length @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> All}]
     },
       k1 >= k2 >= kAll
     ]
   ],
   True,
-  TestID -> "FindSegment-Stretched-Free-K-monotone"
+  TestID -> "FindSegment-Extended-K-monotone"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Sort @ FindSegment[g, 1, 9, All, Method -> "Stretched"] ===
-      Sort @ FindSegment[g, 1, 9, All, Method -> {"Stretched", "Lookback" -> 2}]
+    Sort @ FindSegment[g, 1, 9, All, Method -> "Extended"] ===
+      Sort @ FindSegment[g, 1, 9, All, Method -> {"Extended", "Lookback" -> 2}]
   ],
   True,
-  TestID -> "FindSegment-Stretched-Lookback-default-is-2"
+  TestID -> "FindSegment-Extended-Lookback-default-is-2"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     BlockRandom[
       Length[FindSegment[g, 1, 16, All,
-        Method -> {"Stretched", "Pruning" -> 1}]] == 1,
+        Method -> {"Extended", "Pruning" -> 1}]] == 1,
       RandomSeeding -> 42
     ]
   ],
   True,
-  TestID -> "FindSegment-Stretched-pruning-beam-1"
+  TestID -> "FindSegment-Extended-pruning-beam-1"
 ]
 
 VerificationTest[
@@ -314,37 +303,37 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Stretched", "Pruning" -> -1}],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Extended", "Pruning" -> -1}],
     FindSegment::badpruning],
   $Failed,
   TestID -> "FindSegment-bad-pruning"
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Stretched", "Lookback" -> 0}],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Extended", "Lookback" -> 0}],
     FindSegment::badlookback],
   $Failed,
   TestID -> "FindSegment-bad-lookback-zero"
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Stretched", "Lookback" -> -1}],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Extended", "Lookback" -> -1}],
     FindSegment::badlookback],
   $Failed,
   TestID -> "FindSegment-bad-lookback-negative"
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Stretched", "Lookback" -> 1.5}],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Extended", "Lookback" -> 1.5}],
     FindSegment::badlookback],
   $Failed,
   TestID -> "FindSegment-bad-lookback-fractional"
 ]
 
 VerificationTest[
-  FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "Stretched"],
+  FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "Extended"],
   {},
-  TestID -> "FindSegment-Stretched-same-point-empty"
+  TestID -> "FindSegment-Extended-same-point-empty"
 ]
 
 
@@ -476,10 +465,10 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{6, 6}]},
-    Length[FindSegment[g, 1, 36, 1, Method -> "Stretched"]]
+    Length[FindSegment[g, 1, 36, 1, Method -> "Extended"]]
   ],
   1,
-  TestID -> "FindSegment-Stretched-count-1-terminates-early"
+  TestID -> "FindSegment-Extended-count-1-terminates-early"
 ]
 
 VerificationTest[
@@ -489,7 +478,7 @@ VerificationTest[
 ]
 
 
-(* ===== FindSegment Method -> "Pulled" / "Stretched": Constraint -> "Geodesic" (default) ===== *)
+(* ===== FindSegment Method -> "Pulled": Constraint -> "Geodesic" (default) ===== *)
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
@@ -514,17 +503,6 @@ VerificationTest[
 ]
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}]},
-    AllTrue[
-      FindSegment[g, 1, 9, All, Method -> "Stretched"],
-      walk |-> Length[walk] - 1 === GraphDistance[g, 1, 9]
-    ]
-  ],
-  True,
-  TestID -> "FindSegment-Stretched-Constraint-default-walks-are-geodesic"
-]
-
-VerificationTest[
   With[{g = Graph[{1 <-> 2, 1 <-> 3, 1 <-> 4, 2 <-> 3, 2 <-> 4}]},
     FindSegment[g, 1, 3, All, Method -> "Pulled"]
   ],
@@ -533,17 +511,106 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Stretched", "Constraint" -> "Bogus"}],
-    FindSegment::badconstraint],
-  $Failed,
-  TestID -> "FindSegment-Stretched-bad-Constraint"
-]
-
-VerificationTest[
   Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Pulled", "Constraint" -> "Bogus"}],
     FindSegment::badconstraint],
   $Failed,
   TestID -> "FindSegment-Pulled-bad-Constraint"
+]
+
+
+(* ===== FindSegment Method -> "Pulled": CurvatureMethod -> "Wolfram" ===== *)
+
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    FindSegment[g, 1, 5, All, Method -> {"Pulled", "CurvatureMethod" -> "Wolfram"}]
+  ],
+  {{1, 2, 3, 4, 5}},
+  TestID -> "FindSegment-Pulled-Wolfram-tree-unique-path"
+]
+
+VerificationTest[
+  With[{g = CycleGraph[6]},
+    Sort @ FindSegment[g, 1, 4, All, Method -> {"Pulled", "CurvatureMethod" -> "Wolfram"}]
+  ],
+  Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
+  TestID -> "FindSegment-Pulled-Wolfram-cycle-symmetric"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[
+      FindSegment[g, 1, 9, All, Method -> {"Pulled", "CurvatureMethod" -> "Wolfram"}],
+      walk |-> First[walk] === 1 && Last[walk] === 9 &&
+        DuplicateFreeQ[walk] &&
+        AllTrue[Partition[walk, 2, 1], EdgeQ[g, UndirectedEdge @@ #] &]
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Pulled-Wolfram-grid-walks-valid"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[
+      FindSegment[g, 1, 9, All, Method -> {"Pulled", "CurvatureMethod" -> "Wolfram"}],
+      walk |-> Length[walk] - 1 === GraphDistance[g, 1, 9]
+    ]
+  ],
+  True,
+  TestID -> "FindSegment-Pulled-Wolfram-Constraint-default-walks-are-geodesic"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Length @ FindSegment[g, 1, 9, All,
+      Method -> {"Pulled", "CurvatureMethod" -> "Wolfram", "Dimension" -> 2}]
+  ],
+  _Integer?Positive,
+  SameTest -> MatchQ,
+  TestID -> "FindSegment-Pulled-Wolfram-Dimension-fixed-runs"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Length @ FindSegment[g, 1, 9, All,
+      Method -> {"Pulled", "CurvatureMethod" -> "Wolfram",
+                 "Dimension" -> 2, "Radii" -> {1, 2}}]
+  ],
+  _Integer?Positive,
+  SameTest -> MatchQ,
+  TestID -> "FindSegment-Pulled-Wolfram-Radii-explicit-runs"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Sort @ FindSegment[g, 1, 9, All, Method -> "Pulled"] ===
+      Sort @ FindSegment[g, 1, 9, All, Method -> {"Pulled", "CurvatureMethod" -> "Forman"}]
+  ],
+  True,
+  TestID -> "FindSegment-Pulled-CurvatureMethod-default-is-Forman"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Pulled", "CurvatureMethod" -> "Bogus"}],
+    FindSegment::badcurvature],
+  $Failed,
+  TestID -> "FindSegment-Pulled-bad-CurvatureMethod"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9,
+      Method -> {"Pulled", "CurvatureMethod" -> "Wolfram", "Dimension" -> "two"}],
+    FindSegment::baddim],
+  $Failed,
+  TestID -> "FindSegment-Pulled-Wolfram-bad-dimension"
+]
+
+VerificationTest[
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9,
+      Method -> {"Pulled", "CurvatureMethod" -> "Wolfram", "Radii" -> {3, 1}}],
+    FindSegment::badradii],
+  $Failed,
+  TestID -> "FindSegment-Pulled-Wolfram-bad-radii"
 ]
 
 

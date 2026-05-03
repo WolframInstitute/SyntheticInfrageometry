@@ -10,6 +10,9 @@ FindSegment::badpruning = "Pruning specification `1` is not supported; use Infin
 FindSegment::badlookback = "Lookback specification `1` is not supported; use a positive integer or All.";
 FindSegment::badconstraint = "Constraint specification `1` is not supported; use \"Geodesic\" or \"Free\".";
 FindSegment::badforman = "FormanMethod specification `1` is not supported; use \"Simple\" or \"Triangles\".";
+FindSegment::badcurvature = "CurvatureMethod specification `1` is not supported; use \"Forman\" or \"Wolfram\".";
+FindSegment::baddim = "Dimension specification `1` is not supported; use Automatic or a positive number.";
+FindSegment::badradii = "Radii specification `1` is not supported; use Automatic or {rmin, rmax} with 1 <= rmin <= rmax.";
 
 
 (* ===================== Points ===================== *)
@@ -84,7 +87,7 @@ FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
    count = 1 takes the built-in FindShortestPath; count > 1 (or UpTo[n]
    / All) enumerates via FindPath at exact length d, and the result
    pipes through CentralPaths / EmbeddingClosestPaths / ... for further
-   path-space filtering.  Method -> "Stretched" (or {"Stretched",
+   path-space filtering.  Method -> "Extended" (or {"Extended",
    "Lookback" -> k, "Pruning" -> spec}) enumerates simple paths from p1
    to p2 via a constructive frontier sweep that admits a step
    v_i -> w iff w is unvisited and the recency-lex distance tuple
@@ -105,18 +108,21 @@ Options[ FindSegment ] = { Method -> "Shortest" };
 
 FindSegment[ graph_Graph, p1_, p2_,
     count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
-  Module[ { spec = OptionValue[ Method ], methodName, prune, lookback, formanMethod, constraint, dagNbrs, d, paths },
+  Module[ { spec = OptionValue[ Method ], methodName, prune, lookback, formanMethod, constraint, curvatureMethod, dim, radii, dagNbrs, edgeKappa, d, paths },
     If[ p1 === p2, Return[ { } ] ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    { prune, lookback, formanMethod, constraint } = Replace[ spec, {
-      _String :> { Infinity, 2, "Simple", "Geodesic" },
+    { prune, lookback, formanMethod, constraint, curvatureMethod, dim, radii } = Replace[ spec, {
+      _String :> { Infinity, 2, "Simple", "Geodesic", "Forman", Automatic, Automatic },
       { _String, subOpts___ } :> {
-        "Pruning"      /. { subOpts } /. "Pruning"      -> Infinity,
-        "Lookback"     /. { subOpts } /. "Lookback"     -> 2,
-        "FormanMethod" /. { subOpts } /. "FormanMethod" -> "Simple",
-        "Constraint"   /. { subOpts } /. "Constraint"   -> "Geodesic"
+        "Pruning"         /. { subOpts } /. "Pruning"         -> Infinity,
+        "Lookback"        /. { subOpts } /. "Lookback"        -> 2,
+        "FormanMethod"    /. { subOpts } /. "FormanMethod"    -> "Simple",
+        "Constraint"      /. { subOpts } /. "Constraint"      -> "Geodesic",
+        "CurvatureMethod" /. { subOpts } /. "CurvatureMethod" -> "Forman",
+        "Dimension"       /. { subOpts } /. "Dimension"       -> Automatic,
+        "Radii"           /. { subOpts } /. "Radii"           -> Automatic
       },
-      _ :> { Infinity, 2, "Simple", "Geodesic" }
+      _ :> { Infinity, 2, "Simple", "Geodesic", "Forman", Automatic, Automatic }
     } ];
     Switch[ methodName,
       "Shortest",
@@ -130,30 +136,34 @@ FindSegment[ graph_Graph, p1_, p2_,
           ]
         ];
         If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ],
-      "Stretched",
+      "Extended",
         Which[
           ! pruningSpecQ[ prune ],
             Message[ FindSegment::badpruning, prune ]; $Failed,
           ! lookbackSpecQ[ lookback ],
             Message[ FindSegment::badlookback, lookback ]; $Failed,
-          ! constraintSpecQ[ constraint ],
-            Message[ FindSegment::badconstraint, constraint ]; $Failed,
           True,
-            dagNbrs = If[ constraint === "Geodesic", geodesicDAGNeighbors[ graph, p1, p2 ], Automatic ];
-            paths = stretchedOutPaths[ graph, p1, p2, prune, lookback, countLimit[ count ], dagNbrs ];
+            paths = extendedOutPaths[ graph, p1, p2, prune, lookback, countLimit[ count ] ];
             If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
         ],
       "Pulled",
         Which[
+          ! curvatureMethodSpecQ[ curvatureMethod ],
+            Message[ FindSegment::badcurvature, curvatureMethod ]; $Failed,
           ! formanMethodSpecQ[ formanMethod ],
             Message[ FindSegment::badforman, formanMethod ]; $Failed,
+          ! dimensionSpecQ[ dim ],
+            Message[ FindSegment::baddim, dim ]; $Failed,
+          ! radiiSpecQ[ radii ],
+            Message[ FindSegment::badradii, radii ]; $Failed,
           ! pruningSpecQ[ prune ],
             Message[ FindSegment::badpruning, prune ]; $Failed,
           ! constraintSpecQ[ constraint ],
             Message[ FindSegment::badconstraint, constraint ]; $Failed,
           True,
             dagNbrs = If[ constraint === "Geodesic", geodesicDAGNeighbors[ graph, p1, p2 ], Automatic ];
-            paths = pulledPaths[ graph, p1, p2, formanMethod, prune, countLimit[ count ], dagNbrs ];
+            edgeKappa = buildEdgeKappa[ graph, curvatureMethod, formanMethod, dim, radii ];
+            paths = pulledPaths[ graph, p1, p2, edgeKappa, prune, countLimit[ count ], dagNbrs ];
             If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
         ],
       "Embedding",
@@ -171,6 +181,37 @@ FindSegment[ graph_Graph, p1_, p2_,
           ]
         ],
       _, Message[ FindSegment::badmethod, spec ]; $Failed
+    ]
+  ]
+
+
+(* buildEdgeKappa returns the (v, w) |-> Real closure that the Pulled
+   frontier sweep MinimalBy's on.  For "Forman" it is the symmetric
+   edge curvature F(v, w) returned by FormanRicciCurvature.  For
+   "Wolfram" it is the target-vertex Wolfram-Ricci scalar averaged
+   over the chosen radii range, R-bar(w); the rope at v feels the
+   curvature of the cell it is about to enter. *)
+
+buildEdgeKappa[ graph_Graph, "Forman", formanMethod_, _, _ ] :=
+  With[ { fEdges = FormanRicciCurvature[ graph, Method -> formanMethod ] },
+    With[ { fSym = Join[
+        fEdges,
+        AssociationThread[
+          ( UndirectedEdge[ #[[ 2 ]], #[[ 1 ]] ] & ) /@ Keys[ fEdges ],
+          Values[ fEdges ]
+        ]
+      ] },
+      { v, w } |-> fSym[ UndirectedEdge[ v, w ] ]
+    ]
+  ]
+
+buildEdgeKappa[ graph_Graph, "Wolfram", _, dim_, radii_ ] :=
+  With[ { vertexScalars = If[ radii === Automatic,
+        WolframRicciScalar[ graph, All, "Dimension" -> dim ],
+        WolframRicciScalar[ graph, All, radii, "Dimension" -> dim ]
+      ] },
+    With[ { vertexKappa = Mean[ Values[ # ] ] & /@ vertexScalars },
+      { v, w } |-> vertexKappa[ w ]
     ]
   ]
 

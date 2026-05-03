@@ -9,13 +9,16 @@ PackageScope[FindPairSeparators]
 PackageScope[countLimit]
 PackageScope[takeUpTo]
 PackageScope[allGeodesics]
-PackageScope[stretchedOutPaths]
+PackageScope[extendedOutPaths]
 PackageScope[pulledPaths]
 PackageScope[applyPruning]
 PackageScope[pruningSpecQ]
 PackageScope[lookbackSpecQ]
 PackageScope[formanMethodSpecQ]
 PackageScope[constraintSpecQ]
+PackageScope[curvatureMethodSpecQ]
+PackageScope[dimensionSpecQ]
+PackageScope[radiiSpecQ]
 
 
 (* Path-space distances and selectors (HausdorffDistance, FrechetDistance,
@@ -85,7 +88,7 @@ allGeodesics[ graph_Graph, u_, v_ ] :=
   ]
 
 
-(* ===================== Stretched paths (internal) ===================== *)
+(* ===================== Extended paths (internal) ===================== *)
 
 (* Enumerate simple paths from p1 to p2 certified by a recency-lex
    distance rule with lookback K.  At each interior step v_i -> v_{i+1}
@@ -101,7 +104,7 @@ allGeodesics[ graph_Graph, u_, v_ ] :=
    as that many target-reaching paths have been collected.
    Returns vertex sequences in the same shape as FindSegment / FindPath. *)
 
-stretchedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_, countLimit_, dagNbrs_ ] :=
+extendedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_, countLimit_ ] :=
   Module[ { vidx, dmat, frontier, completed = { }, extended },
     If[ p1 === p2, Return[ { } ] ];
     If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
@@ -117,9 +120,7 @@ stretchedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_, countLimit_, dagNbr
                 If[ lookback === All || lookback === Infinity, rev,
                   Take[ rev, UpTo[ lookback - 1 ] ] ] ] },
             With[
-              { candidates = If[ dagNbrs === Automatic,
-                  Select[ AdjacencyList[ graph, v ], ! MemberQ[ path, # ] & ],
-                  Lookup[ dagNbrs, v, { } ] ] },
+              { candidates = Select[ AdjacencyList[ graph, v ], ! MemberQ[ path, # ] & ] },
               ( Append[ path, # ] & ) /@ Which[
                 candidates === { }, { },
                 historyIdx === { }, candidates,
@@ -165,30 +166,23 @@ lookbackSpecQ[ _ ] := False
 
 (* Enumerate paths from p1 to p2 by a frontier sweep that, at each step
    v_i -> w, restricts the candidate set { w in N(v_i) \ path } to the
-   minimisers of the Forman-Ricci curvature F(v_i, w) of the new edge.
-   Mirrors stretchedOutPaths in shape; the per-step rule is MinimalBy on
-   F instead of MaximalBy on the recency-lex distance tuple.  Ties are
-   kept (frontier branches), so the procedure enumerates every walk
-   whose every step is curvature-minimal in its candidate set.
-   formanMethod is forwarded to FormanRicciCurvature ("Simple" or
-   "Triangles"); prune matches the Stretched convention (Infinity, beam
-   width, or Bernoulli keep probability); countLimit is an integer or
-   Infinity, terminating the sweep early.  Returns vertex sequences in
-   the same shape as FindSegment / FindPath. *)
+   minimisers of an edge-level curvature kappa(v_i, w).  Mirrors
+   extendedOutPaths in shape; the per-step rule is MinimalBy on
+   edgeKappa instead of MaximalBy on the recency-lex distance tuple.
+   Ties are kept (frontier branches), so the procedure enumerates every
+   walk whose every step is curvature-minimal in its candidate set.
+   edgeKappa is a closure (v, w) |-> Real built by the caller from
+   either Forman-Ricci edge curvature or Wolfram-Ricci scalar at the
+   target vertex w; prune is Infinity (default), a positive integer
+   beam width, or a Bernoulli keep probability; countLimit is an
+   integer or Infinity, terminating the sweep early.  Returns vertex
+   sequences in the same shape as FindSegment / FindPath. *)
 
-pulledPaths[ graph_Graph, p1_, p2_, formanMethod_, prune_, countLimit_, dagNbrs_ ] :=
-  Module[ { fEdges, fSym, frontier, completed = { }, extended },
+pulledPaths[ graph_Graph, p1_, p2_, edgeKappa_, prune_, countLimit_, dagNbrs_ ] :=
+  Module[ { frontier, completed = { }, extended },
     If[ p1 === p2, Return[ { } ] ];
     If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
     If[ GraphDistance[ graph, p1, p2 ] === Infinity, Return[ { } ] ];
-    fEdges = FormanRicciCurvature[ graph, Method -> formanMethod ];
-    fSym = Join[
-      fEdges,
-      AssociationThread[
-        ( UndirectedEdge[ #[[ 2 ]], #[[ 1 ]] ] & ) /@ Keys[ fEdges ],
-        Values[ fEdges ]
-      ]
-    ];
     frontier = { { p1 } };
     While[ frontier =!= { } && Length[ completed ] < countLimit,
       extended = Flatten[
@@ -198,7 +192,7 @@ pulledPaths[ graph_Graph, p1_, p2_, formanMethod_, prune_, countLimit_, dagNbrs_
                 Select[ AdjacencyList[ graph, Last[ path ] ], ! MemberQ[ path, # ] & ],
                 Lookup[ dagNbrs, Last[ path ], { } ] ] },
             ( Append[ path, # ] & ) /@ If[ candidates === { }, { },
-              MinimalBy[ candidates, w |-> fSym[ UndirectedEdge[ v, w ] ] ] ]
+              MinimalBy[ candidates, w |-> edgeKappa[ v, w ] ] ]
           ] ) /@ frontier,
         1
       ];
@@ -215,6 +209,18 @@ formanMethodSpecQ[ _ ] := False
 constraintSpecQ[ "Geodesic" ] := True
 constraintSpecQ[ "Free" ] := True
 constraintSpecQ[ _ ] := False
+
+curvatureMethodSpecQ[ "Forman" ] := True
+curvatureMethodSpecQ[ "Wolfram" ] := True
+curvatureMethodSpecQ[ _ ] := False
+
+dimensionSpecQ[ Automatic ] := True
+dimensionSpecQ[ d_?NumericQ ] /; d > 0 := True
+dimensionSpecQ[ _ ] := False
+
+radiiSpecQ[ Automatic ] := True
+radiiSpecQ[ { rmin_Integer, rmax_Integer } ] /; 1 <= rmin <= rmax := True
+radiiSpecQ[ _ ] := False
 
 
 (* ===================== Separating Sets (internal) ===================== *)

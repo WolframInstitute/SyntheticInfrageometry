@@ -35,6 +35,8 @@ PackageExport[PeripheralCycles]
 PackageExport[EmbeddingClosestCycles]
 PackageExport[ShortestCircumferenceCycles]
 PackageExport[LongestCircumferenceCycles]
+PackageExport[GeodesicSubgraph]
+PackageExport[PathSubgraph]
 
 (* MetricAlgebra.wl *)
 PackageExport[MetricInterval]
