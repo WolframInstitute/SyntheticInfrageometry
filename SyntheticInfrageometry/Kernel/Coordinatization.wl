@@ -77,7 +77,7 @@ laminarLayersFromSources[ dag_Graph, sources_List ] :=
 (* axisLayerIndex projects v onto an axis (a line or DAG) and returns the
    *list* of all 0-based positions/layers tied at the minimum graph
    distance.  The caller (OrthogonalCoordinates) reduces this to a scalar
-   via the "Aggregation" option. *)
+   via the "SelectCoordinate" option. *)
 
 axisLayerIndex[ g_Graph, axis_List, v_ ] :=
   Module[ { dists, minD },
@@ -103,27 +103,26 @@ axisLayerIndex[ g_Graph, dag_Graph, v_ ] :=
    DAG) by shortest-path distance and returns the tuple of layer indices.
    With an "Origin" or a center vertex c the layers are signed - Z-valued
    displacements with c at {0, ..., 0}.  When the projection is
-   multi-valued (ties), the "Aggregation" option chooses how to reduce
-   the layer indices: "First" (default; earliest position), "Last",
-   "Min", "Max", "Mean", or "Median".
+   multi-valued (ties), the "SelectCoordinate" option chooses what to
+   return: a function applied to the tied list (e.g. First (default),
+   Last, Min, Max, Mean, Median, or any user-supplied List -> ?Number),
+   or All to keep the full tied list as the per-axis coordinate.  The
+   anchor side is always reduced via First, so anchored coordinates
+   broadcast cleanly when the per-axis value is itself a list.
 
    InfraPoint center: an InfraPoint[{v1, ..., vk}] center asks for axes
    that pass through at least one of {v1, ..., vk} as an interior point;
    each axis is signed relative to the first vi (in InfraPoint order)
    that lies on it. *)
 
-aggregateLayer[ "First",  ix_List ] := First @ ix
-aggregateLayer[ "Last",   ix_List ] := Last @ ix
-aggregateLayer[ "Min",    ix_List ] := Min @ ix
-aggregateLayer[ "Max",    ix_List ] := Max @ ix
-aggregateLayer[ "Mean",   ix_List ] := Mean @ ix
-aggregateLayer[ "Median", ix_List ] := Median @ ix
+selectCoordinate[ All, ix_List ] := ix
+selectCoordinate[ f_,  ix_List ] := f[ ix ]
 
-orthogonalCoordsCore[ g_Graph, axes_List, v_, anchors_, agg_String ] :=
-  With[ { vIdx = aggregateLayer[ agg, axisLayerIndex[ g, #, v ] ] & /@ axes },
+orthogonalCoordsCore[ g_Graph, axes_List, v_, anchors_, sel_ ] :=
+  With[ { vIdx = selectCoordinate[ sel, axisLayerIndex[ g, #, v ] ] & /@ axes },
     If[ anchors === None,
       vIdx,
-      vIdx - MapThread[ aggregateLayer[ agg, axisLayerIndex[ g, #1, #2 ] ] &, { axes, anchors } ]
+      vIdx - MapThread[ First @ axisLayerIndex[ g, #1, #2 ] &, { axes, anchors } ]
     ]
   ]
 
@@ -131,14 +130,14 @@ perAxisAnchor[ axis_List,  vs_List ] := SelectFirst[ vs, MemberQ[ axis, # ] &,  
 perAxisAnchor[ axis_Graph, vs_List ] := SelectFirst[ vs, MemberQ[ VertexList[ axis ], # ] &,    First @ vs ]
 
 
-Options[ OrthogonalCoordinates ] = { "Origin" -> None, "Aggregation" -> "First" };
+Options[ OrthogonalCoordinates ] = { "Origin" -> None, "SelectCoordinate" -> First };
 
 (* Explicit axes, single vertex *)
 OrthogonalCoordinates[ g_Graph, axes_List, v_, opts : OptionsPattern[] ] /; !MemberQ[ VertexList[ g ], axes ] :=
-  With[ { origin = OptionValue[ "Origin" ], agg = OptionValue[ "Aggregation" ] },
+  With[ { origin = OptionValue[ "Origin" ], sel = OptionValue[ "SelectCoordinate" ] },
     orthogonalCoordsCore[ g, axes, v,
       If[ origin === None, None, ConstantArray[ origin, Length[ axes ] ] ],
-      agg
+      sel
     ]
   ]
 
@@ -164,16 +163,16 @@ OrthogonalCoordinates[ g_Graph, InfraPoint[ { v_ } ], rest___ ] :=
 OrthogonalCoordinates[ g_Graph, InfraPoint[ vs_List ], v_, opts : OptionsPattern[] ] /;
     MemberQ[ VertexList[ g ], v ] && SubsetQ[ VertexList[ g ], vs ] :=
   With[ { axes = FindOrthogonalAxes[ g, InfraPoint[ vs ], All ],
-          agg  = OptionValue[ "Aggregation" ] },
-    orthogonalCoordsCore[ g, axes, v, perAxisAnchor[ #, vs ] & /@ axes, agg ]
+          sel  = OptionValue[ "SelectCoordinate" ] },
+    orthogonalCoordsCore[ g, axes, v, perAxisAnchor[ #, vs ] & /@ axes, sel ]
   ]
 
 (* InfraPoint multi-vertex, all vertices *)
 OrthogonalCoordinates[ g_Graph, InfraPoint[ vs_List ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   With[ { axes = FindOrthogonalAxes[ g, InfraPoint[ vs ], All ],
-          agg  = OptionValue[ "Aggregation" ] },
+          sel  = OptionValue[ "SelectCoordinate" ] },
     With[ { anchors = perAxisAnchor[ #, vs ] & /@ axes },
-      Association[ # -> orthogonalCoordsCore[ g, axes, #, anchors, agg ] & /@ VertexList[ g ] ]
+      Association[ # -> orthogonalCoordsCore[ g, axes, #, anchors, sel ] & /@ VertexList[ g ] ]
     ]
   ]
 

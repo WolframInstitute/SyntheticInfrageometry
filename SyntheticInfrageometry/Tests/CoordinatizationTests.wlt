@@ -117,41 +117,76 @@ VerificationTest[
   TestID -> "OrthogonalCoordinates-dag-axis-outside-reach"
 ]
 
-(* ===== Aggregation option (ties on a 4-cycle) ===== *)
+(* ===== SelectCoordinate option (ties on a 4-cycle) ===== *)
 
 (* On CycleGraph[4] with axis {1, 2, 3}: vertex 4 has d(4,1)=1, d(4,2)=2,
-   d(4,3)=1 -- a tie at indices 0 and 2.  Aggregations should differ. *)
+   d(4,3)=1 -- a tie at indices 0 and 2.  Different "SelectCoordinate"
+   choices pick / aggregate / preserve the tied list. *)
 
 VerificationTest[
   With[{g = CycleGraph[4], axes = {{1, 2, 3}}},
-    OrthogonalCoordinates[g, axes, 4, "Aggregation" -> "First"]
+    OrthogonalCoordinates[g, axes, 4, "SelectCoordinate" -> First]
   ],
   {0},
-  TestID -> "OrthogonalCoordinates-aggregation-First"
+  TestID -> "OrthogonalCoordinates-SelectCoordinate-First"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[4], axes = {{1, 2, 3}}},
-    OrthogonalCoordinates[g, axes, 4, "Aggregation" -> "Last"]
+    OrthogonalCoordinates[g, axes, 4, "SelectCoordinate" -> Last]
   ],
   {2},
-  TestID -> "OrthogonalCoordinates-aggregation-Last"
+  TestID -> "OrthogonalCoordinates-SelectCoordinate-Last"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[4], axes = {{1, 2, 3}}},
-    OrthogonalCoordinates[g, axes, 4, "Aggregation" -> "Mean"]
+    OrthogonalCoordinates[g, axes, 4, "SelectCoordinate" -> Min]
   ],
-  {1},
-  TestID -> "OrthogonalCoordinates-aggregation-Mean"
+  {0},
+  TestID -> "OrthogonalCoordinates-SelectCoordinate-Min"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[4], axes = {{1, 2, 3}}},
-    OrthogonalCoordinates[g, axes, 4, "Aggregation" -> "Median"]
+    OrthogonalCoordinates[g, axes, 4, "SelectCoordinate" -> Max]
+  ],
+  {2},
+  TestID -> "OrthogonalCoordinates-SelectCoordinate-Max"
+]
+
+VerificationTest[
+  With[{g = CycleGraph[4], axes = {{1, 2, 3}}},
+    OrthogonalCoordinates[g, axes, 4, "SelectCoordinate" -> Mean]
   ],
   {1},
-  TestID -> "OrthogonalCoordinates-aggregation-Median"
+  TestID -> "OrthogonalCoordinates-SelectCoordinate-Mean"
+]
+
+VerificationTest[
+  With[{g = CycleGraph[4], axes = {{1, 2, 3}}},
+    OrthogonalCoordinates[g, axes, 4, "SelectCoordinate" -> Median]
+  ],
+  {1},
+  TestID -> "OrthogonalCoordinates-SelectCoordinate-Median"
+]
+
+(* All preserves the tied list as the per-axis coordinate. *)
+VerificationTest[
+  With[{g = CycleGraph[4], axes = {{1, 2, 3}}},
+    OrthogonalCoordinates[g, axes, 4, "SelectCoordinate" -> All]
+  ],
+  {{0, 2}},
+  TestID -> "OrthogonalCoordinates-SelectCoordinate-All"
+]
+
+(* User-supplied function works without an allow-list. *)
+VerificationTest[
+  With[{g = CycleGraph[4], axes = {{1, 2, 3}}},
+    OrthogonalCoordinates[g, axes, 4, "SelectCoordinate" -> (Quantile[#, 0.25] &)]
+  ],
+  {0},
+  TestID -> "OrthogonalCoordinates-SelectCoordinate-userFunction"
 ]
 
 (* ===== FindOrthogonalAxes ===== *)
