@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1523,         43]
+NotebookOptionsPosition[       981,         28]
+NotebookOutlinePosition[      1298,         42]
+CellTagsIndexPosition[      1255,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for DistanceMatrixQ\"", "Input",ExpressionUUID->"6612da34-a52e-4359-885f-3becbeac59ad"],
+
+Cell["?DistanceMatrixQ", "Input",ExpressionUUID->"462f73fe-b895-4028-953b-c203c0a818c2"],
+
+Cell["Information[DistanceMatrixQ, LongForm -> True]", "Input",ExpressionUUID->"12867095-96a3-4598-8565-0fe30d926dc1"],
+
+Cell["Definition[DistanceMatrixQ]", "Input",ExpressionUUID->"a7afb2b0-3d24-4013-98f1-d10c2b1a41ac"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 109, 0, 70, "Input",ExpressionUUID->"6612da34-a52e-4359-885f-3becbeac59ad"],
+Cell[666, 22, 88, 0, 70, "Input",ExpressionUUID->"462f73fe-b895-4028-953b-c203c0a818c2"],
+Cell[757, 24, 118, 0, 70, "Input",ExpressionUUID->"12867095-96a3-4598-8565-0fe30d926dc1"],
+Cell[878, 26, 99, 0, 70, "Input",ExpressionUUID->"a7afb2b0-3d24-4013-98f1-d10c2b1a41ac"]
+}
+]
+*)
+
+(* End of internal cache information *)

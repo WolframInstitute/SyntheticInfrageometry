@@ -1,0 +1,255 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     12937,        246]
+NotebookOptionsPosition[      8047,        184]
+NotebookOutlinePosition[      8364,        198]
+CellTagsIndexPosition[      8321,        195]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["Tropical Operations Tutorial", "Title",ExpressionUUID->"85a39bc8-5be5-4270-9b39-8a6a8924d83e"],
+
+Cell["\<\
+Min-plus arithmetic on scalars and matrices: TropicalPlus, TropicalTimes, \
+TropicalDot, TropicalMatrixPower. This is sense 1 of \"tropical\" in the \
+literature -- the algebraic side. Sense 2 (graph-translated tropical \
+convexity: tropical segments, geodesic convex hulls) lives in \
+TropicalConvexityGuide / TropicalConvexityTutorial.\
+\>", "Text",ExpressionUUID->"9f1dea37-2049-4b5d-92ae-d8d319ee6659"],
+
+Cell["\<\
+The bridge between the two senses is the matrix-form triangle inequality: \
+tropical matrix powers of the cost-adjacency matrix of a graph converge to \
+the graph distance matrix at the diameter step.\
+\>", "Text",ExpressionUUID->"7ecff0d8-076a-4871-abef-bfb0c8705fa1"],
+
+Cell["Setup", "Section",ExpressionUUID->"cc92e9e5-a989-41f3-b194-6876932f2cfe"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"9b45fc0e-8adb-44d5-ba0d-f11ca4cbb587"],
+
+Cell["Tropical addition (Min on scalars)", "Section",ExpressionUUID->"80b418bc-7f48-4c26-a0fd-f76cba2528cf"],
+
+Cell["\<\
+TropicalPlus is min-plus addition: Min on scalars, identity Infinity. \
+Listable, so it threads element-wise on equal-shape lists, vectors, or \
+matrices.\
+\>", "Text",ExpressionUUID->"b9426a89-cd9a-48c6-b433-424a77f16fe4"],
+
+Cell["TropicalPlus[3, 5, 1, 7]", "Input",ExpressionUUID->"76826c0f-b648-4c94-bb9c-ec07ef00665e"],
+
+Cell["TropicalPlus[Infinity, 7]", "Input",ExpressionUUID->"3aad43d2-7267-4f41-85e8-797aadb8f7ea"],
+
+Cell["\<\
+Element-wise on matrices (Min is NOT Listable; TropicalPlus is):\
+\>", "CodeText",ExpressionUUID->"1205ceec-42d8-41a0-8963-e184b0a3ca10"],
+
+Cell["TropicalPlus[{{1, 2}, {3, 4}}, {{4, 1}, {2, 5}}]", "Input",ExpressionUUID->"5d1a452a-fcc9-463d-9f22-8f172c95a0f9"],
+
+Cell["Tropical multiplication (Plus on scalars)", "Section",ExpressionUUID->"13b330fb-970e-437a-b017-2e8bb65ccb34"],
+
+Cell["\<\
+TropicalTimes is min-plus multiplication: Plus on scalars, identity 0. \
+Listable.\
+\>", "Text",ExpressionUUID->"f60fe1f8-2d8c-439e-afc4-71596689e143"],
+
+Cell["TropicalTimes[2, 3, 5]", "Input",ExpressionUUID->"086eedd3-c3bd-4ca2-81b0-374979a77cc5"],
+
+Cell["TropicalTimes[0, 7]", "Input",ExpressionUUID->"02a1a774-fe0b-4b67-8e7d-05b4a98b2ce5"],
+
+Cell["Tropical matrix product", "Section",ExpressionUUID->"74d5741b-6543-403e-b76e-ab989ee4d94a"],
+
+Cell["\<\
+TropicalDot[A, B] = Inner[Plus, A, B, Min] -- replaces ordinary Plus with Min \
+and ordinary Times with Plus in matrix multiplication.\
+\>", "Text",ExpressionUUID->"67c6b5d6-65ae-4a95-bb55-54cf02a2c4b6"],
+
+Cell["A = {{0, 1, Infinity}, {1, 0, 2}, {Infinity, 2, 0}}", "Input",ExpressionUUID->"ee1f1626-0c89-4a6f-9dff-f7f00b14c249"],
+
+Cell["TropicalDot[A, A]", "Input",ExpressionUUID->"7d8e2d02-3c15-4999-a086-8b71eddc5c13"],
+
+Cell["Tropical matrix powers", "Section",ExpressionUUID->"9f8a4c54-b27b-4a5d-a7a4-11b9ee8a8f2f"],
+
+Cell["\<\
+TropicalMatrixPower[A, k] iterates TropicalDot. The k = 0 case is the \
+tropical identity matrix (0 on the diagonal, Infinity elsewhere).\
+\>", "Text",ExpressionUUID->"b5e5faeb-7c89-4e94-a126-0936d7e08a77"],
+
+Cell["TropicalMatrixPower[A, 0]", "Input",ExpressionUUID->"cad38aee-0d24-4493-80cd-20c209aad1b2"],
+
+Cell["TropicalMatrixPower[A, 2]", "Input",ExpressionUUID->"aaaed6d1-5f77-4009-83d0-c1fce0bfc70a"],
+
+Cell["The A -> D relation", "Section",ExpressionUUID->"a3a40ffe-7a7b-40d1-b9fd-82c4bd9d54dc"],
+
+Cell["\<\
+The cost-adjacency matrix of a graph is the adjacency matrix with 0 -> \
+Infinity and 1 -> edge cost. Tropical-iterating it converges to the graph \
+distance matrix at the diameter step.\
+\>", "Text",ExpressionUUID->"cb234dda-f656-43c4-86b3-4d7f3ec900b4"],
+
+Cell["g = GridGraph[{3, 3}]", "Input",ExpressionUUID->"68769f0b-3fc2-4074-8ef5-54464037a3b8"],
+
+Cell["\<\
+costA = AdjacencyMatrix[g] /. {0 -> Infinity, 1 -> 1}; distD = \
+GraphDistanceMatrix[g];\
+\>", "Input",ExpressionUUID->"4fa08f31-898a-4712-922b-4317a7fcd032"],
+
+Cell["TropicalMatrixPower[costA, GraphDiameter[g]] == distD", "Input",ExpressionUUID->"e02bf354-8401-4385-a2e6-4ff7c26269a8"],
+
+Cell["\<\
+The convergence is sharp: at the diameter minus one, the iteration has not \
+yet stabilised.\
+\>", "CodeText",ExpressionUUID->"2f60b000-f7d4-4242-a48d-dfc98bf3e159"],
+
+Cell["TropicalMatrixPower[costA, GraphDiameter[g] - 1] != distD", "Input",ExpressionUUID->"8d04a156-a713-4e62-89ce-844b076cac17"],
+
+Cell["Past the diameter the iteration is stable.", "CodeText",ExpressionUUID->"fb7c9e86-0066-4fc3-9eff-752a14ab5e4a"],
+
+Cell["TropicalMatrixPower[costA, GraphDiameter[g] + 5] == distD", "Input",ExpressionUUID->"0ecc0fd1-76e5-4aae-a204-30b88ddaae0d"],
+
+Cell["The matrix-form triangle inequality", "Section",ExpressionUUID->"0c86608a-0c00-47d2-a10f-b9c114803e91"],
+
+Cell["\<\
+A graph distance matrix D satisfies TropicalDot[D, D] === D -- the matrix \
+form of the triangle inequality in the min-plus semiring.\
+\>", "Text",ExpressionUUID->"764aa864-37b0-4155-a153-e4d814329114"],
+
+Cell["TropicalDot[distD, distD] == distD", "Input",ExpressionUUID->"a04264ca-dba1-491b-ba07-6bf9af1c349e"],
+
+Cell["\<\
+This idempotence is exactly the predicate DistanceMatrixQ from the \
+MetricAlgebra layer.\
+\>", "Text",ExpressionUUID->"8f5b28ee-3eed-4ac9-a592-b1192c125f93"],
+
+Cell["DistanceMatrixQ[distD]", "Input",ExpressionUUID->"bfa83dd0-b609-4023-82fc-ad901a13f3c9"],
+
+Cell["Step-by-step convergence on a cycle", "Section",ExpressionUUID->"0dbd80e1-021b-4523-a606-bc4e89e92683"],
+
+Cell["Watch the iteration converge step by step on a 6-cycle.", "Text",ExpressionUUID->"b56cfc6d-fe60-40e5-89ae-d5f7da49e805"],
+
+Cell["c6 = CycleGraph[6]", "Input",ExpressionUUID->"30c9c5bd-523f-426b-a99c-1a31b1b395d9"],
+
+Cell["c6costA = AdjacencyMatrix[c6] /. {0 -> Infinity, 1 -> 1};", "Input",ExpressionUUID->"85cbe378-ab89-406a-b1f5-4da00262f833"],
+
+Cell["\<\
+NestList[TropicalDot[#, c6costA] &, c6costA, GraphDiameter[c6]] // \
+Map[MatrixForm]\
+\>", "Input",ExpressionUUID->"6a6375f0-f1c0-4407-b688-499704ee068e"],
+
+Cell["\<\
+At each iteration k, the (i, j) entry holds the length of the shortest path \
+of at most k edges from i to j. At k = diameter the matrix is the full \
+distance matrix.\
+\>", "Text",ExpressionUUID->"39d18c64-9168-4485-992e-01860ef06d53"],
+
+Cell["See also", "Section",ExpressionUUID->"158e0cbc-1d33-438a-8d42-0239fc993249"],
+
+Cell["TropicalOperationsGuide -- categorical overview.", "Item",ExpressionUUID->"2e3ed7e5-d4ec-4bc0-845a-1cafd2ebe5e5"],
+
+Cell["\<\
+TropicalConvexityGuide -- the graph-translated convexity layer (sense 2).\
+\>", "Item",ExpressionUUID->"69acc042-3aec-427d-8e2b-587a062f8fce"],
+
+Cell["\<\
+MetricAlgebraGuide -- DistanceMatrixQ, MetricInterval, GeodesicCount.\
+\>", "Item",ExpressionUUID->"3438d633-563a-4bbf-8a42-14249bf11c4b"],
+
+Cell["References", "Section",ExpressionUUID->"a2abc5fc-9424-48d3-8ed9-fb51f812c5e0"],
+
+Cell["\<\
+Maclagan and Sturmfels, Introduction to Tropical Geometry, AMS GSM 161, 2015, \
+https://janos.cs.technion.ac.il/COURSES/238900-13/Tropical/MaclaganSturmfels.\
+pdf\
+\>", "Item",ExpressionUUID->"c144c904-3655-4b76-b5b3-e3a3067d66e1"],
+
+Cell["\<\
+Cuninghame-Green, Minimax Algebra, Lecture Notes in Economics and \
+Mathematical Systems 166, Springer 1979 (origin of the matrix-form min-plus \
+algebra).\
+\>", "Item",ExpressionUUID->"7ede5289-35bb-47ce-9f30-dd90635622a8"],
+
+Cell["\<\
+Butkovic, Max-linear Systems: Theory and Algorithms, Springer 2010.\
+\>", "Item",ExpressionUUID->"72b3d6f1-5124-42f5-8591-1ae407a0bc2d"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 100, 0, 70, "Title",ExpressionUUID->"85a39bc8-5be5-4270-9b39-8a6a8924d83e"],
+Cell[657, 22, 416, 6, 70, "Text",ExpressionUUID->"9f1dea37-2049-4b5d-92ae-d8d319ee6659"],
+Cell[1076, 30, 279, 4, 70, "Text",ExpressionUUID->"7ecff0d8-076a-4871-abef-bfb0c8705fa1"],
+Cell[1358, 36, 79, 0, 70, "Section",ExpressionUUID->"cc92e9e5-a989-41f3-b194-6876932f2cfe"],
+Cell[1440, 38, 122, 0, 70, "Code",ExpressionUUID->"9b45fc0e-8adb-44d5-ba0d-f11ca4cbb587"],
+Cell[1565, 40, 108, 0, 70, "Section",ExpressionUUID->"80b418bc-7f48-4c26-a0fd-f76cba2528cf"],
+Cell[1676, 42, 233, 4, 70, "Text",ExpressionUUID->"b9426a89-cd9a-48c6-b433-424a77f16fe4"],
+Cell[1912, 48, 96, 0, 70, "Input",ExpressionUUID->"76826c0f-b648-4c94-bb9c-ec07ef00665e"],
+Cell[2011, 50, 97, 0, 70, "Input",ExpressionUUID->"3aad43d2-7267-4f41-85e8-797aadb8f7ea"],
+Cell[2111, 52, 147, 2, 70, "CodeText",ExpressionUUID->"1205ceec-42d8-41a0-8963-e184b0a3ca10"],
+Cell[2261, 56, 120, 0, 70, "Input",ExpressionUUID->"5d1a452a-fcc9-463d-9f22-8f172c95a0f9"],
+Cell[2384, 58, 115, 0, 70, "Section",ExpressionUUID->"13b330fb-970e-437a-b017-2e8bb65ccb34"],
+Cell[2502, 60, 161, 3, 70, "Text",ExpressionUUID->"f60fe1f8-2d8c-439e-afc4-71596689e143"],
+Cell[2666, 65, 94, 0, 70, "Input",ExpressionUUID->"086eedd3-c3bd-4ca2-81b0-374979a77cc5"],
+Cell[2763, 67, 91, 0, 70, "Input",ExpressionUUID->"02a1a774-fe0b-4b67-8e7d-05b4a98b2ce5"],
+Cell[2857, 69, 97, 0, 70, "Section",ExpressionUUID->"74d5741b-6543-403e-b76e-ab989ee4d94a"],
+Cell[2957, 71, 213, 3, 70, "Text",ExpressionUUID->"67c6b5d6-65ae-4a95-bb55-54cf02a2c4b6"],
+Cell[3173, 76, 123, 0, 70, "Input",ExpressionUUID->"ee1f1626-0c89-4a6f-9dff-f7f00b14c249"],
+Cell[3299, 78, 89, 0, 70, "Input",ExpressionUUID->"7d8e2d02-3c15-4999-a086-8b71eddc5c13"],
+Cell[3391, 80, 96, 0, 70, "Section",ExpressionUUID->"9f8a4c54-b27b-4a5d-a7a4-11b9ee8a8f2f"],
+Cell[3490, 82, 216, 3, 70, "Text",ExpressionUUID->"b5e5faeb-7c89-4e94-a126-0936d7e08a77"],
+Cell[3709, 87, 97, 0, 70, "Input",ExpressionUUID->"cad38aee-0d24-4493-80cd-20c209aad1b2"],
+Cell[3809, 89, 97, 0, 70, "Input",ExpressionUUID->"aaaed6d1-5f77-4009-83d0-c1fce0bfc70a"],
+Cell[3909, 91, 93, 0, 70, "Section",ExpressionUUID->"a3a40ffe-7a7b-40d1-b9fd-82c4bd9d54dc"],
+Cell[4005, 93, 265, 4, 70, "Text",ExpressionUUID->"cb234dda-f656-43c4-86b3-4d7f3ec900b4"],
+Cell[4273, 99, 93, 0, 70, "Input",ExpressionUUID->"68769f0b-3fc2-4074-8ef5-54464037a3b8"],
+Cell[4369, 101, 168, 3, 70, "Input",ExpressionUUID->"4fa08f31-898a-4712-922b-4317a7fcd032"],
+Cell[4540, 106, 125, 0, 70, "Input",ExpressionUUID->"e02bf354-8401-4385-a2e6-4ff7c26269a8"],
+Cell[4668, 108, 175, 3, 70, "CodeText",ExpressionUUID->"2f60b000-f7d4-4242-a48d-dfc98bf3e159"],
+Cell[4846, 113, 129, 0, 70, "Input",ExpressionUUID->"8d04a156-a713-4e62-89ce-844b076cac17"],
+Cell[4978, 115, 117, 0, 70, "CodeText",ExpressionUUID->"fb7c9e86-0066-4fc3-9eff-752a14ab5e4a"],
+Cell[5098, 117, 129, 0, 70, "Input",ExpressionUUID->"0ecc0fd1-76e5-4aae-a204-30b88ddaae0d"],
+Cell[5230, 119, 109, 0, 70, "Section",ExpressionUUID->"0c86608a-0c00-47d2-a10f-b9c114803e91"],
+Cell[5342, 121, 212, 3, 70, "Text",ExpressionUUID->"764aa864-37b0-4155-a153-e4d814329114"],
+Cell[5557, 126, 106, 0, 70, "Input",ExpressionUUID->"a04264ca-dba1-491b-ba07-6bf9af1c349e"],
+Cell[5666, 128, 168, 3, 70, "Text",ExpressionUUID->"8f5b28ee-3eed-4ac9-a592-b1192c125f93"],
+Cell[5837, 133, 94, 0, 70, "Input",ExpressionUUID->"bfa83dd0-b609-4023-82fc-ad901a13f3c9"],
+Cell[5934, 135, 109, 0, 70, "Section",ExpressionUUID->"0dbd80e1-021b-4523-a606-bc4e89e92683"],
+Cell[6046, 137, 126, 0, 70, "Text",ExpressionUUID->"b56cfc6d-fe60-40e5-89ae-d5f7da49e805"],
+Cell[6175, 139, 90, 0, 70, "Input",ExpressionUUID->"30c9c5bd-523f-426b-a99c-1a31b1b395d9"],
+Cell[6268, 141, 129, 0, 70, "Input",ExpressionUUID->"85cbe378-ab89-406a-b1f5-4da00262f833"],
+Cell[6400, 143, 164, 3, 70, "Input",ExpressionUUID->"6a6375f0-f1c0-4407-b688-499704ee068e"],
+Cell[6567, 148, 246, 4, 70, "Text",ExpressionUUID->"39d18c64-9168-4485-992e-01860ef06d53"],
+Cell[6816, 154, 82, 0, 70, "Section",ExpressionUUID->"158e0cbc-1d33-438a-8d42-0239fc993249"],
+Cell[6901, 156, 119, 0, 70, "Item",ExpressionUUID->"2e3ed7e5-d4ec-4bc0-845a-1cafd2ebe5e5"],
+Cell[7023, 158, 152, 2, 70, "Item",ExpressionUUID->"69acc042-3aec-427d-8e2b-587a062f8fce"],
+Cell[7178, 162, 148, 2, 70, "Item",ExpressionUUID->"3438d633-563a-4bbf-8a42-14249bf11c4b"],
+Cell[7329, 166, 84, 0, 70, "Section",ExpressionUUID->"a2abc5fc-9424-48d3-8ed9-fb51f812c5e0"],
+Cell[7416, 168, 241, 4, 70, "Item",ExpressionUUID->"c144c904-3655-4b76-b5b3-e3a3067d66e1"],
+Cell[7660, 174, 234, 4, 70, "Item",ExpressionUUID->"7ede5289-35bb-47ce-9f30-dd90635622a8"],
+Cell[7897, 180, 146, 2, 70, "Item",ExpressionUUID->"72b3d6f1-5124-42f5-8591-1ae407a0bc2d"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1519,         43]
+NotebookOptionsPosition[       977,         28]
+NotebookOutlinePosition[      1294,         42]
+CellTagsIndexPosition[      1251,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for MetricInterval\"", "Input",ExpressionUUID->"44c6c8ab-c49b-42b2-9348-c465f73ad712"],
+
+Cell["?MetricInterval", "Input",ExpressionUUID->"2c336474-4594-4711-a466-f27bd20b9725"],
+
+Cell["Information[MetricInterval, LongForm -> True]", "Input",ExpressionUUID->"87dbe638-6ed4-4758-affb-3edd3bbcece8"],
+
+Cell["Definition[MetricInterval]", "Input",ExpressionUUID->"04e999bb-21ba-4d49-b59b-666a3b1d5dff"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 108, 0, 70, "Input",ExpressionUUID->"44c6c8ab-c49b-42b2-9348-c465f73ad712"],
+Cell[665, 22, 87, 0, 70, "Input",ExpressionUUID->"2c336474-4594-4711-a466-f27bd20b9725"],
+Cell[755, 24, 117, 0, 70, "Input",ExpressionUUID->"87dbe638-6ed4-4758-affb-3edd3bbcece8"],
+Cell[875, 26, 98, 0, 70, "Input",ExpressionUUID->"04e999bb-21ba-4d49-b59b-666a3b1d5dff"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1573,         43]
+NotebookOptionsPosition[      1029,         28]
+NotebookOutlinePosition[      1346,         42]
+CellTagsIndexPosition[      1303,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for CompleteEquilateralTriangle\"", "Input",ExpressionUUID->"69a5d3cc-1811-4eba-9f61-a93c1ca8ae67"],
+
+Cell["?CompleteEquilateralTriangle", "Input",ExpressionUUID->"cc31d61b-cdee-4126-b411-c621a9fce656"],
+
+Cell["Information[CompleteEquilateralTriangle, LongForm -> True]", "Input",ExpressionUUID->"967e9a83-39a4-47d7-b2e8-1633d6960afc"],
+
+Cell["Definition[CompleteEquilateralTriangle]", "Input",ExpressionUUID->"7c8afbee-5fe1-4a4c-924d-7f415c719c8b"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 121, 0, 70, "Input",ExpressionUUID->"69a5d3cc-1811-4eba-9f61-a93c1ca8ae67"],
+Cell[678, 22, 100, 0, 70, "Input",ExpressionUUID->"cc31d61b-cdee-4126-b411-c621a9fce656"],
+Cell[781, 24, 130, 0, 70, "Input",ExpressionUUID->"967e9a83-39a4-47d7-b2e8-1633d6960afc"],
+Cell[914, 26, 111, 0, 70, "Input",ExpressionUUID->"7c8afbee-5fe1-4a4c-924d-7f415c719c8b"]
+}
+]
+*)
+
+(* End of internal cache information *)

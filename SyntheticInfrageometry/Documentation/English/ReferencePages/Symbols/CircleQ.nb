@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1491,         43]
+NotebookOptionsPosition[       949,         28]
+NotebookOutlinePosition[      1266,         42]
+CellTagsIndexPosition[      1223,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for CircleQ\"", "Input",ExpressionUUID->"261e1b15-b7e7-4ad5-be0f-2c5a12450e29"],
+
+Cell["?CircleQ", "Input",ExpressionUUID->"70b47ff8-7f2c-4c6d-b1c5-f3e7c84a4892"],
+
+Cell["Information[CircleQ, LongForm -> True]", "Input",ExpressionUUID->"90520586-4b78-4d63-a7b2-1f698e26bcf7"],
+
+Cell["Definition[CircleQ]", "Input",ExpressionUUID->"cdc18502-d7d9-4bdb-9ba7-b3d91dec5e81"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 101, 0, 70, "Input",ExpressionUUID->"261e1b15-b7e7-4ad5-be0f-2c5a12450e29"],
+Cell[658, 22, 80, 0, 70, "Input",ExpressionUUID->"70b47ff8-7f2c-4c6d-b1c5-f3e7c84a4892"],
+Cell[741, 24, 110, 0, 70, "Input",ExpressionUUID->"90520586-4b78-4d63-a7b2-1f698e26bcf7"],
+Cell[854, 26, 91, 0, 70, "Input",ExpressionUUID->"cdc18502-d7d9-4bdb-9ba7-b3d91dec5e81"]
+}
+]
+*)
+
+(* End of internal cache information *)

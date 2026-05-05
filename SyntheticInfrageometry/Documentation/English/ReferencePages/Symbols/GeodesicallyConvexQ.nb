@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1540,         43]
+NotebookOptionsPosition[       997,         28]
+NotebookOutlinePosition[      1314,         42]
+CellTagsIndexPosition[      1271,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for GeodesicallyConvexQ\"", "Input",ExpressionUUID->"93bf56c2-b4e2-48c3-85c9-f53d8d2f1717"],
+
+Cell["?GeodesicallyConvexQ", "Input",ExpressionUUID->"530af237-2862-4d90-919d-f3591085d58a"],
+
+Cell["Information[GeodesicallyConvexQ, LongForm -> True]", "Input",ExpressionUUID->"8acf3cd4-e8a9-402e-b242-a6a8d9843371"],
+
+Cell["Definition[GeodesicallyConvexQ]", "Input",ExpressionUUID->"c678ddd6-f079-467f-89bc-803e1a9d72d8"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 113, 0, 70, "Input",ExpressionUUID->"93bf56c2-b4e2-48c3-85c9-f53d8d2f1717"],
+Cell[670, 22, 92, 0, 70, "Input",ExpressionUUID->"530af237-2862-4d90-919d-f3591085d58a"],
+Cell[765, 24, 122, 0, 70, "Input",ExpressionUUID->"8acf3cd4-e8a9-402e-b242-a6a8d9843371"],
+Cell[890, 26, 103, 0, 70, "Input",ExpressionUUID->"c678ddd6-f079-467f-89bc-803e1a9d72d8"]
+}
+]
+*)
+
+(* End of internal cache information *)

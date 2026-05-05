@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1552,         43]
+NotebookOptionsPosition[      1009,         28]
+NotebookOutlinePosition[      1326,         42]
+CellTagsIndexPosition[      1283,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for FindGeodesicConvexHull\"", "Input",ExpressionUUID->"a6c43367-15a4-4243-b54d-cc3d0682e0ed"],
+
+Cell["?FindGeodesicConvexHull", "Input",ExpressionUUID->"36677a83-6520-41de-b021-1e1f70f091b5"],
+
+Cell["Information[FindGeodesicConvexHull, LongForm -> True]", "Input",ExpressionUUID->"f7752481-cbb4-481a-894c-31e406a828b4"],
+
+Cell["Definition[FindGeodesicConvexHull]", "Input",ExpressionUUID->"2b5c7b33-d9dd-4992-8cf0-600ffca5f24a"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 116, 0, 70, "Input",ExpressionUUID->"a6c43367-15a4-4243-b54d-cc3d0682e0ed"],
+Cell[673, 22, 95, 0, 70, "Input",ExpressionUUID->"36677a83-6520-41de-b021-1e1f70f091b5"],
+Cell[771, 24, 125, 0, 70, "Input",ExpressionUUID->"f7752481-cbb4-481a-894c-31e406a828b4"],
+Cell[899, 26, 106, 0, 70, "Input",ExpressionUUID->"2b5c7b33-d9dd-4992-8cf0-600ffca5f24a"]
+}
+]
+*)
+
+(* End of internal cache information *)

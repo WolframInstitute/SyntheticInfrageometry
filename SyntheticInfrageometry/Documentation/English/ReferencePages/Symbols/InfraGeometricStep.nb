@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1536,         43]
+NotebookOptionsPosition[       993,         28]
+NotebookOutlinePosition[      1310,         42]
+CellTagsIndexPosition[      1267,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for InfraGeometricStep\"", "Input",ExpressionUUID->"b75228ec-0f1e-434c-b769-0090f10438fc"],
+
+Cell["?InfraGeometricStep", "Input",ExpressionUUID->"8f943643-ac3a-47e3-9b1e-68631a0ecf3b"],
+
+Cell["Information[InfraGeometricStep, LongForm -> True]", "Input",ExpressionUUID->"6d669d2b-c2bd-41a5-a1b4-b192c8398e26"],
+
+Cell["Definition[InfraGeometricStep]", "Input",ExpressionUUID->"57a37477-6360-4657-aa8d-59b606e4a464"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 112, 0, 70, "Input",ExpressionUUID->"b75228ec-0f1e-434c-b769-0090f10438fc"],
+Cell[669, 22, 91, 0, 70, "Input",ExpressionUUID->"8f943643-ac3a-47e3-9b1e-68631a0ecf3b"],
+Cell[763, 24, 121, 0, 70, "Input",ExpressionUUID->"6d669d2b-c2bd-41a5-a1b4-b192c8398e26"],
+Cell[887, 26, 102, 0, 70, "Input",ExpressionUUID->"57a37477-6360-4657-aa8d-59b606e4a464"]
+}
+]
+*)
+
+(* End of internal cache information *)

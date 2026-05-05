@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1511,         43]
+NotebookOptionsPosition[       969,         28]
+NotebookOutlinePosition[      1286,         42]
+CellTagsIndexPosition[      1243,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for PathSubgraph\"", "Input",ExpressionUUID->"440c56fd-8eb2-4387-b1b2-9feeba899e98"],
+
+Cell["?PathSubgraph", "Input",ExpressionUUID->"ee3d6e3c-3d38-44c4-858f-e895a0059e10"],
+
+Cell["Information[PathSubgraph, LongForm -> True]", "Input",ExpressionUUID->"aaee3d0d-9fa4-4a44-a43a-9e985d606988"],
+
+Cell["Definition[PathSubgraph]", "Input",ExpressionUUID->"18f9b8cf-852a-42ee-b338-530d6eb68aee"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 106, 0, 70, "Input",ExpressionUUID->"440c56fd-8eb2-4387-b1b2-9feeba899e98"],
+Cell[663, 22, 85, 0, 70, "Input",ExpressionUUID->"ee3d6e3c-3d38-44c4-858f-e895a0059e10"],
+Cell[751, 24, 115, 0, 70, "Input",ExpressionUUID->"aaee3d0d-9fa4-4a44-a43a-9e985d606988"],
+Cell[869, 26, 96, 0, 70, "Input",ExpressionUUID->"18f9b8cf-852a-42ee-b338-530d6eb68aee"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1528,         43]
+NotebookOptionsPosition[       985,         28]
+NotebookOutlinePosition[      1302,         42]
+CellTagsIndexPosition[      1259,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for GeodesicSubgraph\"", "Input",ExpressionUUID->"94feaa5d-274c-4644-82bb-05f7c0cc34ad"],
+
+Cell["?GeodesicSubgraph", "Input",ExpressionUUID->"8d032a3a-f19f-4ac8-9c74-ca3f6f11bc56"],
+
+Cell["Information[GeodesicSubgraph, LongForm -> True]", "Input",ExpressionUUID->"98409133-59bb-4fc1-b81a-2a35a6249b26"],
+
+Cell["Definition[GeodesicSubgraph]", "Input",ExpressionUUID->"3f048317-ad3a-46b7-8376-56776f8706e0"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 110, 0, 70, "Input",ExpressionUUID->"94feaa5d-274c-4644-82bb-05f7c0cc34ad"],
+Cell[667, 22, 89, 0, 70, "Input",ExpressionUUID->"8d032a3a-f19f-4ac8-9c74-ca3f6f11bc56"],
+Cell[759, 24, 119, 0, 70, "Input",ExpressionUUID->"98409133-59bb-4fc1-b81a-2a35a6249b26"],
+Cell[881, 26, 100, 0, 70, "Input",ExpressionUUID->"3f048317-ad3a-46b7-8376-56776f8706e0"]
+}
+]
+*)
+
+(* End of internal cache information *)

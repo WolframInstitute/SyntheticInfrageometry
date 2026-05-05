@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1507,         43]
+NotebookOptionsPosition[       965,         28]
+NotebookOutlinePosition[      1282,         42]
+CellTagsIndexPosition[      1239,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for InfraShellQ\"", "Input",ExpressionUUID->"273044d9-7f24-42c9-a634-81962cf9e641"],
+
+Cell["?InfraShellQ", "Input",ExpressionUUID->"3df003c2-e979-4d47-98bb-94c5546ef198"],
+
+Cell["Information[InfraShellQ, LongForm -> True]", "Input",ExpressionUUID->"a9e7d15b-f3d0-461a-93a4-79cde57ad5b2"],
+
+Cell["Definition[InfraShellQ]", "Input",ExpressionUUID->"bfc21731-abda-45ec-8565-48cd7f7d9084"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 105, 0, 70, "Input",ExpressionUUID->"273044d9-7f24-42c9-a634-81962cf9e641"],
+Cell[662, 22, 84, 0, 70, "Input",ExpressionUUID->"3df003c2-e979-4d47-98bb-94c5546ef198"],
+Cell[749, 24, 114, 0, 70, "Input",ExpressionUUID->"a9e7d15b-f3d0-461a-93a4-79cde57ad5b2"],
+Cell[866, 26, 95, 0, 70, "Input",ExpressionUUID->"bfc21731-abda-45ec-8565-48cd7f7d9084"]
+}
+]
+*)
+
+(* End of internal cache information *)

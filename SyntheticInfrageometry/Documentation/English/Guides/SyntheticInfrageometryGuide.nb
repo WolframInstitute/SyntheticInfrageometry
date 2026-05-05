@@ -22,11 +22,12 @@ Cell["SyntheticInfrageometry", "Title",ExpressionUUID->"d543e156-5864-4c4c-8e57-
 
 Cell["\<\
 SyntheticInfrageometry organizes Euclidean (metric), path-space (selectors), \
-Tarski (betweenness + equidistance), projective (incidence), tropical \
-(graph-only convexity), and scene-building layers around multivalued \
-constructions on graphs. Curvatures (Forman, Ollivier, Wolfram) supply the \
-engines for curvature-minimizing path enumeration. This guide points to the \
-main entry points.\
+coordinatization, Tarski (betweenness + equidistance), projective \
+(incidence), tropical operations (min-plus arithmetic), tropical convexity \
+(graph-only), metric algebra, curvatures (Forman / Ollivier / Wolfram), and \
+visualization layers around multivalued constructions on graphs. Every \
+direction has a Guide (categorical overview) and a Tutorial (worked \
+walkthrough). This master guide is the entry point.\
 \>", "Text",ExpressionUUID->"1c3839a5-e20d-4124-8242-aa999686bb33"],
 
 Cell["Setup", "Section",ExpressionUUID->"22f8ffa4-fdca-4f80-bbfb-69bf403f008c"],
@@ -49,9 +50,13 @@ Cell["ProjectiveLayerGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaa
 
 Cell["TropicalOperationsGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000003"],
 
+Cell["TropicalConvexityGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000010"],
+
 Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000004"],
 
 Cell["CurvaturesGuide", "Item",ExpressionUUID->"0d648d45-27b6-4488-b184-93bc01941065"],
+
+Cell["VisualizationGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000011"],
 
 Cell["Tutorials", "Section",ExpressionUUID->"5322691a-c134-4c99-8c4f-f72e7e867da1"],
 
@@ -59,9 +64,21 @@ Cell["EuclideanLayerTutorial", "Item",ExpressionUUID->"64a6a721-2131-444b-a995-0
 
 Cell["PathSpaceTutorial", "Item",ExpressionUUID->"7b69b051-998e-475c-b400-e4b38ee6d344"],
 
+Cell["CoordinatizationTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000012"],
+
 Cell["TarskiLayerTutorial", "Item",ExpressionUUID->"3d5f7175-bda1-46cd-ac5a-b4011fe0d87c"],
 
 Cell["ProjectiveLayerTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000005"],
+
+Cell["TropicalOperationsTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000013"],
+
+Cell["TropicalConvexityTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000014"],
+
+Cell["MetricAlgebraTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000015"],
+
+Cell["CurvaturesTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000016"],
+
+Cell["VisualizationTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000017"],
 
 Cell["Core symbols", "Section",ExpressionUUID->"cfed7f44-d9d4-4938-8e69-7121c40c79da"],
 

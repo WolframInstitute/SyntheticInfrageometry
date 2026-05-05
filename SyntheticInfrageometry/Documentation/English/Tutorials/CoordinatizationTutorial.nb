@@ -1,0 +1,215 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     11064,        206]
+NotebookOptionsPosition[      7085,        154]
+NotebookOutlinePosition[      7402,        168]
+CellTagsIndexPosition[      7359,        165]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["Coordinatization Tutorial", "Title",ExpressionUUID->"e893989b-8dc8-4aa0-ba5a-0e9bf09987fa"],
+
+Cell["\<\
+Two ways to attach numerical coordinates to graph vertices: spatial radar \
+coordinates (vector of distances to a basis), and orthogonal coordinates \
+(signed displacements along chosen axes). Both reduce vertex labels to \
+numbers an infra-observer can compute by walking.\
+\>", "Text",ExpressionUUID->"6ac979d6-bdd2-46b8-8db1-8ae84142c1ff"],
+
+Cell["Setup", "Section",ExpressionUUID->"c8f7ae62-2408-41d1-8fe4-76ecf1146a15"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"03ea9eb5-b4ea-4fc7-9b95-24b42c93f3f4"],
+
+Cell["Spatial radar coordinates", "Section",ExpressionUUID->"21c29505-d066-490a-bc2d-61d50ab19b42"],
+
+Cell["\<\
+A radar basis is a vertex set such that every vertex has a unique distance \
+vector to the basis. Once chosen, the radar coordinate of a vertex is exactly \
+that distance vector.\
+\>", "Text",ExpressionUUID->"3b446ec5-efe4-4bef-a7d0-2f3072693e3f"],
+
+Cell["Find a small radar basis on a grid:", "CodeText",ExpressionUUID->"46e13fec-e9b7-4c5f-85e9-0c9b4cb26af4"],
+
+Cell["g = GridGraph[{3, 3}]", "Input",ExpressionUUID->"bb4f9927-4455-49a7-a703-e3ccf55d19eb"],
+
+Cell["FindRadarBasis[g, 1]", "Input",ExpressionUUID->"b62840f9-6238-461d-b508-a0bd8b82b80b"],
+
+Cell["Test that a candidate is a radar basis:", "CodeText",ExpressionUUID->"379fc867-0d84-48eb-b3d9-361826403d24"],
+
+Cell["RadarBasisQ[g, {1, 9}]", "Input",ExpressionUUID->"dce3e118-9ff5-40f9-a652-f538b8911863"],
+
+Cell["\<\
+The radar coordinate of every vertex with respect to the basis {1, 9}:\
+\>", "CodeText",ExpressionUUID->"0c778fe9-796b-42f9-8491-bc30f646c2b6"],
+
+Cell["RadarCoordinates[g, {1, 9}]", "Input",ExpressionUUID->"65bff8ae-9ae2-4b5b-9ee9-39e18a41837a"],
+
+Cell["Equivalent for a single vertex:", "CodeText",ExpressionUUID->"4374961f-ac9b-43ab-ac88-655e49c1f173"],
+
+Cell["RadarCoordinates[g, 5, {1, 9}]", "Input",ExpressionUUID->"09cfc2ee-49f0-4334-8b9f-4e287971c78a"],
+
+Cell["Orthogonal coordinates", "Section",ExpressionUUID->"58ed310b-29c5-415c-b770-b3fc78f3673a"],
+
+Cell["\<\
+Pick a small set of well-separated longest paths (or DAGs) as axes; project \
+each vertex onto each axis and take the layer index. The result is a tuple of \
+non-negative integers (or signed integers, when an origin is chosen).\
+\>", "Text",ExpressionUUID->"4913ecb3-6415-4c28-874b-bc0a88e21c04"],
+
+Cell["\<\
+Find two orthogonal axes through the centre vertex 5 of a 3x3 grid:\
+\>", "CodeText",ExpressionUUID->"ee363d22-a41c-4158-a383-4579b9ba434b"],
+
+Cell["axes = FindOrthogonalAxes[g, 5, 2]", "Input",ExpressionUUID->"eab3dce8-b44a-4351-89a9-5ccab226501f"],
+
+Cell["\<\
+Coordinates of vertex 1 with respect to those axes (vertex 5 plays the role \
+of origin):\
+\>", "CodeText",ExpressionUUID->"0167ddff-626b-43d8-9059-4cc5543d899b"],
+
+Cell["OrthogonalCoordinates[g, 5, 1]", "Input",ExpressionUUID->"31c4dac9-9ddc-4255-8059-a826433d22c7"],
+
+Cell["Bulk form: every vertex's coordinate as an Association.", "CodeText",ExpressionUUID->"8e409df1-6484-424f-95bd-d6e706688df8"],
+
+Cell["OrthogonalCoordinates[g, 5]", "Input",ExpressionUUID->"8a78f71f-9185-4818-91c0-5a0bd252f8fe"],
+
+Cell["Selecting a coordinate when the projection is multi-valued", "Section",ExpressionUUID->"a0190bec-2e17-49ce-8497-c9203c21b776"],
+
+Cell["\<\
+When several axis vertices are equidistant from v, the projection ties. The \
+SelectCoordinate option (default First) picks one value from the tied list.\
+\>", "Text",ExpressionUUID->"a34e9ec5-c2d2-4838-b1c4-538fa5eb0574"],
+
+Cell["\<\
+A 4-cycle: vertex 4 is equidistant from vertex 1 and vertex 3 along the axis \
+{1, 2, 3}. Position 0 (= vertex 1) and position 2 (= vertex 3) both tie.\
+\>", "CodeText",ExpressionUUID->"6ccf73dd-882c-454a-9b3e-3eeba2595458"],
+
+Cell["c4 = CycleGraph[4]", "Input",ExpressionUUID->"8f43fe6d-7a06-4aff-8211-240d1c6e200d"],
+
+Cell["\<\
+{OrthogonalCoordinates[c4, {{1, 2, 3}}, 4, \"SelectCoordinate\" -> First], \
+OrthogonalCoordinates[c4, {{1, 2, 3}}, 4, \"SelectCoordinate\" -> Last], \
+OrthogonalCoordinates[c4, {{1, 2, 3}}, 4, \"SelectCoordinate\" -> All]}\
+\>", "Input",ExpressionUUID->"8cb2e935-1091-48a0-b07a-3e67a608661f"],
+
+Cell["\<\
+First gives 0, Last gives 2, All preserves the tied list {0, 2}. You can also \
+pass any function on lists (e.g. Mean, Median, or Quantile[#, 0.25] &).\
+\>", "Text",ExpressionUUID->"ed6a870f-f556-460e-a0ca-9f7e29999bbb"],
+
+Cell["InfraPoint multi-vertex centre", "Section",ExpressionUUID->"d5595a33-ccfe-4eff-bfa6-d4566565980c"],
+
+Cell["\<\
+The centre can be specified as InfraPoint[{v1, v2, ...}], in which case each \
+axis is required to contain at least one of the listed vertices as an \
+interior point. The axis is signed relative to the first such vertex.\
+\>", "Text",ExpressionUUID->"7712e12b-169f-4117-87e1-258e1acff79d"],
+
+Cell["FindOrthogonalAxes[g, InfraPoint[{1, 5}], 2]", "Input",ExpressionUUID->"ce77c56a-1006-4e01-837f-a014eff6de4c"],
+
+Cell["Where this connects to the rest of the paclet", "Section",ExpressionUUID->"3db9f2f4-304d-4b51-afd2-845d2b3bca84"],
+
+Cell["\<\
+The Projective layer's pencil at O picks out one canonical line per \
+direction. If those lines are taken as axes, OrthogonalCoordinates assigns \
+each vertex a tuple in Z^k -- the projective affinization map (planned, see \
+ProjectivePrimitivesRoster). The Coordinatization layer is the metric \
+scaffolding for that construction.\
+\>", "Text",ExpressionUUID->"acf50ef2-172f-47c2-a116-62f56045436b"],
+
+Cell["See also", "Section",ExpressionUUID->"80c140e9-3519-485a-9635-b092896aef30"],
+
+Cell["CoordinatizationGuide -- categorical overview.", "Item",ExpressionUUID->"3ab111a4-0964-4f74-a51a-ee5e27c7f655"],
+
+Cell["\<\
+EuclideanLayerTutorial -- the metric primitives FindSegment / FindLine that \
+orthogonal projections rely on.\
+\>", "Item",ExpressionUUID->"1c2a765f-513b-48d8-941d-4589cd0e6311"],
+
+Cell["ProjectiveLayerTutorial -- pencils as axis sources.", "Item",ExpressionUUID->"88193144-8a25-4b1f-a061-744d3f48e35f"],
+
+Cell["References", "Section",ExpressionUUID->"5cfadcb1-9e04-48f7-97b6-2716c21d9663"],
+
+Cell["\<\
+Slater, Leaves of Trees, Congressus Numerantium 14, 549-559, 1975 (origin of \
+resolving sets / metric dimension).\
+\>", "Item",ExpressionUUID->"49024e1b-5452-477d-9d62-4c6672903d4b"],
+
+Cell["\<\
+Chartrand, Eroh, Johnson and Oellermann, Resolvability in Graphs and the \
+Metric Dimension of a Graph, Discrete Appl. Math. 105, 99-113, 2000.\
+\>", "Item",ExpressionUUID->"c1408383-b25b-4747-9b05-e6b8360a23d4"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 97, 0, 70, "Title",ExpressionUUID->"e893989b-8dc8-4aa0-ba5a-0e9bf09987fa"],
+Cell[654, 22, 352, 5, 70, "Text",ExpressionUUID->"6ac979d6-bdd2-46b8-8db1-8ae84142c1ff"],
+Cell[1009, 29, 79, 0, 70, "Section",ExpressionUUID->"c8f7ae62-2408-41d1-8fe4-76ecf1146a15"],
+Cell[1091, 31, 122, 0, 70, "Code",ExpressionUUID->"03ea9eb5-b4ea-4fc7-9b95-24b42c93f3f4"],
+Cell[1216, 33, 99, 0, 70, "Section",ExpressionUUID->"21c29505-d066-490a-bc2d-61d50ab19b42"],
+Cell[1318, 35, 257, 4, 70, "Text",ExpressionUUID->"3b446ec5-efe4-4bef-a7d0-2f3072693e3f"],
+Cell[1578, 41, 110, 0, 70, "CodeText",ExpressionUUID->"46e13fec-e9b7-4c5f-85e9-0c9b4cb26af4"],
+Cell[1691, 43, 93, 0, 70, "Input",ExpressionUUID->"bb4f9927-4455-49a7-a703-e3ccf55d19eb"],
+Cell[1787, 45, 92, 0, 70, "Input",ExpressionUUID->"b62840f9-6238-461d-b508-a0bd8b82b80b"],
+Cell[1882, 47, 114, 0, 70, "CodeText",ExpressionUUID->"379fc867-0d84-48eb-b3d9-361826403d24"],
+Cell[1999, 49, 94, 0, 70, "Input",ExpressionUUID->"dce3e118-9ff5-40f9-a652-f538b8911863"],
+Cell[2096, 51, 153, 2, 70, "CodeText",ExpressionUUID->"0c778fe9-796b-42f9-8491-bc30f646c2b6"],
+Cell[2252, 55, 99, 0, 70, "Input",ExpressionUUID->"65bff8ae-9ae2-4b5b-9ee9-39e18a41837a"],
+Cell[2354, 57, 106, 0, 70, "CodeText",ExpressionUUID->"4374961f-ac9b-43ab-ac88-655e49c1f173"],
+Cell[2463, 59, 102, 0, 70, "Input",ExpressionUUID->"09cfc2ee-49f0-4334-8b9f-4e287971c78a"],
+Cell[2568, 61, 96, 0, 70, "Section",ExpressionUUID->"58ed310b-29c5-415c-b770-b3fc78f3673a"],
+Cell[2667, 63, 306, 4, 70, "Text",ExpressionUUID->"4913ecb3-6415-4c28-874b-bc0a88e21c04"],
+Cell[2976, 69, 150, 2, 70, "CodeText",ExpressionUUID->"ee363d22-a41c-4158-a383-4579b9ba434b"],
+Cell[3129, 73, 106, 0, 70, "Input",ExpressionUUID->"eab3dce8-b44a-4351-89a9-5ccab226501f"],
+Cell[3238, 75, 172, 3, 70, "CodeText",ExpressionUUID->"0167ddff-626b-43d8-9059-4cc5543d899b"],
+Cell[3413, 80, 102, 0, 70, "Input",ExpressionUUID->"31c4dac9-9ddc-4255-8059-a826433d22c7"],
+Cell[3518, 82, 130, 0, 70, "CodeText",ExpressionUUID->"8e409df1-6484-424f-95bd-d6e706688df8"],
+Cell[3651, 84, 99, 0, 70, "Input",ExpressionUUID->"8a78f71f-9185-4818-91c0-5a0bd252f8fe"],
+Cell[3753, 86, 132, 0, 70, "Section",ExpressionUUID->"a0190bec-2e17-49ce-8497-c9203c21b776"],
+Cell[3888, 88, 232, 3, 70, "Text",ExpressionUUID->"a34e9ec5-c2d2-4838-b1c4-538fa5eb0574"],
+Cell[4123, 93, 234, 3, 70, "CodeText",ExpressionUUID->"6ccf73dd-882c-454a-9b3e-3eeba2595458"],
+Cell[4360, 98, 90, 0, 70, "Input",ExpressionUUID->"8f43fe6d-7a06-4aff-8211-240d1c6e200d"],
+Cell[4453, 100, 303, 4, 70, "Input",ExpressionUUID->"8cb2e935-1091-48a0-b07a-3e67a608661f"],
+Cell[4759, 106, 230, 3, 70, "Text",ExpressionUUID->"ed6a870f-f556-460e-a0ca-9f7e29999bbb"],
+Cell[4992, 111, 104, 0, 70, "Section",ExpressionUUID->"d5595a33-ccfe-4eff-bfa6-d4566565980c"],
+Cell[5099, 113, 299, 4, 70, "Text",ExpressionUUID->"7712e12b-169f-4117-87e1-258e1acff79d"],
+Cell[5401, 119, 116, 0, 70, "Input",ExpressionUUID->"ce77c56a-1006-4e01-837f-a014eff6de4c"],
+Cell[5520, 121, 119, 0, 70, "Section",ExpressionUUID->"3db9f2f4-304d-4b51-afd2-845d2b3bca84"],
+Cell[5642, 123, 410, 6, 70, "Text",ExpressionUUID->"acf50ef2-172f-47c2-a116-62f56045436b"],
+Cell[6055, 131, 82, 0, 70, "Section",ExpressionUUID->"80c140e9-3519-485a-9635-b092896aef30"],
+Cell[6140, 133, 117, 0, 70, "Item",ExpressionUUID->"3ab111a4-0964-4f74-a51a-ee5e27c7f655"],
+Cell[6260, 135, 188, 3, 70, "Item",ExpressionUUID->"1c2a765f-513b-48d8-941d-4589cd0e6311"],
+Cell[6451, 140, 122, 0, 70, "Item",ExpressionUUID->"88193144-8a25-4b1f-a061-744d3f48e35f"],
+Cell[6576, 142, 84, 0, 70, "Section",ExpressionUUID->"5cfadcb1-9e04-48f7-97b6-2716c21d9663"],
+Cell[6663, 144, 193, 3, 70, "Item",ExpressionUUID->"49024e1b-5452-477d-9d62-4c6672903d4b"],
+Cell[6859, 149, 222, 3, 70, "Item",ExpressionUUID->"c1408383-b25b-4747-9b05-e6b8360a23d4"]
+}
+]
+*)
+
+(* End of internal cache information *)

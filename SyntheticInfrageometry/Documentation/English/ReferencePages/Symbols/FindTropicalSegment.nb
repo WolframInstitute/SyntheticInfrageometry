@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1540,         43]
+NotebookOptionsPosition[       997,         28]
+NotebookOutlinePosition[      1314,         42]
+CellTagsIndexPosition[      1271,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for FindTropicalSegment\"", "Input",ExpressionUUID->"18b8dc03-d85c-481a-b4b8-ef6cedf5104e"],
+
+Cell["?FindTropicalSegment", "Input",ExpressionUUID->"59784d7e-ea51-4d69-9e2c-6bf090e0c912"],
+
+Cell["Information[FindTropicalSegment, LongForm -> True]", "Input",ExpressionUUID->"2bb3ede7-1318-4b2f-862b-b7c5fd38d210"],
+
+Cell["Definition[FindTropicalSegment]", "Input",ExpressionUUID->"97783521-ae02-453b-ad67-2edb34cbf4eb"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 113, 0, 70, "Input",ExpressionUUID->"18b8dc03-d85c-481a-b4b8-ef6cedf5104e"],
+Cell[670, 22, 92, 0, 70, "Input",ExpressionUUID->"59784d7e-ea51-4d69-9e2c-6bf090e0c912"],
+Cell[765, 24, 122, 0, 70, "Input",ExpressionUUID->"2bb3ede7-1318-4b2f-862b-b7c5fd38d210"],
+Cell[890, 26, 103, 0, 70, "Input",ExpressionUUID->"97783521-ae02-453b-ad67-2edb34cbf4eb"]
+}
+]
+*)
+
+(* End of internal cache information *)
