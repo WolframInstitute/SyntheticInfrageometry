@@ -54,15 +54,15 @@ nUUID->"38e57125-a071-4698-90d1-27f4b196ff3b"],
 Cell["Keep the central paths.", "CodeText",ExpressionUUID->"3b6eae67-cf9a-4800-8880-1e47134ed8f1"],
 
 Cell[BoxData[
- RowBox[{"CentralPaths", "[", 
-  RowBox[{"g", ",", "paths"}], "]"}]], "Input",ExpressionUUID->"830e4edc-b83b-\
+ RowBox[{"SelectPaths", "[",
+  RowBox[{"g", ",", "paths", ",", "\"\<Central\>\""}], "]"}]], "Input",ExpressionUUID->"830e4edc-b83b-\
 47b7-af5f-12c26eb4f344"],
 
 Cell["Keep the peripheral paths.", "CodeText",ExpressionUUID->"48a0accb-30cf-4de4-be1e-96cea532d55e"],
 
 Cell[BoxData[
- RowBox[{"PeripheralPaths", "[", 
-  RowBox[{"g", ",", "paths"}], "]"}]], "Input",ExpressionUUID->"d26623f6-26a1-\
+ RowBox[{"SelectPaths", "[",
+  RowBox[{"g", ",", "paths", ",", "\"\<Peripheral\>\""}], "]"}]], "Input",ExpressionUUID->"d26623f6-26a1-\
 4053-84ea-91a34578b85d"],
 
 Cell["Keep the embedding-closest paths.", "CodeText",ExpressionUUID->"f96b49dc-1472-4fd3-beea-b266d4681f8b"],
@@ -79,21 +79,21 @@ Cell["Cycle bundles", "Section",ExpressionUUID->"371bb51d-203a-45b7-af51-be61c61
 Cell["Enumerate separating cycles around the centre.", "CodeText",ExpressionUUID->"aff25113-e5df-4c73-b9ed-9bdf347080f0"],
 
 Cell[BoxData[
- RowBox[{"cycles", "=", 
-  RowBox[{"FindSphere", "[", 
-   RowBox[{"g", ",", "6", ",", 
-    RowBox[{"{", 
-     RowBox[{"1", ",", "2"}], "}"}], ",", "All", ",", 
-    RowBox[{"Method", "\[Rule]", "\"\<SeparatingCycle\>\""}]}], 
+ RowBox[{"cycles", "=",
+  RowBox[{"FindCircle", "[",
+   RowBox[{"g", ",", "6", ",",
+    RowBox[{"{",
+     RowBox[{"1", ",", "2"}], "}"}], ",", "All"}],
    "]"}]}]], "Input",ExpressionUUID->"3f1a6ee5-346e-46fa-957b-eb0940a0aad8"],
 
 Cell["Keep the central cycles, then the shortest among them.", "CodeText",ExpressionUUID->"00ae17ba-220a-4124-8635-e2a37249467c"],
 
 Cell[BoxData[
- RowBox[{"ShortestCircumferenceCycles", "[", 
-  RowBox[{
-   RowBox[{"CentralCycles", "[", "g", "]"}], "[", "cycles", "]"}], 
-  "]"}]], "Input",ExpressionUUID->"7ae67aa9-2f30-478b-9fa5-0765b5c32776"],
+ RowBox[{"SelectCycles", "[",
+  RowBox[{"g", ",",
+   RowBox[{"SelectCycles", "[",
+    RowBox[{"g", ",", "cycles", ",", "\"\<Central\>\""}], "]"}], ",",
+   "\"\<ShortestCircumference\>\""}], "]"}]], "Input",ExpressionUUID->"7ae67aa9-2f30-478b-9fa5-0765b5c32776"],
 
 Cell["Keep the most circle-like cycles under the embedding.", "CodeText",ExpressionUUID->"f37f4f46-18cc-4fde-bb59-f8165fa206b1"],
 

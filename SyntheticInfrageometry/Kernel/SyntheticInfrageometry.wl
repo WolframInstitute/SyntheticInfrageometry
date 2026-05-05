@@ -118,10 +118,6 @@ PackageExport[TropicalT1Q]
 (* Enumeration.wl *)
 PackageExport[EnumerateGraphs]
 
-(* Tessellations.wl *)
-PackageExport[TorusTessellation]
-PackageExport[SchlafliTessellation]
-
 (* Curvatures.wl *)
 PackageExport[FormanRicci]
 PackageExport[OllivierRicci]

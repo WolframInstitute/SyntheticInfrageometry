@@ -18,7 +18,7 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["Tarski Layer Guide", "Title",ExpressionUUID->"9d870de9-3472-4242-9a19-ccc61ba1545f"],
+Cell["Tarski Geometry Guide", "Title",ExpressionUUID->"9d870de9-3472-4242-9a19-ccc61ba1545f"],
 
 Cell["\<\
 First-order axiomatic geometry on graphs, in the style of Alfred Tarski's \
@@ -222,7 +222,7 @@ always returns a central interval element.\
 Cell["Tutorial", "Section",ExpressionUUID->"9fb58b6e-0d8c-4974-aa4a-c268661f11c2"],
 
 Cell["\<\
-TarskiLayerTutorial provides a runnable substrate panel, worked examples for \
+TarskiGeometryTutorial provides a runnable substrate panel, worked examples for \
 every axiom predicate, counterexample extraction on the Petersen graph, and a \
 side-by-side comparison of FindTarskiMidpoint versus FindMidpoint.\
 \>", "Item",ExpressionUUID->"dd449ec1-b930-47c2-8a85-d7bdcb9fc4d3"]

@@ -233,7 +233,7 @@ Cell["FindOrthogonalAxes", "Item",ExpressionUUID->"82f09e5e-fb8b-4c4d-81b2-389e5
 
 Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"82b713d8-6727-4d80-af03-a85cb822113a"],
 
-Cell["EuclideanLayerGuide", "Item",ExpressionUUID->"147ec7be-eda7-4b9a-b501-2a3a68f13344"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"147ec7be-eda7-4b9a-b501-2a3a68f13344"],
 
 Cell["References", "Section",ExpressionUUID->"7f34b2ac-a72f-45d6-8c8c-fef9dabe50d0"],
 

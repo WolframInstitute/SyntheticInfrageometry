@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      9672,        192]
-NotebookOptionsPosition[      6175,        145]
-NotebookOutlinePosition[      6492,        159]
-CellTagsIndexPosition[      6449,        156]
+NotebookDataLength[     12566,        247]
+NotebookOptionsPosition[      8233,        191]
+NotebookOutlinePosition[      8550,        205]
+CellTagsIndexPosition[      8507,        202]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -141,11 +141,57 @@ Cell["\<\
 Jost and Liu, Ollivier's Ricci Curvature, Local Clustering and \
 Curvature-Dimension Inequalities on Graphs, Discrete Comput. Geom. 51, \
 300-322, 2014, https://arxiv.org/abs/1103.4037\
-\>", "Item",ExpressionUUID->"2c97d0f4-057a-4eff-9899-146009af4738"]
+\>", "Item",ExpressionUUID->"2c97d0f4-057a-4eff-9899-146009af4738"],
+
+Cell["Pointwise constant curvature on locally homogeneous graphs", "Section",ExpressionUUID->"7b67356f-7e44-4c64-94cf-b48e95dbb0cd"],
+
+Cell["\<\
+A discrete curvature is pointwise constant on a graph exactly when the local \
+data it depends on is the same at every vertex (or edge). The strongest such \
+condition is vertex-transitivity, which forces every r-ball to be \
+graph-isomorphic to every other and so makes WolframRicci pointwise constant \
+for every radius. The simplest parametric families:\
+\>", "Text",ExpressionUUID->"0e7aa1a1-0ffc-4722-bf42-34feeb01b18c"],
+
+Cell["\<\
+Cayley graphs CayleyGraph[group] -- vertex-transitive by construction.\
+\>", "Item",ExpressionUUID->"5337054b-a738-4141-868d-0815fdf5ad6b"],
+
+Cell["\<\
+Circulant graphs CirculantGraph[n, S] -- one-dimensional Cayley graphs of Z_n.\
+\>", "Item",ExpressionUUID->"b721bea7-6954-49cc-ad7a-aedd94153a29"],
+
+Cell["\<\
+Cartesian cycle products GraphProduct[CycleGraph[n], CycleGraph[m], \
+\"Cartesian\"] -- discrete flat tori.\
+\>", "Item",ExpressionUUID->"952bae9e-d194-4177-bead-71869a265830"],
+
+Cell["\<\
+Distance-regular standards: HypercubeGraph[d], Johnson, Kneser, Paley graphs.\
+\
+\>", "Item",ExpressionUUID->"03fba896-a978-4411-8a7e-da4f8584acc1"],
+
+Cell["\<\
+WolframRicci on a 5x5 discrete flat torus -- one constant value across all 25 \
+vertices.\
+\>", "CodeText",ExpressionUUID->"b4294a30-01f7-4eff-967c-5963b5e49dfa"],
+
+Cell["\<\
+Union @ Values @ WolframRicci[ GraphProduct[ CycleGraph[ 5 ], CycleGraph[ 5 \
+], \"Cartesian\" ], \"Dimension\" -> 2 ]\
+\>", "Input",ExpressionUUID->"d2fffbd6-0f12-42e5-ab3b-203cb7e8bcab"],
+
+Cell["\<\
+For a graph that is r-locally homogeneous but not vertex-transitive (regular \
+graph of girth 2 r + 2 with non-uniform short-cycle distribution), \
+WolframRicci[g, r'] is pointwise constant for r' \\[LessEqual] r and may fail \
+for r' > r -- the radius window in WolframRicci[g, {rmin, rmax}] is then a \
+knob for the scale at which the substrate looks homogeneous.\
+\>", "Text",ExpressionUUID->"a4392be5-e841-4b31-aeda-68e1b66e564d"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"09bd8e93-7f29-4e76-a2aa-f06705fb4c0c"
+ExpressionUUID->"5f03c5ed-44f9-4bcd-91fa-2cb3d45e5b95"
 ]
 (* End of Notebook Content *)
 
@@ -193,7 +239,16 @@ Cell[5143, 119, 212, 3, 70, "Item",ExpressionUUID->"6e0158af-a1c1-47c7-81d4-b0be
 Cell[5358, 124, 158, 3, 70, "Item",ExpressionUUID->"ba3f584d-2539-4554-af85-e9f6f1556bfc"],
 Cell[5519, 129, 193, 3, 70, "Item",ExpressionUUID->"c19f75bc-694a-4b60-b9d5-9ef563c73b33"],
 Cell[5715, 134, 190, 3, 70, "Item",ExpressionUUID->"eb813211-ecd8-435a-9e69-d3d8d6d5c0d6"],
-Cell[5908, 139, 263, 4, 70, "Item",ExpressionUUID->"2c97d0f4-057a-4eff-9899-146009af4738"]
+Cell[5908, 139, 263, 4, 70, "Item",ExpressionUUID->"2c97d0f4-057a-4eff-9899-146009af4738"],
+Cell[6174, 145, 132, 0, 70, "Section",ExpressionUUID->"7b67356f-7e44-4c64-94cf-b48e95dbb0cd"],
+Cell[6309, 147, 435, 6, 70, "Text",ExpressionUUID->"0e7aa1a1-0ffc-4722-bf42-34feeb01b18c"],
+Cell[6747, 155, 149, 2, 70, "Item",ExpressionUUID->"5337054b-a738-4141-868d-0815fdf5ad6b"],
+Cell[6899, 159, 157, 2, 70, "Item",ExpressionUUID->"b721bea7-6954-49cc-ad7a-aedd94153a29"],
+Cell[7059, 163, 186, 3, 70, "Item",ExpressionUUID->"952bae9e-d194-4177-bead-71869a265830"],
+Cell[7248, 168, 158, 3, 70, "Item",ExpressionUUID->"03fba896-a978-4411-8a7e-da4f8584acc1"],
+Cell[7409, 173, 172, 3, 70, "CodeText",ExpressionUUID->"b4294a30-01f7-4eff-967c-5963b5e49dfa"],
+Cell[7584, 178, 198, 3, 70, "Input",ExpressionUUID->"d2fffbd6-0f12-42e5-ab3b-203cb7e8bcab"],
+Cell[7785, 183, 444, 6, 70, "Text",ExpressionUUID->"a4392be5-e841-4b31-aeda-68e1b66e564d"]
 }
 ]
 *)

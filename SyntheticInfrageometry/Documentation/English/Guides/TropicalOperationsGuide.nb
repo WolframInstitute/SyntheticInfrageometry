@@ -199,7 +199,7 @@ Cell["See also", "Section",ExpressionUUID->"b1c2d3e4-002f-4000-8000-00000000002f
 
 Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"b1c2d3e4-0030-4000-8000-000000000030"],
 
-Cell["TarskiLayerGuide", "Item",ExpressionUUID->"b1c2d3e4-0031-4000-8000-000000000031"],
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"b1c2d3e4-0031-4000-8000-000000000031"],
 
 Cell["DistanceMatrixQ", "Item",ExpressionUUID->"b1c2d3e4-0032-4000-8000-000000000032"],
 

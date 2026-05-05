@@ -134,11 +134,11 @@ Cell["See also", "Section",ExpressionUUID->"80c140e9-3519-485a-9635-b092896aef30
 Cell["CoordinatizationGuide -- categorical overview.", "Item",ExpressionUUID->"3ab111a4-0964-4f74-a51a-ee5e27c7f655"],
 
 Cell["\<\
-EuclideanLayerTutorial -- the metric primitives FindSegment / FindLine that \
+EuclideanGeometryTutorial -- the metric primitives FindSegment / FindLine that \
 orthogonal projections rely on.\
 \>", "Item",ExpressionUUID->"1c2a765f-513b-48d8-941d-4589cd0e6311"],
 
-Cell["ProjectiveLayerTutorial -- pencils as axis sources.", "Item",ExpressionUUID->"88193144-8a25-4b1f-a061-744d3f48e35f"],
+Cell["ProjectiveGeometryTutorial -- pencils as axis sources.", "Item",ExpressionUUID->"88193144-8a25-4b1f-a061-744d3f48e35f"],
 
 Cell["References", "Section",ExpressionUUID->"5cfadcb1-9e04-48f7-97b6-2716c21d9663"],
 

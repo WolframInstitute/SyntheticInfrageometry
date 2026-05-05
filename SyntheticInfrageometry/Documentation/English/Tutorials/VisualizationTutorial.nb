@@ -212,12 +212,12 @@ VisualizationGuide -- categorical overview of every symbol in the layer.\
 \>", "Item",ExpressionUUID->"29f0dbc5-1b96-4b8f-ba36-782d5376adc1"],
 
 Cell["\<\
-EuclideanLayerTutorial -- the Find* family used as input to the rendering \
+EuclideanGeometryTutorial -- the Find* family used as input to the rendering \
 pipeline.\
 \>", "Item",ExpressionUUID->"9ba1d630-4d3d-4dbd-a65f-6f6fbcf4226c"],
 
 Cell["\<\
-ProjectiveLayerTutorial -- multi-CONSTITUENT pencil rendering with apex \
+ProjectiveGeometryTutorial -- multi-CONSTITUENT pencil rendering with apex \
 emphasis.\
 \>", "Item",ExpressionUUID->"0955e929-b23d-4f14-aff6-3f3760103129"],
 

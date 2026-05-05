@@ -18,7 +18,7 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["Projective Layer", "Title",ExpressionUUID->"ae07c403-b053-4d1b-bb62-7c8bdc755d58"],
+Cell["Projective Geometry", "Title",ExpressionUUID->"ae07c403-b053-4d1b-bb62-7c8bdc755d58"],
 
 Cell["\<\
 The projective layer reconstructs incidence geometry on graphs: pencils at a \
@@ -182,7 +182,7 @@ through O sharing direction with v.\
 Cell["Tutorial", "Section",ExpressionUUID->"3d8453d7-a269-4a4a-b4ac-e9a1dcaf545e"],
 
 Cell["\<\
-See ProjectiveLayerTutorial for runnable examples on paths, cycles, grids, \
+See ProjectiveGeometryTutorial for runnable examples on paths, cycles, grids, \
 and small projective planes.\
 \>", "Item",ExpressionUUID->"8457d83b-1966-4709-912f-0a0ea24f6867"],
 

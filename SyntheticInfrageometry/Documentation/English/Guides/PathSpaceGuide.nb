@@ -28,45 +28,38 @@ representatives.\
 
 Cell["Path selectors", "Section",ExpressionUUID->"b4c09a93-fc3e-4007-9c19-43cb2dbf5899"],
 
-Cell["CentralPaths", "Item",ExpressionUUID->"5244962c-cea6-47f9-98d2-e97d6f6bfd78"],
-
-Cell["PeripheralPaths", "Item",ExpressionUUID->"9a868631-c0a7-47ad-b6ca-4fae49c15ba2"],
+Cell["SelectPaths (criteria: \"Central\", \"Peripheral\")", "Item",ExpressionUUID->"5244962c-cea6-47f9-98d2-e97d6f6bfd78"],
 
 Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"5605d0d8-702b-4c88-b5aa-9bbe882c9d55"],
 
 Cell["Cycle selectors", "Section",ExpressionUUID->"5e8cc301-7b52-475a-be78-871700ee47c5"],
 
-Cell["CentralCycles", "Item",ExpressionUUID->"79615348-1e0b-4b0e-8560-33727a37b10d"],
-
-Cell["PeripheralCycles", "Item",ExpressionUUID->"b3bcc0fb-fc61-4bc7-8d9b-bea451bebea0"],
+Cell["SelectCycles (criteria: \"Central\", \"Peripheral\", \"ShortestCircumference\", \"LongestCircumference\")", "Item",ExpressionUUID->"79615348-1e0b-4b0e-8560-33727a37b10d"],
 
 Cell["EmbeddingClosestCycles", "Item",ExpressionUUID->"aefdf5df-b7a7-435f-80ea-9a5b13bea637"],
-
-Cell["ShortestCircumferenceCycles", "Item",ExpressionUUID->"231dbc05-6c47-4b10-b40d-ddc73ce26d92"],
-
-Cell["LongestCircumferenceCycles", "Item",ExpressionUUID->"81d120eb-1a00-416d-975e-752459beff23"],
 
 Cell["Typical pipeline", "Section",ExpressionUUID->"b5a313ab-8821-47ca-b4d7-5a3503dbed04"],
 
 Cell["Enumerate first, then filter.", "CodeText",ExpressionUUID->"f19d932d-7945-4b67-a1bf-bb37a88d6faa"],
 
 Cell[BoxData[
- RowBox[{"With", "[", 
+ RowBox[{"With", "[",
   RowBox[{
-   RowBox[{"{", 
-    RowBox[{"g", "=", 
-     RowBox[{"GridGraph", "[", 
-      RowBox[{"{", 
-       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",", 
+   RowBox[{"{",
+    RowBox[{"g", "=",
+     RowBox[{"GridGraph", "[",
+      RowBox[{"{",
+       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",",
    RowBox[{
-    RowBox[{"EmbeddingClosestPaths", "[", 
-     RowBox[{"g", ",", 
-      RowBox[{"{", 
-       RowBox[{"1", ",", "16"}], "}"}]}], "]"}], "[", 
+    RowBox[{"EmbeddingClosestPaths", "[",
+     RowBox[{"g", ",",
+      RowBox[{"{",
+       RowBox[{"1", ",", "16"}], "}"}]}], "]"}], "[",
     RowBox[{
-     RowBox[{"CentralPaths", "[", "g", "]"}], "[", 
-     RowBox[{"FindSegment", "[", 
-      RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "]"}], "]"}]}], 
+     RowBox[{"SelectPaths", "[",
+      RowBox[{"g", ",", "\"\<Central\>\""}], "]"}], "[",
+     RowBox[{"FindSegment", "[",
+      RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "]"}], "]"}]}],
   "]"}]], "Input",ExpressionUUID->"72e1cbb0-f9c3-4419-b142-8b9ebc50f989"],
 
 Cell["Tutorial", "Section",ExpressionUUID->"f87a9767-6390-4b6d-8c92-3c5fce1f8962"],

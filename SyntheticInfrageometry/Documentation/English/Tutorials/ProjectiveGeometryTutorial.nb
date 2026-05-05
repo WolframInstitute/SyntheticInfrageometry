@@ -18,7 +18,7 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["Projective Layer Tutorial", "Title",ExpressionUUID->"c65bce9a-76e3-4cc9-85ac-3c0576b7b175"],
+Cell["Projective Geometry Tutorial", "Title",ExpressionUUID->"c65bce9a-76e3-4cc9-85ac-3c0576b7b175"],
 
 Cell["\<\
 A walkthrough of synthetic projective geometry on graphs: pencils, rays, \
@@ -283,16 +283,16 @@ Pappus, harmonic conjugates -- build on the foundation laid here.\
 Cell["See also", "Section",ExpressionUUID->"31ca7fb2-aa7d-401b-bdb4-422b305e2548"],
 
 Cell["\<\
-ProjectiveLayerGuide -- categorical overview of every symbol in the layer.\
+ProjectiveGeometryGuide -- categorical overview of every symbol in the layer.\
 \>", "Item",ExpressionUUID->"0171e53c-4eb1-4eb0-af80-e731dea97c2f"],
 
 Cell["\<\
-EuclideanLayerGuide -- the metric primitives FindLine and friends that the \
+EuclideanGeometryGuide -- the metric primitives FindLine and friends that the \
 projective layer depends on.\
 \>", "Item",ExpressionUUID->"46f4ecf7-8885-4860-b9f0-2b8dafe6d89c"],
 
 Cell["\<\
-TarskiLayerGuide -- the betweenness/equidistance axiomatisation that \
+TarskiGeometryGuide -- the betweenness/equidistance axiomatisation that \
 complements the synthetic-incidence reading here.\
 \>", "Item",ExpressionUUID->"c9539e33-0aa6-4d40-9ef5-17e0d06fee3e"],
 

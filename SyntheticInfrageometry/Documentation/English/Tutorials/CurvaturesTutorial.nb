@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     11959,        226]
-NotebookOptionsPosition[      7792,        172]
-NotebookOutlinePosition[      8109,        186]
-CellTagsIndexPosition[      8066,        183]
+NotebookDataLength[     15194,        284]
+NotebookOptionsPosition[     10181,        221]
+NotebookOutlinePosition[     10498,        235]
+CellTagsIndexPosition[     10455,        232]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -143,7 +143,7 @@ Cell["See also", "Section",ExpressionUUID->"dc259c4c-fae4-47f4-b64b-4d02b0aa4b40
 Cell["CurvaturesGuide -- categorical overview.", "Item",ExpressionUUID->"dcd37649-b4ed-44c8-8e71-10535528a463"],
 
 Cell["\<\
-EuclideanLayerGuide -- FindSegment / FindLine / ExtendSegment Method axis \
+EuclideanGeometryGuide -- FindSegment / FindLine / ExtendSegment Method axis \
 (where curvature drives the path enumeration).\
 \>", "Item",ExpressionUUID->"4f754851-c494-4694-a5fb-94be50d9d5a0"],
 
@@ -168,11 +168,60 @@ Cell["\<\
 Sandhu, Georgiou and Tannenbaum, Ricci Curvature: An Economic Indicator for \
 Market Fragility and Systemic Risk, Sci. Adv. 2(5), 2016 (Ollivier on real \
 networks).\
-\>", "Item",ExpressionUUID->"728ea79b-0828-4460-a702-b40c6d1f39fd"]
+\>", "Item",ExpressionUUID->"728ea79b-0828-4460-a702-b40c6d1f39fd"],
+
+Cell["Constant-curvature substrates: locally homogeneous graphs", "Section",ExpressionUUID->"0595fc6a-a31f-4d25-80b9-b84bf7f154b1"],
+
+Cell["\<\
+The discrete analogue of a constant-curvature manifold is a graph in which \
+every r-ball is graph-isomorphic to every other -- the local data the \
+curvature sees is the same at every vertex. The cleanest realisation is a \
+vertex-transitive graph: Aut(G) acts transitively on vertices, so \
+left-translation by any group element is a graph automorphism, hence \
+WolframRicci is pointwise constant at every radius. Cayley graphs of finite \
+groups are the broadest natural family.\
+\>", "Text",ExpressionUUID->"aad029ab-f47f-4fc3-a73a-9ba2227da1f0"],
+
+Cell["\<\
+A discrete flat torus -- the Cartesian product of two cycles -- has \
+WolframRicci constant across all vertices.\
+\>", "CodeText",ExpressionUUID->"74c6b2a0-17b9-4f94-9527-096827777d55"],
+
+Cell["\<\
+Union @ Values @ WolframRicci[ GraphProduct[ CycleGraph[ 5 ], CycleGraph[ 5 \
+], \"Cartesian\" ], \"Dimension\" -> 2 ]\
+\>", "Input",ExpressionUUID->"9537702e-0594-4228-8938-a58790519b07"],
+
+Cell["\<\
+A circulant graph -- the canonical one-dimensional Cayley graph of Z_n -- \
+gives the same constancy.\
+\>", "CodeText",ExpressionUUID->"5f26dc09-9e22-4510-a0bb-72c6e0546539"],
+
+Cell["\<\
+Union @ Values @ WolframRicci[ CirculantGraph[ 12, { 1, 2 } ] ]\
+\>", "Input",ExpressionUUID->"0d676412-2769-4db6-951e-edc35398b56e"],
+
+Cell["\<\
+A non-vertex-transitive graph -- here a path -- shows curvature varying with \
+position.\
+\>", "CodeText",ExpressionUUID->"bde7dd09-288b-4dcd-b316-6c87e7bc77cd"],
+
+Cell["WolframRicci[ PathGraph @ Range[ 7 ] ]", "Input",ExpressionUUID->"407acbd7-61c2-482a-8991-c34f694b968c"],
+
+Cell["\<\
+In between strict vertex-transitivity and arbitrary irregularity sits the \
+broader notion of r-local homogeneity: every r-ball is graph-isomorphic for \
+some specific r, possibly without a global automorphism group. The girth \
+criterion gives a clean recipe -- any d-regular graph of girth at least 2 r + \
+2 has all r-balls equal to the depth-r d-regular tree, automatically. \
+WolframRicci at radius r is then constant; at radius r + 1 it may not be. \
+This makes the radius window in WolframRicci[g, {rmin, rmax}] a knob for the \
+scale at which the substrate looks locally homogeneous.\
+\>", "Text",ExpressionUUID->"060c017d-d40d-40ed-a07d-b391c9545f0f"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"5f03c5ed-44f9-4bcd-91fa-2cb3d45e5b95"
 ]
 (* End of Notebook Content *)
 
@@ -227,7 +276,16 @@ Cell[6860, 149, 84, 0, 70, "Section",ExpressionUUID->"7834d309-f9f5-46e6-8380-d6
 Cell[6947, 151, 192, 3, 70, "Item",ExpressionUUID->"f3b06dd7-b73b-40a1-a1d5-e9af5c2c6a07"],
 Cell[7142, 156, 203, 3, 70, "Item",ExpressionUUID->"585ca441-ecad-4453-b0e0-e8e959b423ce"],
 Cell[7348, 161, 193, 3, 70, "Item",ExpressionUUID->"cabe44a5-d1de-4e0d-a8ef-ad83923e06e4"],
-Cell[7544, 166, 244, 4, 70, "Item",ExpressionUUID->"728ea79b-0828-4460-a702-b40c6d1f39fd"]
+Cell[7544, 166, 244, 4, 70, "Item",ExpressionUUID->"728ea79b-0828-4460-a702-b40c6d1f39fd"],
+Cell[7791, 172, 131, 0, 70, "Section",ExpressionUUID->"0595fc6a-a31f-4d25-80b9-b84bf7f154b1"],
+Cell[7925, 174, 560, 8, 70, "Text",ExpressionUUID->"aad029ab-f47f-4fc3-a73a-9ba2227da1f0"],
+Cell[8488, 184, 195, 3, 70, "CodeText",ExpressionUUID->"74c6b2a0-17b9-4f94-9527-096827777d55"],
+Cell[8686, 189, 198, 3, 70, "Input",ExpressionUUID->"9537702e-0594-4228-8938-a58790519b07"],
+Cell[8887, 194, 184, 3, 70, "CodeText",ExpressionUUID->"5f26dc09-9e22-4510-a0bb-72c6e0546539"],
+Cell[9074, 199, 143, 2, 70, "Input",ExpressionUUID->"0d676412-2769-4db6-951e-edc35398b56e"],
+Cell[9220, 203, 171, 3, 70, "CodeText",ExpressionUUID->"bde7dd09-288b-4dcd-b316-6c87e7bc77cd"],
+Cell[9394, 208, 110, 0, 70, "Input",ExpressionUUID->"407acbd7-61c2-482a-8991-c34f694b968c"],
+Cell[9507, 210, 670, 9, 70, "Text",ExpressionUUID->"060c017d-d40d-40ed-a07d-b391c9545f0f"]
 }
 ]
 *)

@@ -119,9 +119,9 @@ Cell["See also", "Section",ExpressionUUID->"658adc1c-7d04-48d9-b267-30ef7e7dde61
 
 Cell["TropicalOperationsGuide", "Item",ExpressionUUID->"b1c2d3e4-00f0-4000-8000-0000000000f0"],
 
-Cell["TarskiLayerGuide", "Item",ExpressionUUID->"1733a710-3ca5-4018-9214-9b2b819be775"],
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"1733a710-3ca5-4018-9214-9b2b819be775"],
 
-Cell["EuclideanLayerGuide", "Item",ExpressionUUID->"8cfc1d09-5350-4325-82db-34af93a8d55e"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"8cfc1d09-5350-4325-82db-34af93a8d55e"],
 
 Cell["PathSpaceGuide", "Item",ExpressionUUID->"94387f1b-fca3-407a-96c1-8c105caadf96"],
 

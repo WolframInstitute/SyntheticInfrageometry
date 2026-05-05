@@ -241,15 +241,15 @@ cycles.\
 Cell["See also", "Section",ExpressionUUID->"08f2bab7-7b37-472d-a556-7f353af5a151"],
 
 Cell["\<\
-EuclideanLayerGuide -- the Find* family that produces the multi-objects.\
+EuclideanGeometryGuide -- the Find* family that produces the multi-objects.\
 \>", "Item",ExpressionUUID->"7d8979d1-dba9-497b-9ef3-8a4c6f1a78ae"],
 
 Cell["\<\
-ProjectiveLayerGuide -- pencils and rays, rendered through the same \
+ProjectiveGeometryGuide -- pencils and rays, rendered through the same \
 diffuse-rendering primitive.\
 \>", "Item",ExpressionUUID->"1c94faea-672e-4589-97bb-6d411cb4b469"],
 
-Cell["TarskiLayerGuide -- predicates that drive scene assertions.", "Item",ExpressionUUID->"ce7a2d03-c5f0-4bf0-b71d-5aee68a66498"],
+Cell["TarskiGeometryGuide -- predicates that drive scene assertions.", "Item",ExpressionUUID->"ce7a2d03-c5f0-4bf0-b71d-5aee68a66498"],
 
 Cell["References", "Section",ExpressionUUID->"40bb3003-f444-468d-a737-a11db1fa3e10"],
 

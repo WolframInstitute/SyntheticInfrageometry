@@ -38,15 +38,15 @@ Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUI
 
 Cell["Guides", "Section",ExpressionUUID->"b252d4a7-95dd-4d05-97d3-e21125513dc2"],
 
-Cell["EuclideanLayerGuide", "Item",ExpressionUUID->"8da37d38-7e2a-4ce9-be83-2000a9ebd7d0"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"8da37d38-7e2a-4ce9-be83-2000a9ebd7d0"],
 
 Cell["PathSpaceGuide", "Item",ExpressionUUID->"c16277ec-8a32-4b0a-be2e-218b99f6655c"],
 
 Cell["CoordinatizationGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000001"],
 
-Cell["TarskiLayerGuide", "Item",ExpressionUUID->"075446b6-5c1f-49aa-a10d-aa3a0c93909c"],
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"075446b6-5c1f-49aa-a10d-aa3a0c93909c"],
 
-Cell["ProjectiveLayerGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000002"],
+Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000002"],
 
 Cell["TropicalOperationsGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000003"],
 
@@ -60,15 +60,15 @@ Cell["VisualizationGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaa
 
 Cell["Tutorials", "Section",ExpressionUUID->"5322691a-c134-4c99-8c4f-f72e7e867da1"],
 
-Cell["EuclideanLayerTutorial", "Item",ExpressionUUID->"64a6a721-2131-444b-a995-081297f0e2b9"],
+Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"64a6a721-2131-444b-a995-081297f0e2b9"],
 
 Cell["PathSpaceTutorial", "Item",ExpressionUUID->"7b69b051-998e-475c-b400-e4b38ee6d344"],
 
 Cell["CoordinatizationTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000012"],
 
-Cell["TarskiLayerTutorial", "Item",ExpressionUUID->"3d5f7175-bda1-46cd-ac5a-b4011fe0d87c"],
+Cell["TarskiGeometryTutorial", "Item",ExpressionUUID->"3d5f7175-bda1-46cd-ac5a-b4011fe0d87c"],
 
-Cell["ProjectiveLayerTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000005"],
+Cell["ProjectiveGeometryTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000005"],
 
 Cell["TropicalOperationsTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000013"],
 
@@ -86,9 +86,9 @@ Cell["InfraSceneHighlight", "Item",ExpressionUUID->"c23be6f1-4c39-483d-a8ea-72ad
 
 Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"1caedf66-b4de-44c0-82f4-9263ff7b162b"],
 
-Cell["CentralPaths", "Item",ExpressionUUID->"e08d39a6-32d9-438a-9515-faa8dab2aec0"],
+Cell["SelectPaths", "Item",ExpressionUUID->"e08d39a6-32d9-438a-9515-faa8dab2aec0"],
 
-Cell["CentralCycles", "Item",ExpressionUUID->"7dcd49e8-b0ea-479a-ad68-9129f7dea443"],
+Cell["SelectCycles", "Item",ExpressionUUID->"7dcd49e8-b0ea-479a-ad68-9129f7dea443"],
 
 Cell["FormanRicci", "Item",ExpressionUUID->"d81eddcc-fa20-4a28-9944-bfc9e496345b"],
 

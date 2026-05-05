@@ -18,7 +18,7 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["Euclidean Layer Tutorial", "Title",ExpressionUUID->"ec449d37-5d3a-407e-aafb-71534b0ad421"],
+Cell["Euclidean Geometry Tutorial", "Title",ExpressionUUID->"ec449d37-5d3a-407e-aafb-71534b0ad421"],
 
 Cell["\<\
 A compact tour of the Euclidean layer on paths and grids: segments, spheres, \
@@ -68,33 +68,28 @@ Cell[BoxData[
      "Blue"}], "}"}]}], "]"}]], "Input",ExpressionUUID->"f4920de6-3d3a-42c5-\
 bd60-83be18b407ee"],
 
-Cell["Spheres", "Section",ExpressionUUID->"1bfbbbec-87e2-42e9-b91b-643ddf9cfac1"],
+Cell["Circles", "Section",ExpressionUUID->"1bfbbbec-87e2-42e9-b91b-643ddf9cfac1"],
 
 Cell["Compute separating cycles around the grid centre.", "CodeText",ExpressionUUID->"b0f75ddc-1ee3-43ab-b7d2-daa9a6046191"],
 
 Cell[BoxData[
- RowBox[{"FindSphere", "[", 
-  RowBox[{"g2", ",", "6", ",", 
-   RowBox[{"{", 
-    RowBox[{"1", ",", "2"}], "}"}], ",", "All", ",", 
-   RowBox[{"Method", "\[Rule]", "\"\<SeparatingCycle\>\""}]}], "]"}]], "Input",\
-ExpressionUUID->"a764e439-488e-4754-ad04-c7e9027e2fd3"],
+ RowBox[{"FindCircle", "[",
+  RowBox[{"g2", ",", "6", ",",
+   RowBox[{"{",
+    RowBox[{"1", ",", "2"}], "}"}], ",", "All"}], "]"}]], "Input",ExpressionUUID->"a764e439-488e-4754-ad04-c7e9027e2fd3"],
 
 Cell["Render the separating-cycle bundle.", "CodeText",ExpressionUUID->"76b7dc90-1599-4ffd-9366-7c5f718eb9ca"],
 
 Cell[BoxData[
- RowBox[{"InfraSceneHighlight", "[", 
-  RowBox[{"g2", ",", 
-   RowBox[{"{", 
+ RowBox[{"InfraSceneHighlight", "[",
+  RowBox[{"g2", ",",
+   RowBox[{"{",
     RowBox[{
-     RowBox[{"FindSphere", "[", 
-      RowBox[{"g2", ",", "6", ",", 
-       RowBox[{"{", 
-        RowBox[{"1", ",", "2"}], "}"}], ",", "All", ",", 
-       RowBox[{"Method", "\[Rule]", "\"\<SeparatingCycle\>\""}]}], "]"}], "\[Rule]",
-      "Green"}], "}"}], ",", 
-   RowBox[{"\"\<Cyclic\>\"", "\[Rule]", "True"}]}], "]"}]], "Input",Expression\
-UUID->"fc4c7855-d09e-4c5d-8810-028f824d6e2c"],
+     RowBox[{"FindCircle", "[",
+      RowBox[{"g2", ",", "6", ",",
+       RowBox[{"{",
+        RowBox[{"1", ",", "2"}], "}"}], ",", "All"}], "]"}], "\[Rule]",
+      "Green"}], "}"}]}], "]"}]], "Input",ExpressionUUID->"fc4c7855-d09e-4c5d-8810-028f824d6e2c"],
 
 Cell["Bisecting hyperplanes", "Section",ExpressionUUID->"7d6ea771-b8ae-49bb-b4df-d42b0a289c44"],
 

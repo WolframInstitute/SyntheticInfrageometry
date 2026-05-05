@@ -116,7 +116,7 @@ distance-multiplicity matrix, MedianVertices.\
 \>", "Item",ExpressionUUID->"5a911a90-3d1f-4195-b575-0577dc4c4a10"],
 
 Cell["\<\
-EuclideanLayerGuide -- FindSegment, the underlying geodesic enumeration.\
+EuclideanGeometryGuide -- FindSegment, the underlying geodesic enumeration.\
 \>", "Item",ExpressionUUID->"640635df-af8c-46e0-87aa-86cb3d546f25"],
 
 Cell["References", "Section",ExpressionUUID->"3806ecc1-4d34-4f31-bd30-423bb9cf35f1"],

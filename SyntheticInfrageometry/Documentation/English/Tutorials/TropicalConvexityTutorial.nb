@@ -157,7 +157,7 @@ Cell["\<\
 MetricAlgebraGuide -- MetricInterval, GeodesicCount, MedianVertices.\
 \>", "Item",ExpressionUUID->"9d2bfe0d-e464-4246-b9e9-cb3616fb8524"],
 
-Cell["EuclideanLayerTutorial -- the underlying FindSegment family.", "Item",ExpressionUUID->"ce903710-7543-4bad-aa5a-24924672d233"],
+Cell["EuclideanGeometryTutorial -- the underlying FindSegment family.", "Item",ExpressionUUID->"ce903710-7543-4bad-aa5a-24924672d233"],
 
 Cell["References", "Section",ExpressionUUID->"59189f52-d453-4002-9bae-cdc45a763d3f"],
 
