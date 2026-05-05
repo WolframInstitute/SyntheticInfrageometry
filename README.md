@@ -24,10 +24,28 @@ This labelling hierarchy aligns with **physical scales**. The unlabeled graph is
 
 ## ✨ Usage
 
+Install from the Wolfram Cloud:
+
+```wolfram
+PacletInstall["https://www.wolframcloud.com/obj/hajek_pavel/SyntheticInfrageometry.paclet", ForceVersionInstall -> True]
+Needs["WolframInstitute`SyntheticInfrageometry`"]
+```
+
+Or load a local checkout for development:
+
 ```wolfram
 PacletDirectoryLoad["/path/to/SyntheticInfrageometry"]
 Needs["WolframInstitute`SyntheticInfrageometry`"]
 ```
+
+A minimal example — enumerate all geodesic segments between two vertices of a grid:
+
+```wolfram
+g = GridGraph[{4, 4}];
+FindSegment[g, 1, 16, All]
+```
+
+The return is a list of vertex sequences (one per shortest path). Each `Find*` postulate function pairs with a predicate `*Q` and accepts the calling triple `n | UpTo[n] | All` where applicable.
 
 ## ∴ License
 

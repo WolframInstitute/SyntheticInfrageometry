@@ -22,11 +22,17 @@ Print[TestReport[FileNameJoin[{$testDir, "PathSpaceTests.wlt"}]]]
 Print["Running MetricAlgebraTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "MetricAlgebraTests.wlt"}]]]
 
+Print["Running InfraObjectsTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraObjectsTests.wlt"}]]]
+
 Print["Running ScenesTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "ScenesTests.wlt"}]]]
 
 Print["Running CoordinatizationTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "CoordinatizationTests.wlt"}]]]
+
+Print["Running HighlightsTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "HighlightsTests.wlt"}]]]
 
 Print["Running ViewersTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "ViewersTests.wlt"}]]]

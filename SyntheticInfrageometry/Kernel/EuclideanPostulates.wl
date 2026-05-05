@@ -754,22 +754,22 @@ findParallelCore[ graph_Graph, line_List, p_,
 
 
 findParallelMetric[ graph_Graph, line_List, p_ ] :=
-  Module[ { lineDist, r, levelSet, linesThroughP, segments, dedup, maximalThrough },
-    maximalThrough = Function[ { l, q, S },
-      Module[ { idx = First @ FirstPosition[ l, q, { 0 } ], lo, hi },
-        If[ idx == 0, Return[ {} ] ];
-        lo = idx; hi = idx;
-        While[ lo > 1 && MemberQ[ S, l[[ lo - 1 ]] ], lo-- ];
-        While[ hi < Length[ l ] && MemberQ[ S, l[[ hi + 1 ]] ], hi++ ];
-        l[[ lo ;; hi ]]
+  Module[ { lineDist, r, levelSet, segments, dedup, maximalThrough },
+    maximalThrough = { l, q, S } |-> With[
+      { idx = First[ FirstPosition[ l, q, { 0 } ], 0 ] },
+      If[ idx === 0, {},
+        With[
+          { lo = idx - LengthWhile[ Reverse @ Take[ l, idx - 1 ], MemberQ[ S, # ] & ],
+            hi = idx + LengthWhile[ Drop[ l, idx ], MemberQ[ S, # ] & ] },
+          l[[ lo ;; hi ]]
+        ]
       ]
     ];
     lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ];
     r = lineDist[ p ];
     If[ r === Infinity, Return[ {} ] ];
     levelSet = Select[ VertexList[ graph ], lineDist[ # ] == r & ];
-    linesThroughP = PencilDirections[ graph, p ];
-    segments = maximalThrough[ #, p, levelSet ] & /@ linesThroughP;
+    segments = maximalThrough[ #, p, levelSet ] & /@ PencilDirections[ graph, p ];
     dedup = DeleteDuplicates[ canonicalLine /@ Select[ segments, Length[ # ] >= 2 & ] ];
     Select[ dedup,
       a |-> ! AnyTrue[ dedup, b |-> Length[ b ] > Length[ a ] && SubsetQ[ b, a ] ]
