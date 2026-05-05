@@ -41,7 +41,15 @@ Cell["EuclideanLayerGuide", "Item",ExpressionUUID->"8da37d38-7e2a-4ce9-be83-2000
 
 Cell["PathSpaceGuide", "Item",ExpressionUUID->"c16277ec-8a32-4b0a-be2e-218b99f6655c"],
 
+Cell["CoordinatizationGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000001"],
+
 Cell["TarskiLayerGuide", "Item",ExpressionUUID->"075446b6-5c1f-49aa-a10d-aa3a0c93909c"],
+
+Cell["ProjectiveLayerGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000002"],
+
+Cell["TropicalOperationsGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000003"],
+
+Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000004"],
 
 Cell["CurvaturesGuide", "Item",ExpressionUUID->"0d648d45-27b6-4488-b184-93bc01941065"],
 
@@ -52,6 +60,8 @@ Cell["EuclideanLayerTutorial", "Item",ExpressionUUID->"64a6a721-2131-444b-a995-0
 Cell["PathSpaceTutorial", "Item",ExpressionUUID->"7b69b051-998e-475c-b400-e4b38ee6d344"],
 
 Cell["TarskiLayerTutorial", "Item",ExpressionUUID->"3d5f7175-bda1-46cd-ac5a-b4011fe0d87c"],
+
+Cell["ProjectiveLayerTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000005"],
 
 Cell["Core symbols", "Section",ExpressionUUID->"cfed7f44-d9d4-4938-8e69-7121c40c79da"],
 
@@ -72,6 +82,12 @@ Cell["OllivierRicci", "Item",ExpressionUUID->"11e07fe6-c3b9-49b3-bf09-f9c3540158
 Cell["TarskiAxiomQ", "Item",ExpressionUUID->"84525bd4-55c1-448d-b077-8fa03331eddd"],
 
 Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"9a06d5a6-8f30-40b4-8a87-666636a43c94"],
+
+Cell["FindPencil", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000006"],
+
+Cell["FindCommonLine", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000007"],
+
+Cell["ProjectivePlaneGraphQ", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000008"],
 
 Cell["Algebraic substrate", "Section",ExpressionUUID->"485e2fd9-bc76-428e-a18c-fa6de0fe32bb"],
 
@@ -130,7 +146,12 @@ Curvature, Discrete Comput. Geom. 29, 2003\
 Cell["\<\
 Wolfram, A Class of Models with the Potential to Represent Fundamental \
 Physics, https://arxiv.org/abs/2004.08210\
-\>", "Item",ExpressionUUID->"63cf9c4d-841d-4881-bae9-e8c9d93b17fa"]
+\>", "Item",ExpressionUUID->"63cf9c4d-841d-4881-bae9-e8c9d93b17fa"],
+
+Cell["\<\
+Whitehead, The Axioms of Projective Geometry, Cambridge University Press \
+1906, https://archive.org/details/cu31924001520455\
+\>", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000009"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",

@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1519,         43]
+NotebookOptionsPosition[       977,         28]
+NotebookOutlinePosition[      1294,         42]
+CellTagsIndexPosition[      1251,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for FindCommonLine\"", "Input",ExpressionUUID->"285c5f80-fec3-4efb-a342-d53b4264ef17"],
+
+Cell["?FindCommonLine", "Input",ExpressionUUID->"f08b4682-d1d1-4e73-a6dc-0c8772b12bae"],
+
+Cell["Information[FindCommonLine, LongForm -> True]", "Input",ExpressionUUID->"1b92f3e5-4f1b-4e67-a7db-ce2edd3147c7"],
+
+Cell["Definition[FindCommonLine]", "Input",ExpressionUUID->"fbb3060f-5338-4b8f-97f4-21f2d25b9d51"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 108, 0, 70, "Input",ExpressionUUID->"285c5f80-fec3-4efb-a342-d53b4264ef17"],
+Cell[665, 22, 87, 0, 70, "Input",ExpressionUUID->"f08b4682-d1d1-4e73-a6dc-0c8772b12bae"],
+Cell[755, 24, 117, 0, 70, "Input",ExpressionUUID->"1b92f3e5-4f1b-4e67-a7db-ce2edd3147c7"],
+Cell[875, 26, 98, 0, 70, "Input",ExpressionUUID->"fbb3060f-5338-4b8f-97f4-21f2d25b9d51"]
+}
+]
+*)
+
+(* End of internal cache information *)

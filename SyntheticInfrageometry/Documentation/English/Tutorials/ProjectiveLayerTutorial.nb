@@ -1,0 +1,414 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     21133,        405]
+NotebookOptionsPosition[     13688,        316]
+NotebookOutlinePosition[     14005,        330]
+CellTagsIndexPosition[     13962,        327]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["Projective Layer Tutorial", "Title",ExpressionUUID->"c65bce9a-76e3-4cc9-85ac-3c0576b7b175"],
+
+Cell["\<\
+A walkthrough of synthetic projective geometry on graphs: pencils, rays, \
+common lines, common points, and the Whitehead projective-plane test, with \
+runnable examples on paths, cycles, grids, and the Levi graph of the Fano \
+plane.\
+\>", "Text",ExpressionUUID->"c6c71a2a-940a-4aaa-9fd4-4b8be1084e17"],
+
+Cell["Setup", "Section",ExpressionUUID->"7ee72381-f6fb-4290-b684-4bf89b5174e0"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"c93d6185-6ee5-4752-ba67-84dd1b57f282"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"739c63c5-8e22-4133-a1d0-8310ca77d2d4"],
+
+Cell["Pencils at a vertex", "Section",ExpressionUUID->"0c2b462b-c7a8-49ea-b710-349a08989478"],
+
+Cell["\<\
+A pencil at vertex O is the set of all maximal-geodesic direction classes \
+through O. The number of directions -- the pencil cardinality -- is a graph \
+invariant of the pair (G, O).\
+\>", "Text",ExpressionUUID->"bafe2b1a-f94a-474a-bde8-7f4becd4b552"],
+
+Cell["\<\
+The simplest case: a path graph. Every interior vertex sits on exactly one \
+canonical maximal geodesic (the full path), so the pencil cardinality is 1.\
+\>", "CodeText",ExpressionUUID->"27a9896e-4fea-46ee-9835-7af3cb04eaf1"],
+
+Cell["FindPencil[PathGraph[Range[7]], 4]", "Input",ExpressionUUID->"875a24a9-6f85-4005-af17-d4e44213417e"],
+
+Cell["\<\
+The result is wrapped: an InfraPencil holding one constituent InfraRay (one \
+direction class), which in turn carries the maximal geodesics through vertex \
+4 sharing that direction.\
+\>", "Text",ExpressionUUID->"3dabb275-349d-4469-b759-7d8119d8d8f7"],
+
+Cell["Read the cardinality directly:", "CodeText",ExpressionUUID->"02a640e9-e6b9-4b65-83f2-404612d52066"],
+
+Cell["PencilCardinality[PathGraph[Range[7]], 4]", "Input",ExpressionUUID->"277f0d85-252b-490f-b16e-79756a6e07a0"],
+
+Cell["\<\
+A more interesting case: a cycle. From any vertex you can reach every other \
+vertex along multiple maximal geodesics; the pencil cardinality counts \
+canonical lines through O, deduplicated by orientation.\
+\>", "CodeText",ExpressionUUID->"beb483c5-4f38-4cf0-b7aa-43b0c948cf69"],
+
+Cell["FindPencil[CycleGraph[6], 1]", "Input",ExpressionUUID->"448cd878-8728-4366-a159-bb7f417e19d8"],
+
+Cell["\<\
+Four direction classes -- the pencil cardinality is 4. The antipodal vertex 4 \
+is reachable along two of those four classes (the clockwise and \
+counter-clockwise half-cycles), so 4 belongs to two directions simultaneously.\
+\>", "Text",ExpressionUUID->"31551e4b-119b-40f1-a401-6b22d41a22ef"],
+
+Cell["\<\
+Verify by counting: how many lines in the pencil contain vertex 4?\
+\>", "CodeText",ExpressionUUID->"59485cb6-2847-42ad-951a-8b32727ed784"],
+
+Cell["\<\
+Count[FindPencil[CycleGraph[6], 1][\"Rays\"], ray_ /; MemberQ[ray, 4]]\
+\>", "Input",ExpressionUUID->"68d906fc-d6a0-45f3-91d1-bedf0ef415bb"],
+
+Cell["Visualizing a pencil", "Section",ExpressionUUID->"64fc238a-3f03-4b97-bb51-30d848b191c9"],
+
+Cell["\<\
+The pencil renders diffusely. The apex O gets natural emphasis because it \
+appears in every constituent ray, so the count-weighting raises its opacity \
+automatically.\
+\>", "Text",ExpressionUUID->"5a10dfa5-c6e5-4190-926c-fb8e2b8df1da"],
+
+Cell["\<\
+InfraSceneHighlight[CycleGraph[6], {FindPencil[CycleGraph[6], 1] -> Red}]\
+\>", "Input",ExpressionUUID->"8a8430d2-8ac8-436e-b1d3-b7d79a1c8a19"],
+
+Cell["Combining the pencil with the apex highlighted explicitly:", "CodeText",ExpressionUUID->"3485ab70-444f-4aa3-af8c-86ea10785260"],
+
+Cell["\<\
+InfraSceneHighlight[CycleGraph[6], {InfraPoint[{1}] -> Black, \
+FindPencil[CycleGraph[6], 1] -> Red}]\
+\>", "Input",ExpressionUUID->"0773acd9-afa2-44c8-a020-606bd66933a6"],
+
+Cell["Rays in a single direction", "Section",ExpressionUUID->"70b2ad5e-f07c-4117-bb37-78bae78a1671"],
+
+Cell["\<\
+FindRay isolates the lines through O sharing direction with v. When the \
+underlying FindLine is multi-valued, the ray multi-realises.\
+\>", "Text",ExpressionUUID->"7d48d40f-95c7-459f-9374-78ce8d955cc6"],
+
+Cell["FindRay[CycleGraph[6], 1, 4, All]", "Input",ExpressionUUID->"5f71e537-c258-40d2-a3a7-7fc50877b986"],
+
+Cell["\<\
+Two realisations -- the same direction (origin 1, antipode 4), reached via \
+two distinct geodesic half-cycles.\
+\>", "Text",ExpressionUUID->"1d479707-9cc7-40ad-8244-f838d6d43b73"],
+
+Cell["Render both realisations of one ray:", "CodeText",ExpressionUUID->"b3c4bbc0-81ea-433b-93a9-f7a6f0568540"],
+
+Cell["\<\
+InfraSceneHighlight[CycleGraph[6], {FindRay[CycleGraph[6], 1, 4, All] -> \
+Blue}]\
+\>", "Input",ExpressionUUID->"bc389339-5211-4fb7-aae8-c1bf4ff2250c"],
+
+Cell["Common lines and common points", "Section",ExpressionUUID->"d82eb279-6913-4157-ab01-775bed325be6"],
+
+Cell["\<\
+The dual postulates: lines containing all of a set of vertices, and vertices \
+on all of a set of lines.\
+\>", "Text",ExpressionUUID->"4cc06a0b-8975-4423-9431-72de7bbe3750"],
+
+Cell["FindCommonLine[GridGraph[{3, 3}], {1, 5, 9}, All]", "Input",ExpressionUUID->"016535d7-753c-4905-b4a4-c688bd88cafd"],
+
+Cell["\<\
+The grid's main diagonal is a common line through {1, 5, 9}; the \
+anti-diagonal is too if you list {3, 5, 7}.\
+\>", "Text",ExpressionUUID->"3b99341f-1d43-4b95-991e-443074e2afc8"],
+
+Cell["\<\
+FindCommonPoint dualises: given a list of lines, return their shared vertices.\
+\>", "CodeText",ExpressionUUID->"0c91aa96-739e-4df7-8fc4-797dfc24046c"],
+
+Cell["\<\
+FindCommonPoint[GridGraph[{3, 3}], {{1, 5, 9}, {3, 5, 7}}, All]\
+\>", "Input",ExpressionUUID->"8fe3e776-5ba6-496b-a0e4-7c4607b7f14e"],
+
+Cell["Both diagonals share only the centre vertex 5.", "Text",ExpressionUUID->"64efbee3-d685-4c49-88b1-a6a07e99e638"],
+
+Cell["Multi-anchor spread", "Section",ExpressionUUID->"3865512e-e9d3-4f72-8cb5-f8ebed3a29ab"],
+
+Cell["\<\
+Find* in the projective layer accepts Infra* anchors. The behaviour is \
+union-conjunction over wrapped lists (FindCommonLine / FindCommonPoint) and \
+Cartesian over individual anchors (FindRay / FindPencil).\
+\>", "Text",ExpressionUUID->"2231b793-111a-4628-9d3e-b395beb61ea5"],
+
+Cell["\<\
+Multi-anchor common-line search: take the union of vertex realisations and \
+find canonical lines through it.\
+\>", "CodeText",ExpressionUUID->"e48e2a38-f93c-4dad-b29e-2b5b55ed9f0d"],
+
+Cell["\<\
+FindCommonLine[GridGraph[{3, 3}], {InfraPoint[{1, 5}], 9}, All]\
+\>", "Input",ExpressionUUID->"9b8aaae7-d687-4328-8bb6-001a5c8814a7"],
+
+Cell["Multi-origin pencil: union the constituent rays.", "CodeText",ExpressionUUID->"3eb88bff-4419-4ebc-a45c-6d3c8404014a"],
+
+Cell["FindPencil[CycleGraph[6], InfraPoint[{1, 4}]]", "Input",ExpressionUUID->"e2526c0d-d3e8-453d-b637-b7f07708c40e"],
+
+Cell["The Whitehead projective-plane axioms", "Section",ExpressionUUID->"967d9c54-4679-47cd-9220-ffa84e6025e6"],
+
+Cell["\<\
+A graph is a projective plane in the synthetic-incidence sense if its lines \
+(canonical maximal geodesics) satisfy the three Whitehead axioms plus a \
+non-degeneracy clause.\
+\>", "Text",ExpressionUUID->"facfd900-d653-46db-a209-ec2bff2a2ad9"],
+
+Cell["W1 -- every line has at least three vertices.", "Item",ExpressionUUID->"6e51e945-a4df-42de-9e1d-b93ac7ff2d69"],
+
+Cell["\<\
+W2 -- through any two distinct vertices there is exactly one line (geodetic \
+property).\
+\>", "Item",ExpressionUUID->"80cd745d-411a-44fa-808c-74a3ed1d5ff3"],
+
+Cell["\<\
+W3 -- the four-vertex axiom: if some line through {A,B} meets some line \
+through {C,D}, then some line through {A,C} meets some line through {B,D}.\
+\>", "Item",ExpressionUUID->"7dd29c8f-b167-4d57-87c7-c39297a54d3e"],
+
+Cell["\<\
+A path graph fails W1 (its endpoints sit on a line of length 2, only two \
+vertices on that line):\
+\>", "CodeText",ExpressionUUID->"81c5713f-4efe-439b-be29-561970a25fd5"],
+
+Cell["\<\
+{WhiteheadW1Q[PathGraph[Range[5]]], \
+ProjectivePlaneGraphQ[PathGraph[Range[5]]]}\
+\>", "Input",ExpressionUUID->"42c025eb-4d95-42e1-8fd6-eb0a92994d63"],
+
+Cell["\<\
+A complete graph on four vertices fails W1 too -- every edge is a line of \
+length 2.\
+\>", "CodeText",ExpressionUUID->"d97e7654-b3e1-4260-9a21-22f8df313b75"],
+
+Cell["\<\
+{WhiteheadW1Q[CompleteGraph[4]], ProjectivePlaneGraphQ[CompleteGraph[4]]}\
+\>", "Input",ExpressionUUID->"91c2d8b6-cc5b-406a-b203-12f7f2ee8106"],
+
+Cell["\<\
+The Levi graph of the Fano plane is the smallest finite projective plane (7 \
+points, 7 lines, 3 points per line, 3 lines per point). Its incidence \
+structure can be encoded as a bipartite graph; the synthetic test \
+ProjectivePlaneGraphQ is O(|V|^4), so we keep the example small.\
+\>", "Text",ExpressionUUID->"5349397e-4011-49f2-8346-f9fcf2f91a42"],
+
+Cell["\<\
+fano = Graph[{1, 2, 3, 4, 5, 6, 7, p1, p2, p3, p4, p5, p6, p7}, {1 <-> p1, 1 \
+<-> p2, 1 <-> p3, 2 <-> p1, 2 <-> p4, 2 <-> p5, 3 <-> p1, 3 <-> p6, 3 <-> p7, \
+4 <-> p2, 4 <-> p4, 4 <-> p6, 5 <-> p2, 5 <-> p5, 5 <-> p7, 6 <-> p3, 6 <-> \
+p4, 6 <-> p7, 7 <-> p3, 7 <-> p5, 7 <-> p6}, GraphLayout -> \
+\"BipartiteEmbedding\"]\
+\>", "Input",ExpressionUUID->"adb43695-8506-462d-b288-3650a2a9e5fc"],
+
+Cell["WhiteheadW1Q[fano]", "Input",ExpressionUUID->"c5e494de-646e-46c8-aeaf-f9dcea4d9ba7"],
+
+Cell["Uniqueness predicates", "Section",ExpressionUUID->"e93639f7-aaf1-4073-9a96-32c2e13260cf"],
+
+Cell["\<\
+The Unique*Q variants check the strict single-witness version of each \
+existential predicate.\
+\>", "Text",ExpressionUUID->"4fb2e33b-45d8-4f1d-bbf9-2ed112be6dd3"],
+
+Cell["UniquePencilQ -- every direction at O has exactly one line.", "Item",ExpressionUUID->"6c6c9446-d85f-4c57-97d1-e3fff49f673e"],
+
+Cell["\<\
+UniqueCollinearQ -- exactly one canonical line contains every listed vertex.\
+\>", "Item",ExpressionUUID->"b73ea891-86b0-445a-a331-4a62ee89c143"],
+
+Cell["\<\
+UniqueConcurrentQ -- exactly one common vertex across the listed lines.\
+\>", "Item",ExpressionUUID->"2733c0c2-d868-44e9-b390-9044001dd9b0"],
+
+Cell["UniquePencilQ[PathGraph[Range[7]], 4]", "Input",ExpressionUUID->"05df25d3-2b30-401e-bc5e-f2fbce64cc33"],
+
+Cell["UniquePencilQ[CycleGraph[6], 1]", "Input",ExpressionUUID->"16654d6c-5084-4905-b2af-30d32ef6e885"],
+
+Cell["\<\
+The cycle's antipode direction admits two geodesics, so the pencil is not \
+single-valued.\
+\>", "Text",ExpressionUUID->"b55d5aa2-4dad-446c-8804-6c825d17988e"],
+
+Cell["UniqueCollinearQ[PathGraph[Range[5]], {1, 3}]", "Input",ExpressionUUID->"26a75032-dcaa-4ef2-a7e9-85f9ce2e0e8a"],
+
+Cell["UniqueConcurrentQ[GridGraph[{3, 3}], {{1, 5, 9}, {3, 5, 7}}]", "Input",ExpressionUUID->"18599685-f4d4-4903-aa1f-3f9d210c5ae6"],
+
+Cell["Where this connects to the rest of the paclet", "Section",ExpressionUUID->"92690ca8-8cd6-4dbb-8d26-22ca1d8d8ec7"],
+
+Cell["\<\
+The projective layer is incidence-only -- it depends on FindLine for the \
+canonical-line enumeration but ignores metric quantities like distance, \
+angle, or curvature. This gives a clean separation:\
+\>", "Text",ExpressionUUID->"8e5f25b0-89ca-4e1d-a87c-589a0bd873b2"],
+
+Cell["\<\
+The Euclidean layer (FindPoint, FindSegment, FindLine, FindShell, FindCircle, \
+FindParallel) supplies the metric primitives.\
+\>", "Item",ExpressionUUID->"7f980d57-bc41-4fad-9547-c75c507f2ca8"],
+
+Cell["\<\
+The projective layer (this tutorial) restricts attention to incidence \
+relations, recovering the abstract structure of points and lines.\
+\>", "Item",ExpressionUUID->"badbf0bf-9b1c-40bb-b63c-75892f29b089"],
+
+Cell["\<\
+The affinization direction (planned) glues the two: pick a centre and unit \
+segments per direction to recover affine \\u2124^k coordinates from the \
+pencil.\
+\>", "Item",ExpressionUUID->"7d78e61c-a8f6-45bd-88b3-c4c71b48530a"],
+
+Cell["\<\
+The next batches in the projective roster -- cross sections, Desargues, \
+Pappus, harmonic conjugates -- build on the foundation laid here.\
+\>", "Text",ExpressionUUID->"81451eb7-3f91-465c-ad7c-c0dff2beb225"],
+
+Cell["See also", "Section",ExpressionUUID->"31ca7fb2-aa7d-401b-bdb4-422b305e2548"],
+
+Cell["\<\
+ProjectiveLayerGuide -- categorical overview of every symbol in the layer.\
+\>", "Item",ExpressionUUID->"0171e53c-4eb1-4eb0-af80-e731dea97c2f"],
+
+Cell["\<\
+EuclideanLayerGuide -- the metric primitives FindLine and friends that the \
+projective layer depends on.\
+\>", "Item",ExpressionUUID->"46f4ecf7-8885-4860-b9f0-2b8dafe6d89c"],
+
+Cell["\<\
+TarskiLayerGuide -- the betweenness/equidistance axiomatisation that \
+complements the synthetic-incidence reading here.\
+\>", "Item",ExpressionUUID->"c9539e33-0aa6-4d40-9ef5-17e0d06fee3e"],
+
+Cell["References", "Section",ExpressionUUID->"fc461769-ac51-4c91-9587-7ba4411bf693"],
+
+Cell["\<\
+Whitehead, The Axioms of Projective Geometry, Cambridge University Press \
+1906, https://archive.org/details/cu31924001520455\
+\>", "Item",ExpressionUUID->"ea40edca-746d-44f4-a423-704863ab0046"],
+
+Cell["\<\
+Hartshorne, Foundations of Projective Geometry, W. A. Benjamin 1967.\
+\>", "Item",ExpressionUUID->"aa03a0ab-c79a-4673-87f5-67d62e4d24a4"],
+
+Cell["\<\
+Beutelspacher and Rosenbaum, Projective Geometry: From Foundations to \
+Applications, Cambridge University Press 1998.\
+\>", "Item",ExpressionUUID->"e197ac36-6c9e-4b6e-8489-43655c5650a1"],
+
+Cell["Coxeter, Projective Geometry, 2nd ed., Springer 1987.", "Item",ExpressionUUID->"b08cd91d-6a6e-4382-b709-14a92dc76f44"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 97, 0, 70, "Title",ExpressionUUID->"c65bce9a-76e3-4cc9-85ac-3c0576b7b175"],
+Cell[654, 22, 313, 5, 70, "Text",ExpressionUUID->"c6c71a2a-940a-4aaa-9fd4-4b8be1084e17"],
+Cell[970, 29, 79, 0, 70, "Section",ExpressionUUID->"7ee72381-f6fb-4290-b684-4bf89b5174e0"],
+Cell[1052, 31, 91, 0, 70, "CodeText",ExpressionUUID->"c93d6185-6ee5-4752-ba67-84dd1b57f282"],
+Cell[1146, 33, 122, 0, 70, "Code",ExpressionUUID->"739c63c5-8e22-4133-a1d0-8310ca77d2d4"],
+Cell[1271, 35, 93, 0, 70, "Section",ExpressionUUID->"0c2b462b-c7a8-49ea-b710-349a08989478"],
+Cell[1367, 37, 262, 4, 70, "Text",ExpressionUUID->"bafe2b1a-f94a-474a-bde8-7f4becd4b552"],
+Cell[1632, 43, 235, 3, 70, "CodeText",ExpressionUUID->"27a9896e-4fea-46ee-9835-7af3cb04eaf1"],
+Cell[1870, 48, 106, 0, 70, "Input",ExpressionUUID->"875a24a9-6f85-4005-af17-d4e44213417e"],
+Cell[1979, 50, 261, 4, 70, "Text",ExpressionUUID->"3dabb275-349d-4469-b759-7d8119d8d8f7"],
+Cell[2243, 56, 105, 0, 70, "CodeText",ExpressionUUID->"02a640e9-e6b9-4b65-83f2-404612d52066"],
+Cell[2351, 58, 113, 0, 70, "Input",ExpressionUUID->"277f0d85-252b-490f-b16e-79756a6e07a0"],
+Cell[2467, 60, 289, 4, 70, "CodeText",ExpressionUUID->"beb483c5-4f38-4cf0-b7aa-43b0c948cf69"],
+Cell[2759, 66, 100, 0, 70, "Input",ExpressionUUID->"448cd878-8728-4366-a159-bb7f417e19d8"],
+Cell[2862, 68, 303, 4, 70, "Text",ExpressionUUID->"31551e4b-119b-40f1-a401-6b22d41a22ef"],
+Cell[3168, 74, 149, 2, 70, "CodeText",ExpressionUUID->"59485cb6-2847-42ad-951a-8b32727ed784"],
+Cell[3320, 78, 150, 2, 70, "Input",ExpressionUUID->"68d906fc-d6a0-45f3-91d1-bedf0ef415bb"],
+Cell[3473, 82, 94, 0, 70, "Section",ExpressionUUID->"64fc238a-3f03-4b97-bb51-30d848b191c9"],
+Cell[3570, 84, 247, 4, 70, "Text",ExpressionUUID->"5a10dfa5-c6e5-4190-926c-fb8e2b8df1da"],
+Cell[3820, 90, 153, 2, 70, "Input",ExpressionUUID->"8a8430d2-8ac8-436e-b1d3-b7d79a1c8a19"],
+Cell[3976, 94, 133, 0, 70, "CodeText",ExpressionUUID->"3485ab70-444f-4aa3-af8c-86ea10785260"],
+Cell[4112, 96, 181, 3, 70, "Input",ExpressionUUID->"0773acd9-afa2-44c8-a020-606bd66933a6"],
+Cell[4296, 101, 100, 0, 70, "Section",ExpressionUUID->"70b2ad5e-f07c-4117-bb37-78bae78a1671"],
+Cell[4399, 103, 213, 3, 70, "Text",ExpressionUUID->"7d48d40f-95c7-459f-9374-78ce8d955cc6"],
+Cell[4615, 108, 105, 0, 70, "Input",ExpressionUUID->"5f71e537-c258-40d2-a3a7-7fc50877b986"],
+Cell[4723, 110, 190, 3, 70, "Text",ExpressionUUID->"1d479707-9cc7-40ad-8244-f838d6d43b73"],
+Cell[4916, 115, 111, 0, 70, "CodeText",ExpressionUUID->"b3c4bbc0-81ea-433b-93a9-f7a6f0568540"],
+Cell[5030, 117, 161, 3, 70, "Input",ExpressionUUID->"bc389339-5211-4fb7-aae8-c1bf4ff2250c"],
+Cell[5194, 122, 104, 0, 70, "Section",ExpressionUUID->"d82eb279-6913-4157-ab01-775bed325be6"],
+Cell[5301, 124, 183, 3, 70, "Text",ExpressionUUID->"4cc06a0b-8975-4423-9431-72de7bbe3750"],
+Cell[5487, 129, 121, 0, 70, "Input",ExpressionUUID->"016535d7-753c-4905-b4a4-c688bd88cafd"],
+Cell[5611, 131, 189, 3, 70, "Text",ExpressionUUID->"3b99341f-1d43-4b95-991e-443074e2afc8"],
+Cell[5803, 136, 161, 2, 70, "CodeText",ExpressionUUID->"0c91aa96-739e-4df7-8fc4-797dfc24046c"],
+Cell[5967, 140, 143, 2, 70, "Input",ExpressionUUID->"8fe3e776-5ba6-496b-a0e4-7c4607b7f14e"],
+Cell[6113, 144, 117, 0, 70, "Text",ExpressionUUID->"64efbee3-d685-4c49-88b1-a6a07e99e638"],
+Cell[6233, 146, 93, 0, 70, "Section",ExpressionUUID->"3865512e-e9d3-4f72-8cb5-f8ebed3a29ab"],
+Cell[6329, 148, 287, 4, 70, "Text",ExpressionUUID->"2231b793-111a-4628-9d3e-b395beb61ea5"],
+Cell[6619, 154, 192, 3, 70, "CodeText",ExpressionUUID->"e48e2a38-f93c-4dad-b29e-2b5b55ed9f0d"],
+Cell[6814, 159, 143, 2, 70, "Input",ExpressionUUID->"9b8aaae7-d687-4328-8bb6-001a5c8814a7"],
+Cell[6960, 163, 123, 0, 70, "CodeText",ExpressionUUID->"3eb88bff-4419-4ebc-a45c-6d3c8404014a"],
+Cell[7086, 165, 117, 0, 70, "Input",ExpressionUUID->"e2526c0d-d3e8-453d-b637-b7f07708c40e"],
+Cell[7206, 167, 111, 0, 70, "Section",ExpressionUUID->"967d9c54-4679-47cd-9220-ffa84e6025e6"],
+Cell[7320, 169, 253, 4, 70, "Text",ExpressionUUID->"facfd900-d653-46db-a209-ec2bff2a2ad9"],
+Cell[7576, 175, 116, 0, 70, "Item",ExpressionUUID->"6e51e945-a4df-42de-9e1d-b93ac7ff2d69"],
+Cell[7695, 177, 167, 3, 70, "Item",ExpressionUUID->"80cd745d-411a-44fa-808c-74a3ed1d5ff3"],
+Cell[7865, 182, 227, 3, 70, "Item",ExpressionUUID->"7dd29c8f-b167-4d57-87c7-c39297a54d3e"],
+Cell[8095, 187, 181, 3, 70, "CodeText",ExpressionUUID->"81c5713f-4efe-439b-be29-561970a25fd5"],
+Cell[8279, 192, 161, 3, 70, "Input",ExpressionUUID->"42c025eb-4d95-42e1-8fd6-eb0a92994d63"],
+Cell[8443, 197, 168, 3, 70, "CodeText",ExpressionUUID->"d97e7654-b3e1-4260-9a21-22f8df313b75"],
+Cell[8614, 202, 153, 2, 70, "Input",ExpressionUUID->"91c2d8b6-cc5b-406a-b203-12f7f2ee8106"],
+Cell[8770, 206, 361, 5, 70, "Text",ExpressionUUID->"5349397e-4011-49f2-8346-f9fcf2f91a42"],
+Cell[9134, 213, 402, 6, 70, "Input",ExpressionUUID->"adb43695-8506-462d-b288-3650a2a9e5fc"],
+Cell[9539, 221, 90, 0, 70, "Input",ExpressionUUID->"c5e494de-646e-46c8-aeaf-f9dcea4d9ba7"],
+Cell[9632, 223, 95, 0, 70, "Section",ExpressionUUID->"e93639f7-aaf1-4073-9a96-32c2e13260cf"],
+Cell[9730, 225, 173, 3, 70, "Text",ExpressionUUID->"4fb2e33b-45d8-4f1d-bbf9-2ed112be6dd3"],
+Cell[9906, 230, 130, 0, 70, "Item",ExpressionUUID->"6c6c9446-d85f-4c57-97d1-e3fff49f673e"],
+Cell[10039, 232, 155, 2, 70, "Item",ExpressionUUID->"b73ea891-86b0-445a-a331-4a62ee89c143"],
+Cell[10197, 236, 150, 2, 70, "Item",ExpressionUUID->"2733c0c2-d868-44e9-b390-9044001dd9b0"],
+Cell[10350, 240, 109, 0, 70, "Input",ExpressionUUID->"05df25d3-2b30-401e-bc5e-f2fbce64cc33"],
+Cell[10462, 242, 103, 0, 70, "Input",ExpressionUUID->"16654d6c-5084-4905-b2af-30d32ef6e885"],
+Cell[10568, 244, 169, 3, 70, "Text",ExpressionUUID->"b55d5aa2-4dad-446c-8804-6c825d17988e"],
+Cell[10740, 249, 117, 0, 70, "Input",ExpressionUUID->"26a75032-dcaa-4ef2-a7e9-85f9ce2e0e8a"],
+Cell[10860, 251, 132, 0, 70, "Input",ExpressionUUID->"18599685-f4d4-4903-aa1f-3f9d210c5ae6"],
+Cell[10995, 253, 119, 0, 70, "Section",ExpressionUUID->"92690ca8-8cd6-4dbb-8d26-22ca1d8d8ec7"],
+Cell[11117, 255, 279, 4, 70, "Text",ExpressionUUID->"8e5f25b0-89ca-4e1d-a87c-589a0bd873b2"],
+Cell[11399, 261, 204, 3, 70, "Item",ExpressionUUID->"7f980d57-bc41-4fad-9547-c75c507f2ca8"],
+Cell[11606, 266, 216, 3, 70, "Item",ExpressionUUID->"badbf0bf-9b1c-40bb-b63c-75892f29b089"],
+Cell[11825, 271, 237, 4, 70, "Item",ExpressionUUID->"7d78e61c-a8f6-45bd-88b3-c4c71b48530a"],
+Cell[12065, 277, 218, 3, 70, "Text",ExpressionUUID->"81451eb7-3f91-465c-ad7c-c0dff2beb225"],
+Cell[12286, 282, 82, 0, 70, "Section",ExpressionUUID->"31ca7fb2-aa7d-401b-bdb4-422b305e2548"],
+Cell[12371, 284, 153, 2, 70, "Item",ExpressionUUID->"0171e53c-4eb1-4eb0-af80-e731dea97c2f"],
+Cell[12527, 288, 184, 3, 70, "Item",ExpressionUUID->"46f4ecf7-8885-4860-b9f0-2b8dafe6d89c"],
+Cell[12714, 293, 199, 3, 70, "Item",ExpressionUUID->"c9539e33-0aa6-4d40-9ef5-17e0d06fee3e"],
+Cell[12916, 298, 84, 0, 70, "Section",ExpressionUUID->"fc461769-ac51-4c91-9587-7ba4411bf693"],
+Cell[13003, 300, 204, 3, 70, "Item",ExpressionUUID->"ea40edca-746d-44f4-a423-704863ab0046"],
+Cell[13210, 305, 147, 2, 70, "Item",ExpressionUUID->"aa03a0ab-c79a-4673-87f5-67d62e4d24a4"],
+Cell[13360, 309, 197, 3, 70, "Item",ExpressionUUID->"e197ac36-6c9e-4b6e-8489-43655c5650a1"],
+Cell[13560, 314, 124, 0, 70, "Item",ExpressionUUID->"b08cd91d-6a6e-4382-b709-14a92dc76f44"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,52 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1548,         43]
+NotebookOptionsPosition[      1005,         28]
+NotebookOutlinePosition[      1322,         42]
+CellTagsIndexPosition[      1279,         39]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\"Documentation for ProjectivePlaneGraphQ\"", "Input",ExpressionUUID->"97334b75-e8d6-4853-ae3e-f7f517e5b973"],
+
+Cell["?ProjectivePlaneGraphQ", "Input",ExpressionUUID->"0bb5dff3-ddba-482f-bcc2-2da0f9008c28"],
+
+Cell["Information[ProjectivePlaneGraphQ, LongForm -> True]", "Input",ExpressionUUID->"3c2343e5-6fb1-4120-b09b-cfd3c337ee33"],
+
+Cell["Definition[ProjectivePlaneGraphQ]", "Input",ExpressionUUID->"43b681d7-cffe-4d93-9314-2ed9bc4644bc"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 115, 0, 70, "Input",ExpressionUUID->"97334b75-e8d6-4853-ae3e-f7f517e5b973"],
+Cell[672, 22, 94, 0, 70, "Input",ExpressionUUID->"0bb5dff3-ddba-482f-bcc2-2da0f9008c28"],
+Cell[769, 24, 124, 0, 70, "Input",ExpressionUUID->"3c2343e5-6fb1-4120-b09b-cfd3c337ee33"],
+Cell[896, 26, 105, 0, 70, "Input",ExpressionUUID->"43b681d7-cffe-4d93-9314-2ed9bc4644bc"]
+}
+]
+*)
+
+(* End of internal cache information *)
