@@ -14,33 +14,71 @@ allCanonicalLines[ graph_Graph ] :=
   ]
 
 
+(* ===================== FindRay ===================== *)
+
+(* A ray at base vertex origin in the direction of v is a maximal
+   geodesic through origin containing v -- the same shape as FindLine's
+   output, but framed projectively as "the line through origin in v's
+   direction".  FindRay enumerates every such line and returns them as
+   InfraRay[{ray1, ray2, ...}].  Multiple realisations belong to one
+   direction class (the equivalence class of canonicalLine).            *)
+
+findRayCore[ graph_Graph, origin_, v_ ] :=
+  DeleteDuplicatesBy[ FindLine[ graph, origin, v, All ][ "Realisations" ], canonicalLine ]
+
+FindRay[ graph_Graph, origin_, v_, All ] :=
+  infraSpreadAndCartesian[ InfraRay, All, findRayCore[ graph, ##] &, origin, v ]
+
+FindRay[ graph_Graph, origin_, v_, UpTo[ n_Integer ] ] :=
+  With[ { result = FindRay[ graph, origin, v, All ] },
+    If[ result === $Failed, $Failed,
+      InfraRay[ Take[ result[ "Realisations" ], UpTo[ n ] ] ]
+    ]
+  ]
+
+FindRay[ graph_Graph, origin_, v_, n_Integer : 1 ] :=
+  With[ { result = FindRay[ graph, origin, v, UpTo[ n ] ] },
+    If[ result === $Failed || result[ "Length" ] < n, $Failed, result ]
+  ]
+
+
 (* ===================== FindPencil ===================== *)
 
-(* The pencil at a vertex O is the set of direction-classes through O,
-   each represented by a canonical maximal geodesic (line) through O.
-   FindPencil returns an Association keyed by these canonical lines.  In
-   the synthetic-projective layer, "lines through O" = pencil elements. *)
+(* The pencil at vertex origin is the set of direction classes through
+   origin, each realised by every maximal geodesic through origin sharing
+   that direction.  FindPencil returns the pencil as InfraPencil of
+   constituent InfraRays, one per direction class.  Pencil cardinality is
+   the wrapper's ["Length"]; multi-anchor origin spreads Cartesian and
+   unions the rays across choices.                                       *)
 
-FindPencil[ graph_Graph, O_ ] :=
-  Module[ { vertices, allLines, canonicals },
-    vertices = DeleteCases[ VertexList[ graph ], O ];
+findPencilCore[ graph_Graph, origin_ ] :=
+  Module[ { otherVerts, allLines, byCanonical },
+    otherVerts = DeleteCases[ VertexList[ graph ], origin ];
     allLines = Flatten[
-      FindLine[ graph, O, #, All ][ "Realisations" ] & /@ vertices, 1
+      FindLine[ graph, origin, #, All ][ "Realisations" ] & /@ otherVerts,
+      1
     ];
-    canonicals = DeleteDuplicates @ ( canonicalLine /@ allLines );
-    Association[ # -> # & /@ canonicals ]
+    byCanonical = GroupBy[ allLines, canonicalLine ];
+    InfraRay[ DeleteDuplicatesBy[ #, canonicalLine ] ] & /@ Values[ byCanonical ]
   ]
+
+FindPencil[ graph_Graph, InfraPoint[ origins_List ] ] :=
+  InfraPencil[ DeleteDuplicates @ Flatten[ findPencilCore[ graph, # ] & /@ origins, 1 ] ]
+
+FindPencil[ graph_Graph, origin_ ] :=
+  InfraPencil[ findPencilCore[ graph, origin ] ]
 
 
 (* ===================== PencilDirections, PencilCardinality ===================== *)
 
-(* PencilDirections lists the canonical lines through O, one per direction
-   class.  PencilCardinality is its size - the synthetic substitute for
-   "number of directions at O". *)
+(* PencilDirections lists the canonical lines through origin, one per
+   direction class -- the canonical representatives of the constituent
+   InfraRays.  PencilCardinality is the pencil's size.                    *)
 
-PencilDirections[ graph_Graph, O_ ] := Keys @ FindPencil[ graph, O ]
+PencilDirections[ graph_Graph, origin_ ] :=
+  canonicalLine[ #[ "First" ] ] & /@ FindPencil[ graph, origin ][ "Realisations" ]
 
-PencilCardinality[ graph_Graph, O_ ] := Length @ PencilDirections[ graph, O ]
+PencilCardinality[ graph_Graph, origin_ ] := FindPencil[ graph, origin ][ "Length" ]
 
 
 (* ===================== LineCount ===================== *)
@@ -53,18 +91,22 @@ LineCount[ graph_Graph ] := Length @ allCanonicalLines[ graph ]
 
 (* ===================== FindCommonLine ===================== *)
 
-(* Lines containing every vertex in the input list - i.e. canonical
-   maximal geodesics through the first two listed vertices that also pass
-   through every other listed vertex.  Constructive companion of
-   CollinearQ. *)
+(* Lines containing every vertex in the input list -- canonical maximal
+   geodesics through the first two listed vertices that also pass through
+   every other listed vertex.  Constructive companion of CollinearQ.
+   Wrapped entries (InfraPoint, InfraSegment, InfraRay, InfraPencil)
+   collapse to the union of their vertex realisations before the search. *)
+
+findCommonLineCore[ graph_Graph, verts_List ] :=
+  Module[ { uverts, candidates },
+    uverts = DeleteDuplicates @ Catenate[ infraUnionSpread /@ verts ];
+    If[ Length[ uverts ] < 2, Return[ {} ] ];
+    candidates = canonicalLine /@ FindLine[ graph, First @ uverts, uverts[[ 2 ]], All ][ "Realisations" ];
+    DeleteDuplicates @ Select[ candidates, line |-> SubsetQ[ line, uverts ] ]
+  ]
 
 FindCommonLine[ graph_Graph, verts_List, All ] :=
-  Module[ { uverts, candidates },
-    uverts = DeleteDuplicates @ verts;
-    If[ Length[ uverts ] < 2, Return[ InfraSegment[ {} ] ] ];
-    candidates = canonicalLine /@ FindLine[ graph, First @ uverts, uverts[[ 2 ]], All ][ "Realisations" ];
-    InfraSegment[ DeleteDuplicates @ Select[ candidates, line |-> SubsetQ[ line, uverts ] ] ]
-  ]
+  InfraSegment[ findCommonLineCore[ graph, verts ] ]
 
 FindCommonLine[ graph_Graph, verts_List, UpTo[ n_Integer ] ] :=
   With[ { result = FindCommonLine[ graph, verts, All ] },
@@ -79,15 +121,20 @@ FindCommonLine[ graph_Graph, verts_List, n_Integer : 1 ] :=
 
 (* ===================== FindCommonPoint ===================== *)
 
-(* Vertices common to every listed line - the intersection of the lines.
-   Constructive companion of ConcurrentQ.  Each input line is either a bare
-   vertex sequence or an InfraSegment[{seq, ...}] wrapper; the wrapped form
-   contributes the union of its realisations to the common-point search.   *)
+(* Vertices common to every listed line -- the intersection of the lines.
+   Constructive companion of ConcurrentQ.  Each input line is either a
+   bare vertex sequence or a wrapped InfraSegment / InfraRay / InfraPencil;
+   wrapped entries contribute the union of their vertex realisations.    *)
+
+linePointSet[ InfraSegment[ reps_List ] ] := Union @@ reps
+linePointSet[ InfraRay    [ reps_List ] ] := Union @@ reps
+linePointSet[ InfraPencil [ rays_List ] ] := Union @@ Catenate[ #[ "Realisations" ] & /@ rays ]
+linePointSet[ line_List ] := line
 
 FindCommonPoint[ graph_Graph, lines_List, All ] :=
   If[ Length[ lines ] == 0,
     InfraPoint[ {} ],
-    InfraPoint[ Apply[ Intersection, lines /. InfraSegment[ reps_List ] :> Union @@ reps ] ]
+    InfraPoint[ Apply[ Intersection, linePointSet /@ lines ] ]
   ]
 
 FindCommonPoint[ graph_Graph, lines_List, UpTo[ n_Integer ] ] :=

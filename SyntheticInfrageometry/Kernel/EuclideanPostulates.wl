@@ -768,7 +768,7 @@ findParallelMetric[ graph_Graph, line_List, p_ ] :=
     r = lineDist[ p ];
     If[ r === Infinity, Return[ {} ] ];
     levelSet = Select[ VertexList[ graph ], lineDist[ # ] == r & ];
-    linesThroughP = Keys @ FindPencil[ graph, p ];
+    linesThroughP = PencilDirections[ graph, p ];
     segments = maximalThrough[ #, p, levelSet ] & /@ linesThroughP;
     dedup = DeleteDuplicates[ canonicalLine /@ Select[ segments, Length[ # ] >= 2 & ] ];
     Select[ dedup,

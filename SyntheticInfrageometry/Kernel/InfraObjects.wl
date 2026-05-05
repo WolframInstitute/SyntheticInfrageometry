@@ -4,13 +4,14 @@ PackageScope[infraSpread]
 PackageScope[infraWrappedQ]
 PackageScope[infraCapBy]
 PackageScope[infraSpreadAndCartesian]
+PackageScope[infraUnionSpread]
 
 
 (* ===================== Multi-realisation wrappers ===================== *)
 
-(* InfraPoint, InfraSegment, InfraShell, InfraPlane, InfraCircle each carry a
-   list of realisations when applied to a single _List argument.  This file
-   attaches the wrapper behaviour to those heads:
+(* InfraPoint, InfraSegment, InfraShell, InfraPlane, InfraCircle, InfraRay,
+   InfraPencil each carry a list of realisations when applied to a single
+   _List argument.  This file attaches the wrapper behaviour to those heads:
 
      - auto-flatten nested same-head wrappers,
      - Part returns a wrapped sub-list (InfraPoint[{a, b, c}][[1]] is
@@ -22,7 +23,13 @@ PackageScope[infraSpreadAndCartesian]
    collide with the scene-constructor signatures of the same heads that take
    bare or multi argument shapes (InfraPoint[v], InfraPoint[origin, dist],
    InfraSegment[p, q], InfraShell[c, r], InfraPlane[p1, p2],
-   InfraCircle[c, r], ...).                                                  *)
+   InfraCircle[c, r], ...).
+
+   InfraPencil is a multi-CONSTITUENT wrapper: its entries are themselves
+   InfraRay objects, one per direction class at a base point O.  Pencil
+   cardinality (number of directions) is the wrapper's ["Length"], and
+   ["Rays"] flattens the constituent rays into a single list of vertex
+   sequences for rendering.                                                *)
 
 
 (* ===================== Auto-flatten nested wrappers ===================== *)
@@ -42,6 +49,12 @@ InfraPlane[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPlane[ _List ] ] ] :=
 InfraCircle[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraCircle[ _List ] ] ] :=
   InfraCircle[ Flatten[ reps /. InfraCircle[ xs_List ] :> xs, 1 ] ]
 
+InfraRay[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraRay[ _List ] ] ] :=
+  InfraRay[ Flatten[ reps /. InfraRay[ xs_List ] :> xs, 1 ] ]
+
+InfraPencil[ rays_List ] /; AnyTrue[ rays, MatchQ[ InfraPencil[ _List ] ] ] :=
+  InfraPencil[ Flatten[ rays /. InfraPencil[ xs_List ] :> xs, 1 ] ]
+
 
 (* ===================== Part: wrapped sub-list ===================== *)
 
@@ -59,6 +72,15 @@ InfraPlane /: Part[ InfraPlane[ reps_List ], spec_ ]     := InfraPlane[ reps[[ s
 
 InfraCircle /: Part[ InfraCircle[ reps_List ], i_Integer ] := InfraCircle[ { reps[[ i ]] } ]
 InfraCircle /: Part[ InfraCircle[ reps_List ], spec_ ]     := InfraCircle[ reps[[ spec ]] ]
+
+InfraRay /: Part[ InfraRay[ reps_List ], i_Integer ] := InfraRay[ { reps[[ i ]] } ]
+InfraRay /: Part[ InfraRay[ reps_List ], spec_ ]     := InfraRay[ reps[[ spec ]] ]
+
+(* InfraPencil: integer index returns the constituent InfraRay; spec returns
+   a wrapped sub-pencil. *)
+
+InfraPencil /: Part[ InfraPencil[ rays_List ], i_Integer ] := rays[[ i ]]
+InfraPencil /: Part[ InfraPencil[ rays_List ], spec_ ]     := InfraPencil[ rays[[ spec ]] ]
 
 
 (* ===================== Property accessors ===================== *)
@@ -88,21 +110,51 @@ InfraCircle[ reps_List ][ "Length" ]       := Length @ reps
 InfraCircle[ reps_List ][ "Expand" ]       := InfraCircle[ { # } ] & /@ reps
 InfraCircle[ reps_List ][ "First" ]        := First @ reps
 
+InfraRay[ reps_List ][ "Realisations" ] := reps
+InfraRay[ reps_List ][ "Length" ]       := Length @ reps
+InfraRay[ reps_List ][ "Expand" ]       := InfraRay[ { # } ] & /@ reps
+InfraRay[ reps_List ][ "First" ]        := First @ reps
+
+(* InfraPencil: ["Realisations"] is the list of constituent InfraRay objects;
+   ["Length"] is the pencil cardinality (= number of direction classes);
+   ["Rays"] catenates the constituent rays' realisations into a single flat
+   list of vertex sequences (used by the rendering pipeline).               *)
+
+InfraPencil[ rays_List ][ "Realisations" ] := rays
+InfraPencil[ rays_List ][ "Length" ]       := Length @ rays
+InfraPencil[ rays_List ][ "Expand" ]       := InfraPencil[ { # } ] & /@ rays
+InfraPencil[ rays_List ][ "First" ]        := First @ rays
+InfraPencil[ rays_List ][ "Rays" ]         := Catenate[ #[ "Realisations" ] & /@ rays ]
+
 
 (* ===================== Internal helpers ===================== *)
 
-(* infraWrappedQ[expr] tests whether expr is one of the four multi-realisation
+(* infraWrappedQ[expr] tests whether expr is one of the multi-realisation
    wrappers in single-_List-arg form. *)
 
-infraWrappedQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle )[ _List ] ] := True
+infraWrappedQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraPencil )[ _List ] ] := True
 infraWrappedQ[ _ ] := False
 
 (* infraSpread[anchor] is the source/endpoint-position adapter: a wrapped
    anchor is spread into its realisations, an unwrapped value becomes a
-   singleton list, ready for Outer / Tuples / Cartesian iteration.          *)
+   singleton list, ready for Outer / Tuples / Cartesian iteration.
+   InfraPencil is excluded -- a pencil is an output, not an anchor.        *)
 
-infraSpread[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle )[ reps_List ] ] := reps
+infraSpread[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] := reps
 infraSpread[ other_ ] := { other }
+
+(* infraUnionSpread[entry] collapses a wrapped entry to the union of its
+   realisations, for set-conjunction Find* over a single _List argument
+   (FindCommonLine, FindCommonPoint).  Bare entries pass through as a
+   singleton list; the pencil case unwraps one level deeper through its
+   constituent InfraRays.                                                  *)
+
+infraUnionSpread[ InfraPoint[ reps_List ] ] := DeleteDuplicates @ reps
+infraUnionSpread[ ( InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] :=
+  Union @@ reps
+infraUnionSpread[ InfraPencil[ rays_List ] ] :=
+  Union @@ Catenate[ #[ "Realisations" ] & /@ rays ]
+infraUnionSpread[ other_ ] := { other }
 
 (* infraCapBy[wrapper, count] applies the standard count semantics
    (n_Integer strict / UpTo[n] / All) to a wrapper.  Returns $Failed on

@@ -1,36 +1,111 @@
 BeginTestSection["ProjectivePostulates"]
 
-(* ===== FindPencil ===== *)
+(* ===== FindPencil (returns InfraPencil of constituent InfraRays) ===== *)
 
 VerificationTest[
   With[{p = FindPencil[PathGraph[Range[7]], 4]},
-    AssociationQ[p] && Length[p] == 1 && First[Keys[p]] == {1, 2, 3, 4, 5, 6, 7}
+    Head[p] === InfraPencil && p["Length"] == 1 &&
+      AllTrue[p["Realisations"], MatchQ[#, InfraRay[_List]] &]
   ],
   True,
-  TestID -> "FindPencil-PathGraph-center-single-line"
+  TestID -> "FindPencil-PathGraph-center-single-direction"
 ]
 
 VerificationTest[
-  Length @ FindPencil[CycleGraph[6], 1],
+  FindPencil[CycleGraph[6], 1]["Length"],
   4,
   TestID -> "FindPencil-CycleGraph6-cardinality"
 ]
 
 VerificationTest[
   With[{p = FindPencil[CycleGraph[6], 1]},
-    AllTrue[Keys[p], Length[#] == 4 &] &&
-    AllTrue[Keys[p], MemberQ[#, 1] &]
+    AllTrue[p["Realisations"],
+      ray |-> AllTrue[ray["Realisations"], MemberQ[#, 1] &]
+    ]
   ],
   True,
-  TestID -> "FindPencil-CycleGraph6-all-keys-contain-O"
+  TestID -> "FindPencil-CycleGraph6-rays-contain-O"
 ]
 
 VerificationTest[
   With[{p = FindPencil[CycleGraph[6], 1]},
-    Count[Values[p], v_ /; MemberQ[v, 4]]
+    Count[p["Rays"], ray_ /; MemberQ[ray, 4]]
   ],
   2,
-  TestID -> "FindPencil-CycleGraph6-antipode-in-two-classes"
+  TestID -> "FindPencil-CycleGraph6-antipode-on-two-direction-rays"
+]
+
+VerificationTest[
+  With[{p = FindPencil[CycleGraph[6], 1]},
+    Length[p["Rays"]] == 4 &&
+    AllTrue[p["Rays"], MemberQ[#, 1] &]
+  ],
+  True,
+  TestID -> "FindPencil-CycleGraph6-flat-rays"
+]
+
+(* ===== FindPencil multi-anchor ===== *)
+
+VerificationTest[
+  Head @ FindPencil[CycleGraph[6], InfraPoint[{1, 2}]],
+  InfraPencil,
+  TestID -> "FindPencil-multi-anchor-head"
+]
+
+VerificationTest[
+  FindPencil[CycleGraph[6], InfraPoint[{1, 2}]]["Length"] >= 4,
+  True,
+  TestID -> "FindPencil-multi-anchor-rays-merged"
+]
+
+(* ===== FindRay ===== *)
+
+VerificationTest[
+  With[{r = FindRay[PathGraph[Range[7]], 4, 7, All]},
+    Head[r] === InfraRay && r["Length"] == 1 &&
+      MemberQ[r["First"], 4] && MemberQ[r["First"], 7]
+  ],
+  True,
+  TestID -> "FindRay-PathGraph-toward-end"
+]
+
+VerificationTest[
+  FindRay[CycleGraph[6], 1, 4, All]["Length"],
+  2,
+  TestID -> "FindRay-CycleGraph6-antipode-two-realisations"
+]
+
+VerificationTest[
+  AllTrue[FindRay[CycleGraph[6], 1, 4, All]["Realisations"], MemberQ[#, 1] && MemberQ[#, 4] &],
+  True,
+  TestID -> "FindRay-CycleGraph6-rays-contain-O-and-v"
+]
+
+VerificationTest[
+  With[{r = FindRay[GridGraph[{3, 3}], 1, 9, 1]},
+    Head[r] === InfraRay && r["Length"] == 1 &&
+      MemberQ[r["First"], 1] && MemberQ[r["First"], 9]
+  ],
+  True,
+  TestID -> "FindRay-GridGraph-strict-1"
+]
+
+VerificationTest[
+  FindRay[CycleGraph[6], 1, 4, 5],
+  $Failed,
+  TestID -> "FindRay-strict-shortfall"
+]
+
+VerificationTest[
+  FindRay[CycleGraph[6], 1, 4, UpTo[10]]["Length"],
+  2,
+  TestID -> "FindRay-UpTo-soft"
+]
+
+VerificationTest[
+  Head @ FindRay[CycleGraph[6], InfraPoint[{1, 2}], 4, All],
+  InfraRay,
+  TestID -> "FindRay-multi-anchor-head"
 ]
 
 (* ===== PencilDirections, PencilCardinality ===== *)
@@ -48,9 +123,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-  PencilDirections[PathGraph[Range[7]], 4],
-  {{1, 2, 3, 4, 5, 6, 7}},
-  TestID -> "PencilDirections-PathGraph"
+  Length @ PencilDirections[PathGraph[Range[7]], 4],
+  PencilCardinality[PathGraph[Range[7]], 4],
+  TestID -> "PencilDirections-PathGraph-cardinality-agree"
 ]
 
 VerificationTest[
@@ -125,6 +200,20 @@ VerificationTest[
   TestID -> "FindCommonLine-GridGraph-diagonal"
 ]
 
+(* ===== FindCommonLine multi-anchor (wrapped entries) ===== *)
+
+VerificationTest[
+  FindCommonLine[PathGraph[Range[5]], {InfraPoint[{1, 3}]}, All],
+  InfraSegment[{{1, 2, 3, 4, 5}}],
+  TestID -> "FindCommonLine-InfraPoint-anchor"
+]
+
+VerificationTest[
+  FindCommonLine[PathGraph[Range[5]], {InfraPoint[{1, 3}], 5}, All],
+  InfraSegment[{{1, 2, 3, 4, 5}}],
+  TestID -> "FindCommonLine-mixed-anchor"
+]
+
 (* ===== FindCommonPoint ===== *)
 
 VerificationTest[
@@ -155,6 +244,70 @@ VerificationTest[
   FindCommonPoint[PathGraph[Range[5]], {{1, 2, 3}, {2, 3, 4}}, UpTo[5]],
   InfraPoint[{2, 3}],
   TestID -> "FindCommonPoint-UpTo-soft"
+]
+
+(* ===== FindCommonPoint with wrapped lines ===== *)
+
+VerificationTest[
+  FindCommonPoint[PathGraph[Range[5]], {InfraSegment[{{1, 2, 3}}], InfraSegment[{{2, 3, 4}}]}, All],
+  InfraPoint[{2, 3}],
+  TestID -> "FindCommonPoint-InfraSegment-wrapped"
+]
+
+VerificationTest[
+  FindCommonPoint[CycleGraph[6], FindCommonLine[CycleGraph[6], {1, 4}, All]["Realisations"], All]["Length"],
+  2,
+  TestID -> "FindCommonPoint-from-FindCommonLine"
+]
+
+(* ===== InfraPencil / InfraRay wrapper boilerplate ===== *)
+
+VerificationTest[
+  InfraRay[{InfraRay[{{1, 2}}], InfraRay[{{1, 3}}]}],
+  InfraRay[{{1, 2}, {1, 3}}],
+  TestID -> "InfraRay-auto-flatten"
+]
+
+VerificationTest[
+  InfraRay[{{1, 2}, {1, 3}}][[1]],
+  InfraRay[{{1, 2}}],
+  TestID -> "InfraRay-Part-wraps-singleton"
+]
+
+VerificationTest[
+  InfraRay[{{1, 2}, {1, 3}}]["Length"],
+  2,
+  TestID -> "InfraRay-Length"
+]
+
+VerificationTest[
+  InfraRay[{{1, 2}, {1, 3}}]["Realisations"],
+  {{1, 2}, {1, 3}},
+  TestID -> "InfraRay-Realisations"
+]
+
+VerificationTest[
+  InfraRay[{{1, 2}, {1, 3}}]["Expand"],
+  {InfraRay[{{1, 2}}], InfraRay[{{1, 3}}]},
+  TestID -> "InfraRay-Expand"
+]
+
+VerificationTest[
+  InfraPencil[{InfraRay[{{1, 2}}], InfraRay[{{1, 3, 4}, {1, 5, 4}}]}]["Length"],
+  2,
+  TestID -> "InfraPencil-Length-counts-directions"
+]
+
+VerificationTest[
+  InfraPencil[{InfraRay[{{1, 2}}], InfraRay[{{1, 3, 4}, {1, 5, 4}}]}]["Rays"],
+  {{1, 2}, {1, 3, 4}, {1, 5, 4}},
+  TestID -> "InfraPencil-Rays-flattens-constituents"
+]
+
+VerificationTest[
+  InfraPencil[{InfraRay[{{1, 2}}], InfraRay[{{1, 3}}]}][[1]],
+  InfraRay[{{1, 2}}],
+  TestID -> "InfraPencil-Part-returns-constituent-Ray"
 ]
 
 EndTestSection[]

@@ -42,6 +42,13 @@ UniqueCollinearQ[ graph_Graph, verts_List ] :=
   FindCommonLine[ graph, verts, All ][ "Length" ] == 1
 
 
+(* UniqueConcurrentQ: the listed lines share exactly one common vertex;
+   the unique-witness companion of ConcurrentQ. *)
+
+UniqueConcurrentQ[ graph_Graph, lines_List ] :=
+  FindCommonPoint[ graph, lines, All ][ "Length" ] == 1
+
+
 (* ===================== Whitehead axioms ===================== *)
 
 (* The three Whitehead incidence axioms for projective planes restated on

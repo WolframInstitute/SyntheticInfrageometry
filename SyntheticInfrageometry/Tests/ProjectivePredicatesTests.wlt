@@ -112,6 +112,32 @@ VerificationTest[
   TestID -> "UniqueCollinearQ-Cycle6-antipode-two-lines"
 ]
 
+(* ===== UniqueConcurrentQ ===== *)
+
+VerificationTest[
+  UniqueConcurrentQ[PathGraph[Range[5]], {{1, 2, 3}, {3, 4, 5}}],
+  True,
+  TestID -> "UniqueConcurrentQ-PathGraph-meet-at-3"
+]
+
+VerificationTest[
+  UniqueConcurrentQ[PathGraph[Range[5]], {{1, 2, 3}, {2, 3, 4}}],
+  False,
+  TestID -> "UniqueConcurrentQ-two-shared-vertices"
+]
+
+VerificationTest[
+  UniqueConcurrentQ[PathGraph[Range[5]], {{1, 2}, {4, 5}}],
+  False,
+  TestID -> "UniqueConcurrentQ-disjoint-lines"
+]
+
+VerificationTest[
+  UniqueConcurrentQ[PathGraph[Range[5]], {{1, 2, 3}}],
+  False,
+  TestID -> "UniqueConcurrentQ-singleton-not-unique"
+]
+
 (* ===== Whitehead axioms ===== *)
 
 VerificationTest[

@@ -57,11 +57,14 @@ PackageExport[FindOrthogonalAxes]
 
 (* ProjectivePostulates.wl *)
 PackageExport[FindPencil]
+PackageExport[FindRay]
 PackageExport[PencilDirections]
 PackageExport[PencilCardinality]
 PackageExport[LineCount]
 PackageExport[FindCommonLine]
 PackageExport[FindCommonPoint]
+PackageExport[InfraRay]
+PackageExport[InfraPencil]
 
 (* ProjectivePredicates.wl *)
 PackageExport[SameDirectionQ]
@@ -69,6 +72,7 @@ PackageExport[CollinearQ]
 PackageExport[ConcurrentQ]
 PackageExport[UniquePencilQ]
 PackageExport[UniqueCollinearQ]
+PackageExport[UniqueConcurrentQ]
 PackageExport[WhiteheadW1Q]
 PackageExport[WhiteheadW2Q]
 PackageExport[WhiteheadW3Q]
