@@ -11,8 +11,8 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 FindTarskiSegmentExtension[ graph_Graph, a_, b_, c_, d_, All ] :=
   With[ { target = GraphDistance[ graph, c, d ] },
-    If[ target === Infinity, { },
-      Select[ VertexList[ graph ],
+    If[ target === Infinity, InfraPoint[ {} ],
+      InfraPoint @ Select[ VertexList[ graph ],
         x |-> BetweennessQ[ graph, a, b, x ] && GraphDistance[ graph, b, x ] === target
       ]
     ]
@@ -20,12 +20,12 @@ FindTarskiSegmentExtension[ graph_Graph, a_, b_, c_, d_, All ] :=
 
 FindTarskiSegmentExtension[ graph_Graph, a_, b_, c_, d_, UpTo[ n_Integer ] ] :=
   With[ { result = FindTarskiSegmentExtension[ graph, a, b, c, d, All ] },
-    Take[ result, UpTo[ n ] ]
+    InfraPoint @ Take[ result[ "Realisations" ], UpTo[ n ] ]
   ]
 
 FindTarskiSegmentExtension[ graph_Graph, a_, b_, c_, d_, n_Integer : 1 ] :=
   With[ { result = FindTarskiSegmentExtension[ graph, a, b, c, d, UpTo[ n ] ] },
-    If[ Length[ result ] < n, $Failed, result ]
+    If[ result[ "Length" ] < n, $Failed, result ]
   ]
 
 
@@ -108,7 +108,7 @@ tarskiSegmentConstructionCounter[ graph_Graph ] :=
   Module[ { vs = VertexList[ graph ] },
     Select[ Tuples[ vs, 4 ],
       tuple |-> FindTarskiSegmentExtension[ graph,
-        tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ] === { }
+        tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ][ "Length" ] === 0
     ]
   ]
 

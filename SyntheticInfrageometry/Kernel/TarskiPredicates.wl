@@ -122,7 +122,7 @@ TarskiSegmentConstructionQ[ graph_Graph ] :=
   Module[ { vs = VertexList[ graph ] },
     AllTrue[ Tuples[ vs, 4 ],
       tuple |-> FindTarskiSegmentExtension[ graph,
-        tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ] =!= { }
+        tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ][ "Length" ] > 0
     ]
   ]
 

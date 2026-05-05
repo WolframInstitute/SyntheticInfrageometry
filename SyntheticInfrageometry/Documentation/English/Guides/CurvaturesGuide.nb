@@ -1,0 +1,201 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      9672,        192]
+NotebookOptionsPosition[      6175,        145]
+NotebookOutlinePosition[      6492,        159]
+CellTagsIndexPosition[      6449,        156]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["Curvatures", "Title",ExpressionUUID->"23d3559c-629e-494c-822c-1df560d79775"],
+
+Cell["\<\
+Three discrete Ricci-curvature engines on graphs: Forman-Ricci edge \
+curvature, Ollivier-Ricci edge curvature, and Wolfram-Ricci scalar \
+(volume-comparison). All three are graph-only, no embedding or auxiliary \
+structure required.\
+\>", "Text",ExpressionUUID->"c73fcf08-2a4b-4070-890a-f3a9bb635b75"],
+
+Cell["Setup", "Section",ExpressionUUID->"3c5d1e1f-36bc-42fe-87c9-fd96b74f9f6d"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"fd2dd36e-97e1-4122-a7d9-f576a7bdf8ec"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"f9e55e6c-c034-4fb7-b7d8-5c45a6d60ae6"],
+
+Cell["Curvature symbols", "Section",ExpressionUUID->"839a106c-4063-41c5-be75-d58a92f45a47"],
+
+Cell["\<\
+FormanRicci -- symmetric Forman-Ricci edge curvature; Method -> \"Simple\" \
+(default; F(u, v) = 4 - deg u - deg v) | \"Triangles\" (adds 3 per shared \
+neighbour). Returns an Association of edges to curvature values.\
+\>", "Item",ExpressionUUID->"89333858-f339-4c6d-be59-a5fc27dec39b"],
+
+Cell["\<\
+OllivierRicci -- Wasserstein-1 between uniform neighborhood measures (alpha = \
+0). Returns an Association of edges to curvature values.\
+\>", "Item",ExpressionUUID->"80be62a4-e276-4465-9c5f-baf3f287c3c9"],
+
+Cell["\<\
+WolframRicci -- volume-comparison Ricci scalar averaged over a per-vertex \
+radius window. WolframRicci[g], WolframRicci[g, {rmin, rmax}], or \
+WolframRicci[g, r]; option \"Dimension\" -> Automatic | d. Returns an \
+Association of vertices to curvature values.\
+\>", "Item",ExpressionUUID->"69592ad9-11ca-4830-b299-091d4538b574"],
+
+Cell["\<\
+Use as a curvature engine for FindSegment / FindLine / ExtendSegment\
+\>", "Section",ExpressionUUID->"56c84f20-435e-42e2-b7ad-cdb999738fd9"],
+
+Cell["\<\
+FormanRicci and WolframRicci drive the Method -> \"CurvatureMinimizing\" \
+frontier sweep via the \"Curvature\" sub-option.\
+\>", "Text",ExpressionUUID->"d8d6fe16-f21e-4cff-bd46-aa8ddedeb989"],
+
+Cell["\"Curvature\" -> \"Forman\" -- FormanRicci defaults.", "Item",ExpressionUUID->"27d99684-f5cd-418a-a2d7-efe68c8bcb87"],
+
+Cell["\<\
+\"Curvature\" -> {\"Forman\", Method -> \"Triangles\"} -- forwards Method to \
+FormanRicci.\
+\>", "Item",ExpressionUUID->"dc9a2696-ea49-49bc-a997-973d5aca42f6"],
+
+Cell["\"Curvature\" -> \"Wolfram\" -- WolframRicci defaults.", "Item",ExpressionUUID->"9013a157-918a-4df1-9cea-7f7c6a45b912"],
+
+Cell["\<\
+\"Curvature\" -> {\"Wolfram\", \"Dimension\" -> 2, \"Radii\" -> {1, 3}} -- \
+forwards options to WolframRicci.\
+\>", "Item",ExpressionUUID->"4fb2ecca-3f21-4391-99ac-54e9212e9e74"],
+
+Cell["Examples", "Section",ExpressionUUID->"2cf5650e-d464-4006-b9f6-dfecda8c4f93"],
+
+Cell["Forman-Ricci edge curvature on a small grid.", "CodeText",ExpressionUUID->"83c11bf6-51b0-4f38-9af1-b12f2161d822"],
+
+Cell["FormanRicci[GridGraph[{4, 4}]]", "Input",ExpressionUUID->"1e9ad651-da91-4b79-9b78-7e0d0da67564"],
+
+Cell["Ollivier-Ricci edge curvature.", "CodeText",ExpressionUUID->"a5c0fc51-4237-4b52-acc1-04e0fb5a3f4d"],
+
+Cell["OllivierRicci[GridGraph[{4, 4}]]", "Input",ExpressionUUID->"4f711998-504f-435b-84b7-98d7eaa3999b"],
+
+Cell["Wolfram-Ricci vertex scalar with explicit dimension.", "CodeText",ExpressionUUID->"726e2f78-4bb6-48fb-9488-2716a27eed57"],
+
+Cell["WolframRicci[GridGraph[{4, 4}], \"Dimension\" -> 2]", "Input",ExpressionUUID->"56cea50b-5ed7-4239-843f-5b2f553d8275"],
+
+Cell["Pulled segments via Wolfram-Ricci on the grid.", "CodeText",ExpressionUUID->"d94bf503-e495-419b-973c-b36b54fb7c9b"],
+
+Cell["\<\
+FindSegment[GridGraph[{4, 4}], 1, 16, All, Method -> \
+{\"CurvatureMinimizing\", \"Curvature\" -> \"Wolfram\"}]\
+\>", "Input",ExpressionUUID->"133978e9-52be-4dd9-9c3f-9c5eb59e7aa3"],
+
+Cell["See also", "Section",ExpressionUUID->"0e411a06-d6a6-411b-9697-11f2fbdce29e"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"d9cc2b0c-4893-49e9-9df9-d709303472d2"],
+
+Cell["FindLine", "Item",ExpressionUUID->"e157f294-db4e-4ed0-bd58-4c9e5c85751c"],
+
+Cell["ExtendSegment", "Item",ExpressionUUID->"a33688fc-bad2-4148-9364-551bf3b0ef81"],
+
+Cell["References", "Section",ExpressionUUID->"41ab89ff-0503-4e95-8668-a196d2d01794"],
+
+Cell["\<\
+Forman, Bochner's Method for Cell Complexes and Combinatorial Ricci \
+Curvature, Discrete Comput. Geom. 29, 323-374, 2003\
+\>", "Item",ExpressionUUID->"6bb7c530-6b00-4cd9-9d5b-fecd79e798cf"],
+
+Cell["\<\
+Sreejith, Mohanraj, Jost, Saucan and Samal, Forman Curvature for Complex \
+Networks, J. Stat. Mech. 063206, 2016, https://arxiv.org/abs/1603.00386\
+\>", "Item",ExpressionUUID->"7875387e-6bcc-4b54-b0f2-3f265b455c20"],
+
+Cell["\<\
+Ollivier, Ricci Curvature of Markov Chains on Metric Spaces, J. Funct. Anal. \
+256, 810-864, 2009, https://arxiv.org/abs/math/0701886\
+\>", "Item",ExpressionUUID->"6e0158af-a1c1-47c7-81d4-b0be60ea7a93"],
+
+Cell["\<\
+Lin, Lu and Yau, Ricci Curvature of Graphs, Tohoku Math. J. 63, 605-627, 2011\
+\
+\>", "Item",ExpressionUUID->"ba3f584d-2539-4554-af85-e9f6f1556bfc"],
+
+Cell["\<\
+Wolfram, A Class of Models with the Potential to Represent Fundamental \
+Physics, https://arxiv.org/abs/2004.08210\
+\>", "Item",ExpressionUUID->"c19f75bc-694a-4b60-b9d5-9ef563c73b33"],
+
+Cell["\<\
+Gorard, Some Relativistic and Gravitational Properties of the Wolfram Model, \
+https://arxiv.org/abs/2004.14810\
+\>", "Item",ExpressionUUID->"eb813211-ecd8-435a-9e69-d3d8d6d5c0d6"],
+
+Cell["\<\
+Jost and Liu, Ollivier's Ricci Curvature, Local Clustering and \
+Curvature-Dimension Inequalities on Graphs, Discrete Comput. Geom. 51, \
+300-322, 2014, https://arxiv.org/abs/1103.4037\
+\>", "Item",ExpressionUUID->"2c97d0f4-057a-4eff-9899-146009af4738"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"09bd8e93-7f29-4e76-a2aa-f06705fb4c0c"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 82, 0, 70, "Title",ExpressionUUID->"23d3559c-629e-494c-822c-1df560d79775"],
+Cell[639, 22, 312, 5, 70, "Text",ExpressionUUID->"c73fcf08-2a4b-4070-890a-f3a9bb635b75"],
+Cell[954, 29, 79, 0, 70, "Section",ExpressionUUID->"3c5d1e1f-36bc-42fe-87c9-fd96b74f9f6d"],
+Cell[1036, 31, 91, 0, 70, "CodeText",ExpressionUUID->"fd2dd36e-97e1-4122-a7d9-f576a7bdf8ec"],
+Cell[1130, 33, 122, 0, 70, "Code",ExpressionUUID->"f9e55e6c-c034-4fb7-b7d8-5c45a6d60ae6"],
+Cell[1255, 35, 91, 0, 70, "Section",ExpressionUUID->"839a106c-4063-41c5-be75-d58a92f45a47"],
+Cell[1349, 37, 296, 4, 70, "Item",ExpressionUUID->"89333858-f339-4c6d-be59-a5fc27dec39b"],
+Cell[1648, 43, 215, 3, 70, "Item",ExpressionUUID->"80be62a4-e276-4465-9c5f-baf3f287c3c9"],
+Cell[1866, 48, 339, 5, 70, "Item",ExpressionUUID->"69592ad9-11ca-4830-b299-091d4538b574"],
+Cell[2208, 55, 150, 2, 70, "Section",ExpressionUUID->"56c84f20-435e-42e2-b7ad-cdb999738fd9"],
+Cell[2361, 59, 202, 3, 70, "Text",ExpressionUUID->"d8d6fe16-f21e-4cff-bd46-aa8ddedeb989"],
+Cell[2566, 64, 123, 0, 70, "Item",ExpressionUUID->"27d99684-f5cd-418a-a2d7-efe68c8bcb87"],
+Cell[2692, 66, 170, 3, 70, "Item",ExpressionUUID->"dc9a2696-ea49-49bc-a997-973d5aca42f6"],
+Cell[2865, 71, 125, 0, 70, "Item",ExpressionUUID->"9013a157-918a-4df1-9cea-7f7c6a45b912"],
+Cell[2993, 73, 189, 3, 70, "Item",ExpressionUUID->"4fb2ecca-3f21-4391-99ac-54e9212e9e74"],
+Cell[3185, 78, 82, 0, 70, "Section",ExpressionUUID->"2cf5650e-d464-4006-b9f6-dfecda8c4f93"],
+Cell[3270, 80, 119, 0, 70, "CodeText",ExpressionUUID->"83c11bf6-51b0-4f38-9af1-b12f2161d822"],
+Cell[3392, 82, 102, 0, 70, "Input",ExpressionUUID->"1e9ad651-da91-4b79-9b78-7e0d0da67564"],
+Cell[3497, 84, 105, 0, 70, "CodeText",ExpressionUUID->"a5c0fc51-4237-4b52-acc1-04e0fb5a3f4d"],
+Cell[3605, 86, 104, 0, 70, "Input",ExpressionUUID->"4f711998-504f-435b-84b7-98d7eaa3999b"],
+Cell[3712, 88, 127, 0, 70, "CodeText",ExpressionUUID->"726e2f78-4bb6-48fb-9488-2716a27eed57"],
+Cell[3842, 90, 123, 0, 70, "Input",ExpressionUUID->"56cea50b-5ed7-4239-843f-5b2f553d8275"],
+Cell[3968, 92, 121, 0, 70, "CodeText",ExpressionUUID->"d94bf503-e495-419b-973c-b36b54fb7c9b"],
+Cell[4092, 94, 191, 3, 70, "Input",ExpressionUUID->"133978e9-52be-4dd9-9c3f-9c5eb59e7aa3"],
+Cell[4286, 99, 82, 0, 70, "Section",ExpressionUUID->"0e411a06-d6a6-411b-9697-11f2fbdce29e"],
+Cell[4371, 101, 82, 0, 70, "Item",ExpressionUUID->"d9cc2b0c-4893-49e9-9df9-d709303472d2"],
+Cell[4456, 103, 79, 0, 70, "Item",ExpressionUUID->"e157f294-db4e-4ed0-bd58-4c9e5c85751c"],
+Cell[4538, 105, 84, 0, 70, "Item",ExpressionUUID->"a33688fc-bad2-4148-9364-551bf3b0ef81"],
+Cell[4625, 107, 84, 0, 70, "Section",ExpressionUUID->"41ab89ff-0503-4e95-8668-a196d2d01794"],
+Cell[4712, 109, 200, 3, 70, "Item",ExpressionUUID->"6bb7c530-6b00-4cd9-9d5b-fecd79e798cf"],
+Cell[4915, 114, 225, 3, 70, "Item",ExpressionUUID->"7875387e-6bcc-4b54-b0f2-3f265b455c20"],
+Cell[5143, 119, 212, 3, 70, "Item",ExpressionUUID->"6e0158af-a1c1-47c7-81d4-b0be60ea7a93"],
+Cell[5358, 124, 158, 3, 70, "Item",ExpressionUUID->"ba3f584d-2539-4554-af85-e9f6f1556bfc"],
+Cell[5519, 129, 193, 3, 70, "Item",ExpressionUUID->"c19f75bc-694a-4b60-b9d5-9ef563c73b33"],
+Cell[5715, 134, 190, 3, 70, "Item",ExpressionUUID->"eb813211-ecd8-435a-9e69-d3d8d6d5c0d6"],
+Cell[5908, 139, 263, 4, 70, "Item",ExpressionUUID->"2c97d0f4-057a-4eff-9899-146009af4738"]
+}
+]
+*)
+
+(* End of internal cache information *)

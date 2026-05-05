@@ -1,5 +1,10 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+PackageScope[findMidpointCore]
+PackageScope[findPerpendicularCore]
+PackageScope[findBisectingHyperplaneCore]
+PackageScope[completeEquilateralTriangleCore]
+
 
 (* ===================== Messages ===================== *)
 
@@ -21,24 +26,36 @@ SegmentLineAngle::badmethod = "Method `1` is not supported by SegmentLineAngle."
 
 Options[ FindMidpoint ] = { Method -> "Metric" };
 
+(* FindMidpoint[g, segment] returns the midpoint vertex of an explicit
+   segment as a wrapped InfraPoint singleton (no count form for this
+   shape).  FindMidpoint[g, p1, p2, count, opts] dispatches over multi-
+   realisation endpoints with Cartesian + per-pair-count + union. *)
+
 FindMidpoint[ graph_Graph, segment_List, opts : OptionsPattern[] ] /; Length[ segment ] >= 2 :=
   Module[ { spec = OptionValue[ Method ], methodName },
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
     Switch[ methodName,
-      "Metric", segment[[ Ceiling[ Length[ segment ] / 2 ] ]],
+      "Metric",   InfraPoint[ { segment[[ Ceiling[ Length[ segment ] / 2 ] ]] } ],
       "Embedding",
         With[ { embOpts = parseEmbeddingMethod[ spec ] },
-          First @ embeddingRankMidpoints[ graph, First[ segment ], Last[ segment ], embOpts ]
+          InfraPoint[ { First @ embeddingRankMidpoints[ graph, First[ segment ], Last[ segment ], embOpts ] } ]
         ],
       "Spectral" | "Resistance", Message[ FindMidpoint::nyi, methodName ]; $Failed,
       _, Message[ FindMidpoint::badmethod, methodName ]; $Failed
     ]
   ]
 
-FindMidpoint[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] :=
-  Module[ { spec = OptionValue[ Method ], methodName, segs },
+FindMidpoint[ graph_Graph, p1_, p2_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  infraSpreadAndCartesian[ InfraPoint, count,
+    findMidpointCore[ graph, ##, count, opts ] &, p1, p2 ]
+
+
+findMidpointCore[ graph_Graph, p1_, p2_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindMidpoint ] ] :=
+  Module[ { spec = OptionValue[ FindMidpoint, { opts }, Method ], methodName, segs, midpoints },
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    Switch[ methodName,
+    midpoints = Switch[ methodName,
       "Metric",
         segs = allGeodesics[ graph, p1, p2 ];
         If[ segs === {}, {},
@@ -50,37 +67,35 @@ FindMidpoint[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] :=
         ],
       "Spectral" | "Resistance", Message[ FindMidpoint::nyi, methodName ]; $Failed,
       _, Message[ FindMidpoint::badmethod, methodName ]; $Failed
+    ];
+    Which[
+      midpoints === $Failed, $Failed,
+      MatchQ[ count, _Integer ] && Length[ midpoints ] < count, $Failed,
+      MatchQ[ count, _Integer ],          Take[ midpoints, count ],
+      MatchQ[ count, UpTo[ _Integer ] ],  Take[ midpoints, count ],
+      count === All,                       midpoints,
+      True,                                midpoints
     ]
   ]
 
 
 (* embeddingRankMidpoints sorts vertices by their Euclidean distance to
-   (coord(p1) + coord(p2)) / 2.  Constraint "Geodesic" ranks only the
+   (coord(p1) + coord(p2)) / 2.  Pool "ShortestPaths" ranks only the
    metric interval { w : d(p1, w) + d(w, p2) == d(p1, p2) } -- vertices
-   that lie on at least one geodesic; "Free" ranks every vertex. *)
+   that lie on at least one geodesic; "AllPaths" ranks every vertex. *)
 
 embeddingRankMidpoints[ graph_Graph, p1_, p2_, embOpts_Association ] :=
   Module[ { coords, vertexIndex, target, pool, total },
     coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
     vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
     target = ( coords[[ vertexIndex[ p1 ] ]] + coords[[ vertexIndex[ p2 ] ]] ) / 2;
-    pool = If[ embOpts[ "Constraint" ] === "Free", VertexList[ graph ],
+    pool = If[ embOpts[ "Pool" ] === "AllPaths", VertexList[ graph ],
       total = GraphDistance[ graph, p1, p2 ];
       Select[ VertexList[ graph ],
         GraphDistance[ graph, p1, # ] + GraphDistance[ graph, #, p2 ] == total & ]
     ];
     SortBy[ pool,
       v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ]
-  ]
-
-FindMidpoint[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  With[ { result = FindMidpoint[ graph, p1, p2, All, opts ] },
-    If[ ListQ[ result ], Take[ result, UpTo[ n ] ], result ]
-  ]
-
-FindMidpoint[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] :=
-  With[ { result = FindMidpoint[ graph, p1, p2, UpTo[ n ], opts ] },
-    Which[ ! ListQ[ result ], result, Length[ result ] < n, $Failed, True, result ]
   ]
 
 
@@ -94,14 +109,21 @@ FindMidpoint[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 Options[ FindPerpendicular ] = { Method -> "Metric" };
 
-FindPerpendicular[ graph_Graph, line_List, point_, All, opts : OptionsPattern[] ] :=
-  Module[ { spec = OptionValue[ Method ], methodName, distances, byIndex, feet },
+FindPerpendicular[ graph_Graph, line_, point_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  infraSpreadAndCartesian[ InfraPoint, count,
+    findPerpendicularCore[ graph, ##, count, opts ] &, line, point ]
+
+
+findPerpendicularCore[ graph_Graph, line_List, point_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindPerpendicular ] ] :=
+  Module[ { spec = OptionValue[ FindPerpendicular, { opts }, Method ], methodName, distances, byIndex, feet },
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    Switch[ methodName,
+    feet = Switch[ methodName,
       "Metric",
         distances = GraphDistance[ graph, point, # ] & /@ line;
         byIndex = Values @ GroupBy[ Range @ Length @ line, distances[[ # ]] & ];
-        feet = Union @ Flatten @ Table[
+        Union @ Flatten @ Table[
           Table[
             With[ { lo = Min[ pair[[ 1 ]], pair[[ 2 ]] ], hi = Max[ pair[[ 1 ]], pair[[ 2 ]] ] },
               If[ OddQ[ hi - lo ],
@@ -112,14 +134,21 @@ FindPerpendicular[ graph_Graph, line_List, point_, All, opts : OptionsPattern[] 
             { pair, Subsets[ group, { 2 } ] }
           ],
           { group, byIndex }
-        ];
-        feet,
+        ],
       "Embedding",
         With[ { embOpts = parseEmbeddingMethod[ spec ] },
           embeddingRankPerpendicularFeet[ graph, line, point, embOpts ]
         ],
       "Spectral" | "Resistance", Message[ FindPerpendicular::nyi, methodName ]; $Failed,
       _, Message[ FindPerpendicular::badmethod, methodName ]; $Failed
+    ];
+    Which[
+      feet === $Failed, $Failed,
+      MatchQ[ count, _Integer ] && Length[ feet ] < count, $Failed,
+      MatchQ[ count, _Integer ],          Take[ feet, count ],
+      MatchQ[ count, UpTo[ _Integer ] ],  Take[ feet, count ],
+      count === All,                       feet,
+      True,                                feet
     ]
   ]
 
@@ -145,16 +174,6 @@ embeddingRankPerpendicularFeet[ graph_Graph, line_List, point_, embOpts_Associat
       v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], foot ] ]
   ]
 
-FindPerpendicular[ graph_Graph, line_List, point_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  With[ { result = FindPerpendicular[ graph, line, point, All, opts ] },
-    If[ ListQ[ result ], Take[ result, UpTo[ n ] ], result ]
-  ]
-
-FindPerpendicular[ graph_Graph, line_List, point_, n_Integer : 1, opts : OptionsPattern[] ] :=
-  With[ { result = FindPerpendicular[ graph, line, point, UpTo[ n ], opts ] },
-    Which[ ! ListQ[ result ], result, Length[ result ] < n, $Failed, True, result ]
-  ]
-
 
 (* ===================== FindBisectingHyperplane ===================== *)
 
@@ -169,37 +188,37 @@ FindPerpendicular[ graph_Graph, line_List, point_, n_Integer : 1, opts : Options
    hyperplane); n / UpTo[n] / All control how many.  Returns $Failed
    when fewer than n are available; {} when none exist (under All). *)
 
-FindBisectingHyperplane[ graph_Graph, { p1_, p2_ }, args___ ] :=
-  FindBisectingHyperplane[ graph, p1, p2, args ]
-
-FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List] ] :=
+FindBisectingHyperplane[ graph_Graph, p1_, p2_ ] :=
   FindBisectingHyperplane[ graph, p1, p2, { 0, 0 }, 1 ]
 
-FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List],
-    count : (_Integer | UpTo[_Integer] | All) ] :=
+FindBisectingHyperplane[ graph_Graph, p1_, p2_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) ] :=
   FindBisectingHyperplane[ graph, p1, p2, { 0, 0 }, count ]
 
-FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List],
+FindBisectingHyperplane[ graph_Graph, p1_, p2_,
     window : { _Integer, _Integer } ] :=
   FindBisectingHyperplane[ graph, p1, p2, window, 1 ]
 
-FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List],
-    { lo_Integer, hi_Integer }, All ] :=
-  Module[ { bisector },
+FindBisectingHyperplane[ graph_Graph, p1_, p2_,
+    window : { _Integer, _Integer }, count : ( _Integer | UpTo[ _Integer ] | All ) ] :=
+  infraSpreadAndCartesian[ InfraPlane, count,
+    findBisectingHyperplaneCore[ graph, ##, window, count ] &, p1, p2 ]
+
+
+findBisectingHyperplaneCore[ graph_Graph, p1_, p2_,
+    { lo_Integer, hi_Integer }, count : ( _Integer | UpTo[ _Integer ] | All ) ] :=
+  Module[ { bisector, hyperplanes },
     bisector = Pick[ VertexList[ graph ],
       MapThread[ { x, y } |-> lo <= x - y <= hi,
         { GraphDistance[ graph, p1 ], GraphDistance[ graph, p2 ] } ] ];
-    FindPairSeparators[ graph, Complement[ bisector, { p1, p2 } ], p1, p2 ]
-  ]
-
-FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List],
-    { lo_Integer, hi_Integer }, UpTo[ n_Integer ] ] :=
-  Take[ FindBisectingHyperplane[ graph, p1, p2, { lo, hi }, All ], UpTo[ n ] ]
-
-FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List],
-    { lo_Integer, hi_Integer }, n_Integer ] :=
-  With[ { result = FindBisectingHyperplane[ graph, p1, p2, { lo, hi }, UpTo[ n ] ] },
-    If[ Length[ result ] < n, $Failed, result ]
+    hyperplanes = FindPairSeparators[ graph, Complement[ bisector, { p1, p2 } ], p1, p2 ];
+    Which[
+      MatchQ[ count, _Integer ] && Length[ hyperplanes ] < count, $Failed,
+      MatchQ[ count, _Integer ],          Take[ hyperplanes, count ],
+      MatchQ[ count, UpTo[ _Integer ] ],  Take[ hyperplanes, count ],
+      count === All,                       hyperplanes,
+      True,                                hyperplanes
+    ]
   ]
 
 
@@ -211,9 +230,16 @@ FindBisectingHyperplane[ graph_Graph, p1 : Except[_List], p2 : Except[_List],
 
 Options[ CompleteEquilateralTriangle ] = { Method -> "Metric" };
 
-CompleteEquilateralTriangle[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] :=
-  Module[ { method = OptionValue[ Method ], r },
-    Switch[ method,
+CompleteEquilateralTriangle[ graph_Graph, p1_, p2_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  infraSpreadAndCartesian[ InfraPoint, count,
+    completeEquilateralTriangleCore[ graph, ##, count, opts ] &, p1, p2 ]
+
+
+completeEquilateralTriangleCore[ graph_Graph, p1_, p2_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ CompleteEquilateralTriangle ] ] :=
+  Module[ { method = OptionValue[ CompleteEquilateralTriangle, { opts }, Method ], r, apexes },
+    apexes = Switch[ method,
       "Metric",
         r = GraphDistance[ graph, p1, p2 ];
         If[ r === Infinity, {},
@@ -224,27 +250,25 @@ CompleteEquilateralTriangle[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[]
         ],
       "Spectral" | "Resistance", Message[ CompleteEquilateralTriangle::nyi, method ]; $Failed,
       _, Message[ CompleteEquilateralTriangle::badmethod, method ]; $Failed
+    ];
+    Which[
+      apexes === $Failed, $Failed,
+      MatchQ[ count, _Integer ] && Length[ apexes ] < count, $Failed,
+      MatchQ[ count, _Integer ],          Take[ apexes, count ],
+      MatchQ[ count, UpTo[ _Integer ] ],  Take[ apexes, count ],
+      count === All,                       apexes,
+      True,                                apexes
     ]
   ]
 
-CompleteEquilateralTriangle[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  With[ { result = CompleteEquilateralTriangle[ graph, p1, p2, All, opts ] },
-    If[ ListQ[ result ], Take[ result, UpTo[ n ] ], result ]
-  ]
 
-CompleteEquilateralTriangle[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] :=
-  With[ { result = CompleteEquilateralTriangle[ graph, p1, p2, UpTo[ n ], opts ] },
-    Which[ ! ListQ[ result ], result, Length[ result ] < n, $Failed, True, result ]
-  ]
+(* ===================== InfraAngle ===================== *)
 
-
-(* ===================== GraphAngle ===================== *)
-
-(* GraphAngle[q1, p, q2] removes the open ball around p of radius
+(* InfraAngle[q1, p, q2] removes the open ball around p of radius
    Min[d(p, q1), d(p, q2)], then measures how far q1 and q2 are forced
    to travel outside that neighborhood, normalized by that radius. *)
 
-GraphAngle[ graph_Graph, { q1_, p_, q2_ } ] :=
+InfraAngle[ graph_Graph, { q1_, p_, q2_ } ] :=
   Module[ { radius, rem },
     radius = Min[ GraphDistance[ graph, p, q1 ], GraphDistance[ graph, p, q2 ] ];
     rem = VertexDelete[ graph,

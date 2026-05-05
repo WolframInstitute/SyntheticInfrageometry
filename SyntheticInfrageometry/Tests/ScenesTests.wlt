@@ -63,7 +63,7 @@ VerificationTest[
     scene = InfraScene[{p}, {p == InfraPoint[]}],
     g = PathGraph[Range[5]]
   },
-    Length[FindInfraScene[scene, g, "PruningProbability" -> 0.9]] >= 1
+    Length[FindInfraScene[scene, g, "PruneProbability" -> 0.9]] >= 1
   ],
   True,
   TestID -> "FindInfraScene-pruning-at-least-one-survives"
@@ -139,6 +139,44 @@ VerificationTest[
   ],
   True,
   TestID -> "FindInfraScene-InfraShell-FindShell"
+]
+
+(* ===== InfraPlane with FindBisectingHyperplane ===== *)
+
+VerificationTest[
+  With[{
+    scene = InfraScene[{a, b, h}, {
+      a == InfraPoint[1],
+      b == InfraPoint[5],
+      h == InfraPlane[a, b]
+    }],
+    g = PathGraph[Range[5]]
+  },
+    With[{instances = FindInfraScene[scene, g]},
+      Length[instances] >= 1 &&
+      AllTrue[instances, inst |-> ListQ[inst[[1]][h]] && MemberQ[inst[[1]][h], 3]]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraScene-InfraPlane-FindBisectingHyperplane"
+]
+
+(* InfraPlane[p1, p2, {lo, hi}] threads the window through to FindBisectingHyperplane.
+   On PathGraph[6], 1 to 6 has odd distance; the strict {0, 0} bisector is empty
+   so the no-window form yields no instances, while {-1, 1} recovers {3} and {4}. *)
+VerificationTest[
+  With[{
+    scene = InfraScene[{a, b, h}, {
+      a == InfraPoint[1],
+      b == InfraPoint[6],
+      h == InfraPlane[a, b, {-1, 1}]
+    }],
+    g = PathGraph[Range[6]]
+  },
+    Sort @ DeleteDuplicates[#[[1]][h] & /@ FindInfraScene[scene, g]]
+  ],
+  {{3}, {4}},
+  TestID -> "FindInfraScene-InfraPlane-window"
 ]
 
 (* ===== InfraCircle with FindCircle ===== *)

@@ -1,52 +1,44 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageScope[findLineExtensions]
+PackageScope[findSegmentCore]
+PackageScope[findLineCore]
+PackageScope[extendSegmentCore]
+PackageScope[findShellCore]
+PackageScope[findCircleCore]
+PackageScope[findParallelCore]
+PackageScope[infraSpreadAndCartesian]
 
 
 (* ===================== Messages ===================== *)
 
 FindSegment::badmethod = "Method `1` is not supported by FindSegment.";
 FindSegment::badpruning = "Pruning specification `1` is not supported; use Infinity, a positive integer (beam width), or a number 0 < p < 1 (Bernoulli keep probability).";
-FindSegment::badlookback = "Lookback specification `1` is not supported; use a positive integer or All.";
-FindSegment::badconstraint = "Constraint specification `1` is not supported; use \"Geodesic\" or \"Free\".";
-FindSegment::badforman = "FormanMethod specification `1` is not supported; use \"Simple\" or \"Triangles\".";
-FindSegment::badcurvature = "CurvatureMethod specification `1` is not supported; use \"Forman\" or \"Wolfram\".";
-FindSegment::baddim = "Dimension specification `1` is not supported; use Automatic or a positive number.";
-FindSegment::badradii = "Radii specification `1` is not supported; use Automatic or {rmin, rmax} with 1 <= rmin <= rmax.";
+FindSegment::badwindow = "ShortestPathWindow specification `1` is not supported; use a positive integer or All.";
+FindSegment::badpool = "Pool specification `1` is not supported; use \"ShortestPaths\" or \"AllPaths\".";
+FindSegment::badcurvature = "Curvature specification `1` is not supported; use \"Forman\", \"Wolfram\", {\"Forman\", Method -> \"Simple\" | \"Triangles\"}, or {\"Wolfram\", \"Dimension\" -> Automatic | d, \"Radii\" -> Automatic | {rmin, rmax}}.";
 
 
 (* ===================== Points ===================== *)
 
 (* FindPoint[g, n] returns n vertices of the graph (the existence postulate
-   for points).  With "Distance" -> r the n vertices form a clique in the
-   r-distance graph (mutually at least r apart), realising "n points spread
-   out by r"; with "From" the candidate pool is restricted (Center, Periphery,
-   a vertex list, a single vertex, or origin -> dist where dist is a number,
-   {dMin, dMax} range, or "Max" -- vertices at that graph distance from origin). *)
+   for points), wrapped as InfraPoint[{v1, ..., vn}].  With "Distance" -> r
+   the n vertices form a clique in the r-distance graph (mutually at least
+   r apart), realising "n points spread out by r"; with "From" the candidate
+   pool is restricted -- "Center", "Periphery", a vertex, a vertex list,
+   InfraPoint[{a, b, ...}] (multi-anchor pool), origin -> dist (single
+   anchor at given distance, where dist is a number, {dMin, dMax} range, or
+   "Max"), or InfraPoint[{a, b, ...}] -> dist (multi-anchor intersection:
+   vertices satisfying dist from EVERY anchor).                             *)
 
 Options[ FindPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
 
 FindPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  Module[ { from, pool, dist, range, distMatrix, vertexIndex, auxiliaryGraph, cliques, thresholds, finiteMax, maxCl },
-    from = OptionValue[ "From" ];
-    pool = Which[
-      StringQ[ from ] && from == "Center", GraphCenter[ graph ],
-      StringQ[ from ] && from == "Periphery", GraphPeriphery[ graph ],
-      StringQ[ from ], VertexList[ graph ],
-      MemberQ[ VertexList[ graph ], from ], { from },
-      MatchQ[ from, _ -> (_?NumericQ | { _?NumericQ, _?NumericQ } | "Max") ] && MemberQ[ VertexList[ graph ], First[ from ] ],
-        With[ { allDists = GraphDistance[ graph, First[ from ] ] },
-          With[ { spec = Last[ from ] /. "Max" :> Max[ Select[ allDists, # < Infinity & ] ] },
-            Pick[ VertexList[ graph ],
-              Replace[ spec, { d_?NumericQ :> Map[ # == d &, allDists ], { lo_, hi_ } :> Map[ lo <= # <= hi &, allDists ] } ] ]
-          ]
-        ],
-      ListQ[ from ], from,
-      True, VertexList[ graph ]
-    ];
+  Module[ { pool, dist, range, distMatrix, vertexIndex, auxiliaryGraph, cliques, thresholds, finiteMax, maxCl, picked },
+    pool = findPointPool[ graph, OptionValue[ "From" ] ];
     dist = OptionValue[ "Distance" ];
     maxCl = OptionValue[ "MaxCliques" ];
-    If[ n == 1 || dist === None,
+    picked = If[ n == 1 || dist === None,
       RandomSample[ pool, UpTo[ n ] ],
       vertexIndex = Lookup[ AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ], pool ];
       distMatrix = GraphDistanceMatrix[ graph ][[ vertexIndex, vertexIndex ]];
@@ -70,7 +62,8 @@ FindPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
         cliques = FindClique[ auxiliaryGraph, { Min[ n, VertexCount[ auxiliaryGraph ] ], VertexCount[ auxiliaryGraph ] }, maxCl ];
         If[ cliques === {}, {}, RandomSample[ RandomChoice[ cliques ], UpTo[ n ] ] ]
       ]
-    ]
+    ];
+    InfraPoint[ picked ]
   ]
 
 FindPoint[ graph_Graph, All, opts : OptionsPattern[] ] :=
@@ -78,8 +71,53 @@ FindPoint[ graph_Graph, All, opts : OptionsPattern[] ] :=
 
 FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
   With[ { result = FindPoint[ graph, UpTo[ n ], opts ] },
-    If[ Length[ result ] < n, $Failed, result ]
+    If[ result[ "Length" ] < n, $Failed, result ]
   ]
+
+
+(* findPointPool resolves the "From" option to a vertex pool.
+   Anchors: "Center" / "Periphery" / "Random" string pools, a bare vertex,
+   a bare vertex list, InfraPoint[{...}] (multi-anchor pool, the realisations
+   themselves are the pool when no distance constraint is supplied).
+   With a distance clause origin -> dist, the pool is restricted to vertices
+   satisfying the distance constraint from origin (a single vertex) or from
+   EVERY realisation in InfraPoint[{...}] (multi-anchor intersection).      *)
+
+PackageScope[findPointPool]
+
+findPointPool[ graph_Graph, "Center" ]    := GraphCenter[ graph ]
+findPointPool[ graph_Graph, "Periphery" ] := GraphPeriphery[ graph ]
+findPointPool[ graph_Graph, _String ]     := VertexList[ graph ]
+
+findPointPool[ graph_Graph, InfraPoint[ reps_List ] ] := reps
+
+findPointPool[ graph_Graph, ( origin_ -> spec_ ) ] :=
+  With[ {
+      anchors = If[ MatchQ[ origin, InfraPoint[ _List ] ],
+        origin[ "Realisations" ], { origin } ] },
+    With[ {
+        anchorDists = Association @ Map[ a |-> a -> GraphDistance[ graph, a ], anchors ],
+        vertexIndex = AssociationThread[ VertexList[ graph ] -> Range @ VertexCount[ graph ] ] },
+      Select[ VertexList[ graph ],
+        v |-> And @@ Map[
+          a |-> anchorDistMatchQ[ anchorDists[ a ], vertexIndex[ v ], spec ],
+          anchors ] ]
+    ]
+  ]
+
+findPointPool[ graph_Graph, v_ ] /; MemberQ[ VertexList[ graph ], v ] := { v }
+findPointPool[ graph_Graph, list_List ] := list
+findPointPool[ graph_Graph, _ ]         := VertexList[ graph ]
+
+
+anchorDistMatchQ[ allDists_List, idx_Integer, d_?NumericQ ] :=
+  allDists[[ idx ]] == d
+
+anchorDistMatchQ[ allDists_List, idx_Integer, { lo_?NumericQ, hi_?NumericQ } ] :=
+  lo <= allDists[[ idx ]] <= hi
+
+anchorDistMatchQ[ allDists_List, idx_Integer, "Max" ] :=
+  allDists[[ idx ]] == Max @ Select[ allDists, # < Infinity & ]
 
 
 (* ===================== Segments ===================== *)
@@ -89,43 +127,60 @@ FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
    adjacent.  Method -> "Shortest" (default) enumerates geodesics:
    count = 1 takes the built-in FindShortestPath; count > 1 (or UpTo[n]
    / All) enumerates via FindPath at exact length d, and the result
-   pipes through CentralPaths / EmbeddingClosestPaths / ... for further
-   path-space filtering.  Method -> "Extended" (or {"Extended",
-   "Lookback" -> k, "Pruning" -> spec}) enumerates simple paths from p1
-   to p2 via a constructive frontier sweep that admits a step
-   v_i -> w iff w is unvisited and the recency-lex distance tuple
-   ( d(v_{i-1}, w), ..., d(v_{i-K+1}, w) ) is maximal among unvisited
-   neighbours.  K = 1 has empty tuple (no filter, all simple paths),
-   K = 2 (default) excludes triangle shortcuts, K = All compares
+   pipes through SelectPaths / EmbeddingClosestPaths for further path-space
+   filtering.  Method -> "ShortestPathExtension" (or
+   {"ShortestPathExtension", "ShortestPathWindow" -> K, "Pruning" -> spec})
+   enumerates simple paths from p1 to p2 via a constructive frontier sweep
+   that admits a step v_i -> w iff w is unvisited and the recency-lex
+   distance tuple ( d(v_{i-1}, w), ..., d(v_{i-K+1}, w) ) is maximal among
+   unvisited neighbours.  K = 1 has empty tuple (no filter, all simple
+   paths), K = 2 (default) excludes triangle shortcuts, K = All compares
    against every available predecessor and on most graphs collapses to
-   geodesics.  Pruning spec is Infinity (default), a positive integer
-   beam width, or a Bernoulli keep probability.  Method -> "Pulled"
-   (or {"Pulled", "FormanMethod" -> "Simple" | "Triangles"}) traces the
-   rope being pulled tight from p1 toward p2 by a frontier sweep that
-   admits step v_i -> w iff w is unvisited and minimises the
-   Forman-Ricci edge curvature F(v_i, w) among unvisited neighbours of
-   v_i.  Ties branch the frontier; the result is every walk whose
-   every step is curvature-minimal in its candidate set. *)
+   geodesics.  Pruning spec is Infinity (default), a positive integer beam
+   width, or a Bernoulli keep probability.  Method -> "CurvatureMinimizing"
+   (or {"CurvatureMinimizing", "Curvature" -> spec, "Pool" -> p,
+   "Pruning" -> q}) traces the rope being pulled tight from p1 toward p2 by
+   a frontier sweep that admits step v_i -> w iff w is unvisited and
+   minimises an edge-level curvature kappa(v_i, w) among the candidate
+   neighbours of v_i; ties branch the frontier.  Curvature spec is
+   "Forman" / {"Forman", Method -> "Simple"|"Triangles"} (forwarded to
+   FormanRicci) or "Wolfram" / {"Wolfram", "Dimension" -> ..., "Radii" ->
+   ...} (forwarded to WolframRicci).  Pool is "ShortestPaths" (default;
+   restrict candidates to the geodesic DAG) or "AllPaths" (full
+   adjacency, paths simple but possibly detouring).  *)
 
 Options[ FindSegment ] = { Method -> "Shortest" };
 
+(* FindSegment public entry: dispatches over multi-realisation endpoints
+   (InfraPoint / InfraSegment wrappers).  For each (a, b) in the Cartesian
+   product of the realisations of p1 and p2, the single-pair core
+   findSegmentCore is invoked with the requested count.  Strict-n shortfall
+   on any pair propagates as bare $Failed; otherwise the per-pair bare-list
+   results are union-deduplicated and wrapped as InfraSegment[...].         *)
+
 FindSegment[ graph_Graph, p1_, p2_,
-    count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
-  Module[ { spec = OptionValue[ Method ], methodName, prune, lookback, formanMethod, constraint, curvatureMethod, dim, radii, dagNbrs, edgeKappa, d, paths },
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  infraSpreadAndCartesian[ InfraSegment, count,
+    findSegmentCore[ graph, ##, count, opts ] &, p1, p2 ]
+
+
+(* findSegmentCore is the single-pair body: returns a bare list of vertex
+   sequences, or $Failed on strict-n shortfall.                              *)
+
+findSegmentCore[ graph_Graph, p1_, p2_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindSegment ] ] :=
+  Module[ { spec = OptionValue[ FindSegment, { opts }, Method ], methodName, prune, shortestPathWindow, pool, curvature, curvatureSpec, dagNbrs, edgeKappa, d, paths },
     If[ p1 === p2, Return[ { } ] ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    { prune, lookback, formanMethod, constraint, curvatureMethod, dim, radii } = Replace[ spec, {
-      _String :> { Infinity, 2, "Simple", "Geodesic", "Forman", Automatic, Automatic },
+    { prune, shortestPathWindow, pool, curvature } = Replace[ spec, {
+      _String :> { Infinity, 2, "ShortestPaths", "Forman" },
       { _String, subOpts___ } :> {
-        "Pruning"         /. { subOpts } /. "Pruning"         -> Infinity,
-        "Lookback"        /. { subOpts } /. "Lookback"        -> 2,
-        "FormanMethod"    /. { subOpts } /. "FormanMethod"    -> "Simple",
-        "Constraint"      /. { subOpts } /. "Constraint"      -> "Geodesic",
-        "CurvatureMethod" /. { subOpts } /. "CurvatureMethod" -> "Forman",
-        "Dimension"       /. { subOpts } /. "Dimension"       -> Automatic,
-        "Radii"           /. { subOpts } /. "Radii"           -> Automatic
+        "Pruning"            /. { subOpts } /. "Pruning"            -> Infinity,
+        "ShortestPathWindow" /. { subOpts } /. "ShortestPathWindow" -> 2,
+        "Pool"               /. { subOpts } /. "Pool"               -> "ShortestPaths",
+        "Curvature"          /. { subOpts } /. "Curvature"          -> "Forman"
       },
-      _ :> { Infinity, 2, "Simple", "Geodesic", "Forman", Automatic, Automatic }
+      _ :> { Infinity, 2, "ShortestPaths", "Forman" }
     } ];
     Switch[ methodName,
       "Shortest",
@@ -139,33 +194,28 @@ FindSegment[ graph_Graph, p1_, p2_,
           ]
         ];
         If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ],
-      "Extended",
+      "ShortestPathExtension",
         Which[
           ! pruningSpecQ[ prune ],
             Message[ FindSegment::badpruning, prune ]; $Failed,
-          ! lookbackSpecQ[ lookback ],
-            Message[ FindSegment::badlookback, lookback ]; $Failed,
+          ! shortestPathWindowSpecQ[ shortestPathWindow ],
+            Message[ FindSegment::badwindow, shortestPathWindow ]; $Failed,
           True,
-            paths = extendedOutPaths[ graph, p1, p2, prune, lookback, countLimit[ count ] ];
+            paths = extendedOutPaths[ graph, p1, p2, prune, shortestPathWindow, countLimit[ count ] ];
             If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
         ],
-      "Pulled",
+      "CurvatureMinimizing",
+        curvatureSpec = parseCurvatureSpec[ curvature ];
         Which[
-          ! curvatureMethodSpecQ[ curvatureMethod ],
-            Message[ FindSegment::badcurvature, curvatureMethod ]; $Failed,
-          ! formanMethodSpecQ[ formanMethod ],
-            Message[ FindSegment::badforman, formanMethod ]; $Failed,
-          ! dimensionSpecQ[ dim ],
-            Message[ FindSegment::baddim, dim ]; $Failed,
-          ! radiiSpecQ[ radii ],
-            Message[ FindSegment::badradii, radii ]; $Failed,
+          curvatureSpec === $Failed,
+            Message[ FindSegment::badcurvature, curvature ]; $Failed,
           ! pruningSpecQ[ prune ],
             Message[ FindSegment::badpruning, prune ]; $Failed,
-          ! constraintSpecQ[ constraint ],
-            Message[ FindSegment::badconstraint, constraint ]; $Failed,
+          ! poolSpecQ[ pool ],
+            Message[ FindSegment::badpool, pool ]; $Failed,
           True,
-            dagNbrs = If[ constraint === "Geodesic", geodesicDAGNeighbors[ graph, p1, p2 ], Automatic ];
-            edgeKappa = buildEdgeKappa[ graph, curvatureMethod, formanMethod, dim, radii ];
+            dagNbrs = If[ pool === "ShortestPaths", geodesicDAGNeighbors[ graph, p1, p2 ], Automatic ];
+            edgeKappa = buildEdgeKappa[ graph, curvatureSpec ];
             paths = pulledPaths[ graph, p1, p2, edgeKappa, prune, countLimit[ count ], dagNbrs ];
             If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
         ],
@@ -174,8 +224,8 @@ FindSegment[ graph_Graph, p1_, p2_,
           Which[
             ! pruningSpecQ[ embOpts[ "Pruning" ] ],
               Message[ FindSegment::badpruning, embOpts[ "Pruning" ] ]; $Failed,
-            ! MemberQ[ { "Geodesic", "Free" }, embOpts[ "Constraint" ] ],
-              Message[ FindSegment::badconstraint, embOpts[ "Constraint" ] ]; $Failed,
+            ! poolSpecQ[ embOpts[ "Pool" ] ],
+              Message[ FindSegment::badpool, embOpts[ "Pool" ] ]; $Failed,
             True,
               paths = embeddingFindSegmentPaths[ graph, p1, p2, embOpts ];
               With[ { result = takeUpTo[ paths, countLimit[ count ] ] },
@@ -188,15 +238,16 @@ FindSegment[ graph_Graph, p1_, p2_,
   ]
 
 
-(* buildEdgeKappa returns the (v, w) |-> Real closure that the Pulled
-   frontier sweep MinimalBy's on.  For "Forman" it is the symmetric
-   edge curvature F(v, w) returned by FormanRicciCurvature.  For
-   "Wolfram" it is the target-vertex Wolfram-Ricci scalar averaged
-   over the chosen radii range, R-bar(w); the rope at v feels the
-   curvature of the cell it is about to enter. *)
+(* buildEdgeKappa returns the (v, w) |-> Real closure that the
+   CurvatureMinimizing frontier sweep MinimalBy's on.  Dispatches on the
+   normalised curvature spec produced by parseCurvatureSpec: "Forman"
+   forwards Method to FormanRicci and uses the symmetric edge curvature
+   F(v, w); "Wolfram" forwards Dimension and Radii to WolframRicci and
+   uses the target-vertex Wolfram-Ricci scalar (the rope at v feels the
+   curvature of the cell it is about to enter). *)
 
-buildEdgeKappa[ graph_Graph, "Forman", formanMethod_, _, _ ] :=
-  With[ { fEdges = FormanRicciCurvature[ graph, Method -> formanMethod ] },
+buildEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Forman", "Method" -> formanMethod_ } ] ] :=
+  With[ { fEdges = FormanRicci[ graph, Method -> formanMethod ] },
     With[ { fSym = Join[
         fEdges,
         AssociationThread[
@@ -208,20 +259,18 @@ buildEdgeKappa[ graph_Graph, "Forman", formanMethod_, _, _ ] :=
     ]
   ]
 
-buildEdgeKappa[ graph_Graph, "Wolfram", _, dim_, radii_ ] :=
-  With[ { vertexScalars = If[ radii === Automatic,
-        WolframRicciScalar[ graph, All, "Dimension" -> dim ],
-        WolframRicciScalar[ graph, All, radii, "Dimension" -> dim ]
+buildEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Wolfram", "Dimension" -> dim_, "Radii" -> radii_ } ] ] :=
+  With[ { vertexKappa = If[ radii === Automatic,
+        WolframRicci[ graph, "Dimension" -> dim ],
+        WolframRicci[ graph, radii, "Dimension" -> dim ]
       ] },
-    With[ { vertexKappa = Mean[ Values[ # ] ] & /@ vertexScalars },
-      { v, w } |-> vertexKappa[ w ]
-    ]
+    { v, w } |-> vertexKappa[ w ]
   ]
 
 
 (* embeddingFindSegmentPaths returns paths from p1 to p2 sorted by their
    embedding-Hausdorff distance to the straight Euclidean segment p1 p2.
-   Constraint "Geodesic" recurses through the geodesic DAG; "Free"
+   Pool "ShortestPaths" recurses through the geodesic DAG; "AllPaths"
    recurses through the whole graph along simple-path extensions. *)
 
 embeddingFindSegmentPaths[ graph_Graph, p1_, p2_, embOpts_Association ] :=
@@ -229,9 +278,9 @@ embeddingFindSegmentPaths[ graph_Graph, p1_, p2_, embOpts_Association ] :=
     coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
     vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
     prune = embOpts[ "Pruning" ];
-    extendFn = If[ embOpts[ "Constraint" ] === "Geodesic",
+    extendFn = If[ embOpts[ "Pool" ] === "ShortestPaths",
       dagNbrs = geodesicDAGNeighbors[ graph, p1, p2 ];
-      ( path |-> Lookup[ dagNbrs, Last[ path ], { } ] ),
+      ( path |-> Lookup[ dagNbrs, Key[ Last[ path ] ], { } ] ),
       ( path |-> Complement[ AdjacencyList[ graph, Last[ path ] ], path ] )
     ];
     paths = generateEmbeddingPaths[ extendFn, { p1 }, ( Last[ # ] === p2 & ), prune ];
@@ -239,10 +288,6 @@ embeddingFindSegmentPaths[ graph_Graph, p1_, p2_, embOpts_Association ] :=
     SortBy[ paths,
       path |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, path ], ep ] ]
   ]
-
-FindSegment[ graph_Graph, { p1_, p2_ }, args___ ] :=
-  FindSegment[ graph, p1, p2, args ]
-
 
 (* ===================== Lines ===================== *)
 
@@ -254,48 +299,74 @@ FindSegment[ graph_Graph, { p1_, p2_ }, args___ ] :=
    length equals GraphDiameter[g].
      Method axis is shared with FindSegment / ExtendSegment.
    "Shortest" (default) returns every maximal geodesic extension.
-   "Extended" returns every maximal geodesic extension of every
-   "Extended"-segment from p1 to p2 (the underlying middle path is then a
+   "ShortestPathExtension" returns every maximal geodesic extension of every
+   "ShortestPathExtension"-segment from p1 to p2 (the underlying middle path is then a
    recency-lex-certified simple path, the prefix and suffix are still
-   geodesic).  "Pulled" does the same with curvature-pulled middle paths.
+   geodesic).  "CurvatureMinimizing" does the same with curvature-pulled middle paths.
    "Embedding" ranks the extensions by EmbeddingHausdorffDistance to the
    infinite Euclidean line through p1 and p2 under the graph drawing.
    To extend a given segment to a line, use ExtendSegment. *)
 
 FindLine::badmethod = "Method `1` is not supported by FindLine.";
-FindLine::nyi = "Constraint `1` is not yet implemented for FindLine; use \"Geodesic\".";
+FindLine::nyi = "Pool `1` is not yet implemented for FindLine; use \"ShortestPaths\".";
 
 Options[ FindLine ] = { "Maximality" -> "Extension", Method -> "Shortest" };
 
-FindLine[ graph_Graph, p1_, p2_, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
-  Module[ { spec, methodName, middles, allExtensions, diam },
-    spec = OptionValue[ Method ];
+(* FindLine public dispatcher: spreads multi-realisation endpoints over the
+   Cartesian product of realisations, runs the single-pair core for each,
+   unions the bare-list results, and wraps as InfraSegment[...].  Strict-n
+   shortfall on any pair propagates as $Failed.                              *)
+
+FindLine[ graph_Graph, p1_, p2_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  infraSpreadAndCartesian[ InfraSegment, count,
+    findLineCore[ graph, ##, count, opts ] &, p1, p2 ]
+
+
+(* findLineCore is the single-pair body: returns a bare list of maximal
+   geodesic extensions through p1 and p2, capped to count.  $Failed on
+   strict-n shortfall or unknown method.                                     *)
+
+findLineCore[ graph_Graph, p1_, p2_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindLine ] ] /;
+    MemberQ[ VertexList[ graph ], p1 ] :=
+  Module[ { spec, methodName, middles, allExtensions, diam, ranked },
+    spec = OptionValue[ FindLine, { opts }, Method ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, Automatic -> "Shortest", _ :> spec } ];
     middles = Switch[ methodName,
       "Shortest" | "Embedding", allGeodesics[ graph, p1, p2 ],
-      "Extended" | "Pulled",
-        With[ { paths = FindSegment[ graph, p1, p2, All, Method -> spec ] },
+      "ShortestPathExtension" | "CurvatureMinimizing",
+        With[ { paths = findSegmentCore[ graph, p1, p2, All, Method -> spec ] },
           If[ paths === $Failed || ! ListQ[ paths ], { }, paths ]
         ],
       _, $Failed
     ];
     If[ middles === $Failed, Message[ FindLine::badmethod, spec ]; Return[ $Failed ] ];
     allExtensions = Union @ Flatten[ findLineExtensions[ graph, # ] & /@ middles, 1 ];
-    If[ OptionValue[ "Maximality" ] === "Diameter",
+    If[ OptionValue[ FindLine, { opts }, "Maximality" ] === "Diameter",
       diam = GraphDiameter[ graph ];
       allExtensions = Select[ allExtensions, line |-> Length[ line ] - 1 == diam ]
     ];
-    Switch[ methodName,
-      "Shortest" | "Extended" | "Pulled", allExtensions,
+    ranked = Switch[ methodName,
+      "Shortest" | "ShortestPathExtension" | "CurvatureMinimizing", allExtensions,
       "Embedding",
         With[ { embOpts = parseEmbeddingMethod[ spec ] },
-          If[ embOpts[ "Constraint" ] =!= "Geodesic",
-            Message[ FindLine::nyi, embOpts[ "Constraint" ] ]; allExtensions,
+          If[ embOpts[ "Pool" ] =!= "ShortestPaths",
+            Message[ FindLine::nyi, embOpts[ "Pool" ] ]; allExtensions,
             embeddingRankLines[ graph, allExtensions, p1, p2, embOpts ]
           ]
         ]
+    ];
+    Which[
+      MatchQ[ count, _Integer ] && Length[ ranked ] < count, $Failed,
+      MatchQ[ count, _Integer ],                              Take[ ranked, count ],
+      MatchQ[ count, UpTo[ _Integer ] ],                      Take[ ranked, count ],
+      count === All,                                          ranked,
+      True,                                                   ranked
     ]
   ]
+
+findLineCore[ _Graph, _, _, _, OptionsPattern[ FindLine ] ] := $Failed
 
 
 (* embeddingRankLines sorts maximal extensions by their Hausdorff distance
@@ -312,14 +383,6 @@ embeddingRankLines[ graph_Graph, lines_List, p1_, p2_, embOpts_Association ] :=
     ep = Lookup[ vertexIndex, { p1, p2 } ];
     SortBy[ lines,
       line |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, line ], ep ] ]
-  ]
-
-FindLine[ graph_Graph, p1_, p2_, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
-  Take[ FindLine[ graph, p1, p2, All, opts ], UpTo[ n ] ]
-
-FindLine[ graph_Graph, p1_, p2_, n_Integer : 1, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ graph ], p1 ] :=
-  With[ { result = FindLine[ graph, p1, p2, UpTo[ n ], opts ] },
-    If[ Length[ result ] < n, $Failed, result ]
   ]
 
 findLineExtensions[ graph_Graph, segment_List ] :=
@@ -369,8 +432,8 @@ findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_ ] :=
 (* ExtendSegment[g, segment] takes a vertex sequence and extends it to a
    line: a maximal vertex sequence containing segment as a contiguous
    sub-sequence, every prefix / suffix of which is itself a path (geodesic
-   for "Shortest", recency-lex-certified for "Extended", curvature-pulled
-   for "Pulled", embedding-line-aligned for "Embedding"). The Method axis
+   for "Shortest", recency-lex-certified for "ShortestPathExtension", curvature-pulled
+   for "CurvatureMinimizing", embedding-line-aligned for "Embedding"). The Method axis
    matches FindSegment / FindLine: every method is a path-enumeration
    strategy on the prefix and suffix; the candidate before / after vertices
    are selected by the geodesic relation
@@ -380,60 +443,63 @@ findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_ ] :=
 
 ExtendSegment::badmethod = "Method `1` is not supported by ExtendSegment.";
 ExtendSegment::badpruning = "Pruning specification `1` is not supported; use Infinity, a positive integer (beam width), or a number 0 < p < 1 (Bernoulli keep probability).";
-ExtendSegment::badlookback = "Lookback specification `1` is not supported; use a positive integer or All.";
-ExtendSegment::badforman = "FormanMethod specification `1` is not supported; use \"Simple\" or \"Triangles\".";
-ExtendSegment::badcurvature = "CurvatureMethod specification `1` is not supported; use \"Forman\" or \"Wolfram\".";
-ExtendSegment::baddim = "Dimension specification `1` is not supported; use Automatic or a positive number.";
-ExtendSegment::badradii = "Radii specification `1` is not supported; use Automatic or {rmin, rmax} with 1 <= rmin <= rmax.";
+ExtendSegment::badwindow = "ShortestPathWindow specification `1` is not supported; use a positive integer or All.";
+ExtendSegment::badcurvature = "Curvature specification `1` is not supported; use \"Forman\", \"Wolfram\", {\"Forman\", Method -> \"Simple\" | \"Triangles\"}, or {\"Wolfram\", \"Dimension\" -> Automatic | d, \"Radii\" -> Automatic | {rmin, rmax}}.";
 
 Options[ ExtendSegment ] = { Method -> "Shortest" };
 
-ExtendSegment[ graph_Graph, segment_List,
-    count : (_Integer | UpTo[ _Integer ] | All) : 1, opts : OptionsPattern[] ] :=
-  Module[ { spec, methodName, prune, lookback, formanMethod, curvatureMethod, dim, radii, edgeKappa, paths },
+(* ExtendSegment public dispatcher: spreads multi-realisation segment input
+   (InfraSegment[{seg1, seg2, ...}]) over each realisation, runs the
+   single-segment core for each, unions the bare-list results, and wraps as
+   InfraSegment[...].  Strict-n shortfall on any input segment propagates as
+   $Failed.                                                                  *)
+
+ExtendSegment[ graph_Graph, segment_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  infraSpreadAndCartesian[ InfraSegment, count,
+    extendSegmentCore[ graph, ##, count, opts ] &, segment ]
+
+
+(* extendSegmentCore is the single-segment body. *)
+
+extendSegmentCore[ graph_Graph, segment_List,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ ExtendSegment ] ] :=
+  Module[ { spec, methodName, prune, shortestPathWindow, curvature, curvatureSpec, edgeKappa, paths },
     If[ Length[ segment ] < 2, Return[ { segment } ] ];
-    spec = OptionValue[ Method ];
+    spec = OptionValue[ ExtendSegment, { opts }, Method ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, Automatic -> "Shortest", _ :> spec } ];
-    { prune, lookback, formanMethod, curvatureMethod, dim, radii } = Replace[ spec, {
-      _String :> { Infinity, 2, "Simple", "Forman", Automatic, Automatic },
+    { prune, shortestPathWindow, curvature } = Replace[ spec, {
+      _String :> { Infinity, 2, "Forman" },
       { _String, subOpts___ } :> {
-        "Pruning"         /. { subOpts } /. "Pruning"         -> Infinity,
-        "Lookback"        /. { subOpts } /. "Lookback"        -> 2,
-        "FormanMethod"    /. { subOpts } /. "FormanMethod"    -> "Simple",
-        "CurvatureMethod" /. { subOpts } /. "CurvatureMethod" -> "Forman",
-        "Dimension"       /. { subOpts } /. "Dimension"       -> Automatic,
-        "Radii"           /. { subOpts } /. "Radii"           -> Automatic
+        "Pruning"            /. { subOpts } /. "Pruning"            -> Infinity,
+        "ShortestPathWindow" /. { subOpts } /. "ShortestPathWindow" -> 2,
+        "Curvature"          /. { subOpts } /. "Curvature"          -> "Forman"
       },
-      _ :> { Infinity, 2, "Simple", "Forman", Automatic, Automatic }
+      _ :> { Infinity, 2, "Forman" }
     } ];
     paths = Switch[ methodName,
       "Shortest",
         findLineExtensions[ graph, segment ],
-      "Extended",
+      "ShortestPathExtension",
         Which[
           ! pruningSpecQ[ prune ],
             Message[ ExtendSegment::badpruning, prune ]; $Failed,
-          ! lookbackSpecQ[ lookback ],
-            Message[ ExtendSegment::badlookback, lookback ]; $Failed,
+          ! shortestPathWindowSpecQ[ shortestPathWindow ],
+            Message[ ExtendSegment::badwindow, shortestPathWindow ]; $Failed,
           True,
             findLineExtensionsWith[ graph, segment,
-              { s, p, db } |-> extendedOutPaths[ graph, s, p, prune, lookback, Infinity ],
-              { p, e, da } |-> extendedOutPaths[ graph, p, e, prune, lookback, Infinity ] ]
+              { s, p, db } |-> extendedOutPaths[ graph, s, p, prune, shortestPathWindow, Infinity ],
+              { p, e, da } |-> extendedOutPaths[ graph, p, e, prune, shortestPathWindow, Infinity ] ]
         ],
-      "Pulled",
+      "CurvatureMinimizing",
+        curvatureSpec = parseCurvatureSpec[ curvature ];
         Which[
-          ! curvatureMethodSpecQ[ curvatureMethod ],
-            Message[ ExtendSegment::badcurvature, curvatureMethod ]; $Failed,
-          ! formanMethodSpecQ[ formanMethod ],
-            Message[ ExtendSegment::badforman, formanMethod ]; $Failed,
-          ! dimensionSpecQ[ dim ],
-            Message[ ExtendSegment::baddim, dim ]; $Failed,
-          ! radiiSpecQ[ radii ],
-            Message[ ExtendSegment::badradii, radii ]; $Failed,
+          curvatureSpec === $Failed,
+            Message[ ExtendSegment::badcurvature, curvature ]; $Failed,
           ! pruningSpecQ[ prune ],
             Message[ ExtendSegment::badpruning, prune ]; $Failed,
           True,
-            edgeKappa = buildEdgeKappa[ graph, curvatureMethod, formanMethod, dim, radii ];
+            edgeKappa = buildEdgeKappa[ graph, curvatureSpec ];
             findLineExtensionsWith[ graph, segment,
               { s, p, db } |-> pulledPaths[ graph, s, p, edgeKappa, prune, Infinity, Automatic ],
               { p, e, da } |-> pulledPaths[ graph, p, e, edgeKappa, prune, Infinity, Automatic ] ]
@@ -524,44 +590,51 @@ FindShell::badmethod = "Method `1` is not supported by FindShell.";
 
 Options[ FindShell ] = { Method -> "Metric" };
 
-FindShell[ graph_Graph, p_, r_, All, opts : OptionsPattern[] ] :=
-  Module[ { spec, methodName, range, levelSet, radius },
-    spec = OptionValue[ Method ];
+FindShell[ graph_Graph, p_, r_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  infraSpreadAndCartesian[ InfraShell, count,
+    findShellCore[ graph, ##, count, opts ] &, p, r ]
+
+
+findShellCore[ graph_Graph, p_, r_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindShell ] ] :=
+  Module[ { spec, methodName, range, levelSet, radius, shells },
+    spec = OptionValue[ FindShell, { opts }, Method ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
     range = Replace[ r, d_?NumericQ :> { d, d } ];
     levelSet = Select[ VertexList[ graph ],
       range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ];
     radius = If[ NumericQ[ r ], r, Mean[ r ] ];
-    Switch[ methodName,
+    shells = Switch[ methodName,
       "Metric",     { levelSet },
       "Separating", FindMinimalSeparatingSubgraphs[ graph, levelSet, p, radius ],
-      "Embedding",  embeddingRankShellVertices[ graph, p, radius, levelSet, parseEmbeddingMethod[ spec ] ],
+      "Embedding",  embeddingRankShellVertices[ graph, p, radius, levelSet, parseEmbeddingMethod[ spec, "LevelSet" ] ],
       _,            Message[ FindShell::badmethod, spec ]; $Failed
+    ];
+    Which[
+      shells === $Failed, $Failed,
+      MatchQ[ count, _Integer ] && Length[ shells ] < count, $Failed,
+      MatchQ[ count, _Integer ],          Take[ shells, count ],
+      MatchQ[ count, UpTo[ _Integer ] ],  Take[ shells, count ],
+      count === All,                       shells,
+      True,                                shells
     ]
   ]
 
 
 (* embeddingRankShellVertices returns single-vertex sets {v}, ordered by
    how close v is to the Euclidean sphere of radius r centred at coord(p):
-   score = | |coord(v) - coord(p)| - r |.  Constraint "Geodesic" restricts
-   to vertices on the metric level surface; "Free" ranks every vertex. *)
+   score = | |coord(v) - coord(p)| - r |.  Pool "LevelSet" restricts to
+   vertices on the metric level surface; "AllVertices" ranks every vertex. *)
 
 embeddingRankShellVertices[ graph_Graph, p_, radius_, levelSet_, embOpts_Association ] :=
   Module[ { coords, vertexIndex, centerPt, pool },
     coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
     vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
     centerPt = coords[[ vertexIndex[ p ] ]];
-    pool = If[ embOpts[ "Constraint" ] === "Free", VertexList[ graph ], levelSet ];
+    pool = If[ embOpts[ "Pool" ] === "AllVertices", VertexList[ graph ], levelSet ];
     List /@ SortBy[ pool,
       v |-> Abs[ EuclideanDistance[ coords[[ vertexIndex[ v ] ]], centerPt ] - radius ] ]
-  ]
-
-FindShell[ graph_Graph, p_, r_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  Take[ FindShell[ graph, p, r, All, opts ], UpTo[ n ] ]
-
-FindShell[ graph_Graph, p_, r_, n_Integer : 1, opts : OptionsPattern[] ] :=
-  With[ { result = FindShell[ graph, p, r, UpTo[ n ], opts ] },
-    If[ Length[ result ] < n, $Failed, result ]
   ]
 
 
@@ -576,12 +649,19 @@ FindShell[ graph_Graph, p_, r_, n_Integer : 1, opts : OptionsPattern[] ] :=
    centred at coord(p) under the graph drawing. *)
 
 FindCircle::badmethod = "Method `1` is not supported by FindCircle.";
-FindCircle::nyi = "Constraint `1` is not yet implemented for FindCircle; use \"Geodesic\".";
+FindCircle::nyi = "Pool `1` is not yet implemented for FindCircle; use \"LevelSet\".";
 
 Options[ FindCircle ] = { Method -> "Metric" };
 
-FindCircle[ graph_Graph, p_, r_, All, opts : OptionsPattern[] ] :=
-  Module[ { range, levelSet, radius, levelGraph, allCycles, vertexCycles, separating, spec, methodName },
+FindCircle[ graph_Graph, p_, r_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  infraSpreadAndCartesian[ InfraCircle, count,
+    findCircleCore[ graph, ##, count, opts ] &, p, r ]
+
+
+findCircleCore[ graph_Graph, p_, r_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindCircle ] ] :=
+  Module[ { range, levelSet, radius, levelGraph, allCycles, vertexCycles, separating, spec, methodName, ranked },
     range = Replace[ r, d_?NumericQ :> { d, d } ];
     levelSet = Select[ VertexList[ graph ],
       range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ];
@@ -592,27 +672,27 @@ FindCircle[ graph_Graph, p_, r_, All, opts : OptionsPattern[] ] :=
       vertexCycles = (First /@ #) & /@ allCycles;
       FindSeparatingCycles[ graph, vertexCycles, p, radius ]
     ];
-    spec = OptionValue[ Method ];
+    spec = OptionValue[ FindCircle, { opts }, Method ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    Switch[ methodName,
+    ranked = Switch[ methodName,
       "Metric", separating,
       "Embedding",
-        With[ { embOpts = parseEmbeddingMethod[ spec ] },
-          If[ embOpts[ "Constraint" ] =!= "Geodesic",
-            Message[ FindCircle::nyi, embOpts[ "Constraint" ] ]; separating,
+        With[ { embOpts = parseEmbeddingMethod[ spec, "LevelSet" ] },
+          If[ embOpts[ "Pool" ] =!= "LevelSet",
+            Message[ FindCircle::nyi, embOpts[ "Pool" ] ]; separating,
             embeddingRankCircles[ graph, separating, p, radius, embOpts ]
           ]
         ],
       _, Message[ FindCircle::badmethod, spec ]; $Failed
+    ];
+    Which[
+      ranked === $Failed, $Failed,
+      MatchQ[ count, _Integer ] && Length[ ranked ] < count, $Failed,
+      MatchQ[ count, _Integer ],          Take[ ranked, count ],
+      MatchQ[ count, UpTo[ _Integer ] ],  Take[ ranked, count ],
+      count === All,                       ranked,
+      True,                                ranked
     ]
-  ]
-
-FindCircle[ graph_Graph, p_, r_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  Take[ FindCircle[ graph, p, r, All, opts ], UpTo[ n ] ]
-
-FindCircle[ graph_Graph, p_, r_, n_Integer : 1, opts : OptionsPattern[] ] :=
-  With[ { result = FindCircle[ graph, p, r, UpTo[ n ], opts ] },
-    If[ Length[ result ] < n, $Failed, result ]
   ]
 
 
@@ -643,16 +723,32 @@ FindParallel::badmethod = "Method `1` is not supported by FindParallel.";
 
 Options[ FindParallel ] = { Method -> "Metric" };
 
-FindParallel[ graph_Graph, line_List, p_, All, opts : OptionsPattern[] ] :=
-  Module[ { spec = OptionValue[ Method ], methodName },
+FindParallel[ graph_Graph, line_, p_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  infraSpreadAndCartesian[ InfraSegment, count,
+    findParallelCore[ graph, ##, count, opts ] &, line, p ]
+
+
+findParallelCore[ graph_Graph, line_List, p_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindParallel ] ] :=
+  Module[ { spec, methodName, parallels },
+    spec = OptionValue[ FindParallel, { opts }, Method ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    Switch[ methodName,
+    parallels = Switch[ methodName,
       "Metric", findParallelMetric[ graph, line, p ],
       "Embedding",
-        With[ { embOpts = parseEmbeddingMethod[ spec ] },
+        With[ { embOpts = parseEmbeddingMethod[ spec, "LevelSet" ] },
           embeddingRankParallels[ graph, findParallelMetric[ graph, line, p ], line, p, embOpts ]
         ],
       _, Message[ FindParallel::badmethod, methodName ]; $Failed
+    ];
+    Which[
+      parallels === $Failed, $Failed,
+      MatchQ[ count, _Integer ] && Length[ parallels ] < count, $Failed,
+      MatchQ[ count, _Integer ],          Take[ parallels, count ],
+      MatchQ[ count, UpTo[ _Integer ] ],  Take[ parallels, count ],
+      count === All,                       parallels,
+      True,                                parallels
     ]
   ]
 
@@ -703,12 +799,3 @@ embeddingRankParallels[ graph_Graph, parallels_List, line_List, p_, embOpts_Asso
         Lookup[ vertexIndex, par ], { n + 1, n + 2 } ] ]
   ]
 
-FindParallel[ graph_Graph, line_List, p_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  With[ { result = FindParallel[ graph, line, p, All, opts ] },
-    If[ ListQ[ result ], Take[ result, UpTo[ n ] ], result ]
-  ]
-
-FindParallel[ graph_Graph, line_List, p_, n_Integer : 1, opts : OptionsPattern[] ] :=
-  With[ { result = FindParallel[ graph, line, p, UpTo[ n ], opts ] },
-    Which[ ! ListQ[ result ], result, Length[ result ] < n, $Failed, True, result ]
-  ]

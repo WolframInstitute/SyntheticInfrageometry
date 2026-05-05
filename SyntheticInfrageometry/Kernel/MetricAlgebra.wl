@@ -1,16 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[tropicalProduct]
-PackageScope[tropicalPower]
-
-
-(* ===================== Tropical matrix helpers (internal) ===================== *)
-
-tropicalProduct[ A_?MatrixQ, B_?MatrixQ ] := Inner[ Plus, A, B, Min ]
-
-tropicalPower[ A_?MatrixQ, 1 ] := A
-tropicalPower[ A_?MatrixQ, k_Integer /; k > 1 ] :=
-  Nest[ tropicalProduct[ #, A ] &, A, k - 1 ]
+(* TropicalDot, used by DistanceMatrixQ for the tropical-idempotence
+   form of the triangle inequality, lives in TropicalOperations.wl. *)
 
 
 (* ===================== MetricInterval ===================== *)
@@ -89,7 +80,7 @@ DistanceMatrixQ[ M_?MatrixQ ] :=
     AllTrue[ Diagonal[ M ], # === 0 & ],
     AllTrue[ Flatten[ M ],
       # === Infinity || ( IntegerQ[ # ] && # >= 0 ) || ( NumericQ[ # ] && # >= 0 ) & ],
-    tropicalProduct[ M, M ] === M
+    TropicalDot[ M, M ] === M
   ]
 
 DistanceMatrixQ[ _ ] := False

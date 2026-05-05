@@ -4,25 +4,25 @@ BeginTestSection["EuclideanConstructions"]
 
 VerificationTest[
   FindMidpoint[PathGraph[Range[5]], {1, 2, 3, 4, 5}],
-  3,
+  InfraPoint[{3}],
   TestID -> "FindMidpoint-segment-odd-length"
 ]
 
 VerificationTest[
   FindMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}],
-  2,
+  InfraPoint[{2}],
   TestID -> "FindMidpoint-segment-even-length-lower-central"
 ]
 
 VerificationTest[
   FindMidpoint[PathGraph[Range[5]], 1, 5],
-  {3},
+  InfraPoint[{3}],
   TestID -> "FindMidpoint-endpoints-strict-1"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], d = GraphDistance[GridGraph[{3, 3}], 1, 9]},
-    Sort @ FindMidpoint[g, 1, 9, All] ===
+    Sort @ FindMidpoint[g, 1, 9, All]["Realisations"] ===
       Sort @ DeleteDuplicates[
         #[[ Ceiling[ Length[#] / 2 ] ]] & /@ FindPath[g, 1, 9, {d}, All]
       ]
@@ -32,7 +32,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Length @ FindMidpoint[GridGraph[{3, 3}], 1, 9, UpTo[2]] <= 2,
+  FindMidpoint[GridGraph[{3, 3}], 1, 9, UpTo[2]]["Length"] <= 2,
   True,
   TestID -> "FindMidpoint-upto-soft"
 ]
@@ -61,12 +61,12 @@ VerificationTest[
 
 VerificationTest[
   FindPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All],
-  {2},
+  InfraPoint[{2}],
   TestID -> "FindPerpendicular-CycleGraph5"
 ]
 
 VerificationTest[
-  With[{feet = FindPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All]},
+  With[{feet = FindPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All]["Realisations"]},
     AllTrue[feet, MemberQ[{1, 2, 3, 4}, #] &]
   ],
   True,
@@ -75,7 +75,7 @@ VerificationTest[
 
 VerificationTest[
   FindPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, 1],
-  {2},
+  InfraPoint[{2}],
   TestID -> "FindPerpendicular-strict-1"
 ]
 
@@ -92,13 +92,13 @@ VerificationTest[
    disconnects 1 from 5 and is the only minimal hyperplane. *)
 VerificationTest[
   FindBisectingHyperplane[PathGraph[Range[5]], 1, 5],
-  {{3}},
+  InfraPlane[{{3}}],
   TestID -> "FindBisectingHyperplane-path-center"
 ]
 
 VerificationTest[
   FindBisectingHyperplane[PathGraph[Range[5]], 1, 5, All],
-  FindBisectingHyperplane[PathGraph[Range[5]], {1, 5}, All],
+  FindBisectingHyperplane[PathGraph[Range[5]], InfraPoint[{1}], InfraPoint[{5}], All],
   TestID -> "FindBisectingHyperplane-list-form-equiv"
 ]
 
@@ -107,7 +107,7 @@ VerificationTest[
    disconnect them. *)
 VerificationTest[
   FindBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All],
-  {{3, 5, 7}},
+  InfraPlane[{{3, 5, 7}}],
   TestID -> "FindBisectingHyperplane-grid-antidiagonal"
 ]
 
@@ -115,7 +115,7 @@ VerificationTest[
    so no hyperplane exists in the {0, 0} window. *)
 VerificationTest[
   FindBisectingHyperplane[PathGraph[Range[6]], 1, 6, All],
-  {},
+  InfraPlane[{}],
   TestID -> "FindBisectingHyperplane-odd-distance-empty"
 ]
 
@@ -123,7 +123,7 @@ VerificationTest[
    3 and 4 individually disconnects 1 from 6, giving two minimal
    hyperplanes within the thickened bisector. *)
 VerificationTest[
-  Sort @ FindBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, All],
+  Sort @ FindBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, All]["Realisations"],
   {{3}, {4}},
   TestID -> "FindBisectingHyperplane-thickened-path"
 ]
@@ -132,13 +132,13 @@ VerificationTest[
    is {2, 3, 5, 6}; cutting either arc requires one vertex from {2, 3}
    and one from {5, 6}, giving four minimal hyperplanes. *)
 VerificationTest[
-  Sort @ ( Sort /@ FindBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, All] ),
+  Sort @ ( Sort /@ FindBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, All]["Realisations"] ),
   {{2, 5}, {2, 6}, {3, 5}, {3, 6}},
   TestID -> "FindBisectingHyperplane-cycle-thickened"
 ]
 
 VerificationTest[
-  Length @ FindBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, UpTo[2]],
+  FindBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, UpTo[2]]["Length"],
   2,
   TestID -> "FindBisectingHyperplane-upto-soft"
 ]
@@ -149,23 +149,31 @@ VerificationTest[
   TestID -> "FindBisectingHyperplane-strict-fails-when-too-few"
 ]
 
+(* FindBisectingHyperplane returns InfraPlane (not InfraShell) so the two
+   set-shaped wrappers stay distinct. *)
+VerificationTest[
+  Head @ FindBisectingHyperplane[PathGraph[Range[5]], 1, 5],
+  InfraPlane,
+  TestID -> "FindBisectingHyperplane-wraps-as-InfraPlane"
+]
+
 (* ===== CompleteEquilateralTriangle ===== *)
 
 VerificationTest[
-  Sort @ CompleteEquilateralTriangle[CycleGraph[6], 1, 3, All],
+  Sort @ CompleteEquilateralTriangle[CycleGraph[6], 1, 3, All]["Realisations"],
   {5},
   TestID -> "CompleteEquilateralTriangle-cycle6"
 ]
 
 VerificationTest[
   CompleteEquilateralTriangle[PathGraph[Range[5]], 1, 5, All],
-  {},
+  InfraPoint[{}],
   TestID -> "CompleteEquilateralTriangle-path-no-apex"
 ]
 
 VerificationTest[
   CompleteEquilateralTriangle[CompleteGraph[4], 1, 2, 1],
-  {3},
+  InfraPoint[{3}],
   TestID -> "CompleteEquilateralTriangle-K4-strict-1"
 ]
 
@@ -176,30 +184,30 @@ VerificationTest[
   TestID -> "CompleteEquilateralTriangle-spectral-stub"
 ]
 
-(* ===== GraphAngle ===== *)
+(* ===== InfraAngle ===== *)
 
 VerificationTest[
-  GraphAngle[CycleGraph[6], {1, 2, 3}],
+  InfraAngle[CycleGraph[6], {1, 2, 3}],
   4,
-  TestID -> "GraphAngle-cycle-local"
+  TestID -> "InfraAngle-cycle-local"
 ]
 
 VerificationTest[
-  GraphAngle[PathGraph[Range[5]], {1, 3, 5}],
+  InfraAngle[PathGraph[Range[5]], {1, 3, 5}],
   Infinity,
-  TestID -> "GraphAngle-path-infinite"
+  TestID -> "InfraAngle-path-infinite"
 ]
 
 VerificationTest[
-  GraphAngle[CompleteGraph[4], {2, 1, 3}],
+  InfraAngle[CompleteGraph[4], {2, 1, 3}],
   1,
-  TestID -> "GraphAngle-complete-graph"
+  TestID -> "InfraAngle-complete-graph"
 ]
 
 VerificationTest[
-  GraphAngle[CycleGraph[6], {1, 2, 3}] == GraphAngle[CycleGraph[6], {3, 2, 1}],
+  InfraAngle[CycleGraph[6], {1, 2, 3}] == InfraAngle[CycleGraph[6], {3, 2, 1}],
   True,
-  TestID -> "GraphAngle-symmetric"
+  TestID -> "InfraAngle-symmetric"
 ]
 
 (* ===== SegmentLineAngle ===== *)
@@ -246,7 +254,7 @@ VerificationTest[
 
 VerificationTest[
   FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All, Method -> "Metric"],
-  {{5, 6, 7, 8}},
+  InfraSegment[{{5, 6, 7, 8}}],
   TestID -> "FindParallel-explicit-metric"
 ]
 
@@ -268,14 +276,14 @@ VerificationTest[
 (* ===== FindMidpoint Method -> "Embedding" ===== *)
 
 VerificationTest[
-  MemberQ[ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> "Metric" ],
-           First @ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, 1, Method -> "Embedding" ] ],
+  MemberQ[ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> "Metric" ][ "Realisations" ],
+           FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, 1, Method -> "Embedding" ][ "First" ] ],
   True,
   TestID -> "FindMidpoint-Embedding-Geodesic-in-metric-set"
 ]
 
 VerificationTest[
-  Length @ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> { "Embedding", "Constraint" -> "Geodesic" } ],
+  FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> { "Embedding", "Pool" -> "ShortestPaths" } ][ "Length" ],
   Length @ Select[ VertexList[ GridGraph[ { 5, 5 } ] ],
     GraphDistance[ GridGraph[ { 5, 5 } ], 1, # ] + GraphDistance[ GridGraph[ { 5, 5 } ], #, 25 ] ==
       GraphDistance[ GridGraph[ { 5, 5 } ], 1, 25 ] & ],
@@ -283,22 +291,22 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Length @ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> { "Embedding", "Constraint" -> "Free" } ],
+  FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> { "Embedding", "Pool" -> "AllPaths" } ][ "Length" ],
   25,
-  TestID -> "FindMidpoint-Embedding-Free-pool-equals-all-vertices"
+  TestID -> "FindMidpoint-Embedding-AllPaths-pool-equals-all-vertices"
 ]
 
 
 (* ===== FindPerpendicular Method -> "Embedding" ===== *)
 
 VerificationTest[
-  Sort @ FindPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ],
+  Sort @ FindPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ][ "Realisations" ],
   { 1, 2, 3, 4, 5 },
   TestID -> "FindPerpendicular-Embedding-pool-equals-line"
 ]
 
 VerificationTest[
-  First @ FindPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ],
+  FindPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ][ "First" ],
   3,
   TestID -> "FindPerpendicular-Embedding-closest-foot-is-projection"
 ]

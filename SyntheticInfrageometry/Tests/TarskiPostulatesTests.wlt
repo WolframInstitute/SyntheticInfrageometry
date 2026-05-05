@@ -4,19 +4,19 @@ BeginTestSection["TarskiPostulates"]
 
 VerificationTest[
   FindTarskiSegmentExtension[PathGraph[Range[5]], 1, 2, 1, 2, All],
-  {3},
+  InfraPoint[{3}],
   TestID -> "FindTarskiSegmentExtension-PathGraph-extends-by-one"
 ]
 
 VerificationTest[
   FindTarskiSegmentExtension[PathGraph[Range[5]], 1, 2, 1, 3, All],
-  {4},
+  InfraPoint[{4}],
   TestID -> "FindTarskiSegmentExtension-PathGraph-extends-by-two"
 ]
 
 VerificationTest[
   FindTarskiSegmentExtension[PathGraph[Range[5]], 1, 2, 1, 5, All],
-  {},
+  InfraPoint[{}],
   TestID -> "FindTarskiSegmentExtension-PathGraph-no-room"
 ]
 
@@ -28,12 +28,12 @@ VerificationTest[
 
 VerificationTest[
   FindTarskiSegmentExtension[PathGraph[Range[5]], 1, 2, 1, 5, UpTo[1]],
-  {},
+  InfraPoint[{}],
   TestID -> "FindTarskiSegmentExtension-PathGraph-UpTo-empty-not-failed"
 ]
 
 VerificationTest[
-  Length @ FindTarskiSegmentExtension[CycleGraph[6], 1, 2, 1, 2, All] >= 1,
+  FindTarskiSegmentExtension[CycleGraph[6], 1, 2, 1, 2, All]["Length"] >= 1,
   True,
   TestID -> "FindTarskiSegmentExtension-CycleGraph-has-extension"
 ]

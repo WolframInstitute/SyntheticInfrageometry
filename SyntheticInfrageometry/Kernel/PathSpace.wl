@@ -6,7 +6,6 @@ PackageScope[MinimalSeparationDistance]
 PackageScope[EmbeddingHausdorffDistance]
 PackageScope[EmbeddingCircleDistance]
 PackageScope[pathFilterPairwiseDistances]
-PackageScope[applyPathSpaceSelector]
 PackageScope[geodesicDAGNeighbors]
 PackageScope[generateEmbeddingPaths]
 PackageScope[resolveEmbeddingCoords]
@@ -106,56 +105,70 @@ pathFilterPairwiseDistances[ graph_Graph, paths_List, baseDist_, cyclic_ ] :=
   ]
 
 
-(* ===================== Path-space selectors: paths ===================== *)
+(* ===================== Path-space selectors ===================== *)
 
-(* CentralPaths[g, paths] keeps the paths that minimise their maximum
-   path-space distance to the rest of the input -- the metric centres of
-   the path bundle.  PeripheralPaths keeps those that maximise the same
-   eccentricity instead.  Method picks the underlying base metric:
-   "Frechet" (default) is the Hausdorff-of-aligned-pairs distance,
-   "Hausdorff" is the unaligned subset Hausdorff, "MeanFrechet" averages
-   the aligned pair-distances instead of taking the max.  Operator form
-   CentralPaths[g, opts][paths] is provided for chaining. *)
+(* SelectPaths[g, paths, criterion] / SelectCycles[g, cycles, criterion] are
+   chainable post-filters on the realisation bundles produced by Find* heads.
+   Criteria intrinsic to the bundle:
+     "Central"    - minimise the maximum path-space distance to the rest
+                    of the bundle (the metric centres);
+     "Peripheral" - maximise that eccentricity (the outliers).
+   Cycle-only criteria, length-based:
+     "ShortestCircumference", "LongestCircumference".
+   Option Method -> "Frechet" (default) | "Hausdorff" | "MeanFrechet" picks
+   the path-space metric for the Central / Peripheral criteria; the
+   circumference filters ignore Method.  SelectCycles uses cyclic rotation
+   when computing the path-space metric so the distance is rotation-invariant.
 
-Options[ CentralPaths ] = { Method -> "Frechet" };
-Options[ PeripheralPaths ] = { Method -> "Frechet" };
+   Wrappers: SelectPaths accepts InfraSegment[paths_List]; SelectCycles
+   accepts InfraCircle[cycles_List].  Each preserves its wrapper.
 
-CentralPaths[ graph_Graph, paths_List, opts : OptionsPattern[] ] :=
-  pathSpaceExtremalPick[ graph, paths, OptionValue[ Method ], False, Min ]
+   Chaining: a list of criteria is folded left-to-right.  Operator form
+   SelectPaths[g, criterion, opts][paths] (and SelectCycles likewise). *)
 
-CentralPaths[ graph_Graph, opts : OptionsPattern[] ] :=
-  CentralPaths[ graph, #, opts ] &
+Options[ SelectPaths ]  = { Method -> "Frechet" };
+Options[ SelectCycles ] = { Method -> "Frechet" };
 
-PeripheralPaths[ graph_Graph, paths_List, opts : OptionsPattern[] ] :=
-  pathSpaceExtremalPick[ graph, paths, OptionValue[ Method ], False, Max ]
+SelectPaths[ graph_Graph, paths_List, "Central", opts : OptionsPattern[] ] :=
+  selectByPathSpaceMetric[ graph, paths, OptionValue[ Method ], False, Min ]
 
-PeripheralPaths[ graph_Graph, opts : OptionsPattern[] ] :=
-  PeripheralPaths[ graph, #, opts ] &
+SelectPaths[ graph_Graph, paths_List, "Peripheral", opts : OptionsPattern[] ] :=
+  selectByPathSpaceMetric[ graph, paths, OptionValue[ Method ], False, Max ]
+
+SelectPaths[ graph_Graph, paths_List, criteria_List, opts : OptionsPattern[] ] :=
+  Fold[ SelectPaths[ graph, #1, #2, opts ] &, paths, criteria ]
+
+SelectPaths[ graph_Graph, InfraSegment[ paths_List ], crit_, opts : OptionsPattern[] ] :=
+  InfraSegment[ SelectPaths[ graph, paths, crit, opts ] ]
+
+SelectPaths[ graph_Graph, crit : ( _String | _List ), opts : OptionsPattern[] ] :=
+  SelectPaths[ graph, #, crit, opts ] &
+
+SelectCycles[ graph_Graph, cycles_List, "Central", opts : OptionsPattern[] ] :=
+  selectByPathSpaceMetric[ graph, cycles, OptionValue[ Method ], True, Min ]
+
+SelectCycles[ graph_Graph, cycles_List, "Peripheral", opts : OptionsPattern[] ] :=
+  selectByPathSpaceMetric[ graph, cycles, OptionValue[ Method ], True, Max ]
+
+SelectCycles[ _Graph, cycles_List, "ShortestCircumference", OptionsPattern[] ] :=
+  If[ Length[ cycles ] <= 1, cycles, MinimalBy[ cycles, Length ] ]
+
+SelectCycles[ _Graph, cycles_List, "LongestCircumference", OptionsPattern[] ] :=
+  If[ Length[ cycles ] <= 1, cycles, MaximalBy[ cycles, Length ] ]
+
+SelectCycles[ graph_Graph, cycles_List, criteria_List, opts : OptionsPattern[] ] :=
+  Fold[ SelectCycles[ graph, #1, #2, opts ] &, cycles, criteria ]
+
+SelectCycles[ graph_Graph, InfraCircle[ cycles_List ], crit_, opts : OptionsPattern[] ] :=
+  InfraCircle[ SelectCycles[ graph, cycles, crit, opts ] ]
+
+SelectCycles[ graph_Graph, crit : ( _String | _List ), opts : OptionsPattern[] ] :=
+  SelectCycles[ graph, #, crit, opts ] &
 
 
-(* ===================== Path-space selectors: cycles ===================== *)
+selectByPathSpaceMetric[ _Graph, paths_List, _, _, _ ] /; Length[ paths ] <= 1 := paths
 
-(* Cycle versions use the same path-space metrics with cyclic rotation. *)
-
-Options[ CentralCycles ] = { Method -> "Frechet" };
-Options[ PeripheralCycles ] = { Method -> "Frechet" };
-
-CentralCycles[ graph_Graph, cycles_List, opts : OptionsPattern[] ] :=
-  pathSpaceExtremalPick[ graph, cycles, OptionValue[ Method ], True, Min ]
-
-CentralCycles[ graph_Graph, opts : OptionsPattern[] ] :=
-  CentralCycles[ graph, #, opts ] &
-
-PeripheralCycles[ graph_Graph, cycles_List, opts : OptionsPattern[] ] :=
-  pathSpaceExtremalPick[ graph, cycles, OptionValue[ Method ], True, Max ]
-
-PeripheralCycles[ graph_Graph, opts : OptionsPattern[] ] :=
-  PeripheralCycles[ graph, #, opts ] &
-
-
-pathSpaceExtremalPick[ _Graph, paths_List, _, _, _ ] /; Length[ paths ] <= 1 := paths
-
-pathSpaceExtremalPick[ graph_Graph, paths_List, method_String, cyclic_, extremum_ ] :=
+selectByPathSpaceMetric[ graph_Graph, paths_List, method_String, cyclic_, extremum_ ] :=
   Module[ { baseDist, pd, scores },
     baseDist = Switch[ method,
       "Frechet",     FrechetDistance,
@@ -186,6 +199,9 @@ EmbeddingClosestPaths[ graph_Graph, paths_List, { p1_, p2_ } ] :=
       path |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, path ], ep ] ]
   ]
 
+EmbeddingClosestPaths[ graph_Graph, InfraSegment[ paths_List ], { p1_, p2_ } ] :=
+  InfraSegment[ EmbeddingClosestPaths[ graph, paths, { p1, p2 } ] ]
+
 EmbeddingClosestPaths[ graph_Graph, { p1_, p2_ } ] :=
   EmbeddingClosestPaths[ graph, #, { p1, p2 } ] &
 
@@ -205,38 +221,32 @@ EmbeddingClosestCycles[ graph_Graph, cycles_List, { center_, radius_ } ] :=
       cycle |-> EmbeddingCircleDistance[ coords, Lookup[ vertexIndex, cycle ], centerIdx, radius ] ]
   ]
 
+EmbeddingClosestCycles[ graph_Graph, InfraCircle[ cycles_List ], { center_, radius_ } ] :=
+  InfraCircle[ EmbeddingClosestCycles[ graph, cycles, { center, radius } ] ]
+
 EmbeddingClosestCycles[ graph_Graph, { center_, radius_ } ] :=
   EmbeddingClosestCycles[ graph, #, { center, radius } ] &
 
 
-(* ===================== Length filters (cycles) ===================== *)
-
-(* Combinatorial circumference filters: paths from FindSegment / FindLine
-   are equilength so length filtering is degenerate there, but cycles from
-   FindCircle can vary. *)
-
-ShortestCircumferenceCycles[ cycles_List ] /; Length[ cycles ] <= 1 := cycles
-ShortestCircumferenceCycles[ cycles_List ] := MinimalBy[ cycles, Length ]
-
-LongestCircumferenceCycles[ cycles_List ] /; Length[ cycles ] <= 1 := cycles
-LongestCircumferenceCycles[ cycles_List ] := MaximalBy[ cycles, Length ]
-
-
 (* ===================== Embedding-method helpers ===================== *)
 
-(* parseEmbeddingMethod[spec] extracts the suboptions of Method -> "Embedding"
-   (or Method -> {"Embedding", ...}) into an Association with keys
-   "Coordinates", "Constraint", "Pruning". *)
+(* parseEmbeddingMethod[spec, poolDefault] extracts the suboptions of
+   Method -> "Embedding" (or Method -> {"Embedding", ...}) into an Association
+   with keys "Coordinates", "Pool", "Pruning".  The poolDefault parameter sets
+   the context-dependent default Pool value: "ShortestPaths" for path-shaped
+   constructors (FindSegment / FindLine / ExtendSegment / FindMidpoint /
+   FindPerpendicular), "LevelSet" for shell-shaped ones (FindShell / FindCircle
+   / FindParallel). *)
 
-parseEmbeddingMethod[ spec_ ] :=
+parseEmbeddingMethod[ spec_, poolDefault_String : "ShortestPaths" ] :=
   Replace[ spec, {
-    "Embedding" -> <| "Coordinates" -> Automatic, "Constraint" -> "Geodesic", "Pruning" -> Infinity |>,
+    "Embedding" -> <| "Coordinates" -> Automatic, "Pool" -> poolDefault, "Pruning" -> Infinity |>,
     { "Embedding", subOpts___ } :> <|
       "Coordinates" -> ( "Coordinates" /. { subOpts } /. "Coordinates" -> Automatic ),
-      "Constraint"  -> ( "Constraint"  /. { subOpts } /. "Constraint"  -> "Geodesic" ),
+      "Pool"        -> ( "Pool"        /. { subOpts } /. "Pool"        -> poolDefault ),
       "Pruning"     -> ( "Pruning"     /. { subOpts } /. "Pruning"     -> Infinity )
     |>,
-    _ -> <| "Coordinates" -> Automatic, "Constraint" -> "Geodesic", "Pruning" -> Infinity |>
+    _ -> <| "Coordinates" -> Automatic, "Pool" -> poolDefault, "Pruning" -> Infinity |>
   } ]
 
 
@@ -278,7 +288,7 @@ geodesicDAGNeighbors[ graph_Graph, u_, v_ ] :=
    recursion that extends each partial path via extendFn[path]; complete
    candidates (those satisfying goalQ[path]) are collected.  At every
    branching step the extension list is filtered by applyPruning, so the
-   same Pruning spec used by Method -> "Extended" controls the search. *)
+   same Pruning spec used by Method -> "ShortestPathExtension" controls the search. *)
 
 generateEmbeddingPaths[ extendFn_, startPath_List, goalQ_, prune_ ] :=
   Module[ { results = {}, recurse },
@@ -292,52 +302,6 @@ generateEmbeddingPaths[ extendFn_, startPath_List, goalQ_, prune_ ] :=
       ];
     recurse[ startPath ];
     results
-  ]
-
-
-(* ===================== String-named selector dispatch (internal) ===================== *)
-
-(* Legacy string-name dispatch.  Used only by Scenes.wl (InfraScene
-   hypothesis "Select" option) and Viewers.wl (SetterBar widgets) to keep
-   the user-visible string interface working after the public API moved
-   to chainable functions.  ctx supplies the side data the embedding /
-   cycle selectors need: "Cyclic", "Endpoints" (paths), "Center",
-   "Radius" (cycles). *)
-
-applyPathSpaceSelector[ _Graph, paths_List, None, _Association ] := paths
-
-applyPathSpaceSelector[ graph_Graph, paths_List, methods_List, ctx_Association ] :=
-  Fold[ applyPathSpaceSelector[ graph, #1, #2, ctx ] &, paths, methods ]
-
-applyPathSpaceSelector[ graph_Graph, paths_List, name_String, ctx_Association ] :=
-  With[ { cyclic = TrueQ @ ctx[ "Cyclic" ] },
-    Switch[ name,
-      "FrechetCentral",
-        If[ cyclic, CentralCycles[ graph, paths, Method -> "Frechet" ],
-                    CentralPaths [ graph, paths, Method -> "Frechet" ] ],
-      "FrechetPeripheral",
-        If[ cyclic, PeripheralCycles[ graph, paths, Method -> "Frechet" ],
-                    PeripheralPaths [ graph, paths, Method -> "Frechet" ] ],
-      "MeanFrechetCentral",
-        If[ cyclic, CentralCycles[ graph, paths, Method -> "MeanFrechet" ],
-                    CentralPaths [ graph, paths, Method -> "MeanFrechet" ] ],
-      "MeanFrechetPeripheral",
-        If[ cyclic, PeripheralCycles[ graph, paths, Method -> "MeanFrechet" ],
-                    PeripheralPaths [ graph, paths, Method -> "MeanFrechet" ] ],
-      "HausdorffCentral",
-        If[ cyclic, CentralCycles[ graph, paths, Method -> "Hausdorff" ],
-                    CentralPaths [ graph, paths, Method -> "Hausdorff" ] ],
-      "HausdorffPeripheral",
-        If[ cyclic, PeripheralCycles[ graph, paths, Method -> "Hausdorff" ],
-                    PeripheralPaths [ graph, paths, Method -> "Hausdorff" ] ],
-      "ShortestCircumference", ShortestCircumferenceCycles[ paths ],
-      "LongestCircumference",  LongestCircumferenceCycles [ paths ],
-      "EmbeddingClosest",
-        If[ cyclic,
-          EmbeddingClosestCycles[ graph, paths, { ctx[ "Center" ], ctx[ "Radius" ] } ],
-          EmbeddingClosestPaths [ graph, paths, ctx[ "Endpoints" ] ] ],
-      _, paths
-    ]
   ]
 
 

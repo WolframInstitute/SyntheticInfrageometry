@@ -5,7 +5,7 @@ BeginTestSection["EuclideanPostulates"]
 VerificationTest[
   With[{g = PetersenGraph[]},
     With[{pt = FindPoint[g]},
-      Length[pt] == 1 && SubsetQ[VertexList[g], pt]
+      pt["Length"] == 1 && SubsetQ[VertexList[g], pt["Realisations"]]
     ]
   ],
   True,
@@ -15,7 +15,7 @@ VerificationTest[
 VerificationTest[
   With[{g = PetersenGraph[]},
     With[{pts = FindPoint[g, 3]},
-      Length[pts] == 3 && DuplicateFreeQ[pts] && SubsetQ[VertexList[g], pts]
+      pts["Length"] == 3 && DuplicateFreeQ[pts["Realisations"]] && SubsetQ[VertexList[g], pts["Realisations"]]
     ]
   ],
   True,
@@ -24,7 +24,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    SubsetQ[GraphCenter[g], FindPoint[g, 1, "From" -> "Center"]]
+    SubsetQ[GraphCenter[g], FindPoint[g, 1, "From" -> "Center"]["Realisations"]]
   ],
   True,
   TestID -> "FindPoint-from-center"
@@ -32,7 +32,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    SubsetQ[GraphPeriphery[g], FindPoint[g, 1, "From" -> "Periphery"]]
+    SubsetQ[GraphPeriphery[g], FindPoint[g, 1, "From" -> "Periphery"]["Realisations"]]
   ],
   True,
   TestID -> "FindPoint-from-periphery"
@@ -40,7 +40,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{pts = FindPoint[g, 2, "Distance" -> 4]},
+    With[{pts = FindPoint[g, 2, "Distance" -> 4]["Realisations"]},
       Length[pts] == 2 && GraphDistance[g, pts[[1]], pts[[2]]] >= 4
     ]
   ],
@@ -51,7 +51,7 @@ VerificationTest[
 VerificationTest[
   With[{g = PetersenGraph[]},
     With[{pt = FindPoint[g, 1, "From" -> {2, 3, 4}]},
-      Length[pt] == 1 && SubsetQ[{2, 3, 4}, pt]
+      pt["Length"] == 1 && SubsetQ[{2, 3, 4}, pt["Realisations"]]
     ]
   ],
   True,
@@ -60,7 +60,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{pts = FindPoint[g, 2, "From" -> {1, 2, 3, 4, 5}, "Distance" -> 4]},
+    With[{pts = FindPoint[g, 2, "From" -> {1, 2, 3, 4, 5}, "Distance" -> 4]["Realisations"]},
       Length[pts] == 2 && GraphDistance[g, pts[[1]], pts[[2]]] >= 4
     ]
   ],
@@ -76,7 +76,7 @@ VerificationTest[
 
 VerificationTest[
   With[{pts = FindPoint[PathGraph[Range[3]], UpTo[10]]},
-    Length[pts] == 3 && SubsetQ[VertexList[PathGraph[Range[3]]], pts]
+    pts["Length"] == 3 && SubsetQ[VertexList[PathGraph[Range[3]]], pts["Realisations"]]
   ],
   True,
   TestID -> "FindPoint-upto-returns-available"
@@ -91,7 +91,7 @@ VerificationTest[
 VerificationTest[
   With[{g = PathGraph[Range[7]]},
     With[{pt = FindPoint[g, 1, "From" -> 3 -> 2]},
-      Length[pt] == 1 && GraphDistance[g, 3, First[pt]] == 2
+      pt["Length"] == 1 && GraphDistance[g, 3, pt["First"]] == 2
     ]
   ],
   True,
@@ -100,7 +100,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{pts = FindPoint[g, UpTo[20], "From" -> 1 -> {2, 3}]},
+    With[{pts = FindPoint[g, UpTo[20], "From" -> 1 -> {2, 3}]["Realisations"]},
       AllTrue[pts, 2 <= GraphDistance[g, 1, #] <= 3 &]
     ]
   ],
@@ -111,7 +111,7 @@ VerificationTest[
 VerificationTest[
   With[{g = CycleGraph[8]},
     With[{ecc = Max[GraphDistance[g, 1, #] & /@ VertexList[g]]},
-      With[{pts = FindPoint[g, UpTo[VertexCount[g]], "From" -> 1 -> "Max"]},
+      With[{pts = FindPoint[g, UpTo[VertexCount[g]], "From" -> 1 -> "Max"]["Realisations"]},
         AllTrue[pts, GraphDistance[g, 1, #] == ecc &]
       ]
     ]
@@ -120,19 +120,44 @@ VerificationTest[
   TestID -> "FindPoint-from-origin-max-distance"
 ]
 
+VerificationTest[
+  Head[FindPoint[PetersenGraph[]]] === InfraPoint,
+  True,
+  TestID -> "FindPoint-returns-InfraPoint-wrapper"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    With[{pts = FindPoint[g, UpTo[VertexCount[g]],
+      "From" -> InfraPoint[{1, 16}] -> 3]["Realisations"]},
+      AllTrue[pts, GraphDistance[g, 1, #] == 3 && GraphDistance[g, 16, #] == 3 &]
+    ]
+  ],
+  True,
+  TestID -> "FindPoint-multi-anchor-intersection"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    Sort @ FindPoint[g, UpTo[VertexCount[g]], "From" -> InfraPoint[{2, 5, 7}]]["Realisations"]
+  ],
+  {2, 5, 7},
+  TestID -> "FindPoint-multi-anchor-pool-no-distance"
+]
+
 (* ===== FindSegment ===== *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
     FindSegment[g, 1, 5]
   ],
-  {{1, 2, 3, 4, 5}},
+  InfraSegment[{{1, 2, 3, 4, 5}}],
   TestID -> "FindSegment-unique-path"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{segs = FindSegment[g, 1, 3]},
+    With[{segs = FindSegment[g, 1, 3]["Realisations"]},
       Length[segs] == 1 && Length[First[segs]] == 3
     ]
   ],
@@ -142,7 +167,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = FindSegment[g, 1, 9, All]},
+    With[{segs = FindSegment[g, 1, 9, All]["Realisations"]},
       AllTrue[segs, Length[#] == 5 &]
     ]
   ],
@@ -152,17 +177,17 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = CentralPaths[g, FindSegment[g, 1, 9, All]]},
+    With[{segs = SelectPaths[g, FindSegment[g, 1, 9, All], "Central"]["Realisations"]},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
   True,
-  TestID -> "FindSegment-CentralPaths-Frechet"
+  TestID -> "FindSegment-SelectPaths-Central-Frechet"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = EmbeddingClosestPaths[g, FindSegment[g, 1, 9, All], {1, 9}]},
+    With[{segs = EmbeddingClosestPaths[g, FindSegment[g, 1, 9, All], {1, 9}]["Realisations"]},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
@@ -172,33 +197,33 @@ VerificationTest[
 
 VerificationTest[
   FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1]],
-  {},
+  InfraSegment[{}],
   TestID -> "FindSegment-same-point-empty"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = CentralPaths[g, FindSegment[g, 1, 9, All], Method -> "Hausdorff"]},
+    With[{segs = SelectPaths[g, FindSegment[g, 1, 9, All], "Central", Method -> "Hausdorff"]["Realisations"]},
       Length[segs] >= 1
     ]
   ],
   True,
-  TestID -> "FindSegment-CentralPaths-Hausdorff"
+  TestID -> "FindSegment-SelectPaths-Central-Hausdorff"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = PeripheralPaths[g, FindSegment[g, 1, 9, All]]},
+    With[{segs = SelectPaths[g, FindSegment[g, 1, 9, All], "Peripheral"]["Realisations"]},
       Length[segs] >= 1
     ]
   ],
   True,
-  TestID -> "FindSegment-PeripheralPaths-Frechet"
+  TestID -> "FindSegment-SelectPaths-Peripheral-Frechet"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = EmbeddingClosestPaths[g, {1, 9}] @ CentralPaths[g] @ FindSegment[g, 1, 9, All]},
+    With[{segs = (EmbeddingClosestPaths[g, {1, 9}] @ SelectPaths[g, "Central"] @ FindSegment[g, 1, 9, All])["Realisations"]},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
@@ -208,7 +233,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = FindSegment[g, 1, 9, UpTo[2]]},
+    With[{segs = FindSegment[g, 1, 9, UpTo[2]]["Realisations"]},
       Length[segs] <= 2 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
@@ -216,39 +241,39 @@ VerificationTest[
   TestID -> "FindSegment-upto-soft-cap"
 ]
 
-(* ===== FindSegment Method -> "Extended" ===== *)
+(* ===== FindSegment Method -> "ShortestPathExtension" ===== *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    FindSegment[g, 1, 5, All, Method -> "Extended"]
+    FindSegment[g, 1, 5, All, Method -> "ShortestPathExtension"]
   ],
-  {{1, 2, 3, 4, 5}},
-  TestID -> "FindSegment-Extended-unique-path"
+  InfraSegment[{{1, 2, 3, 4, 5}}],
+  TestID -> "FindSegment-ShortestPathExtension-unique-path"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ FindSegment[g, 1, 4, All, Method -> "Extended"]
+    Sort @ FindSegment[g, 1, 4, All, Method -> "ShortestPathExtension"]["Realisations"]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
-  TestID -> "FindSegment-Extended-cycle-symmetric"
+  TestID -> "FindSegment-ShortestPathExtension-cycle-symmetric"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Sort @ FindSegment[g, 1, 9, All, Method -> {"Extended", "Lookback" -> 1}] ===
+    Sort @ FindSegment[g, 1, 9, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 1}]["Realisations"] ===
       Sort @ FindPath[g, 1, 9, Infinity, All]
   ],
   True,
-  TestID -> "FindSegment-Extended-K1-equals-FindPath"
+  TestID -> "FindSegment-ShortestPathExtension-K1-equals-FindPath"
 ]
 
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
     With[{
-      k1   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> 1}],
-      k2   = Sort @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> 2}],
-      kAll = Sort @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> All}]
+      k1   = Sort @ FindSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 1}]["Realisations"],
+      k2   = Sort @ FindSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 2}]["Realisations"],
+      kAll = Sort @ FindSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> All}]["Realisations"]
     },
       Length[k1] == 4 &&
       MemberQ[k1, {1, 2, 4, 3}] && MemberQ[k1, {1, 4, 2, 3}] &&
@@ -257,42 +282,42 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindSegment-Extended-K2-strict-between"
+  TestID -> "FindSegment-ShortestPathExtension-K2-strict-between"
 ]
 
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
     With[{
-      k1   = Length @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> 1}],
-      k2   = Length @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> 2}],
-      kAll = Length @ FindSegment[g, 1, 3, All, Method -> {"Extended", "Lookback" -> All}]
+      k1   = FindSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 1}]["Length"],
+      k2   = FindSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 2}]["Length"],
+      kAll = FindSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> All}]["Length"]
     },
       k1 >= k2 >= kAll
     ]
   ],
   True,
-  TestID -> "FindSegment-Extended-K-monotone"
+  TestID -> "FindSegment-ShortestPathExtension-K-monotone"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Sort @ FindSegment[g, 1, 9, All, Method -> "Extended"] ===
-      Sort @ FindSegment[g, 1, 9, All, Method -> {"Extended", "Lookback" -> 2}]
+    Sort @ FindSegment[g, 1, 9, All, Method -> "ShortestPathExtension"]["Realisations"] ===
+      Sort @ FindSegment[g, 1, 9, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 2}]["Realisations"]
   ],
   True,
-  TestID -> "FindSegment-Extended-Lookback-default-is-2"
+  TestID -> "FindSegment-ShortestPathExtension-ShortestPathWindow-default-is-2"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     BlockRandom[
-      Length[FindSegment[g, 1, 16, All,
-        Method -> {"Extended", "Pruning" -> 1}]] == 1,
+      FindSegment[g, 1, 16, All,
+        Method -> {"ShortestPathExtension", "Pruning" -> 1}]["Length"] == 1,
       RandomSeeding -> 42
     ]
   ],
   True,
-  TestID -> "FindSegment-Extended-pruning-beam-1"
+  TestID -> "FindSegment-ShortestPathExtension-pruning-beam-1"
 ]
 
 VerificationTest[
@@ -303,314 +328,314 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Extended", "Pruning" -> -1}],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"ShortestPathExtension", "Pruning" -> -1}],
     FindSegment::badpruning],
   $Failed,
   TestID -> "FindSegment-bad-pruning"
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Extended", "Lookback" -> 0}],
-    FindSegment::badlookback],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 0}],
+    FindSegment::badwindow],
   $Failed,
   TestID -> "FindSegment-bad-lookback-zero"
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Extended", "Lookback" -> -1}],
-    FindSegment::badlookback],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> -1}],
+    FindSegment::badwindow],
   $Failed,
   TestID -> "FindSegment-bad-lookback-negative"
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Extended", "Lookback" -> 1.5}],
-    FindSegment::badlookback],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 1.5}],
+    FindSegment::badwindow],
   $Failed,
   TestID -> "FindSegment-bad-lookback-fractional"
 ]
 
 VerificationTest[
-  FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "Extended"],
-  {},
-  TestID -> "FindSegment-Extended-same-point-empty"
+  FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "ShortestPathExtension"],
+  InfraSegment[{}],
+  TestID -> "FindSegment-ShortestPathExtension-same-point-empty"
 ]
 
 
-(* ===== FindSegment Method -> "Pulled" ===== *)
+(* ===== FindSegment Method -> "CurvatureMinimizing" ===== *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    FindSegment[g, 1, 5, All, Method -> "Pulled"]
+    FindSegment[g, 1, 5, All, Method -> "CurvatureMinimizing"]
   ],
-  {{1, 2, 3, 4, 5}},
-  TestID -> "FindSegment-Pulled-tree-unique-path"
+  InfraSegment[{{1, 2, 3, 4, 5}}],
+  TestID -> "FindSegment-CurvatureMinimizing-tree-unique-path"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ FindSegment[g, 1, 4, All, Method -> "Pulled"]
+    Sort @ FindSegment[g, 1, 4, All, Method -> "CurvatureMinimizing"]["Realisations"]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
-  TestID -> "FindSegment-Pulled-cycle-symmetric"
+  TestID -> "FindSegment-CurvatureMinimizing-cycle-symmetric"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
     AllTrue[
-      FindSegment[g, 1, 9, All, Method -> "Pulled"],
+      FindSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]["Realisations"],
       walk |-> First[walk] === 1 && Last[walk] === 9 &&
         DuplicateFreeQ[walk] &&
         AllTrue[Partition[walk, 2, 1], EdgeQ[g, UndirectedEdge @@ #] &]
     ]
   ],
   True,
-  TestID -> "FindSegment-Pulled-grid-walks-valid"
+  TestID -> "FindSegment-CurvatureMinimizing-grid-walks-valid"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Length @ FindSegment[g, 1, 9, All, Method -> {"Pulled", "Constraint" -> "Free"}]
+    FindSegment[g, 1, 9, All, Method -> {"CurvatureMinimizing", "Pool" -> "AllPaths"}]["Length"]
   ],
   6,
-  TestID -> "FindSegment-Pulled-Free-grid-bundle-size"
+  TestID -> "FindSegment-CurvatureMinimizing-AllPaths-grid-bundle-size"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
     AllTrue[
-      FindSegment[g, 1, 9, All, Method -> "Pulled"],
+      FindSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]["Realisations"],
       walk |-> Length[walk] - 1 >= GraphDistance[g, 1, 9]
     ]
   ],
   True,
-  TestID -> "FindSegment-Pulled-grid-walks-no-shorter-than-geodesic"
+  TestID -> "FindSegment-CurvatureMinimizing-grid-walks-no-shorter-than-geodesic"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Sort @ FindSegment[g, 1, 9, All, Method -> "Pulled"] ===
-      Sort @ FindSegment[g, 1, 9, All, Method -> {"Pulled", "FormanMethod" -> "Simple"}]
+    Sort @ FindSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]["Realisations"] ===
+      Sort @ FindSegment[g, 1, 9, All, Method -> {"CurvatureMinimizing", "Curvature" -> {"Forman", Method -> "Simple"}}]["Realisations"]
   ],
   True,
-  TestID -> "FindSegment-Pulled-FormanMethod-default-is-Simple"
+  TestID -> "FindSegment-CurvatureMinimizing-Forman-Method-default-is-Simple"
 ]
 
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 1 <-> 3, 1 <-> 4, 2 <-> 3, 2 <-> 4}]},
-    Sort @ FindSegment[g, 1, 3, All, Method -> {"Pulled", "FormanMethod" -> "Simple", "Constraint" -> "Free"}] =!=
-      Sort @ FindSegment[g, 1, 3, All, Method -> {"Pulled", "FormanMethod" -> "Triangles", "Constraint" -> "Free"}]
+    Sort @ FindSegment[g, 1, 3, All, Method -> {"CurvatureMinimizing", "Curvature" -> {"Forman", Method -> "Simple"}, "Pool" -> "AllPaths"}]["Realisations"] =!=
+      Sort @ FindSegment[g, 1, 3, All, Method -> {"CurvatureMinimizing", "Curvature" -> {"Forman", Method -> "Triangles"}, "Pool" -> "AllPaths"}]["Realisations"]
   ],
   True,
-  TestID -> "FindSegment-Pulled-Free-FormanMethod-Triangles-differs-on-triangulated"
+  TestID -> "FindSegment-CurvatureMinimizing-AllPaths-Forman-Method-Triangles-differs-on-triangulated"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Length @ FindSegment[g, 1, 9, UpTo[2], Method -> "Pulled"]
+    FindSegment[g, 1, 9, UpTo[2], Method -> "CurvatureMinimizing"]["Length"]
   ],
   2,
-  TestID -> "FindSegment-Pulled-UpTo-truncates"
+  TestID -> "FindSegment-CurvatureMinimizing-UpTo-truncates"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Length @ FindSegment[g, 1, 9, 3, Method -> "Pulled"]
+    FindSegment[g, 1, 9, 3, Method -> "CurvatureMinimizing"]["Length"]
   ],
   3,
-  TestID -> "FindSegment-Pulled-Count-exact"
+  TestID -> "FindSegment-CurvatureMinimizing-Count-exact"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    CentralPaths[g] @ FindSegment[g, 1, 9, All, Method -> "Pulled"]
+    SelectPaths[g, "Central"] @ FindSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]
   ],
-  _List,
+  _InfraSegment,
   SameTest -> MatchQ,
-  TestID -> "FindSegment-Pulled-chains-with-CentralPaths"
+  TestID -> "FindSegment-CurvatureMinimizing-chains-with-SelectPaths"
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Pulled", "FormanMethod" -> "Quadrilaterals"}],
-    FindSegment::badforman],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"CurvatureMinimizing", "Curvature" -> {"Forman", Method -> "Quadrilaterals"}}],
+    FindSegment::badcurvature],
   $Failed,
-  TestID -> "FindSegment-Pulled-bad-FormanMethod"
+  TestID -> "FindSegment-CurvatureMinimizing-bad-Forman-Method"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     BlockRandom[
-      Length[FindSegment[g, 1, 16, All, Method -> {"Pulled", "Pruning" -> 1}]] <= 1,
+      FindSegment[g, 1, 16, All, Method -> {"CurvatureMinimizing", "Pruning" -> 1}]["Length"] <= 1,
       RandomSeeding -> 42
     ]
   ],
   True,
-  TestID -> "FindSegment-Pulled-pruning-beam-1"
+  TestID -> "FindSegment-CurvatureMinimizing-pruning-beam-1"
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Pulled", "Pruning" -> -1}],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"CurvatureMinimizing", "Pruning" -> -1}],
     FindSegment::badpruning],
   $Failed,
-  TestID -> "FindSegment-Pulled-bad-pruning"
+  TestID -> "FindSegment-CurvatureMinimizing-bad-pruning"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{6, 6}]},
-    Length[FindSegment[g, 1, 36, 1, Method -> "Pulled"]]
+    FindSegment[g, 1, 36, 1, Method -> "CurvatureMinimizing"]["Length"]
   ],
   1,
-  TestID -> "FindSegment-Pulled-count-1-terminates-early"
+  TestID -> "FindSegment-CurvatureMinimizing-count-1-terminates-early"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{6, 6}]},
-    Length[FindSegment[g, 1, 36, 1, Method -> "Extended"]]
+    FindSegment[g, 1, 36, 1, Method -> "ShortestPathExtension"]["Length"]
   ],
   1,
-  TestID -> "FindSegment-Extended-count-1-terminates-early"
+  TestID -> "FindSegment-ShortestPathExtension-count-1-terminates-early"
 ]
 
 VerificationTest[
-  FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "Pulled"],
-  {},
-  TestID -> "FindSegment-Pulled-same-point-empty"
+  FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "CurvatureMinimizing"],
+  InfraSegment[{}],
+  TestID -> "FindSegment-CurvatureMinimizing-same-point-empty"
 ]
 
 
-(* ===== FindSegment Method -> "Pulled": Constraint -> "Geodesic" (default) ===== *)
+(* ===== FindSegment Method -> "CurvatureMinimizing": Pool -> "ShortestPaths" (default) ===== *)
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
     AllTrue[
-      FindSegment[g, 1, 9, All, Method -> "Pulled"],
+      FindSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]["Realisations"],
       walk |-> Length[walk] - 1 === GraphDistance[g, 1, 9]
     ]
   ],
   True,
-  TestID -> "FindSegment-Pulled-Constraint-default-walks-are-geodesic"
+  TestID -> "FindSegment-CurvatureMinimizing-Constraint-default-walks-are-geodesic"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
     SubsetQ[
-      Sort @ FindSegment[g, 1, 9, All, Method -> "Shortest"],
-      Sort @ FindSegment[g, 1, 9, All, Method -> "Pulled"]
+      Sort @ FindSegment[g, 1, 9, All, Method -> "Shortest"]["Realisations"],
+      Sort @ FindSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]["Realisations"]
     ]
   ],
   True,
-  TestID -> "FindSegment-Pulled-Constraint-default-subset-of-geodesics"
+  TestID -> "FindSegment-CurvatureMinimizing-Constraint-default-subset-of-geodesics"
 ]
 
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 1 <-> 3, 1 <-> 4, 2 <-> 3, 2 <-> 4}]},
-    FindSegment[g, 1, 3, All, Method -> "Pulled"]
+    FindSegment[g, 1, 3, All, Method -> "CurvatureMinimizing"]
   ],
-  {{1, 3}},
-  TestID -> "FindSegment-Pulled-Constraint-default-target-adjacent"
+  InfraSegment[{{1, 3}}],
+  TestID -> "FindSegment-CurvatureMinimizing-Constraint-default-target-adjacent"
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Pulled", "Constraint" -> "Bogus"}],
-    FindSegment::badconstraint],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"CurvatureMinimizing", "Pool" -> "Bogus"}],
+    FindSegment::badpool],
   $Failed,
-  TestID -> "FindSegment-Pulled-bad-Constraint"
+  TestID -> "FindSegment-CurvatureMinimizing-bad-Constraint"
 ]
 
 
-(* ===== FindSegment Method -> "Pulled": CurvatureMethod -> "Wolfram" ===== *)
+(* ===== FindSegment Method -> "CurvatureMinimizing": CurvatureMethod -> "Wolfram" ===== *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    FindSegment[g, 1, 5, All, Method -> {"Pulled", "CurvatureMethod" -> "Wolfram"}]
+    FindSegment[g, 1, 5, All, Method -> {"CurvatureMinimizing", "Curvature" -> "Wolfram"}]
   ],
-  {{1, 2, 3, 4, 5}},
-  TestID -> "FindSegment-Pulled-Wolfram-tree-unique-path"
+  InfraSegment[{{1, 2, 3, 4, 5}}],
+  TestID -> "FindSegment-CurvatureMinimizing-Wolfram-tree-unique-path"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ FindSegment[g, 1, 4, All, Method -> {"Pulled", "CurvatureMethod" -> "Wolfram"}]
+    Sort @ FindSegment[g, 1, 4, All, Method -> {"CurvatureMinimizing", "Curvature" -> "Wolfram"}]["Realisations"]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
-  TestID -> "FindSegment-Pulled-Wolfram-cycle-symmetric"
+  TestID -> "FindSegment-CurvatureMinimizing-Wolfram-cycle-symmetric"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
     AllTrue[
-      FindSegment[g, 1, 9, All, Method -> {"Pulled", "CurvatureMethod" -> "Wolfram"}],
+      FindSegment[g, 1, 9, All, Method -> {"CurvatureMinimizing", "Curvature" -> "Wolfram"}]["Realisations"],
       walk |-> First[walk] === 1 && Last[walk] === 9 &&
         DuplicateFreeQ[walk] &&
         AllTrue[Partition[walk, 2, 1], EdgeQ[g, UndirectedEdge @@ #] &]
     ]
   ],
   True,
-  TestID -> "FindSegment-Pulled-Wolfram-grid-walks-valid"
+  TestID -> "FindSegment-CurvatureMinimizing-Wolfram-grid-walks-valid"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
     AllTrue[
-      FindSegment[g, 1, 9, All, Method -> {"Pulled", "CurvatureMethod" -> "Wolfram"}],
+      FindSegment[g, 1, 9, All, Method -> {"CurvatureMinimizing", "Curvature" -> "Wolfram"}]["Realisations"],
       walk |-> Length[walk] - 1 === GraphDistance[g, 1, 9]
     ]
   ],
   True,
-  TestID -> "FindSegment-Pulled-Wolfram-Constraint-default-walks-are-geodesic"
+  TestID -> "FindSegment-CurvatureMinimizing-Wolfram-Constraint-default-walks-are-geodesic"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Length @ FindSegment[g, 1, 9, All,
-      Method -> {"Pulled", "CurvatureMethod" -> "Wolfram", "Dimension" -> 2}]
+    FindSegment[g, 1, 9, All,
+      Method -> {"CurvatureMinimizing", "Curvature" -> "Wolfram", "Dimension" -> 2}]["Length"]
   ],
   _Integer?Positive,
   SameTest -> MatchQ,
-  TestID -> "FindSegment-Pulled-Wolfram-Dimension-fixed-runs"
+  TestID -> "FindSegment-CurvatureMinimizing-Wolfram-Dimension-fixed-runs"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Length @ FindSegment[g, 1, 9, All,
-      Method -> {"Pulled", "CurvatureMethod" -> "Wolfram",
-                 "Dimension" -> 2, "Radii" -> {1, 2}}]
+    FindSegment[g, 1, 9, All,
+      Method -> {"CurvatureMinimizing", "Curvature" -> "Wolfram",
+                 "Dimension" -> 2, "Radii" -> {1, 2}}]["Length"]
   ],
   _Integer?Positive,
   SameTest -> MatchQ,
-  TestID -> "FindSegment-Pulled-Wolfram-Radii-explicit-runs"
+  TestID -> "FindSegment-CurvatureMinimizing-Wolfram-Radii-explicit-runs"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Sort @ FindSegment[g, 1, 9, All, Method -> "Pulled"] ===
-      Sort @ FindSegment[g, 1, 9, All, Method -> {"Pulled", "CurvatureMethod" -> "Forman"}]
+    Sort @ FindSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]["Realisations"] ===
+      Sort @ FindSegment[g, 1, 9, All, Method -> {"CurvatureMinimizing", "Curvature" -> "Forman"}]["Realisations"]
   ],
   True,
-  TestID -> "FindSegment-Pulled-CurvatureMethod-default-is-Forman"
+  TestID -> "FindSegment-CurvatureMinimizing-CurvatureMethod-default-is-Forman"
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"Pulled", "CurvatureMethod" -> "Bogus"}],
+  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"CurvatureMinimizing", "Curvature" -> "Bogus"}],
     FindSegment::badcurvature],
   $Failed,
-  TestID -> "FindSegment-Pulled-bad-CurvatureMethod"
+  TestID -> "FindSegment-CurvatureMinimizing-bad-CurvatureMethod"
 ]
 
 VerificationTest[
   Quiet[FindSegment[GridGraph[{3, 3}], 1, 9,
-      Method -> {"Pulled", "CurvatureMethod" -> "Wolfram", "Dimension" -> "two"}],
-    FindSegment::baddim],
+      Method -> {"CurvatureMinimizing", "Curvature" -> {"Wolfram", "Dimension" -> "two"}}],
+    FindSegment::badcurvature],
   $Failed,
-  TestID -> "FindSegment-Pulled-Wolfram-bad-dimension"
+  TestID -> "FindSegment-CurvatureMinimizing-Wolfram-bad-dimension"
 ]
 
 VerificationTest[
   Quiet[FindSegment[GridGraph[{3, 3}], 1, 9,
-      Method -> {"Pulled", "CurvatureMethod" -> "Wolfram", "Radii" -> {3, 1}}],
-    FindSegment::badradii],
+      Method -> {"CurvatureMinimizing", "Curvature" -> {"Wolfram", "Radii" -> {3, 1}}}],
+    FindSegment::badcurvature],
   $Failed,
-  TestID -> "FindSegment-Pulled-Wolfram-bad-radii"
+  TestID -> "FindSegment-CurvatureMinimizing-Wolfram-bad-radii"
 ]
 
 
@@ -620,13 +645,13 @@ VerificationTest[
   With[{g = PathGraph[Range[5]]},
     FindLine[g, 2, 4]
   ],
-  {{1, 2, 3, 4, 5}},
+  InfraSegment[{{1, 2, 3, 4, 5}}],
   TestID -> "FindLine-extends-from-points"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    Length[First @ FindLine[g, 2, 4]]
+    Length @ FindLine[g, 2, 4]["First"]
   ],
   5,
   TestID -> "FindLine-extends-to-full-path"
@@ -636,25 +661,23 @@ VerificationTest[
   With[{g = PathGraph[Range[5]]},
     FindLine[g, 1, 5]
   ],
-  {{1, 2, 3, 4, 5}},
+  InfraSegment[{{1, 2, 3, 4, 5}}],
   TestID -> "FindLine-already-maximal"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{exts = Take[CentralPaths[g, FindLine[g, 5, 6, All]], UpTo[3]]},
+    With[{exts = Take[SelectPaths[g, FindLine[g, 5, 6, All], "Central"]["Realisations"], UpTo[3]]},
       Length[exts] >= 1 && AllTrue[exts, Length[#] > 2 &]
     ]
   ],
   True,
-  TestID -> "FindLine-with-CentralPaths"
+  TestID -> "FindLine-with-SelectPaths-Central"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{exts = FindLine[g, 2, 4, UpTo[5]]},
-      Length[exts] >= 1
-    ]
+    FindLine[g, 2, 4, UpTo[5]]["Length"] >= 1
   ],
   True,
   TestID -> "FindLine-upto-soft"
@@ -664,7 +687,7 @@ VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
     FindLine[g, 1, 3, All, "Maximality" -> "Extension"]
   ],
-  {{1, 2, 3}},
+  InfraSegment[{{1, 2, 3}}],
   TestID -> "FindLine-Maximality-Extension-keeps-short-line"
 ]
 
@@ -672,7 +695,7 @@ VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
     FindLine[g, 1, 3, All, "Maximality" -> "Diameter"]
   ],
-  {},
+  InfraSegment[{}],
   TestID -> "FindLine-Maximality-Diameter-drops-short-line"
 ]
 
@@ -680,7 +703,7 @@ VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
     FindLine[g, 1, 5, All, "Maximality" -> "Diameter"]
   ],
-  {{1, 2, 4, 5}},
+  InfraSegment[{{1, 2, 4, 5}}],
   TestID -> "FindLine-Maximality-Diameter-keeps-diameter-line"
 ]
 
@@ -690,7 +713,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    Sort @ First @ FindShell[g, 3, 2]
+    Sort @ FindShell[g, 3, 2]["First"]
   ],
   {1, 5},
   TestID -> "FindShell-Metric-default-equidistant"
@@ -699,8 +722,8 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     With[{result = FindShell[g, 6, {1, 2}, All]},
-      Length[result] == 1 &&
-      AllTrue[First[result], v |-> 1 <= GraphDistance[g, 6, v] <= 2]
+      result["Length"] == 1 &&
+      AllTrue[result["First"], v |-> 1 <= GraphDistance[g, 6, v] <= 2]
     ]
   ],
   True,
@@ -709,7 +732,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    Length @ FindShell[g, 1, 2, All]
+    FindShell[g, 1, 2, All]["Length"]
   ],
   1,
   TestID -> "FindShell-Metric-single-result"
@@ -719,7 +742,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{shells = FindShell[g, 6, {1, 2}, All, Method -> "Separating"]},
+    With[{shells = FindShell[g, 6, {1, 2}, All, Method -> "Separating"]["Realisations"]},
       Length[shells] >= 1 &&
       AllTrue[shells, vs |-> AllTrue[vs, v |-> 1 <= GraphDistance[g, 6, v] <= 2]] &&
       AllTrue[shells, vs |-> ConnectedGraphQ[Subgraph[g, vs]]]
@@ -731,7 +754,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{shells = FindShell[g, 6, {1, 2}, All, Method -> "Separating"]},
+    With[{shells = FindShell[g, 6, {1, 2}, All, Method -> "Separating"]["Realisations"]},
       AllTrue[shells, vs |-> AllTrue[shells,
         other |-> other === vs || ! (Length[other] < Length[vs] && SubsetQ[vs, other])
       ]]
@@ -746,7 +769,7 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     With[{circles = Take[
-        LongestCircumferenceCycles @ FindCircle[g, 6, {1, 2}, All],
+        SelectCycles[g, FindCircle[g, 6, {1, 2}, All]["Realisations"], "LongestCircumference"],
         UpTo[1]]},
       Length[circles] >= 1 && AllTrue[circles, ListQ]
     ]
@@ -757,9 +780,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    With[{circles = FindCircle[g, 1, {1, 2}, All]},
-      Length[circles] >= 1
-    ]
+    FindCircle[g, 1, {1, 2}, All]["Length"] >= 1
   ],
   True,
   TestID -> "FindCircle-all-cycles"
@@ -767,53 +788,53 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = LongestCircumferenceCycles @ FindCircle[g, 6, {1, 2}, All]},
+    With[{circles = SelectCycles[g, FindCircle[g, 6, {1, 2}, All]["Realisations"], "LongestCircumference"]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
   True,
-  TestID -> "FindCircle-LongestCircumferenceCycles-uniform"
+  TestID -> "FindCircle-SelectCycles-LongestCircumference-uniform"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = ShortestCircumferenceCycles @ FindCircle[g, 6, {1, 2}, All]},
+    With[{circles = SelectCycles[g, FindCircle[g, 6, {1, 2}, All]["Realisations"], "ShortestCircumference"]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
   True,
-  TestID -> "FindCircle-ShortestCircumferenceCycles"
+  TestID -> "FindCircle-SelectCycles-ShortestCircumference"
 ]
 
 (* ===== FindParallel ===== *)
 
 VerificationTest[
   FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All],
-  {{5, 6, 7, 8}},
+  InfraSegment[{{5, 6, 7, 8}}],
   TestID -> "FindParallel-GridGraph-row-from-row"
 ]
 
 VerificationTest[
   FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 6, All],
-  {{5, 6, 7, 8}},
+  InfraSegment[{{5, 6, 7, 8}}],
   TestID -> "FindParallel-GridGraph-row-interior-vertex"
 ]
 
 VerificationTest[
   FindParallel[PathGraph[Range[5]], {1, 2, 3, 4, 5}, 3, All],
-  {{1, 2, 3, 4, 5}},
+  InfraSegment[{{1, 2, 3, 4, 5}}],
   TestID -> "FindParallel-self-on-line"
 ]
 
 VerificationTest[
   FindParallel[Graph[{1, 2, 3, 4}, {1 <-> 2, 3 <-> 4}], {1, 2}, 3, All],
-  {},
+  InfraSegment[{}],
   TestID -> "FindParallel-disconnected-empty"
 ]
 
 VerificationTest[
   FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, 1],
-  {{5, 6, 7, 8}},
+  InfraSegment[{{5, 6, 7, 8}}],
   TestID -> "FindParallel-strict-1"
 ]
 
@@ -825,13 +846,13 @@ VerificationTest[
 
 VerificationTest[
   FindParallel[CycleGraph[8], {1, 2, 3}, 6, All],
-  {},
+  InfraSegment[{}],
   TestID -> "FindParallel-CycleGraph-no-parallel"
 ]
 
 VerificationTest[
   ParallelQ[GridGraph[{4, 4}], {1, 2, 3, 4},
-    First @ FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5]],
+    FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5]["First"]],
   True,
   TestID -> "FindParallel-output-passes-ParallelQ"
 ]
@@ -841,15 +862,15 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Sort @ FindSegment[ g, 1, 16, All, Method -> "Embedding" ] ===
-      Sort @ FindSegment[ g, 1, 16, All, Method -> "Shortest" ]
+    Sort @ FindSegment[ g, 1, 16, All, Method -> "Embedding" ][ "Realisations" ] ===
+      Sort @ FindSegment[ g, 1, 16, All, Method -> "Shortest" ][ "Realisations" ]
   ],
   True,
   TestID -> "FindSegment-Embedding-Geodesic-All-equals-Shortest-set"
 ]
 
 VerificationTest[
-  With[ { paths = FindSegment[ GridGraph[ { 4, 4 } ], 1, 16, All, Method -> "Embedding" ] },
+  With[ { paths = FindSegment[ GridGraph[ { 4, 4 } ], 1, 16, All, Method -> "Embedding" ][ "Realisations" ] },
     Length[ paths ] >= 1 && AllTrue[ paths, First[ # ] === 1 && Last[ # ] === 16 & ]
   ],
   True,
@@ -866,15 +887,15 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Length @ FindSegment[ GridGraph[ { 4, 4 } ], 1, 16, 1, Method -> { "Embedding", "Pruning" -> 1 } ],
+  FindSegment[ GridGraph[ { 4, 4 } ], 1, 16, 1, Method -> { "Embedding", "Pruning" -> 1 } ][ "Length" ],
   1,
   TestID -> "FindSegment-Embedding-Pruning-beam-one"
 ]
 
 VerificationTest[
-  FindSegment[ PathGraph[ Range[ 5 ] ], 1, 5, 1, Method -> { "Embedding", "Constraint" -> "Free" } ],
-  { { 1, 2, 3, 4, 5 } },
-  TestID -> "FindSegment-Embedding-Free-PathGraph-unique-path"
+  FindSegment[ PathGraph[ Range[ 5 ] ], 1, 5, 1, Method -> { "Embedding", "Pool" -> "AllPaths" } ],
+  InfraSegment[ { { 1, 2, 3, 4, 5 } } ],
+  TestID -> "FindSegment-Embedding-AllPaths-PathGraph-unique-path"
 ]
 
 
@@ -882,7 +903,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Sort @ FindLine[ g, 1, 16, All, Method -> "Embedding" ] === Sort @ FindLine[ g, 1, 16, All ]
+    Sort @ FindLine[ g, 1, 16, All, Method -> "Embedding" ][ "Realisations" ] ===
+      Sort @ FindLine[ g, 1, 16, All ][ "Realisations" ]
   ],
   True,
   TestID -> "FindLine-Embedding-set-equals-default"
@@ -892,16 +914,16 @@ VerificationTest[
 (* ===== FindShell Method -> "Embedding" ===== *)
 
 VerificationTest[
-  Length @ Flatten @ FindShell[ GridGraph[ { 4, 4 } ], 6, 1, All, Method -> "Embedding" ],
+  Length @ Flatten @ FindShell[ GridGraph[ { 4, 4 } ], 6, 1, All, Method -> "Embedding" ][ "Realisations" ],
   Length @ Select[ VertexList[ GridGraph[ { 4, 4 } ] ],
     GraphDistance[ GridGraph[ { 4, 4 } ], 6, # ] == 1 & ],
   TestID -> "FindShell-Embedding-Geodesic-pool-equals-level-surface"
 ]
 
 VerificationTest[
-  Length @ FindShell[ GridGraph[ { 4, 4 } ], 6, 1, All, Method -> { "Embedding", "Constraint" -> "Free" } ],
+  FindShell[ GridGraph[ { 4, 4 } ], 6, 1, All, Method -> { "Embedding", "Pool" -> "AllVertices" } ][ "Length" ],
   16,
-  TestID -> "FindShell-Embedding-Free-pool-equals-all-vertices"
+  TestID -> "FindShell-Embedding-AllPaths-pool-equals-all-vertices"
 ]
 
 
@@ -909,8 +931,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Sort @ FindCircle[ g, 6, { 1, 2 }, All, Method -> "Embedding" ] ===
-      Sort @ FindCircle[ g, 6, { 1, 2 }, All ]
+    Sort @ FindCircle[ g, 6, { 1, 2 }, All, Method -> "Embedding" ][ "Realisations" ] ===
+      Sort @ FindCircle[ g, 6, { 1, 2 }, All ][ "Realisations" ]
   ],
   True,
   TestID -> "FindCircle-Embedding-set-equals-default"
@@ -918,7 +940,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Length @ FindCircle[ g, 6, { 1, 2 }, All, Method -> "Embedding" ] >= 1
+    FindCircle[ g, 6, { 1, 2 }, All, Method -> "Embedding" ][ "Length" ] >= 1
   ],
   True,
   TestID -> "FindCircle-Embedding-non-empty-on-grid-with-cycles"
@@ -929,8 +951,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Sort @ FindParallel[ g, { 1, 2, 3, 4 }, 5, All, Method -> "Embedding" ] ===
-      Sort @ FindParallel[ g, { 1, 2, 3, 4 }, 5, All ]
+    Sort @ FindParallel[ g, { 1, 2, 3, 4 }, 5, All, Method -> "Embedding" ][ "Realisations" ] ===
+      Sort @ FindParallel[ g, { 1, 2, 3, 4 }, 5, All ][ "Realisations" ]
   ],
   True,
   TestID -> "FindParallel-Embedding-set-equals-default"
@@ -941,7 +963,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    Sort @ FindPoint[ g, All ] === VertexList[ g ]
+    Sort @ FindPoint[ g, All ][ "Realisations" ] === VertexList[ g ]
   ],
   True,
   TestID -> "FindPoint-All-returns-every-vertex"
@@ -949,7 +971,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PetersenGraph[ ] },
-    Length @ FindPoint[ g, All ] == VertexCount[ g ]
+    FindPoint[ g, All ][ "Length" ] == VertexCount[ g ]
   ],
   True,
   TestID -> "FindPoint-All-length-equals-vertex-count"
@@ -960,8 +982,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Sort @ FindLine[ g, 1, 16, All, Method -> "Shortest" ] ===
-      Sort @ FindLine[ g, 1, 16, All, Method -> Automatic ]
+    Sort @ FindLine[ g, 1, 16, All, Method -> "Shortest" ][ "Realisations" ] ===
+      Sort @ FindLine[ g, 1, 16, All, Method -> Automatic ][ "Realisations" ]
   ],
   True,
   TestID -> "FindLine-Shortest-equals-Automatic"
@@ -969,22 +991,23 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { lines = FindLine[ g, 1, 16, All, Method -> "Extended" ] },
-      ListQ[ lines ] && Length[ lines ] >= Length @ FindLine[ g, 1, 16, All, Method -> "Shortest" ]
+    With[ { lines = FindLine[ g, 1, 16, All, Method -> "ShortestPathExtension" ] },
+      MatchQ[ lines, _InfraSegment ] &&
+        lines[ "Length" ] >= FindLine[ g, 1, 16, All, Method -> "Shortest" ][ "Length" ]
     ]
   ],
   True,
-  TestID -> "FindLine-Extended-superset-of-Shortest"
+  TestID -> "FindLine-ShortestPathExtension-superset-of-Shortest"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { lines = FindLine[ g, 1, 16, All, Method -> "Pulled" ] },
-      ListQ[ lines ] && Length[ lines ] >= 1
+    With[ { lines = FindLine[ g, 1, 16, All, Method -> "CurvatureMinimizing" ] },
+      MatchQ[ lines, _InfraSegment ] && lines[ "Length" ] >= 1
     ]
   ],
   True,
-  TestID -> "FindLine-Pulled-non-empty"
+  TestID -> "FindLine-CurvatureMinimizing-non-empty"
 ]
 
 
@@ -992,8 +1015,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { seg = First @ FindSegment[ g, 1, 6, All ] },
-      With[ { lines = ExtendSegment[ g, seg, All ] },
+    With[ { seg = FindSegment[ g, 1, 6, All ][ "First" ] },
+      With[ { lines = ExtendSegment[ g, seg, All ][ "Realisations" ] },
         ListQ[ lines ] && AllTrue[ lines,
           lst |-> Length[ lst ] >= Length[ seg ] && MemberQ[ Partition[ lst, Length @ seg, 1 ], seg ] ]
       ]
@@ -1005,9 +1028,9 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { seg = First @ FindSegment[ g, 1, 6, All ] },
-      Sort @ ExtendSegment[ g, seg, All, Method -> "Shortest" ] ===
-        Sort @ Select[ FindLine[ g, 1, 6, All ],
+    With[ { seg = FindSegment[ g, 1, 6, All ][ "First" ] },
+      Sort @ ExtendSegment[ g, seg, All, Method -> "Shortest" ][ "Realisations" ] ===
+        Sort @ Select[ FindLine[ g, 1, 6, All ][ "Realisations" ],
           lst |-> Length[ lst ] >= Length[ seg ] && MemberQ[ Partition[ lst, Length @ seg, 1 ], seg ] ]
     ]
   ],
@@ -1017,30 +1040,30 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { seg = First @ FindSegment[ g, 1, 6, All ] },
-      ListQ @ ExtendSegment[ g, seg, All, Method -> "Extended" ]
+    With[ { seg = FindSegment[ g, 1, 6, All ][ "First" ] },
+      MatchQ[ ExtendSegment[ g, seg, All, Method -> "ShortestPathExtension" ], _InfraSegment ]
     ]
   ],
   True,
-  TestID -> "ExtendSegment-Extended-returns-list"
+  TestID -> "ExtendSegment-ShortestPathExtension-returns-list"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { seg = First @ FindSegment[ g, 1, 6, All ] },
-      ListQ @ ExtendSegment[ g, seg, All, Method -> "Pulled" ]
+    With[ { seg = FindSegment[ g, 1, 6, All ][ "First" ] },
+      MatchQ[ ExtendSegment[ g, seg, All, Method -> "CurvatureMinimizing" ], _InfraSegment ]
     ]
   ],
   True,
-  TestID -> "ExtendSegment-Pulled-returns-list"
+  TestID -> "ExtendSegment-CurvatureMinimizing-returns-list"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { seg = First @ FindSegment[ g, 1, 6, All ] },
+    With[ { seg = FindSegment[ g, 1, 6, All ][ "First" ] },
       With[ { lines = ExtendSegment[ g, seg, 1, Method -> "Embedding" ] },
-        ListQ[ lines ] && Length[ lines ] == 1 &&
-          MemberQ[ Partition[ First @ lines, Length @ seg, 1 ], seg ]
+        lines[ "Length" ] == 1 &&
+          MemberQ[ Partition[ lines[ "First" ], Length @ seg, 1 ], seg ]
       ]
     ]
   ],
@@ -1050,7 +1073,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph[ Range[ 5 ] ] },
-    ExtendSegment[ g, { 2, 3 }, 1, Method -> "Shortest" ] === { { 1, 2, 3, 4, 5 } }
+    ExtendSegment[ g, { 2, 3 }, 1, Method -> "Shortest" ] === InfraSegment[ { { 1, 2, 3, 4, 5 } } ]
   ],
   True,
   TestID -> "ExtendSegment-PathGraph-recovers-full-path"

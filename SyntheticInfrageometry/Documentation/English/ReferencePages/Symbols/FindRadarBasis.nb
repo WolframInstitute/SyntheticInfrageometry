@@ -1,0 +1,126 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5961,        117]
+NotebookOptionsPosition[      3561,         82]
+NotebookOutlinePosition[      3878,         96]
+CellTagsIndexPosition[      3835,         93]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindRadarBasis", "Title",ExpressionUUID->"45ad08b0-2e7c-47cb-ac45-e90a0dff8d31"],
+
+Cell["\<\
+FindRadarBasis[graph] returns one spatial radar basis (resolving set) of \
+graph -- a vertex set B of minimum size such that the distance map v |-> \
+(d(v, b))_{b in B} is injective. FindRadarBasis[graph, n] returns up to n \
+bases of ascending size. FindRadarBasis[graph, n, m] restricts the candidate \
+basis sizes: m can be All (default), an integer (max size), {min, max}, or \
+{exact}.\
+\>", "Text",ExpressionUUID->"1d080f22-aff2-429c-8a7e-4b7f76a1b3a8"],
+
+Cell["Setup", "Section",ExpressionUUID->"c0f4b67b-ac9e-4884-b274-33ccbe61311a"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"37844882-d3cf-4159-bffc-c77eb61cf880"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"5b86c558-c573-460d-ba24-e4bcf85c9107"],
+
+Cell["Usage", "Section",ExpressionUUID->"e56c3d20-ba3c-4377-8d4e-152968d1b7a0"],
+
+Cell["One radar basis of a 6-cycle.", "CodeText",ExpressionUUID->"d2947e46-bb6f-4ec4-b7fb-0e0518f0ae4b"],
+
+Cell["FindRadarBasis[CycleGraph[6]]", "Input",ExpressionUUID->"c24f710c-124c-48bd-a10a-3d69600031db"],
+
+Cell["Three smallest radar bases.", "CodeText",ExpressionUUID->"fbb49dd7-70a9-45fa-ab4c-1682a84ca3b1"],
+
+Cell["FindRadarBasis[CycleGraph[6], 3]", "Input",ExpressionUUID->"facf8594-2abb-4f8d-b637-dfa017a82681"],
+
+Cell["Examples", "Section",ExpressionUUID->"0e678d15-ce43-49a2-9b50-2088aeedef3e"],
+
+Cell["\<\
+Resolving sets of small graphs are tight: trees with few leaves have small \
+metric dimension.\
+\>", "CodeText",ExpressionUUID->"36ab7082-c437-4642-bb3e-26b8be53d372"],
+
+Cell["FindRadarBasis[PathGraph[Range[7]]]", "Input",ExpressionUUID->"1029dff0-d96e-4c48-a522-9107d46af02a"],
+
+Cell["\<\
+On a 4 x 4 grid, two corners suffice to resolve every vertex.\
+\>", "CodeText",ExpressionUUID->"389ffaa0-ca9d-4127-87a7-caf4f9bd4aac"],
+
+Cell["FindRadarBasis[GridGraph[{4, 4}]]", "Input",ExpressionUUID->"29888e9a-791d-4158-942e-8651fb45f4d1"],
+
+Cell["Verify that the returned set really is a resolving set.", "CodeText",ExpressionUUID->"fb9c08ea-2c11-4772-bbb5-43c45d7538a4"],
+
+Cell["\<\
+With[{g = CycleGraph[6]}, RadarBasisQ[g, First @ FindRadarBasis[g]]]\
+\>", "Input",ExpressionUUID->"e3e2bcbb-8069-42ba-a964-59d0dbf4bea6"],
+
+Cell["Restrict the search to bases of size exactly 3.", "CodeText",ExpressionUUID->"206f7276-10cd-4d6e-8394-86c852e9a7dd"],
+
+Cell["FindRadarBasis[CycleGraph[6], 3, {3}]", "Input",ExpressionUUID->"3fe3ad2c-3477-412d-8492-dd5969fa87c1"],
+
+Cell["See also", "Section",ExpressionUUID->"23d21157-51ca-44a2-a712-c14b54cf02df"],
+
+Cell["RadarBasisQ", "Item",ExpressionUUID->"a3e8443a-28c3-420e-8f13-4c834402395f"],
+
+Cell["RadarCoordinates", "Item",ExpressionUUID->"7764d16a-29e2-444e-b91f-28b4582cb9ab"],
+
+Cell["FindOrthogonalAxes", "Item",ExpressionUUID->"bff30bd3-9835-406a-8ba9-63b2b2c599f5"],
+
+Cell["CoordinatizationGuide", "Item",ExpressionUUID->"e6a2e801-1916-473f-a6f9-0ef004338c25"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"d2c1c499-01d7-433e-a353-e9264d068cc9"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"45ad08b0-2e7c-47cb-ac45-e90a0dff8d31"],
+Cell[643, 22, 469, 7, 70, "Text",ExpressionUUID->"1d080f22-aff2-429c-8a7e-4b7f76a1b3a8"],
+Cell[1115, 31, 79, 0, 70, "Section",ExpressionUUID->"c0f4b67b-ac9e-4884-b274-33ccbe61311a"],
+Cell[1197, 33, 132, 0, 70, "CodeText",ExpressionUUID->"37844882-d3cf-4159-bffc-c77eb61cf880"],
+Cell[1332, 35, 122, 0, 70, "Code",ExpressionUUID->"5b86c558-c573-460d-ba24-e4bcf85c9107"],
+Cell[1457, 37, 79, 0, 70, "Section",ExpressionUUID->"e56c3d20-ba3c-4377-8d4e-152968d1b7a0"],
+Cell[1539, 39, 104, 0, 70, "CodeText",ExpressionUUID->"d2947e46-bb6f-4ec4-b7fb-0e0518f0ae4b"],
+Cell[1646, 41, 101, 0, 70, "Input",ExpressionUUID->"c24f710c-124c-48bd-a10a-3d69600031db"],
+Cell[1750, 43, 102, 0, 70, "CodeText",ExpressionUUID->"fbb49dd7-70a9-45fa-ab4c-1682a84ca3b1"],
+Cell[1855, 45, 104, 0, 70, "Input",ExpressionUUID->"facf8594-2abb-4f8d-b637-dfa017a82681"],
+Cell[1962, 47, 82, 0, 70, "Section",ExpressionUUID->"0e678d15-ce43-49a2-9b50-2088aeedef3e"],
+Cell[2047, 49, 177, 3, 70, "CodeText",ExpressionUUID->"36ab7082-c437-4642-bb3e-26b8be53d372"],
+Cell[2227, 54, 107, 0, 70, "Input",ExpressionUUID->"1029dff0-d96e-4c48-a522-9107d46af02a"],
+Cell[2337, 56, 144, 2, 70, "CodeText",ExpressionUUID->"389ffaa0-ca9d-4127-87a7-caf4f9bd4aac"],
+Cell[2484, 60, 105, 0, 70, "Input",ExpressionUUID->"29888e9a-791d-4158-942e-8651fb45f4d1"],
+Cell[2592, 62, 130, 0, 70, "CodeText",ExpressionUUID->"fb9c08ea-2c11-4772-bbb5-43c45d7538a4"],
+Cell[2725, 64, 148, 2, 70, "Input",ExpressionUUID->"e3e2bcbb-8069-42ba-a964-59d0dbf4bea6"],
+Cell[2876, 68, 122, 0, 70, "CodeText",ExpressionUUID->"206f7276-10cd-4d6e-8394-86c852e9a7dd"],
+Cell[3001, 70, 109, 0, 70, "Input",ExpressionUUID->"3fe3ad2c-3477-412d-8492-dd5969fa87c1"],
+Cell[3113, 72, 82, 0, 70, "Section",ExpressionUUID->"23d21157-51ca-44a2-a712-c14b54cf02df"],
+Cell[3198, 74, 82, 0, 70, "Item",ExpressionUUID->"a3e8443a-28c3-420e-8f13-4c834402395f"],
+Cell[3283, 76, 87, 0, 70, "Item",ExpressionUUID->"7764d16a-29e2-444e-b91f-28b4582cb9ab"],
+Cell[3373, 78, 89, 0, 70, "Item",ExpressionUUID->"bff30bd3-9835-406a-8ba9-63b2b2c599f5"],
+Cell[3465, 80, 92, 0, 70, "Item",ExpressionUUID->"e6a2e801-1916-473f-a6f9-0ef004338c25"]
+}
+]
+*)
+
+(* End of internal cache information *)

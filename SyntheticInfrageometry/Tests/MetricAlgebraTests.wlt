@@ -1,5 +1,8 @@
 BeginTestSection["MetricAlgebra"]
 
+(* Tropical (min-plus) operation tests have moved to TropicalOperationsTests.wlt
+   (mirror of Kernel/TropicalOperations.wl). *)
+
 (* ===== MetricInterval ===== *)
 
 VerificationTest[

@@ -6,14 +6,10 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
    `InfraSceneViewer` walks the construction-step DAG of an `InfraScene`. *)
 
 
-$InfraSegmentSelectOptions = { None, "FrechetCentral", "FrechetPeripheral",
-  "MeanFrechetCentral", "MeanFrechetPeripheral",
-  "HausdorffCentral", "HausdorffPeripheral", "EmbeddingClosest" };
+$InfraSegmentSelectOptions = { None, "Central", "Peripheral", "EmbeddingClosest" };
 
-$InfraCircleSelectOptions = { None, "ShortestCircumference", "LongestCircumference",
-  "FrechetCentral", "FrechetPeripheral",
-  "MeanFrechetCentral", "MeanFrechetPeripheral",
-  "HausdorffCentral", "HausdorffPeripheral", "EmbeddingClosest" };
+$InfraCircleSelectOptions = { None, "Central", "Peripheral",
+  "ShortestCircumference", "LongestCircumference", "EmbeddingClosest" };
 
 
 (* ===================== Per-object viewers ===================== *)
@@ -32,7 +28,7 @@ PointViewer[ g_Graph, sym_: None ] :=
       With[ { pts = FindPoint[ g, UpTo[ n ], "From" -> from, "MaxCliques" -> 100,
           "Distance" -> Switch[ separation, "None", None, "Max", "Max", "Range", distRange ] ] },
         If[ sym =!= None, sym = pts ];
-        InfraSceneHighlight[ g, { InfraPoint[ pts ] -> $InfraPointColor }, ImageSize -> 600 ] ],
+        InfraSceneHighlight[ g, { pts -> $InfraPointColor }, ImageSize -> 600 ] ],
       Grid[ {
         { Control[ { { n, 1, "Points" }, ControlType -> InputField } ],
           Control[ { { from, "Random", "From" }, { "Random", "Center", "Periphery" } } ] },
@@ -58,8 +54,8 @@ SegmentViewer[ g_Graph ] :=
       With[ {
           segments = If[ p1 === p2 || GraphDistance[ g, p1, p2 ] === Infinity, {},
             Take[
-              applyPathSpaceSelector[ g, FindSegment[ g, p1, p2, All ],
-                sel, <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |> ],
+              applySelectOption[ g, FindSegment[ g, p1, p2, All ][ "Realisations" ],
+                sel, False, <| "Endpoints" -> { p1, p2 } |> ],
               UpTo[ n ] ] ] },
         EventHandler[
           HighlightGraph[
@@ -96,7 +92,7 @@ ShellViewer[ g_Graph ] :=
       seed;
       With[ {
           shells = If[ r < 1, {},
-            Take[ FindShell[ g, p, r, All, Method -> method ], UpTo[ n ] ] ] },
+            Take[ FindShell[ g, p, r, All, Method -> method ][ "Realisations" ], UpTo[ n ] ] ] },
         EventHandler[
           HighlightGraph[
             InfraSceneHighlight[ g, { InfraShell[ shells ] -> $InfraShellColor } ],
@@ -131,8 +127,8 @@ CircleViewer[ g_Graph ] :=
       With[ {
           circles = If[ r < 1, {},
             Take[
-              applyPathSpaceSelector[ g, FindCircle[ g, p, r, All ],
-                sel, <| "Cyclic" -> True, "Center" -> p, "Radius" -> r |> ],
+              applySelectOption[ g, FindCircle[ g, p, r, All ][ "Realisations" ],
+                sel, True, <| "Center" -> p, "Radius" -> r |> ],
               UpTo[ n ] ] ] },
         EventHandler[
           HighlightGraph[
@@ -176,6 +172,7 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
         Switch[ Head @ Lookup[ scene[ "Constructions" ], #, InfraPoint ],
           InfraSegment | InfraLine, InfraSegment,
           InfraShell,               InfraShell,
+          InfraPlane,               InfraPlane,
           InfraCircle,              InfraCircle,
           _,                        InfraPoint ] &,
         scene[ "Objects" ] ] },

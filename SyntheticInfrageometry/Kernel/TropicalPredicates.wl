@@ -7,7 +7,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
    to v - i.e. S is the sorted vertex set of some geodesic u -> v. *)
 
 TropicalSegmentQ[ graph_Graph, S_List, u_, v_ ] :=
-  MemberQ[ FindTropicalSegment[ graph, u, v, All ], Sort @ DeleteDuplicates @ S ]
+  MemberQ[ FindTropicalSegment[ graph, u, v, All ][ "Realisations" ], Sort @ DeleteDuplicates @ S ]
 
 
 (* GeodesicallyConvexQ: S is closed under taking metric intervals - it
@@ -23,7 +23,7 @@ GeodesicallyConvexQ[ graph_Graph, S_List ] :=
    (only one geodesic, equivalently UniqueSegmentQ). *)
 
 UniqueTropicalSegmentQ[ graph_Graph, u_, v_ ] :=
-  Length @ FindTropicalSegment[ graph, u, v, All ] == 1
+  FindTropicalSegment[ graph, u, v, All ][ "Length" ] == 1
 
 
 (* ===================== Tropical axioms ===================== *)

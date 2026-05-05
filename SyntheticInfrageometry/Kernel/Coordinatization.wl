@@ -48,11 +48,17 @@ RadarBasisQ[ g_Graph, b_List ] :=
 
 
 (* RadarCoordinates of v with respect to b is its distance vector
-   (d(v, b1), ..., d(v, bk)). *)
+   (d(v, b1), ..., d(v, bk)).  The two-argument form returns the
+   Association of all vertices' radar coordinates. *)
 
 RadarCoordinates[ g_Graph, v_, b_List ] :=
   GraphDistance[ g, v, # ] & /@ b
 
+RadarCoordinates[ g_Graph, b_List ] /; !MemberQ[ VertexList[ g ], b ] :=
+  Association[ # -> RadarCoordinates[ g, #, b ] & /@ VertexList[ g ] ]
+
+
+(* ===================== Laminar layers ===================== *)
 
 LaminarLayers[ g_Graph, line_List ] :=
   List /@ line
@@ -68,12 +74,16 @@ laminarLayersFromSources[ dag_Graph, sources_List ] :=
   ]
 
 
+(* axisLayerIndex projects v onto an axis (a line or DAG) and returns the
+   *list* of all 0-based positions/layers tied at the minimum graph
+   distance.  The caller (OrthogonalCoordinates) reduces this to a scalar
+   via the "Aggregation" option. *)
+
 axisLayerIndex[ g_Graph, axis_List, v_ ] :=
-  Module[ { dists, minD, proj },
+  Module[ { dists, minD },
     dists = GraphDistance[ g, v, # ] & /@ axis;
     minD = Min[ dists ];
-    proj = Pick[ axis, dists, minD ];
-    Min[ Flatten[ FirstPosition[ axis, # ] & /@ proj ] ] - 1
+    Flatten[ Position[ dists, minD ] ] - 1
   ]
 
 axisLayerIndex[ g_Graph, dag_Graph, v_ ] :=
@@ -83,57 +93,101 @@ axisLayerIndex[ g_Graph, dag_Graph, v_ ] :=
     dists = GraphDistance[ g, v, # ] & /@ verts;
     minD = Min[ dists ];
     proj = Pick[ verts, dists, minD ];
-    Min @ Flatten @ Table[
-      Position[ layers, u ][[ All, 1 ]] - 1,
-      { u, proj }
+    Flatten @ Table[ Position[ layers, u ][[ All, 1 ]] - 1, { u, proj } ]
+  ]
+
+
+(* ===================== OrthogonalCoordinates ===================== *)
+
+(* OrthogonalCoordinates projects each vertex onto each axis (a line or
+   DAG) by shortest-path distance and returns the tuple of layer indices.
+   With an "Origin" or a center vertex c the layers are signed - Z-valued
+   displacements with c at {0, ..., 0}.  When the projection is
+   multi-valued (ties), the "Aggregation" option chooses how to reduce
+   the layer indices: "First" (default; earliest position), "Last",
+   "Min", "Max", "Mean", or "Median".
+
+   InfraPoint center: an InfraPoint[{v1, ..., vk}] center asks for axes
+   that pass through at least one of {v1, ..., vk} as an interior point;
+   each axis is signed relative to the first vi (in InfraPoint order)
+   that lies on it. *)
+
+aggregateLayer[ "First",  ix_List ] := First @ ix
+aggregateLayer[ "Last",   ix_List ] := Last @ ix
+aggregateLayer[ "Min",    ix_List ] := Min @ ix
+aggregateLayer[ "Max",    ix_List ] := Max @ ix
+aggregateLayer[ "Mean",   ix_List ] := Mean @ ix
+aggregateLayer[ "Median", ix_List ] := Median @ ix
+
+orthogonalCoordsCore[ g_Graph, axes_List, v_, anchors_, agg_String ] :=
+  With[ { vIdx = aggregateLayer[ agg, axisLayerIndex[ g, #, v ] ] & /@ axes },
+    If[ anchors === None,
+      vIdx,
+      vIdx - MapThread[ aggregateLayer[ agg, axisLayerIndex[ g, #1, #2 ] ] &, { axes, anchors } ]
     ]
   ]
 
+perAxisAnchor[ axis_List,  vs_List ] := SelectFirst[ vs, MemberQ[ axis, # ] &,                  First @ vs ]
+perAxisAnchor[ axis_Graph, vs_List ] := SelectFirst[ vs, MemberQ[ VertexList[ axis ], # ] &,    First @ vs ]
 
-(* AxesCoordinates projects a vertex onto each axis (a line or DAG) and
-   returns the tuple of layer indices.  With an "Origin" or a center
-   vertex c, the layers are signed - Z-valued displacements with c at
-   {0, ..., 0}.  The number of axes through c is the coordinatised
-   dimension at c. *)
 
-Options[ AxesCoordinates ] = { Method -> "ShortestPaths", "Origin" -> None };
+Options[ OrthogonalCoordinates ] = { "Origin" -> None, "Aggregation" -> "First" };
 
-AxesCoordinates[ g_Graph, axes_List, v_, opts : OptionsPattern[] ] /; !MemberQ[ VertexList[ g ], axes ] :=
-  Switch[ OptionValue[ Method ],
-    "ShortestPaths",
-      With[ { origin = OptionValue[ "Origin" ] },
-        If[ origin === None,
-          axisLayerIndex[ g, #, v ] & /@ axes,
-          With[ { originIdx = axisLayerIndex[ g, #, origin ] & /@ axes,
-                   vIdx = axisLayerIndex[ g, #, v ] & /@ axes },
-            vIdx - originIdx
-          ]
-        ]
-      ],
-    "ParallelLines", $Failed,
-    _, $Failed
+(* Explicit axes, single vertex *)
+OrthogonalCoordinates[ g_Graph, axes_List, v_, opts : OptionsPattern[] ] /; !MemberQ[ VertexList[ g ], axes ] :=
+  With[ { origin = OptionValue[ "Origin" ], agg = OptionValue[ "Aggregation" ] },
+    orthogonalCoordsCore[ g, axes, v,
+      If[ origin === None, None, ConstantArray[ origin, Length[ axes ] ] ],
+      agg
+    ]
   ]
 
-AxesCoordinates[ g_Graph, axes_List, opts : OptionsPattern[] ] /; !MemberQ[ VertexList[ g ], axes ] :=
-  Association[ # -> AxesCoordinates[ g, axes, #, opts ] & /@ VertexList[ g ] ]
+(* Explicit axes, all vertices *)
+OrthogonalCoordinates[ g_Graph, axes_List, opts : OptionsPattern[] ] /; !MemberQ[ VertexList[ g ], axes ] :=
+  Association[ # -> OrthogonalCoordinates[ g, axes, #, opts ] & /@ VertexList[ g ] ]
 
-AxesCoordinates[ g_Graph, c_, v_, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] && MemberQ[ VertexList[ g ], v ] :=
-  AxesCoordinates[ g, FindOrthogonalAxes[ g, c, All ], v, "Origin" -> c, opts ]
+(* Center vertex c, single vertex *)
+OrthogonalCoordinates[ g_Graph, c_, v_, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] && MemberQ[ VertexList[ g ], v ] :=
+  OrthogonalCoordinates[ g, FindOrthogonalAxes[ g, c, All ], v, "Origin" -> c, opts ]
 
-AxesCoordinates[ g_Graph, c_, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+(* Center vertex c, all vertices *)
+OrthogonalCoordinates[ g_Graph, c_, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
   With[ { axes = FindOrthogonalAxes[ g, c, All ] },
-    Association[ # -> AxesCoordinates[ g, axes, #, "Origin" -> c, opts ] & /@ VertexList[ g ] ]
+    Association[ # -> OrthogonalCoordinates[ g, axes, #, "Origin" -> c, opts ] & /@ VertexList[ g ] ]
+  ]
+
+(* InfraPoint singleton: degenerates to single-vertex center *)
+OrthogonalCoordinates[ g_Graph, InfraPoint[ { v_ } ], rest___ ] :=
+  OrthogonalCoordinates[ g, v, rest ]
+
+(* InfraPoint multi-vertex, single vertex *)
+OrthogonalCoordinates[ g_Graph, InfraPoint[ vs_List ], v_, opts : OptionsPattern[] ] /;
+    MemberQ[ VertexList[ g ], v ] && SubsetQ[ VertexList[ g ], vs ] :=
+  With[ { axes = FindOrthogonalAxes[ g, InfraPoint[ vs ], All ],
+          agg  = OptionValue[ "Aggregation" ] },
+    orthogonalCoordsCore[ g, axes, v, perAxisAnchor[ #, vs ] & /@ axes, agg ]
+  ]
+
+(* InfraPoint multi-vertex, all vertices *)
+OrthogonalCoordinates[ g_Graph, InfraPoint[ vs_List ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+  With[ { axes = FindOrthogonalAxes[ g, InfraPoint[ vs ], All ],
+          agg  = OptionValue[ "Aggregation" ] },
+    With[ { anchors = perAxisAnchor[ #, vs ] & /@ axes },
+      Association[ # -> orthogonalCoordsCore[ g, axes, #, anchors, agg ] & /@ VertexList[ g ] ]
+    ]
   ]
 
 
 (* ===================== Orthogonal axes ===================== *)
 
 (* FindOrthogonalAxes selects a maximal mutually-separated set of longest
-   geodesics (or longest geodesics through a chosen center c).
+   geodesics (or longest geodesics through a chosen center).
    "Orthogonality" is operationalised as a Hausdorff / endpoint
    separation between axes; greedy selection.  When constrained to pass
    through c as an interior point, each axis fixes a sign convention for
-   the corresponding signed AxesCoordinates layer. *)
+   the corresponding signed OrthogonalCoordinates layer.  An InfraPoint
+   center accepts a vertex set; each returned axis must contain at least
+   one of those vertices as an interior point. *)
 
 findLongestPaths[ g_Graph, n_, epsilon_ : 0 ] :=
   Module[ { vertices, distMatrix, maxDist, pairs, numPairs, counts },
@@ -157,7 +211,7 @@ findLongestPaths[ g_Graph, n_, epsilon_ : 0 ] :=
     ]
   ]
 
-findLongestGeodesicThrough[ g_Graph, v_, n_ ] :=
+findLongestGeodesicThrough[ g_Graph, v_, n_ ] /; MemberQ[ VertexList[ g ], v ] :=
   Module[ { vertices, distMatrix, vertexIdx, distFromVertex, candidates, maxLen, pairs, counts },
     vertices = VertexList[ g ];
     distMatrix = GraphDistanceMatrix[ g ];
@@ -198,6 +252,20 @@ findLongestGeodesicThrough[ g_Graph, v_, n_ ] :=
     ]
   ]
 
+findLongestGeodesicThrough[ g_Graph, anchors_List, n_ ] /; AllTrue[ anchors, MemberQ[ VertexList[ g ], # ] & ] :=
+  Module[ { paths, maxLen },
+    paths = DeleteDuplicates[ Flatten[ findLongestGeodesicThrough[ g, #, All ] & /@ anchors, 1 ] ];
+    If[ paths === {}, Return[ {} ] ];
+    maxLen = Max[ Length /@ paths ];
+    paths = Select[ paths, Length[ # ] == maxLen & ];
+    If[ n === All, paths,
+      With[ { l = Length[ paths ] },
+        If[ n >= l, paths, RandomSample[ paths, n ] ]
+      ]
+    ]
+  ]
+
+
 orthogonalGreedy[ g_Graph, paths_List, opts_List ] :=
   Module[ { distMatrix, vertices, vertexIndex, minSeparation, thickness, distanceFunction, pick,
             pickFirst, axes, candidates, next, previousIndices, previousEndpoints, separation, closeAxes, scores },
@@ -205,7 +273,7 @@ orthogonalGreedy[ g_Graph, paths_List, opts_List ] :=
     vertices = VertexList[ g ];
     distMatrix = GraphDistanceMatrix[ g ];
     vertexIndex = AssociationThread[ vertices, Range @ Length @ vertices ];
-    distanceFunction = "DistanceFunction" /. opts /. "DistanceFunction" -> "MinEndpoint";
+    distanceFunction = "AxisDistance" /. opts /. "AxisDistance" -> "MinEndpoint";
     minSeparation = "MinSeparation" /. opts /. "MinSeparation" -> Automatic;
     minSeparation = Replace[ minSeparation, Automatic -> (Length[ First[ paths ] ] - 1) / 2 ];
     thickness = "AxisThickness" /. opts /. "AxisThickness" -> 0;
@@ -243,7 +311,7 @@ orthogonalGreedy[ g_Graph, paths_List, opts_List ] :=
   ]
 
 Options[ FindOrthogonalAxes ] = {
-  "DistanceFunction" -> "MinEndpoint",
+  "AxisDistance" -> "MinEndpoint",
   "MinLength" -> Automatic,
   "MinSeparation" -> Automatic,
   "AxisThickness" -> 0,
@@ -274,5 +342,20 @@ FindOrthogonalAxes[ g_Graph, v_, UpTo[ n_Integer ], opts : OptionsPattern[] ] /;
 
 FindOrthogonalAxes[ g_Graph, v_, n_Integer : 1, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], v ] :=
   With[ { result = FindOrthogonalAxes[ g, v, UpTo[ n ], opts ] },
+    If[ Length[ result ] < n, $Failed, result ]
+  ]
+
+(* InfraPoint singleton: degenerates to single-vertex center *)
+FindOrthogonalAxes[ g_Graph, InfraPoint[ { v_ } ], rest___ ] :=
+  FindOrthogonalAxes[ g, v, rest ]
+
+FindOrthogonalAxes[ g_Graph, InfraPoint[ vs_List ], All, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+  orthogonalGreedy[ g, findLongestGeodesicThrough[ g, vs, All ], { opts } ]
+
+FindOrthogonalAxes[ g_Graph, InfraPoint[ vs_List ], UpTo[ n_Integer ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+  Take[ FindOrthogonalAxes[ g, InfraPoint[ vs ], All, opts ], UpTo[ n ] ]
+
+FindOrthogonalAxes[ g_Graph, InfraPoint[ vs_List ], n_Integer : 1, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+  With[ { result = FindOrthogonalAxes[ g, InfraPoint[ vs ], UpTo[ n ], opts ] },
     If[ Length[ result ] < n, $Failed, result ]
   ]

@@ -3,6 +3,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageScope[$InfraPointColor]
 PackageScope[$InfraSegmentColor]
 PackageScope[$InfraShellColor]
+PackageScope[$InfraPlaneColor]
 PackageScope[$InfraCircleColor]
 PackageScope[$InfraSceneHighlightPalette]
 PackageScope[$InfraOpacityRange]
@@ -13,6 +14,7 @@ PackageScope[$InfraPointSizeRange]
 $InfraPointColor   = RGBColor[ 0.78, 0.30, 0.55 ];
 $InfraSegmentColor = RGBColor[ 0.92, 0.45, 0.30 ];
 $InfraShellColor   = RGBColor[ 0.30, 0.70, 0.50 ];
+$InfraPlaneColor   = RGBColor[ 0.55, 0.45, 0.80 ];
 $InfraCircleColor  = RGBColor[ 0.20, 0.55, 0.65 ];
 
 $InfraOpacityRange   = { 0.40, 1.0 };
@@ -41,11 +43,13 @@ $InfraSceneHighlightPalette := Join[
      InfraSegment[ {seg1, seg2, ...} ]       -- sequential edges (Partition)
      InfraLine   [ {line1, line2, ...} ]     -- sequential edges (Partition)
      InfraShell  [ {set1, set2, ...} ]       -- induced subgraph edges
+     InfraPlane  [ {set1, set2, ...} ]       -- induced subgraph edges
      InfraCircle [ {cyc1, cyc2, ...} ]       -- sequential edges + auto-closure
 
    The arg shape (a single List) selects the rendering interpretation; the
    scene-construction shapes of these heads (e.g. `InfraSegment[p1, p2]`,
-   `InfraShell[c, r]`, `InfraCircle[c, r]`) take more args and never collide.
+   `InfraShell[c, r]`, `InfraPlane[p1, p2]`, `InfraCircle[c, r]`) take more
+   args and never collide.
    Each entry may be plain or wrapped as `entry -> color`. *)
 
 Options[ InfraSceneHighlight ] = {
@@ -55,7 +59,10 @@ Options[ InfraSceneHighlight ] = {
 };
 
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
-  Module[ { triples, oRange, tRange, pRange, vEntries, eEntries },
+  Module[ { triples, oRange, tRange, pRange, vEntries, eEntries, objects },
+
+    objects = DeleteCases[ multiObjects,
+      _[ $Failed ] | ( _[ $Failed ] -> _ ) | ( _ -> _[ $Failed ] ) ];
 
     triples = MapIndexed[
       { item, idx } |-> Replace[
@@ -65,6 +72,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
               InfraSegment, $InfraSegmentColor,
               InfraLine,    $InfraSegmentColor,
               InfraShell,   $InfraShellColor,
+              InfraPlane,   $InfraPlaneColor,
               InfraCircle,  $InfraCircleColor,
               _,            $InfraSceneHighlightPalette[[
                               1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ] } ],
@@ -73,6 +81,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           { InfraSegment[ b_List ], c_ } :> { b, c, "Paths"  },
           { InfraLine   [ b_List ], c_ } :> { b, c, "Paths"  },
           { InfraShell  [ b_List ], c_ } :> { b, c, "Sets"   },
+          { InfraPlane  [ b_List ], c_ } :> { b, c, "Sets"   },
           { InfraCircle [ b_List ], c_ } :> { b, c, "Cycles" },
           { b_, c_ }                     :> { b, c, Automatic }
         } ],
@@ -122,21 +131,17 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
 
     HighlightGraph[ graph, Join[
       KeyValueMap[
-        { e, cs } |-> With[ {
-            w      = Mean @ cs[[ All, 2 ]],
-            shades = Lighter[ #[[ 1 ]], 1 - #[[ 2 ]] ] & /@ cs },
+        { e, cs } |-> With[ { last = Last @ cs },
           Style[ UndirectedEdge @@ e, Directive[
-            If[ Length @ shades == 1, cs[[ 1, 1 ]], Blend @ shades ],
-            Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) w ],
-            AbsoluteThickness[ tRange[[ 1 ]] + ( tRange[[ 2 ]] - tRange[[ 1 ]] ) w ] ] ] ],
+            last[[ 1 ]],
+            Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) last[[ 2 ]] ],
+            AbsoluteThickness[ tRange[[ 1 ]] + ( tRange[[ 2 ]] - tRange[[ 1 ]] ) last[[ 2 ]] ] ] ] ],
         Merge[ eEntries, Identity ] ],
       KeyValueMap[
-        { v, cs } |-> With[ {
-            w      = Mean @ cs[[ All, 2 ]],
-            shades = Lighter[ #[[ 1 ]], 1 - #[[ 2 ]] ] & /@ cs },
+        { v, cs } |-> With[ { last = Last @ cs },
           Style[ v, Directive[
-            If[ Length @ shades == 1, cs[[ 1, 1 ]], Blend @ shades ],
-            Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) w ],
-            AbsolutePointSize[ pRange[[ 1 ]] + ( pRange[[ 2 ]] - pRange[[ 1 ]] ) w ] ] ] ],
+            last[[ 1 ]],
+            Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) last[[ 2 ]] ],
+            AbsolutePointSize[ pRange[[ 1 ]] + ( pRange[[ 2 ]] - pRange[[ 1 ]] ) last[[ 2 ]] ] ] ] ],
         Merge[ vEntries, Identity ] ] ] ]
   ]

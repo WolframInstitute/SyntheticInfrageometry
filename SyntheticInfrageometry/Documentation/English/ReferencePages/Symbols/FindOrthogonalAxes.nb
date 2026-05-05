@@ -1,0 +1,161 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      7671,        152]
+NotebookOptionsPosition[      4986,        114]
+NotebookOutlinePosition[      5303,        128]
+CellTagsIndexPosition[      5260,        125]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindOrthogonalAxes", "Title",ExpressionUUID->"5cabe707-6bb7-45a8-b2c4-4bf797252732"],
+
+Cell["\<\
+FindOrthogonalAxes[graph, n] returns n mutually well-separated longest paths \
+in graph (or $Failed if fewer exist); FindOrthogonalAxes[graph, UpTo[n]] \
+returns up to n; FindOrthogonalAxes[graph, All] returns every axis above the \
+separation threshold. FindOrthogonalAxes[graph, c, n] (or UpTo / All) \
+constrains every axis to pass through vertex c as an interior point, \
+anchoring a sign convention for downstream Z-valued coordinates. \
+FindOrthogonalAxes[graph, InfraPoint[{v1, ..., vk}], n] requires every axis \
+to contain at least one of the listed vertices as an interior point. Options: \
+\"AxisDistance\" (\"MinEndpoint\" | \"Hausdorff\" | \"Separation\") -- the \
+pairwise axis distance used for separation; \"MinLength\" (Automatic = \
+diameter); \"MinSeparation\" (Automatic = half axis length); \
+\"AxisThickness\" (axes within this Hausdorff distance are kept together); \
+\"RandomPick\" (False picks the first match deterministically; True picks at \
+random).\
+\>", "Text",ExpressionUUID->"03d44c1f-05f3-469d-978c-909b4110cc61"],
+
+Cell["Setup", "Section",ExpressionUUID->"4d250d84-8231-4fa8-814f-1feaa9f0c34f"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"0d5580a0-be0e-456b-9c97-7a96149e28ac"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"bca4deaf-001c-4ef8-b244-532db528b8cd"],
+
+Cell["Usage", "Section",ExpressionUUID->"c488d2ad-db71-442f-971d-8b46c295bef6"],
+
+Cell["\<\
+All orthogonal axes of a 5 x 5 grid passing through the corner.\
+\>", "CodeText",ExpressionUUID->"5940099e-01f1-41b4-b9dd-66a364d73c83"],
+
+Cell["FindOrthogonalAxes[GridGraph[{5, 5}], 1, All]", "Input",ExpressionUUID->"6df79392-77e8-4884-b5f0-cefcf4389b06"],
+
+Cell["Visualize the axes in red with the center vertex green.", "CodeText",ExpressionUUID->"d037a648-d3ae-436e-82b7-2bd90a1a4cbf"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}], c = 1}, InfraSceneHighlight[g, \
+{InfraSegment[FindOrthogonalAxes[g, c, All]] -> Red, InfraPoint[{c}] -> \
+Green}]]\
+\>", "Input",ExpressionUUID->"dc9b1241-271a-40a3-8b9f-7a145c29f79f"],
+
+Cell["\<\
+The coordinatized dimension at a vertex is just the number of axes through it.\
+\>", "CodeText",ExpressionUUID->"b6f3e15d-01bc-40fa-b36e-222f44045f0b"],
+
+Cell["Length @ FindOrthogonalAxes[GridGraph[{5, 5}], 1, All]", "Input",ExpressionUUID->"4f044a07-354b-4798-9efc-09a05e86dd1b"],
+
+Cell["Examples", "Section",ExpressionUUID->"dae47140-03b8-462e-be91-9822226537d9"],
+
+Cell["\<\
+All longest paths through the center of a path -- there is only one.\
+\>", "CodeText",ExpressionUUID->"19130b06-68db-4388-b93c-ac73b99097cf"],
+
+Cell["FindOrthogonalAxes[PathGraph[Range[5]], 3, All]", "Input",ExpressionUUID->"e944a813-4a25-44b6-9745-d5d3c5266b7f"],
+
+Cell["\<\
+InfraPoint center: every axis must pass through at least one of the listed \
+vertices.\
+\>", "CodeText",ExpressionUUID->"752cb942-9b39-4154-bb23-fde81a6c896a"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}], anchors = {7, 19}}, InfraSceneHighlight[g, \
+{InfraSegment[FindOrthogonalAxes[g, InfraPoint[anchors], All]] -> Red, \
+InfraPoint[anchors] -> Green}]]\
+\>", "Input",ExpressionUUID->"1027858f-1d85-4852-8816-403f36044122"],
+
+Cell["\<\
+Strict count: requesting more axes than exist returns $Failed.\
+\>", "CodeText",ExpressionUUID->"b8339c0b-c133-4c89-8633-0d0d6a5f2bc4"],
+
+Cell["FindOrthogonalAxes[PathGraph[Range[5]], 3, 5]", "Input",ExpressionUUID->"1391bf0c-5416-436e-b60d-93c53e22aba7"],
+
+Cell["\<\
+Hausdorff separation between axes (instead of the default minimum-endpoint \
+separation).\
+\>", "CodeText",ExpressionUUID->"6bcbae75-86a2-44b7-8462-e8dd2f792317"],
+
+Cell["\<\
+FindOrthogonalAxes[GridGraph[{5, 5}], 13, All, \"AxisDistance\" -> \
+\"Hausdorff\"]\
+\>", "Input",ExpressionUUID->"1875676b-42e8-4333-9e4c-077559c71dca"],
+
+Cell["See also", "Section",ExpressionUUID->"d8cadd65-3209-4016-a395-934a34a9cdac"],
+
+Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"cffafffe-a71a-42b7-a3de-a5799b083a46"],
+
+Cell["FindRadarBasis", "Item",ExpressionUUID->"496da466-2501-49aa-8512-328090cd3b4f"],
+
+Cell["FindLine", "Item",ExpressionUUID->"69e4113c-6a21-4c17-b670-788a7eeee000"],
+
+Cell["InfraPoint", "Item",ExpressionUUID->"a3ebab2c-e765-4b6f-983a-00d9176eea45"],
+
+Cell["CoordinatizationGuide", "Item",ExpressionUUID->"78b543b9-29d5-4c18-a83a-74285898e59c"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"d2c1c499-01d7-433e-a353-e9264d068cc9"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"5cabe707-6bb7-45a8-b2c4-4bf797252732"],
+Cell[647, 22, 1057, 15, 70, "Text",ExpressionUUID->"03d44c1f-05f3-469d-978c-909b4110cc61"],
+Cell[1707, 39, 79, 0, 70, "Section",ExpressionUUID->"4d250d84-8231-4fa8-814f-1feaa9f0c34f"],
+Cell[1789, 41, 132, 0, 70, "CodeText",ExpressionUUID->"0d5580a0-be0e-456b-9c97-7a96149e28ac"],
+Cell[1924, 43, 122, 0, 70, "Code",ExpressionUUID->"bca4deaf-001c-4ef8-b244-532db528b8cd"],
+Cell[2049, 45, 79, 0, 70, "Section",ExpressionUUID->"c488d2ad-db71-442f-971d-8b46c295bef6"],
+Cell[2131, 47, 146, 2, 70, "CodeText",ExpressionUUID->"5940099e-01f1-41b4-b9dd-66a364d73c83"],
+Cell[2280, 51, 117, 0, 70, "Input",ExpressionUUID->"6df79392-77e8-4884-b5f0-cefcf4389b06"],
+Cell[2400, 53, 130, 0, 70, "CodeText",ExpressionUUID->"d037a648-d3ae-436e-82b7-2bd90a1a4cbf"],
+Cell[2533, 55, 224, 4, 70, "Input",ExpressionUUID->"dc9b1241-271a-40a3-8b9f-7a145c29f79f"],
+Cell[2760, 61, 161, 2, 70, "CodeText",ExpressionUUID->"b6f3e15d-01bc-40fa-b36e-222f44045f0b"],
+Cell[2924, 65, 126, 0, 70, "Input",ExpressionUUID->"4f044a07-354b-4798-9efc-09a05e86dd1b"],
+Cell[3053, 67, 82, 0, 70, "Section",ExpressionUUID->"dae47140-03b8-462e-be91-9822226537d9"],
+Cell[3138, 69, 151, 2, 70, "CodeText",ExpressionUUID->"19130b06-68db-4388-b93c-ac73b99097cf"],
+Cell[3292, 73, 119, 0, 70, "Input",ExpressionUUID->"e944a813-4a25-44b6-9745-d5d3c5266b7f"],
+Cell[3414, 75, 169, 3, 70, "CodeText",ExpressionUUID->"752cb942-9b39-4154-bb23-fde81a6c896a"],
+Cell[3586, 80, 258, 4, 70, "Input",ExpressionUUID->"1027858f-1d85-4852-8816-403f36044122"],
+Cell[3847, 86, 145, 2, 70, "CodeText",ExpressionUUID->"b8339c0b-c133-4c89-8633-0d0d6a5f2bc4"],
+Cell[3995, 90, 117, 0, 70, "Input",ExpressionUUID->"1391bf0c-5416-436e-b60d-93c53e22aba7"],
+Cell[4115, 92, 172, 3, 70, "CodeText",ExpressionUUID->"6bcbae75-86a2-44b7-8462-e8dd2f792317"],
+Cell[4290, 97, 163, 3, 70, "Input",ExpressionUUID->"1875676b-42e8-4333-9e4c-077559c71dca"],
+Cell[4456, 102, 82, 0, 70, "Section",ExpressionUUID->"d8cadd65-3209-4016-a395-934a34a9cdac"],
+Cell[4541, 104, 92, 0, 70, "Item",ExpressionUUID->"cffafffe-a71a-42b7-a3de-a5799b083a46"],
+Cell[4636, 106, 85, 0, 70, "Item",ExpressionUUID->"496da466-2501-49aa-8512-328090cd3b4f"],
+Cell[4724, 108, 79, 0, 70, "Item",ExpressionUUID->"69e4113c-6a21-4c17-b670-788a7eeee000"],
+Cell[4806, 110, 81, 0, 70, "Item",ExpressionUUID->"a3ebab2c-e765-4b6f-983a-00d9176eea45"],
+Cell[4890, 112, 92, 0, 70, "Item",ExpressionUUID->"78b543b9-29d5-4c18-a83a-74285898e59c"]
+}
+]
+*)
+
+(* End of internal cache information *)

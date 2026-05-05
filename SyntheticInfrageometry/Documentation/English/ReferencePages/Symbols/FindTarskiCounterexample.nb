@@ -10,99 +10,25 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      6459,        136]
-NotebookOptionsPosition[      4162,        102]
-NotebookOutlinePosition[      4479,        116]
-CellTagsIndexPosition[      4436,        113]
+NotebookDataLength[      1560,         43]
+NotebookOptionsPosition[      1017,         28]
+NotebookOutlinePosition[      1334,         42]
+CellTagsIndexPosition[      1291,         39]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindTarskiCounterexample", "Title",ExpressionUUID->"ee6bb69f-3d42-43a1-a13a-f3f962fe508a"],
+Cell["\"Documentation for FindTarskiCounterexample\"", "Input",ExpressionUUID->"814cbf82-c489-4bbc-948b-811115325084"],
 
-Cell["\<\
-FindTarskiCounterexample[graph, predQ] returns one vertex tuple witnessing \
-the failure of the Tarski axiom predQ on graph, or $Failed. predQ is one of \
-TarskiCongruenceIdentityQ, TarskiSegmentConstructionQ, TarskiFiveSegmentsQ, \
-TarskiBetweennessIdentityQ, TarskiInnerPaschQ, TarskiLowerDimensionQ, \
-TarskiUpperDimensionQ. The calling triple n / UpTo[n] / All caps the witness \
-count. Returns $Failed for the always-True axioms and for TarskiContinuityQ \
-(whose failure has no finite vertex-tuple witness).\
-\>", "Text",ExpressionUUID->"3053bd48-9575-4232-aabe-6927de6aac0f"],
+Cell["?FindTarskiCounterexample", "Input",ExpressionUUID->"54c46d63-770d-49f5-b834-bec828f5ce51"],
 
-Cell["Setup", "Section",ExpressionUUID->"34e3460c-ff09-462d-b08a-eb5c77c83b87"],
+Cell["Information[FindTarskiCounterexample, LongForm -> True]", "Input",ExpressionUUID->"0851de46-932a-42d2-acc9-b5e248af1cb4"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"7e48825d-c5ad-405c-96d8-cda4ad2ffcbe"],
-
-Cell[BoxData[
- RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
-  "]"}]], "Code",ExpressionUUID->"c6508dea-419d-45c9-aa3a-f2faf1724207"],
-
-Cell["Usage", "Section",ExpressionUUID->"009d3a25-9d1b-4447-8232-294cf7da3a37"],
-
-Cell["Find a witness that A4 fails on a finite path.", "CodeText",ExpressionUUID->"136bb95c-2d4a-45c8-9852-10318da4ac83"],
-
-Cell[BoxData[
- RowBox[{"FindTarskiCounterexample", "[", 
-  RowBox[{
-   RowBox[{"PathGraph", "[", 
-    RowBox[{"Range", "[", "5", "]"}], "]"}], ",", 
-   "TarskiSegmentConstructionQ", ",", 
-   RowBox[{"UpTo", "[", "2", "]"}]}], "]"}]], "Input",ExpressionUUID->\
-"ebd6a297-7732-439a-9915-a716962a84f9"],
-
-Cell["Find an Inner Pasch counterexample on the Petersen graph.", "CodeText",ExpressionUUID->"c7fe1fcb-e8a3-44cd-816f-8bb704a688b2"],
-
-Cell[BoxData[
- RowBox[{"FindTarskiCounterexample", "[", 
-  RowBox[{
-   RowBox[{"PetersenGraph", "[", "]"}], ",", "TarskiInnerPaschQ", ",", 
-   RowBox[{"UpTo", "[", "1", "]"}]}], "]"}]], "Input",ExpressionUUID->\
-"aa54b03a-4298-4ca7-a45e-e9cb6cd34316"],
-
-Cell["Examples", "Section",ExpressionUUID->"41bc616f-cb2f-430a-8b28-d16113763cdf"],
-
-Cell["Always-true axioms return no witness list.", "CodeText",ExpressionUUID->"ddf4789c-d66c-4097-af48-4e95ddab55a9"],
-
-Cell[BoxData[
- RowBox[{"FindTarskiCounterexample", "[", 
-  RowBox[{
-   RowBox[{"PathGraph", "[", 
-    RowBox[{"Range", "[", "5", "]"}], "]"}], ",", 
-   "TarskiCongruenceReflexivityQ", ",", "All"}], "]"}]], "Input",ExpressionUUI\
-D->"ead9a3d8-c82a-4594-a869-ae1f59890800"],
-
-Cell["Continuity has no finite witness and returns $Failed.", "CodeText",ExpressionUUID->"ac23048c-694a-426d-889a-d75b2a68d934"],
-
-Cell[BoxData[
- RowBox[{"Quiet", "[", 
-  RowBox[{"FindTarskiCounterexample", "[", 
-   RowBox[{
-    RowBox[{"GridGraph", "[", 
-     RowBox[{"{", 
-      RowBox[{"3", ",", "3"}], "}"}], "]"}], ",", "TarskiContinuityQ", ",", 
-    "All"}], "]"}], "]"}]], "Input",ExpressionUUID->"d9132dd6-79d5-4d03-ad5c-\
-b556571806c7"],
-
-Cell["See also", "Section",ExpressionUUID->"028499b0-ef01-449b-b7cf-5712c81fc184"],
-
-Cell["BetweennessQ", "Item",ExpressionUUID->"13a93ad3-00c6-4b05-82c8-46cc94103584"],
-
-Cell["EquidistanceQ", "Item",ExpressionUUID->"9cebae3d-bfca-402b-909a-21162e251a12"],
-
-Cell["TarskiStructure", "Item",ExpressionUUID->"565dd67f-4100-4d75-9cbc-98375be21428"],
-
-Cell["TarskiAxiomQ", "Item",ExpressionUUID->"83bebfb0-bfb7-4e0f-916e-61882ae95fe8"],
-
-Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"dfe8bb91-b306-478e-ac6f-fb41e53231b3"],
-
-Cell["FindTarskiReflection", "Item",ExpressionUUID->"27a97e42-eed8-4473-b600-4d075133f978"],
-
-Cell["MetricInterval", "Item",ExpressionUUID->"ed7704ce-4505-493c-b746-01a102d0eaa8"]
+Cell["Definition[FindTarskiCounterexample]", "Input",ExpressionUUID->"50ccca35-4095-4bce-bb20-0c0cec8e5956"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"44f98e3d-3313-40e3-9475-afdb24a065f6"
+ExpressionUUID->"4683f7b6-aed1-4b1d-ba35-fce7a84eba6f"
 ]
 (* End of Notebook Content *)
 
@@ -115,29 +41,10 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 96, 0, 70, "Title",ExpressionUUID->"ee6bb69f-3d42-43a1-a13a-f3f962fe508a"],
-Cell[653, 22, 592, 8, 70, "Text",ExpressionUUID->"3053bd48-9575-4232-aabe-6927de6aac0f"],
-Cell[1248, 32, 79, 0, 70, "Section",ExpressionUUID->"34e3460c-ff09-462d-b08a-eb5c77c83b87"],
-Cell[1330, 34, 132, 0, 70, "CodeText",ExpressionUUID->"7e48825d-c5ad-405c-96d8-cda4ad2ffcbe"],
-Cell[1465, 36, 162, 2, 70, "Code",ExpressionUUID->"c6508dea-419d-45c9-aa3a-f2faf1724207"],
-Cell[1630, 40, 79, 0, 70, "Section",ExpressionUUID->"009d3a25-9d1b-4447-8232-294cf7da3a37"],
-Cell[1712, 42, 121, 0, 70, "CodeText",ExpressionUUID->"136bb95c-2d4a-45c8-9852-10318da4ac83"],
-Cell[1836, 44, 299, 7, 70, "Input",ExpressionUUID->"ebd6a297-7732-439a-9915-a716962a84f9"],
-Cell[2138, 53, 132, 0, 70, "CodeText",ExpressionUUID->"c7fe1fcb-e8a3-44cd-816f-8bb704a688b2"],
-Cell[2273, 55, 251, 5, 70, "Input",ExpressionUUID->"aa54b03a-4298-4ca7-a45e-e9cb6cd34316"],
-Cell[2527, 62, 82, 0, 70, "Section",ExpressionUUID->"41bc616f-cb2f-430a-8b28-d16113763cdf"],
-Cell[2612, 64, 117, 0, 70, "CodeText",ExpressionUUID->"ddf4789c-d66c-4097-af48-4e95ddab55a9"],
-Cell[2732, 66, 271, 6, 70, "Input",ExpressionUUID->"ead9a3d8-c82a-4594-a869-ae1f59890800"],
-Cell[3006, 74, 128, 0, 70, "CodeText",ExpressionUUID->"ac23048c-694a-426d-889a-d75b2a68d934"],
-Cell[3137, 76, 314, 8, 70, "Input",ExpressionUUID->"d9132dd6-79d5-4d03-ad5c-b556571806c7"],
-Cell[3454, 86, 82, 0, 70, "Section",ExpressionUUID->"028499b0-ef01-449b-b7cf-5712c81fc184"],
-Cell[3539, 88, 83, 0, 70, "Item",ExpressionUUID->"13a93ad3-00c6-4b05-82c8-46cc94103584"],
-Cell[3625, 90, 84, 0, 70, "Item",ExpressionUUID->"9cebae3d-bfca-402b-909a-21162e251a12"],
-Cell[3712, 92, 86, 0, 70, "Item",ExpressionUUID->"565dd67f-4100-4d75-9cbc-98375be21428"],
-Cell[3801, 94, 83, 0, 70, "Item",ExpressionUUID->"83bebfb0-bfb7-4e0f-916e-61882ae95fe8"],
-Cell[3887, 96, 89, 0, 70, "Item",ExpressionUUID->"dfe8bb91-b306-478e-ac6f-fb41e53231b3"],
-Cell[3979, 98, 91, 0, 70, "Item",ExpressionUUID->"27a97e42-eed8-4473-b600-4d075133f978"],
-Cell[4073, 100, 85, 0, 70, "Item",ExpressionUUID->"ed7704ce-4505-493c-b746-01a102d0eaa8"]
+Cell[554, 20, 118, 0, 70, "Input",ExpressionUUID->"814cbf82-c489-4bbc-948b-811115325084"],
+Cell[675, 22, 97, 0, 70, "Input",ExpressionUUID->"54c46d63-770d-49f5-b834-bec828f5ce51"],
+Cell[775, 24, 127, 0, 70, "Input",ExpressionUUID->"0851de46-932a-42d2-acc9-b5e248af1cb4"],
+Cell[905, 26, 108, 0, 70, "Input",ExpressionUUID->"50ccca35-4095-4bce-bb20-0c0cec8e5956"]
 }
 ]
 *)

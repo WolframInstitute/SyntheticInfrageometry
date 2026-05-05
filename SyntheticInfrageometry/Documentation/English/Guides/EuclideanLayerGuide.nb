@@ -10,71 +10,196 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5224,        109]
-NotebookOptionsPosition[      2873,         74]
-NotebookOutlinePosition[      3190,         88]
-CellTagsIndexPosition[      3147,         85]
+NotebookDataLength[     13614,        266]
+NotebookOptionsPosition[      8315,        199]
+NotebookOutlinePosition[      8632,        213]
+CellTagsIndexPosition[      8589,        210]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["Euclidean Layer", "Title",ExpressionUUID->"1ac694c8-fd64-4494-bd04-da6cad500da4"],
+Cell["Euclidean Layer", "Title",ExpressionUUID->"ac03a01c-b4d1-4e9d-9d50-496f60ef6d1d"],
 
 Cell["\<\
-The Euclidean layer reconstructs point selection, geodesic segments, maximal \
-lines, metric spheres, and derived constructions directly from graph \
-invariants.\
-\>", "Text",ExpressionUUID->"61125939-ee10-4dfd-9e32-c39744709360"],
+The Euclidean layer reconstructs Euclidean concepts -- point, segment, line, \
+shell, circle, parallel, midpoint, perpendicular, bisector -- as graph \
+properties under the infra-observer's standpoint. Every constructor returns a \
+wrapped Infra* multi-realisation object; predicates test the corresponding \
+pattern.\
+\>", "Text",ExpressionUUID->"effc5b16-a86a-4cd1-856f-ad3010e09551"],
 
-Cell["Primitive postulates", "Section",ExpressionUUID->"1fcd726c-5357-43aa-9db5-316f2fc19608"],
+Cell["Setup", "Section",ExpressionUUID->"5e43fb6f-ab02-4427-82a6-41e1960b3b79"],
 
-Cell["FindPoint", "Item",ExpressionUUID->"03da7014-da58-427c-88b2-313c9e83fa47"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"ed9be9be-38a5-4a46-811d-d811defc907b"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"801c7a98-618d-49a9-a8c3-16f5ca9dfbbf"],
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"9acba5e1-b0a7-4dc3-a74e-187dabb6e387"],
 
-Cell["FindLine", "Item",ExpressionUUID->"eac38df7-8e2b-46bd-9bbe-0600faae35d1"],
+Cell["Primitive postulates", "Section",ExpressionUUID->"0c958286-655e-41a9-9d86-b8dcadf87192"],
 
-Cell["FindSphere", "Item",ExpressionUUID->"ebc69512-9e12-4c96-9270-d0563055008e"],
+Cell["FindPoint", "Item",ExpressionUUID->"ce0dcac9-53e0-4081-a27b-d1103afc422f"],
 
-Cell["FindParallel", "Item",ExpressionUUID->"2490d967-881d-4f77-9b55-d167c6493ca0"],
+Cell["FindSegment", "Item",ExpressionUUID->"730ce996-aa41-4843-b446-5a78dbf45402"],
 
-Cell["Predicates", "Section",ExpressionUUID->"bd610676-0483-425d-8d49-0abafd742fe0"],
+Cell["FindLine", "Item",ExpressionUUID->"89d3d575-9e70-439c-aa82-ad79eea1e50e"],
 
-Cell["SegmentQ", "Item",ExpressionUUID->"3d2abfdf-d59d-498a-a5c2-f044e7942d02"],
+Cell["ExtendSegment", "Item",ExpressionUUID->"514a8be0-7259-4868-a410-c747ffca7716"],
 
-Cell["LineQ", "Item",ExpressionUUID->"14f96f85-90c4-4601-85a7-57b2faa9f641"],
+Cell["FindShell", "Item",ExpressionUUID->"bd59c09e-5249-4e52-ad0b-44491faa8e66"],
 
-Cell["SphereQ", "Item",ExpressionUUID->"7f0cc63b-57bb-467a-9a38-c88bdd7085dd"],
+Cell["FindCircle", "Item",ExpressionUUID->"f175697c-53b2-4905-b61a-b38ba4d88296"],
 
-Cell["ParallelQ", "Item",ExpressionUUID->"30ca740a-d705-41f7-a87f-b80c44f80ff9"],
+Cell["FindParallel", "Item",ExpressionUUID->"8051f9f7-e643-42cb-a2c4-5806916f1ae0"],
 
-Cell["FindSphereParameters", "Item",ExpressionUUID->"cecf7314-f7cf-4b1d-bb39-525153432a86"],
+Cell["Predicates", "Section",ExpressionUUID->"b3e46e09-2015-4e78-89db-8654157aaa9f"],
 
-Cell["UniqueSegmentQ", "Item",ExpressionUUID->"75ba704e-f718-4c9e-9389-484d8ec6b647"],
+Cell["SegmentQ", "Item",ExpressionUUID->"785572ab-fc4d-4857-9532-aebe7df137d5"],
 
-Cell["Constructions", "Section",ExpressionUUID->"2b64aa8a-fdc0-40a5-b4e4-2708a2b16a06"],
+Cell["LineQ", "Item",ExpressionUUID->"d4488f7e-bdf8-4cf4-b358-890d416efe9c"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"be188506-81f6-414f-a4c1-75e3e75d7612"],
+Cell["ShellQ", "Item",ExpressionUUID->"4686227f-75d1-46e1-b958-d857d13c12d5"],
 
-Cell["FindPerpendicular", "Item",ExpressionUUID->"57fac6fb-79d0-433b-85ed-b076f3b25ce4"],
+Cell["CircleQ", "Item",ExpressionUUID->"463ba2c8-9a9f-41e9-95e6-8e4c086ad516"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"ccbd56f5-a661-4765-bb24-87dfde15363c"],
+Cell["ParallelQ", "Item",ExpressionUUID->"4d33b3c3-3740-4add-8c17-fe0513968cb7"],
 
-Cell["CompleteEquilateralTriangle", "Item",ExpressionUUID->"6de184d1-7390-47c6-8109-5d58c01b805e"],
+Cell["SeparatesQ", "Item",ExpressionUUID->"29b8b4f0-07da-4504-a381-26a9ba52ebdb"],
 
-Cell["GraphAngle", "Item",ExpressionUUID->"7112eabf-2e17-4702-b879-2506694cc738"],
+Cell["FindShellParameters", "Item",ExpressionUUID->"fa8ccb26-642f-4b9e-ba42-8a2bcb05e60d"],
 
-Cell["SegmentLineAngle", "Item",ExpressionUUID->"56d53050-8fdc-47d1-9584-f77f5dad0c83"],
+Cell["UniqueSegmentQ", "Item",ExpressionUUID->"bab7ce02-6ee6-4640-8711-99fd26c3a43a"],
 
-Cell["Tutorial", "Section",ExpressionUUID->"3494801d-5b0a-4064-aafd-5df5aea272f6"],
+Cell["Constructions", "Section",ExpressionUUID->"7fdf12c0-4501-4902-8d54-8cbbff3bd569"],
+
+Cell["FindMidpoint", "Item",ExpressionUUID->"0c962298-d2ed-47cd-8f1a-0eed1311116d"],
+
+Cell["FindPerpendicular", "Item",ExpressionUUID->"7cc689df-04fa-493e-9656-8e79d499a27c"],
+
+Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"edfff49b-6cbe-4ed9-8238-77fe2703b5a7"],
+
+Cell["CompleteEquilateralTriangle", "Item",ExpressionUUID->"60864966-25af-4454-8dd8-7e6104123238"],
+
+Cell["InfraAngle", "Item",ExpressionUUID->"9afa1893-c250-4caf-8588-93978863fd4d"],
+
+Cell["SegmentLineAngle", "Item",ExpressionUUID->"91f4da1c-4009-437a-9644-5323df4e70bb"],
+
+Cell["Method axis (FindSegment / FindLine / ExtendSegment)", "Section",ExpressionUUID->"27b48369-6b63-49c0-b856-fb660bad3d7a"],
+
+Cell["\<\
+All three share the same allow-list and pass sub-options through the Method \
+spec.\
+\>", "Text",ExpressionUUID->"73212ad6-60ec-45fc-94d2-0f5feb1d7e57"],
+
+Cell["\<\
+\"Shortest\" (default) -- enumerate geodesics via the built-in shortest-path \
+machinery.\
+\>", "Item",ExpressionUUID->"9da07f03-6b75-4140-9443-148916a7efee"],
+
+Cell["\<\
+\"ShortestPathExtension\" / {\"ShortestPathExtension\", \
+\"ShortestPathWindow\" -> K, \"Pruning\" -> spec} -- recency-lex frontier \
+sweep over simple paths; K = 1 = no filter, K = 2 (default) excludes triangle \
+shortcuts, K = All compares against every predecessor.\
+\>", "Item",ExpressionUUID->"1001daa4-4927-4f72-adae-2606cb6f7fc0"],
+
+Cell["\<\
+\"CurvatureMinimizing\" / {\"CurvatureMinimizing\", \"Curvature\" -> spec, \
+\"Pool\" -> p, \"Pruning\" -> q} -- the rope-pulled-tight sweep that \
+minimises an edge-level curvature at every step.\
+\>", "Item",ExpressionUUID->"819630ca-52df-4ae4-a2f3-d086da7926ae"],
+
+Cell["\<\
+\"Embedding\" / {\"Embedding\", \"Coordinates\" -> coords, \"Pool\" -> p, \
+\"Pruning\" -> spec} -- ranks candidate paths by Hausdorff distance to the \
+straight Euclidean segment p1 p2 under the graph drawing.\
+\>", "Item",ExpressionUUID->"60dd6b4c-a7a2-4564-8c91-bf1a01ee8559"],
+
+Cell["Curvature spec (under \"CurvatureMinimizing\")", "Section",ExpressionUUID->"3b9cc552-73b4-4fad-bdb4-deb491e64a63"],
+
+Cell["\<\
+\"Forman\" / {\"Forman\", Method -> \"Simple\" | \"Triangles\"} -- forwards \
+Method to FormanRicci.\
+\>", "Item",ExpressionUUID->"64ba94eb-e0e7-4e30-b358-d2f7e5f170f3"],
+
+Cell["\<\
+\"Wolfram\" / {\"Wolfram\", \"Dimension\" -> Automatic | d, \"Radii\" -> \
+Automatic | {rmin, rmax}} -- forwards options to WolframRicci.\
+\>", "Item",ExpressionUUID->"7ea03286-f8f4-4fa7-b38d-14fd590443e6"],
+
+Cell["Pool values (context-dependent)", "Section",ExpressionUUID->"9a17e416-a75f-49cb-8ebf-d5d0a86b1207"],
+
+Cell["\<\
+Path-shaped consumers (FindSegment / FindLine / ExtendSegment / FindMidpoint \
+/ FindPerpendicular): \"ShortestPaths\" (default; restrict to the geodesic \
+DAG / metric interval) or \"AllPaths\" (full adjacency).\
+\>", "Item",ExpressionUUID->"64c5e60f-061c-401b-ba8b-aca79b74cd41"],
+
+Cell["\<\
+Shell-shaped consumers (FindShell / FindCircle / FindParallel): \"LevelSet\" \
+(default; restrict to the metric level surface) or \"AllVertices\" (full \
+vertex set).\
+\>", "Item",ExpressionUUID->"c934971b-1ca5-4e50-828a-2c6a253a7a15"],
+
+Cell["Path-space post-filters", "Section",ExpressionUUID->"76798be2-2550-4ee2-b44c-1aa61d4f7189"],
+
+Cell["\<\
+Pipe Find* output through the path-space selectors to keep the central / \
+peripheral / embedding-closest representatives.\
+\>", "Text",ExpressionUUID->"23f8a993-d6e0-4c93-9412-815e554aa7a4"],
+
+Cell["CentralPaths", "Item",ExpressionUUID->"173b18f5-6b85-4844-bbef-4d4dbd135eb3"],
+
+Cell["PeripheralPaths", "Item",ExpressionUUID->"5b9c92a2-c89d-4356-9c2e-7e7b98a10dd3"],
+
+Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"5893fd4a-64ee-416f-81ba-8a49badd4038"],
+
+Cell["Tutorial", "Section",ExpressionUUID->"be534904-f79d-49a9-9ce6-1611f2287d23"],
 
 Cell["\<\
 See EuclideanLayerTutorial for runnable examples on paths and grids.\
-\>", "Item",ExpressionUUID->"066d8f9d-f892-4180-9e35-ac3065e86fed"]
+\>", "Item",ExpressionUUID->"0c2f1489-eaf8-4b00-9c5e-57db1f5d5b4a"],
+
+Cell["References", "Section",ExpressionUUID->"bc3d8fc0-0e60-471b-8799-3c9735ffc191"],
+
+Cell["\<\
+Euclid, Elements (Heath translation, three volumes), Dover 1956, \
+https://archive.org/details/euclid_heath_2nd_ed\
+\>", "Item",ExpressionUUID->"4a99c641-942d-454a-a892-b625be7ae05c"],
+
+Cell["\<\
+Hilbert, The Foundations of Geometry, Open Court 1971 (English translation of \
+the 10th German edition), https://www.gutenberg.org/ebooks/17384\
+\>", "Item",ExpressionUUID->"408dd850-78b2-488a-ba0f-eb3b2924670f"],
+
+Cell["\<\
+Greenberg, Euclidean and Non-Euclidean Geometries: Development and History, \
+W. H. Freeman, 4th ed., 2008\
+\>", "Item",ExpressionUUID->"99723c00-325a-4b32-aad3-cd63ecbb835d"],
+
+Cell["\<\
+Linial, Geodesic Geometry on Graphs, \
+https://www.cs.huji.ac.il/~nati/PAPERS/ge_ge_gr.pdf\
+\>", "Item",ExpressionUUID->"98318332-de9c-4191-809c-161fc7887501"],
+
+Cell["\<\
+Mulder, The Interval Function of a Graph, Mathematical Centre Tracts 132, \
+Amsterdam 1980\
+\>", "Item",ExpressionUUID->"7cdd5bfe-acc4-4d92-8ee0-b9e099485453"],
+
+Cell["\<\
+Bandelt and Mulder, Distance-Hereditary Graphs, J. Combin. Theory Ser. B 41, \
+182-208, 1986\
+\>", "Item",ExpressionUUID->"71045671-0ab7-4cb8-acc9-bffe64c31feb"],
+
+Cell["\<\
+Tarski and Givant, Tarski's System of Geometry, Bulletin of Symbolic Logic \
+5(2), 175-214, 1999, \
+https://projecteuclid.org/journals/bulletin-of-symbolic-logic/volume-5/issue-\
+2/Tarskis-system-of-geometry/bsl/1182353717\
+\>", "Item",ExpressionUUID->"3973c714-ac92-4263-a52f-9560a39f3081"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"44f98e3d-3313-40e3-9475-afdb24a065f6"
+ExpressionUUID->"09bd8e93-7f29-4e76-a2aa-f06705fb4c0c"
 ]
 (* End of Notebook Content *)
 
@@ -87,30 +212,62 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"1ac694c8-fd64-4494-bd04-da6cad500da4"],
-Cell[644, 22, 240, 4, 70, "Text",ExpressionUUID->"61125939-ee10-4dfd-9e32-c39744709360"],
-Cell[887, 28, 94, 0, 70, "Section",ExpressionUUID->"1fcd726c-5357-43aa-9db5-316f2fc19608"],
-Cell[984, 30, 80, 0, 70, "Item",ExpressionUUID->"03da7014-da58-427c-88b2-313c9e83fa47"],
-Cell[1067, 32, 82, 0, 70, "Item",ExpressionUUID->"801c7a98-618d-49a9-a8c3-16f5ca9dfbbf"],
-Cell[1152, 34, 79, 0, 70, "Item",ExpressionUUID->"eac38df7-8e2b-46bd-9bbe-0600faae35d1"],
-Cell[1234, 36, 81, 0, 70, "Item",ExpressionUUID->"ebc69512-9e12-4c96-9270-d0563055008e"],
-Cell[1318, 38, 83, 0, 70, "Item",ExpressionUUID->"2490d967-881d-4f77-9b55-d167c6493ca0"],
-Cell[1404, 40, 84, 0, 70, "Section",ExpressionUUID->"bd610676-0483-425d-8d49-0abafd742fe0"],
-Cell[1491, 42, 79, 0, 70, "Item",ExpressionUUID->"3d2abfdf-d59d-498a-a5c2-f044e7942d02"],
-Cell[1573, 44, 76, 0, 70, "Item",ExpressionUUID->"14f96f85-90c4-4601-85a7-57b2faa9f641"],
-Cell[1652, 46, 78, 0, 70, "Item",ExpressionUUID->"7f0cc63b-57bb-467a-9a38-c88bdd7085dd"],
-Cell[1733, 48, 80, 0, 70, "Item",ExpressionUUID->"30ca740a-d705-41f7-a87f-b80c44f80ff9"],
-Cell[1816, 50, 91, 0, 70, "Item",ExpressionUUID->"cecf7314-f7cf-4b1d-bb39-525153432a86"],
-Cell[1910, 52, 85, 0, 70, "Item",ExpressionUUID->"75ba704e-f718-4c9e-9389-484d8ec6b647"],
-Cell[1998, 54, 87, 0, 70, "Section",ExpressionUUID->"2b64aa8a-fdc0-40a5-b4e4-2708a2b16a06"],
-Cell[2088, 56, 83, 0, 70, "Item",ExpressionUUID->"be188506-81f6-414f-a4c1-75e3e75d7612"],
-Cell[2174, 58, 88, 0, 70, "Item",ExpressionUUID->"57fac6fb-79d0-433b-85ed-b076f3b25ce4"],
-Cell[2265, 60, 94, 0, 70, "Item",ExpressionUUID->"ccbd56f5-a661-4765-bb24-87dfde15363c"],
-Cell[2362, 62, 98, 0, 70, "Item",ExpressionUUID->"6de184d1-7390-47c6-8109-5d58c01b805e"],
-Cell[2463, 64, 81, 0, 70, "Item",ExpressionUUID->"7112eabf-2e17-4702-b879-2506694cc738"],
-Cell[2547, 66, 87, 0, 70, "Item",ExpressionUUID->"56d53050-8fdc-47d1-9584-f77f5dad0c83"],
-Cell[2637, 68, 82, 0, 70, "Section",ExpressionUUID->"3494801d-5b0a-4064-aafd-5df5aea272f6"],
-Cell[2722, 70, 147, 2, 70, "Item",ExpressionUUID->"066d8f9d-f892-4180-9e35-ac3065e86fed"]
+Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"ac03a01c-b4d1-4e9d-9d50-496f60ef6d1d"],
+Cell[644, 22, 396, 6, 70, "Text",ExpressionUUID->"effc5b16-a86a-4cd1-856f-ad3010e09551"],
+Cell[1043, 30, 79, 0, 70, "Section",ExpressionUUID->"5e43fb6f-ab02-4427-82a6-41e1960b3b79"],
+Cell[1125, 32, 91, 0, 70, "CodeText",ExpressionUUID->"ed9be9be-38a5-4a46-811d-d811defc907b"],
+Cell[1219, 34, 122, 0, 70, "Code",ExpressionUUID->"9acba5e1-b0a7-4dc3-a74e-187dabb6e387"],
+Cell[1344, 36, 94, 0, 70, "Section",ExpressionUUID->"0c958286-655e-41a9-9d86-b8dcadf87192"],
+Cell[1441, 38, 80, 0, 70, "Item",ExpressionUUID->"ce0dcac9-53e0-4081-a27b-d1103afc422f"],
+Cell[1524, 40, 82, 0, 70, "Item",ExpressionUUID->"730ce996-aa41-4843-b446-5a78dbf45402"],
+Cell[1609, 42, 79, 0, 70, "Item",ExpressionUUID->"89d3d575-9e70-439c-aa82-ad79eea1e50e"],
+Cell[1691, 44, 84, 0, 70, "Item",ExpressionUUID->"514a8be0-7259-4868-a410-c747ffca7716"],
+Cell[1778, 46, 80, 0, 70, "Item",ExpressionUUID->"bd59c09e-5249-4e52-ad0b-44491faa8e66"],
+Cell[1861, 48, 81, 0, 70, "Item",ExpressionUUID->"f175697c-53b2-4905-b61a-b38ba4d88296"],
+Cell[1945, 50, 83, 0, 70, "Item",ExpressionUUID->"8051f9f7-e643-42cb-a2c4-5806916f1ae0"],
+Cell[2031, 52, 84, 0, 70, "Section",ExpressionUUID->"b3e46e09-2015-4e78-89db-8654157aaa9f"],
+Cell[2118, 54, 79, 0, 70, "Item",ExpressionUUID->"785572ab-fc4d-4857-9532-aebe7df137d5"],
+Cell[2200, 56, 76, 0, 70, "Item",ExpressionUUID->"d4488f7e-bdf8-4cf4-b358-890d416efe9c"],
+Cell[2279, 58, 77, 0, 70, "Item",ExpressionUUID->"4686227f-75d1-46e1-b958-d857d13c12d5"],
+Cell[2359, 60, 78, 0, 70, "Item",ExpressionUUID->"463ba2c8-9a9f-41e9-95e6-8e4c086ad516"],
+Cell[2440, 62, 80, 0, 70, "Item",ExpressionUUID->"4d33b3c3-3740-4add-8c17-fe0513968cb7"],
+Cell[2523, 64, 81, 0, 70, "Item",ExpressionUUID->"29b8b4f0-07da-4504-a381-26a9ba52ebdb"],
+Cell[2607, 66, 90, 0, 70, "Item",ExpressionUUID->"fa8ccb26-642f-4b9e-ba42-8a2bcb05e60d"],
+Cell[2700, 68, 85, 0, 70, "Item",ExpressionUUID->"bab7ce02-6ee6-4640-8711-99fd26c3a43a"],
+Cell[2788, 70, 87, 0, 70, "Section",ExpressionUUID->"7fdf12c0-4501-4902-8d54-8cbbff3bd569"],
+Cell[2878, 72, 83, 0, 70, "Item",ExpressionUUID->"0c962298-d2ed-47cd-8f1a-0eed1311116d"],
+Cell[2964, 74, 88, 0, 70, "Item",ExpressionUUID->"7cc689df-04fa-493e-9656-8e79d499a27c"],
+Cell[3055, 76, 94, 0, 70, "Item",ExpressionUUID->"edfff49b-6cbe-4ed9-8238-77fe2703b5a7"],
+Cell[3152, 78, 98, 0, 70, "Item",ExpressionUUID->"60864966-25af-4454-8dd8-7e6104123238"],
+Cell[3253, 80, 81, 0, 70, "Item",ExpressionUUID->"9afa1893-c250-4caf-8588-93978863fd4d"],
+Cell[3337, 82, 87, 0, 70, "Item",ExpressionUUID->"91f4da1c-4009-437a-9644-5323df4e70bb"],
+Cell[3427, 84, 126, 0, 70, "Section",ExpressionUUID->"27b48369-6b63-49c0-b856-fb660bad3d7a"],
+Cell[3556, 86, 162, 3, 70, "Text",ExpressionUUID->"73212ad6-60ec-45fc-94d2-0f5feb1d7e57"],
+Cell[3721, 91, 168, 3, 70, "Item",ExpressionUUID->"9da07f03-6b75-4140-9443-148916a7efee"],
+Cell[3892, 96, 347, 5, 70, "Item",ExpressionUUID->"1001daa4-4927-4f72-adae-2606cb6f7fc0"],
+Cell[4242, 103, 275, 4, 70, "Item",ExpressionUUID->"819630ca-52df-4ae4-a2f3-d086da7926ae"],
+Cell[4520, 109, 289, 4, 70, "Item",ExpressionUUID->"60dd6b4c-a7a2-4564-8c91-bf1a01ee8559"],
+Cell[4812, 115, 120, 0, 70, "Section",ExpressionUUID->"3b9cc552-73b4-4fad-bdb4-deb491e64a63"],
+Cell[4935, 117, 179, 3, 70, "Item",ExpressionUUID->"64ba94eb-e0e7-4e30-b358-d2f7e5f170f3"],
+Cell[5117, 122, 216, 3, 70, "Item",ExpressionUUID->"7ea03286-f8f4-4fa7-b38d-14fd590443e6"],
+Cell[5336, 127, 105, 0, 70, "Section",ExpressionUUID->"9a17e416-a75f-49cb-8ebf-d5d0a86b1207"],
+Cell[5444, 129, 291, 4, 70, "Item",ExpressionUUID->"64c5e60f-061c-401b-ba8b-aca79b74cd41"],
+Cell[5738, 135, 245, 4, 70, "Item",ExpressionUUID->"c934971b-1ca5-4e50-828a-2c6a253a7a15"],
+Cell[5986, 141, 97, 0, 70, "Section",ExpressionUUID->"76798be2-2550-4ee2-b44c-1aa61d4f7189"],
+Cell[6086, 143, 201, 3, 70, "Text",ExpressionUUID->"23f8a993-d6e0-4c93-9412-815e554aa7a4"],
+Cell[6290, 148, 83, 0, 70, "Item",ExpressionUUID->"173b18f5-6b85-4844-bbef-4d4dbd135eb3"],
+Cell[6376, 150, 86, 0, 70, "Item",ExpressionUUID->"5b9c92a2-c89d-4356-9c2e-7e7b98a10dd3"],
+Cell[6465, 152, 92, 0, 70, "Item",ExpressionUUID->"5893fd4a-64ee-416f-81ba-8a49badd4038"],
+Cell[6560, 154, 82, 0, 70, "Section",ExpressionUUID->"be534904-f79d-49a9-9ce6-1611f2287d23"],
+Cell[6645, 156, 147, 2, 70, "Item",ExpressionUUID->"0c2f1489-eaf8-4b00-9c5e-57db1f5d5b4a"],
+Cell[6795, 160, 84, 0, 70, "Section",ExpressionUUID->"bc3d8fc0-0e60-471b-8799-3c9735ffc191"],
+Cell[6882, 162, 193, 3, 70, "Item",ExpressionUUID->"4a99c641-942d-454a-a892-b625be7ae05c"],
+Cell[7078, 167, 223, 3, 70, "Item",ExpressionUUID->"408dd850-78b2-488a-ba0f-eb3b2924670f"],
+Cell[7304, 172, 185, 3, 70, "Item",ExpressionUUID->"99723c00-325a-4b32-aad3-cd63ecbb835d"],
+Cell[7492, 177, 169, 3, 70, "Item",ExpressionUUID->"98318332-de9c-4191-809c-161fc7887501"],
+Cell[7664, 182, 169, 3, 70, "Item",ExpressionUUID->"7cdd5bfe-acc4-4d92-8ee0-b9e099485453"],
+Cell[7836, 187, 171, 3, 70, "Item",ExpressionUUID->"71045671-0ab7-4cb8-acc9-bffe64c31feb"],
+Cell[8010, 192, 301, 5, 70, "Item",ExpressionUUID->"3973c714-ac92-4263-a52f-9560a39f3081"]
 }
 ]
 *)

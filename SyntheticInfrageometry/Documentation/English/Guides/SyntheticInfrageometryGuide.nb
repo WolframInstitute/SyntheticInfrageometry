@@ -10,64 +10,131 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      4694,         98]
-NotebookOptionsPosition[      2697,         67]
-NotebookOutlinePosition[      3014,         81]
-CellTagsIndexPosition[      2971,         78]
+NotebookDataLength[      9409,        185]
+NotebookOptionsPosition[      5592,        134]
+NotebookOutlinePosition[      5909,        148]
+CellTagsIndexPosition[      5866,        145]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["SyntheticInfrageometry", "Title",ExpressionUUID->"f30a21f0-1b9d-4398-bb6e-66fd8345718d"],
+Cell["SyntheticInfrageometry", "Title",ExpressionUUID->"d543e156-5864-4c4c-8e57-7c85aaa0cd95"],
 
 Cell["\<\
-SyntheticInfrageometry organizes Euclidean, path-space, Tarski, projective, \
-tropical, and scene-building layers around multivalued constructions on \
-graphs. This guide points to the main entry points for the newly documented \
-Euclidean, PathSpace, and Tarski surfaces.\
-\>", "Text",ExpressionUUID->"07813557-69a1-4e1d-a265-f73f690f6e31"],
+SyntheticInfrageometry organizes Euclidean (metric), path-space (selectors), \
+Tarski (betweenness + equidistance), projective (incidence), tropical \
+(graph-only convexity), and scene-building layers around multivalued \
+constructions on graphs. Curvatures (Forman, Ollivier, Wolfram) supply the \
+engines for curvature-minimizing path enumeration. This guide points to the \
+main entry points.\
+\>", "Text",ExpressionUUID->"1c3839a5-e20d-4124-8242-aa999686bb33"],
 
-Cell["Setup", "Section",ExpressionUUID->"d906f957-5508-4371-a34c-1fe0e0542bcb"],
+Cell["Setup", "Section",ExpressionUUID->"22f8ffa4-fdca-4f80-bbfb-69bf403f008c"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"dad6d64e-27b9-435b-b6a0-1c4a0987d637"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"83705957-938b-48b7-8f86-f241b9b1ee3c"],
 
-Cell[BoxData[
- RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
-  "]"}]], "Code",ExpressionUUID->"7f10d7f9-30f0-4972-bcc9-36c2f2575cb6"],
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"00dae3a9-6cea-4907-92d3-bee00ec320e7"],
 
-Cell["Guides", "Section",ExpressionUUID->"41797ae9-5b7c-4957-b55b-0152b025b627"],
+Cell["Guides", "Section",ExpressionUUID->"b252d4a7-95dd-4d05-97d3-e21125513dc2"],
 
-Cell["EuclideanLayerGuide", "Item",ExpressionUUID->"dd577e3c-9144-4187-91d4-ff4b1524e439"],
+Cell["EuclideanLayerGuide", "Item",ExpressionUUID->"8da37d38-7e2a-4ce9-be83-2000a9ebd7d0"],
 
-Cell["PathSpaceGuide", "Item",ExpressionUUID->"da7f84bc-111c-4aaa-8265-cc19979e1105"],
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"c16277ec-8a32-4b0a-be2e-218b99f6655c"],
 
-Cell["TarskiLayerGuide", "Item",ExpressionUUID->"f9d13d78-d199-4c93-9a1b-670330ef020c"],
+Cell["TarskiLayerGuide", "Item",ExpressionUUID->"075446b6-5c1f-49aa-a10d-aa3a0c93909c"],
 
-Cell["Tutorials", "Section",ExpressionUUID->"33dda836-7efe-4e80-b321-958d30125a0d"],
+Cell["CurvaturesGuide", "Item",ExpressionUUID->"0d648d45-27b6-4488-b184-93bc01941065"],
 
-Cell["EuclideanLayerTutorial", "Item",ExpressionUUID->"21a64e1d-f40e-4142-a092-f2d9307a6161"],
+Cell["Tutorials", "Section",ExpressionUUID->"5322691a-c134-4c99-8c4f-f72e7e867da1"],
 
-Cell["PathSpaceTutorial", "Item",ExpressionUUID->"db5924c1-b8d6-4f1f-98a8-2ec2ba3e1717"],
+Cell["EuclideanLayerTutorial", "Item",ExpressionUUID->"64a6a721-2131-444b-a995-081297f0e2b9"],
 
-Cell["TarskiLayerTutorial", "Item",ExpressionUUID->"dd74894d-dc8d-46da-b989-d74f29e9079d"],
+Cell["PathSpaceTutorial", "Item",ExpressionUUID->"7b69b051-998e-475c-b400-e4b38ee6d344"],
 
-Cell["Core symbols", "Section",ExpressionUUID->"23effe56-40aa-4f5f-aa5f-a6d76f13c6aa"],
+Cell["TarskiLayerTutorial", "Item",ExpressionUUID->"3d5f7175-bda1-46cd-ac5a-b4011fe0d87c"],
 
-Cell["InfraSceneHighlight", "Item",ExpressionUUID->"9767b59e-67db-4a35-a7a6-a0dd6f50b6c3"],
+Cell["Core symbols", "Section",ExpressionUUID->"cfed7f44-d9d4-4938-8e69-7121c40c79da"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"2e167e7e-24ce-4fdb-bed0-121e1a0e1752"],
+Cell["InfraSceneHighlight", "Item",ExpressionUUID->"c23be6f1-4c39-483d-a8ea-72ad55c3fddc"],
 
-Cell["CentralPaths", "Item",ExpressionUUID->"0728dc60-0f5b-4711-a14d-30f8b0cbddf8"],
+Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"1caedf66-b4de-44c0-82f4-9263ff7b162b"],
 
-Cell["CentralCycles", "Item",ExpressionUUID->"a2e57b17-2e94-4cef-8a3c-5f9f3fc8a86d"],
+Cell["CentralPaths", "Item",ExpressionUUID->"e08d39a6-32d9-438a-9515-faa8dab2aec0"],
 
-Cell["TarskiAxiomQ", "Item",ExpressionUUID->"d51a120e-adfa-4200-8685-a5b77cbf271c"],
+Cell["CentralCycles", "Item",ExpressionUUID->"7dcd49e8-b0ea-479a-ad68-9129f7dea443"],
 
-Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"9e276b41-5612-4fbe-9f21-439e3603fdaa"]
+Cell["FormanRicci", "Item",ExpressionUUID->"d81eddcc-fa20-4a28-9944-bfc9e496345b"],
+
+Cell["WolframRicci", "Item",ExpressionUUID->"c3033353-7d1a-43aa-8280-fffc7691cb81"],
+
+Cell["OllivierRicci", "Item",ExpressionUUID->"11e07fe6-c3b9-49b3-bf09-f9c3540158c1"],
+
+Cell["TarskiAxiomQ", "Item",ExpressionUUID->"84525bd4-55c1-448d-b077-8fa03331eddd"],
+
+Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"9a06d5a6-8f30-40b4-8a87-666636a43c94"],
+
+Cell["Algebraic substrate", "Section",ExpressionUUID->"485e2fd9-bc76-428e-a18c-fa6de0fe32bb"],
+
+Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"32fb562d-13d2-40cc-b18f-fd6780a8367a"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"b7f4ca90-b7bd-4947-a136-73674311bb7d"],
+
+Cell["GeodesicCount", "Item",ExpressionUUID->"c300397d-17a2-4dd0-b9e8-324f29884775"],
+
+Cell["DistanceMultiplicityMatrix", "Item",ExpressionUUID->"ca374a40-1a0e-4e1a-9d0a-e5bf3dce632d"],
+
+Cell["DistanceMatrixQ", "Item",ExpressionUUID->"16035671-9f08-4934-b49a-144ce089cd70"],
+
+Cell["MedianVertices", "Item",ExpressionUUID->"10a472e8-f91c-4e76-aac6-dcdabe10019b"],
+
+Cell["References", "Section",ExpressionUUID->"44bff92f-0cb3-4f73-ad15-ae4feffc83fa"],
+
+Cell["\<\
+Hilbert, The Foundations of Geometry, Open Court 1971 (English translation), \
+https://www.gutenberg.org/ebooks/17384\
+\>", "Item",ExpressionUUID->"f0732b4b-7804-410a-bb2e-8a33be54549d"],
+
+Cell["\<\
+Tarski and Givant, Tarski's System of Geometry, Bulletin of Symbolic Logic \
+5(2), 175-214, 1999, \
+https://projecteuclid.org/journals/bulletin-of-symbolic-logic/volume-5/issue-\
+2/Tarskis-system-of-geometry/bsl/1182353717\
+\>", "Item",ExpressionUUID->"88afbc14-522b-46ad-b7fb-10c4b64c3507"],
+
+Cell["\<\
+Schwabhauser, Szmielew and Tarski, Metamathematische Methoden in der \
+Geometrie, Springer 1983, https://link.springer.com/book/9783540129585\
+\>", "Item",ExpressionUUID->"4d098297-8a1b-4bf5-a152-b73c0433d664"],
+
+Cell["\<\
+Linial, Geodesic Geometry on Graphs, \
+https://www.cs.huji.ac.il/~nati/PAPERS/ge_ge_gr.pdf\
+\>", "Item",ExpressionUUID->"607efd9c-ccb9-4a66-8c27-dd09c1b70c19"],
+
+Cell["\<\
+Maclagan and Sturmfels, Introduction to Tropical Geometry, AMS GSM 161, 2015, \
+https://janos.cs.technion.ac.il/COURSES/238900-13/Tropical/MaclaganSturmfels.\
+pdf\
+\>", "Item",ExpressionUUID->"eb526f1b-c050-4cee-ab7e-47807183efdc"],
+
+Cell["\<\
+Ollivier, Ricci Curvature of Markov Chains on Metric Spaces, J. Funct. Anal. \
+256, 2009, https://arxiv.org/abs/math/0701886\
+\>", "Item",ExpressionUUID->"b2231d03-8507-44ea-a5bf-3b563ad29d68"],
+
+Cell["\<\
+Forman, Bochner's Method for Cell Complexes and Combinatorial Ricci \
+Curvature, Discrete Comput. Geom. 29, 2003\
+\>", "Item",ExpressionUUID->"11d3cc27-59ae-4b90-a582-4ed822526fce"],
+
+Cell["\<\
+Wolfram, A Class of Models with the Potential to Represent Fundamental \
+Physics, https://arxiv.org/abs/2004.08210\
+\>", "Item",ExpressionUUID->"63cf9c4d-841d-4881-bae9-e8c9d93b17fa"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"44f98e3d-3313-40e3-9475-afdb24a065f6"
+ExpressionUUID->"09bd8e93-7f29-4e76-a2aa-f06705fb4c0c"
 ]
 (* End of Notebook Content *)
 
@@ -80,26 +147,46 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 94, 0, 70, "Title",ExpressionUUID->"f30a21f0-1b9d-4398-bb6e-66fd8345718d"],
-Cell[651, 22, 351, 5, 70, "Text",ExpressionUUID->"07813557-69a1-4e1d-a265-f73f690f6e31"],
-Cell[1005, 29, 79, 0, 70, "Section",ExpressionUUID->"d906f957-5508-4371-a34c-1fe0e0542bcb"],
-Cell[1087, 31, 91, 0, 70, "CodeText",ExpressionUUID->"dad6d64e-27b9-435b-b6a0-1c4a0987d637"],
-Cell[1181, 33, 162, 2, 70, "Code",ExpressionUUID->"7f10d7f9-30f0-4972-bcc9-36c2f2575cb6"],
-Cell[1346, 37, 80, 0, 70, "Section",ExpressionUUID->"41797ae9-5b7c-4957-b55b-0152b025b627"],
-Cell[1429, 39, 90, 0, 70, "Item",ExpressionUUID->"dd577e3c-9144-4187-91d4-ff4b1524e439"],
-Cell[1522, 41, 85, 0, 70, "Item",ExpressionUUID->"da7f84bc-111c-4aaa-8265-cc19979e1105"],
-Cell[1610, 43, 87, 0, 70, "Item",ExpressionUUID->"f9d13d78-d199-4c93-9a1b-670330ef020c"],
-Cell[1700, 45, 83, 0, 70, "Section",ExpressionUUID->"33dda836-7efe-4e80-b321-958d30125a0d"],
-Cell[1786, 47, 93, 0, 70, "Item",ExpressionUUID->"21a64e1d-f40e-4142-a092-f2d9307a6161"],
-Cell[1882, 49, 88, 0, 70, "Item",ExpressionUUID->"db5924c1-b8d6-4f1f-98a8-2ec2ba3e1717"],
-Cell[1973, 51, 90, 0, 70, "Item",ExpressionUUID->"dd74894d-dc8d-46da-b989-d74f29e9079d"],
-Cell[2066, 53, 86, 0, 70, "Section",ExpressionUUID->"23effe56-40aa-4f5f-aa5f-a6d76f13c6aa"],
-Cell[2155, 55, 90, 0, 70, "Item",ExpressionUUID->"9767b59e-67db-4a35-a7a6-a0dd6f50b6c3"],
-Cell[2248, 57, 94, 0, 70, "Item",ExpressionUUID->"2e167e7e-24ce-4fdb-bed0-121e1a0e1752"],
-Cell[2345, 59, 83, 0, 70, "Item",ExpressionUUID->"0728dc60-0f5b-4711-a14d-30f8b0cbddf8"],
-Cell[2431, 61, 84, 0, 70, "Item",ExpressionUUID->"a2e57b17-2e94-4cef-8a3c-5f9f3fc8a86d"],
-Cell[2518, 63, 83, 0, 70, "Item",ExpressionUUID->"d51a120e-adfa-4200-8685-a5b77cbf271c"],
-Cell[2604, 65, 89, 0, 70, "Item",ExpressionUUID->"9e276b41-5612-4fbe-9f21-439e3603fdaa"]
+Cell[554, 20, 94, 0, 70, "Title",ExpressionUUID->"d543e156-5864-4c4c-8e57-7c85aaa0cd95"],
+Cell[651, 22, 474, 7, 70, "Text",ExpressionUUID->"1c3839a5-e20d-4124-8242-aa999686bb33"],
+Cell[1128, 31, 79, 0, 70, "Section",ExpressionUUID->"22f8ffa4-fdca-4f80-bbfb-69bf403f008c"],
+Cell[1210, 33, 91, 0, 70, "CodeText",ExpressionUUID->"83705957-938b-48b7-8f86-f241b9b1ee3c"],
+Cell[1304, 35, 122, 0, 70, "Code",ExpressionUUID->"00dae3a9-6cea-4907-92d3-bee00ec320e7"],
+Cell[1429, 37, 80, 0, 70, "Section",ExpressionUUID->"b252d4a7-95dd-4d05-97d3-e21125513dc2"],
+Cell[1512, 39, 90, 0, 70, "Item",ExpressionUUID->"8da37d38-7e2a-4ce9-be83-2000a9ebd7d0"],
+Cell[1605, 41, 85, 0, 70, "Item",ExpressionUUID->"c16277ec-8a32-4b0a-be2e-218b99f6655c"],
+Cell[1693, 43, 87, 0, 70, "Item",ExpressionUUID->"075446b6-5c1f-49aa-a10d-aa3a0c93909c"],
+Cell[1783, 45, 86, 0, 70, "Item",ExpressionUUID->"0d648d45-27b6-4488-b184-93bc01941065"],
+Cell[1872, 47, 83, 0, 70, "Section",ExpressionUUID->"5322691a-c134-4c99-8c4f-f72e7e867da1"],
+Cell[1958, 49, 93, 0, 70, "Item",ExpressionUUID->"64a6a721-2131-444b-a995-081297f0e2b9"],
+Cell[2054, 51, 88, 0, 70, "Item",ExpressionUUID->"7b69b051-998e-475c-b400-e4b38ee6d344"],
+Cell[2145, 53, 90, 0, 70, "Item",ExpressionUUID->"3d5f7175-bda1-46cd-ac5a-b4011fe0d87c"],
+Cell[2238, 55, 86, 0, 70, "Section",ExpressionUUID->"cfed7f44-d9d4-4938-8e69-7121c40c79da"],
+Cell[2327, 57, 90, 0, 70, "Item",ExpressionUUID->"c23be6f1-4c39-483d-a8ea-72ad55c3fddc"],
+Cell[2420, 59, 94, 0, 70, "Item",ExpressionUUID->"1caedf66-b4de-44c0-82f4-9263ff7b162b"],
+Cell[2517, 61, 83, 0, 70, "Item",ExpressionUUID->"e08d39a6-32d9-438a-9515-faa8dab2aec0"],
+Cell[2603, 63, 84, 0, 70, "Item",ExpressionUUID->"7dcd49e8-b0ea-479a-ad68-9129f7dea443"],
+Cell[2690, 65, 82, 0, 70, "Item",ExpressionUUID->"d81eddcc-fa20-4a28-9944-bfc9e496345b"],
+Cell[2775, 67, 83, 0, 70, "Item",ExpressionUUID->"c3033353-7d1a-43aa-8280-fffc7691cb81"],
+Cell[2861, 69, 84, 0, 70, "Item",ExpressionUUID->"11e07fe6-c3b9-49b3-bf09-f9c3540158c1"],
+Cell[2948, 71, 83, 0, 70, "Item",ExpressionUUID->"84525bd4-55c1-448d-b077-8fa03331eddd"],
+Cell[3034, 73, 89, 0, 70, "Item",ExpressionUUID->"9a06d5a6-8f30-40b4-8a87-666636a43c94"],
+Cell[3126, 75, 93, 0, 70, "Section",ExpressionUUID->"485e2fd9-bc76-428e-a18c-fa6de0fe32bb"],
+Cell[3222, 77, 89, 0, 70, "Item",ExpressionUUID->"32fb562d-13d2-40cc-b18f-fd6780a8367a"],
+Cell[3314, 79, 85, 0, 70, "Item",ExpressionUUID->"b7f4ca90-b7bd-4947-a136-73674311bb7d"],
+Cell[3402, 81, 84, 0, 70, "Item",ExpressionUUID->"c300397d-17a2-4dd0-b9e8-324f29884775"],
+Cell[3489, 83, 97, 0, 70, "Item",ExpressionUUID->"ca374a40-1a0e-4e1a-9d0a-e5bf3dce632d"],
+Cell[3589, 85, 86, 0, 70, "Item",ExpressionUUID->"16035671-9f08-4934-b49a-144ce089cd70"],
+Cell[3678, 87, 85, 0, 70, "Item",ExpressionUUID->"10a472e8-f91c-4e76-aac6-dcdabe10019b"],
+Cell[3766, 89, 84, 0, 70, "Section",ExpressionUUID->"44bff92f-0cb3-4f73-ad15-ae4feffc83fa"],
+Cell[3853, 91, 196, 3, 70, "Item",ExpressionUUID->"f0732b4b-7804-410a-bb2e-8a33be54549d"],
+Cell[4052, 96, 301, 5, 70, "Item",ExpressionUUID->"88afbc14-522b-46ad-b7fb-10c4b64c3507"],
+Cell[4356, 103, 220, 3, 70, "Item",ExpressionUUID->"4d098297-8a1b-4bf5-a152-b73c0433d664"],
+Cell[4579, 108, 169, 3, 70, "Item",ExpressionUUID->"607efd9c-ccb9-4a66-8c27-dd09c1b70c19"],
+Cell[4751, 113, 241, 4, 70, "Item",ExpressionUUID->"eb526f1b-c050-4cee-ab7e-47807183efdc"],
+Cell[4995, 119, 203, 3, 70, "Item",ExpressionUUID->"b2231d03-8507-44ea-a5bf-3b563ad29d68"],
+Cell[5201, 124, 191, 3, 70, "Item",ExpressionUUID->"11d3cc27-59ae-4b90-a582-4ed822526fce"],
+Cell[5395, 129, 193, 3, 70, "Item",ExpressionUUID->"63cf9c4d-841d-4881-bae9-e8c9d93b17fa"]
 }
 ]
 *)

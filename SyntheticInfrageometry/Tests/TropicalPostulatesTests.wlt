@@ -4,36 +4,36 @@ BeginTestSection["TropicalPostulates"]
 
 VerificationTest[
   FindTropicalSegment[PathGraph[Range[5]], 1, 5, All],
-  {{1, 2, 3, 4, 5}},
+  InfraSegment[{{1, 2, 3, 4, 5}}],
   TestID -> "FindTropicalSegment-PathGraph-unique"
 ]
 
 VerificationTest[
   FindTropicalSegment[PathGraph[Range[5]], 1, 5],
-  {{1, 2, 3, 4, 5}},
+  InfraSegment[{{1, 2, 3, 4, 5}}],
   TestID -> "FindTropicalSegment-PathGraph-default-1"
 ]
 
 VerificationTest[
-  Length @ FindTropicalSegment[CycleGraph[4], 1, 3, All],
+  FindTropicalSegment[CycleGraph[4], 1, 3, All]["Length"],
   2,
   TestID -> "FindTropicalSegment-CycleGraph4-two-segments"
 ]
 
 VerificationTest[
-  Sort @ FindTropicalSegment[CycleGraph[4], 1, 3, All],
+  Sort @ FindTropicalSegment[CycleGraph[4], 1, 3, All]["Realisations"],
   {{1, 2, 3}, {1, 3, 4}},
   TestID -> "FindTropicalSegment-CycleGraph4-content"
 ]
 
 VerificationTest[
-  Length @ FindTropicalSegment[GridGraph[{3, 3}], 1, 9, All],
+  FindTropicalSegment[GridGraph[{3, 3}], 1, 9, All]["Length"],
   6,
   TestID -> "FindTropicalSegment-GridGraph3x3-six"
 ]
 
 VerificationTest[
-  AllTrue[FindTropicalSegment[GridGraph[{3, 3}], 1, 9, All],
+  AllTrue[FindTropicalSegment[GridGraph[{3, 3}], 1, 9, All]["Realisations"],
     set |-> Length[set] == 5 && SubsetQ[set, {1, 9}]],
   True,
   TestID -> "FindTropicalSegment-GridGraph3x3-shape"
@@ -52,8 +52,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindTropicalSegment[CycleGraph[4], 1, 3, UpTo[1]],
-  Take[FindTropicalSegment[CycleGraph[4], 1, 3, All], 1],
+  FindTropicalSegment[CycleGraph[4], 1, 3, UpTo[1]]["Realisations"],
+  Take[FindTropicalSegment[CycleGraph[4], 1, 3, All]["Realisations"], 1],
   TestID -> "FindTropicalSegment-UpTo-1"
 ]
 
@@ -65,7 +65,7 @@ VerificationTest[
 
 VerificationTest[
   FindTropicalSegment[PathGraph[Range[5]], 3, 3, All],
-  {},
+  InfraSegment[{}],
   TestID -> "FindTropicalSegment-self-empty"
 ]
 

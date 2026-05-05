@@ -3,23 +3,23 @@ BeginTestSection["PathSpace"]
 (* ===== Sublist invariants ===== *)
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], paths = FindSegment[GridGraph[{3, 3}], 1, 9, All]},
-    SubsetQ[paths, CentralPaths[g, paths]]
+  With[{g = GridGraph[{3, 3}], paths = FindSegment[GridGraph[{3, 3}], 1, 9, All]["Realisations"]},
+    SubsetQ[paths, SelectPaths[g, paths, "Central"]]
   ],
   True,
-  TestID -> "CentralPaths-returns-sublist"
+  TestID -> "SelectPaths-Central-returns-sublist"
 ]
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], paths = FindSegment[GridGraph[{3, 3}], 1, 9, All]},
-    SubsetQ[paths, PeripheralPaths[g, paths]]
+  With[{g = GridGraph[{3, 3}], paths = FindSegment[GridGraph[{3, 3}], 1, 9, All]["Realisations"]},
+    SubsetQ[paths, SelectPaths[g, paths, "Peripheral"]]
   ],
   True,
-  TestID -> "PeripheralPaths-returns-sublist"
+  TestID -> "SelectPaths-Peripheral-returns-sublist"
 ]
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], paths = FindSegment[GridGraph[{3, 3}], 1, 9, All]},
+  With[{g = GridGraph[{3, 3}], paths = FindSegment[GridGraph[{3, 3}], 1, 9, All]["Realisations"]},
     SubsetQ[paths, EmbeddingClosestPaths[g, paths, {1, 9}]]
   ],
   True,
@@ -30,19 +30,19 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], paths = FindSegment[GridGraph[{3, 3}], 1, 9, All]},
-    CentralPaths[g, paths] === CentralPaths[g][paths]
+    SelectPaths[g, paths, "Central"] === SelectPaths[g, "Central"][paths]
   ],
   True,
-  TestID -> "CentralPaths-operator-form-agrees"
+  TestID -> "SelectPaths-operator-form-agrees"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], paths = FindSegment[GridGraph[{3, 3}], 1, 9, All]},
-    CentralPaths[g, paths, Method -> "Hausdorff"] ===
-    CentralPaths[g, Method -> "Hausdorff"][paths]
+    SelectPaths[g, paths, "Central", Method -> "Hausdorff"] ===
+    SelectPaths[g, "Central", Method -> "Hausdorff"][paths]
   ],
   True,
-  TestID -> "CentralPaths-operator-form-method-agrees"
+  TestID -> "SelectPaths-operator-form-method-agrees"
 ]
 
 VerificationTest[
@@ -53,18 +53,47 @@ VerificationTest[
   TestID -> "EmbeddingClosestPaths-operator-form-agrees"
 ]
 
-(* ===== Length-1 input is identity ===== *)
+(* ===== Wrapper passthrough ===== *)
 
 VerificationTest[
-  CentralPaths[GridGraph[{3, 3}], {{1, 2, 3}}],
-  {{1, 2, 3}},
-  TestID -> "CentralPaths-singleton-identity"
+  With[{g = GridGraph[{3, 3}], wrapped = FindSegment[GridGraph[{3, 3}], 1, 9, All]},
+    Head @ SelectPaths[g, wrapped, "Central"]
+  ],
+  InfraSegment,
+  TestID -> "SelectPaths-preserves-InfraSegment-wrapper"
 ]
 
 VerificationTest[
-  PeripheralPaths[GridGraph[{3, 3}], {{1, 2, 3}}, Method -> "Hausdorff"],
+  With[{g = CycleGraph[6], wrapped = FindCircle[CycleGraph[6], 1, {1, 2}, All]},
+    Head @ SelectCycles[g, wrapped, "Central"]
+  ],
+  InfraCircle,
+  TestID -> "SelectCycles-preserves-InfraCircle-wrapper"
+]
+
+(* ===== Chained criteria ===== *)
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}], cycles = FindCircle[GridGraph[{4, 4}], 6, {1, 2}, All]["Realisations"]},
+    SelectCycles[g, cycles, {"ShortestCircumference", "Central"}] ===
+    SelectCycles[g, SelectCycles[g, cycles, "ShortestCircumference"], "Central"]
+  ],
+  True,
+  TestID -> "SelectCycles-chained-criteria-fold"
+]
+
+(* ===== Length-1 input is identity ===== *)
+
+VerificationTest[
+  SelectPaths[GridGraph[{3, 3}], {{1, 2, 3}}, "Central"],
   {{1, 2, 3}},
-  TestID -> "PeripheralPaths-singleton-identity"
+  TestID -> "SelectPaths-Central-singleton-identity"
+]
+
+VerificationTest[
+  SelectPaths[GridGraph[{3, 3}], {{1, 2, 3}}, "Peripheral", Method -> "Hausdorff"],
+  {{1, 2, 3}},
+  TestID -> "SelectPaths-Peripheral-singleton-identity"
 ]
 
 VerificationTest[
@@ -74,57 +103,57 @@ VerificationTest[
 ]
 
 VerificationTest[
-  CentralPaths[GridGraph[{3, 3}], {}],
+  SelectPaths[GridGraph[{3, 3}], {}, "Central"],
   {},
-  TestID -> "CentralPaths-empty-identity"
+  TestID -> "SelectPaths-Central-empty-identity"
 ]
 
 VerificationTest[
-  ShortestCircumferenceCycles[{}],
+  SelectCycles[GridGraph[{3, 3}], {}, "ShortestCircumference"],
   {},
-  TestID -> "ShortestCircumferenceCycles-empty-identity"
+  TestID -> "SelectCycles-ShortestCircumference-empty-identity"
 ]
 
 (* ===== Length filters ===== *)
 
 VerificationTest[
-  ShortestCircumferenceCycles[{{1, 2, 3, 4, 5}, {1, 2, 3}, {1, 2, 3, 4}}],
+  SelectCycles[GridGraph[{3, 3}], {{1, 2, 3, 4, 5}, {1, 2, 3}, {1, 2, 3, 4}}, "ShortestCircumference"],
   {{1, 2, 3}},
-  TestID -> "ShortestCircumferenceCycles-picks-min"
+  TestID -> "SelectCycles-ShortestCircumference-picks-min"
 ]
 
 VerificationTest[
-  LongestCircumferenceCycles[{{1, 2, 3, 4, 5}, {1, 2, 3}, {1, 2, 3, 4}}],
+  SelectCycles[GridGraph[{3, 3}], {{1, 2, 3, 4, 5}, {1, 2, 3}, {1, 2, 3, 4}}, "LongestCircumference"],
   {{1, 2, 3, 4, 5}},
-  TestID -> "LongestCircumferenceCycles-picks-max"
+  TestID -> "SelectCycles-LongestCircumference-picks-max"
 ]
 
 VerificationTest[
-  ShortestCircumferenceCycles[{{1, 2, 3}, {4, 5, 6}, {1, 2, 3, 4}}],
+  SelectCycles[GridGraph[{3, 3}], {{1, 2, 3}, {4, 5, 6}, {1, 2, 3, 4}}, "ShortestCircumference"],
   {{1, 2, 3}, {4, 5, 6}},
-  TestID -> "ShortestCircumferenceCycles-keeps-ties"
+  TestID -> "SelectCycles-ShortestCircumference-keeps-ties"
 ]
 
 (* ===== Method options behave ===== *)
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], paths = FindSegment[GridGraph[{3, 3}], 1, 9, All]},
+  With[{g = GridGraph[{3, 3}], paths = FindSegment[GridGraph[{3, 3}], 1, 9, All]["Realisations"]},
     Length[paths] > 1 &&
     AllTrue[{"Frechet", "Hausdorff", "MeanFrechet"},
-      m |-> SubsetQ[paths, CentralPaths[g, paths, Method -> m]]]
+      m |-> SubsetQ[paths, SelectPaths[g, paths, "Central", Method -> m]]]
   ],
   True,
-  TestID -> "CentralPaths-all-methods-return-sublists"
+  TestID -> "SelectPaths-Central-all-methods-return-sublists"
 ]
 
 (* ===== Cycle vs path distinction ===== *)
 
 VerificationTest[
   With[{g = CycleGraph[6], cycles = FindCircle[CycleGraph[6], 1, {1, 2}, All]},
-    SubsetQ[cycles, CentralCycles[g, cycles]]
+    SubsetQ[cycles, SelectCycles[g, cycles, "Central"]]
   ],
   True,
-  TestID -> "CentralCycles-returns-sublist"
+  TestID -> "SelectCycles-Central-returns-sublist"
 ]
 
 VerificationTest[

@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      4586,        105]
-NotebookOptionsPosition[      2857,         77]
-NotebookOutlinePosition[      3174,         91]
-CellTagsIndexPosition[      3131,         88]
+NotebookDataLength[      6236,        139]
+NotebookOptionsPosition[      3958,        105]
+NotebookOutlinePosition[      4275,        119]
+CellTagsIndexPosition[      4232,        116]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -73,11 +73,39 @@ Cell["Tutorial", "Section",ExpressionUUID->"f87a9767-6390-4b6d-8c92-3c5fce1f8962
 
 Cell["\<\
 See PathSpaceTutorial for end-to-end segment and cycle examples.\
-\>", "Item",ExpressionUUID->"2eada757-e214-441a-be4b-2783a564a636"]
+\>", "Item",ExpressionUUID->"2eada757-e214-441a-be4b-2783a564a636"],
+
+Cell["References", "Section",ExpressionUUID->"ebb5a041-905d-497a-ab54-5af721770bb2"],
+
+Cell["\<\
+Linial, Geodesic Geometry on Graphs, \
+https://www.cs.huji.ac.il/~nati/PAPERS/ge_ge_gr.pdf\
+\>", "Item",ExpressionUUID->"486a26ae-9b42-42a4-a4cc-7dc7527162ca"],
+
+Cell["\<\
+Mulder, The Interval Function of a Graph, Mathematical Centre Tracts 132, \
+Amsterdam 1980\
+\>", "Item",ExpressionUUID->"967c03b6-47a7-46de-b338-da42904f6055"],
+
+Cell["\<\
+Alt and Godau, Computing the Frechet Distance Between Two Polygonal Curves, \
+International Journal of Computational Geometry and Applications 5, 75-91, \
+1995\
+\>", "Item",ExpressionUUID->"9ff93b50-8375-4fae-8e2e-05107017dedd"],
+
+Cell["\<\
+Buchin, Buchin, van Kreveld and Luo, Finding Long and Similar Parts of \
+Trajectories, Computational Geometry 44, 465-476, 2011\
+\>", "Item",ExpressionUUID->"5601dfba-0b8e-47a0-8c26-1c354d7eea4a"],
+
+Cell["\<\
+Hausdorff, Grundzuege der Mengenlehre, Veit 1914 (chapter on the Hausdorff \
+metric), https://archive.org/details/grundzgedermen00hausuoft\
+\>", "Item",ExpressionUUID->"81e18395-9991-448f-be7d-a63741382b4d"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"44f98e3d-3313-40e3-9475-afdb24a065f6"
+ExpressionUUID->"09bd8e93-7f29-4e76-a2aa-f06705fb4c0c"
 ]
 (* End of Notebook Content *)
 
@@ -106,7 +134,13 @@ Cell[1817, 48, 90, 0, 70, "Section",ExpressionUUID->"b5a313ab-8821-47ca-b4d7-5a3
 Cell[1910, 50, 104, 0, 70, "CodeText",ExpressionUUID->"f19d932d-7945-4b67-a1bf-bb37a88d6faa"],
 Cell[2017, 52, 605, 17, 70, "Input",ExpressionUUID->"72e1cbb0-f9c3-4419-b142-8b9ebc50f989"],
 Cell[2625, 71, 82, 0, 70, "Section",ExpressionUUID->"f87a9767-6390-4b6d-8c92-3c5fce1f8962"],
-Cell[2710, 73, 143, 2, 70, "Item",ExpressionUUID->"2eada757-e214-441a-be4b-2783a564a636"]
+Cell[2710, 73, 143, 2, 70, "Item",ExpressionUUID->"2eada757-e214-441a-be4b-2783a564a636"],
+Cell[2856, 77, 84, 0, 70, "Section",ExpressionUUID->"ebb5a041-905d-497a-ab54-5af721770bb2"],
+Cell[2943, 79, 169, 3, 70, "Item",ExpressionUUID->"486a26ae-9b42-42a4-a4cc-7dc7527162ca"],
+Cell[3115, 84, 169, 3, 70, "Item",ExpressionUUID->"967c03b6-47a7-46de-b338-da42904f6055"],
+Cell[3287, 89, 238, 4, 70, "Item",ExpressionUUID->"9ff93b50-8375-4fae-8e2e-05107017dedd"],
+Cell[3528, 95, 206, 3, 70, "Item",ExpressionUUID->"5601dfba-0b8e-47a0-8c26-1c354d7eea4a"],
+Cell[3737, 100, 217, 3, 70, "Item",ExpressionUUID->"81e18395-9991-448f-be7d-a63741382b4d"]
 }
 ]
 *)

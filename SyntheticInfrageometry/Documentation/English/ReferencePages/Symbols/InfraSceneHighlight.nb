@@ -10,14 +10,16 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      7623,        183]
-NotebookOptionsPosition[      5585,        152]
-NotebookOutlinePosition[      5902,        166]
-CellTagsIndexPosition[      5859,        163]
+NotebookDataLength[     73856,       1372]
+NotebookOptionsPosition[     69813,       1308]
+NotebookOutlinePosition[     70205,       1324]
+CellTagsIndexPosition[     70162,       1321]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
+
+Cell[CellGroupData[{
 Cell["InfraSceneHighlight", "Title",ExpressionUUID->"4b266bde-dd58-45c3-b664-941d096ca88a"],
 
 Cell["\<\
@@ -32,17 +34,26 @@ multi-objects, colors blend on shared vertices/edges. Entries may be plain \
 \"PointSizeRange\" tune the diffusion envelope.\
 \>", "Text",ExpressionUUID->"fffc8868-7430-436e-8368-e8f0b2fae0d9"],
 
+Cell[CellGroupData[{
+
 Cell["Setup", "Section",ExpressionUUID->"491d1f3c-9f0e-40ca-8642-5bd473891cc8"],
 
 Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"31a84b92-70b2-4aa9-a8f6-1d0aaa8544c4"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
-  "]"}]], "Code",ExpressionUUID->"a32089ae-0596-45e7-a56b-8cc1c48e83db"],
+  "]"}]], "Code",
+ CellLabel->
+  "In[119]:=",ExpressionUUID->"a32089ae-0596-45e7-a56b-8cc1c48e83db"]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell["Usage", "Section",ExpressionUUID->"9aca08e3-9173-4000-a2cc-23ea7838e941"],
 
 Cell["Render a geodesic bundle as one diffuse multi-object.", "CodeText",ExpressionUUID->"cd485499-21d3-4e7c-a4e3-3dc1e9d90ad7"],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"With", "[", 
@@ -58,13 +69,378 @@ Cell[BoxData[
       RowBox[{
        RowBox[{"FindSegment", "[", 
         RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "\[Rule]", 
-       "Blue"}], "}"}]}], "]"}]}], "]"}]], "Input",ExpressionUUID->"845dc2bb-\
-1813-441f-a2de-1f11c4a1f6c9"],
+       "Blue"}], "}"}]}], "]"}]}], "]"}]], "Input",
+ CellLabel->
+  "In[120]:=",ExpressionUUID->"845dc2bb-1813-441f-a2de-1f11c4a1f6c9"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, {Null, 
+       SparseArray[
+       Automatic, {16, 16}, 0, {
+        1, {{0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, 35, 38, 40, 43, 46, 
+          48}, {{2}, {5}, {1}, {3}, {6}, {2}, {4}, {7}, {3}, {8}, {1}, {6}, {
+          9}, {2}, {5}, {7}, {10}, {3}, {6}, {8}, {11}, {4}, {7}, {12}, {5}, {
+          10}, {13}, {6}, {9}, {11}, {14}, {7}, {10}, {12}, {15}, {8}, {11}, {
+          16}, {9}, {14}, {10}, {13}, {15}, {11}, {14}, {16}, {12}, {15}}}, 
+         Pattern}]}, {GraphHighlight -> {
+         UndirectedEdge[1, 5], 
+         UndirectedEdge[15, 16], 3, 10, 14, 6, 9, 
+         UndirectedEdge[6, 7], 2, 
+         UndirectedEdge[7, 11], 
+         UndirectedEdge[8, 12], 
+         UndirectedEdge[5, 9], 5, 12, 
+         UndirectedEdge[12, 16], 11, 
+         UndirectedEdge[6, 10], 1, 
+         UndirectedEdge[11, 15], 15, 
+         UndirectedEdge[11, 12], 
+         UndirectedEdge[2, 6], 
+         UndirectedEdge[9, 13], 
+         UndirectedEdge[4, 8], 
+         UndirectedEdge[9, 10], 
+         UndirectedEdge[3, 7], 
+         UndirectedEdge[7, 8], 
+         UndirectedEdge[13, 14], 4, 13, 16, 
+         UndirectedEdge[10, 11], 
+         UndirectedEdge[5, 6], 
+         UndirectedEdge[3, 4], 
+         UndirectedEdge[10, 14], 
+         UndirectedEdge[14, 15], 7, 
+         UndirectedEdge[2, 3], 8, 
+         UndirectedEdge[1, 2]}, 
+       GraphHighlightStyle -> {5 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, 7 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.67], 
+              AbsolutePointSize[
+               Rational[48, 5]]]}}, UndirectedEdge[7, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[1, 5] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 11 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.76], 
+              AbsolutePointSize[
+               Rational[54, 5]]]}}, UndirectedEdge[12, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[10, 14] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, 1 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 14 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, UndirectedEdge[3, 4] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, 15 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[1, 2] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 8 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, 6 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.76], 
+              AbsolutePointSize[
+               Rational[54, 5]]]}}, 9 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, UndirectedEdge[13, 14] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, UndirectedEdge[9, 10] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, 12 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, 13 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsolutePointSize[
+               Rational[32, 5]]]}}, UndirectedEdge[14, 15] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, 2 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[4, 8] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, UndirectedEdge[10, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[6, 10] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[7, 8] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, UndirectedEdge[8, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, 16 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, UndirectedEdge[9, 13] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, UndirectedEdge[2, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[2, 3] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, UndirectedEdge[11, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, 4 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsolutePointSize[
+               Rational[32, 5]]]}}, 3 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, UndirectedEdge[6, 7] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, 10 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.67], 
+              AbsolutePointSize[
+               Rational[48, 5]]]}}, UndirectedEdge[11, 15] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[5, 9] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, UndirectedEdge[3, 7] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, UndirectedEdge[15, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[5, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}}, 
+       GraphLayout -> {"GridEmbedding", "Dimension" -> {4, 4}}}]]}, 
+    TagBox[
+     GraphicsGroupBox[
+      GraphicsComplexBox[{{1., 1.}, {1., 2.}, {1., 3.}, {1., 4.}, {2., 1.}, {
+       2., 2.}, {2., 3.}, {2., 4.}, {3., 1.}, {3., 2.}, {3., 3.}, {3., 4.}, {
+       4., 1.}, {4., 2.}, {4., 3.}, {4., 4.}}, {
+        {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {1., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {2., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {1., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 3.}, {1., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 3.}, {2., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 4.}, {2., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 1.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 1.}, {3., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {2., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {3., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 3.}, {2., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 3.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 4.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 1.}, {3., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 1.}, {4., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 2.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 2.}, {4., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {4., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 4.}, {4., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 1.}, {4., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 2.}, {4., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 3.}, {4., 4.}}, 0.030239520958083826`]}}}, 
+        {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[1, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[2, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[3, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[32, 5], 6.4]], Opacity[0.43000000000000005`], 
+          DiskBox[4, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[5, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[54, 5], 10.8]], Opacity[0.76], 
+          DiskBox[6, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[48, 5], 9.6]], Opacity[0.67], 
+          DiskBox[7, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[8, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[9, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[48, 5], 9.6]], Opacity[0.67], 
+          DiskBox[10, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[54, 5], 10.8]], Opacity[0.76], 
+          DiskBox[11, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[12, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[32, 5], 6.4]], Opacity[0.43000000000000005`], 
+          DiskBox[13, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[14, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[15, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[16, 0.030239520958083826]}}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{3.9869209677796307`*^9},
+ CellLabel->
+  "Out[120]=",ExpressionUUID->"3038fd7b-471c-47a6-9bc7-895e898f61cb"]
+}, Open  ]],
 
 Cell["\<\
 Render a segment cloud and a sphere cloud together, with per-object cyclic \
 flags.\
 \>", "CodeText",ExpressionUUID->"ee518621-d738-4720-b88a-313033f4b2fe"],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"With", "[", 
@@ -88,8 +464,783 @@ Cell[BoxData[
         "Green"}]}], "}"}], ",", 
      RowBox[{"\"\<Cyclic\>\"", "\[Rule]", 
       RowBox[{"{", 
-       RowBox[{"False", ",", "True"}], "}"}]}]}], "]"}]}], "]"}]], "Input",Exp\
-ressionUUID->"f65bb021-1d6f-4c5b-bb33-d9c2b9a0503d"],
+       RowBox[{"False", ",", "True"}], "}"}]}]}], "]"}]}], "]"}]], "Input",
+ CellLabel->
+  "In[121]:=",ExpressionUUID->"f65bb021-1d6f-4c5b-bb33-d9c2b9a0503d"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "OptionValue", "nodef", 
+   "\"Unknown option \\!\\(\\*RowBox[{\\\"\\\\\\\"Cyclic\\\\\\\"\\\"}]\\) for \
+\\!\\(\\*RowBox[{\\\"InfraSceneHighlight\\\"}]\\).\"", 2, 121, 51, 
+   33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.986920969831945*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"e3acdad3-7a36-4e12-b563-1524804a86b4"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "OptionValue", "nodef", 
+   "\"Unknown option \\!\\(\\*RowBox[{\\\"\\\\\\\"Cyclic\\\\\\\"\\\"}]\\) for \
+\\!\\(\\*RowBox[{\\\"InfraSceneHighlight\\\"}]\\).\"", 2, 121, 52, 
+   33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.986920969836411*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"2754fb89-4068-4df3-8003-b4220fcb6beb"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "OptionValue", "nodef", 
+   "\"Unknown option \\!\\(\\*RowBox[{\\\"\\\\\\\"Cyclic\\\\\\\"\\\"}]\\) for \
+\\!\\(\\*RowBox[{\\\"InfraSceneHighlight\\\"}]\\).\"", 2, 121, 53, 
+   33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.986920969838537*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"b4de8ca6-8740-4615-89ea-984b8c503f06"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "General", "stop", 
+   "\"Further output of \\!\\(\\*StyleBox[RowBox[{\\\"OptionValue\\\", \\\"::\
+\\\", \\\"nodef\\\"}], \\\"MessageName\\\"]\\) will be suppressed during this \
+calculation.\"", 2, 121, 54, 33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.986920969840407*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"c7bb4242-d7ef-455b-a303-ad46015aabe9"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Counts", "invrp", 
+   "\"The argument \\!\\(\\*RowBox[{\\\"Catenate\\\", \\\"[\\\", \
+RowBox[{\\\"FindSphere\\\", \\\"[\\\", \
+RowBox[{GraphicsBox[NamespaceBox[\\\"NetworkGraphics\\\", \
+DynamicModuleBox[List[Set[Typeset`graph, HoldComplete[Graph[List[1, 2, 3, 4, \
+5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], List[Null, SparseArray[Automatic, \
+List[16, 16], 0, List[1, List[List[0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, \
+35, 38, 40, 43, 46, 48], List[List[2], List[5], List[1], List[3], List[6], \
+List[2], List[4], List[7], List[3], List[8], List[1], List[6], List[9], \
+List[2], List[5], List[7], List[10], List[3], List[6], List[8], List[11], \
+List[4], List[7], List[12], List[5], List[10], List[13], List[6], List[9], \
+List[11], List[14], List[7], List[10], List[12], List[15], List[8], List[11], \
+List[16], List[9], List[14], List[10], List[13], List[15], List[11], \
+List[14], List[16], List[12], List[15]]], Pattern]]], List[Rule[GraphLayout, \
+List[\\\"GridEmbedding\\\", Rule[\\\"Dimension\\\", List[4, 4]]]]]]]]], \
+TagBox[GraphicsGroupBox[GraphicsComplexBox[List[List[1.`, 1.`], List[1.`, \
+2.`], List[1.`, 3.`], List[1.`, 4.`], List[2.`, 1.`], List[2.`, 2.`], \
+List[2.`, 3.`], List[2.`, 4.`], List[3.`, 1.`], List[3.`, 2.`], List[3.`, \
+3.`], List[3.`, 4.`], List[4.`, 1.`], List[4.`, 2.`], List[4.`, 3.`], \
+List[4.`, 4.`]], List[List[Directive[Opacity[0.7`], Hue[0.6`, 0.7`, 0.7`], \
+CapForm[\\\"Round\\\"]], Arrowheads[0.`], List[ArrowBox[List[List[1, 2], \
+List[1, 5], List[2, 3], List[2, 6], List[3, 4], List[3, 7], List[4, 8], \
+List[5, 6], List[5, 9], List[6, 7], List[6, 10], List[7, 8], List[7, 11], \
+List[8, 12], List[9, 10], List[9, 13], List[10, 11], List[10, 14], List[11, \
+12], List[11, 15], List[12, 16], List[13, 14], List[14, 15], List[15, 16]], \
+0.030239520958083826`]]], List[Directive[Hue[0.6`, 0.5`, 1.`], \
+EdgeForm[Directive[GrayLevel[0], Opacity[0.7`]]]], DiskBox[1, \
+0.030239520958083826`], DiskBox[2, 0.030239520958083826`], DiskBox[3, \
+0.030239520958083826`], DiskBox[4, 0.030239520958083826`], DiskBox[5, \
+0.030239520958083826`], DiskBox[6, 0.030239520958083826`], DiskBox[7, \
+0.030239520958083826`], DiskBox[8, 0.030239520958083826`], DiskBox[9, \
+0.030239520958083826`], DiskBox[10, 0.030239520958083826`], DiskBox[11, \
+0.030239520958083826`], DiskBox[12, 0.030239520958083826`], DiskBox[13, \
+0.030239520958083826`], DiskBox[14, 0.030239520958083826`], DiskBox[15, \
+0.030239520958083826`], DiskBox[16, 0.030239520958083826`]]]]], \
+MouseAppearanceTag[\\\"NetworkGraphics\\\"]], Rule[AllowKernelInitialization, \
+False]]], List[Rule[FormatType, TraditionalForm], Rule[FrameTicks, None], \
+Rule[DefaultBaseStyle, \\\"NetworkGraphics\\\"]]], \\\",\\\", RowBox[{\\\"{\\\
+\", \\\"6\\\", \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"2\\\", \
+\\\"}\\\"}], \\\",\\\", \\\"All\\\"}], \\\"]\\\"}], \\\"]\\\"}]\\) is not a \
+valid Association or a list.\"", 2, 121, 55, 33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.986920969862351*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"df73af22-8be5-4686-9da2-a85b105fed6a"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Keys", "invrl", 
+   "\"The argument \\!\\(\\*RowBox[{\\\"Counts\\\", \\\"[\\\", \
+RowBox[{\\\"Catenate\\\", \\\"[\\\", RowBox[{\\\"FindSphere\\\", \\\"[\\\", \
+RowBox[{GraphicsBox[NamespaceBox[\\\"NetworkGraphics\\\", \
+DynamicModuleBox[List[Set[Typeset`graph, HoldComplete[Graph[List[1, 2, 3, 4, \
+5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], List[Null, SparseArray[Automatic, \
+List[16, 16], 0, List[1, List[List[0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, \
+35, 38, 40, 43, 46, 48], List[List[2], List[5], List[1], List[3], List[6], \
+List[2], List[4], List[7], List[3], List[8], List[1], List[6], List[9], \
+List[2], List[5], List[7], List[10], List[3], List[6], List[8], List[11], \
+List[4], List[7], List[12], List[5], List[10], List[13], List[6], List[9], \
+List[11], List[14], List[7], List[10], List[12], List[15], List[8], List[11], \
+List[16], List[9], List[14], List[10], List[13], List[15], List[11], \
+List[14], List[16], List[12], List[15]]], Pattern]]], List[Rule[GraphLayout, \
+List[\\\"GridEmbedding\\\", Rule[\\\"Dimension\\\", List[4, 4]]]]]]]]], \
+TagBox[GraphicsGroupBox[GraphicsComplexBox[List[List[1.`, 1.`], List[1.`, \
+2.`], List[1.`, 3.`], List[1.`, 4.`], List[2.`, 1.`], List[2.`, 2.`], \
+List[2.`, 3.`], List[2.`, 4.`], List[3.`, 1.`], List[3.`, 2.`], List[3.`, \
+3.`], List[3.`, 4.`], List[4.`, 1.`], List[4.`, 2.`], List[4.`, 3.`], \
+List[4.`, 4.`]], List[List[Directive[Opacity[0.7`], Hue[0.6`, 0.7`, 0.7`], \
+CapForm[\\\"Round\\\"]], Arrowheads[0.`], List[ArrowBox[List[List[1, 2], \
+List[1, 5], List[2, 3], List[2, 6], List[3, 4], List[3, 7], List[4, 8], \
+List[5, 6], List[5, 9], List[6, 7], List[6, 10], List[7, 8], List[7, 11], \
+List[8, 12], List[9, 10], List[9, 13], List[10, 11], List[10, 14], List[11, \
+12], List[11, 15], List[12, 16], List[13, 14], List[14, 15], List[15, 16]], \
+0.030239520958083826`]]], List[Directive[Hue[0.6`, 0.5`, 1.`], \
+EdgeForm[Directive[GrayLevel[0], Opacity[0.7`]]]], DiskBox[1, \
+0.030239520958083826`], DiskBox[2, 0.030239520958083826`], DiskBox[3, \
+0.030239520958083826`], DiskBox[4, 0.030239520958083826`], DiskBox[5, \
+0.030239520958083826`], DiskBox[6, 0.030239520958083826`], DiskBox[7, \
+0.030239520958083826`], DiskBox[8, 0.030239520958083826`], DiskBox[9, \
+0.030239520958083826`], DiskBox[10, 0.030239520958083826`], DiskBox[11, \
+0.030239520958083826`], DiskBox[12, 0.030239520958083826`], DiskBox[13, \
+0.030239520958083826`], DiskBox[14, 0.030239520958083826`], DiskBox[15, \
+0.030239520958083826`], DiskBox[16, 0.030239520958083826`]]]]], \
+MouseAppearanceTag[\\\"NetworkGraphics\\\"]], Rule[AllowKernelInitialization, \
+False]]], List[Rule[FormatType, TraditionalForm], Rule[FrameTicks, None], \
+Rule[DefaultBaseStyle, \\\"NetworkGraphics\\\"]]], \\\",\\\", RowBox[{\\\"{\\\
+\", \\\"6\\\", \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"2\\\", \
+\\\"}\\\"}], \\\",\\\", \\\"All\\\"}], \\\"]\\\"}], \\\"]\\\"}], \
+\\\"]\\\"}]\\) is not a valid Association or a list of rules.\"", 2, 121, 56, 
+   33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.98692096986663*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"d757d7f0-f976-44f8-a717-4fbcc3a6aabb"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "AssociationMap", "invrp", 
+   "\"The argument \\!\\(\\*RowBox[{\\\"Keys\\\", \\\"[\\\", \
+RowBox[{\\\"Counts\\\", \\\"[\\\", RowBox[{\\\"Catenate\\\", \\\"[\\\", \
+RowBox[{\\\"FindSphere\\\", \\\"[\\\", \
+RowBox[{GraphicsBox[NamespaceBox[\\\"NetworkGraphics\\\", \
+DynamicModuleBox[List[Set[Typeset`graph, HoldComplete[Graph[List[1, 2, 3, 4, \
+5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], List[Null, SparseArray[Automatic, \
+List[16, 16], 0, List[1, List[List[0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, \
+35, 38, 40, 43, 46, 48], List[List[2], List[5], List[1], List[3], List[6], \
+List[2], List[4], List[7], List[3], List[8], List[1], List[6], List[9], \
+List[2], List[5], List[7], List[10], List[3], List[6], List[8], List[11], \
+List[4], List[7], List[12], List[5], List[10], List[13], List[6], List[9], \
+List[11], List[14], List[7], List[10], List[12], List[15], List[8], List[11], \
+List[16], List[9], List[14], List[10], List[13], List[15], List[11], \
+List[14], List[16], List[12], List[15]]], Pattern]]], List[Rule[GraphLayout, \
+List[\\\"GridEmbedding\\\", Rule[\\\"Dimension\\\", List[4, 4]]]]]]]]], \
+TagBox[GraphicsGroupBox[GraphicsComplexBox[List[List[1.`, 1.`], List[1.`, \
+2.`], List[1.`, 3.`], List[1.`, 4.`], List[2.`, 1.`], List[2.`, 2.`], \
+List[2.`, 3.`], List[2.`, 4.`], List[3.`, 1.`], List[3.`, 2.`], List[3.`, \
+3.`], List[3.`, 4.`], List[4.`, 1.`], List[4.`, 2.`], List[4.`, 3.`], \
+List[4.`, 4.`]], List[List[Directive[Opacity[0.7`], Hue[0.6`, 0.7`, 0.7`], \
+CapForm[\\\"Round\\\"]], Arrowheads[0.`], List[ArrowBox[List[List[1, 2], \
+List[1, 5], List[2, 3], List[2, 6], List[3, 4], List[3, 7], List[4, 8], \
+List[5, 6], List[5, 9], List[6, 7], List[6, 10], List[7, 8], List[7, 11], \
+List[8, 12], List[9, 10], List[9, 13], List[10, 11], List[10, 14], List[11, \
+12], List[11, 15], List[12, 16], List[13, 14], List[14, 15], List[15, 16]], \
+0.030239520958083826`]]], List[Directive[Hue[0.6`, 0.5`, 1.`], \
+EdgeForm[Directive[GrayLevel[0], Opacity[0.7`]]]], DiskBox[1, \
+0.030239520958083826`], DiskBox[2, 0.030239520958083826`], DiskBox[3, \
+0.030239520958083826`], DiskBox[4, 0.030239520958083826`], DiskBox[5, \
+0.030239520958083826`], DiskBox[6, 0.030239520958083826`], DiskBox[7, \
+0.030239520958083826`], DiskBox[8, 0.030239520958083826`], DiskBox[9, \
+0.030239520958083826`], DiskBox[10, 0.030239520958083826`], DiskBox[11, \
+0.030239520958083826`], DiskBox[12, 0.030239520958083826`], DiskBox[13, \
+0.030239520958083826`], DiskBox[14, 0.030239520958083826`], DiskBox[15, \
+0.030239520958083826`], DiskBox[16, 0.030239520958083826`]]]]], \
+MouseAppearanceTag[\\\"NetworkGraphics\\\"]], Rule[AllowKernelInitialization, \
+False]]], List[Rule[FormatType, TraditionalForm], Rule[FrameTicks, None], \
+Rule[DefaultBaseStyle, \\\"NetworkGraphics\\\"]]], \\\",\\\", RowBox[{\\\"{\\\
+\", \\\"6\\\", \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"2\\\", \
+\\\"}\\\"}], \\\",\\\", \\\"All\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}], \
+\\\"]\\\"}]\\) is not a valid Association or a list.\"", 2, 121, 57, 
+   33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.9869209698713417`*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"5e8d6ba7-cdd3-42ea-8ebd-74e62411530a"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Counts", "invrp", 
+   "\"The argument \\!\\(\\*RowBox[{\\\"Catenate\\\", \\\"[\\\", \
+RowBox[{\\\"FindSphere\\\", \\\"[\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"1\\\", \\\",\\\", \\\"2\\\"}], \\\"}\\\
+\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"1\\\", \\\",\\\", \
+\\\"5\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"2\\\", \\\
+\",\\\", \\\"3\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"2\\\", \\\",\\\", \\\"6\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\
+\"{\\\", RowBox[{\\\"3\\\", \\\",\\\", \\\"4\\\"}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{\\\"3\\\", \\\",\\\", \\\"7\\\"}], \\\"}\\\"}], \\\
+\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"4\\\", \\\",\\\", \\\"8\\\"}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"5\\\", \\\",\\\", \
+\\\"6\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"5\\\", \\\
+\",\\\", \\\"9\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"6\\\", \\\",\\\", \\\"7\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\
+\"{\\\", RowBox[{\\\"6\\\", \\\",\\\", \\\"10\\\"}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{\\\"7\\\", \\\",\\\", \\\"8\\\"}], \\\"}\\\"}], \\\
+\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"7\\\", \\\",\\\", \\\"11\\\"}], \\\"}\
+\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"8\\\", \\\",\\\", \
+\\\"12\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"9\\\", \
+\\\",\\\", \\\"10\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"9\\\", \\\",\\\", \\\"13\\\"}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{\\\"10\\\", \\\",\\\", \\\"11\\\"}], \\\"}\\\"}], \
+\\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"10\\\", \\\",\\\", \\\"14\\\"}], \\\
+\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"11\\\", \\\",\\\", \
+\\\"12\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"11\\\", \
+\\\",\\\", \\\"15\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"12\\\", \\\",\\\", \\\"16\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\
+\\\"{\\\", RowBox[{\\\"13\\\", \\\",\\\", \\\"14\\\"}], \\\"}\\\"}], \
+\\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"14\\\", \\\",\\\", \\\"15\\\"}], \\\
+\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"15\\\", \\\",\\\", \
+\\\"16\\\"}], \\\"}\\\"}]}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\
+\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\
+\", \\\"}\\\"}]}], \\\"]\\\"}], \\\"]\\\"}]\\) is not a valid Association or \
+a list.\"", 2, 121, 58, 33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.986920969874394*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"637bc5bc-0b6a-4ccc-a8ed-6784d26503f1"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Keys", "invrl", 
+   "\"The argument \\!\\(\\*RowBox[{\\\"Counts\\\", \\\"[\\\", \
+RowBox[{\\\"Catenate\\\", \\\"[\\\", RowBox[{\\\"FindSphere\\\", \\\"[\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"1\\\", \
+\\\",\\\", \\\"2\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\
+\"1\\\", \\\",\\\", \\\"5\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"2\\\", \\\",\\\", \\\"3\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\
+\"{\\\", RowBox[{\\\"2\\\", \\\",\\\", \\\"6\\\"}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{\\\"3\\\", \\\",\\\", \\\"4\\\"}], \\\"}\\\"}], \\\
+\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"3\\\", \\\",\\\", \\\"7\\\"}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"4\\\", \\\",\\\", \
+\\\"8\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"5\\\", \\\
+\",\\\", \\\"6\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"5\\\", \\\",\\\", \\\"9\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\
+\"{\\\", RowBox[{\\\"6\\\", \\\",\\\", \\\"7\\\"}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{\\\"6\\\", \\\",\\\", \\\"10\\\"}], \\\"}\\\"}], \
+\\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"7\\\", \\\",\\\", \\\"8\\\"}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"7\\\", \\\",\\\", \
+\\\"11\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"8\\\", \
+\\\",\\\", \\\"12\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"9\\\", \\\",\\\", \\\"10\\\"}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{\\\"9\\\", \\\",\\\", \\\"13\\\"}], \\\"}\\\"}], \
+\\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"10\\\", \\\",\\\", \\\"11\\\"}], \\\
+\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"10\\\", \\\",\\\", \
+\\\"14\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"11\\\", \
+\\\",\\\", \\\"12\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"11\\\", \\\",\\\", \\\"15\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\
+\\\"{\\\", RowBox[{\\\"12\\\", \\\",\\\", \\\"16\\\"}], \\\"}\\\"}], \
+\\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"13\\\", \\\",\\\", \\\"14\\\"}], \\\
+\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"14\\\", \\\",\\\", \
+\\\"15\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"15\\\", \
+\\\",\\\", \\\"16\\\"}], \\\"}\\\"}]}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\
+\\\", \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", \\\"}\\\"}]}], \\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}]\\) is \
+not a valid Association or a list of rules.\"", 2, 121, 59, 
+   33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.98692096987643*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"6e004d6c-f6cd-4fb2-a892-4e5a51c4b59a"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "AssociationMap", "invrp", 
+   "\"The argument \\!\\(\\*RowBox[{\\\"Keys\\\", \\\"[\\\", \
+RowBox[{\\\"Counts\\\", \\\"[\\\", RowBox[{\\\"Catenate\\\", \\\"[\\\", \
+RowBox[{\\\"FindSphere\\\", \\\"[\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"1\\\", \\\",\\\", \\\"2\\\"}], \\\"}\\\
+\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"1\\\", \\\",\\\", \
+\\\"5\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"2\\\", \\\
+\",\\\", \\\"3\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"2\\\", \\\",\\\", \\\"6\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\
+\"{\\\", RowBox[{\\\"3\\\", \\\",\\\", \\\"4\\\"}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{\\\"3\\\", \\\",\\\", \\\"7\\\"}], \\\"}\\\"}], \\\
+\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"4\\\", \\\",\\\", \\\"8\\\"}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"5\\\", \\\",\\\", \
+\\\"6\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"5\\\", \\\
+\",\\\", \\\"9\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"6\\\", \\\",\\\", \\\"7\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\
+\"{\\\", RowBox[{\\\"6\\\", \\\",\\\", \\\"10\\\"}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{\\\"7\\\", \\\",\\\", \\\"8\\\"}], \\\"}\\\"}], \\\
+\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"7\\\", \\\",\\\", \\\"11\\\"}], \\\"}\
+\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"8\\\", \\\",\\\", \
+\\\"12\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"9\\\", \
+\\\",\\\", \\\"10\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"9\\\", \\\",\\\", \\\"13\\\"}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{\\\"10\\\", \\\",\\\", \\\"11\\\"}], \\\"}\\\"}], \
+\\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"10\\\", \\\",\\\", \\\"14\\\"}], \\\
+\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"11\\\", \\\",\\\", \
+\\\"12\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"11\\\", \
+\\\",\\\", \\\"15\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"12\\\", \\\",\\\", \\\"16\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\
+\\\"{\\\", RowBox[{\\\"13\\\", \\\",\\\", \\\"14\\\"}], \\\"}\\\"}], \
+\\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"14\\\", \\\",\\\", \\\"15\\\"}], \\\
+\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"15\\\", \\\",\\\", \
+\\\"16\\\"}], \\\"}\\\"}]}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\
+\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\
+\", \\\"}\\\"}]}], \\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}]\\) is \
+not a valid Association or a list.\"", 2, 121, 60, 33105655518428930130, 
+   "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.986920969878481*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"e02a90fd-2caf-46cd-b350-a86a4d4a52f9"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Merge", "list1", 
+   "\"The argument \\!\\(\\*RowBox[{\\\"AssociationMap\\\", \\\"[\\\", \
+RowBox[{RowBox[{\\\"Function\\\", \\\"[\\\", \
+RowBox[{\\\"WolframInstitute`SyntheticInfrageometry`Highlights`PackagePrivate`\
+e$\\\", \\\",\\\", RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\
+\"color\\\", RGBColor[0, 1, 0]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", \
+RowBox[{FractionBox[\\\"1\\\", \\\"4\\\"], \\\" \\\", \
+RowBox[{RowBox[{\\\"Counts\\\", \\\"[\\\", RowBox[{\\\"Catenate\\\", \
+\\\"[\\\", RowBox[{\\\"FindSphere\\\", \\\"[\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"\[LeftSkeleton]\\\", \\\"24\\\", \\\"\[RightSkeleton]\\\"}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}], \\\",\\\", RowBox[{\\\
+\"{\\\", \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}]}], \
+\\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"[\\\", \
+\\\"WolframInstitute`SyntheticInfrageometry`Highlights`PackagePrivate`e$\\\", \
+\\\"]\\\"}]}]}], \\\"}\\\"}]}], \\\"]\\\"}], \\\",\\\", RowBox[{\\\"Keys\\\", \
+\\\"[\\\", RowBox[{\\\"Counts\\\", \\\"[\\\", RowBox[{\\\"Catenate\\\", \\\"[\
+\\\", RowBox[{\\\"FindSphere\\\", \\\"[\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"1\\\", \\\",\\\", \\\"2\\\"}], \\\"}\\\
+\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"1\\\", \\\",\\\", \
+\\\"5\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"2\\\", \\\
+\",\\\", \\\"3\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"2\\\", \\\",\\\", \\\"6\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\
+\"\[LeftSkeleton]\\\", \\\"16\\\", \\\"\[RightSkeleton]\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{\\\"12\\\", \\\",\\\", \\\"16\\\"}], \\\"}\\\"}], \
+\\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"13\\\", \\\",\\\", \\\"14\\\"}], \\\
+\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"14\\\", \\\",\\\", \
+\\\"15\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"15\\\", \
+\\\",\\\", \\\"16\\\"}], \\\"}\\\"}]}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\
+\\\", \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", \\\"}\\\"}]}], \\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}], \
+\\\"]\\\"}]}], \\\"]\\\"}]\\) is not a valid list of Associations or rules or \
+lists of rules.\"", 2, 121, 61, 33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.986920969880226*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"e6f479fd-8141-4646-8252-a7ac63e13667"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "KeyValueMap", "invak", 
+   "\"The argument \\!\\(\\*RowBox[{\\\"Merge\\\", \\\"[\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"\[LeftAssociation]\\\", \
+RowBox[{RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"1\\\", \\\",\\\", \\\"5\\\"}], \
+\\\"}\\\"}], \\\"\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"1\\\", \
+\\\"2\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\
+\"5\\\", \\\",\\\", \\\"9\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"1\\\", \\\"5\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"9\\\", \\\",\\\", \\\"13\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"1\\\", \\\"20\\\"]}], \\\"}\\\"}]}], \\\",\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"13\\\", \\\",\\\", \\\"14\\\"}], \\\"}\
+\\\"}], \\\"\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"1\\\", \
+\\\"20\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"14\\\", \\\",\\\", \\\"15\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"1\\\", \\\"5\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"15\\\", \\\",\\\", \\\"16\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"1\\\", \\\"2\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"9\\\", \\\",\\\", \\\"10\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"3\\\", \\\"20\\\"]}], \\\"}\\\"}]}], \\\",\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"10\\\", \\\",\\\", \\\"14\\\"}], \\\"}\
+\\\"}], \\\"\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"3\\\", \
+\\\"20\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"10\\\", \\\",\\\", \\\"11\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"3\\\", \\\"10\\\"]}], \\\"}\\\"}]}], \\\",\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"11\\\", \\\",\\\", \\\"15\\\"}], \\\"}\
+\\\"}], \\\"\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"3\\\", \
+\\\"10\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"11\\\", \\\",\\\", \\\"12\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"3\\\", \\\"10\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"\
+\[LeftSkeleton]\\\", \\\"2\\\", \\\"\[RightSkeleton]\\\"}], \\\",\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"6\\\", \\\",\\\", \\\"10\\\"}], \
+\\\"}\\\"}], \\\"\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"3\\\", \
+\\\"10\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"6\\\", \\\",\\\", \\\"7\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"3\\\", \\\"10\\\"]}], \\\"}\\\"}]}], \\\",\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"7\\\", \\\",\\\", \\\"11\\\"}], \
+\\\"}\\\"}], \\\"\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"3\\\", \
+\\\"10\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"7\\\", \\\",\\\", \\\"8\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"3\\\", \\\"20\\\"]}], \\\"}\\\"}]}], \\\",\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"8\\\", \\\",\\\", \\\"12\\\"}], \
+\\\"}\\\"}], \\\"\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"1\\\", \
+\\\"5\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\
+\"1\\\", \\\",\\\", \\\"2\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"1\\\", \\\"2\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"2\\\", \\\",\\\", \\\"6\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"3\\\", \\\"10\\\"]}], \\\"}\\\"}]}], \\\",\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"2\\\", \\\",\\\", \\\"3\\\"}], \\\"}\\\
+\"}], \\\"\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"1\\\", \
+\\\"5\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\
+\"3\\\", \\\",\\\", \\\"7\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"3\\\", \\\"20\\\"]}], \\\"}\\\"}]}], \\\",\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{\\\"3\\\", \\\",\\\", \\\"4\\\"}], \\\"}\\\
+\"}], \\\"\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"1\\\", \
+\\\"20\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"4\\\", \\\",\\\", \\\"8\\\"}], \\\"}\\\"}], \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"1\\\", \\\"20\\\"]}], \\\"}\\\"}]}]}], \\\"\[RightAssociation]\\\"}], \
+\\\",\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \\\"1\\\", \\\"\[RightSkeleton]\\\
+\"}]}], \\\"}\\\"}], \\\",\\\", \\\"Identity\\\"}], \\\"]\\\"}]\\) is not a \
+valid Association.\"", 2, 121, 62, 33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.9869209699211082`*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"cb3233e6-26e4-42b0-94a5-8cabaa2ac0d0"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Merge", "list1", 
+   "\"The argument \\!\\(\\*RowBox[{\\\"AssociationMap\\\", \\\"[\\\", \
+RowBox[{RowBox[{\\\"Function\\\", \\\"[\\\", \
+RowBox[{\\\"WolframInstitute`SyntheticInfrageometry`Highlights`PackagePrivate`\
+v$\\\", \\\",\\\", RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\
+\"color\\\", RGBColor[0, 1, 0]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", \
+RowBox[{FractionBox[\\\"1\\\", \\\"4\\\"], \\\" \\\", \
+RowBox[{RowBox[{\\\"Counts\\\", \\\"[\\\", RowBox[{\\\"Catenate\\\", \
+\\\"[\\\", RowBox[{\\\"FindSphere\\\", \\\"[\\\", \
+RowBox[{GraphicsBox[NamespaceBox[\\\"NetworkGraphics\\\", \
+DynamicModuleBox[List[Set[Typeset`graph, HoldComplete[Graph[List[1, 2, 3, 4, \
+5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], List[Null, SparseArray[Automatic, \
+List[16, 16], 0, List[1, List[List[0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, \
+35, 38, 40, 43, 46, 48], List[List[2], List[5], List[1], List[3], List[6], \
+List[2], List[4], List[7], List[3], List[8], List[1], List[6], List[9], \
+List[2], List[5], List[7], List[10], List[3], List[6], List[8], List[11], \
+List[4], List[7], List[12], List[5], List[10], List[13], List[6], List[9], \
+List[11], List[14], List[7], List[10], List[12], List[15], List[8], List[11], \
+List[16], List[9], List[14], List[10], List[13], List[15], List[11], \
+List[14], List[16], List[12], List[15]]], Pattern]]], List[Rule[GraphLayout, \
+List[\\\"GridEmbedding\\\", Rule[\\\"Dimension\\\", List[4, 4]]]]]]]]], \
+TagBox[GraphicsGroupBox[GraphicsComplexBox[List[List[1.`, 1.`], List[1.`, \
+2.`], List[1.`, 3.`], List[1.`, 4.`], List[2.`, 1.`], List[2.`, 2.`], \
+List[2.`, 3.`], List[2.`, 4.`], List[3.`, 1.`], List[3.`, 2.`], List[3.`, \
+3.`], List[3.`, 4.`], List[4.`, 1.`], List[4.`, 2.`], List[4.`, 3.`], \
+List[4.`, 4.`]], List[List[Directive[Opacity[0.7`], Hue[0.6`, 0.7`, 0.7`], \
+CapForm[\\\"Round\\\"]], Arrowheads[0.`], List[ArrowBox[List[List[1, 2], \
+List[1, 5], List[2, 3], List[2, 6], List[3, 4], List[3, 7], List[4, 8], \
+List[5, 6], List[5, 9], List[6, 7], List[6, 10], List[7, 8], List[7, 11], \
+List[8, 12], List[9, 10], List[9, 13], List[10, 11], List[10, 14], List[11, \
+12], List[11, 15], List[12, 16], List[13, 14], List[14, 15], List[15, 16]], \
+0.030239520958083826`]]], List[Directive[Hue[0.6`, 0.5`, 1.`], \
+EdgeForm[Directive[GrayLevel[0], Opacity[0.7`]]]], DiskBox[1, \
+0.030239520958083826`], DiskBox[2, 0.030239520958083826`], DiskBox[3, \
+0.030239520958083826`], DiskBox[4, 0.030239520958083826`], DiskBox[5, \
+0.030239520958083826`], DiskBox[6, 0.030239520958083826`], DiskBox[7, \
+0.030239520958083826`], DiskBox[8, 0.030239520958083826`], DiskBox[9, \
+0.030239520958083826`], DiskBox[10, 0.030239520958083826`], DiskBox[11, \
+0.030239520958083826`], DiskBox[12, 0.030239520958083826`], DiskBox[13, \
+0.030239520958083826`], DiskBox[14, 0.030239520958083826`], DiskBox[15, \
+0.030239520958083826`], DiskBox[16, 0.030239520958083826`]]]]], \
+MouseAppearanceTag[\\\"NetworkGraphics\\\"]], Rule[AllowKernelInitialization, \
+False]]], List[Rule[FormatType, TraditionalForm], Rule[FrameTicks, None], \
+Rule[DefaultBaseStyle, \\\"NetworkGraphics\\\"]]], \\\",\\\", RowBox[{\\\"{\\\
+\", RowBox[{\\\"\[LeftSkeleton]\\\", \\\"1\\\", \\\"\[RightSkeleton]\\\"}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \
+\\\"1\\\", \\\"\[RightSkeleton]\\\"}], \\\"}\\\"}], \\\",\\\", \\\"All\\\"}], \
+\\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"[\\\", \
+\\\"WolframInstitute`SyntheticInfrageometry`Highlights`PackagePrivate`v$\\\", \
+\\\"]\\\"}]}]}], \\\"}\\\"}]}], \\\"]\\\"}], \\\",\\\", RowBox[{\\\"Keys\\\", \
+\\\"[\\\", RowBox[{\\\"Counts\\\", \\\"[\\\", RowBox[{\\\"Catenate\\\", \\\"[\
+\\\", RowBox[{\\\"FindSphere\\\", \\\"[\\\", \
+RowBox[{GraphicsBox[NamespaceBox[\\\"NetworkGraphics\\\", \
+DynamicModuleBox[List[Set[Typeset`graph, HoldComplete[Graph[List[1, 2, 3, 4, \
+5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], List[Null, SparseArray[Automatic, \
+List[16, 16], 0, List[1, List[List[0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, \
+35, 38, 40, 43, 46, 48], List[List[2], List[5], List[1], List[3], List[6], \
+List[2], List[4], List[7], List[3], List[8], List[1], List[6], List[9], \
+List[2], List[5], List[7], List[10], List[3], List[6], List[8], List[11], \
+List[4], List[7], List[12], List[5], List[10], List[13], List[6], List[9], \
+List[11], List[14], List[7], List[10], List[12], List[15], List[8], List[11], \
+List[16], List[9], List[14], List[10], List[13], List[15], List[11], \
+List[14], List[16], List[12], List[15]]], Pattern]]], List[Rule[GraphLayout, \
+List[\\\"GridEmbedding\\\", Rule[\\\"Dimension\\\", List[4, 4]]]]]]]]], \
+TagBox[GraphicsGroupBox[GraphicsComplexBox[List[List[1.`, 1.`], List[1.`, \
+2.`], List[1.`, 3.`], List[1.`, 4.`], List[2.`, 1.`], List[2.`, 2.`], \
+List[2.`, 3.`], List[2.`, 4.`], List[3.`, 1.`], List[3.`, 2.`], List[3.`, \
+3.`], List[3.`, 4.`], List[4.`, 1.`], List[4.`, 2.`], List[4.`, 3.`], \
+List[4.`, 4.`]], List[List[Directive[Opacity[0.7`], Hue[0.6`, 0.7`, 0.7`], \
+CapForm[\\\"Round\\\"]], Arrowheads[0.`], List[ArrowBox[List[List[1, 2], \
+List[1, 5], List[2, 3], List[2, 6], List[3, 4], List[3, 7], List[4, 8], \
+List[5, 6], List[5, 9], List[6, 7], List[6, 10], List[7, 8], List[7, 11], \
+List[8, 12], List[9, 10], List[9, 13], List[10, 11], List[10, 14], List[11, \
+12], List[11, 15], List[12, 16], List[13, 14], List[14, 15], List[15, 16]], \
+0.030239520958083826`]]], List[Directive[Hue[0.6`, 0.5`, 1.`], \
+EdgeForm[Directive[GrayLevel[0], Opacity[0.7`]]]], DiskBox[1, \
+0.030239520958083826`], DiskBox[2, 0.030239520958083826`], DiskBox[3, \
+0.030239520958083826`], DiskBox[4, 0.030239520958083826`], DiskBox[5, \
+0.030239520958083826`], DiskBox[6, 0.030239520958083826`], DiskBox[7, \
+0.030239520958083826`], DiskBox[8, 0.030239520958083826`], DiskBox[9, \
+0.030239520958083826`], DiskBox[10, 0.030239520958083826`], DiskBox[11, \
+0.030239520958083826`], DiskBox[12, 0.030239520958083826`], DiskBox[13, \
+0.030239520958083826`], DiskBox[14, 0.030239520958083826`], DiskBox[15, \
+0.030239520958083826`], DiskBox[16, 0.030239520958083826`]]]]], \
+MouseAppearanceTag[\\\"NetworkGraphics\\\"]], Rule[AllowKernelInitialization, \
+False]]], List[Rule[FormatType, TraditionalForm], Rule[FrameTicks, None], \
+Rule[DefaultBaseStyle, \\\"NetworkGraphics\\\"]]], \\\",\\\", RowBox[{\\\"{\\\
+\", \\\"6\\\", \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \\\"2\\\", \
+\\\"}\\\"}], \\\",\\\", \\\"All\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}], \
+\\\"]\\\"}]}], \\\"]\\\"}]\\) is not a valid list of Associations or rules or \
+lists of rules.\"", 2, 121, 63, 33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.986920969938431*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"00f9388b-fbed-498d-a2f3-454eab0fa4e6"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "KeyValueMap", "invak", 
+   "\"The argument \\!\\(\\*RowBox[{\\\"Merge\\\", \\\"[\\\", \
+RowBox[{RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"\[LeftAssociation]\\\", \
+RowBox[{RowBox[{\\\"1\\\", \\\"\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", \\\"1\\\"}], \\\"}\\\"}]}], \\\",\
+\\\", RowBox[{\\\"5\\\", \\\"\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"1\\\", \
+\\\"2\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"9\\\", \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"1\\\", \\\"5\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"13\\\", \\\"\
+\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"1\\\", \
+\\\"20\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"14\\\", \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"1\\\", \\\"5\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"15\\\", \\\"\
+\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"1\\\", \
+\\\"2\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"16\\\", \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", \\\"1\\\"}], \
+\\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"10\\\", \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"9\\\", \\\"20\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"11\\\", \\\"\
+\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"3\\\", \
+\\\"5\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"12\\\", \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"1\\\", \\\"2\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"6\\\", \\\"\
+\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"3\\\", \
+\\\"5\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"7\\\", \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"9\\\", \\\"20\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"8\\\", \\\"\
+\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"1\\\", \
+\\\"5\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"2\\\", \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"1\\\", \\\"2\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"3\\\", \\\"\
+\[Rule]\\\", RowBox[{\\\"{\\\", \
+RowBox[{TemplateBox[Association[Rule[\\\"color\\\", RGBColor[0, 0, 1]]], \
+\\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\\\"1\\\", \
+\\\"5\\\"]}], \\\"}\\\"}]}], \\\",\\\", RowBox[{\\\"4\\\", \\\"\[Rule]\\\", \
+RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\"color\\\", \
+RGBColor[0, 0, 1]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", FractionBox[\
+\\\"1\\\", \\\"20\\\"]}], \\\"}\\\"}]}]}], \\\"\[RightAssociation]\\\"}], \
+\\\",\\\", RowBox[{\\\"AssociationMap\\\", \\\"[\\\", \
+RowBox[{RowBox[{\\\"Function\\\", \\\"[\\\", \
+RowBox[{\\\"WolframInstitute`SyntheticInfrageometry`Highlights`PackagePrivate`\
+v$\\\", \\\",\\\", RowBox[{\\\"{\\\", RowBox[{TemplateBox[Association[Rule[\\\
+\"color\\\", RGBColor[0, 1, 0]]], \\\"RGBColorSwatchTemplate\\\"], \\\",\\\", \
+RowBox[{FractionBox[\\\"1\\\", \\\"4\\\"], \\\" \\\", \
+RowBox[{RowBox[{\\\"Counts\\\", \\\"[\\\", RowBox[{\\\"Catenate\\\", \
+\\\"[\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \\\"1\\\", \\\"\[RightSkeleton]\\\
+\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"[\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \
+\\\"68\\\", \\\"\[RightSkeleton]\\\"}], \\\"]\\\"}]}]}], \\\"}\\\"}]}], \\\"]\
+\\\"}], \\\",\\\", RowBox[{\\\"Keys\\\", \\\"[\\\", RowBox[{\\\"Counts\\\", \
+\\\"[\\\", RowBox[{\\\"Catenate\\\", \\\"[\\\", RowBox[{\\\"FindSphere\\\", \
+\\\"[\\\", RowBox[{GraphicsBox[NamespaceBox[\\\"NetworkGraphics\\\", \
+DynamicModuleBox[List[Set[Typeset`graph, HoldComplete[Graph[List[1, 2, 3, 4, \
+5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], List[Null, SparseArray[Automatic, \
+List[16, 16], 0, List[1, List[List[0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, \
+35, 38, 40, 43, 46, 48], List[List[2], List[5], List[1], List[3], List[6], \
+List[2], List[4], List[7], List[3], List[8], List[1], List[6], List[9], \
+List[2], List[5], List[7], List[10], List[3], List[6], List[8], List[11], \
+List[4], List[7], List[12], List[5], List[10], List[13], List[6], List[9], \
+List[11], List[14], List[7], List[10], List[12], List[15], List[8], List[11], \
+List[16], List[9], List[14], List[10], List[13], List[15], List[11], \
+List[14], List[16], List[12], List[15]]], Pattern]]], List[Rule[GraphLayout, \
+List[\\\"GridEmbedding\\\", Rule[\\\"Dimension\\\", List[4, 4]]]]]]]]], \
+TagBox[GraphicsGroupBox[GraphicsComplexBox[List[List[1.`, 1.`], List[1.`, \
+2.`], List[1.`, 3.`], List[1.`, 4.`], List[2.`, 1.`], List[2.`, 2.`], \
+List[2.`, 3.`], List[2.`, 4.`], List[3.`, 1.`], List[3.`, 2.`], List[3.`, \
+3.`], List[3.`, 4.`], List[4.`, 1.`], List[4.`, 2.`], List[4.`, 3.`], \
+List[4.`, 4.`]], List[List[Directive[Opacity[0.7`], Hue[0.6`, 0.7`, 0.7`], \
+CapForm[\\\"Round\\\"]], Arrowheads[0.`], List[ArrowBox[List[List[1, 2], \
+List[1, 5], List[2, 3], List[2, 6], List[3, 4], List[3, 7], List[4, 8], \
+List[5, 6], List[5, 9], List[6, 7], List[6, 10], List[7, 8], List[7, 11], \
+List[8, 12], List[9, 10], List[9, 13], List[10, 11], List[10, 14], List[11, \
+12], List[11, 15], List[12, 16], List[13, 14], List[14, 15], List[15, 16]], \
+0.030239520958083826`]]], List[Directive[Hue[0.6`, 0.5`, 1.`], \
+EdgeForm[Directive[GrayLevel[0], Opacity[0.7`]]]], DiskBox[1, \
+0.030239520958083826`], DiskBox[2, 0.030239520958083826`], DiskBox[3, \
+0.030239520958083826`], DiskBox[4, 0.030239520958083826`], DiskBox[5, \
+0.030239520958083826`], DiskBox[6, 0.030239520958083826`], DiskBox[7, \
+0.030239520958083826`], DiskBox[8, 0.030239520958083826`], DiskBox[9, \
+0.030239520958083826`], DiskBox[10, 0.030239520958083826`], DiskBox[11, \
+0.030239520958083826`], DiskBox[12, 0.030239520958083826`], DiskBox[13, \
+0.030239520958083826`], DiskBox[14, 0.030239520958083826`], DiskBox[15, \
+0.030239520958083826`], DiskBox[16, 0.030239520958083826`]]]]], \
+MouseAppearanceTag[\\\"NetworkGraphics\\\"]], Rule[AllowKernelInitialization, \
+False]]], List[Rule[FormatType, TraditionalForm], Rule[FrameTicks, None], \
+Rule[DefaultBaseStyle, \\\"NetworkGraphics\\\"]]], \\\",\\\", RowBox[{\\\"\
+\[LeftSkeleton]\\\", \\\"2\\\", \\\"\[RightSkeleton]\\\"}], \\\",\\\", \
+\\\"All\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}], \\\"]\\\"}]}], \
+\\\"]\\\"}]}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \\\"8\
+\\\", \\\"\[RightSkeleton]\\\"}]}], \\\"]\\\"}]\\) is not a valid \
+Association.\"", 2, 121, 64, 33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.986920969981574*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"72817f92-82b0-4d04-90b5-666814ed5589"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "KeyValueMap", "argt", 
+   "\"\\!\\(\\*RowBox[{\\\"KeyValueMap\\\"}]\\) called with \\!\\(\\*RowBox[{\
+\\\"4\\\"}]\\) arguments; \\!\\(\\*RowBox[{\\\"1\\\"}]\\) or \
+\\!\\(\\*RowBox[{\\\"2\\\"}]\\) arguments are expected.\"", 2, 121, 65, 
+   33105655518428930130, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellChangeTimes->{3.9869209699911423`*^9},
+ CellLabel->
+  "During evaluation of \
+In[121]:=",ExpressionUUID->"c0b47bb1-b866-4043-8dfe-5e6fc159b7c1"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, {Null, 
+       SparseArray[
+       Automatic, {16, 16}, 0, {
+        1, {{0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, 35, 38, 40, 43, 46, 
+          48}, {{2}, {5}, {1}, {3}, {6}, {2}, {4}, {7}, {3}, {8}, {1}, {6}, {
+          9}, {2}, {5}, {7}, {10}, {3}, {6}, {8}, {11}, {4}, {7}, {12}, {5}, {
+          10}, {13}, {6}, {9}, {11}, {14}, {7}, {10}, {12}, {15}, {8}, {11}, {
+          16}, {9}, {14}, {10}, {13}, {15}, {11}, {14}, {16}, {12}, {15}}}, 
+         Pattern}]}, {
+      GraphLayout -> {"GridEmbedding", "Dimension" -> {4, 4}}}]]}, 
+    TagBox[
+     GraphicsGroupBox[
+      GraphicsComplexBox[{{1., 1.}, {1., 2.}, {1., 3.}, {1., 4.}, {2., 1.}, {
+       2., 2.}, {2., 3.}, {2., 4.}, {3., 1.}, {3., 2.}, {3., 3.}, {3., 4.}, {
+       4., 1.}, {4., 2.}, {4., 3.}, {4., 4.}}, {
+        {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[0.], 
+         ArrowBox[{{1, 2}, {1, 5}, {2, 3}, {2, 6}, {3, 4}, {3, 7}, {4, 8}, {5,
+           6}, {5, 9}, {6, 7}, {6, 10}, {7, 8}, {7, 11}, {8, 12}, {9, 10}, {9,
+           13}, {10, 11}, {10, 14}, {11, 12}, {11, 15}, {12, 16}, {13, 14}, {
+          14, 15}, {15, 16}}, 0.030239520958083826`]}, 
+        {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         DiskBox[1, 0.030239520958083826], DiskBox[2, 0.030239520958083826], 
+         DiskBox[3, 0.030239520958083826], DiskBox[4, 0.030239520958083826], 
+         DiskBox[5, 0.030239520958083826], DiskBox[6, 0.030239520958083826], 
+         DiskBox[7, 0.030239520958083826], DiskBox[8, 0.030239520958083826], 
+         DiskBox[9, 0.030239520958083826], DiskBox[10, 0.030239520958083826], 
+         DiskBox[11, 0.030239520958083826], DiskBox[12, 0.030239520958083826],
+          DiskBox[13, 0.030239520958083826], 
+         DiskBox[14, 0.030239520958083826], DiskBox[15, 0.030239520958083826],
+          DiskBox[16, 0.030239520958083826]}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{3.986920970004096*^9},
+ CellLabel->
+  "Out[121]=",ExpressionUUID->"fabe56b1-91d2-4ff2-893c-434c66f3d98b"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell["Examples", "Section",ExpressionUUID->"b9974d6e-298f-4931-b908-4dd611e3cffa"],
 
@@ -138,7 +1289,10 @@ Cell[BoxData[
      RowBox[{"\"\<Cyclic\>\"", "\[Rule]", 
       RowBox[{"{", 
        RowBox[{"False", ",", "True"}], "}"}]}]}], "]"}]}], "]"}]], "Input",Exp\
-ressionUUID->"1b24f3cf-0c5b-454d-b362-6da2f514d8f6"],
+ressionUUID->"1b24f3cf-0c5b-454d-b362-6da2f514d8f6"]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell["See also", "Section",ExpressionUUID->"1d447ad4-cb80-40ad-b21b-864adc766baa"],
 
@@ -149,7 +1303,11 @@ Cell["FindSphere", "Item",ExpressionUUID->"6fe25f41-12c2-4867-881e-b743daa04349"
 Cell["CentralPaths", "Item",ExpressionUUID->"e70f5a6b-5e49-4370-b78d-de860041f6e0"],
 
 Cell["TarskiAxiomQ", "Item",ExpressionUUID->"c4ec1b1e-7082-478e-9c77-69f242a3d056"]
+}, Open  ]]
+}, Open  ]]
 },
+WindowSize->{808, 911},
+WindowMargins->{{12, Automatic}, {Automatic, 24}},
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"44f98e3d-3313-40e3-9475-afdb24a065f6"
@@ -165,28 +1323,58 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"4b266bde-dd58-45c3-b664-941d096ca88a"],
-Cell[648, 22, 706, 10, 70, "Text",ExpressionUUID->"fffc8868-7430-436e-8368-e8f0b2fae0d9"],
-Cell[1357, 34, 79, 0, 70, "Section",ExpressionUUID->"491d1f3c-9f0e-40ca-8642-5bd473891cc8"],
-Cell[1439, 36, 132, 0, 70, "CodeText",ExpressionUUID->"31a84b92-70b2-4aa9-a8f6-1d0aaa8544c4"],
-Cell[1574, 38, 162, 2, 70, "Code",ExpressionUUID->"a32089ae-0596-45e7-a56b-8cc1c48e83db"],
-Cell[1739, 42, 79, 0, 70, "Section",ExpressionUUID->"9aca08e3-9173-4000-a2cc-23ea7838e941"],
-Cell[1821, 44, 128, 0, 70, "CodeText",ExpressionUUID->"cd485499-21d3-4e7c-a4e3-3dc1e9d90ad7"],
-Cell[1952, 46, 517, 15, 70, "Input",ExpressionUUID->"845dc2bb-1813-441f-a2de-1f11c4a1f6c9"],
-Cell[2472, 63, 166, 3, 70, "CodeText",ExpressionUUID->"ee518621-d738-4720-b88a-313033f4b2fe"],
-Cell[2641, 68, 807, 23, 70, "Input",ExpressionUUID->"f65bb021-1d6f-4c5b-bb33-d9c2b9a0503d"],
-Cell[3451, 93, 82, 0, 70, "Section",ExpressionUUID->"b9974d6e-298f-4931-b908-4dd611e3cffa"],
-Cell[3536, 95, 122, 0, 70, "CodeText",ExpressionUUID->"32ababc3-5c0a-46b8-8e19-23e558ec0590"],
-Cell[3661, 97, 649, 20, 70, "Input",ExpressionUUID->"e346d064-e79a-4904-a871-06722e41c407"],
-Cell[4313, 119, 129, 0, 70, "CodeText",ExpressionUUID->"2fdbb60f-c7e3-4260-a0fd-00a7c352f9e0"],
-Cell[4445, 121, 710, 19, 70, "Input",ExpressionUUID->"1b24f3cf-0c5b-454d-b362-6da2f514d8f6"],
-Cell[5158, 142, 82, 0, 70, "Section",ExpressionUUID->"1d447ad4-cb80-40ad-b21b-864adc766baa"],
-Cell[5243, 144, 82, 0, 70, "Item",ExpressionUUID->"4e11806b-8cc7-4b69-81df-a3003c493997"],
-Cell[5328, 146, 81, 0, 70, "Item",ExpressionUUID->"6fe25f41-12c2-4867-881e-b743daa04349"],
-Cell[5412, 148, 83, 0, 70, "Item",ExpressionUUID->"e70f5a6b-5e49-4370-b78d-de860041f6e0"],
-Cell[5498, 150, 83, 0, 70, "Item",ExpressionUUID->"c4ec1b1e-7082-478e-9c77-69f242a3d056"]
+Cell[CellGroupData[{
+Cell[576, 22, 91, 0, 96, "Title",ExpressionUUID->"4b266bde-dd58-45c3-b664-941d096ca88a"],
+Cell[670, 24, 706, 10, 143, "Text",ExpressionUUID->"fffc8868-7430-436e-8368-e8f0b2fae0d9"],
+Cell[CellGroupData[{
+Cell[1401, 38, 79, 0, 66, "Section",ExpressionUUID->"491d1f3c-9f0e-40ca-8642-5bd473891cc8"],
+Cell[1483, 40, 132, 0, 36, "CodeText",ExpressionUUID->"31a84b92-70b2-4aa9-a8f6-1d0aaa8544c4"],
+Cell[1618, 42, 190, 4, 51, "Code",ExpressionUUID->"a32089ae-0596-45e7-a56b-8cc1c48e83db"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1845, 51, 79, 0, 66, "Section",ExpressionUUID->"9aca08e3-9173-4000-a2cc-23ea7838e941"],
+Cell[1927, 53, 128, 0, 36, "CodeText",ExpressionUUID->"cd485499-21d3-4e7c-a4e3-3dc1e9d90ad7"],
+Cell[CellGroupData[{
+Cell[2080, 57, 543, 16, 29, "Input",ExpressionUUID->"845dc2bb-1813-441f-a2de-1f11c4a1f6c9"],
+Cell[2626, 75, 15939, 359, 376, "Output",ExpressionUUID->"3038fd7b-471c-47a6-9bc7-895e898f61cb"]
+}, Open  ]],
+Cell[18580, 437, 166, 3, 36, "CodeText",ExpressionUUID->"ee518621-d738-4720-b88a-313033f4b2fe"],
+Cell[CellGroupData[{
+Cell[18771, 444, 833, 24, 70, "Input",ExpressionUUID->"f65bb021-1d6f-4c5b-bb33-d9c2b9a0503d"],
+Cell[19607, 470, 440, 11, 26, "Message",ExpressionUUID->"e3acdad3-7a36-4e12-b563-1524804a86b4"],
+Cell[20050, 483, 440, 11, 26, "Message",ExpressionUUID->"2754fb89-4068-4df3-8003-b4220fcb6beb"],
+Cell[20493, 496, 440, 11, 26, "Message",ExpressionUUID->"b4de8ca6-8740-4615-89ea-984b8c503f06"],
+Cell[20936, 509, 472, 11, 26, "Message",ExpressionUUID->"c7bb4242-d7ef-455b-a303-ad46015aabe9"],
+Cell[21411, 522, 3184, 48, 97, "Message",ExpressionUUID->"df73af22-8be5-4686-9da2-a85b105fed6a"],
+Cell[24598, 572, 3242, 49, 97, "Message",ExpressionUUID->"d757d7f0-f976-44f8-a717-4fbcc3a6aabb"],
+Cell[27843, 623, 3294, 50, 123, "Message",ExpressionUUID->"5e8d6ba7-cdd3-42ea-8ebd-74e62411530a"],
+Cell[31140, 675, 2791, 42, 75, "Message",ExpressionUUID->"637bc5bc-0b6a-4ccc-a8ed-6784d26503f1"],
+Cell[33934, 719, 2849, 43, 75, "Message",ExpressionUUID->"6e004d6c-f6cd-4fb2-a892-4e5a51c4b59a"],
+Cell[36786, 764, 2899, 44, 75, "Message",ExpressionUUID->"e02a90fd-2caf-46cd-b350-a86a4d4a52f9"],
+Cell[39688, 810, 2536, 39, 145, "Message",ExpressionUUID->"e6f479fd-8141-4646-8252-a7ac63e13667"],
+Cell[42227, 851, 7541, 111, 149, "Message",ExpressionUUID->"cb3233e6-26e4-42b0-94a5-8cabaa2ac0d0"],
+Cell[49771, 964, 6854, 98, 276, "Message",ExpressionUUID->"00f9388b-fbed-498d-a2f3-454eab0fa4e6"],
+Cell[56628, 1064, 8076, 117, 226, "Message",ExpressionUUID->"72817f92-82b0-4d04-90b5-666814ed5589"],
+Cell[64707, 1183, 508, 12, 26, "Message",ExpressionUUID->"c0b47bb1-b866-4043-8dfe-5e6fc159b7c1"],
+Cell[65218, 1197, 2354, 41, 395, "Output",ExpressionUUID->"fabe56b1-91d2-4ff2-893c-434c66f3d98b"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[67621, 1244, 82, 0, 66, "Section",ExpressionUUID->"b9974d6e-298f-4931-b908-4dd611e3cffa"],
+Cell[67706, 1246, 122, 0, 36, "CodeText",ExpressionUUID->"32ababc3-5c0a-46b8-8e19-23e558ec0590"],
+Cell[67831, 1248, 649, 20, 49, "Input",ExpressionUUID->"e346d064-e79a-4904-a871-06722e41c407"],
+Cell[68483, 1270, 129, 0, 36, "CodeText",ExpressionUUID->"2fdbb60f-c7e3-4260-a0fd-00a7c352f9e0"],
+Cell[68615, 1272, 710, 19, 70, "Input",ExpressionUUID->"1b24f3cf-0c5b-454d-b362-6da2f514d8f6"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[69362, 1296, 82, 0, 66, "Section",ExpressionUUID->"1d447ad4-cb80-40ad-b21b-864adc766baa"],
+Cell[69447, 1298, 82, 0, 30, "Item",ExpressionUUID->"4e11806b-8cc7-4b69-81df-a3003c493997"],
+Cell[69532, 1300, 81, 0, 30, "Item",ExpressionUUID->"6fe25f41-12c2-4867-881e-b743daa04349"],
+Cell[69616, 1302, 83, 0, 30, "Item",ExpressionUUID->"e70f5a6b-5e49-4370-b78d-de860041f6e0"],
+Cell[69702, 1304, 83, 0, 30, "Item",ExpressionUUID->"c4ec1b1e-7082-478e-9c77-69f242a3d056"]
+}, Open  ]]
+}, Open  ]]
 }
 ]
 *)
 
-(* End of internal cache information *)

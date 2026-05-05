@@ -8,7 +8,7 @@ canonicalLine[ line_List ] := First @ Sort @ { line, Reverse[ line ] }
 
 allCanonicalLines[ graph_Graph ] :=
   DeleteDuplicates @ Flatten[
-    canonicalLine /@ FindLine[ graph, #[[ 1 ]], #[[ 2 ]], All ] & /@
+    canonicalLine /@ FindLine[ graph, #[[ 1 ]], #[[ 2 ]], All ][ "Realisations" ] & /@
       Subsets[ VertexList[ graph ], { 2 } ],
     1
   ]
@@ -25,7 +25,7 @@ FindPencil[ graph_Graph, O_ ] :=
   Module[ { vertices, allLines, canonicals },
     vertices = DeleteCases[ VertexList[ graph ], O ];
     allLines = Flatten[
-      FindLine[ graph, O, #, All ] & /@ vertices, 1
+      FindLine[ graph, O, #, All ][ "Realisations" ] & /@ vertices, 1
     ];
     canonicals = DeleteDuplicates @ ( canonicalLine /@ allLines );
     Association[ # -> # & /@ canonicals ]
@@ -61,32 +61,41 @@ LineCount[ graph_Graph ] := Length @ allCanonicalLines[ graph ]
 FindCommonLine[ graph_Graph, verts_List, All ] :=
   Module[ { uverts, candidates },
     uverts = DeleteDuplicates @ verts;
-    If[ Length[ uverts ] < 2, Return[ {} ] ];
-    candidates = canonicalLine /@ FindLine[ graph, First @ uverts, uverts[[ 2 ]], All ];
-    DeleteDuplicates @ Select[ candidates, line |-> SubsetQ[ line, uverts ] ]
+    If[ Length[ uverts ] < 2, Return[ InfraSegment[ {} ] ] ];
+    candidates = canonicalLine /@ FindLine[ graph, First @ uverts, uverts[[ 2 ]], All ][ "Realisations" ];
+    InfraSegment[ DeleteDuplicates @ Select[ candidates, line |-> SubsetQ[ line, uverts ] ] ]
   ]
 
 FindCommonLine[ graph_Graph, verts_List, UpTo[ n_Integer ] ] :=
-  Take[ FindCommonLine[ graph, verts, All ], UpTo[ n ] ]
+  With[ { result = FindCommonLine[ graph, verts, All ] },
+    InfraSegment[ Take[ result[ "Realisations" ], UpTo[ n ] ] ]
+  ]
 
 FindCommonLine[ graph_Graph, verts_List, n_Integer : 1 ] :=
   With[ { result = FindCommonLine[ graph, verts, UpTo[ n ] ] },
-    If[ Length[ result ] < n, $Failed, result ]
+    If[ result[ "Length" ] < n, $Failed, result ]
   ]
 
 
 (* ===================== FindCommonPoint ===================== *)
 
 (* Vertices common to every listed line - the intersection of the lines.
-   Constructive companion of ConcurrentQ. *)
+   Constructive companion of ConcurrentQ.  Each input line is either a bare
+   vertex sequence or an InfraSegment[{seq, ...}] wrapper; the wrapped form
+   contributes the union of its realisations to the common-point search.   *)
 
 FindCommonPoint[ graph_Graph, lines_List, All ] :=
-  If[ Length[ lines ] == 0, {}, Apply[ Intersection, lines ] ]
+  If[ Length[ lines ] == 0,
+    InfraPoint[ {} ],
+    InfraPoint[ Apply[ Intersection, lines /. InfraSegment[ reps_List ] :> Union @@ reps ] ]
+  ]
 
 FindCommonPoint[ graph_Graph, lines_List, UpTo[ n_Integer ] ] :=
-  Take[ FindCommonPoint[ graph, lines, All ], UpTo[ n ] ]
+  With[ { result = FindCommonPoint[ graph, lines, All ] },
+    InfraPoint[ Take[ result[ "Realisations" ], UpTo[ n ] ] ]
+  ]
 
 FindCommonPoint[ graph_Graph, lines_List, n_Integer : 1 ] :=
   With[ { result = FindCommonPoint[ graph, lines, UpTo[ n ] ] },
-    If[ Length[ result ] < n, $Failed, result ]
+    If[ result[ "Length" ] < n, $Failed, result ]
   ]

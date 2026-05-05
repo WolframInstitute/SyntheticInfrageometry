@@ -1,0 +1,2050 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     89978,       2042]
+NotebookOptionsPosition[     86411,       1976]
+NotebookOutlinePosition[     86803,       1992]
+CellTagsIndexPosition[     86760,       1989]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["FindLine", "Title",ExpressionUUID->"3a9c2f62-3098-4f80-9e40-6b551ba18087"],
+
+Cell["\<\
+FindLine[graph, p1, p2] returns InfraSegment[{line}] for one maximal geodesic \
+extension through p1 and p2 -- a vertex sequence (a, ..., p1, ..., p2, ..., \
+b) every contiguous sub-sequence of which is a geodesic and which cannot be \
+extended at either end without breaking the geodesic property. Option \
+\"Maximality\" -> \"Extension\" (default) or \"Diameter\"; Method axis \
+matches FindSegment / ExtendSegment.\
+\>", "Text",ExpressionUUID->"1ec69ac5-9543-4aea-9876-e4efbe7f2311"],
+
+Cell[CellGroupData[{
+
+Cell["Setup", "Section",ExpressionUUID->"a3b4d04b-903d-40f7-99b2-2c1f019c5292"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"add460b6-e572-45fe-a32c-386a74eff17a"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",
+ CellLabel->
+  "In[112]:=",ExpressionUUID->"fcb97c3a-1377-4e3d-a66b-74f912834c73"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Usage", "Section",ExpressionUUID->"dbf3dad0-60e1-4e32-9a13-76dcdc0afc4f"],
+
+Cell["\<\
+Find one maximal geodesic extension through two diagonal vertices.\
+\>", "CodeText",ExpressionUUID->"ed51c9ad-4628-41de-928f-e6ee3f9e45b1"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindLine[g, 1, 16] -> \
+Blue}]]\
+\>", "Input",
+ CellLabel->
+  "In[113]:=",ExpressionUUID->"e3b0c203-6416-46b8-8fa4-8e331ed0a404"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, {Null, 
+       SparseArray[
+       Automatic, {16, 16}, 0, {
+        1, {{0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, 35, 38, 40, 43, 46, 
+          48}, {{2}, {5}, {1}, {3}, {6}, {2}, {4}, {7}, {3}, {8}, {1}, {6}, {
+          9}, {2}, {5}, {7}, {10}, {3}, {6}, {8}, {11}, {4}, {7}, {12}, {5}, {
+          10}, {13}, {6}, {9}, {11}, {14}, {7}, {10}, {12}, {15}, {8}, {11}, {
+          16}, {9}, {14}, {10}, {13}, {15}, {11}, {14}, {16}, {12}, {15}}}, 
+         Pattern}]}, {GraphHighlight -> {
+         UndirectedEdge[4, 8], 
+         UndirectedEdge[2, 3], 
+         UndirectedEdge[12, 16], 1, 
+         UndirectedEdge[8, 12], 3, 4, 16, 2, 
+         UndirectedEdge[3, 4], 12, 
+         UndirectedEdge[1, 2], 8}, 
+       GraphHighlightStyle -> {UndirectedEdge[2, 3] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsoluteThickness[5.]]}}, UndirectedEdge[1, 2] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsoluteThickness[5.]]}}, UndirectedEdge[12, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsoluteThickness[5.]]}}, UndirectedEdge[3, 4] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsoluteThickness[5.]]}}, 12 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 1 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 16 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, UndirectedEdge[8, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsoluteThickness[5.]]}}, 4 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 3 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 2 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 8 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, UndirectedEdge[4, 8] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsoluteThickness[5.]]}}}, 
+       GraphLayout -> {"GridEmbedding", "Dimension" -> {4, 4}}}]]}, 
+    TagBox[
+     GraphicsGroupBox[
+      GraphicsComplexBox[{{1., 1.}, {1., 2.}, {1., 3.}, {1., 4.}, {2., 1.}, {
+       2., 2.}, {2., 3.}, {2., 4.}, {3., 1.}, {3., 2.}, {3., 3.}, {3., 4.}, {
+       4., 1.}, {4., 2.}, {4., 3.}, {4., 4.}}, {
+        {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], 
+         {RGBColor[0, 0, 1], AbsoluteThickness[5.], Opacity[1.], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {1., 2.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{1., 1.}, {2., 1.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[5.], Opacity[1.], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {1., 3.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{1., 2.}, {2., 2.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[5.], Opacity[1.], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 3.}, {1., 4.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{1., 3.}, {2., 3.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[5.], Opacity[1.], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 4.}, {2., 4.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{2., 1.}, {2., 2.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{2., 1.}, {3., 1.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{2., 2.}, {2., 3.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{2., 2.}, {3., 2.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{2., 3.}, {2., 4.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{2., 3.}, {3., 3.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[5.], Opacity[1.], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 4.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{3., 1.}, {3., 2.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{3., 1.}, {4., 1.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{3., 2.}, {3., 3.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{3., 2.}, {4., 2.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{3., 3.}, {3., 4.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{3., 3.}, {4., 3.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[5.], Opacity[1.], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 4.}, {4., 4.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{4., 1.}, {4., 2.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{4., 2.}, {4., 3.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{4., 3.}, {4., 4.}}, 0.030239520958083826`]}}, 
+        {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[1, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[2, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[3, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[4, 0.030239520958083826]}, DiskBox[5, 0.030239520958083826],
+          DiskBox[6, 0.030239520958083826], 
+         DiskBox[7, 0.030239520958083826], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[8, 0.030239520958083826]}, DiskBox[9, 0.030239520958083826],
+          DiskBox[10, 0.030239520958083826], 
+         DiskBox[11, 0.030239520958083826], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[12, 0.030239520958083826]}, 
+         DiskBox[13, 0.030239520958083826], DiskBox[14, 0.030239520958083826],
+          DiskBox[15, 0.030239520958083826], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[16, 0.030239520958083826]}}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{3.986920938338921*^9},
+ CellLabel->
+  "Out[113]=",ExpressionUUID->"4549b55a-e450-413f-9c79-b6ac50f87a57"]
+}, Open  ]],
+
+Cell["\<\
+Enumerate every maximal geodesic extension and overlay the bundle.\
+\>", "CodeText",ExpressionUUID->"64699975-235b-4bd6-bdaf-c158e8f06e71"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindLine[g, 1, 16, All] \
+-> Blue}]]\
+\>", "Input",
+ CellLabel->
+  "In[114]:=",ExpressionUUID->"fa51d903-0386-4b1f-85ef-3b3fbd204b9e"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, {Null, 
+       SparseArray[
+       Automatic, {16, 16}, 0, {
+        1, {{0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, 35, 38, 40, 43, 46, 
+          48}, {{2}, {5}, {1}, {3}, {6}, {2}, {4}, {7}, {3}, {8}, {1}, {6}, {
+          9}, {2}, {5}, {7}, {10}, {3}, {6}, {8}, {11}, {4}, {7}, {12}, {5}, {
+          10}, {13}, {6}, {9}, {11}, {14}, {7}, {10}, {12}, {15}, {8}, {11}, {
+          16}, {9}, {14}, {10}, {13}, {15}, {11}, {14}, {16}, {12}, {15}}}, 
+         Pattern}]}, {GraphHighlight -> {
+         UndirectedEdge[1, 5], 
+         UndirectedEdge[15, 16], 3, 10, 14, 6, 9, 
+         UndirectedEdge[6, 7], 2, 
+         UndirectedEdge[7, 11], 
+         UndirectedEdge[8, 12], 
+         UndirectedEdge[5, 9], 5, 12, 
+         UndirectedEdge[12, 16], 11, 
+         UndirectedEdge[6, 10], 1, 
+         UndirectedEdge[11, 15], 15, 
+         UndirectedEdge[11, 12], 
+         UndirectedEdge[2, 6], 
+         UndirectedEdge[9, 13], 
+         UndirectedEdge[4, 8], 
+         UndirectedEdge[9, 10], 
+         UndirectedEdge[3, 7], 
+         UndirectedEdge[7, 8], 
+         UndirectedEdge[13, 14], 4, 13, 16, 
+         UndirectedEdge[10, 11], 
+         UndirectedEdge[5, 6], 
+         UndirectedEdge[3, 4], 
+         UndirectedEdge[10, 14], 
+         UndirectedEdge[14, 15], 7, 
+         UndirectedEdge[2, 3], 8, 
+         UndirectedEdge[1, 2]}, 
+       GraphHighlightStyle -> {5 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, 7 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.67], 
+              AbsolutePointSize[
+               Rational[48, 5]]]}}, UndirectedEdge[7, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[1, 5] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 11 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.76], 
+              AbsolutePointSize[
+               Rational[54, 5]]]}}, UndirectedEdge[12, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[10, 14] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, 1 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 14 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, UndirectedEdge[3, 4] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, 15 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[1, 2] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 8 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, 6 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.76], 
+              AbsolutePointSize[
+               Rational[54, 5]]]}}, 9 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, UndirectedEdge[13, 14] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, UndirectedEdge[9, 10] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, 12 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, 13 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsolutePointSize[
+               Rational[32, 5]]]}}, UndirectedEdge[14, 15] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, 2 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[4, 8] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, UndirectedEdge[10, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[6, 10] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[7, 8] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, UndirectedEdge[8, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, 16 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, UndirectedEdge[9, 13] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, UndirectedEdge[2, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[2, 3] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, UndirectedEdge[11, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, 4 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsolutePointSize[
+               Rational[32, 5]]]}}, 3 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, UndirectedEdge[6, 7] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, 10 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.67], 
+              AbsolutePointSize[
+               Rational[48, 5]]]}}, UndirectedEdge[11, 15] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[5, 9] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, UndirectedEdge[3, 7] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, UndirectedEdge[15, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[5, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}}, 
+       GraphLayout -> {"GridEmbedding", "Dimension" -> {4, 4}}}]]}, 
+    TagBox[
+     GraphicsGroupBox[
+      GraphicsComplexBox[{{1., 1.}, {1., 2.}, {1., 3.}, {1., 4.}, {2., 1.}, {
+       2., 2.}, {2., 3.}, {2., 4.}, {3., 1.}, {3., 2.}, {3., 3.}, {3., 4.}, {
+       4., 1.}, {4., 2.}, {4., 3.}, {4., 4.}}, {
+        {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {1., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {2., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {1., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 3.}, {1., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 3.}, {2., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 4.}, {2., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 1.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 1.}, {3., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {2., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {3., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 3.}, {2., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 3.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 4.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 1.}, {3., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 1.}, {4., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 2.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 2.}, {4., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {4., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 4.}, {4., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 1.}, {4., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 2.}, {4., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 3.}, {4., 4.}}, 0.030239520958083826`]}}}, 
+        {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[1, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[2, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[3, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[32, 5], 6.4]], Opacity[0.43000000000000005`], 
+          DiskBox[4, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[5, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[54, 5], 10.8]], Opacity[0.76], 
+          DiskBox[6, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[48, 5], 9.6]], Opacity[0.67], 
+          DiskBox[7, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[8, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[9, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[48, 5], 9.6]], Opacity[0.67], 
+          DiskBox[10, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[54, 5], 10.8]], Opacity[0.76], 
+          DiskBox[11, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[12, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[32, 5], 6.4]], Opacity[0.43000000000000005`], 
+          DiskBox[13, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[14, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[15, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[16, 0.030239520958083826]}}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{3.98692094356514*^9},
+ CellLabel->
+  "Out[114]=",ExpressionUUID->"774784da-1359-416b-a290-c6678d510ffc"]
+}, Open  ]],
+
+Cell["Restrict to lines whose length equals the graph diameter.", "CodeText",ExpressionUUID->"44a5e98a-a9e6-4838-a49f-d4d299cfa6e1"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindLine[g, 1, 16, All, \
+\"Maximality\" -> \"Diameter\"] -> Blue}]]\
+\>", "Input",
+ CellLabel->
+  "In[115]:=",ExpressionUUID->"d555ac18-db41-42dc-87d9-147ad2206e6b"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, {Null, 
+       SparseArray[
+       Automatic, {16, 16}, 0, {
+        1, {{0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, 35, 38, 40, 43, 46, 
+          48}, {{2}, {5}, {1}, {3}, {6}, {2}, {4}, {7}, {3}, {8}, {1}, {6}, {
+          9}, {2}, {5}, {7}, {10}, {3}, {6}, {8}, {11}, {4}, {7}, {12}, {5}, {
+          10}, {13}, {6}, {9}, {11}, {14}, {7}, {10}, {12}, {15}, {8}, {11}, {
+          16}, {9}, {14}, {10}, {13}, {15}, {11}, {14}, {16}, {12}, {15}}}, 
+         Pattern}]}, {GraphHighlight -> {
+         UndirectedEdge[1, 5], 
+         UndirectedEdge[15, 16], 3, 10, 14, 6, 9, 
+         UndirectedEdge[6, 7], 2, 
+         UndirectedEdge[7, 11], 
+         UndirectedEdge[8, 12], 
+         UndirectedEdge[5, 9], 5, 12, 
+         UndirectedEdge[12, 16], 11, 
+         UndirectedEdge[6, 10], 1, 
+         UndirectedEdge[11, 15], 15, 
+         UndirectedEdge[11, 12], 
+         UndirectedEdge[2, 6], 
+         UndirectedEdge[9, 13], 
+         UndirectedEdge[4, 8], 
+         UndirectedEdge[9, 10], 
+         UndirectedEdge[3, 7], 
+         UndirectedEdge[7, 8], 
+         UndirectedEdge[13, 14], 4, 13, 16, 
+         UndirectedEdge[10, 11], 
+         UndirectedEdge[5, 6], 
+         UndirectedEdge[3, 4], 
+         UndirectedEdge[10, 14], 
+         UndirectedEdge[14, 15], 7, 
+         UndirectedEdge[2, 3], 8, 
+         UndirectedEdge[1, 2]}, 
+       GraphHighlightStyle -> {5 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, 7 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.67], 
+              AbsolutePointSize[
+               Rational[48, 5]]]}}, UndirectedEdge[7, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[1, 5] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 11 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.76], 
+              AbsolutePointSize[
+               Rational[54, 5]]]}}, UndirectedEdge[12, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[10, 14] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, 1 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 14 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, UndirectedEdge[3, 4] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, 15 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[1, 2] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 8 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, 6 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.76], 
+              AbsolutePointSize[
+               Rational[54, 5]]]}}, 9 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, UndirectedEdge[13, 14] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, UndirectedEdge[9, 10] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, 12 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, 13 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsolutePointSize[
+               Rational[32, 5]]]}}, UndirectedEdge[14, 15] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, 2 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[4, 8] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, UndirectedEdge[10, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[6, 10] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[7, 8] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, UndirectedEdge[8, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, 16 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, UndirectedEdge[9, 13] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsoluteThickness[1.2]]}}, UndirectedEdge[2, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[2, 3] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, UndirectedEdge[11, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, 4 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.43000000000000005`], 
+              AbsolutePointSize[
+               Rational[32, 5]]]}}, 3 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsolutePointSize[
+               Rational[38, 5]]]}}, UndirectedEdge[6, 7] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, 10 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.67], 
+              AbsolutePointSize[
+               Rational[48, 5]]]}}, UndirectedEdge[11, 15] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}, UndirectedEdge[5, 9] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.52], 
+              AbsoluteThickness[1.8]]}}, UndirectedEdge[3, 7] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.49], 
+              AbsoluteThickness[1.6]]}}, UndirectedEdge[15, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[5, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.5800000000000001], 
+              AbsoluteThickness[2.2]]}}}, 
+       GraphLayout -> {"GridEmbedding", "Dimension" -> {4, 4}}}]]}, 
+    TagBox[
+     GraphicsGroupBox[
+      GraphicsComplexBox[{{1., 1.}, {1., 2.}, {1., 3.}, {1., 4.}, {2., 1.}, {
+       2., 2.}, {2., 3.}, {2., 4.}, {3., 1.}, {3., 2.}, {3., 3.}, {3., 4.}, {
+       4., 1.}, {4., 2.}, {4., 3.}, {4., 4.}}, {
+        {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {1., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {2., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {1., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 3.}, {1., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 3.}, {2., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 4.}, {2., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 1.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 1.}, {3., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {2., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {3., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 3.}, {2., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 3.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 4.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 1.}, {3., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 1.}, {4., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 2.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.6], Opacity[0.49], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 2.}, {4., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.2], Opacity[
+          0.5800000000000001], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {4., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 4.}, {4., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.2], Opacity[
+          0.43000000000000005`], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 1.}, {4., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[1.8], Opacity[0.52], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 2.}, {4., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 3.}, {4., 4.}}, 0.030239520958083826`]}}}, 
+        {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[1, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[2, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[3, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[32, 5], 6.4]], Opacity[0.43000000000000005`], 
+          DiskBox[4, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[5, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[54, 5], 10.8]], Opacity[0.76], 
+          DiskBox[6, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[48, 5], 9.6]], Opacity[0.67], 
+          DiskBox[7, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[8, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[9, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[48, 5], 9.6]], Opacity[0.67], 
+          DiskBox[10, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[54, 5], 10.8]], Opacity[0.76], 
+          DiskBox[11, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[12, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[32, 5], 6.4]], Opacity[0.43000000000000005`], 
+          DiskBox[13, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[38, 5], 7.6]], Opacity[0.52], 
+          DiskBox[14, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[15, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[16, 0.030239520958083826]}}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{3.9869209466158657`*^9},
+ CellLabel->
+  "Out[115]=",ExpressionUUID->"794988ce-9192-4338-a197-e20508538ae1"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Examples", "Section",ExpressionUUID->"22d45e6a-1dcf-4891-8d3f-6b467dd8ad07"],
+
+Cell["\<\
+Method axis matches FindSegment: \"ShortestPathExtension\" enumerates lines \
+whose middle path is a recency-lex simple path.\
+\>", "CodeText",ExpressionUUID->"adcd09bb-81f2-4c6f-9c96-11ae0bf89631"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindLine[g, 1, 16, All, \
+Method -> \"ShortestPathExtension\"] -> Blue}]]\
+\>", "Input",
+ CellLabel->
+  "In[116]:=",ExpressionUUID->"9cece66f-cedc-4a6c-87b4-32c0c708dbc3"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, {Null, 
+       SparseArray[
+       Automatic, {16, 16}, 0, {
+        1, {{0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, 35, 38, 40, 43, 46, 
+          48}, {{2}, {5}, {1}, {3}, {6}, {2}, {4}, {7}, {3}, {8}, {1}, {6}, {
+          9}, {2}, {5}, {7}, {10}, {3}, {6}, {8}, {11}, {4}, {7}, {12}, {5}, {
+          10}, {13}, {6}, {9}, {11}, {14}, {7}, {10}, {12}, {15}, {8}, {11}, {
+          16}, {9}, {14}, {10}, {13}, {15}, {11}, {14}, {16}, {12}, {15}}}, 
+         Pattern}]}, {GraphHighlight -> {
+         UndirectedEdge[1, 5], 
+         UndirectedEdge[15, 16], 3, 10, 14, 6, 9, 
+         UndirectedEdge[6, 7], 2, 
+         UndirectedEdge[7, 11], 
+         UndirectedEdge[8, 12], 
+         UndirectedEdge[5, 9], 5, 12, 
+         UndirectedEdge[12, 16], 11, 
+         UndirectedEdge[6, 10], 1, 
+         UndirectedEdge[11, 15], 15, 
+         UndirectedEdge[11, 12], 
+         UndirectedEdge[2, 6], 
+         UndirectedEdge[9, 13], 
+         UndirectedEdge[4, 8], 
+         UndirectedEdge[9, 10], 
+         UndirectedEdge[3, 7], 
+         UndirectedEdge[7, 8], 
+         UndirectedEdge[13, 14], 4, 13, 16, 
+         UndirectedEdge[10, 11], 
+         UndirectedEdge[5, 6], 
+         UndirectedEdge[3, 4], 
+         UndirectedEdge[10, 14], 
+         UndirectedEdge[14, 15], 7, 
+         UndirectedEdge[2, 3], 8, 
+         UndirectedEdge[1, 2]}, 
+       GraphHighlightStyle -> {5 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.8239130434782609], 
+              AbsolutePointSize[
+               Rational[268, 23]]]}}, 7 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.8630434782608696], 
+              AbsolutePointSize[
+               Rational[280, 23]]]}}, 
+         UndirectedEdge[7, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6413043478260869], 
+              AbsoluteThickness[2.608695652173913]]}}, 
+         UndirectedEdge[1, 5] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 11 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.8956521739130434], 
+              AbsolutePointSize[
+               Rational[290, 23]]]}}, UndirectedEdge[12, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[10, 14] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6217391304347826], 
+              AbsoluteThickness[2.4782608695652173`]]}}, 1 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 14 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7815217391304348], 
+              AbsolutePointSize[
+               Rational[255, 23]]]}}, UndirectedEdge[3, 4] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6478260869565218], 
+              AbsoluteThickness[2.6521739130434785`]]}}, 15 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.8239130434782609], 
+              AbsolutePointSize[
+               Rational[268, 23]]]}}, UndirectedEdge[1, 2] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 8 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7815217391304348], 
+              AbsolutePointSize[
+               Rational[255, 23]]]}}, 6 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.8956521739130434], 
+              AbsolutePointSize[
+               Rational[290, 23]]]}}, 9 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7815217391304348], 
+              AbsolutePointSize[
+               Rational[255, 23]]]}}, UndirectedEdge[13, 14] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6478260869565218], 
+              AbsoluteThickness[2.6521739130434785`]]}}, 
+         UndirectedEdge[9, 10] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6217391304347826], 
+              AbsoluteThickness[2.4782608695652173`]]}}, 12 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.8239130434782609], 
+              AbsolutePointSize[
+               Rational[268, 23]]]}}, 13 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6478260869565218], 
+              AbsolutePointSize[
+               Rational[214, 23]]]}}, UndirectedEdge[14, 15] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6934782608695652], 
+              AbsoluteThickness[2.9565217391304346`]]}}, 2 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.8239130434782609], 
+              AbsolutePointSize[
+               Rational[268, 23]]]}}, UndirectedEdge[4, 8] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6478260869565218], 
+              AbsoluteThickness[2.6521739130434785`]]}}, 
+         UndirectedEdge[10, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6413043478260869], 
+              AbsoluteThickness[2.608695652173913]]}}, 
+         UndirectedEdge[6, 10] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6413043478260869], 
+              AbsoluteThickness[2.608695652173913]]}}, 
+         UndirectedEdge[7, 8] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6217391304347826], 
+              AbsoluteThickness[2.4782608695652173`]]}}, 
+         UndirectedEdge[8, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6934782608695652], 
+              AbsoluteThickness[2.9565217391304346`]]}}, 16 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, UndirectedEdge[9, 13] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6478260869565218], 
+              AbsoluteThickness[2.6521739130434785`]]}}, 
+         UndirectedEdge[2, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6543478260869565], 
+              AbsoluteThickness[2.6956521739130435`]]}}, 
+         UndirectedEdge[2, 3] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6934782608695652], 
+              AbsoluteThickness[2.9565217391304346`]]}}, 
+         UndirectedEdge[11, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6543478260869565], 
+              AbsoluteThickness[2.6956521739130435`]]}}, 4 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6478260869565218], 
+              AbsolutePointSize[
+               Rational[214, 23]]]}}, 3 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7815217391304348], 
+              AbsolutePointSize[
+               Rational[255, 23]]]}}, UndirectedEdge[6, 7] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6413043478260869], 
+              AbsoluteThickness[2.608695652173913]]}}, 
+         10 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.8630434782608696], 
+              AbsolutePointSize[
+               Rational[280, 23]]]}}, UndirectedEdge[11, 15] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6543478260869565], 
+              AbsoluteThickness[2.6956521739130435`]]}}, 
+         UndirectedEdge[5, 9] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6934782608695652], 
+              AbsoluteThickness[2.9565217391304346`]]}}, 
+         UndirectedEdge[3, 7] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6217391304347826], 
+              AbsoluteThickness[2.4782608695652173`]]}}, 
+         UndirectedEdge[15, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[5, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.6543478260869565], 
+              AbsoluteThickness[2.6956521739130435`]]}}}, 
+       GraphLayout -> {"GridEmbedding", "Dimension" -> {4, 4}}}]]}, 
+    TagBox[
+     GraphicsGroupBox[
+      GraphicsComplexBox[{{1., 1.}, {1., 2.}, {1., 3.}, {1., 4.}, {2., 1.}, {
+       2., 2.}, {2., 3.}, {2., 4.}, {3., 1.}, {3., 2.}, {3., 3.}, {3., 4.}, {
+       4., 1.}, {4., 2.}, {4., 3.}, {4., 4.}}, {
+        {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {1., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {2., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.9565217391304346`], Opacity[
+          0.6934782608695652], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {1., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.6956521739130435`], Opacity[
+          0.6543478260869565], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.6521739130434785`], Opacity[
+          0.6478260869565218], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 3.}, {1., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.4782608695652173`], Opacity[
+          0.6217391304347826], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 3.}, {2., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.6521739130434785`], Opacity[
+          0.6478260869565218], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 4.}, {2., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.6956521739130435`], Opacity[
+          0.6543478260869565], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 1.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.9565217391304346`], Opacity[
+          0.6934782608695652], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 1.}, {3., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.608695652173913], Opacity[
+          0.6413043478260869], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {2., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.608695652173913], Opacity[
+          0.6413043478260869], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {3., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.4782608695652173`], Opacity[
+          0.6217391304347826], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 3.}, {2., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.608695652173913], Opacity[
+          0.6413043478260869], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 3.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.9565217391304346`], Opacity[
+          0.6934782608695652], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 4.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.4782608695652173`], Opacity[
+          0.6217391304347826], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 1.}, {3., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.6521739130434785`], Opacity[
+          0.6478260869565218], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 1.}, {4., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.608695652173913], Opacity[
+          0.6413043478260869], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 2.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.4782608695652173`], Opacity[
+          0.6217391304347826], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 2.}, {4., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.6956521739130435`], Opacity[
+          0.6543478260869565], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.6956521739130435`], Opacity[
+          0.6543478260869565], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {4., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 4.}, {4., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.6521739130434785`], Opacity[
+          0.6478260869565218], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 1.}, {4., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[2.9565217391304346`], Opacity[
+          0.6934782608695652], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 2.}, {4., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 3.}, {4., 4.}}, 0.030239520958083826`]}}}, 
+        {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[1, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[268, 23], 11.652173913043478`]], Opacity[
+          0.8239130434782609], DiskBox[2, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[255, 23], 11.08695652173913]], Opacity[
+          0.7815217391304348], DiskBox[3, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[214, 23], 9.304347826086957]], Opacity[
+          0.6478260869565218], DiskBox[4, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[268, 23], 11.652173913043478`]], Opacity[
+          0.8239130434782609], DiskBox[5, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[290, 23], 12.608695652173912`]], Opacity[
+          0.8956521739130434], DiskBox[6, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[280, 23], 12.173913043478262`]], Opacity[
+          0.8630434782608696], DiskBox[7, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[255, 23], 11.08695652173913]], Opacity[
+          0.7815217391304348], DiskBox[8, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[255, 23], 11.08695652173913]], Opacity[
+          0.7815217391304348], DiskBox[9, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[280, 23], 12.173913043478262`]], Opacity[
+          0.8630434782608696], DiskBox[10, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[290, 23], 12.608695652173912`]], Opacity[
+          0.8956521739130434], DiskBox[11, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[268, 23], 11.652173913043478`]], Opacity[
+          0.8239130434782609], DiskBox[12, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[214, 23], 9.304347826086957]], Opacity[
+          0.6478260869565218], DiskBox[13, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[255, 23], 11.08695652173913]], Opacity[
+          0.7815217391304348], DiskBox[14, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[
+           NCache[
+            Rational[268, 23], 11.652173913043478`]], Opacity[
+          0.8239130434782609], DiskBox[15, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[16, 0.030239520958083826]}}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{3.9869209489222937`*^9},
+ CellLabel->
+  "Out[116]=",ExpressionUUID->"4bc4797c-866d-466a-9271-5d0836e4f432"]
+}, Open  ]],
+
+Cell["\<\
+\"CurvatureMinimizing\" enumerates lines whose middle path is \
+curvature-pulled.\
+\>", "CodeText",ExpressionUUID->"7ddeb75b-33e1-490f-88ab-07f75129c62a"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindLine[g, 1, 16, All, \
+Method -> \"CurvatureMinimizing\"] -> Blue}]]\
+\>", "Input",
+ CellLabel->
+  "In[117]:=",ExpressionUUID->"369aa33f-c6f7-46cc-a1f0-2276e568dc14"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, {Null, 
+       SparseArray[
+       Automatic, {16, 16}, 0, {
+        1, {{0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, 35, 38, 40, 43, 46, 
+          48}, {{2}, {5}, {1}, {3}, {6}, {2}, {4}, {7}, {3}, {8}, {1}, {6}, {
+          9}, {2}, {5}, {7}, {10}, {3}, {6}, {8}, {11}, {4}, {7}, {12}, {5}, {
+          10}, {13}, {6}, {9}, {11}, {14}, {7}, {10}, {12}, {15}, {8}, {11}, {
+          16}, {9}, {14}, {10}, {13}, {15}, {11}, {14}, {16}, {12}, {15}}}, 
+         Pattern}]}, {GraphHighlight -> {5, 16, 7, 
+         UndirectedEdge[5, 6], 
+         UndirectedEdge[12, 16], 
+         UndirectedEdge[6, 10], 11, 15, 1, 
+         UndirectedEdge[7, 11], 
+         UndirectedEdge[10, 11], 
+         UndirectedEdge[15, 16], 
+         UndirectedEdge[6, 7], 12, 
+         UndirectedEdge[2, 6], 
+         UndirectedEdge[11, 15], 
+         UndirectedEdge[1, 5], 10, 
+         UndirectedEdge[11, 12], 2, 6, 
+         UndirectedEdge[1, 2]}, 
+       GraphHighlightStyle -> {UndirectedEdge[1, 5] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 15 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[1, 2] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[6, 10] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[7, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[10, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[11, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[6, 7] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 16 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 5 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, 12 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, 7 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, 1 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 6 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 11 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, UndirectedEdge[15, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 10 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, 2 -> {VertexStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[11, 15] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[5, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[2, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[12, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[0, 0, 1], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}}, 
+       GraphLayout -> {"GridEmbedding", "Dimension" -> {4, 4}}}]]}, 
+    TagBox[
+     GraphicsGroupBox[
+      GraphicsComplexBox[{{1., 1.}, {1., 2.}, {1., 3.}, {1., 4.}, {2., 1.}, {
+       2., 2.}, {2., 3.}, {2., 4.}, {3., 1.}, {3., 2.}, {3., 3.}, {3., 4.}, {
+       4., 1.}, {4., 2.}, {4., 3.}, {4., 4.}}, {
+        {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {1., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {2., 1.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{1., 2.}, {1., 3.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{1., 3.}, {1., 4.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{1., 3.}, {2., 3.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{1., 4.}, {2., 4.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 1.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{2., 1.}, {3., 1.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {2., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {3., 2.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{2., 3.}, {2., 4.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 3.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{2., 4.}, {3., 4.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{3., 1.}, {3., 2.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{3., 1.}, {4., 1.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 2.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{3., 2.}, {4., 2.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {4., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 4.}, {4., 4.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{4., 1.}, {4., 2.}}, 0.030239520958083826`]}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{4., 2.}, {4., 3.}}, 0.030239520958083826`]}, 
+         {RGBColor[0, 0, 1], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 3.}, {4., 4.}}, 0.030239520958083826`]}}}, 
+        {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[1, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[2, 0.030239520958083826]}, DiskBox[3, 0.030239520958083826],
+          DiskBox[4, 0.030239520958083826], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[5, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[6, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[7, 0.030239520958083826]}, DiskBox[8, 0.030239520958083826],
+          DiskBox[9, 0.030239520958083826], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[10, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[11, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[12, 0.030239520958083826]}, 
+         DiskBox[13, 0.030239520958083826], DiskBox[14, 0.030239520958083826], 
+         {RGBColor[0, 0, 1], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[15, 0.030239520958083826]}, 
+         {RGBColor[0, 0, 1], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[16, 0.030239520958083826]}}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{3.986920950713245*^9},
+ CellLabel->
+  "Out[117]=",ExpressionUUID->"eebd4801-ad54-44ca-8870-20e529ae1629"]
+}, Open  ]],
+
+Cell["\<\
+Pipe through CentralPaths to keep the path-space centres of the line bundle.\
+\>", "CodeText",ExpressionUUID->"182dec19-9cb4-40f5-a133-395da58a817e"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {CentralPaths[g, \
+FindLine[g, 1, 16, All]] -> Red}]]\
+\>", "Input",
+ CellLabel->
+  "In[118]:=",ExpressionUUID->"96bcf12f-b1c8-470f-bb14-f1f8c2ad4a10"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, {Null, 
+       SparseArray[
+       Automatic, {16, 16}, 0, {
+        1, {{0, 2, 5, 8, 10, 13, 17, 21, 24, 27, 31, 35, 38, 40, 43, 46, 
+          48}, {{2}, {5}, {1}, {3}, {6}, {2}, {4}, {7}, {3}, {8}, {1}, {6}, {
+          9}, {2}, {5}, {7}, {10}, {3}, {6}, {8}, {11}, {4}, {7}, {12}, {5}, {
+          10}, {13}, {6}, {9}, {11}, {14}, {7}, {10}, {12}, {15}, {8}, {11}, {
+          16}, {9}, {14}, {10}, {13}, {15}, {11}, {14}, {16}, {12}, {15}}}, 
+         Pattern}]}, {GraphHighlight -> {
+         UndirectedEdge[1, 5], 
+         UndirectedEdge[15, 16], 3, 10, 14, 6, 9, 
+         UndirectedEdge[6, 7], 2, 
+         UndirectedEdge[7, 11], 
+         UndirectedEdge[8, 12], 
+         UndirectedEdge[5, 9], 5, 12, 
+         UndirectedEdge[12, 16], 11, 
+         UndirectedEdge[6, 10], 1, 
+         UndirectedEdge[11, 15], 15, 
+         UndirectedEdge[11, 12], 
+         UndirectedEdge[2, 6], 
+         UndirectedEdge[9, 10], 
+         UndirectedEdge[3, 7], 
+         UndirectedEdge[7, 8], 16, 
+         UndirectedEdge[10, 11], 
+         UndirectedEdge[5, 6], 
+         UndirectedEdge[10, 14], 
+         UndirectedEdge[14, 15], 7, 
+         UndirectedEdge[2, 3], 8, 
+         UndirectedEdge[1, 2]}, 
+       GraphHighlightStyle -> {5 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, 7 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[7, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.6], 
+              AbsoluteThickness[2.333333333333333]]}}, 
+         UndirectedEdge[1, 5] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 11 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.8], 
+              AbsolutePointSize[
+               Rational[34, 3]]]}}, UndirectedEdge[12, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[10, 14] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsoluteThickness[1.6666666666666665`]]}}, 1 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, 14 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsolutePointSize[
+               Rational[22, 3]]]}}, 15 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[1, 2] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, 8 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsolutePointSize[
+               Rational[22, 3]]]}}, 6 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.8], 
+              AbsolutePointSize[
+               Rational[34, 3]]]}}, 9 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsolutePointSize[
+               Rational[22, 3]]]}}, UndirectedEdge[9, 10] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsoluteThickness[1.6666666666666665`]]}}, 12 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[14, 15] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsoluteThickness[1.6666666666666665`]]}}, 2 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[10, 11] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.6], 
+              AbsoluteThickness[2.333333333333333]]}}, 
+         UndirectedEdge[6, 10] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.6], 
+              AbsoluteThickness[2.333333333333333]]}}, 
+         UndirectedEdge[7, 8] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsoluteThickness[1.6666666666666665`]]}}, 
+         UndirectedEdge[8, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsoluteThickness[1.6666666666666665`]]}}, 16 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[1.], 
+              AbsolutePointSize[14]]}}, UndirectedEdge[2, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.6], 
+              AbsoluteThickness[2.333333333333333]]}}, 
+         UndirectedEdge[2, 3] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsoluteThickness[1.6666666666666665`]]}}, 
+         UndirectedEdge[11, 12] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.6], 
+              AbsoluteThickness[2.333333333333333]]}}, 3 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsolutePointSize[
+               Rational[22, 3]]]}}, UndirectedEdge[6, 7] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.6], 
+              AbsoluteThickness[2.333333333333333]]}}, 
+         10 -> {VertexStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.7], 
+              AbsolutePointSize[10]]}}, UndirectedEdge[11, 15] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.6], 
+              AbsoluteThickness[2.333333333333333]]}}, 
+         UndirectedEdge[5, 9] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsoluteThickness[1.6666666666666665`]]}}, 
+         UndirectedEdge[3, 7] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.5], 
+              AbsoluteThickness[1.6666666666666665`]]}}, 
+         UndirectedEdge[15, 16] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.7], 
+              AbsoluteThickness[3.]]}}, UndirectedEdge[5, 6] -> {EdgeStyle -> {
+             Directive[
+              RGBColor[1, 0, 0], 
+              Opacity[0.6], 
+              AbsoluteThickness[2.333333333333333]]}}}, 
+       GraphLayout -> {"GridEmbedding", "Dimension" -> {4, 4}}}]]}, 
+    TagBox[
+     GraphicsGroupBox[
+      GraphicsComplexBox[{{1., 1.}, {1., 2.}, {1., 3.}, {1., 4.}, {2., 1.}, {
+       2., 2.}, {2., 3.}, {2., 4.}, {3., 1.}, {3., 2.}, {3., 3.}, {3., 4.}, {
+       4., 1.}, {4., 2.}, {4., 3.}, {4., 4.}}, {
+        {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], 
+         {RGBColor[1, 0, 0], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {1., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 1.}, {2., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[1.6666666666666665`], Opacity[
+          0.5], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {1., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[2.333333333333333], Opacity[
+          0.6], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 2.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{1., 3.}, {1., 4.}}, 0.030239520958083826`]}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[1.6666666666666665`], Opacity[
+          0.5], 
+          {Arrowheads[0.], 
+           ArrowBox[{{1., 3.}, {2., 3.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{1., 4.}, {2., 4.}}, 0.030239520958083826`]}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[2.333333333333333], Opacity[
+          0.6], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 1.}, {2., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[1.6666666666666665`], Opacity[
+          0.5], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 1.}, {3., 1.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[2.333333333333333], Opacity[
+          0.6], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {2., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[2.333333333333333], Opacity[
+          0.6], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 2.}, {3., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[1.6666666666666665`], Opacity[
+          0.5], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 3.}, {2., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[2.333333333333333], Opacity[
+          0.6], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 3.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[1.6666666666666665`], Opacity[
+          0.5], 
+          {Arrowheads[0.], 
+           ArrowBox[{{2., 4.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[1.6666666666666665`], Opacity[
+          0.5], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 1.}, {3., 2.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{3., 1.}, {4., 1.}}, 0.030239520958083826`]}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[2.333333333333333], Opacity[
+          0.6], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 2.}, {3., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[1.6666666666666665`], Opacity[
+          0.5], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 2.}, {4., 2.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[2.333333333333333], Opacity[
+          0.6], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {3., 4.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[2.333333333333333], Opacity[
+          0.6], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 3.}, {4., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{3., 4.}, {4., 4.}}, 0.030239520958083826`]}}, 
+         {Arrowheads[0.], 
+          ArrowBox[{{4., 1.}, {4., 2.}}, 0.030239520958083826`]}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[1.6666666666666665`], Opacity[
+          0.5], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 2.}, {4., 3.}}, 0.030239520958083826`]}}, 
+         {RGBColor[1, 0, 0], AbsoluteThickness[3.], Opacity[0.7], 
+          {Arrowheads[0.], 
+           ArrowBox[{{4., 3.}, {4., 4.}}, 0.030239520958083826`]}}}, 
+        {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+         {RGBColor[1, 0, 0], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[1, 0.030239520958083826]}, 
+         {RGBColor[1, 0, 0], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[2, 0.030239520958083826]}, 
+         {RGBColor[1, 0, 0], AbsolutePointSize[
+           NCache[
+            Rational[22, 3], 7.333333333333333]], Opacity[0.5], 
+          DiskBox[3, 0.030239520958083826]}, DiskBox[4, 0.030239520958083826], 
+         {RGBColor[1, 0, 0], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[5, 0.030239520958083826]}, 
+         {RGBColor[1, 0, 0], AbsolutePointSize[
+           NCache[
+            Rational[34, 3], 11.333333333333334`]], Opacity[0.8], 
+          DiskBox[6, 0.030239520958083826]}, 
+         {RGBColor[1, 0, 0], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[7, 0.030239520958083826]}, 
+         {RGBColor[1, 0, 0], AbsolutePointSize[
+           NCache[
+            Rational[22, 3], 7.333333333333333]], Opacity[0.5], 
+          DiskBox[8, 0.030239520958083826]}, 
+         {RGBColor[1, 0, 0], AbsolutePointSize[
+           NCache[
+            Rational[22, 3], 7.333333333333333]], Opacity[0.5], 
+          DiskBox[9, 0.030239520958083826]}, 
+         {RGBColor[1, 0, 0], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[10, 0.030239520958083826]}, 
+         {RGBColor[1, 0, 0], AbsolutePointSize[
+           NCache[
+            Rational[34, 3], 11.333333333333334`]], Opacity[0.8], 
+          DiskBox[11, 0.030239520958083826]}, 
+         {RGBColor[1, 0, 0], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[12, 0.030239520958083826]}, 
+         DiskBox[13, 0.030239520958083826], 
+         {RGBColor[1, 0, 0], AbsolutePointSize[
+           NCache[
+            Rational[22, 3], 7.333333333333333]], Opacity[0.5], 
+          DiskBox[14, 0.030239520958083826]}, 
+         {RGBColor[1, 0, 0], AbsolutePointSize[10], Opacity[0.7], 
+          DiskBox[15, 0.030239520958083826]}, 
+         {RGBColor[1, 0, 0], AbsolutePointSize[14], Opacity[1.], 
+          DiskBox[16, 0.030239520958083826]}}}]],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellChangeTimes->{3.9869209534397917`*^9},
+ CellLabel->
+  "Out[118]=",ExpressionUUID->"0796b6b3-5366-4e99-b321-f372851291be"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["See also", "Section",ExpressionUUID->"b245c217-a35c-4b4d-b30b-31899a4f1254"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"b4e28a52-69e3-44b7-b66f-8010cbed6f91"],
+
+Cell["ExtendSegment", "Item",ExpressionUUID->"414fda16-b59b-450b-a386-a3ea18b0e4d9"],
+
+Cell["FindParallel", "Item",ExpressionUUID->"85faf79d-eb6a-4a02-ac54-52a5f7ab4060"],
+
+Cell["CentralPaths", "Item",ExpressionUUID->"31ae03e0-0350-411e-92d8-4e3b3d231998"],
+
+Cell["InfraSceneHighlight", "Item",ExpressionUUID->"d7584fde-fb95-4da5-b38e-a48e7b08c6cc"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{808, 911},
+WindowMargins->{{12, Automatic}, {Automatic, 24}},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"6dc4a242-813d-4352-ac44-d8bf3ee96084"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 80, 0, 96, "Title",ExpressionUUID->"3a9c2f62-3098-4f80-9e40-6b551ba18087"],
+Cell[659, 24, 496, 7, 99, "Text",ExpressionUUID->"1ec69ac5-9543-4aea-9876-e4efbe7f2311"],
+Cell[CellGroupData[{
+Cell[1180, 35, 79, 0, 66, "Section",ExpressionUUID->"a3b4d04b-903d-40f7-99b2-2c1f019c5292"],
+Cell[1262, 37, 132, 0, 36, "CodeText",ExpressionUUID->"add460b6-e572-45fe-a32c-386a74eff17a"],
+Cell[1397, 39, 150, 2, 51, "Code",ExpressionUUID->"fcb97c3a-1377-4e3d-a66b-74f912834c73"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1584, 46, 79, 0, 66, "Section",ExpressionUUID->"dbf3dad0-60e1-4e32-9a13-76dcdc0afc4f"],
+Cell[1666, 48, 149, 2, 36, "CodeText",ExpressionUUID->"ed51c9ad-4628-41de-928f-e6ee3f9e45b1"],
+Cell[CellGroupData[{
+Cell[1840, 54, 193, 5, 29, "Input",ExpressionUUID->"e3b0c203-6416-46b8-8fa4-8e331ed0a404"],
+Cell[2036, 61, 7549, 161, 376, "Output",ExpressionUUID->"4549b55a-e450-413f-9c79-b6ac50f87a57"]
+}, Open  ]],
+Cell[9600, 225, 149, 2, 36, "CodeText",ExpressionUUID->"64699975-235b-4bd6-bdaf-c158e8f06e71"],
+Cell[CellGroupData[{
+Cell[9774, 231, 198, 5, 29, "Input",ExpressionUUID->"fa51d903-0386-4b1f-85ef-3b3fbd204b9e"],
+Cell[9975, 238, 15936, 359, 376, "Output",ExpressionUUID->"774784da-1359-416b-a290-c6678d510ffc"]
+}, Open  ]],
+Cell[25926, 600, 132, 0, 36, "CodeText",ExpressionUUID->"44a5e98a-a9e6-4838-a49f-d4d299cfa6e1"],
+Cell[CellGroupData[{
+Cell[26083, 604, 230, 5, 29, "Input",ExpressionUUID->"d555ac18-db41-42dc-87d9-147ad2206e6b"],
+Cell[26316, 611, 15939, 359, 376, "Output",ExpressionUUID->"794988ce-9192-4338-a197-e20508538ae1"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[42304, 976, 82, 0, 66, "Section",ExpressionUUID->"22d45e6a-1dcf-4891-8d3f-6b467dd8ad07"],
+Cell[42389, 978, 208, 3, 56, "CodeText",ExpressionUUID->"adcd09bb-81f2-4c6f-9c96-11ae0bf89631"],
+Cell[CellGroupData[{
+Cell[42622, 985, 235, 5, 29, "Input",ExpressionUUID->"9cece66f-cedc-4a6c-87b4-32c0c708dbc3"],
+Cell[42860, 992, 17921, 393, 376, "Output",ExpressionUUID->"4bc4797c-866d-466a-9271-5d0836e4f432"]
+}, Open  ]],
+Cell[60796, 1388, 164, 3, 36, "CodeText",ExpressionUUID->"7ddeb75b-33e1-490f-88ab-07f75129c62a"],
+Cell[CellGroupData[{
+Cell[60985, 1395, 233, 5, 29, "Input",ExpressionUUID->"369aa33f-c6f7-46cc-a1f0-2276e568dc14"],
+Cell[61221, 1402, 9871, 212, 376, "Output",ExpressionUUID->"eebd4801-ad54-44ca-8870-20e529ae1629"]
+}, Open  ]],
+Cell[71107, 1617, 159, 2, 36, "CodeText",ExpressionUUID->"182dec19-9cb4-40f5-a133-395da58a817e"],
+Cell[CellGroupData[{
+Cell[71291, 1623, 214, 5, 29, "Input",ExpressionUUID->"96bcf12f-b1c8-470f-bb14-f1f8c2ad4a10"],
+Cell[71508, 1630, 14307, 326, 395, "Output",ExpressionUUID->"0796b6b3-5366-4e99-b321-f372851291be"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[85864, 1962, 82, 0, 66, "Section",ExpressionUUID->"b245c217-a35c-4b4d-b30b-31899a4f1254"],
+Cell[85949, 1964, 82, 0, 30, "Item",ExpressionUUID->"b4e28a52-69e3-44b7-b66f-8010cbed6f91"],
+Cell[86034, 1966, 84, 0, 30, "Item",ExpressionUUID->"414fda16-b59b-450b-a386-a3ea18b0e4d9"],
+Cell[86121, 1968, 83, 0, 30, "Item",ExpressionUUID->"85faf79d-eb6a-4a02-ac54-52a5f7ab4060"],
+Cell[86207, 1970, 83, 0, 30, "Item",ExpressionUUID->"31ae03e0-0350-411e-92d8-4e3b3d231998"],
+Cell[86293, 1972, 90, 0, 30, "Item",ExpressionUUID->"d7584fde-fb95-4da5-b38e-a48e7b08c6cc"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

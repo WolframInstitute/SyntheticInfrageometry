@@ -1,0 +1,140 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      6554,        131]
+NotebookOptionsPosition[      4154,         96]
+NotebookOutlinePosition[      4471,        110]
+CellTagsIndexPosition[      4428,        107]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FormanRicci", "Title",ExpressionUUID->"bf18b6fc-1854-4707-999c-4bee545f92c4"],
+
+Cell["\<\
+FormanRicci[graph] returns an Association of edges to Forman-Ricci edge \
+curvature values. Method -> \"Simple\" (default) computes F(u, v) = 4 - deg u \
+- deg v; Method -> \"Triangles\" adds 3 per shared neighbour. Used as a \
+curvature engine for FindSegment / FindLine / ExtendSegment under Method -> \
+\"CurvatureMinimizing\".\
+\>", "Text",ExpressionUUID->"f748c981-7a95-403c-9aea-277b824eb94c"],
+
+Cell["Setup", "Section",ExpressionUUID->"5f80c91e-fcbd-4616-bca1-bd501bc63a7d"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"31b9438d-f0bc-4a91-8625-0ac7054ad4ca"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"7c727de2-41e1-4eaf-b570-343f68fcee13"],
+
+Cell["Usage", "Section",ExpressionUUID->"bc0f92d1-393a-4183-a073-aaf81966de0e"],
+
+Cell["\<\
+Compute Forman-Ricci edge curvature on a small grid (Simple variant).\
+\>", "CodeText",ExpressionUUID->"a0183646-8fe1-4c9f-be3a-00ecd03f7079"],
+
+Cell["FormanRicci[GridGraph[{4, 4}]]", "Input",ExpressionUUID->"251ab789-c4dd-4796-8c68-ad41ec9b43b1"],
+
+Cell["\<\
+Color edges by curvature value -- corner-adjacent edges (low degree on both \
+ends) are most positive; bulk edges are most negative.\
+\>", "CodeText",ExpressionUUID->"f6b65877-400f-4215-b8ce-5e72130ad954"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}], ric = FormanRicci[GridGraph[{5, 5}]]}, Graph[g, \
+EdgeStyle -> KeyValueMap[#1 -> Directive[Thick, \
+ColorData[\"TemperatureMap\"][Rescale[#2, MinMax @ Values @ ric]]] &, ric]]]\
+\>", "Input",ExpressionUUID->"8f74282c-cbba-4db9-9d1c-c13cefc80165"],
+
+Cell["Switch to the triangle-corrected variant.", "CodeText",ExpressionUUID->"a76c3e1d-af3b-439b-9e5c-78819c62415e"],
+
+Cell["FormanRicci[GridGraph[{4, 4}], Method -> \"Triangles\"]", "Input",ExpressionUUID->"c5d5c6a8-4ab9-42f8-8b4d-f4dc7bd5972e"],
+
+Cell["Examples", "Section",ExpressionUUID->"f865f49f-9ac8-4869-b466-c578cb21865a"],
+
+Cell["\<\
+Forman-Ricci on the Petersen graph rendered with edge-curvature gradient.\
+\>", "CodeText",ExpressionUUID->"ca417e42-17ee-4548-8e69-fa5b12101120"],
+
+Cell["\<\
+With[{g = PetersenGraph[], ric = FormanRicci[PetersenGraph[]]}, Graph[g, \
+EdgeStyle -> KeyValueMap[#1 -> Directive[Thick, \
+ColorData[\"TemperatureMap\"][Rescale[#2, MinMax @ Values @ ric]]] &, ric]]]\
+\>", "Input",ExpressionUUID->"ad9c9d1a-b1d5-4d0a-9399-4a1441955884"],
+
+Cell["Histogram of edge curvature values on a 5x5 grid.", "CodeText",ExpressionUUID->"b1ce1eb8-251e-45fe-a606-94fd346e9d12"],
+
+Cell["Histogram[Values @ FormanRicci[GridGraph[{5, 5}]]]", "Input",ExpressionUUID->"1d0b4461-8f44-4218-864c-fcfa7f803c71"],
+
+Cell["\<\
+Use as a curvature engine: pulled segments via Forman with the Triangles \
+variant, visualized.\
+\>", "CodeText",ExpressionUUID->"41ec0122-b14e-4a26-a891-3b3db16e8999"],
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindSegment[g, 1, 16, \
+All, Method -> {\"CurvatureMinimizing\", \"Curvature\" -> {\"Forman\", Method \
+-> \"Triangles\"}}] -> Blue}]]\
+\>", "Input",ExpressionUUID->"00756154-7460-435f-b81c-723e3629c5f9"],
+
+Cell["See also", "Section",ExpressionUUID->"2b6486fc-7547-4729-82a1-62329c904d5f"],
+
+Cell["OllivierRicci", "Item",ExpressionUUID->"6f984e7b-f6ef-47c4-a156-a89d9ce53429"],
+
+Cell["WolframRicci", "Item",ExpressionUUID->"4b915e91-2ccf-4b1e-855b-090d8da39dc2"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"822d6212-1bb4-4e83-9906-b5ca156ea801"],
+
+Cell["ExtendSegment", "Item",ExpressionUUID->"bc476d99-75d5-43ae-8eab-438a392ca35b"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"6dc4a242-813d-4352-ac44-d8bf3ee96084"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 83, 0, 70, "Title",ExpressionUUID->"bf18b6fc-1854-4707-999c-4bee545f92c4"],
+Cell[640, 22, 409, 6, 70, "Text",ExpressionUUID->"f748c981-7a95-403c-9aea-277b824eb94c"],
+Cell[1052, 30, 79, 0, 70, "Section",ExpressionUUID->"5f80c91e-fcbd-4616-bca1-bd501bc63a7d"],
+Cell[1134, 32, 132, 0, 70, "CodeText",ExpressionUUID->"31b9438d-f0bc-4a91-8625-0ac7054ad4ca"],
+Cell[1269, 34, 122, 0, 70, "Code",ExpressionUUID->"7c727de2-41e1-4eaf-b570-343f68fcee13"],
+Cell[1394, 36, 79, 0, 70, "Section",ExpressionUUID->"bc0f92d1-393a-4183-a073-aaf81966de0e"],
+Cell[1476, 38, 152, 2, 70, "CodeText",ExpressionUUID->"a0183646-8fe1-4c9f-be3a-00ecd03f7079"],
+Cell[1631, 42, 102, 0, 70, "Input",ExpressionUUID->"251ab789-c4dd-4796-8c68-ad41ec9b43b1"],
+Cell[1736, 44, 215, 3, 70, "CodeText",ExpressionUUID->"f6b65877-400f-4215-b8ce-5e72130ad954"],
+Cell[1954, 49, 285, 4, 70, "Input",ExpressionUUID->"8f74282c-cbba-4db9-9d1c-c13cefc80165"],
+Cell[2242, 55, 116, 0, 70, "CodeText",ExpressionUUID->"a76c3e1d-af3b-439b-9e5c-78819c62415e"],
+Cell[2361, 57, 127, 0, 70, "Input",ExpressionUUID->"c5d5c6a8-4ab9-42f8-8b4d-f4dc7bd5972e"],
+Cell[2491, 59, 82, 0, 70, "Section",ExpressionUUID->"f865f49f-9ac8-4869-b466-c578cb21865a"],
+Cell[2576, 61, 156, 2, 70, "CodeText",ExpressionUUID->"ca417e42-17ee-4548-8e69-fa5b12101120"],
+Cell[2735, 65, 281, 4, 70, "Input",ExpressionUUID->"ad9c9d1a-b1d5-4d0a-9399-4a1441955884"],
+Cell[3019, 71, 124, 0, 70, "CodeText",ExpressionUUID->"b1ce1eb8-251e-45fe-a606-94fd346e9d12"],
+Cell[3146, 73, 122, 0, 70, "Input",ExpressionUUID->"1d0b4461-8f44-4218-864c-fcfa7f803c71"],
+Cell[3271, 75, 178, 3, 70, "CodeText",ExpressionUUID->"41ec0122-b14e-4a26-a891-3b3db16e8999"],
+Cell[3452, 80, 268, 4, 70, "Input",ExpressionUUID->"00756154-7460-435f-b81c-723e3629c5f9"],
+Cell[3723, 86, 82, 0, 70, "Section",ExpressionUUID->"2b6486fc-7547-4729-82a1-62329c904d5f"],
+Cell[3808, 88, 84, 0, 70, "Item",ExpressionUUID->"6f984e7b-f6ef-47c4-a156-a89d9ce53429"],
+Cell[3895, 90, 83, 0, 70, "Item",ExpressionUUID->"4b915e91-2ccf-4b1e-855b-090d8da39dc2"],
+Cell[3981, 92, 82, 0, 70, "Item",ExpressionUUID->"822d6212-1bb4-4e83-9906-b5ca156ea801"],
+Cell[4066, 94, 84, 0, 70, "Item",ExpressionUUID->"bc476d99-75d5-43ae-8eab-438a392ca35b"]
+}
+]
+*)
+
+(* End of internal cache information *)

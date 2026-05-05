@@ -1,0 +1,138 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      6144,        129]
+NotebookOptionsPosition[      4021,         97]
+NotebookOutlinePosition[      4338,        111]
+CellTagsIndexPosition[      4295,        108]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["ExtendSegment", "Title",ExpressionUUID->"09b62e6c-eacd-45df-a372-1d38b0bc90da"],
+
+Cell["\<\
+ExtendSegment[graph, segment] extends a vertex sequence to a maximal line \
+whose middle part is segment, returning InfraSegment[{line}]. The candidate \
+before / after vertices are selected by the geodesic relation d(s, p1) + \
+d(p1, p2) == d(s, p2), so the line's outer endpoints are \
+graph-distance-maximal regardless of method. Method axis matches FindSegment \
+/ FindLine: \"Shortest\" (default; geodesic prefix / suffix paths) | \
+\"ShortestPathExtension\" | \"CurvatureMinimizing\" | \"Embedding\".\
+\>", "Text",ExpressionUUID->"f55b7070-8295-436d-9a69-4735b47f9aba"],
+
+Cell["Setup", "Section",ExpressionUUID->"fa71904d-a843-41ee-bd6b-692e2a1d3da2"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"b7358066-7990-4fe0-a067-0ce6a04731eb"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"4c3fb2ee-5efe-4d29-b1e7-587195b8f20e"],
+
+Cell["Usage", "Section",ExpressionUUID->"e8268fa3-f304-4a21-837b-0f0a24eaa8c0"],
+
+Cell["\<\
+Extend the short segment {6, 11} on a 4x4 grid to a maximal line; visualize \
+input segment in blue and the extension in red.\
+\>", "CodeText",ExpressionUUID->"f3a03dcb-c58c-4402-96fa-db9b45c43c1d"],
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}], seg = {6, 11}}, InfraSceneHighlight[g, \
+{ExtendSegment[g, seg] -> Red, InfraSegment[{seg}] -> Blue}]]\
+\>", "Input",ExpressionUUID->"66001fb6-f7e5-484f-931c-a150b86fde89"],
+
+Cell["Enumerate every maximal extension and overlay the bundle.", "CodeText",ExpressionUUID->"1cbca659-1e1d-4b96-ab85-f2f6213f8773"],
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}], seg = {6, 11}}, InfraSceneHighlight[g, \
+{ExtendSegment[g, seg, All] -> Red, InfraSegment[{seg}] -> Blue}]]\
+\>", "Input",ExpressionUUID->"9aaed964-a9d4-4770-9aa7-8fa8c1526fdc"],
+
+Cell["Examples", "Section",ExpressionUUID->"a2edd2c2-4464-4560-b748-ddd70baff0bc"],
+
+Cell["\<\
+Extending a single edge gives the bundle of all longest geodesics through \
+that edge.\
+\>", "CodeText",ExpressionUUID->"cbbaa71d-e09b-4286-95d7-ef84403e830e"],
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}], seg = {6, 7}}, InfraSceneHighlight[g, \
+{ExtendSegment[g, seg, All] -> Red, InfraSegment[{seg}] -> Blue}]]\
+\>", "Input",ExpressionUUID->"355c5119-d7ad-4e6b-adb1-51a0087de506"],
+
+Cell["\<\
+Method -> \"CurvatureMinimizing\" extends with curvature-pulled prefix / \
+suffix paths.\
+\>", "CodeText",ExpressionUUID->"654b186a-741a-44ee-810c-e7ad92a8476b"],
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}], seg = {6, 11}}, InfraSceneHighlight[g, \
+{ExtendSegment[g, seg, All, Method -> \"CurvatureMinimizing\"] -> Red, \
+InfraSegment[{seg}] -> Blue}]]\
+\>", "Input",ExpressionUUID->"41ede486-e4a8-4a85-a407-1d3e060df2f5"],
+
+Cell["\<\
+Round-trip: extending a geodesic between corners is itself a maximal line.\
+\>", "CodeText",ExpressionUUID->"4205c23a-4280-4b1e-8810-c35245d02427"],
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, ExtendSegment[g, FindSegment[g, 1, \
+16][\"First\"]][\"First\"]]\
+\>", "Input",ExpressionUUID->"dcab5c56-9c9e-43aa-9f38-e9567ae1282b"],
+
+Cell["See also", "Section",ExpressionUUID->"bfe030f6-50c3-48b1-be90-7eb97643f194"],
+
+Cell["FindLine", "Item",ExpressionUUID->"91eae320-c17d-4a74-8f00-5946ec1722e2"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"ae8906ec-a7fd-42e6-a8bd-7f77a7e58975"],
+
+Cell["InfraSceneHighlight", "Item",ExpressionUUID->"f00809f7-7dab-4466-82a6-78b043d69740"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"6dc4a242-813d-4352-ac44-d8bf3ee96084"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"09b62e6c-eacd-45df-a372-1d38b0bc90da"],
+Cell[642, 22, 585, 8, 70, "Text",ExpressionUUID->"f55b7070-8295-436d-9a69-4735b47f9aba"],
+Cell[1230, 32, 79, 0, 70, "Section",ExpressionUUID->"fa71904d-a843-41ee-bd6b-692e2a1d3da2"],
+Cell[1312, 34, 132, 0, 70, "CodeText",ExpressionUUID->"b7358066-7990-4fe0-a067-0ce6a04731eb"],
+Cell[1447, 36, 122, 0, 70, "Code",ExpressionUUID->"4c3fb2ee-5efe-4d29-b1e7-587195b8f20e"],
+Cell[1572, 38, 79, 0, 70, "Section",ExpressionUUID->"e8268fa3-f304-4a21-837b-0f0a24eaa8c0"],
+Cell[1654, 40, 208, 3, 70, "CodeText",ExpressionUUID->"f3a03dcb-c58c-4402-96fa-db9b45c43c1d"],
+Cell[1865, 45, 211, 3, 70, "Input",ExpressionUUID->"66001fb6-f7e5-484f-931c-a150b86fde89"],
+Cell[2079, 50, 132, 0, 70, "CodeText",ExpressionUUID->"1cbca659-1e1d-4b96-ab85-f2f6213f8773"],
+Cell[2214, 52, 216, 3, 70, "Input",ExpressionUUID->"9aaed964-a9d4-4770-9aa7-8fa8c1526fdc"],
+Cell[2433, 57, 82, 0, 70, "Section",ExpressionUUID->"a2edd2c2-4464-4560-b748-ddd70baff0bc"],
+Cell[2518, 59, 169, 3, 70, "CodeText",ExpressionUUID->"cbbaa71d-e09b-4286-95d7-ef84403e830e"],
+Cell[2690, 64, 215, 3, 70, "Input",ExpressionUUID->"355c5119-d7ad-4e6b-adb1-51a0087de506"],
+Cell[2908, 69, 171, 3, 70, "CodeText",ExpressionUUID->"654b186a-741a-44ee-810c-e7ad92a8476b"],
+Cell[3082, 74, 253, 4, 70, "Input",ExpressionUUID->"41ede486-e4a8-4a85-a407-1d3e060df2f5"],
+Cell[3338, 80, 157, 2, 70, "CodeText",ExpressionUUID->"4205c23a-4280-4b1e-8810-c35245d02427"],
+Cell[3498, 84, 174, 3, 70, "Input",ExpressionUUID->"dcab5c56-9c9e-43aa-9f38-e9567ae1282b"],
+Cell[3675, 89, 82, 0, 70, "Section",ExpressionUUID->"bfe030f6-50c3-48b1-be90-7eb97643f194"],
+Cell[3760, 91, 79, 0, 70, "Item",ExpressionUUID->"91eae320-c17d-4a74-8f00-5946ec1722e2"],
+Cell[3842, 93, 82, 0, 70, "Item",ExpressionUUID->"ae8906ec-a7fd-42e6-a8bd-7f77a7e58975"],
+Cell[3927, 95, 90, 0, 70, "Item",ExpressionUUID->"f00809f7-7dab-4466-82a6-78b043d69740"]
+}
+]
+*)
+
+(* End of internal cache information *)

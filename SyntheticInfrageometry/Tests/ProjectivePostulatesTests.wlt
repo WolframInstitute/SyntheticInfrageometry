@@ -83,19 +83,19 @@ VerificationTest[
 
 VerificationTest[
   FindCommonLine[PathGraph[Range[5]], {1, 3}],
-  {{1, 2, 3, 4, 5}},
+  InfraSegment[{{1, 2, 3, 4, 5}}],
   TestID -> "FindCommonLine-PathGraph-default-1"
 ]
 
 VerificationTest[
   FindCommonLine[PathGraph[Range[5]], {1, 3}, All],
-  {{1, 2, 3, 4, 5}},
+  InfraSegment[{{1, 2, 3, 4, 5}}],
   TestID -> "FindCommonLine-PathGraph-All"
 ]
 
 VerificationTest[
   FindCommonLine[PathGraph[Range[5]], {1, 3}, UpTo[3]],
-  {{1, 2, 3, 4, 5}},
+  InfraSegment[{{1, 2, 3, 4, 5}}],
   TestID -> "FindCommonLine-PathGraph-UpTo-soft"
 ]
 
@@ -107,20 +107,20 @@ VerificationTest[
 
 VerificationTest[
   FindCommonLine[PathGraph[Range[5]], {1, 5, 3}],
-  {{1, 2, 3, 4, 5}},
+  InfraSegment[{{1, 2, 3, 4, 5}}],
   TestID -> "FindCommonLine-three-collinear-vertices"
 ]
 
 VerificationTest[
-  Length @ FindCommonLine[CycleGraph[6], {1, 4}, All],
+  FindCommonLine[CycleGraph[6], {1, 4}, All]["Length"],
   2,
   TestID -> "FindCommonLine-CycleGraph6-antipode-two-lines"
 ]
 
 VerificationTest[
-  FindCommonLine[GridGraph[{3, 3}], {1, 9, 5}, All] =!= {} &&
-    AllTrue[FindCommonLine[GridGraph[{3, 3}], {1, 9, 5}, All],
-      SubsetQ[#, {1, 9, 5}] &],
+  With[{result = FindCommonLine[GridGraph[{3, 3}], {1, 9, 5}, All]},
+    result["Length"] >= 1 && AllTrue[result["Realisations"], SubsetQ[#, {1, 9, 5}] &]
+  ],
   True,
   TestID -> "FindCommonLine-GridGraph-diagonal"
 ]
@@ -129,19 +129,19 @@ VerificationTest[
 
 VerificationTest[
   FindCommonPoint[PathGraph[Range[5]], {{1, 2, 3}, {2, 3, 4}}, All],
-  {2, 3},
+  InfraPoint[{2, 3}],
   TestID -> "FindCommonPoint-overlap-two"
 ]
 
 VerificationTest[
   FindCommonPoint[PathGraph[Range[5]], {{1, 2}, {3, 4}}, All],
-  {},
+  InfraPoint[{}],
   TestID -> "FindCommonPoint-disjoint-empty"
 ]
 
 VerificationTest[
   FindCommonPoint[PathGraph[Range[5]], {{1, 2, 3}, {2, 3, 4}}, 1],
-  {2},
+  InfraPoint[{2}],
   TestID -> "FindCommonPoint-strict-1"
 ]
 
@@ -153,7 +153,7 @@ VerificationTest[
 
 VerificationTest[
   FindCommonPoint[PathGraph[Range[5]], {{1, 2, 3}, {2, 3, 4}}, UpTo[5]],
-  {2, 3},
+  InfraPoint[{2, 3}],
   TestID -> "FindCommonPoint-UpTo-soft"
 ]
 

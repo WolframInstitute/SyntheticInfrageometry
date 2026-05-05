@@ -1,0 +1,118 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5151,        109]
+NotebookOptionsPosition[      3312,         80]
+NotebookOutlinePosition[      3629,         94]
+CellTagsIndexPosition[      3586,         91]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindParallel", "Title",ExpressionUUID->"b87ed8b2-3d09-475a-a8ec-1b7c66675c73"],
+
+Cell["\<\
+FindParallel[graph, line, p] returns InfraSegment[{parallel}] for one line \
+through p parallel to line -- the maximal sub-segment of a maximal geodesic \
+through p whose vertices all lie at distance r = d(p, line) from line. Pure \
+metric construction: no perpendiculars, no auxiliary segments. Method -> \
+\"Embedding\" reorders by Hausdorff distance to the Euclidean line through \
+coord(p) parallel to coord(line[[1]]) -> coord(line[[-1]]).\
+\>", "Text",ExpressionUUID->"39ed8847-f24b-46f6-a728-85e9bfbcc586"],
+
+Cell["Setup", "Section",ExpressionUUID->"93b8ffba-998f-4b0e-a843-be26660f1a05"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"d2a90e85-63f5-4047-aa94-e380ecd11e9f"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"602e5dc7-144e-4c02-a36f-c398d26786b6"],
+
+Cell["Usage", "Section",ExpressionUUID->"2feff93f-aab5-434a-8ba8-a1c722e02556"],
+
+Cell["\<\
+Find a line through vertex 13 parallel to the bottom row of a 5x5 grid \
+(visualized).\
+\>", "CodeText",ExpressionUUID->"0386daab-ddce-4952-bfcf-456f63c54f81"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}], baseLine = {1, 2, 3, 4, 5}}, \
+InfraSceneHighlight[g, {InfraSegment[{baseLine}] -> Blue, FindParallel[g, \
+baseLine, 13] -> Red, InfraPoint[{13}] -> Green}]]\
+\>", "Input",ExpressionUUID->"4a85c98c-d9a5-4c87-9584-8f747cd7503c"],
+
+Cell["Enumerate every parallel.", "CodeText",ExpressionUUID->"bd5ae14b-72fd-4789-9f48-52029e2970bd"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}], baseLine = {1, 2, 3, 4, 5}}, FindParallel[g, \
+baseLine, 13, All][\"Length\"]]\
+\>", "Input",ExpressionUUID->"730031ef-481d-4ad6-8424-fa1cc950e19d"],
+
+Cell["Examples", "Section",ExpressionUUID->"ba4d62cc-35fd-444f-8781-9425c05eedd0"],
+
+Cell["\<\
+Parallels through three different points: row 2, row 3, row 4.\
+\>", "CodeText",ExpressionUUID->"78d88c1c-0b37-47e6-8d64-25802d657f04"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}], baseLine = {1, 2, 3, 4, 5}}, \
+InfraSceneHighlight[g, {InfraSegment[{baseLine}] -> Blue, FindParallel[g, \
+baseLine, 8] -> Red, FindParallel[g, baseLine, 13] -> Orange, FindParallel[g, \
+baseLine, 18] -> Purple}]]\
+\>", "Input",ExpressionUUID->"2c6ce32b-9228-45cb-9cbe-3a9e9e2b2a88"],
+
+Cell["See also", "Section",ExpressionUUID->"62e9cc50-74cd-44d9-888d-e73b69cb8c11"],
+
+Cell["FindLine", "Item",ExpressionUUID->"618a7833-7f92-41fc-acf0-09a1bd8cb0f2"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"e536168a-5f8b-4d48-9137-6d54b9927895"],
+
+Cell["ParallelQ", "Item",ExpressionUUID->"74569de3-8da9-4223-9740-37311cde8d62"],
+
+Cell["InfraSceneHighlight", "Item",ExpressionUUID->"f631ce80-156d-4a6c-9e98-2f3dd7104e52"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"6dc4a242-813d-4352-ac44-d8bf3ee96084"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"b87ed8b2-3d09-475a-a8ec-1b7c66675c73"],
+Cell[641, 22, 523, 7, 70, "Text",ExpressionUUID->"39ed8847-f24b-46f6-a728-85e9bfbcc586"],
+Cell[1167, 31, 79, 0, 70, "Section",ExpressionUUID->"93b8ffba-998f-4b0e-a843-be26660f1a05"],
+Cell[1249, 33, 132, 0, 70, "CodeText",ExpressionUUID->"d2a90e85-63f5-4047-aa94-e380ecd11e9f"],
+Cell[1384, 35, 122, 0, 70, "Code",ExpressionUUID->"602e5dc7-144e-4c02-a36f-c398d26786b6"],
+Cell[1509, 37, 79, 0, 70, "Section",ExpressionUUID->"2feff93f-aab5-434a-8ba8-a1c722e02556"],
+Cell[1591, 39, 169, 3, 70, "CodeText",ExpressionUUID->"0386daab-ddce-4952-bfcf-456f63c54f81"],
+Cell[1763, 44, 266, 4, 70, "Input",ExpressionUUID->"4a85c98c-d9a5-4c87-9584-8f747cd7503c"],
+Cell[2032, 50, 100, 0, 70, "CodeText",ExpressionUUID->"bd5ae14b-72fd-4789-9f48-52029e2970bd"],
+Cell[2135, 52, 187, 3, 70, "Input",ExpressionUUID->"730031ef-481d-4ad6-8424-fa1cc950e19d"],
+Cell[2325, 57, 82, 0, 70, "Section",ExpressionUUID->"ba4d62cc-35fd-444f-8781-9425c05eedd0"],
+Cell[2410, 59, 145, 2, 70, "CodeText",ExpressionUUID->"78d88c1c-0b37-47e6-8d64-25802d657f04"],
+Cell[2558, 63, 322, 5, 70, "Input",ExpressionUUID->"2c6ce32b-9228-45cb-9cbe-3a9e9e2b2a88"],
+Cell[2883, 70, 82, 0, 70, "Section",ExpressionUUID->"62e9cc50-74cd-44d9-888d-e73b69cb8c11"],
+Cell[2968, 72, 79, 0, 70, "Item",ExpressionUUID->"618a7833-7f92-41fc-acf0-09a1bd8cb0f2"],
+Cell[3050, 74, 82, 0, 70, "Item",ExpressionUUID->"e536168a-5f8b-4d48-9137-6d54b9927895"],
+Cell[3135, 76, 80, 0, 70, "Item",ExpressionUUID->"74569de3-8da9-4223-9740-37311cde8d62"],
+Cell[3218, 78, 90, 0, 70, "Item",ExpressionUUID->"f631ce80-156d-4a6c-9e98-2f3dd7104e52"]
+}
+]
+*)
+
+(* End of internal cache information *)

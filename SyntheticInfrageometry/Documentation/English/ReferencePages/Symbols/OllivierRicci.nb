@@ -1,0 +1,125 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5853,        116]
+NotebookOptionsPosition[      3820,         85]
+NotebookOutlinePosition[      4137,         99]
+CellTagsIndexPosition[      4094,         96]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["OllivierRicci", "Title",ExpressionUUID->"35c3ab58-1e70-46ff-890a-cfe958c1045c"],
+
+Cell["\<\
+OllivierRicci[graph] returns an Association of edges to Ollivier-Ricci edge \
+curvature values: kappa(u, v) = 1 - W_1(m_u, m_v) / d(u, v) where m_u and m_v \
+are uniform neighborhood measures (alpha = 0) and W_1 is the Wasserstein-1 \
+distance, computed via LinearOptimization.\
+\>", "Text",ExpressionUUID->"35966ecc-3f84-44fb-a4c0-69701b2a5944"],
+
+Cell["Setup", "Section",ExpressionUUID->"dd7b89ca-7897-4041-ad37-2a6b61c027c6"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"095111ce-6568-4df2-855c-dc68da637b95"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"39c196d6-2630-4b9d-8cc5-db6a7a080e63"],
+
+Cell["Usage", "Section",ExpressionUUID->"0add6980-ce22-4a5f-99a3-99c7282f46c5"],
+
+Cell["Compute Ollivier-Ricci edge curvature on a small grid.", "CodeText",ExpressionUUID->"7166b4bb-cd35-44db-afb5-14111ecbf48c"],
+
+Cell["OllivierRicci[GridGraph[{4, 4}]]", "Input",ExpressionUUID->"6902855d-5b2f-443d-aeda-2bf81d578bea"],
+
+Cell["Color edges by Ollivier-Ricci curvature.", "CodeText",ExpressionUUID->"c7584e87-51ef-4a0e-a8a3-b3ca5a24a2c8"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}], ric = OllivierRicci[GridGraph[{5, 5}]]}, \
+Graph[g, EdgeStyle -> KeyValueMap[#1 -> Directive[Thick, \
+ColorData[\"TemperatureMap\"][Rescale[#2, MinMax @ Values @ ric]]] &, ric]]]\
+\>", "Input",ExpressionUUID->"f6ac837d-442a-4367-8126-c50e4fbeca6e"],
+
+Cell["Examples", "Section",ExpressionUUID->"fd5bb7af-bf42-4c84-b5dd-97e76d0087af"],
+
+Cell["\<\
+Ollivier-Ricci on the Petersen graph (3-regular, vertex-transitive: every \
+edge has the same curvature).\
+\>", "CodeText",ExpressionUUID->"66d698b0-0304-4a1c-872c-8e743eb705c1"],
+
+Cell["\<\
+With[{g = PetersenGraph[], ric = OllivierRicci[PetersenGraph[]]}, Graph[g, \
+EdgeStyle -> KeyValueMap[#1 -> Directive[Thick, \
+ColorData[\"TemperatureMap\"][Rescale[#2, MinMax @ Values @ ric]]] &, ric]]]\
+\>", "Input",ExpressionUUID->"9b3dae56-2c54-4002-9c22-393cc7ee756d"],
+
+Cell["Histogram of edge curvature values on a 5x5 grid.", "CodeText",ExpressionUUID->"8a4db94b-a49b-4897-bca3-70532fd0168f"],
+
+Cell["Histogram[Values @ OllivierRicci[GridGraph[{5, 5}]]]", "Input",ExpressionUUID->"c0b4984f-2606-46d8-bd86-f861d751ef54"],
+
+Cell["\<\
+Compare Ollivier and Forman side-by-side: same graph, two curvature gradients.\
+\>", "CodeText",ExpressionUUID->"fdd5d1ec-9ebf-45ad-9f00-e5548a69c2e0"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}], oll = OllivierRicci[GridGraph[{5, 5}]], for = \
+FormanRicci[GridGraph[{5, 5}]]}, Row[{Graph[g, EdgeStyle -> KeyValueMap[#1 -> \
+Directive[Thick, ColorData[\"TemperatureMap\"][Rescale[#2, MinMax @ Values @ \
+oll]]] &, oll], ImageSize -> 220], Graph[g, EdgeStyle -> KeyValueMap[#1 -> \
+Directive[Thick, ColorData[\"TemperatureMap\"][Rescale[#2, MinMax @ Values @ \
+for]]] &, for], ImageSize -> 220]}]]\
+\>", "Input",ExpressionUUID->"87e70b29-3d23-47b1-bfdd-0701e83b9a03"],
+
+Cell["See also", "Section",ExpressionUUID->"ea4bbdca-5a57-4955-b588-8c283e1d17ef"],
+
+Cell["FormanRicci", "Item",ExpressionUUID->"23783551-9847-40a3-b327-f6233131b431"],
+
+Cell["WolframRicci", "Item",ExpressionUUID->"e1d44941-8a27-45cc-a792-3c0818af4899"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"6dc4a242-813d-4352-ac44-d8bf3ee96084"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"35c3ab58-1e70-46ff-890a-cfe958c1045c"],
+Cell[642, 22, 356, 5, 70, "Text",ExpressionUUID->"35966ecc-3f84-44fb-a4c0-69701b2a5944"],
+Cell[1001, 29, 79, 0, 70, "Section",ExpressionUUID->"dd7b89ca-7897-4041-ad37-2a6b61c027c6"],
+Cell[1083, 31, 132, 0, 70, "CodeText",ExpressionUUID->"095111ce-6568-4df2-855c-dc68da637b95"],
+Cell[1218, 33, 122, 0, 70, "Code",ExpressionUUID->"39c196d6-2630-4b9d-8cc5-db6a7a080e63"],
+Cell[1343, 35, 79, 0, 70, "Section",ExpressionUUID->"0add6980-ce22-4a5f-99a3-99c7282f46c5"],
+Cell[1425, 37, 129, 0, 70, "CodeText",ExpressionUUID->"7166b4bb-cd35-44db-afb5-14111ecbf48c"],
+Cell[1557, 39, 104, 0, 70, "Input",ExpressionUUID->"6902855d-5b2f-443d-aeda-2bf81d578bea"],
+Cell[1664, 41, 115, 0, 70, "CodeText",ExpressionUUID->"c7584e87-51ef-4a0e-a8a3-b3ca5a24a2c8"],
+Cell[1782, 43, 287, 4, 70, "Input",ExpressionUUID->"f6ac837d-442a-4367-8126-c50e4fbeca6e"],
+Cell[2072, 49, 82, 0, 70, "Section",ExpressionUUID->"fd5bb7af-bf42-4c84-b5dd-97e76d0087af"],
+Cell[2157, 51, 188, 3, 70, "CodeText",ExpressionUUID->"66d698b0-0304-4a1c-872c-8e743eb705c1"],
+Cell[2348, 56, 283, 4, 70, "Input",ExpressionUUID->"9b3dae56-2c54-4002-9c22-393cc7ee756d"],
+Cell[2634, 62, 124, 0, 70, "CodeText",ExpressionUUID->"8a4db94b-a49b-4897-bca3-70532fd0168f"],
+Cell[2761, 64, 124, 0, 70, "Input",ExpressionUUID->"c0b4984f-2606-46d8-bd86-f861d751ef54"],
+Cell[2888, 66, 161, 2, 70, "CodeText",ExpressionUUID->"fdd5d1ec-9ebf-45ad-9f00-e5548a69c2e0"],
+Cell[3052, 70, 508, 7, 70, "Input",ExpressionUUID->"87e70b29-3d23-47b1-bfdd-0701e83b9a03"],
+Cell[3563, 79, 82, 0, 70, "Section",ExpressionUUID->"ea4bbdca-5a57-4955-b588-8c283e1d17ef"],
+Cell[3648, 81, 82, 0, 70, "Item",ExpressionUUID->"23783551-9847-40a3-b327-f6233131b431"],
+Cell[3733, 83, 83, 0, 70, "Item",ExpressionUUID->"e1d44941-8a27-45cc-a792-3c0818af4899"]
+}
+]
+*)
+
+(* End of internal cache information *)

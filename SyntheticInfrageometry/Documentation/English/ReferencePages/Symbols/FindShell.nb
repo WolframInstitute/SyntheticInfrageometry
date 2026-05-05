@@ -1,0 +1,125 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5643,        116]
+NotebookOptionsPosition[      3617,         85]
+NotebookOutlinePosition[      3934,         99]
+CellTagsIndexPosition[      3891,         96]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindShell", "Title",ExpressionUUID->"20c5ac1d-b818-4851-afd2-4aee37c2ab15"],
+
+Cell["\<\
+FindShell[graph, c, r] returns InfraShell[{levelSet}] for the metric shell of \
+radius r around c -- the level surface { v : d(c, v) = r }. Method -> \
+\"Metric\" (default) returns the level surface as one vertex set; \
+\"Separating\" returns minimal connected subsets of the level surface whose \
+removal disconnects c from the exterior; \"Embedding\" returns single-vertex \
+sets ranked by Euclidean distance to the sphere of radius r under the graph \
+drawing. The cyclic case (separating cycles) is FindCircle.\
+\>", "Text",ExpressionUUID->"38e7d208-e486-40cf-86a1-c1161201fb1d"],
+
+Cell["Setup", "Section",ExpressionUUID->"cac40bdd-ebd1-4b28-90e6-753e1a2d6ada"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"6d13e332-c1c8-4509-abdf-15d24c24bc4c"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"b71db188-0d61-4e8c-a114-9292763cc98a"],
+
+Cell["Usage", "Section",ExpressionUUID->"ebae15b2-5ca0-4408-9d96-208cf4e34867"],
+
+Cell["\<\
+Read the level surface at radius 2 from the center of a 5x5 grid.\
+\>", "CodeText",ExpressionUUID->"bb5ac207-dc66-4818-af17-5539d5ca5169"],
+
+Cell["FindShell[GridGraph[{5, 5}], 13, 2][\"First\"]", "Input",ExpressionUUID->"b8cb12af-408a-4458-8b06-9c1022b85ffd"],
+
+Cell["\<\
+Visualize the metric shell as red points on top of the graph.\
+\>", "CodeText",ExpressionUUID->"98cd001e-a52f-4b7b-a1a8-99fb54a8a4db"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, {FindShell[g, 13, 2] -> \
+Red, InfraPoint[{13}] -> Blue}]]\
+\>", "Input",ExpressionUUID->"04196f74-4d2b-4001-95c4-c51b18ec9677"],
+
+Cell["Examples", "Section",ExpressionUUID->"2cafa7c1-cb8d-4f17-8664-766f3d840b56"],
+
+Cell["\<\
+Method -> \"Separating\" returns minimal connected subsets that separate the \
+center from the exterior of the closed ball.\
+\>", "CodeText",ExpressionUUID->"532f796b-30de-45d5-8c2d-e16c7c9abf73"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, {FindShell[g, 13, 2, \
+All, Method -> \"Separating\"] -> Red, InfraPoint[{13}] -> Blue}]]\
+\>", "Input",ExpressionUUID->"082e4e37-f59f-4e3f-b2a1-44386b811233"],
+
+Cell["Three concentric shells around vertex 13 on a 5x5 grid.", "CodeText",ExpressionUUID->"b597f8a5-4011-431f-a871-e8b266f3464c"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, {FindShell[g, 13, 1] -> \
+Red, FindShell[g, 13, 2] -> Orange, FindShell[g, 13, 3] -> Yellow, \
+InfraPoint[{13}] -> Blue}]]\
+\>", "Input",ExpressionUUID->"210d1ddd-66e7-454c-afc2-cc54c36d3f73"],
+
+Cell["See also", "Section",ExpressionUUID->"e9174f71-10bd-4ba3-9343-a901ab62496f"],
+
+Cell["FindCircle", "Item",ExpressionUUID->"693d0de9-6782-4a2c-b3e8-0966707cb297"],
+
+Cell["FindShellParameters", "Item",ExpressionUUID->"9706ad04-ce3f-4f1f-93cf-a5c38a28a145"],
+
+Cell["ShellQ", "Item",ExpressionUUID->"362ddb0c-f3a7-4428-a5f1-5066d5295b7a"],
+
+Cell["InfraSceneHighlight", "Item",ExpressionUUID->"4d198b84-fea6-483b-929e-953d6de4ae9c"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"6dc4a242-813d-4352-ac44-d8bf3ee96084"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 81, 0, 70, "Title",ExpressionUUID->"20c5ac1d-b818-4851-afd2-4aee37c2ab15"],
+Cell[638, 22, 593, 8, 70, "Text",ExpressionUUID->"38e7d208-e486-40cf-86a1-c1161201fb1d"],
+Cell[1234, 32, 79, 0, 70, "Section",ExpressionUUID->"cac40bdd-ebd1-4b28-90e6-753e1a2d6ada"],
+Cell[1316, 34, 132, 0, 70, "CodeText",ExpressionUUID->"6d13e332-c1c8-4509-abdf-15d24c24bc4c"],
+Cell[1451, 36, 122, 0, 70, "Code",ExpressionUUID->"b71db188-0d61-4e8c-a114-9292763cc98a"],
+Cell[1576, 38, 79, 0, 70, "Section",ExpressionUUID->"ebae15b2-5ca0-4408-9d96-208cf4e34867"],
+Cell[1658, 40, 148, 2, 70, "CodeText",ExpressionUUID->"bb5ac207-dc66-4818-af17-5539d5ca5169"],
+Cell[1809, 44, 118, 0, 70, "Input",ExpressionUUID->"b8cb12af-408a-4458-8b06-9c1022b85ffd"],
+Cell[1930, 46, 144, 2, 70, "CodeText",ExpressionUUID->"98cd001e-a52f-4b7b-a1a8-99fb54a8a4db"],
+Cell[2077, 50, 191, 3, 70, "Input",ExpressionUUID->"04196f74-4d2b-4001-95c4-c51b18ec9677"],
+Cell[2271, 55, 82, 0, 70, "Section",ExpressionUUID->"2cafa7c1-cb8d-4f17-8664-766f3d840b56"],
+Cell[2356, 57, 206, 3, 70, "CodeText",ExpressionUUID->"532f796b-30de-45d5-8c2d-e16c7c9abf73"],
+Cell[2565, 62, 222, 3, 70, "Input",ExpressionUUID->"082e4e37-f59f-4e3f-b2a1-44386b811233"],
+Cell[2790, 67, 130, 0, 70, "CodeText",ExpressionUUID->"b597f8a5-4011-431f-a871-e8b266f3464c"],
+Cell[2923, 69, 255, 4, 70, "Input",ExpressionUUID->"210d1ddd-66e7-454c-afc2-cc54c36d3f73"],
+Cell[3181, 75, 82, 0, 70, "Section",ExpressionUUID->"e9174f71-10bd-4ba3-9343-a901ab62496f"],
+Cell[3266, 77, 81, 0, 70, "Item",ExpressionUUID->"693d0de9-6782-4a2c-b3e8-0966707cb297"],
+Cell[3350, 79, 90, 0, 70, "Item",ExpressionUUID->"9706ad04-ce3f-4f1f-93cf-a5c38a28a145"],
+Cell[3443, 81, 77, 0, 70, "Item",ExpressionUUID->"362ddb0c-f3a7-4428-a5f1-5066d5295b7a"],
+Cell[3523, 83, 90, 0, 70, "Item",ExpressionUUID->"4d198b84-fea6-483b-929e-953d6de4ae9c"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -51,7 +51,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Head @ InfraSceneHighlight[ g,
       { FindSegment[ g, 1, 16, All ] -> Blue,
-        InfraCircle @ FindCircle[ g, 1, 2, All ] -> Green } ]
+        FindCircle[ g, 1, 2, All ] -> Green } ]
   ],
   Graph,
   TestID -> "InfraSceneHighlight-mixed-segment-and-circle"
@@ -81,7 +81,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
-          { InfraShell[ FindShell[ g, 1, { 1, 2 }, All ] ] -> Green } ] },
+          { FindShell[ g, 1, { 1, 2 }, All ] -> Green } ] },
       Length @ Cases[ styles, _UndirectedEdge -> _, Infinity ] > 0
     ]
   ],

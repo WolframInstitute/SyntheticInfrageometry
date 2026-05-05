@@ -5,10 +5,10 @@ PackageScope[wasserstein1]
 
 (* ===================== Messages ===================== *)
 
-FormanRicciCurvature::badmethod = "Method `1` is not supported by FormanRicciCurvature; expected \"Simple\" or \"Triangles\".";
+FormanRicci::badmethod = "Method `1` is not supported by FormanRicci; expected \"Simple\" or \"Triangles\".";
 
 
-(* ===================== FormanRicciCurvature ===================== *)
+(* ===================== FormanRicci ===================== *)
 
 (* Discrete Forman-Ricci curvature on the edges of a graph.
        Method -> "Simple"     :  F(e) = 4 - deg(u) - deg(v)
@@ -18,9 +18,9 @@ FormanRicciCurvature::badmethod = "Method `1` is not supported by FormanRicciCur
    3-cycle as a 2-cell; the +3 per triangle is +1 for shared face plus
    +2 from the two parallel edges.  Returns Association[edge -> kappa]. *)
 
-Options[ FormanRicciCurvature ] = { Method -> "Simple" }
+Options[ FormanRicci ] = { Method -> "Simple" }
 
-FormanRicciCurvature[ graph_Graph, OptionsPattern[] ] :=
+FormanRicci[ graph_Graph, OptionsPattern[] ] :=
   With[ { deg = AssociationThread[ VertexList[ graph ], VertexDegree[ graph ] ] },
     Switch[ OptionValue[ Method ],
       "Simple",
@@ -36,12 +36,12 @@ FormanRicciCurvature[ graph_Graph, OptionsPattern[] ] :=
             EdgeList[ graph ]
           ]
         ],
-      m_, Message[ FormanRicciCurvature::badmethod, m ]; $Failed
+      m_, Message[ FormanRicci::badmethod, m ]; $Failed
     ]
   ]
 
 
-(* ===================== OllivierRicciCurvature ===================== *)
+(* ===================== OllivierRicci ===================== *)
 
 (* Ollivier-Ricci curvature on the edges of a graph with idleness alpha = 0:
        kappa(u, v) = 1 - W_1(mu_u, mu_v) / d(u, v),
@@ -49,7 +49,7 @@ FormanRicciCurvature[ graph_Graph, OptionsPattern[] ] :=
    N(x) and W_1 is the Wasserstein-1 (Earth-Mover) distance under graph
    distance.  Returns Association[edge -> kappa]. *)
 
-OllivierRicciCurvature[ graph_Graph ] :=
+OllivierRicci[ graph_Graph ] :=
   Module[ { vs, idx, adj, dist },
     vs   = VertexList[ graph ];
     idx  = AssociationThread[ vs, Range @ Length @ vs ];
@@ -89,47 +89,64 @@ wasserstein1[ mu_List, nu_List, costs_List ] :=
   ]
 
 
-(* ===================== WolframRicciScalar ===================== *)
+(* ===================== WolframRicci ===================== *)
 
-(* Volume-comparison Ricci scalar at vertex v and integer scale r:
-       R(r) = 6 (d + 2) / r^2 (1 - V(r) / V_E(d, r)),
+(* Volume-comparison Ricci scalar at vertex v and integer radius r:
+       R(v, r) = 6 (d + 2) / r^2 (1 - V(r) / V_E(d, r)),
        V_E(d, r) = pi^(d/2) r^d / Gamma[d/2 + 1],
    where V(r) = |B_r(v)| is the closed metric ball volume.  The local
    dimension d is either supplied via "Dimension" -> d or read off from
    the log-difference (Log V(r+1) - Log V(r)) / (Log(r+1) - Log r)
-   when "Dimension" -> Automatic (default).  In Automatic mode the
-   default radius range stops at eccentricity(v) - 1 because the local
-   dimension at the boundary radius would need V(r+1).  Returns
-   Association[ r -> R(r) ];  with All in place of v, returns
-   Association[ vertex -> Association[ r -> R(r) ] ]. *)
+   when "Dimension" -> Automatic (default); the latter caps the per-vertex
+   valid radius range at eccentricity(v) - 1 because V(r+1) must exist.
 
-Options[ WolframRicciScalar ] = { "Dimension" -> Automatic }
+   WolframRicci[graph]               returns Association[v -> mean_r R(v, r)]
+   averaging over r = 1, ..., ecc(v) (- 1 in Automatic dimension mode).
+   WolframRicci[graph, {rmin, rmax}] averages over the intersection of
+   [rmin, rmax] with that per-vertex valid range.
+   WolframRicci[graph, r_Integer]    returns Association[v -> R(v, r)],
+   no averaging.  Vertices whose valid range is empty map to Indeterminate. *)
 
-WolframRicciScalar[ graph_Graph, v_, { rmin_Integer, rmax_Integer }, OptionsPattern[] ] :=
-  Module[ { dim = OptionValue[ "Dimension" ], vols },
+Options[ WolframRicci ] = { "Dimension" -> Automatic }
+
+WolframRicci[ graph_Graph,
+    range : (_Integer | { _Integer, _Integer } | All) : All,
+    OptionsPattern[] ] :=
+  With[ { dim = OptionValue[ "Dimension" ] },
+    AssociationMap[
+      v |-> wolframRicciAtVertex[ graph, v, range, dim ],
+      VertexList[ graph ]
+    ]
+  ]
+
+
+(* Per-vertex helper: builds V(r) by accumulating distance counts, picks
+   the valid radius window (capped at ecc(v), or ecc(v) - 1 when the
+   local dimension is read off Automatic), and returns Mean over that
+   window of the volume-comparison scalar.  An empty window yields
+   Indeterminate. *)
+
+wolframRicciAtVertex[ graph_Graph, v_, range_, dim_ ] :=
+  Module[ { vols, top, rs },
     vols = With[ { c = KeySort @ Counts @ DeleteCases[ GraphDistance[ graph, v ], Infinity ] },
       AssociationThread[ Keys[ c ] -> Accumulate[ Values[ c ] ] ]
     ];
-    AssociationMap[
-      r |-> With[
-        { vr = vols[ r ],
-          dr = If[ dim === Automatic,
-                   N[ ( Log[ vols[ r + 1 ] ] - Log[ vols[ r ] ] )
-                     / ( Log[ r + 1 ] - Log[ r ] ) ],
-                   dim ] },
-        N[ 6 ( dr + 2 ) / r^2 ( 1 - vr Gamma[ dr / 2 + 1 ] / ( Pi^( dr / 2 ) r^dr ) ) ]
-      ],
-      Range[ rmin, rmax ]
+    top = Max[ Keys[ vols ] ] - Boole[ dim === Automatic ];
+    rs = Switch[ range,
+      All,                    Range[ 1, top ],
+      _Integer,               If[ 1 <= range <= top, { range }, { } ],
+      { _Integer, _Integer }, Range[ Max[ 1, range[[ 1 ]] ], Min[ top, range[[ 2 ]] ] ]
+    ];
+    If[ rs === { },
+      Indeterminate,
+      Mean[ ( r |-> With[
+          { dr = If[ dim === Automatic,
+                     N[ ( Log[ vols[ r + 1 ] ] - Log[ vols[ r ] ] )
+                       / ( Log[ r + 1 ] - Log[ r ] ) ],
+                     dim ],
+            vr = vols[ r ] },
+          N[ 6 ( dr + 2 ) / r^2 ( 1 - vr Gamma[ dr / 2 + 1 ] / ( Pi^( dr / 2 ) r^dr ) ) ]
+        ] ) /@ rs
+      ]
     ]
-  ] /; v =!= All
-
-WolframRicciScalar[ graph_Graph, v_, opts : OptionsPattern[] ] :=
-  With[ {
-      ecc = Max @ DeleteCases[ GraphDistance[ graph, v ], Infinity ],
-      drop = Boole[ OptionValue[ "Dimension" ] === Automatic ]
-    },
-    WolframRicciScalar[ graph, v, { 1, ecc - drop }, opts ]
-  ] /; v =!= All
-
-WolframRicciScalar[ graph_Graph, All, args___ ] :=
-  AssociationMap[ WolframRicciScalar[ graph, #, args ] &, VertexList[ graph ] ]
+  ]

@@ -1,0 +1,133 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      6085,        124]
+NotebookOptionsPosition[      3873,         91]
+NotebookOutlinePosition[      4190,        105]
+CellTagsIndexPosition[      4147,        102]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindMidpoint", "Title",ExpressionUUID->"0486bba9-324e-4c78-88d7-bb43238d56c1"],
+
+Cell["\<\
+FindMidpoint[graph, p1, p2] returns InfraPoint[{midpoint, ...}] for the \
+midpoint vertices between p1 and p2 across all geodesics (the central \
+elements of each geodesic). FindMidpoint[graph, segment] returns the midpoint \
+of an explicit vertex sequence as a wrapped singleton. Multi-valued in \
+general -- returns the union of distinct midpoint vertices.\
+\>", "Text",ExpressionUUID->"df22a307-94ea-46b7-abd7-fc0354b7d03a"],
+
+Cell["Setup", "Section",ExpressionUUID->"e88b0d95-a5be-4524-9764-ec5b0e3025d5"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"5175290b-b172-4d7d-8687-632186fbf57b"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"04d87e57-7af7-4117-a929-3a4c9838c47b"],
+
+Cell["Usage", "Section",ExpressionUUID->"3c24eea4-8ec4-4d7c-befe-98cf777d6466"],
+
+Cell["\<\
+Find the midpoint(s) between two corners of a 4x4 grid -- visualize geodesics \
+in blue, midpoints in red.\
+\>", "CodeText",ExpressionUUID->"e434b7c9-1ba0-4da2-b201-614472be3fb0"],
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindSegment[g, 1, 16, \
+All] -> Blue, FindMidpoint[g, 1, 16, All] -> Red}]]\
+\>", "Input",ExpressionUUID->"d4786f43-efff-4325-b9e6-cd6960c6b75c"],
+
+Cell["Read the realisations.", "CodeText",ExpressionUUID->"36adca9b-542d-4f61-bc16-06a4d19c70af"],
+
+Cell["FindMidpoint[GridGraph[{4, 4}], 1, 16, All][\"Realisations\"]", "Input",ExpressionUUID->"15a689b5-739a-4bd9-b11a-4ca3250b18d5"],
+
+Cell["Examples", "Section",ExpressionUUID->"2e74546a-5c05-4805-b43c-94f979455889"],
+
+Cell["On a path graph the midpoint is unique.", "CodeText",ExpressionUUID->"85820950-ce8c-4d98-ae65-363a5cc27fdf"],
+
+Cell["\<\
+With[{g = PathGraph[Range[7]]}, InfraSceneHighlight[g, {FindSegment[g, 1, 7] \
+-> Blue, FindMidpoint[g, 1, 7] -> Red}]]\
+\>", "Input",ExpressionUUID->"30817d7d-55bf-4fc7-9d6f-a8ed938c767a"],
+
+Cell["\<\
+On a cycle there is one midpoint vertex when the distance between the points \
+is even, two when odd (across the two geodesics).\
+\>", "CodeText",ExpressionUUID->"1b34e158-6e3f-485c-bf4e-04b134c1e9d1"],
+
+Cell["\<\
+With[{g = CycleGraph[8]}, InfraSceneHighlight[g, {FindSegment[g, 1, 5, All] \
+-> Blue, FindMidpoint[g, 1, 5, All] -> Red}]]\
+\>", "Input",ExpressionUUID->"670ff565-df77-4699-8dba-219c53dc0801"],
+
+Cell["\<\
+Method -> \"Embedding\" ranks pool vertices by Euclidean distance to the \
+midpoint of the line segment under the graph drawing.\
+\>", "CodeText",ExpressionUUID->"ecb88971-0d8a-46b4-9bef-04e82158271f"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, {FindSegment[g, 1, 25, \
+All] -> Blue, FindMidpoint[g, 1, 25, All, Method -> \"Embedding\"] -> Red}]]\
+\>", "Input",ExpressionUUID->"6593a797-ad6f-48c7-81ba-6a2106784a81"],
+
+Cell["See also", "Section",ExpressionUUID->"80544f5a-f955-4e0a-81f7-24d02636b57f"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"59e8fc5f-2f37-46c6-9296-e17c46e9f95e"],
+
+Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"4a7898ea-44c8-4ccd-8c45-ad714bd1ac8e"],
+
+Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"80aeb8f3-ad7f-4fa8-9e24-790a5aeacd52"],
+
+Cell["InfraSceneHighlight", "Item",ExpressionUUID->"56357a6f-518b-403f-8d88-0bd73ea2fc74"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"6dc4a242-813d-4352-ac44-d8bf3ee96084"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"0486bba9-324e-4c78-88d7-bb43238d56c1"],
+Cell[641, 22, 437, 6, 70, "Text",ExpressionUUID->"df22a307-94ea-46b7-abd7-fc0354b7d03a"],
+Cell[1081, 30, 79, 0, 70, "Section",ExpressionUUID->"e88b0d95-a5be-4524-9764-ec5b0e3025d5"],
+Cell[1163, 32, 132, 0, 70, "CodeText",ExpressionUUID->"5175290b-b172-4d7d-8687-632186fbf57b"],
+Cell[1298, 34, 122, 0, 70, "Code",ExpressionUUID->"04d87e57-7af7-4117-a929-3a4c9838c47b"],
+Cell[1423, 36, 79, 0, 70, "Section",ExpressionUUID->"3c24eea4-8ec4-4d7c-befe-98cf777d6466"],
+Cell[1505, 38, 189, 3, 70, "CodeText",ExpressionUUID->"e434b7c9-1ba0-4da2-b201-614472be3fb0"],
+Cell[1697, 43, 209, 3, 70, "Input",ExpressionUUID->"d4786f43-efff-4325-b9e6-cd6960c6b75c"],
+Cell[1909, 48, 97, 0, 70, "CodeText",ExpressionUUID->"36adca9b-542d-4f61-bc16-06a4d19c70af"],
+Cell[2009, 50, 133, 0, 70, "Input",ExpressionUUID->"15a689b5-739a-4bd9-b11a-4ca3250b18d5"],
+Cell[2145, 52, 82, 0, 70, "Section",ExpressionUUID->"2e74546a-5c05-4805-b43c-94f979455889"],
+Cell[2230, 54, 114, 0, 70, "CodeText",ExpressionUUID->"85820950-ce8c-4d98-ae65-363a5cc27fdf"],
+Cell[2347, 56, 199, 3, 70, "Input",ExpressionUUID->"30817d7d-55bf-4fc7-9d6f-a8ed938c767a"],
+Cell[2549, 61, 211, 3, 70, "CodeText",ExpressionUUID->"1b34e158-6e3f-485c-bf4e-04b134c1e9d1"],
+Cell[2763, 66, 203, 3, 70, "Input",ExpressionUUID->"670ff565-df77-4699-8dba-219c53dc0801"],
+Cell[2969, 71, 211, 3, 70, "CodeText",ExpressionUUID->"ecb88971-0d8a-46b4-9bef-04e82158271f"],
+Cell[3183, 76, 234, 3, 70, "Input",ExpressionUUID->"6593a797-ad6f-48c7-81ba-6a2106784a81"],
+Cell[3420, 81, 82, 0, 70, "Section",ExpressionUUID->"80544f5a-f955-4e0a-81f7-24d02636b57f"],
+Cell[3505, 83, 82, 0, 70, "Item",ExpressionUUID->"59e8fc5f-2f37-46c6-9296-e17c46e9f95e"],
+Cell[3590, 85, 94, 0, 70, "Item",ExpressionUUID->"4a7898ea-44c8-4ccd-8c45-ad714bd1ac8e"],
+Cell[3687, 87, 89, 0, 70, "Item",ExpressionUUID->"80aeb8f3-ad7f-4fa8-9e24-790a5aeacd52"],
+Cell[3779, 89, 90, 0, 70, "Item",ExpressionUUID->"56357a6f-518b-403f-8d88-0bd73ea2fc74"]
+}
+]
+*)
+
+(* End of internal cache information *)

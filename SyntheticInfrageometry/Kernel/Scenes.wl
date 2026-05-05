@@ -5,6 +5,7 @@ PackageScope[topologicalLevels]
 PackageScope[resolveExpression]
 PackageScope[extractBranches]
 PackageScope[capBranches]
+PackageScope[applySelectOption]
 PackageScope[constructionPatternQ]
 PackageScope[dispatchConstruction]
 PackageScope[evaluateConstruction]
@@ -35,6 +36,9 @@ resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
     { InfraDistance[ x_, y_ ]      :> GraphDistance[ graph, x, y ],
       InfraSegmentQ[ s_ ]          :> SegmentQ[ graph, s ],
       InfraShellQ[ vs_ ]           :> ShellQ[ graph, vs ],
+      InfraPlaneQ[ h_, p1_, p2_ ]  :> SeparatesQ[ graph, h, p1, p2 ] &&
+                                       AllTrue[ h, GraphDistance[ graph, p1, # ] ==
+                                                    GraphDistance[ graph, p2, # ] & ],
       InfraCircleQ[ c_ ]           :> CircleQ[ graph, c ],
       InfraLineQ[ s_ ]             :> LineQ[ graph, s ],
       InfraParallelQ[ l1_, l2_ ]   :> ParallelQ[ graph, l1, l2 ],
@@ -54,6 +58,22 @@ capBranches[ paths_List, All ]              := paths
 capBranches[ paths_List, n_Integer ]        := Take[ paths, UpTo[ n ] ]
 capBranches[ paths_List, UpTo[ n_Integer ] ] := Take[ paths, UpTo[ n ] ]
 capBranches[ other_, _ ]                    := other
+
+(* The "Select" hypothesis option accepts None, a criterion string, or a list
+   thereof.  "EmbeddingClosest" routes to EmbeddingClosestPaths/Cycles using
+   ctx ("Endpoints" for paths, "Center"+"Radius" for cycles); other criteria
+   route to SelectPaths / SelectCycles by the cyclic flag. *)
+applySelectOption[ _Graph, paths_, None, _, _ ] := paths
+applySelectOption[ graph_Graph, paths_, list_List, cyclic_, ctx_ ] :=
+  Fold[ applySelectOption[ graph, #1, #2, cyclic, ctx ] &, paths, list ]
+applySelectOption[ graph_Graph, paths_, "EmbeddingClosest", True,  ctx_ ] :=
+  EmbeddingClosestCycles[ graph, paths, { ctx[ "Center" ], ctx[ "Radius" ] } ]
+applySelectOption[ graph_Graph, paths_, "EmbeddingClosest", False, ctx_ ] :=
+  EmbeddingClosestPaths[ graph, paths, ctx[ "Endpoints" ] ]
+applySelectOption[ graph_Graph, paths_, name_String, True,  _ ] :=
+  SelectCycles[ graph, paths, name ]
+applySelectOption[ graph_Graph, paths_, name_String, False, _ ] :=
+  SelectPaths[ graph, paths, name ]
 
 
 (* ===================== Scene ===================== *)
@@ -191,49 +211,59 @@ dispatchConstruction[ graph_Graph, InfraPoint[ n_Integer, opts___Rule ] ] :=
 
 dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
   capBranches[
-    applyPathSpaceSelector[ graph,
-      FindSegment[ graph, p1, p2, All ],
+    applySelectOption[ graph,
+      FindSegment[ graph, p1, p2, All ][ "Realisations" ],
       "Select" /. { opts } /. "Select" -> None,
-      <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |> ],
+      False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]
 
 dispatchConstruction[ graph_Graph, InfraLine[ path_List, opts___Rule ] ] :=
   capBranches[
-    applyPathSpaceSelector[ graph,
+    applySelectOption[ graph,
       findLineExtensions[ graph, path ],
       "Select" /. { opts } /. "Select" -> None,
-      <| "Cyclic" -> False, "Endpoints" -> { First @ path, Last @ path } |> ],
+      False, <| "Endpoints" -> { First @ path, Last @ path } |> ],
     extractBranches[ { opts } ] ]
 
 dispatchConstruction[ graph_Graph, InfraLine[ p1_, p2_, opts___Rule ] ] /;
   MemberQ[ VertexList @ graph, p1 ] :=
   capBranches[
-    applyPathSpaceSelector[ graph,
+    applySelectOption[ graph,
       FindLine[ graph, p1, p2, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindLine ] ] ],
+        Sequence @@ FilterRules[ { opts }, Options[ FindLine ] ] ][ "Realisations" ],
       "Select" /. { opts } /. "Select" -> None,
-      <| "Cyclic" -> False, "Endpoints" -> { p1, p2 } |> ],
+      False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]
 
 dispatchConstruction[ graph_Graph, InfraShell[ center_, r_, opts___Rule ] ] :=
   capBranches[
-    applyPathSpaceSelector[ graph,
+    applySelectOption[ graph,
       FindShell[ graph, center, r, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindShell ] ] ],
+        Sequence @@ FilterRules[ { opts }, Options[ FindShell ] ] ][ "Realisations" ],
       "Select" /. { opts } /. "Select" -> None,
-      <| "Cyclic" -> False,
-         "Center" -> center,
-         "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
+      False, <| "Center" -> center,
+                "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
     extractBranches[ { opts } ] ]
 
 dispatchConstruction[ graph_Graph, InfraCircle[ center_, r_, opts___Rule ] ] :=
   capBranches[
-    applyPathSpaceSelector[ graph,
-      FindCircle[ graph, center, r, All ],
+    applySelectOption[ graph,
+      FindCircle[ graph, center, r, All ][ "Realisations" ],
       "Select" /. { opts } /. "Select" -> None,
-      <| "Cyclic" -> True,
-         "Center" -> center,
-         "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
+      True, <| "Center" -> center,
+               "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
+    extractBranches[ { opts } ] ]
+
+dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_, opts___Rule ] ] :=
+  dispatchConstruction[ graph, InfraPlane[ p1, p2, { 0, 0 }, opts ] ]
+
+dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_,
+    window : { _Integer, _Integer }, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      FindBisectingHyperplane[ graph, p1, p2, window, All ][ "Realisations" ],
+      "Select" /. { opts } /. "Select" -> None,
+      False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]
 
 
@@ -278,7 +308,7 @@ evaluateStep[ graph_Graph, step_List, constructions_Association, branches_List ]
 
 (* ===================== FindInfraScene ===================== *)
 
-Options[ FindInfraScene ] = { "PruningProbability" -> 0 };
+Options[ FindInfraScene ] = { "PruneProbability" -> 0 };
 
 FindInfraScene[ scene_InfraScene, graph_Graph, opts : OptionsPattern[] ] :=
   FindInfraScene[ scene, graph, Length @ scene[ "Steps" ], <||>, opts ]
@@ -291,7 +321,7 @@ FindInfraScene[ scene_InfraScene, graph_Graph, init_Association, opts : OptionsP
 
 FindInfraScene[ scene_InfraScene, graph_Graph, nSteps_Integer, init_Association,
     opts : OptionsPattern[] ] :=
-  Module[ { branches = { init }, prob = OptionValue[ "PruningProbability" ],
+  Module[ { branches = { init }, prob = OptionValue[ "PruneProbability" ],
             objects = scene[ "Objects" ] },
     Do[
       With[ { effective = Select[ step,

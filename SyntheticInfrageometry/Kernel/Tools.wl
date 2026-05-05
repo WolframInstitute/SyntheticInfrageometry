@@ -13,10 +13,11 @@ PackageScope[extendedOutPaths]
 PackageScope[pulledPaths]
 PackageScope[applyPruning]
 PackageScope[pruningSpecQ]
-PackageScope[lookbackSpecQ]
+PackageScope[shortestPathWindowSpecQ]
 PackageScope[formanMethodSpecQ]
-PackageScope[constraintSpecQ]
-PackageScope[curvatureMethodSpecQ]
+PackageScope[poolSpecQ]
+PackageScope[curvatureSpecQ]
+PackageScope[parseCurvatureSpec]
 PackageScope[dimensionSpecQ]
 PackageScope[radiiSpecQ]
 
@@ -156,13 +157,13 @@ pruningSpecQ[ n_Integer ] /; n >= 1 := True
 pruningSpecQ[ p_?NumericQ ] /; 0 < p < 1 := True
 pruningSpecQ[ _ ] := False
 
-lookbackSpecQ[ All ] := True
-lookbackSpecQ[ Infinity ] := True
-lookbackSpecQ[ n_Integer ] /; n >= 1 := True
-lookbackSpecQ[ _ ] := False
+shortestPathWindowSpecQ[ All ] := True
+shortestPathWindowSpecQ[ Infinity ] := True
+shortestPathWindowSpecQ[ n_Integer ] /; n >= 1 := True
+shortestPathWindowSpecQ[ _ ] := False
 
 
-(* ===================== Pulled paths (internal) ===================== *)
+(* ===================== Curvature-minimising paths (internal) ===================== *)
 
 (* Enumerate paths from p1 to p2 by a frontier sweep that, at each step
    v_i -> w, restricts the candidate set { w in N(v_i) \ path } to the
@@ -190,7 +191,7 @@ pulledPaths[ graph_Graph, p1_, p2_, edgeKappa_, prune_, countLimit_, dagNbrs_ ] 
             { v = Last[ path ],
               candidates = If[ dagNbrs === Automatic,
                 Select[ AdjacencyList[ graph, Last[ path ] ], ! MemberQ[ path, # ] & ],
-                Lookup[ dagNbrs, Last[ path ], { } ] ] },
+                Lookup[ dagNbrs, Key[ Last[ path ] ], { } ] ] },
             ( Append[ path, # ] & ) /@ If[ candidates === { }, { },
               MinimalBy[ candidates, w |-> edgeKappa[ v, w ] ] ]
           ] ) /@ frontier,
@@ -206,13 +207,16 @@ formanMethodSpecQ[ "Simple" ] := True
 formanMethodSpecQ[ "Triangles" ] := True
 formanMethodSpecQ[ _ ] := False
 
-constraintSpecQ[ "Geodesic" ] := True
-constraintSpecQ[ "Free" ] := True
-constraintSpecQ[ _ ] := False
+(* Pool spec accepts both path-shaped values ("ShortestPaths" | "AllPaths")
+   and shell-shaped values ("LevelSet" | "AllVertices").  Each consumer
+   selects the meaningful pair; downstream branching falls through to the
+   restricted default when the value is unrecognised. *)
 
-curvatureMethodSpecQ[ "Forman" ] := True
-curvatureMethodSpecQ[ "Wolfram" ] := True
-curvatureMethodSpecQ[ _ ] := False
+poolSpecQ[ "ShortestPaths" ] := True
+poolSpecQ[ "AllPaths" ]      := True
+poolSpecQ[ "LevelSet" ]      := True
+poolSpecQ[ "AllVertices" ]   := True
+poolSpecQ[ _ ]               := False
 
 dimensionSpecQ[ Automatic ] := True
 dimensionSpecQ[ d_?NumericQ ] /; d > 0 := True
@@ -221,6 +225,48 @@ dimensionSpecQ[ _ ] := False
 radiiSpecQ[ Automatic ] := True
 radiiSpecQ[ { rmin_Integer, rmax_Integer } ] /; 1 <= rmin <= rmax := True
 radiiSpecQ[ _ ] := False
+
+
+(* parseCurvatureSpec normalises the "Curvature" sub-option of
+   Method -> "CurvatureMinimizing" into a uniform Association.
+
+   Accepted shapes:
+     "Forman"                                      -> FormanRicci defaults
+     {"Forman",  Method -> "Simple" | "Triangles"} -> passes Method to FormanRicci
+     "Wolfram"                                     -> WolframRicci defaults
+     {"Wolfram", "Dimension" -> d, "Radii" -> r}   -> passes opts to WolframRicci
+
+   Returns <| "Head" -> "Forman" | "Wolfram", ...inner... |> on success and
+   $Failed otherwise. *)
+
+parseCurvatureSpec[ "Forman" ] :=
+  <| "Head" -> "Forman", "Method" -> "Simple" |>
+
+parseCurvatureSpec[ { "Forman", innerOpts___ } ] :=
+  With[ { method = Method /. { innerOpts } /. Method -> "Simple" },
+    If[ formanMethodSpecQ[ method ],
+      <| "Head" -> "Forman", "Method" -> method |>,
+      $Failed
+    ]
+  ]
+
+parseCurvatureSpec[ "Wolfram" ] :=
+  <| "Head" -> "Wolfram", "Dimension" -> Automatic, "Radii" -> Automatic |>
+
+parseCurvatureSpec[ { "Wolfram", innerOpts___ } ] :=
+  With[ {
+      dim   = "Dimension" /. { innerOpts } /. "Dimension" -> Automatic,
+      radii = "Radii"     /. { innerOpts } /. "Radii"     -> Automatic
+    },
+    If[ dimensionSpecQ[ dim ] && radiiSpecQ[ radii ],
+      <| "Head" -> "Wolfram", "Dimension" -> dim, "Radii" -> radii |>,
+      $Failed
+    ]
+  ]
+
+parseCurvatureSpec[ _ ] := $Failed
+
+curvatureSpecQ[ spec_ ] := parseCurvatureSpec[ spec ] =!= $Failed
 
 
 (* ===================== Separating Sets (internal) ===================== *)
