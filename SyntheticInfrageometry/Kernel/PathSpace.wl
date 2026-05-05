@@ -135,6 +135,10 @@ SelectPaths[ graph_Graph, paths_List, "Central", opts : OptionsPattern[] ] :=
 SelectPaths[ graph_Graph, paths_List, "Peripheral", opts : OptionsPattern[] ] :=
   selectByPathSpaceMetric[ graph, paths, OptionValue[ Method ], False, Max ]
 
+SelectPaths[ _Graph, paths_List, "MostVisited", OptionsPattern[] ] :=
+  If[ Length[ paths ] <= 1, paths,
+    pickByVisitCount[ paths, sequentialEdges /@ paths ] ]
+
 SelectPaths[ graph_Graph, paths_List, criteria_List, opts : OptionsPattern[] ] :=
   Fold[ SelectPaths[ graph, #1, #2, opts ] &, paths, criteria ]
 
@@ -155,6 +159,10 @@ SelectCycles[ _Graph, cycles_List, "ShortestCircumference", OptionsPattern[] ] :
 
 SelectCycles[ _Graph, cycles_List, "LongestCircumference", OptionsPattern[] ] :=
   If[ Length[ cycles ] <= 1, cycles, MaximalBy[ cycles, Length ] ]
+
+SelectCycles[ _Graph, cycles_List, "MostVisited", OptionsPattern[] ] :=
+  If[ Length[ cycles ] <= 1, cycles,
+    pickByVisitCount[ cycles, cycleEdges /@ cycles ] ]
 
 SelectCycles[ graph_Graph, cycles_List, criteria_List, opts : OptionsPattern[] ] :=
   Fold[ SelectCycles[ graph, #1, #2, opts ] &, cycles, criteria ]
@@ -366,5 +374,71 @@ PathSubgraph[ g_Graph, u_, v_, lengthSpec : ( _Integer | UpTo[ _Integer ] | All 
     If[ paths === { },
       Graph[ { }, { } ],
       GraphUnion @@ ( PathGraph[ #, DirectedEdges -> OptionValue[ "Directed" ] ] & /@ paths )
+    ]
+  ]
+
+
+(* ===================== Mode of the visit-measure ===================== *)
+
+(* InfraMode[graph, infra] picks the most-visited realisation(s) of a
+   multi-realisation Infra* wrapper.  Each realisation is scored by the total
+   visit count of its constituent vertices and edges across the bundle --
+   exactly the measure that InfraSceneHighlight paints onto the graph.  Edges
+   are sequential Partition for path/cycle wrappers (with auto-closure for
+   cycles) and induced-subgraph edges for set wrappers; InfraPoint is scored
+   by vertex frequency alone.  All realisations achieving the maximum score
+   are returned in a same-head wrapper, preserving the multi-realisation
+   contract; tie-break by taking ["First"].  For InfraPencil the function maps
+   over the constituent direction-class InfraRay objects.  Operator form:
+   InfraMode[graph][infra]. *)
+
+InfraMode[ graph_Graph, InfraPencil[ rays_List ] ] :=
+  InfraPencil[ InfraMode[ graph, # ] & /@ rays ]
+
+InfraMode[ _Graph, ( head : InfraPoint | InfraSegment | InfraLine | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] /; Length[ reps ] <= 1 :=
+  head[ reps ]
+
+InfraMode[ _Graph, InfraPoint[ reps_List ] ] :=
+  InfraPoint[ Commonest @ reps ]
+
+InfraMode[ _Graph, ( head : InfraSegment | InfraLine | InfraRay )[ reps_List ] ] :=
+  head[ pickByVisitCount[ reps, sequentialEdges /@ reps ] ]
+
+InfraMode[ _Graph, InfraCircle[ cycles_List ] ] :=
+  InfraCircle[ pickByVisitCount[ cycles, cycleEdges /@ cycles ] ]
+
+InfraMode[ graph_Graph, ( head : InfraShell | InfraPlane )[ sets_List ] ] :=
+  head[ pickByVisitCount[ sets,
+    Sort /@ ( List @@@ EdgeList @ Subgraph[ graph, # ] ) & /@ sets ] ]
+
+InfraMode[ graph_Graph ] := InfraMode[ graph, # ] &
+
+
+(* sequentialEdges[path] returns sorted undirected edges along the vertex
+   sequence; cycleEdges[cycle] does the same after auto-closing.            *)
+
+sequentialEdges[ path_List ] :=
+  If[ Length[ path ] >= 2, Sort /@ Partition[ path, 2, 1 ], { } ]
+
+cycleEdges[ cycle_List ] :=
+  With[ { closed = If[ Length[ cycle ] >= 2 && First @ cycle === Last @ cycle,
+                       cycle, Append[ cycle, First @ cycle ] ] },
+    If[ Length[ closed ] >= 2, Sort /@ Partition[ closed, 2, 1 ], { } ]
+  ]
+
+
+(* pickByVisitCount[reps, edgesOfReps] picks the realisation(s) maximising
+   the sum of vertex visit counts plus edge visit counts across the bundle.
+   The bundle's visit measure is simply Counts of all vertex/edge incidences;
+   each realisation's score is the bundle-mass it intersects. *)
+
+pickByVisitCount[ reps_List, edges_List ] :=
+  With[ {
+      vCounts = Counts @ Catenate @ reps,
+      eCounts = Counts @ Catenate @ edges },
+    With[ { scores = MapThread[
+        Total @ Lookup[ vCounts, #1, 0 ] + Total @ Lookup[ eCounts, #2, 0 ] &,
+        { reps, edges } ] },
+      Pick[ reps, scores, Max @ scores ]
     ]
   ]

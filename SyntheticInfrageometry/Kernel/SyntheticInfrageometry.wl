@@ -34,6 +34,7 @@ PackageExport[EmbeddingClosestPaths]
 PackageExport[EmbeddingClosestCycles]
 PackageExport[GeodesicSubgraph]
 PackageExport[PathSubgraph]
+PackageExport[InfraMode]
 
 (* TropicalOperations.wl *)
 PackageExport[TropicalPlus]

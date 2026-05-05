@@ -246,4 +246,127 @@ VerificationTest[
   TestID -> "PathSubgraph-integer-equals-UpTo"
 ]
 
+(* ===== InfraMode + "MostVisited" criterion ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], paths = FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realisations" ] },
+    SubsetQ[ paths, SelectPaths[ g, paths, "MostVisited" ] ]
+  ],
+  True,
+  TestID -> "SelectPaths-MostVisited-returns-sublist"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], paths = FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realisations" ] },
+    Length[ SelectPaths[ g, paths, "MostVisited" ] ] >= 1 &&
+      Length[ SelectPaths[ g, paths, "MostVisited" ] ] <= Length[ paths ]
+  ],
+  True,
+  TestID -> "SelectPaths-MostVisited-non-empty"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], wrapped = FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    Head @ SelectPaths[ g, wrapped, "MostVisited" ]
+  ],
+  InfraSegment,
+  TestID -> "SelectPaths-MostVisited-preserves-wrapper"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], wrapped = FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    SelectPaths[ g, wrapped, "MostVisited" ] === SelectPaths[ g, "MostVisited" ][ wrapped ]
+  ],
+  True,
+  TestID -> "SelectPaths-MostVisited-operator-form-agrees"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ], cycles = FindCircle[ GridGraph[ { 4, 4 } ], 6, { 1, 2 }, All ][ "Realisations" ] },
+    SubsetQ[ cycles, SelectCycles[ g, cycles, "MostVisited" ] ]
+  ],
+  True,
+  TestID -> "SelectCycles-MostVisited-returns-sublist"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], wrapped = FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    Head @ InfraMode[ g, wrapped ]
+  ],
+  InfraSegment,
+  TestID -> "InfraMode-InfraSegment-preserves-head"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], wrapped = FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    SubsetQ[ wrapped[ "Realisations" ], InfraMode[ g, wrapped ][ "Realisations" ] ]
+  ],
+  True,
+  TestID -> "InfraMode-returns-sublist-of-realisations"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], wrapped = FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    InfraMode[ g, wrapped ][ "Length" ] >= 1
+  ],
+  True,
+  TestID -> "InfraMode-non-empty"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], wrapped = FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    InfraMode[ g, wrapped ] === InfraMode[ g ][ wrapped ]
+  ],
+  True,
+  TestID -> "InfraMode-operator-form-agrees"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    Head @ InfraMode[ g, InfraSegment[ { } ] ]
+  ],
+  InfraSegment,
+  TestID -> "InfraMode-empty-wrapper-passthrough"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], reps = FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realisations" ] },
+    InfraMode[ g, InfraSegment[ { First @ reps } ] ] === InfraSegment[ { First @ reps } ]
+  ],
+  True,
+  TestID -> "InfraMode-singleton-wrapper-passthrough"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    InfraMode[ g, InfraPoint[ { 1, 2, 1, 3, 1 } ] ] === InfraPoint[ { 1 } ]
+  ],
+  True,
+  TestID -> "InfraMode-InfraPoint-Commonest"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], wrapped = FindCircle[ GridGraph[ { 3, 3 } ], 2, { 1, 2 }, All ] },
+    Head @ InfraMode[ g, wrapped ]
+  ],
+  InfraCircle,
+  TestID -> "InfraMode-InfraCircle-preserves-head"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], wrapped = FindShell[ GridGraph[ { 3, 3 } ], 1, 2, All ] },
+    Head @ InfraMode[ g, wrapped ]
+  ],
+  InfraShell,
+  TestID -> "InfraMode-InfraShell-preserves-head"
+]
+
+VerificationTest[
+  With[ { g = PathGraph[ Range @ 5 ], wrapped = FindSegment[ PathGraph[ Range @ 5 ], 1, 5, All ] },
+    InfraMode[ g, wrapped ] === wrapped
+  ],
+  True,
+  TestID -> "InfraMode-unique-segment-passthrough"
+]
+
 EndTestSection[]

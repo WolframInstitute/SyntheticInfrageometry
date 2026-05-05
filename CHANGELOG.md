@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.2
+
+- New public `InfraMode[graph, infra]` — picks the most-visited realisation(s) from any single-`_List`-arg `Infra*` wrapper (point, segment, line, shell, plane, circle, ray, pencil), the single-realisation readout of the diffuse measure that `InfraSceneHighlight` paints. Same engine exposed bundle-level as a new `"MostVisited"` criterion on `SelectPaths` / `SelectCycles`.
+
 ## 0.8.1
 
 - Concise usage-message style: every `::usage` is one sentence per signature, no inline tutorials.
