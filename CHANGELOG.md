@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.3
+
+- New public `InfraExampleGraph[name, params]` — paclet-wide example-graph registry for guides, tutorials, and symbol-page demonstrations. Twelve keys covering the curvature spectrum (`"Grid"`, `"RectangleMesh"`, `"DiskMesh"`, `"SphereMesh"`, `"TriangularLattice"`, `"HexagonalLattice"`, `"RegularTree"`, `"Cayley"`) plus small named gems (`"Petersen"`, `"Heawood"`, `"MobiusKantor"`, `"Tutte"`). Mesh keys forward `MaxCellMeasure` / `AccuracyGoal` to `DiscretizeRegion`.
+- Retire `InfraMode`. The path/cycle cases collapse to `SelectPaths[g, infra, "MostVisited"]` / `SelectCycles[g, infra, "MostVisited"]`; `SelectPaths` extended to accept `InfraLine`, `InfraRay`, and `InfraPencil` (mapped over its rays).
+
 ## 0.8.2
 
 - New public `InfraMode[graph, infra]` — picks the most-visited realisation(s) from any single-`_List`-arg `Infra*` wrapper (point, segment, line, shell, plane, circle, ray, pencil), the single-realisation readout of the diffuse measure that `InfraSceneHighlight` paints. Same engine exposed bundle-level as a new `"MostVisited"` criterion on `SelectPaths` / `SelectCycles`.

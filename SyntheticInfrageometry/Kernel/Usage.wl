@@ -36,13 +36,12 @@ SegmentLineAngle::usage = "SegmentLineAngle[graph, p1, p2, line] (or SegmentLine
 
 (* ===================== PathSpace ===================== *)
 
-SelectPaths::usage = "SelectPaths[graph, paths, criterion] filters a path bundle by a path-space criterion (\"Central\", \"Peripheral\", \"MostVisited\", or a list of criteria folded left to right). Option: Method (\"Frechet\" (default) | \"Hausdorff\" | \"MeanFrechet\") for the metric criteria; ignored by \"MostVisited\". Accepts InfraSegment[paths_List]. Operator form SelectPaths[graph, criterion, opts][paths].";
+SelectPaths::usage = "SelectPaths[graph, paths, criterion] filters a path bundle by a path-space criterion (\"Central\", \"Peripheral\", \"MostVisited\", or a list of criteria folded left to right). Option: Method (\"Frechet\" (default) | \"Hausdorff\" | \"MeanFrechet\") for the metric criteria; ignored by \"MostVisited\". Accepts InfraSegment, InfraLine, InfraRay, and InfraPencil (mapped over its rays); preserves the wrapper. Operator form SelectPaths[graph, criterion, opts][paths].";
 SelectCycles::usage = "SelectCycles[graph, cycles, criterion] filters a cycle bundle (criterion: \"Central\", \"Peripheral\", \"MostVisited\", \"ShortestCircumference\", \"LongestCircumference\", or a list). Option: Method (\"Frechet\" (default) | \"Hausdorff\" | \"MeanFrechet\") for the metric criteria; ignored otherwise. Accepts InfraCircle[cycles_List]. Operator form SelectCycles[graph, criterion, opts][cycles].";
 EmbeddingClosestPaths::usage = "EmbeddingClosestPaths[graph, paths, {p1, p2}] keeps the paths whose drawing under GraphEmbedding is Hausdorff-closest to the straight Euclidean segment p1-p2. Operator form EmbeddingClosestPaths[graph, {p1, p2}][paths].";
 EmbeddingClosestCycles::usage = "EmbeddingClosestCycles[graph, cycles, {center, radius}] keeps the cycles whose drawing under GraphEmbedding is Hausdorff-closest to the Euclidean circle of given centre and radius. Operator form EmbeddingClosestCycles[graph, {center, radius}][cycles].";
 GeodesicSubgraph::usage = "GeodesicSubgraph[graph, pairs] returns the union of geodesics between the listed vertex pairs. Options: \"PathThickness\" (Hausdorff threshold for keeping multiple geodesics per pair), \"Directed\".";
 PathSubgraph::usage = "PathSubgraph[graph, u, v] returns the union of all shortest u-v paths. PathSubgraph[graph, u, v, k] (or UpTo[k]) caps path length; PathSubgraph[graph, u, v, All] returns the full simple-path subgraph. Option: \"Directed\".";
-InfraMode::usage = "InfraMode[graph, infra] picks the most-visited realisation(s) from a multi-realisation Infra* wrapper -- the mode of the diffuse visit-measure that InfraSceneHighlight paints onto the graph. Each realisation is scored by the total visit count of its vertices and edges across the bundle; ties are preserved in the same-head wrapper. Dispatches across InfraPoint, InfraSegment, InfraLine, InfraShell, InfraPlane, InfraCircle, InfraRay, and InfraPencil (mapped over its constituent rays). Operator form InfraMode[graph][infra].";
 
 (* ===================== TropicalOperations ===================== *)
 
@@ -135,6 +134,10 @@ TropicalT1Q::usage = "TropicalT1Q[graph] tests tropical axiom T1: every two vert
 (* ===================== Enumeration ===================== *)
 
 EnumerateGraphs::usage = "EnumerateGraphs[n, predQ] returns all connected n-vertex graphs from GraphData satisfying predQ. EnumerateGraphs[n, predQ, k] returns exactly k or $Failed; UpTo[k] returns up to k; All returns all. Option: \"From\" (override the default GraphData generator with a list).";
+
+(* ===================== Example graphs ===================== *)
+
+InfraExampleGraph::usage = "InfraExampleGraph[name, params] returns a canonical example graph from the paclet's registry, used as the running graph in guides, tutorials, and symbol-page demonstrations. InfraExampleGraph[] lists the available keys; InfraExampleGraph[name] uses default parameters. Keys cover the curvature spectrum: \"Grid\", \"RectangleMesh\", \"DiskMesh\", \"SphereMesh\", \"TriangularLattice\", \"HexagonalLattice\", \"RegularTree\", \"Cayley\", plus small named gems \"Petersen\", \"Heawood\", \"MobiusKantor\", \"Tutte\". Mesh keys forward MaxCellMeasure and AccuracyGoal to DiscretizeRegion.";
 
 (* ===================== Scenes ===================== *)
 

@@ -1,0 +1,183 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      7610,        174]
+NotebookOptionsPosition[      4683,        122]
+NotebookOutlinePosition[      5000,        136]
+CellTagsIndexPosition[      4957,        133]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["EnumerateGraphs", "Title",ExpressionUUID->"6fb58a65-69e5-4797-aae0-2dd05652cd2e"],
+
+Cell["\<\
+EnumerateGraphs[n, predQ] returns every connected n-vertex graph from \
+GraphData satisfying predQ. The third positional argument follows the calling \
+triple: an integer demands exactly that many or returns $Failed; UpTo[k] \
+returns up to k; All returns the full set. The option \"From\" overrides the \
+default GraphData generator with a user-supplied list of graphs.\
+\>", "Text",ExpressionUUID->"6d4f22e8-d708-4baa-9bb5-8ba2f20f0d8b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Setup", "Section",ExpressionUUID->"26f9cbe0-04d5-48d5-910f-c2f046dcb592"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"77abffa3-3fce-4793-ac56-db17d527c2f7"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"61477ff6-10ee-4572-92a6-5a87fa8345dc"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Basic examples", "Section",ExpressionUUID->"f35ba547-4af2-4894-a421-2183773a9573"],
+
+Cell["Enumerate every connected 4-vertex graph.", "CodeText",ExpressionUUID->"fbed91bf-b939-4f8c-b11c-0f562f0616a1"],
+
+Cell["Length @ EnumerateGraphs[ 4, ConnectedGraphQ ]", "Input",ExpressionUUID->"d2f6fd34-6010-4185-a3bf-398dd4c107b3"],
+
+Cell["\<\
+Filter by a paclet predicate. Whitehead's W1 axiom on five vertices.\
+\>", "CodeText",ExpressionUUID->"6f45b52b-b87a-459c-ab2f-9b63bd1f825e"],
+
+Cell["EnumerateGraphs[ 5, WhiteheadW1Q ]", "Input",ExpressionUUID->"21b60fa8-a0d8-4b1c-a57e-8b32cdadc54a"],
+
+Cell["\<\
+Project: count how many four-vertex graphs satisfy the projective-plane \
+predicate.\
+\>", "CodeText",ExpressionUUID->"5f72453c-8a77-4ce8-9f0f-296a031480c9"],
+
+Cell["Length @ EnumerateGraphs[ 4, ProjectivePlaneGraphQ ]", "Input",ExpressionUUID->"930f2b59-c89b-43a7-87a6-e966a948282e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Calling triple", "Section",ExpressionUUID->"6b1f504e-c725-483c-ac77-e311872f7edd"],
+
+Cell["Strict count: returns exactly k or $Failed.", "CodeText",ExpressionUUID->"b257a424-a39b-4031-aaa4-2d6b34f3cb8d"],
+
+Cell["EnumerateGraphs[ 5, ConnectedGraphQ, 3 ]", "Input",ExpressionUUID->"af083aa9-6693-4548-b1a7-f2def4db2b05"],
+
+Cell["Soft count: returns up to k.", "CodeText",ExpressionUUID->"dfbd5306-dfc9-45fe-9900-3e6e95f3e8f4"],
+
+Cell["EnumerateGraphs[ 5, ConnectedGraphQ, UpTo[ 3 ] ]", "Input",ExpressionUUID->"bf081e8d-7a5d-4d62-b6bf-7ec1eb8f0934"],
+
+Cell["All matches: returns the full filtered set.", "CodeText",ExpressionUUID->"7661d1d1-4393-4060-993b-207a8d6be3ee"],
+
+Cell["EnumerateGraphs[ 4, ConnectedGraphQ, All ]", "Input",ExpressionUUID->"cf547ef6-c363-4109-ac92-393a125dddf7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Options", "Section",ExpressionUUID->"3df434df-fb82-4968-ba16-b84bd500d846"],
+
+Cell["\<\
+Option \"From\" supplies a custom pool instead of GraphData. Search a sample \
+of small named graphs.\
+\>", "CodeText",ExpressionUUID->"3557c302-40c4-4bbc-b813-d64ccaf897cb"],
+
+Cell["\<\
+EnumerateGraphs[ Automatic, ConnectedGraphQ, All, \"From\" -> { \
+PetersenGraph[ ], CycleGraph[ 6 ], PathGraph[ Range @ 5 ] } ]\
+\>", "Input",ExpressionUUID->"3b252cfb-14d9-413c-ab7c-7faaf1e009b7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Demonstration on the example-graph trio", "Section",ExpressionUUID->"a65b249c-3600-4731-92b9-6c84a2f4b516"],
+
+Cell["\<\
+Verify that several InfraExampleGraph entries pass the connectedness \
+predicate.\
+\>", "CodeText",ExpressionUUID->"bf33e713-c132-46ae-b7a6-133264a18104"],
+
+Cell["\<\
+EnumerateGraphs[ 10, ConnectedGraphQ, All, \"From\" -> { InfraExampleGraph[ \
+\"Petersen\" ], InfraExampleGraph[ \"Grid\", { 3, 3 } ], InfraExampleGraph[ \
+\"TriangularLattice\", 5 ] } ] // Length\
+\>", "Input",ExpressionUUID->"d19c635d-db3d-4fcf-853b-036855519bd0"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["See also", "Section",ExpressionUUID->"2c4c29f0-7a5a-4854-ae89-199cffc94291"],
+
+Cell["\<\
+WhiteheadW1Q  WhiteheadW2Q  WhiteheadW3Q  ProjectivePlaneGraphQ  RadarBasisQ  \
+TarskiAxiomQ  InfraExampleGraph\
+\>", "Text",ExpressionUUID->"c3d1f948-8c7f-4486-ac39-18a4bb8af445"]
+}, Open  ]]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"573c9b3f-ee9e-4f63-b955-d6940ddd9def"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 87, 0, 70, "Title",ExpressionUUID->"6fb58a65-69e5-4797-aae0-2dd05652cd2e"],
+Cell[666, 24, 449, 6, 70, "Text",ExpressionUUID->"6d4f22e8-d708-4baa-9bb5-8ba2f20f0d8b"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1152, 35, 79, 0, 70, "Section",ExpressionUUID->"26f9cbe0-04d5-48d5-910f-c2f046dcb592"],
+Cell[1234, 37, 132, 0, 70, "CodeText",ExpressionUUID->"77abffa3-3fce-4793-ac56-db17d527c2f7"],
+Cell[1369, 39, 122, 0, 70, "Code",ExpressionUUID->"61477ff6-10ee-4572-92a6-5a87fa8345dc"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1528, 44, 88, 0, 70, "Section",ExpressionUUID->"f35ba547-4af2-4894-a421-2183773a9573"],
+Cell[1619, 46, 116, 0, 70, "CodeText",ExpressionUUID->"fbed91bf-b939-4f8c-b11c-0f562f0616a1"],
+Cell[1738, 48, 118, 0, 70, "Input",ExpressionUUID->"d2f6fd34-6010-4185-a3bf-398dd4c107b3"],
+Cell[1859, 50, 151, 2, 70, "CodeText",ExpressionUUID->"6f45b52b-b87a-459c-ab2f-9b63bd1f825e"],
+Cell[2013, 54, 106, 0, 70, "Input",ExpressionUUID->"21b60fa8-a0d8-4b1c-a57e-8b32cdadc54a"],
+Cell[2122, 56, 167, 3, 70, "CodeText",ExpressionUUID->"5f72453c-8a77-4ce8-9f0f-296a031480c9"],
+Cell[2292, 61, 124, 0, 70, "Input",ExpressionUUID->"930f2b59-c89b-43a7-87a6-e966a948282e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2453, 66, 88, 0, 70, "Section",ExpressionUUID->"6b1f504e-c725-483c-ac77-e311872f7edd"],
+Cell[2544, 68, 118, 0, 70, "CodeText",ExpressionUUID->"b257a424-a39b-4031-aaa4-2d6b34f3cb8d"],
+Cell[2665, 70, 112, 0, 70, "Input",ExpressionUUID->"af083aa9-6693-4548-b1a7-f2def4db2b05"],
+Cell[2780, 72, 103, 0, 70, "CodeText",ExpressionUUID->"dfbd5306-dfc9-45fe-9900-3e6e95f3e8f4"],
+Cell[2886, 74, 120, 0, 70, "Input",ExpressionUUID->"bf081e8d-7a5d-4d62-b6bf-7ec1eb8f0934"],
+Cell[3009, 76, 118, 0, 70, "CodeText",ExpressionUUID->"7661d1d1-4393-4060-993b-207a8d6be3ee"],
+Cell[3130, 78, 114, 0, 70, "Input",ExpressionUUID->"cf547ef6-c363-4109-ac92-393a125dddf7"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3281, 83, 81, 0, 70, "Section",ExpressionUUID->"3df434df-fb82-4968-ba16-b84bd500d846"],
+Cell[3365, 85, 184, 3, 70, "CodeText",ExpressionUUID->"3557c302-40c4-4bbc-b813-d64ccaf897cb"],
+Cell[3552, 90, 207, 3, 70, "Input",ExpressionUUID->"3b252cfb-14d9-413c-ab7c-7faaf1e009b7"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3796, 98, 113, 0, 70, "Section",ExpressionUUID->"a65b249c-3600-4731-92b9-6c84a2f4b516"],
+Cell[3912, 100, 164, 3, 70, "CodeText",ExpressionUUID->"bf33e713-c132-46ae-b7a6-133264a18104"],
+Cell[4079, 105, 276, 4, 70, "Input",ExpressionUUID->"d19c635d-db3d-4fcf-853b-036855519bd0"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4392, 114, 82, 0, 70, "Section",ExpressionUUID->"2c4c29f0-7a5a-4854-ae89-199cffc94291"],
+Cell[4477, 116, 190, 3, 70, "Text",ExpressionUUID->"c3d1f948-8c7f-4486-ac39-18a4bb8af445"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

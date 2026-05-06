@@ -34,7 +34,6 @@ PackageExport[EmbeddingClosestPaths]
 PackageExport[EmbeddingClosestCycles]
 PackageExport[GeodesicSubgraph]
 PackageExport[PathSubgraph]
-PackageExport[InfraMode]
 
 (* TropicalOperations.wl *)
 PackageExport[TropicalPlus]
@@ -118,6 +117,9 @@ PackageExport[TropicalT1Q]
 
 (* Enumeration.wl *)
 PackageExport[EnumerateGraphs]
+
+(* ExampleGraphs.wl *)
+PackageExport[InfraExampleGraph]
 
 (* Curvatures.wl *)
 PackageExport[FormanRicci]

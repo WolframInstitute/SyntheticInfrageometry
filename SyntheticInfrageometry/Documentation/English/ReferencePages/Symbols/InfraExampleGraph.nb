@@ -1,0 +1,293 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     13628,        284]
+NotebookOptionsPosition[      8209,        199]
+NotebookOutlinePosition[      8526,        213]
+CellTagsIndexPosition[      8483,        210]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["InfraExampleGraph", "Title",ExpressionUUID->"5ea2a7cd-c700-4053-9af1-016d4f9ea278"],
+
+Cell["\<\
+InfraExampleGraph[name, params] is the paclet's example-graph registry, \
+modelled on ExampleData. It returns a canonical example graph used as the \
+running graph in guides, tutorials, and symbol-page demonstrations. \
+InfraExampleGraph[] returns the list of available keys; \
+InfraExampleGraph[name] uses the registry's default parameters. Mesh keys \
+forward MaxCellMeasure and AccuracyGoal to DiscretizeRegion. Twelve keys \
+cover the curvature spectrum (flat lattices, Euclidean meshes, regular trees, \
+spherical meshes) plus standard small named graphs and Cayley graphs of \
+finite groups.\
+\>", "Text",ExpressionUUID->"eca9afed-1c1f-4ca4-b333-3f07a5ed1344"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Setup", "Section",ExpressionUUID->"65a6ac3b-594d-4293-bc36-50168ac14d96"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"75cd1a1b-21b8-4acd-a1a9-3311e844a2e9"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"47616db4-df0b-4c8d-a775-95a259983edc"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Listing the registry", "Section",ExpressionUUID->"7e620363-003a-441d-bf6b-6a5eeb9e838a"],
+
+Cell["Call with no arguments to list the available keys.", "CodeText",ExpressionUUID->"7a1ddb0e-b068-4da4-9969-649c292b05c3"],
+
+Cell["InfraExampleGraph[ ]", "Input",ExpressionUUID->"22427997-79ec-4306-8dbe-37570e5e4b39"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Lattices", "Section",ExpressionUUID->"2a6af984-4f95-4b2f-98c3-e3ad9b61fff6"],
+
+Cell["Rectangular grid: the canonical 4-regular flat lattice.", "CodeText",ExpressionUUID->"67848f33-679d-47e6-9a7c-a1ea9e63b71a"],
+
+Cell["InfraExampleGraph[ \"Grid\", { 4, 4 } ]", "Input",ExpressionUUID->"ef882886-411b-41f8-9189-04b0a950cb0d"],
+
+Cell["\<\
+Triangular lattice: 6-regular interior, dense triangle structure.\
+\>", "CodeText",ExpressionUUID->"4e56e803-7508-44d6-97b5-200cadc29867"],
+
+Cell["InfraExampleGraph[ \"TriangularLattice\", 5 ]", "Input",ExpressionUUID->"3834eb18-80d1-41b1-bca5-40e16044dc5f"],
+
+Cell["Hexagonal lattice: 3-regular, no triangles, six-cycle faces.", \
+"CodeText",ExpressionUUID->"78cae041-25ea-4f71-830f-3efe29123931"],
+
+Cell["InfraExampleGraph[ \"HexagonalLattice\", { 3, 3, 3 } ]", "Input",ExpressionUUID->"f07cae02-926b-487a-89f2-f23e394a90b2"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Mesh discretizations", "Section",ExpressionUUID->"8e45be25-eb33-46ec-adcf-cf13abf105af"],
+
+Cell["\<\
+Triangulated rectangle [0,a] x [0,b] from DiscretizeRegion. Use \
+MaxCellMeasure to control resolution.\
+\>", "CodeText",ExpressionUUID->"31be735d-a734-467f-a03b-84cc28c9ea40"],
+
+Cell["\<\
+InfraExampleGraph[ \"RectangleMesh\", { 3, 2 }, MaxCellMeasure -> 0.1 ]\
+\>", "Input",ExpressionUUID->"8b861792-b052-4734-a450-e60a35658305"],
+
+Cell["A finer mesh of the same rectangle.", "CodeText",ExpressionUUID->"c4cffb07-57de-490e-8085-2468d47c6f19"],
+
+Cell["\<\
+InfraExampleGraph[ \"RectangleMesh\", { 3, 2 }, MaxCellMeasure -> 0.02 ]\
+\>", "Input",ExpressionUUID->"4269afee-c01c-4c60-b30e-ea9020460357"],
+
+Cell["\<\
+Triangulated disk: boundary effects mimic negative curvature.\
+\>", "CodeText",ExpressionUUID->"96c2825f-c0f1-4b2a-a0ac-d18b9b31dd47"],
+
+Cell["InfraExampleGraph[ \"DiskMesh\", 1, MaxCellMeasure -> 0.05 ]", "Input",ExpressionUUID->"66949b35-0eff-4e85-9276-c3456d4461e4"],
+
+Cell["Triangulated sphere: positive curvature.", "CodeText",ExpressionUUID->"c8e1e970-27ff-4966-8e86-e30b51407cd8"],
+
+Cell["InfraExampleGraph[ \"SphereMesh\", 1, MaxCellMeasure -> 0.1 ]", "Input",ExpressionUUID->"adf9c17e-0b02-45d1-9bbe-0119bf021cfe"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Trees and Cayley graphs", "Section",ExpressionUUID->"29706171-f127-454b-8443-120720cb27f6"],
+
+Cell["\<\
+Regular tree of degree d and depth h (root has d children, every other \
+internal vertex has d-1).\
+\>", "CodeText",ExpressionUUID->"be093c9b-e121-4149-be78-c4e38ba1bc7a"],
+
+Cell["InfraExampleGraph[ \"RegularTree\", { 3, 3 } ]", "Input",ExpressionUUID->"855ec876-3e3f-478f-a558-349f190bce9c"],
+
+Cell["Cayley graph of the symmetric group S_4.", "CodeText",ExpressionUUID->"54c3deda-b712-4687-a6d5-868a1dde1584"],
+
+Cell["InfraExampleGraph[ \"Cayley\", { \"SymmetricGroup\", 4 } ]", "Input",ExpressionUUID->"7ea81299-71ad-4315-9180-4d322e1e7a4f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Named gems", "Section",ExpressionUUID->"9f17a503-ee49-4a65-ac87-714335aca360"],
+
+Cell["Petersen graph: 3-regular, girth 5, distance-regular.", "CodeText",ExpressionUUID->"9342ef46-fcd7-4914-af59-c9ee6eb36632"],
+
+Cell["InfraExampleGraph[ \"Petersen\" ]", "Input",ExpressionUUID->"9c4df39f-670b-4f61-af23-5c5782e5a00f"],
+
+Cell["\<\
+Heawood graph: 3-regular bipartite, girth 6, point-line incidence of PG(2, 2).\
+\>", "CodeText",ExpressionUUID->"75c35e56-137f-4168-b7c8-b417012921e6"],
+
+Cell["InfraExampleGraph[ \"Heawood\" ]", "Input",ExpressionUUID->"6df22b82-c5d2-4014-9b53-cdd01af70d54"],
+
+Cell["Moebius-Kantor graph: 3-regular, girth 6.", "CodeText",ExpressionUUID->"7f6b02ad-9bfd-4e0f-b809-8893f09b734d"],
+
+Cell["InfraExampleGraph[ \"MobiusKantor\" ]", "Input",ExpressionUUID->"5bddce29-ac44-46fe-9d11-268d8cd41ba7"],
+
+Cell["Tutte 12-cage: 3-regular, girth 12.", "CodeText",ExpressionUUID->"8994839f-3a51-4d9b-8bc9-bc2eb9d1c7b2"],
+
+Cell["InfraExampleGraph[ \"Tutte\" ]", "Input",ExpressionUUID->"02dc97a0-21c0-4ce5-8f0f-cd20181d696e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Three graphs side by side: the curvature spectrum", "Section",ExpressionUUID->"d5d180cd-bd46-425b-96fe-bf718d3dea7e"],
+
+Cell["\<\
+The same construction (a geodesic between two corners) on a flat mesh, a \
+regular tree, and a sphere mesh.\
+\>", "CodeText",ExpressionUUID->"cea36bd7-5d70-40da-8c3e-973b86123464"],
+
+Cell["\<\
+GraphicsRow @ Map[ g |-> InfraSceneHighlight[ g, { FindSegment[ g, 1, \
+VertexCount[ g ], All ] -> Blue } ], { InfraExampleGraph[ \"RectangleMesh\", \
+{ 3, 2 }, MaxCellMeasure -> 0.1 ], InfraExampleGraph[ \"RegularTree\", { 3, 3 \
+} ], InfraExampleGraph[ \"SphereMesh\", 1, MaxCellMeasure -> 0.1 ] } ]\
+\>", "Input",ExpressionUUID->"5e7b4e75-ad90-4004-bbf2-e293b0af6a91"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Default parameters", "Section",ExpressionUUID->"0518ceaf-ddd0-40f2-9db1-e138d134b2cf"],
+
+Cell["\<\
+Calling with just the key uses the registry's default parameters.\
+\>", "CodeText",ExpressionUUID->"6f8d0942-5691-496d-9924-d8dacbfc053e"],
+
+Cell["InfraExampleGraph[ \"Grid\" ]", "Input",ExpressionUUID->"4bc7dc68-e750-4182-95d7-ea073a46512b"],
+
+Cell["InfraExampleGraph[ \"RegularTree\" ]", "Input",ExpressionUUID->"65d62a2f-fe1d-4e01-b251-dd3d733de2e5"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Composition with paclet primitives", "Section",ExpressionUUID->"de054181-0bbe-4732-8a44-6e36e854a931"],
+
+Cell["Run a curvature engine on a registry graph.", "CodeText",ExpressionUUID->"d10eb113-8ebf-41b4-b0e7-e2a08834bc76"],
+
+Cell["FormanRicci @ InfraExampleGraph[ \"TriangularLattice\", 5 ]", "Input",ExpressionUUID->"40f9e3e3-6f5a-4154-aabc-db0ce92afcbf"],
+
+Cell["Use a registry graph as the substrate for FindSegment.", "CodeText",ExpressionUUID->"0a6a1d98-4cc0-48d5-ab35-6386a57a6b35"],
+
+Cell["\<\
+FindSegment[ InfraExampleGraph[ \"Grid\", { 3, 3 } ], 1, 9, All ]\
+\>", "Input",ExpressionUUID->"80948646-959b-45a3-8dba-16c1547ff39d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["See also", "Section",ExpressionUUID->"a6e29414-cf8f-4d43-b839-d402cc9eb6f9"],
+
+Cell["\<\
+EnumerateGraphs  FormanRicci  OllivierRicci  WolframRicci  FindSegment  \
+InfraSceneHighlight\
+\>", "Text",ExpressionUUID->"ff06f883-fd46-4b07-86a9-295fd1fc4e17"]
+}, Open  ]]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"573c9b3f-ee9e-4f63-b955-d6940ddd9def"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 89, 0, 70, "Title",ExpressionUUID->"5ea2a7cd-c700-4053-9af1-016d4f9ea278"],
+Cell[668, 24, 676, 10, 70, "Text",ExpressionUUID->"eca9afed-1c1f-4ca4-b333-3f07a5ed1344"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1381, 39, 79, 0, 70, "Section",ExpressionUUID->"65a6ac3b-594d-4293-bc36-50168ac14d96"],
+Cell[1463, 41, 91, 0, 70, "CodeText",ExpressionUUID->"75cd1a1b-21b8-4acd-a1a9-3311e844a2e9"],
+Cell[1557, 43, 122, 0, 70, "Code",ExpressionUUID->"47616db4-df0b-4c8d-a775-95a259983edc"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1716, 48, 94, 0, 70, "Section",ExpressionUUID->"7e620363-003a-441d-bf6b-6a5eeb9e838a"],
+Cell[1813, 50, 125, 0, 70, "CodeText",ExpressionUUID->"7a1ddb0e-b068-4da4-9969-649c292b05c3"],
+Cell[1941, 52, 92, 0, 70, "Input",ExpressionUUID->"22427997-79ec-4306-8dbe-37570e5e4b39"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2070, 57, 82, 0, 70, "Section",ExpressionUUID->"2a6af984-4f95-4b2f-98c3-e3ad9b61fff6"],
+Cell[2155, 59, 130, 0, 70, "CodeText",ExpressionUUID->"67848f33-679d-47e6-9a7c-a1ea9e63b71a"],
+Cell[2288, 61, 111, 0, 70, "Input",ExpressionUUID->"ef882886-411b-41f8-9189-04b0a950cb0d"],
+Cell[2402, 63, 148, 2, 70, "CodeText",ExpressionUUID->"4e56e803-7508-44d6-97b5-200cadc29867"],
+Cell[2553, 67, 117, 0, 70, "Input",ExpressionUUID->"3834eb18-80d1-41b1-bca5-40e16044dc5f"],
+Cell[2673, 69, 137, 1, 70, "CodeText",ExpressionUUID->"78cae041-25ea-4f71-830f-3efe29123931"],
+Cell[2813, 72, 126, 0, 70, "Input",ExpressionUUID->"f07cae02-926b-487a-89f2-f23e394a90b2"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2976, 77, 94, 0, 70, "Section",ExpressionUUID->"8e45be25-eb33-46ec-adcf-cf13abf105af"],
+Cell[3073, 79, 186, 3, 70, "CodeText",ExpressionUUID->"31be735d-a734-467f-a03b-84cc28c9ea40"],
+Cell[3262, 84, 151, 2, 70, "Input",ExpressionUUID->"8b861792-b052-4734-a450-e60a35658305"],
+Cell[3416, 88, 110, 0, 70, "CodeText",ExpressionUUID->"c4cffb07-57de-490e-8085-2468d47c6f19"],
+Cell[3529, 90, 152, 2, 70, "Input",ExpressionUUID->"4269afee-c01c-4c60-b30e-ea9020460357"],
+Cell[3684, 94, 144, 2, 70, "CodeText",ExpressionUUID->"96c2825f-c0f1-4b2a-a0ac-d18b9b31dd47"],
+Cell[3831, 98, 132, 0, 70, "Input",ExpressionUUID->"66949b35-0eff-4e85-9276-c3456d4461e4"],
+Cell[3966, 100, 115, 0, 70, "CodeText",ExpressionUUID->"c8e1e970-27ff-4966-8e86-e30b51407cd8"],
+Cell[4084, 102, 133, 0, 70, "Input",ExpressionUUID->"adf9c17e-0b02-45d1-9bbe-0119bf021cfe"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4254, 107, 97, 0, 70, "Section",ExpressionUUID->"29706171-f127-454b-8443-120720cb27f6"],
+Cell[4354, 109, 181, 3, 70, "CodeText",ExpressionUUID->"be093c9b-e121-4149-be78-c4e38ba1bc7a"],
+Cell[4538, 114, 118, 0, 70, "Input",ExpressionUUID->"855ec876-3e3f-478f-a558-349f190bce9c"],
+Cell[4659, 116, 115, 0, 70, "CodeText",ExpressionUUID->"54c3deda-b712-4687-a6d5-868a1dde1584"],
+Cell[4777, 118, 130, 0, 70, "Input",ExpressionUUID->"7ea81299-71ad-4315-9180-4d322e1e7a4f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4944, 123, 84, 0, 70, "Section",ExpressionUUID->"9f17a503-ee49-4a65-ac87-714335aca360"],
+Cell[5031, 125, 128, 0, 70, "CodeText",ExpressionUUID->"9342ef46-fcd7-4914-af59-c9ee6eb36632"],
+Cell[5162, 127, 105, 0, 70, "Input",ExpressionUUID->"9c4df39f-670b-4f61-af23-5c5782e5a00f"],
+Cell[5270, 129, 161, 2, 70, "CodeText",ExpressionUUID->"75c35e56-137f-4168-b7c8-b417012921e6"],
+Cell[5434, 133, 104, 0, 70, "Input",ExpressionUUID->"6df22b82-c5d2-4014-9b53-cdd01af70d54"],
+Cell[5541, 135, 116, 0, 70, "CodeText",ExpressionUUID->"7f6b02ad-9bfd-4e0f-b809-8893f09b734d"],
+Cell[5660, 137, 109, 0, 70, "Input",ExpressionUUID->"5bddce29-ac44-46fe-9d11-268d8cd41ba7"],
+Cell[5772, 139, 110, 0, 70, "CodeText",ExpressionUUID->"8994839f-3a51-4d9b-8bc9-bc2eb9d1c7b2"],
+Cell[5885, 141, 102, 0, 70, "Input",ExpressionUUID->"02dc97a0-21c0-4ce5-8f0f-cd20181d696e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6024, 146, 123, 0, 70, "Section",ExpressionUUID->"d5d180cd-bd46-425b-96fe-bf718d3dea7e"],
+Cell[6150, 148, 190, 3, 70, "CodeText",ExpressionUUID->"cea36bd7-5d70-40da-8c3e-973b86123464"],
+Cell[6343, 153, 381, 5, 70, "Input",ExpressionUUID->"5e7b4e75-ad90-4004-bbf2-e293b0af6a91"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6761, 163, 92, 0, 70, "Section",ExpressionUUID->"0518ceaf-ddd0-40f2-9db1-e138d134b2cf"],
+Cell[6856, 165, 148, 2, 70, "CodeText",ExpressionUUID->"6f8d0942-5691-496d-9924-d8dacbfc053e"],
+Cell[7007, 169, 101, 0, 70, "Input",ExpressionUUID->"4bc7dc68-e750-4182-95d7-ea073a46512b"],
+Cell[7111, 171, 108, 0, 70, "Input",ExpressionUUID->"65d62a2f-fe1d-4e01-b251-dd3d733de2e5"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7256, 176, 108, 0, 70, "Section",ExpressionUUID->"de054181-0bbe-4732-8a44-6e36e854a931"],
+Cell[7367, 178, 118, 0, 70, "CodeText",ExpressionUUID->"d10eb113-8ebf-41b4-b0e7-e2a08834bc76"],
+Cell[7488, 180, 131, 0, 70, "Input",ExpressionUUID->"40f9e3e3-6f5a-4154-aabc-db0ce92afcbf"],
+Cell[7622, 182, 129, 0, 70, "CodeText",ExpressionUUID->"0a6a1d98-4cc0-48d5-ab35-6386a57a6b35"],
+Cell[7754, 184, 145, 2, 70, "Input",ExpressionUUID->"80948646-959b-45a3-8dba-16c1547ff39d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7936, 191, 82, 0, 70, "Section",ExpressionUUID->"a6e29414-cf8f-4d43-b839-d402cc9eb6f9"],
+Cell[8021, 193, 172, 3, 70, "Text",ExpressionUUID->"ff06f883-fd46-4b07-86a9-295fd1fc4e17"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
