@@ -43,19 +43,48 @@ FindRadarBasis[ g_, n_ : 1, m_ : All ] :=
 (* RadarBasisQ tests whether a vertex list b resolves the graph: the
    pointwise distance map v |-> (d(v, b1), ..., d(v, bk)) is injective. *)
 
-RadarBasisQ[ g_Graph, b_List ] :=
-  DuplicateFreeQ[ GraphDistance[ g, # ] & /@ b ]
+Options[ RadarBasisQ ] = { "InfraPointAggregation" -> Min }
+
+RadarBasisQ[ g_Graph, b_List, opts : OptionsPattern[] ] :=
+  With[ { agg = OptionValue[ "InfraPointAggregation" ] },
+    DuplicateFreeQ[ Table[ infraAnchorDistance[ g, v, #, agg ] & /@ b, { v, VertexList[ g ] } ] ]
+  ]
 
 
 (* RadarCoordinates of v with respect to b is its distance vector
    (d(v, b1), ..., d(v, bk)).  The two-argument form returns the
-   Association of all vertices' radar coordinates. *)
+   Association of all vertices' radar coordinates.
 
-RadarCoordinates[ g_Graph, v_, b_List ] :=
-  GraphDistance[ g, v, # ] & /@ b
+   InfraPoint anchors: an InfraPoint[{u1, ..., um}] entry in the basis
+   contributes the aggregated distance Min | Mean | Max over its
+   realisations (Min by default, the infra-observer's nearest-anchor
+   reading).  An InfraPoint[...] query point degenerates to its single
+   vertex when |vs| = 1 and otherwise returns the list of per-realisation
+   coordinate vectors.  Aggregation is controlled by the
+   "InfraPointAggregation" option. *)
 
-RadarCoordinates[ g_Graph, b_List ] /; !MemberQ[ VertexList[ g ], b ] :=
-  Association[ # -> RadarCoordinates[ g, #, b ] & /@ VertexList[ g ] ]
+Options[ RadarCoordinates ] = { "InfraPointAggregation" -> Min }
+
+infraAnchorDistance[ g_, v_, InfraPoint[ vs_List ], agg_ ] :=
+  agg[ GraphDistance[ g, v, # ] & /@ vs ]
+
+infraAnchorDistance[ g_, v_, u_, _ ] :=
+  GraphDistance[ g, v, u ]
+
+RadarCoordinates[ g_Graph, v_, b_List, opts : OptionsPattern[] ] :=
+  With[ { agg = OptionValue[ "InfraPointAggregation" ] },
+    infraAnchorDistance[ g, v, #, agg ] & /@ b
+  ]
+
+RadarCoordinates[ g_Graph, InfraPoint[ { v_ } ], b_List, opts : OptionsPattern[] ] :=
+  RadarCoordinates[ g, v, b, opts ]
+
+RadarCoordinates[ g_Graph, InfraPoint[ vs_List ], b_List, opts : OptionsPattern[] ] /;
+  SubsetQ[ VertexList[ g ], vs ] :=
+  RadarCoordinates[ g, #, b, opts ] & /@ vs
+
+RadarCoordinates[ g_Graph, b_List, opts : OptionsPattern[] ] /; !MemberQ[ VertexList[ g ], b ] :=
+  Association[ # -> RadarCoordinates[ g, #, b, opts ] & /@ VertexList[ g ] ]
 
 
 (* ===================== Laminar layers ===================== *)
