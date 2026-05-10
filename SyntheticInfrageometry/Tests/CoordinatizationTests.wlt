@@ -277,6 +277,22 @@ VerificationTest[
   TestID -> "OrthogonalCoordinates-SelectCoordinate-Centered-anchor-interior"
 ]
 
+(* "Centered" coords are integers (Round[Median[...]] fallback).  Run on a
+   reasonably diverse mesh and assert every per-vertex per-axis coord is an
+   integer. *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    With[{axes = FindOrthogonalFrame[g, 6]},
+      AllTrue[
+        Catenate[OrthogonalCoordinates[g, 6, axes, #] & /@ VertexList[g]],
+        IntegerQ
+      ]
+    ]
+  ],
+  True,
+  TestID -> "OrthogonalCoordinates-Centered-integer-coords"
+]
+
 (* ===== FindOrthogonalFrame ===== *)
 
 (* On PathGraph[5] at interior vertex 3 the line {1, 2, 3, 4, 5} is the

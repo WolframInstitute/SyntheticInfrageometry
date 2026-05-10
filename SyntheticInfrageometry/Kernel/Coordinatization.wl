@@ -130,8 +130,9 @@ axisLayerIndex[ g_Graph, dag_Graph, v_ ] :=
    *shifted* tied list (ix_v - k, where k is the anchor's position on
    the axis), so 0 in the shifted list means "v projects exactly to the
    anchor" and the option can react to that:
-     "Centered" (default): 0 if 0 in shifted, else Median[shifted] -- on-axis
-                           vertices receive coordinate 0 by construction.
+     "Centered" (default): 0 if 0 in shifted, else Round[Median[shifted]] --
+                           on-axis vertices receive coordinate 0 by construction;
+                           off-axis vertices receive integer coordinates.
      Min, Max, Mean, Median, First, Last: linear reducers (output identical
                            to the pre-shift form, since they commute with
                            the shift).
@@ -139,7 +140,7 @@ axisLayerIndex[ g_Graph, dag_Graph, v_ ] :=
      Any user function:    applied to the shifted tied list. *)
 
 selectCoordinate[ "Centered", shifted_List ] :=
-  If[ MemberQ[ shifted, 0 ], 0, Median[ shifted ] ]
+  If[ MemberQ[ shifted, 0 ], 0, Round @ Median[ shifted ] ]
 selectCoordinate[ All, ix_List ] := ix
 selectCoordinate[ f_,   ix_List ] := f @ ix
 
