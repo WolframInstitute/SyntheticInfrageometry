@@ -126,19 +126,28 @@ axisLayerIndex[ g_Graph, dag_Graph, v_ ] :=
    FindOrthogonalFrame is the standalone search.
 
    When the projection is multi-valued (ties), the "SelectCoordinate"
-   option chooses what to return: a function applied to the tied list
-   (e.g. Median (default, centers symmetric tied sets on c), Min, Max,
-   First, Last, Mean, or any user-supplied List -> ?Number), or All to
-   keep the full tied list as the per-axis coordinate.  The anchor side
-   is always reduced via First, so anchored coordinates broadcast cleanly
-   when the per-axis value is itself a list. *)
+   option chooses what to return.  The aggregator is applied to the
+   *shifted* tied list (ix_v - k, where k is the anchor's position on
+   the axis), so 0 in the shifted list means "v projects exactly to the
+   anchor" and the option can react to that:
+     "Centered" (default): 0 if 0 in shifted, else Median[shifted] -- on-axis
+                           vertices receive coordinate 0 by construction.
+     Min, Max, Mean, Median, First, Last: linear reducers (output identical
+                           to the pre-shift form, since they commute with
+                           the shift).
+     All:                  the full shifted tied list.
+     Any user function:    applied to the shifted tied list. *)
 
+selectCoordinate[ "Centered", shifted_List ] :=
+  If[ MemberQ[ shifted, 0 ], 0, Median[ shifted ] ]
 selectCoordinate[ All, ix_List ] := ix
 selectCoordinate[ f_,   ix_List ] := f @ ix
 
 orthogonalCoordsCore[ g_Graph, axes_List, v_, anchors_List, sel_ ] :=
-  With[ { vIdx = selectCoordinate[ sel, axisLayerIndex[ g, #, v ] ] & /@ axes },
-    vIdx - MapThread[ First @ axisLayerIndex[ g, #1, #2 ] &, { axes, anchors } ]
+  MapThread[
+    { axis, anchor } |-> selectCoordinate[ sel,
+      axisLayerIndex[ g, axis, v ] - First @ axisLayerIndex[ g, axis, anchor ] ],
+    { axes, anchors }
   ]
 
 perAxisAnchor[ axis_List, vs_List ] :=
@@ -148,7 +157,7 @@ perAxisAnchor[ axis_Graph, vs_List ] :=
   SelectFirst[ vs, MemberQ[ VertexList @ axis, # ] &, First @ vs ]
 
 
-Options[ OrthogonalCoordinates ] = { "SelectCoordinate" -> Median };
+Options[ OrthogonalCoordinates ] = { "SelectCoordinate" -> "Centered" };
 
 (* Single vertex: signed displacement of v in the frame {a1, ..., an} centred at c *)
 OrthogonalCoordinates[ g_Graph, c_, axes_List, v_, opts : OptionsPattern[] ] /;
@@ -331,14 +340,14 @@ axisSortKey[ axis_List ] :=
 
 
 (* projectsToCenterQ -- does w project to c on axis under tie-reducer sel?
-   Both sides of the comparison are reduced via selectCoordinate[sel, ...],
-   so the test matches the aggregation OrthogonalCoordinates uses for its
-   coordinate map: sel = Min (default) compares smallest tied projections;
-   sel = Median compares medians; sel = All compares the full tied lists. *)
+   Defined as "the OrthogonalCoordinates coord of w on the axis is 0",
+   so the perpendicularity gate and the coord map agree by construction.
+   With the default sel = "Centered", this fires whenever c is in w's
+   tied projection set (or w's tied set is symmetric around c). *)
 
 projectsToCenterQ[ g_Graph, axis_, c_, w_, sel_ ] :=
-  selectCoordinate[ sel, axisLayerIndex[ g, axis, w ] ] ===
-  selectCoordinate[ sel, axisLayerIndex[ g, axis, c ] ]
+  selectCoordinate[ sel,
+    axisLayerIndex[ g, axis, w ] - First @ axisLayerIndex[ g, axis, c ] ] === 0
 
 
 (* restrictDagToCenter -- keep only DAG vertices that project to c on axis
@@ -425,7 +434,7 @@ Options[ FindOrthogonalFrame ] = {
   "AxisLength"       -> All,
   "AxisCount"        -> Automatic,
   "BranchSampleSize" -> All,
-  "SelectCoordinate" -> Median
+  "SelectCoordinate" -> "Centered"
 };
 
 
@@ -464,7 +473,7 @@ findOrthogonalFrameCore[ g_Graph, c_, count_, opts_List ] /; MemberQ[ VertexList
     sampleSize    = If[ method === "Greedy", All,
       "BranchSampleSize" /. opts /. "BranchSampleSize" -> All ];
     maxFrames = If[ method === "Greedy" && IntegerQ @ count, count, Infinity ];
-    sel       = "SelectCoordinate" /. opts /. "SelectCoordinate" -> Median;
+    sel       = "SelectCoordinate" /. opts /. "SelectCoordinate" -> "Centered";
     frames = orthogonalFrameDFS[ g, c, dag, axisCountSpec, minLength, sampleSize, maxFrames, sel ];
     If[ method === "Exhaustive", SortBy[ frames, frameSortKey ], frames ]
   ]

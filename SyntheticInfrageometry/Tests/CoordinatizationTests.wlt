@@ -243,6 +243,40 @@ VerificationTest[
   TestID -> "OrthogonalCoordinates-SelectCoordinate-userFunction"
 ]
 
+(* "Centered" rule: shifted ix_v contains 0 (vertex 4 ties at positions 0
+   and 2 on axis {1, 2, 3} anchored at 1, so shifted = {0, 2}) -> coord 0. *)
+VerificationTest[
+  With[{g = CycleGraph[4], axes = {{1, 2, 3}}},
+    OrthogonalCoordinates[g, 1, axes, 4, "SelectCoordinate" -> "Centered"]
+  ],
+  {0},
+  TestID -> "OrthogonalCoordinates-SelectCoordinate-Centered-contains-0"
+]
+
+(* "Centered" rule: shifted ix_v doesn't contain 0 -> Median fallback.
+   On PathGraph[5] anchored at vertex 2 (position 1 of axis {1, 2, 3, 4, 5}),
+   vertex 4 has unique closest position 3, so ix_v = {3} and shifted = {2}.
+   Doesn't contain 0; Median[{2}] = 2. *)
+VerificationTest[
+  With[{g = PathGraph @ Range[5], axes = {{1, 2, 3, 4, 5}}},
+    OrthogonalCoordinates[g, 2, axes, 4, "SelectCoordinate" -> "Centered"]
+  ],
+  {2},
+  TestID -> "OrthogonalCoordinates-SelectCoordinate-Centered-fallback-Median"
+]
+
+(* "Centered" with anchor not at position 0: axis {3, 1, 2} on CycleGraph[4]
+   anchored at vertex 1 (position 1).  For v = 4: distances are
+   d(4, 3) = 1, d(4, 1) = 1, d(4, 2) = 2 -> ix_v = {0, 1}, shifted = {-1, 0}.
+   Contains 0 -> coord 0. *)
+VerificationTest[
+  With[{g = CycleGraph[4], axes = {{3, 1, 2}}},
+    OrthogonalCoordinates[g, 1, axes, 4, "SelectCoordinate" -> "Centered"]
+  ],
+  {0},
+  TestID -> "OrthogonalCoordinates-SelectCoordinate-Centered-anchor-interior"
+]
+
 (* ===== FindOrthogonalFrame ===== *)
 
 (* On PathGraph[5] at interior vertex 3 the line {1, 2, 3, 4, 5} is the
@@ -544,13 +578,36 @@ VerificationTest[
 ]
 
 
-(* "SelectCoordinate" default is Median: omitting the option matches passing Median. *)
+(* "SelectCoordinate" default is "Centered": omitting the option matches
+   passing "Centered" explicitly. *)
 
 VerificationTest[
   FindOrthogonalFrame[GridGraph[{4, 4}], 6, All] ===
-    FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, "SelectCoordinate" -> Median],
+    FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, "SelectCoordinate" -> "Centered"],
   True,
-  TestID -> "FindOrthogonalFrame-SelectCoordinate-default-is-Median"
+  TestID -> "FindOrthogonalFrame-SelectCoordinate-default-is-Centered"
+]
+
+
+(* Unification: under "Centered", every vertex on axis i has coord 0 on
+   every axis j != i.  This is by construction (perpendicularity test ==
+   coord-is-0 test), but worth pinning. *)
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}], c = 5},
+    With[{axes = FindOrthogonalFrame[g, c]},
+      AllTrue[Range @ Length @ axes,
+        i |-> AllTrue[axes[[i]]["First"],
+          v |-> With[{coords = OrthogonalCoordinates[g, c, axes, v,
+              "SelectCoordinate" -> "Centered"]},
+            AllTrue[Range @ Length @ coords, j |-> j == i || coords[[j]] == 0]
+          ]
+        ]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "FindOrthogonalFrame-Centered-unifies-perpendicularity-and-coords"
 ]
 
 
