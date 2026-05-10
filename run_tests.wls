@@ -1,6 +1,12 @@
 #!/usr/bin/env wolframscript
 
 $pacletDir = DirectoryName[$InputFileName];
+$sisterDir = FileNameJoin[{ParentDirectory[$pacletDir], "Infrageometry", "Infrageometry"}];
+
+(* Load the dev sister paclet first so the synthetic paclet's
+   Needs[...Infrageometry...] resolves to the in-tree version, not whatever
+   stale copy may be installed globally. *)
+If[DirectoryQ[$sisterDir], PacletDirectoryLoad[$sisterDir]];
 
 PacletDirectoryLoad[$pacletDir <> "/SyntheticInfrageometry"];
 Needs["WolframInstitute`SyntheticInfrageometry`"];

@@ -1,88 +1,96 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-(* EuclideanPostulates.wl *)
-PackageExport[FindPoint]
-PackageExport[FindSegment]
-PackageExport[FindLine]
-PackageExport[ExtendSegment]
-PackageExport[FindShell]
-PackageExport[FindCircle]
-PackageExport[FindParallel]
+Needs["WolframInstitute`Infrageometry`"]
 
-(* EuclideanPredicates.wl *)
+(* InfraPoint.wl *)
+PackageExport[InfraPoint]
+PackageExport[FindPoint]
+PackageExport[FindMidpoint]
+PackageExport[FindReflection]
+PackageExport[CompleteEquilateralTriangle]
+PackageExport[FindCommonPoint]
+
+(* InfraSegment.wl *)
+PackageExport[InfraSegment]
+PackageExport[FindSegment]
+PackageExport[ExtendSegment]
 PackageExport[SegmentQ]
-PackageExport[LineQ]
-PackageExport[ShellQ]
-PackageExport[CircleQ]
-PackageExport[ParallelQ]
-PackageExport[SeparatesQ]
-PackageExport[FindShellParameters]
 PackageExport[UniqueSegmentQ]
 
-(* EuclideanConstructions.wl *)
-PackageExport[FindMidpoint]
+(* InfraLine.wl *)
+PackageExport[FindLine]
+PackageExport[FindParallel]
 PackageExport[FindPerpendicular]
-PackageExport[FindBisectingHyperplane]
-PackageExport[CompleteEquilateralTriangle]
-PackageExport[InfraAngle]
+PackageExport[FindCommonLine]
 PackageExport[SegmentLineAngle]
+PackageExport[LineQ]
+PackageExport[ParallelQ]
+
+(* InfraShell.wl *)
+PackageExport[InfraShell]
+PackageExport[FindShell]
+PackageExport[FindShellParameters]
+PackageExport[ShellQ]
+PackageExport[SeparatesQ]
+
+(* InfraCircle.wl *)
+PackageExport[InfraCircle]
+PackageExport[FindCircle]
+PackageExport[CircleQ]
+
+(* InfraPlane.wl *)
+PackageExport[InfraPlane]
+PackageExport[FindBisectingHyperplane]
+
+(* InfraRay.wl *)
+PackageExport[InfraRay]
+PackageExport[FindRay]
+
+(* InfraPencil.wl *)
+PackageExport[InfraPencil]
+PackageExport[FindPencil]
+PackageExport[PencilDirections]
+PackageExport[PencilCardinality]
+PackageExport[LineCount]
+
+(* InfraEuclideanSpace.wl *)
+PackageExport[InfraScalarProduct]
+PackageExport[FindInfraLinearCombination]
+PackageExport[InfraAngle]
+
+(* AlexandrovGeometry.wl *)
+PackageExport[ComparisonTriangle]
+PackageExport[InfraComparisonTriangle]
+PackageExport[CATInequalityQ]
+PackageExport[InfraCurvature]
 
 (* PathSpace.wl *)
 PackageExport[SelectPaths]
 PackageExport[SelectCycles]
 PackageExport[EmbeddingClosestPaths]
 PackageExport[EmbeddingClosestCycles]
+PackageExport[GeodesicGraph]
 PackageExport[GeodesicSubgraph]
 PackageExport[PathSubgraph]
 
-(* TropicalOperations.wl *)
-PackageExport[TropicalPlus]
-PackageExport[TropicalTimes]
-PackageExport[TropicalDot]
-PackageExport[TropicalMatrixPower]
-
-(* MetricAlgebra.wl *)
+(* MetricGeometry.wl *)
 PackageExport[MetricInterval]
-PackageExport[GeodesicCount]
-PackageExport[DistanceMultiplicityMatrix]
-PackageExport[DistanceMatrixQ]
+PackageExport[GeodesicMultiplicity]
+PackageExport[GeodesicMultiplicityMatrix]
 PackageExport[MedianVertices]
+PackageExport[FindGeodesicConvexHull]
+PackageExport[GeodesicallyConvexQ]
 
 (* Coordinatization.wl *)
 PackageExport[FindRadarBasis]
 PackageExport[RadarBasisQ]
 PackageExport[RadarCoordinates]
 PackageExport[OrthogonalCoordinates]
-PackageExport[FindOrthogonalAxes]
+PackageExport[FindOrthogonalFrame]
+PackageExport[FindSpanningAxes]
+PackageExport[ResistanceCoordinates]
 
-(* ProjectivePostulates.wl *)
-PackageExport[FindPencil]
-PackageExport[FindRay]
-PackageExport[PencilDirections]
-PackageExport[PencilCardinality]
-PackageExport[LineCount]
-PackageExport[FindCommonLine]
-PackageExport[FindCommonPoint]
-PackageExport[InfraRay]
-PackageExport[InfraPencil]
-
-(* ProjectivePredicates.wl *)
-PackageExport[SameDirectionQ]
-PackageExport[CollinearQ]
-PackageExport[ConcurrentQ]
-PackageExport[UniquePencilQ]
-PackageExport[UniqueCollinearQ]
-PackageExport[UniqueConcurrentQ]
-PackageExport[WhiteheadW1Q]
-PackageExport[WhiteheadW2Q]
-PackageExport[WhiteheadW3Q]
-PackageExport[ProjectivePlaneGraphQ]
-
-(* TarskiPostulates.wl *)
-PackageExport[FindTarskiSegmentExtension]
-PackageExport[FindTarskiCounterexample]
-
-(* TarskiPredicates.wl *)
+(* TarskiGeometry.wl *)
 PackageExport[BetweennessQ]
 PackageExport[EquidistanceQ]
 PackageExport[TarskiStructure]
@@ -100,43 +108,32 @@ PackageExport[TarskiUpperDimensionQ]
 PackageExport[TarskiEuclidAxiomQ]
 PackageExport[TarskiContinuityQ]
 PackageExport[TarskiAxiomQ]
+PackageExport[FindTarskiCounterexample]
 
-(* TarskiConstructions.wl *)
-PackageExport[FindTarskiReflection]
-PackageExport[FindTarskiMidpoint]
+(* ProjectiveGeometry.wl *)
+PackageExport[SameDirectionQ]
+PackageExport[CollinearQ]
+PackageExport[ConcurrentQ]
+PackageExport[UniquePencilQ]
+PackageExport[UniqueCollinearQ]
+PackageExport[UniqueConcurrentQ]
+PackageExport[WhiteheadW1Q]
+PackageExport[WhiteheadW2Q]
+PackageExport[WhiteheadW3Q]
+PackageExport[ProjectivePlaneGraphQ]
 
-(* TropicalPostulates.wl *)
-PackageExport[FindTropicalSegment]
-PackageExport[FindGeodesicConvexHull]
-
-(* TropicalPredicates.wl *)
-PackageExport[TropicalSegmentQ]
-PackageExport[GeodesicallyConvexQ]
-PackageExport[UniqueTropicalSegmentQ]
-PackageExport[TropicalT1Q]
-
-(* Enumeration.wl *)
+(* GraphEnumeration.wl *)
 PackageExport[EnumerateGraphs]
 
 (* ExampleGraphs.wl *)
 PackageExport[InfraExampleGraph]
 
-(* Curvatures.wl *)
-PackageExport[FormanRicci]
-PackageExport[OllivierRicci]
-PackageExport[WolframRicci]
-
-(* Scenes.wl *)
+(* InfraScene.wl *)
 PackageExport[InfraScene]
 PackageExport[FindInfraScene]
 PackageExport[InfraInstance]
 PackageExport[InfraGeometricStep]
-PackageExport[InfraPoint]
-PackageExport[InfraSegment]
 PackageExport[InfraLine]
-PackageExport[InfraShell]
-PackageExport[InfraPlane]
-PackageExport[InfraCircle]
 PackageExport[InfraIntersection]
 PackageExport[InfraDistance]
 PackageExport[InfraSegmentQ]
@@ -147,10 +144,10 @@ PackageExport[InfraLineQ]
 PackageExport[InfraParallelQ]
 PackageExport[InfraIntersectQ]
 
-(* Highlights.wl *)
+(* InfraSceneVisualization.wl *)
 PackageExport[InfraSceneHighlight]
 
-(* Viewers.wl *)
+(* InfraSceneInteractive.wl *)
 PackageExport[PointViewer]
 PackageExport[SegmentViewer]
 PackageExport[ShellViewer]

@@ -1,0 +1,109 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5210,        100]
+NotebookOptionsPosition[      3094,         68]
+NotebookOutlinePosition[      3411,         82]
+CellTagsIndexPosition[      3368,         79]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["GeodesicGraph", "Title",ExpressionUUID->"7cae2f26-b4ba-41bd-a465-93910a43d468"],
+
+Cell["\<\
+GeodesicGraph[graph, c] returns the BFS DAG rooted at c: a directed graph \
+with edge u -> v whenever d(c, v) = d(c, u) + 1 and u-v is an edge of graph. \
+Sinks are peripheral vertices reachable from c; directed paths c -> sink are \
+exactly the maximal geodesics from c. Accepts InfraPoint[{c1, ..., ck}] for \
+multi-source BFS. Option \"AxisLength\" truncates at depth k (default All).\
+\>", "Text",ExpressionUUID->"e5ee8c89-1c11-4fb0-bac0-ba563ff8eeca"],
+
+Cell["Setup", "Section",ExpressionUUID->"69489031-a66f-4669-9d5a-232f96fd5739"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"e6029a8f-6316-4671-b7f5-c0993c5bc550"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"6ae0e62e-5da2-417f-90b8-0c52bbad1859"],
+
+Cell["Usage", "Section",ExpressionUUID->"4ac95d2b-c549-41e6-bf26-855bc9fbeb63"],
+
+Cell["BFS DAG rooted at the corner of a 4x4 grid.", "CodeText",ExpressionUUID->"1e0b4981-6ba2-4367-9ded-7b117f940d1b"],
+
+Cell["GeodesicGraph[GridGraph[{4, 4}], 1]", "Input",ExpressionUUID->"f89c6450-de9d-4e30-90de-cfc1e2957048"],
+
+Cell["Truncate the DAG at depth 2.", "CodeText",ExpressionUUID->"e9d8a39a-ac98-4cb7-be73-9695d84cc0d9"],
+
+Cell["GeodesicGraph[GridGraph[{4, 4}], 1, \"AxisLength\" -> 2]", "Input",ExpressionUUID->"9f4417ee-9b9c-442a-b5a6-cc79edf65ab1"],
+
+Cell["Examples", "Section",ExpressionUUID->"b1eb31dc-b69e-4075-8534-d575f9607cdb"],
+
+Cell["Multi-source BFS from a vertex set.", "CodeText",ExpressionUUID->"3633c9dd-08f1-407a-8a24-71f08a3c53cf"],
+
+Cell["GeodesicGraph[GridGraph[{4, 4}], InfraPoint[{1, 4}]]", "Input",ExpressionUUID->"7625293d-b3da-4866-be01-1f7c90960621"],
+
+Cell["On a cycle every vertex is at distance <= floor(n/2).", "CodeText",ExpressionUUID->"971bbea0-1c51-4a5a-ae31-5c564cdda392"],
+
+Cell["GeodesicGraph[CycleGraph[8], 1]", "Input",ExpressionUUID->"58631396-da46-46ca-8b67-d55f984dd978"],
+
+Cell["See also", "Section",ExpressionUUID->"9797fa8b-3571-46c6-83c9-f2266fa056d6"],
+
+Cell["GeodesicSubgraph", "Item",ExpressionUUID->"6692c9f3-3f19-41d2-9058-45a4563848df"],
+
+Cell["PathSubgraph", "Item",ExpressionUUID->"352d916c-ea78-41a4-9a9e-dcdc98a20142"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"550abe01-c49b-458b-9598-2fe5a03db2b2"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"0386fde3-7ba1-46c0-8244-cc96a3161c68"],
+
+Cell["GeodesicMultiplicity", "Item",ExpressionUUID->"5fbe5e91-be4f-4c19-868a-0a979e0a1ee6"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"7cae2f26-b4ba-41bd-a465-93910a43d468"],
+Cell[642, 22, 466, 6, 70, "Text",ExpressionUUID->"e5ee8c89-1c11-4fb0-bac0-ba563ff8eeca"],
+Cell[1111, 30, 79, 0, 70, "Section",ExpressionUUID->"69489031-a66f-4669-9d5a-232f96fd5739"],
+Cell[1193, 32, 132, 0, 70, "CodeText",ExpressionUUID->"e6029a8f-6316-4671-b7f5-c0993c5bc550"],
+Cell[1328, 34, 122, 0, 70, "Code",ExpressionUUID->"6ae0e62e-5da2-417f-90b8-0c52bbad1859"],
+Cell[1453, 36, 79, 0, 70, "Section",ExpressionUUID->"4ac95d2b-c549-41e6-bf26-855bc9fbeb63"],
+Cell[1535, 38, 118, 0, 70, "CodeText",ExpressionUUID->"1e0b4981-6ba2-4367-9ded-7b117f940d1b"],
+Cell[1656, 40, 107, 0, 70, "Input",ExpressionUUID->"f89c6450-de9d-4e30-90de-cfc1e2957048"],
+Cell[1766, 42, 103, 0, 70, "CodeText",ExpressionUUID->"e9d8a39a-ac98-4cb7-be73-9695d84cc0d9"],
+Cell[1872, 44, 128, 0, 70, "Input",ExpressionUUID->"9f4417ee-9b9c-442a-b5a6-cc79edf65ab1"],
+Cell[2003, 46, 82, 0, 70, "Section",ExpressionUUID->"b1eb31dc-b69e-4075-8534-d575f9607cdb"],
+Cell[2088, 48, 110, 0, 70, "CodeText",ExpressionUUID->"3633c9dd-08f1-407a-8a24-71f08a3c53cf"],
+Cell[2201, 50, 124, 0, 70, "Input",ExpressionUUID->"7625293d-b3da-4866-be01-1f7c90960621"],
+Cell[2328, 52, 128, 0, 70, "CodeText",ExpressionUUID->"971bbea0-1c51-4a5a-ae31-5c564cdda392"],
+Cell[2459, 54, 103, 0, 70, "Input",ExpressionUUID->"58631396-da46-46ca-8b67-d55f984dd978"],
+Cell[2565, 56, 82, 0, 70, "Section",ExpressionUUID->"9797fa8b-3571-46c6-83c9-f2266fa056d6"],
+Cell[2650, 58, 87, 0, 70, "Item",ExpressionUUID->"6692c9f3-3f19-41d2-9058-45a4563848df"],
+Cell[2740, 60, 83, 0, 70, "Item",ExpressionUUID->"352d916c-ea78-41a4-9a9e-dcdc98a20142"],
+Cell[2826, 62, 82, 0, 70, "Item",ExpressionUUID->"550abe01-c49b-458b-9598-2fe5a03db2b2"],
+Cell[2911, 64, 85, 0, 70, "Item",ExpressionUUID->"0386fde3-7ba1-46c0-8244-cc96a3161c68"],
+Cell[2999, 66, 91, 0, 70, "Item",ExpressionUUID->"5fbe5e91-be4f-4c19-868a-0a979e0a1ee6"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -48,7 +48,7 @@ All] -> Blue, FindMidpoint[g, 1, 16, All] -> Red}]]\
 
 Cell["Read the realisations.", "CodeText",ExpressionUUID->"36adca9b-542d-4f61-bc16-06a4d19c70af"],
 
-Cell["FindMidpoint[GridGraph[{4, 4}], 1, 16, All][\"Realisations\"]", "Input",ExpressionUUID->"15a689b5-739a-4bd9-b11a-4ca3250b18d5"],
+Cell["FindMidpoint[GridGraph[{4, 4}], 1, 16, All][\"Realizations\"]", "Input",ExpressionUUID->"15a689b5-739a-4bd9-b11a-4ca3250b18d5"],
 
 Cell["Examples", "Section",ExpressionUUID->"2e74546a-5c05-4805-b43c-94f979455889"],
 
@@ -85,7 +85,7 @@ Cell["FindSegment", "Item",ExpressionUUID->"59e8fc5f-2f37-46c6-9296-e17c46e9f95e
 
 Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"4a7898ea-44c8-4ccd-8c45-ad714bd1ac8e"],
 
-Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"80aeb8f3-ad7f-4fa8-9e24-790a5aeacd52"],
+Cell["FindReflection", "Item",ExpressionUUID->"80aeb8f3-ad7f-4fa8-9e24-790a5aeacd52"],
 
 Cell["InfraSceneHighlight", "Item",ExpressionUUID->"56357a6f-518b-403f-8d88-0bd73ea2fc74"]
 },

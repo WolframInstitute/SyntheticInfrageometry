@@ -10,162 +10,137 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     11104,        217]
-NotebookOptionsPosition[      7139,        165]
-NotebookOutlinePosition[      7456,        179]
-CellTagsIndexPosition[      7413,        176]
+NotebookDataLength[      9395,        186]
+NotebookOptionsPosition[      5994,        140]
+NotebookOutlinePosition[      6311,        154]
+CellTagsIndexPosition[      6268,        151]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["Metric Algebra Tutorial", "Title",ExpressionUUID->"dab7d4ef-5002-417b-b691-fdfb7c5c4c9a"],
+Cell["Metric Algebra Tutorial", "Title",ExpressionUUID->"3f98edda-a8d2-4aed-b47d-a456d110e724"],
 
 Cell["\<\
 The metric algebra layer organises numerical invariants of the shortest-path \
-metric: the metric interval, geodesic counts, the distance-multiplicity \
-matrix, the test for distance matrices, and median vertices. These are the \
+metric: the metric interval, geodesic multiplicities, the \
+geodesic-multiplicity matrix, and median vertices. These are the \
 synthetic-to-analytic-to-algebraic bridge: distances on a graph become \
-matrices that satisfy a tropical-idempotence relation, the matrix-form \
-triangle inequality.\
-\>", "Text",ExpressionUUID->"81562983-413c-4207-97a6-2aa785779551"],
+matrices that the higher synthetic / Tarski layers query through one-line \
+conditions on the pair (A, D).\
+\>", "Text",ExpressionUUID->"0c17c72f-2a32-416d-84c2-3142ec7d7734"],
 
-Cell["Setup", "Section",ExpressionUUID->"1db56bd7-92e6-4b92-9343-524114576cc2"],
+Cell["Setup", "Section",ExpressionUUID->"20eb803b-5d97-4d62-9489-a4ee4ec619a8"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"c5145e4e-fded-40fd-94ff-e29a1cb019cf"],
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"9455711b-5326-4eb3-9269-136efa32bfe4"],
 
-Cell["The metric interval", "Section",ExpressionUUID->"e3692cbe-741d-4f73-8a9b-180aff2528de"],
+Cell["The metric interval", "Section",ExpressionUUID->"63bbca3d-0b6d-47c4-b8ab-9a093455f637"],
 
 Cell["\<\
 The metric interval I(u, v) = { w : d(u, w) + d(w, v) == d(u, v) } is the \
 union of all geodesics from u to v -- the master operation of the metric \
 algebra layer.\
-\>", "Text",ExpressionUUID->"76d2d9ac-4c2f-4ebe-9e33-e22b64634bb3"],
+\>", "Text",ExpressionUUID->"5c21722e-36d4-4221-81e3-21a4784b84f5"],
 
-Cell["MetricInterval[GridGraph[{3, 3}], 1, 9]", "Input",ExpressionUUID->"06060966-e2e5-49c3-9d73-a261506299e1"],
+Cell["MetricInterval[GridGraph[{3, 3}], 1, 9]", "Input",ExpressionUUID->"de9482de-2561-4379-8f4d-de7a73681f1e"],
 
 Cell["\<\
 The interval contains every vertex on every shortest 1-9 path. On a tree the \
 interval is exactly the unique geodesic vertex set; on a grid it is much \
 wider.\
-\>", "Text",ExpressionUUID->"7db593a5-ebae-4ed6-a618-748847c349da"],
+\>", "Text",ExpressionUUID->"a13420bc-71f5-4905-a4a4-ebbaeca5bb84"],
 
-Cell["Geodesic counts", "Section",ExpressionUUID->"8bd500ab-ad93-472e-a873-cb5518e880af"],
+Cell["Geodesic multiplicities", "Section",ExpressionUUID->"415e9b19-4847-4f03-b6a6-55ca53137e91"],
 
 Cell["\<\
-GeodesicCount[g, u, v] returns the number of distinct geodesics from u to v. \
-Computed in polynomial time as (A^d)[u, v] where A is the adjacency matrix \
-and d = d(u, v).\
-\>", "Text",ExpressionUUID->"72e89315-5ba9-4c27-af8f-533bb24d894b"],
+GeodesicMultiplicity[g, u, v] returns the number of distinct geodesics from u \
+to v. Computed in polynomial time as (A^d)[u, v] where A is the adjacency \
+matrix and d = d(u, v).\
+\>", "Text",ExpressionUUID->"65319f47-787d-490e-8908-1dd0d6436229"],
 
-Cell["GeodesicCount[GridGraph[{3, 3}], 1, 9]", "Input",ExpressionUUID->"a073ffe0-bc7b-44f1-9f1c-2675db823520"],
+Cell["GeodesicMultiplicity[GridGraph[{3, 3}], 1, 9]", "Input",ExpressionUUID->"609c9e54-f6d7-4202-be70-2a690e81333e"],
 
-Cell["GeodesicCount[CycleGraph[6], 1, 4]", "Input",ExpressionUUID->"7eded275-81a4-447c-ac7a-622291721f96"],
+Cell["GeodesicMultiplicity[CycleGraph[6], 1, 4]", "Input",ExpressionUUID->"4522c634-d030-44a3-a284-ac6c9964dcf1"],
 
 Cell["\<\
 Six geodesics on the grid (the lattice paths from one corner to the other) \
 and two on the cycle (one for each side).\
-\>", "Text",ExpressionUUID->"54ef3bf4-5f7e-4984-8dee-02d46dafab24"],
+\>", "Text",ExpressionUUID->"0fa7db7c-b567-407c-ad77-bd8eebbfe93c"],
 
-Cell["The distance-multiplicity matrix", "Section",ExpressionUUID->"bbf0258e-a967-467d-8da7-8bc6f4f26c9e"],
+Cell["The geodesic-multiplicity matrix", "Section",ExpressionUUID->"73b111d8-2113-47da-b481-fdf791ae6e49"],
 
 Cell["\<\
-DistanceMultiplicityMatrix[g] returns {D, M} where D is the n x n distance \
+GeodesicMultiplicityMatrix[g] returns {D, M} where D is the n x n distance \
 matrix and M is the geodesic-count matrix.\
-\>", "Text",ExpressionUUID->"10abd041-8261-425a-8388-7b489d8b88d0"],
+\>", "Text",ExpressionUUID->"4d7df7bb-aea6-4ca8-912a-e531357905cf"],
 
 Cell["\<\
-{distMat, mulMat} = DistanceMultiplicityMatrix[GridGraph[{3, 3}]]; \
+{distMat, mulMat} = GeodesicMultiplicityMatrix[GridGraph[{3, 3}]]; \
 MatrixForm[mulMat]\
-\>", "Input",ExpressionUUID->"ca00c544-a634-4205-9254-8911e7e4b9fd"],
-
-Cell["The matrix-form triangle inequality", "Section",ExpressionUUID->"58178a7b-599d-4932-9132-f60854f2baf1"],
+\>", "Input",ExpressionUUID->"d857dfca-5b88-48d6-a7bb-064285b12352"],
 
 Cell["\<\
-DistanceMatrixQ[M] tests whether a matrix can be the distance matrix of some \
-graph: square, symmetric, zero on the diagonal, non-negative entries, and \
-tropical-idempotent (TropicalDot[M, M] === M, the matrix-form triangle \
-inequality in the min-plus semiring).\
-\>", "Text",ExpressionUUID->"52b0fa9d-3215-483a-a041-b69622a0f42d"],
+Reading off the global geodesic counts: each entry of mulMat counts the \
+geodesics between the corresponding vertex pair.\
+\>", "Text",ExpressionUUID->"a797025a-30d9-45b3-bde5-f71f38e7e1f5"],
 
-Cell["DistanceMatrixQ[GraphDistanceMatrix[GridGraph[{3, 3}]]]", "Input",ExpressionUUID->"8a6317cf-3a78-4809-8b23-20f4d27e9e34"],
-
-Cell["A bogus matrix that violates the triangle inequality:", "CodeText",ExpressionUUID->"a1278c4e-8951-4ea7-9774-755163d1136c"],
-
-Cell["DistanceMatrixQ[{{0, 1, 5}, {1, 0, 1}, {5, 1, 0}}]", "Input",ExpressionUUID->"5dbe413d-f255-4e58-a956-ed89dda80716"],
-
-Cell["The triangle inequality fails because 5 > 1 + 1.", "Text",ExpressionUUID->"9b5afa50-0791-4678-bcd1-a691b1741059"],
-
-Cell["The bridge to TropicalOperations: A^k = D for k >= diameter", "Section",ExpressionUUID->"57d71c34-4cfe-4ed0-95ed-b1d717a61523"],
-
-Cell["\<\
-Tropical matrix powers of the cost-adjacency matrix converge to the distance \
-matrix at the diameter step.\
-\>", "Text",ExpressionUUID->"f5127784-b8f5-42a5-8001-67f10e51878f"],
-
-Cell["g = GridGraph[{3, 3}]", "Input",ExpressionUUID->"6901f250-f620-4fd0-bdb8-56f714d8107d"],
-
-Cell["\<\
-A = AdjacencyMatrix[g] /. {0 -> Infinity, 1 -> 1}; D = \
-GraphDistanceMatrix[g]; TropicalMatrixPower[A, GraphDiameter[g]] == D\
-\>", "Input",ExpressionUUID->"01aab451-b126-4b88-b7a6-d972ea19f16b"],
-
-Cell["\<\
-Past the diameter the iteration is stable -- additional iterations leave the \
-matrix unchanged.\
-\>", "Text",ExpressionUUID->"0e3c8104-0799-495b-8318-efa9389aaea6"],
-
-Cell["TropicalMatrixPower[A, GraphDiameter[g] + 5] == D", "Input",ExpressionUUID->"d4eca3c5-9da5-4a96-ad14-821faf4a88b6"],
-
-Cell["Median vertices", "Section",ExpressionUUID->"be79a0e3-ba6f-4a95-9174-353f574657c6"],
+Cell["Median vertices", "Section",ExpressionUUID->"8dafe2ff-c6a4-482f-a95b-2928a2dc813e"],
 
 Cell["\<\
 MedianVertices[g, vs] returns the vertices minimising the sum of graph \
 distances to the given vertex list. For a triple {a, b, c} this is the metric \
 median(s); a graph is a median graph iff every triple has a unique median.\
-\>", "Text",ExpressionUUID->"31c58c02-cea8-42d1-8446-2c7467b2e9ec"],
+\>", "Text",ExpressionUUID->"71e9d8fc-06f2-4a55-abaa-bba30da6dd50"],
 
-Cell["MedianVertices[HypercubeGraph[3], {1, 4, 6}]", "Input",ExpressionUUID->"3e06db3a-9f5f-4be5-b145-454dd9dc7d30"],
+Cell["MedianVertices[HypercubeGraph[3], {1, 4, 6}]", "Input",ExpressionUUID->"b544f9cc-c455-481d-9ab2-5cd75e98cc3a"],
 
 Cell["\<\
 Hypercubes are median graphs (the median is unique). The 6-cycle is not:\
-\>", "CodeText",ExpressionUUID->"fc940362-b252-4dc3-a798-2037b9780d7f"],
+\>", "CodeText",ExpressionUUID->"a48460cb-b255-4294-b12e-5d2c46650d57"],
 
-Cell["MedianVertices[CycleGraph[6], {1, 3, 5}]", "Input",ExpressionUUID->"5a97569f-eebc-4c7e-9c25-f2f7d7d6531d"],
+Cell["MedianVertices[CycleGraph[6], {1, 3, 5}]", "Input",ExpressionUUID->"b2774105-6750-4ac7-b501-b945fa9a3414"],
 
-Cell["See also", "Section",ExpressionUUID->"1e65956d-1fee-4963-92de-3b06e2338d64"],
-
-Cell["MetricAlgebraGuide -- categorical overview.", "Item",ExpressionUUID->"5421fa33-b681-4a38-9139-d7646bdec257"],
+Cell["Geodesic convex hulls", "Section",ExpressionUUID->"9390e9df-3832-4191-95f9-b9e6342671e6"],
 
 Cell["\<\
-TropicalOperationsGuide -- the min-plus arithmetic underlying the matrix-form \
-triangle inequality.\
-\>", "Item",ExpressionUUID->"5e2b5949-d317-48e2-ba9a-91096a5bbc4e"],
+FindGeodesicConvexHull[g, vs] is the smallest geodesically convex superset of \
+vs -- the closure of vs under FindSegment. GeodesicallyConvexQ tests whether \
+a vertex set is already closed.\
+\>", "Text",ExpressionUUID->"d30946a0-f622-4e2b-ad28-1a4ce38cace9"],
 
-Cell["\<\
-TropicalConvexityGuide -- median vertices feed into geodesic-convex-hull \
-constructions.\
-\>", "Item",ExpressionUUID->"17e32e36-4285-473b-9f05-bc98625d8993"],
+Cell["FindGeodesicConvexHull[GridGraph[{4, 4}], {1, 4, 16}]", "Input",ExpressionUUID->"090d6022-df2b-4927-8110-75f5df92b993"],
 
-Cell["References", "Section",ExpressionUUID->"51a939cc-0ea0-417e-9a67-c8eb2fd3f8a5"],
+Cell["GeodesicallyConvexQ[GridGraph[{4, 4}], {1, 2, 3, 4}]", "Input",ExpressionUUID->"e089ccfa-4e1f-48d8-9bbb-bf3130f64bee"],
+
+Cell["See also", "Section",ExpressionUUID->"eb2c280f-347c-487e-aba3-8e842146c4e5"],
+
+Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"df80f0a6-9d69-4fbf-b132-31027461b397"],
+
+Cell["TropicalConvexityGuide", "Item",ExpressionUUID->"2bcf6edf-c159-4845-a2e6-1aa39d8a63d9"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"dabeb72d-fb94-4d21-a714-532c802c7af9"],
+
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"5e351473-c4cc-4dd9-8a68-d2fe3ad1a590"],
+
+Cell["References", "Section",ExpressionUUID->"748832f6-0afa-4dae-9ed4-7eec525109b2"],
 
 Cell["\<\
 Mulder, The Interval Function of a Graph, Mathematical Centre Tracts 132, \
 Amsterdam 1980.\
-\>", "Item",ExpressionUUID->"5c7c0b30-158b-4331-a8ae-657cb2893eb9"],
+\>", "Item",ExpressionUUID->"ad7f597d-9231-427b-90e8-54d2982073de"],
 
 Cell["\<\
 Bandelt and Mulder, Distance-Hereditary Graphs, J. Combin. Theory Ser. B 41, \
 182-208, 1986.\
-\>", "Item",ExpressionUUID->"e6d60af0-b1c1-479b-a7f0-afce22f603e1"],
+\>", "Item",ExpressionUUID->"f4edbdbc-4f80-4e42-b820-47e9ee8cf030"],
 
 Cell["\<\
 Linial, Geodesic Geometry on Graphs, \
 https://www.cs.huji.ac.il/~nati/PAPERS/ge_ge_gr.pdf\
-\>", "Item",ExpressionUUID->"c257997d-34fa-46f3-b0a6-4a396b9de39c"]
+\>", "Item",ExpressionUUID->"39497534-bffe-4c85-adc2-a14e84a0c96c"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
 ]
 (* End of Notebook Content *)
 
@@ -178,47 +153,41 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 95, 0, 70, "Title",ExpressionUUID->"dab7d4ef-5002-417b-b691-fdfb7c5c4c9a"],
-Cell[652, 22, 475, 7, 70, "Text",ExpressionUUID->"81562983-413c-4207-97a6-2aa785779551"],
-Cell[1130, 31, 79, 0, 70, "Section",ExpressionUUID->"1db56bd7-92e6-4b92-9343-524114576cc2"],
-Cell[1212, 33, 122, 0, 70, "Code",ExpressionUUID->"c5145e4e-fded-40fd-94ff-e29a1cb019cf"],
-Cell[1337, 35, 93, 0, 70, "Section",ExpressionUUID->"e3692cbe-741d-4f73-8a9b-180aff2528de"],
-Cell[1433, 37, 244, 4, 70, "Text",ExpressionUUID->"76d2d9ac-4c2f-4ebe-9e33-e22b64634bb3"],
-Cell[1680, 43, 111, 0, 70, "Input",ExpressionUUID->"06060966-e2e5-49c3-9d73-a261506299e1"],
-Cell[1794, 45, 239, 4, 70, "Text",ExpressionUUID->"7db593a5-ebae-4ed6-a618-748847c349da"],
-Cell[2036, 51, 89, 0, 70, "Section",ExpressionUUID->"8bd500ab-ad93-472e-a873-cb5518e880af"],
-Cell[2128, 53, 251, 4, 70, "Text",ExpressionUUID->"72e89315-5ba9-4c27-af8f-533bb24d894b"],
-Cell[2382, 59, 110, 0, 70, "Input",ExpressionUUID->"a073ffe0-bc7b-44f1-9f1c-2675db823520"],
-Cell[2495, 61, 106, 0, 70, "Input",ExpressionUUID->"7eded275-81a4-447c-ac7a-622291721f96"],
-Cell[2604, 63, 197, 3, 70, "Text",ExpressionUUID->"54ef3bf4-5f7e-4984-8dee-02d46dafab24"],
-Cell[2804, 68, 106, 0, 70, "Section",ExpressionUUID->"bbf0258e-a967-467d-8da7-8bc6f4f26c9e"],
-Cell[2913, 70, 198, 3, 70, "Text",ExpressionUUID->"10abd041-8261-425a-8388-7b489d8b88d0"],
-Cell[3114, 75, 167, 3, 70, "Input",ExpressionUUID->"ca00c544-a634-4205-9254-8911e7e4b9fd"],
-Cell[3284, 80, 109, 0, 70, "Section",ExpressionUUID->"58178a7b-599d-4932-9132-f60854f2baf1"],
-Cell[3396, 82, 344, 5, 70, "Text",ExpressionUUID->"52b0fa9d-3215-483a-a041-b69622a0f42d"],
-Cell[3743, 89, 127, 0, 70, "Input",ExpressionUUID->"8a6317cf-3a78-4809-8b23-20f4d27e9e34"],
-Cell[3873, 91, 128, 0, 70, "CodeText",ExpressionUUID->"a1278c4e-8951-4ea7-9774-755163d1136c"],
-Cell[4004, 93, 122, 0, 70, "Input",ExpressionUUID->"5dbe413d-f255-4e58-a956-ed89dda80716"],
-Cell[4129, 95, 119, 0, 70, "Text",ExpressionUUID->"9b5afa50-0791-4678-bcd1-a691b1741059"],
-Cell[4251, 97, 133, 0, 70, "Section",ExpressionUUID->"57d71c34-4cfe-4ed0-95ed-b1d717a61523"],
-Cell[4387, 99, 186, 3, 70, "Text",ExpressionUUID->"f5127784-b8f5-42a5-8001-67f10e51878f"],
-Cell[4576, 104, 93, 0, 70, "Input",ExpressionUUID->"6901f250-f620-4fd0-bdb8-56f714d8107d"],
-Cell[4672, 106, 206, 3, 70, "Input",ExpressionUUID->"01aab451-b126-4b88-b7a6-d972ea19f16b"],
-Cell[4881, 111, 175, 3, 70, "Text",ExpressionUUID->"0e3c8104-0799-495b-8318-efa9389aaea6"],
-Cell[5059, 116, 121, 0, 70, "Input",ExpressionUUID->"d4eca3c5-9da5-4a96-ad14-821faf4a88b6"],
-Cell[5183, 118, 89, 0, 70, "Section",ExpressionUUID->"be79a0e3-ba6f-4a95-9174-353f574657c6"],
-Cell[5275, 120, 306, 4, 70, "Text",ExpressionUUID->"31c58c02-cea8-42d1-8446-2c7467b2e9ec"],
-Cell[5584, 126, 116, 0, 70, "Input",ExpressionUUID->"3e06db3a-9f5f-4be5-b145-454dd9dc7d30"],
-Cell[5703, 128, 155, 2, 70, "CodeText",ExpressionUUID->"fc940362-b252-4dc3-a798-2037b9780d7f"],
-Cell[5861, 132, 112, 0, 70, "Input",ExpressionUUID->"5a97569f-eebc-4c7e-9c25-f2f7d7d6531d"],
-Cell[5976, 134, 82, 0, 70, "Section",ExpressionUUID->"1e65956d-1fee-4963-92de-3b06e2338d64"],
-Cell[6061, 136, 114, 0, 70, "Item",ExpressionUUID->"5421fa33-b681-4a38-9139-d7646bdec257"],
-Cell[6178, 138, 179, 3, 70, "Item",ExpressionUUID->"5e2b5949-d317-48e2-ba9a-91096a5bbc4e"],
-Cell[6360, 143, 168, 3, 70, "Item",ExpressionUUID->"17e32e36-4285-473b-9f05-bc98625d8993"],
-Cell[6531, 148, 84, 0, 70, "Section",ExpressionUUID->"51a939cc-0ea0-417e-9a67-c8eb2fd3f8a5"],
-Cell[6618, 150, 170, 3, 70, "Item",ExpressionUUID->"5c7c0b30-158b-4331-a8ae-657cb2893eb9"],
-Cell[6791, 155, 172, 3, 70, "Item",ExpressionUUID->"e6d60af0-b1c1-479b-a7f0-afce22f603e1"],
-Cell[6966, 160, 169, 3, 70, "Item",ExpressionUUID->"c257997d-34fa-46f3-b0a6-4a396b9de39c"]
+Cell[554, 20, 95, 0, 70, "Title",ExpressionUUID->"3f98edda-a8d2-4aed-b47d-a456d110e724"],
+Cell[652, 22, 464, 7, 70, "Text",ExpressionUUID->"0c17c72f-2a32-416d-84c2-3142ec7d7734"],
+Cell[1119, 31, 79, 0, 70, "Section",ExpressionUUID->"20eb803b-5d97-4d62-9489-a4ee4ec619a8"],
+Cell[1201, 33, 122, 0, 70, "Code",ExpressionUUID->"9455711b-5326-4eb3-9269-136efa32bfe4"],
+Cell[1326, 35, 93, 0, 70, "Section",ExpressionUUID->"63bbca3d-0b6d-47c4-b8ab-9a093455f637"],
+Cell[1422, 37, 244, 4, 70, "Text",ExpressionUUID->"5c21722e-36d4-4221-81e3-21a4784b84f5"],
+Cell[1669, 43, 111, 0, 70, "Input",ExpressionUUID->"de9482de-2561-4379-8f4d-de7a73681f1e"],
+Cell[1783, 45, 239, 4, 70, "Text",ExpressionUUID->"a13420bc-71f5-4905-a4a4-ebbaeca5bb84"],
+Cell[2025, 51, 97, 0, 70, "Section",ExpressionUUID->"415e9b19-4847-4f03-b6a6-55ca53137e91"],
+Cell[2125, 53, 258, 4, 70, "Text",ExpressionUUID->"65319f47-787d-490e-8908-1dd0d6436229"],
+Cell[2386, 59, 117, 0, 70, "Input",ExpressionUUID->"609c9e54-f6d7-4202-be70-2a690e81333e"],
+Cell[2506, 61, 113, 0, 70, "Input",ExpressionUUID->"4522c634-d030-44a3-a284-ac6c9964dcf1"],
+Cell[2622, 63, 197, 3, 70, "Text",ExpressionUUID->"0fa7db7c-b567-407c-ad77-bd8eebbfe93c"],
+Cell[2822, 68, 106, 0, 70, "Section",ExpressionUUID->"73b111d8-2113-47da-b481-fdf791ae6e49"],
+Cell[2931, 70, 198, 3, 70, "Text",ExpressionUUID->"4d7df7bb-aea6-4ca8-912a-e531357905cf"],
+Cell[3132, 75, 167, 3, 70, "Input",ExpressionUUID->"d857dfca-5b88-48d6-a7bb-064285b12352"],
+Cell[3302, 80, 201, 3, 70, "Text",ExpressionUUID->"a797025a-30d9-45b3-bde5-f71f38e7e1f5"],
+Cell[3506, 85, 89, 0, 70, "Section",ExpressionUUID->"8dafe2ff-c6a4-482f-a95b-2928a2dc813e"],
+Cell[3598, 87, 306, 4, 70, "Text",ExpressionUUID->"71e9d8fc-06f2-4a55-abaa-bba30da6dd50"],
+Cell[3907, 93, 116, 0, 70, "Input",ExpressionUUID->"b544f9cc-c455-481d-9ab2-5cd75e98cc3a"],
+Cell[4026, 95, 155, 2, 70, "CodeText",ExpressionUUID->"a48460cb-b255-4294-b12e-5d2c46650d57"],
+Cell[4184, 99, 112, 0, 70, "Input",ExpressionUUID->"b2774105-6750-4ac7-b501-b945fa9a3414"],
+Cell[4299, 101, 95, 0, 70, "Section",ExpressionUUID->"9390e9df-3832-4191-95f9-b9e6342671e6"],
+Cell[4397, 103, 269, 4, 70, "Text",ExpressionUUID->"d30946a0-f622-4e2b-ad28-1a4ce38cace9"],
+Cell[4669, 109, 125, 0, 70, "Input",ExpressionUUID->"090d6022-df2b-4927-8110-75f5df92b993"],
+Cell[4797, 111, 124, 0, 70, "Input",ExpressionUUID->"e089ccfa-4e1f-48d8-9bbb-bf3130f64bee"],
+Cell[4924, 113, 82, 0, 70, "Section",ExpressionUUID->"eb2c280f-347c-487e-aba3-8e842146c4e5"],
+Cell[5009, 115, 89, 0, 70, "Item",ExpressionUUID->"df80f0a6-9d69-4fbf-b132-31027461b397"],
+Cell[5101, 117, 93, 0, 70, "Item",ExpressionUUID->"2bcf6edf-c159-4845-a2e6-1aa39d8a63d9"],
+Cell[5197, 119, 93, 0, 70, "Item",ExpressionUUID->"dabeb72d-fb94-4d21-a714-532c802c7af9"],
+Cell[5293, 121, 90, 0, 70, "Item",ExpressionUUID->"5e351473-c4cc-4dd9-8a68-d2fe3ad1a590"],
+Cell[5386, 123, 84, 0, 70, "Section",ExpressionUUID->"748832f6-0afa-4dae-9ed4-7eec525109b2"],
+Cell[5473, 125, 170, 3, 70, "Item",ExpressionUUID->"ad7f597d-9231-427b-90e8-54d2982073de"],
+Cell[5646, 130, 172, 3, 70, "Item",ExpressionUUID->"f4edbdbc-4f80-4e42-b820-47e9ee8cf030"],
+Cell[5821, 135, 169, 3, 70, "Item",ExpressionUUID->"39497534-bffe-4c85-adc2-a14e84a0c96c"]
 }
 ]
 *)

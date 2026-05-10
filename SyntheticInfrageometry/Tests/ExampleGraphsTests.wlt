@@ -130,10 +130,10 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = InfraExampleGraph[ "RegularTree", { 3, 2 } ] },
-    AssociationQ @ FormanRicci[ g ]
+    AssociationQ @ WolframInstitute`Infrageometry`FormanRicciCurvature[ g ]
   ],
   True,
-  TestID -> "InfraExampleGraph-RegularTree-feeds-FormanRicci"
+  TestID -> "InfraExampleGraph-RegularTree-feeds-FormanRicciCurvature"
 ]
 
 EndTestSection[]

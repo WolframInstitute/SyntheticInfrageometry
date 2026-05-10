@@ -334,7 +334,7 @@ Inspect every minimal hyperplane on a 3x3 grid between opposite corners.\
 Cell[CellGroupData[{
 
 Cell["\<\
-FindBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All][\"Realisations\"]\
+FindBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All][\"Realizations\"]\
 \>", "Input",
  CellLabel->
   "In[155]:=",ExpressionUUID->"82b64084-5360-4c0c-a806-ad882ddeefb4"],
@@ -357,7 +357,7 @@ Cell[CellGroupData[{
 
 Cell["\<\
 With[{g = GridGraph[{4, 5}]}, InfraSceneHighlight[g, {InfraPoint[Flatten @ \
-FindBisectingHyperplane[g, 1, 20, {-1, 1}, All][\"Realisations\"]] -> Red, \
+FindBisectingHyperplane[g, 1, 20, {-1, 1}, All][\"Realizations\"]] -> Red, \
 InfraPoint[{1, 20}] -> Blue}]]\
 \>", "Input",
  CellLabel->
@@ -488,7 +488,7 @@ Cell[CellGroupData[{
 
 Cell["\<\
 With[{g = PathGraph[Range[5]], hs = \
-FindBisectingHyperplane[PathGraph[Range[5]], 1, 5, All][\"Realisations\"]}, \
+FindBisectingHyperplane[PathGraph[Range[5]], 1, 5, All][\"Realizations\"]}, \
 AllTrue[hs, h |-> SeparatesQ[g, h, 1, 5]]]\
 \>", "Input",
  CellLabel->

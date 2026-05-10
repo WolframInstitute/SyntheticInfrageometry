@@ -25,7 +25,7 @@ The coordinatization layer is the synthetic-to-analytic bridge: it assigns to \
 every vertex of a graph a coordinate tuple computed entirely from graph \
 properties. Two coordinate systems are exposed -- spatial radar coordinates \
 (resolving sets) and orthogonal coordinates (shortest-path projection onto \
-axes). Together with FindOrthogonalAxes for axis discovery, the layer turns a \
+axes). Together with FindOrthogonalFrame for axis discovery, the layer turns a \
 synthetic graph into something downstream layers (tropical, projective, \
 embedding-based finders) can consume.\
 \>", "Text",ExpressionUUID->"c066c617-37cd-41a5-aea5-2d3704ad6441"],
@@ -56,9 +56,10 @@ companion of FindRadarBasis).\
 \>", "Item",ExpressionUUID->"9339b575-0e63-451c-86e2-24833623868a"],
 
 Cell["\<\
-RadarCoordinates -- single-vertex form RadarCoordinates[graph, v, basis] \
+RadarCoordinates -- single-vertex form RadarCoordinates[graph, basis, v] \
 returns the distance vector; bulk form RadarCoordinates[graph, basis] returns \
-the Association of all vertices' coordinates.\
+the Association of all vertices' coordinates, so RadarCoordinates[graph, basis][v] \
+is the natural operator form.\
 \>", "Item",ExpressionUUID->"a851fc8f-6acb-413d-85c9-0d9915a59d2f"],
 
 Cell["Orthogonal coordinates", "Section",ExpressionUUID->"a616b21f-d1f8-4e47-9e88-00b5a46fa467"],
@@ -82,7 +83,7 @@ vertex.\
 
 Cell["\<\
 OrthogonalCoordinates[graph, c, v] -- auto-discovers orthogonal axes through \
-center c via FindOrthogonalAxes and returns the Z-valued signed displacement \
+center c via FindOrthogonalFrame and returns the Z-valued signed displacement \
 of v from c. The bare two-argument form OrthogonalCoordinates[graph, c] \
 returns the Association for every vertex with c at the origin {0, 0, ..., 0}.\
 \
@@ -108,7 +109,7 @@ to a single coordinate: \"First\" (default), \"Last\", \"Min\", \"Max\", \
 Cell["Orthogonal axes", "Section",ExpressionUUID->"b9eda318-e200-4610-9ed1-3337ecfabb0e"],
 
 Cell["\<\
-FindOrthogonalAxes[graph, n] returns n mutually well-separated longest paths \
+FindOrthogonalFrame[graph, n] returns n mutually well-separated longest paths \
 in the graph (or $Failed if fewer exist); UpTo[n] is soft, All returns every \
 axis above the separation threshold. The selection is greedy: start from one \
 longest path; at each step pick the candidate path with maximum separation \
@@ -117,13 +118,13 @@ from the already-chosen axes; stop when separation drops below \
 \>", "Text",ExpressionUUID->"5fa99789-0e41-440c-95a4-c4d53bc3b11e"],
 
 Cell["\<\
-FindOrthogonalAxes[graph, c, n] constrains every axis to pass through vertex \
+FindOrthogonalFrame[graph, c, n] constrains every axis to pass through vertex \
 c as an interior point, anchoring a sign convention for downstream Z-valued \
 coordinates.\
 \>", "Text",ExpressionUUID->"2f968a85-6aee-4dbf-8cfe-81211f1d4178"],
 
 Cell["\<\
-FindOrthogonalAxes[graph, InfraPoint[{v1, ..., vk}], n] requires every axis \
+FindOrthogonalFrame[graph, InfraPoint[{v1, ..., vk}], n] requires every axis \
 to contain at least one of the listed vertices as an interior point.\
 \>", "Text",ExpressionUUID->"7ae03f3d-af4e-4876-9085-652600fb1cea"],
 
@@ -137,7 +138,7 @@ diameter); \"MinSeparation\" (Automatic = half axis length); \
 
 Cell["\<\
 The number of axes through a point is itself a graph invariant -- the \
-coordinatized dimension at c, computed as Length @ FindOrthogonalAxes[g, c, \
+coordinatized dimension at c, computed as Length @ FindOrthogonalFrame[g, c, \
 All] (no dedicated symbol, mirroring the radar-basis convention).\
 \>", "Text",ExpressionUUID->"04aec439-6304-40ad-9426-95a6cacfa0fe"],
 
@@ -192,7 +193,7 @@ Orthogonal axes through a corner of a 5 x 5 grid (visualized).\
 
 Cell["\<\
 With[{g = GridGraph[{5, 5}], c = 1}, InfraSceneHighlight[g, \
-{InfraSegment[FindOrthogonalAxes[g, c, All]] -> Red, InfraPoint[{c}] -> \
+{InfraSegment[FindOrthogonalFrame[g, c, All]] -> Red, InfraPoint[{c}] -> \
 Green}]]\
 \>", "Input",ExpressionUUID->"ef746166-69e1-424e-852b-df29a727002b"],
 
@@ -203,7 +204,7 @@ vertex.\
 
 Cell["\<\
 With[{g = GridGraph[{5, 5}], anchors = {7, 19}}, InfraSceneHighlight[g, \
-{InfraSegment[FindOrthogonalAxes[g, InfraPoint[anchors], All]] -> Red, \
+{InfraSegment[FindOrthogonalFrame[g, InfraPoint[anchors], All]] -> Red, \
 InfraPoint[anchors] -> Green}]]\
 \>", "Input",ExpressionUUID->"0f84a4f2-7f37-4a14-b784-4f3af3ac280b"],
 
@@ -229,7 +230,7 @@ Cell["RadarCoordinates", "Item",ExpressionUUID->"6f29e87d-a47f-48a3-8c4f-2061451
 
 Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"dcc352ed-7b6f-4756-9e76-d8acaf86ce19"],
 
-Cell["FindOrthogonalAxes", "Item",ExpressionUUID->"82f09e5e-fb8b-4c4d-81b2-389e547897af"],
+Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"82f09e5e-fb8b-4c4d-81b2-389e547897af"],
 
 Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"82b713d8-6727-4d80-af03-a85cb822113a"],
 

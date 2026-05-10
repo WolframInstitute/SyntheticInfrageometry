@@ -16,50 +16,47 @@ Print[TestReport[FileNameJoin[{$testDir, "EuclideanPredicatesTests.wlt"}]]]
 Print["Running EuclideanConstructionsTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "EuclideanConstructionsTests.wlt"}]]]
 
+Print["Running InfraEuclideanSpaceTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraEuclideanSpaceTests.wlt"}]]]
+
 Print["Running PathSpaceTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "PathSpaceTests.wlt"}]]]
 
-Print["Running MetricAlgebraTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "MetricAlgebraTests.wlt"}]]]
+Print["Running MetricGeometryTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "MetricGeometryTests.wlt"}]]]
 
-Print["Running InfraObjectsTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraObjectsTests.wlt"}]]]
+Print["Running LaplacianAlgebraTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "LaplacianAlgebraTests.wlt"}]]]
 
-Print["Running ScenesTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "ScenesTests.wlt"}]]]
+Print["Running ResistanceGeometryTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "ResistanceGeometryTests.wlt"}]]]
+
+Print["Running SpectralGeometryTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "SpectralGeometryTests.wlt"}]]]
+
+Print["Running InfraPrimitivesTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraPrimitivesTests.wlt"}]]]
+
+Print["Running InfraSceneTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraSceneTests.wlt"}]]]
 
 Print["Running CoordinatizationTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "CoordinatizationTests.wlt"}]]]
 
-Print["Running HighlightsTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "HighlightsTests.wlt"}]]]
+Print["Running InfraSceneVisualizationTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraSceneVisualizationTests.wlt"}]]]
 
-Print["Running ViewersTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "ViewersTests.wlt"}]]]
+Print["Running InfraSceneInteractiveTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraSceneInteractiveTests.wlt"}]]]
 
-Print["Running ProjectivePostulatesTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "ProjectivePostulatesTests.wlt"}]]]
+Print["Running ProjectiveGeometryTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "ProjectiveGeometryTests.wlt"}]]]
 
-Print["Running ProjectivePredicatesTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "ProjectivePredicatesTests.wlt"}]]]
+Print["Running TarskiGeometryTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "TarskiGeometryTests.wlt"}]]]
 
-Print["Running TarskiPostulatesTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "TarskiPostulatesTests.wlt"}]]]
-
-Print["Running TarskiPredicatesTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "TarskiPredicatesTests.wlt"}]]]
-
-Print["Running TarskiConstructionsTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "TarskiConstructionsTests.wlt"}]]]
-
-Print["Running TropicalPostulatesTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "TropicalPostulatesTests.wlt"}]]]
-
-Print["Running TropicalPredicatesTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "TropicalPredicatesTests.wlt"}]]]
-
-Print["Running EnumerationTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "EnumerationTests.wlt"}]]]
+Print["Running GraphEnumerationTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "GraphEnumerationTests.wlt"}]]]
 
 Print["Running ExampleGraphsTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "ExampleGraphsTests.wlt"}]]]

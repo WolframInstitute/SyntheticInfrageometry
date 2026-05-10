@@ -155,7 +155,7 @@ Cell["Read the realisations back as a bare list.", "CodeText",ExpressionUUID->"b
 
 Cell[CellGroupData[{
 
-Cell["FindPoint[GridGraph[{5, 5}], 3][\"Realisations\"]", "Input",
+Cell["FindPoint[GridGraph[{5, 5}], 3][\"Realizations\"]", "Input",
  CellLabel->"In[70]:=",ExpressionUUID->"e1a37f12-1a1f-43de-9870-a9f489ca7d3f"],
 
 Cell[BoxData[

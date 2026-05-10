@@ -1,0 +1,120 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5435,        111]
+NotebookOptionsPosition[      3320,         79]
+NotebookOutlinePosition[      3637,         93]
+CellTagsIndexPosition[      3594,         90]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindReflection", "Title",ExpressionUUID->"5c137edd-7265-490d-a8f4-f58d78e7b5bb"],
+
+Cell["\<\
+FindReflection[graph, x, a] returns one vertex x' satisfying B(x, a, x') and \
+d(a, x) == d(a, x') -- the reflection of x through a. The third argument n / \
+UpTo[n] / All controls multiplicity. Multi-valued in general.\
+\>", "Text",ExpressionUUID->"c70e5860-50ae-4324-bf8e-1292cd49dfbf"],
+
+Cell["Setup", "Section",ExpressionUUID->"9ad401ad-38c5-48c1-80d3-8639e70ef549"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"ec0d3482-3f28-4f66-87cf-a44fc8b54b63"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"d3205371-fc25-4370-aa34-7d1326929b5c"],
+
+Cell["Usage", "Section",ExpressionUUID->"a77a45a4-c73f-4224-83c0-e00f80c9622f"],
+
+Cell["Reflect a vertex through a midpoint on a path graph.", "CodeText",ExpressionUUID->"4343522f-c081-4ce0-8376-8bfcf5f99f42"],
+
+Cell["With[{g = PathGraph[Range[7]]}, FindReflection[g, 1, 4]]", "Input",ExpressionUUID->"078d4800-bf52-41f7-a0dd-5e79e1c5cc0f"],
+
+Cell["\<\
+Visualize the reflection together with the original point and the centre.\
+\>", "CodeText",ExpressionUUID->"9c7be7f7-0311-4342-8cb6-82574753f283"],
+
+Cell["\<\
+With[{g = PathGraph[Range[7]]}, InfraSceneHighlight[g, {InfraPoint[1] -> \
+Blue, InfraPoint[4] -> Green, FindReflection[g, 1, 4, All] -> Red}]]\
+\>", "Input",ExpressionUUID->"6c5460b0-06d5-4f18-8471-26e3c6ec3f9f"],
+
+Cell["Examples", "Section",ExpressionUUID->"1c8d9ec3-633a-4568-8fbe-8cc96bcbfca7"],
+
+Cell["\<\
+On a cycle the reflection through the antipode is single-valued.\
+\>", "CodeText",ExpressionUUID->"6d7bd0cf-7cc8-4467-86cd-b3dbb9cd008f"],
+
+Cell["With[{g = CycleGraph[8]}, FindReflection[g, 1, 5, All]]", "Input",ExpressionUUID->"a21fca55-f16e-4c5f-9074-ca9f10618f54"],
+
+Cell["\<\
+Reflection on a 4x4 grid -- multi-valued because there is a 1-parameter \
+family of reflection candidates.\
+\>", "CodeText",ExpressionUUID->"34cda181-605f-4ec8-b8e4-93df11414a3d"],
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {InfraPoint[1] -> Blue, \
+InfraPoint[6] -> Green, FindReflection[g, 1, 6, All] -> Red}]]\
+\>", "Input",ExpressionUUID->"f13133ed-9536-44b0-949e-d91c487b70d7"],
+
+Cell["See also", "Section",ExpressionUUID->"65e96643-7277-4f19-a3e1-8a3e0d9fd25b"],
+
+Cell["FindMidpoint", "Item",ExpressionUUID->"37ba89d5-1cd4-4457-a0e8-75f2b14e6198"],
+
+Cell["BetweennessQ", "Item",ExpressionUUID->"07147c42-7306-4e88-a7d8-12a0948b30e9"],
+
+Cell["EquidistanceQ", "Item",ExpressionUUID->"c03408dd-81a0-4e5a-b498-f03f4abdd753"],
+
+Cell["ExtendSegment", "Item",ExpressionUUID->"a677750d-b1ee-48fa-b420-bdd4a019702a"],
+
+Cell["InfraSceneHighlight", "Item",ExpressionUUID->"37a326ae-caea-42c9-8a7c-c52b2d49dba0"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"5c137edd-7265-490d-a8f4-f58d78e7b5bb"],
+Cell[643, 22, 298, 4, 70, "Text",ExpressionUUID->"c70e5860-50ae-4324-bf8e-1292cd49dfbf"],
+Cell[944, 28, 79, 0, 70, "Section",ExpressionUUID->"9ad401ad-38c5-48c1-80d3-8639e70ef549"],
+Cell[1026, 30, 132, 0, 70, "CodeText",ExpressionUUID->"ec0d3482-3f28-4f66-87cf-a44fc8b54b63"],
+Cell[1161, 32, 122, 0, 70, "Code",ExpressionUUID->"d3205371-fc25-4370-aa34-7d1326929b5c"],
+Cell[1286, 34, 79, 0, 70, "Section",ExpressionUUID->"a77a45a4-c73f-4224-83c0-e00f80c9622f"],
+Cell[1368, 36, 127, 0, 70, "CodeText",ExpressionUUID->"4343522f-c081-4ce0-8376-8bfcf5f99f42"],
+Cell[1498, 38, 128, 0, 70, "Input",ExpressionUUID->"078d4800-bf52-41f7-a0dd-5e79e1c5cc0f"],
+Cell[1629, 40, 156, 2, 70, "CodeText",ExpressionUUID->"9c7be7f7-0311-4342-8cb6-82574753f283"],
+Cell[1788, 44, 223, 3, 70, "Input",ExpressionUUID->"6c5460b0-06d5-4f18-8471-26e3c6ec3f9f"],
+Cell[2014, 49, 82, 0, 70, "Section",ExpressionUUID->"1c8d9ec3-633a-4568-8fbe-8cc96bcbfca7"],
+Cell[2099, 51, 147, 2, 70, "CodeText",ExpressionUUID->"6d7bd0cf-7cc8-4467-86cd-b3dbb9cd008f"],
+Cell[2249, 55, 127, 0, 70, "Input",ExpressionUUID->"a21fca55-f16e-4c5f-9074-ca9f10618f54"],
+Cell[2379, 57, 189, 3, 70, "CodeText",ExpressionUUID->"34cda181-605f-4ec8-b8e4-93df11414a3d"],
+Cell[2571, 62, 221, 3, 70, "Input",ExpressionUUID->"f13133ed-9536-44b0-949e-d91c487b70d7"],
+Cell[2795, 67, 82, 0, 70, "Section",ExpressionUUID->"65e96643-7277-4f19-a3e1-8a3e0d9fd25b"],
+Cell[2880, 69, 83, 0, 70, "Item",ExpressionUUID->"37ba89d5-1cd4-4457-a0e8-75f2b14e6198"],
+Cell[2966, 71, 83, 0, 70, "Item",ExpressionUUID->"07147c42-7306-4e88-a7d8-12a0948b30e9"],
+Cell[3052, 73, 84, 0, 70, "Item",ExpressionUUID->"c03408dd-81a0-4e5a-b498-f03f4abdd753"],
+Cell[3139, 75, 84, 0, 70, "Item",ExpressionUUID->"a677750d-b1ee-48fa-b420-bdd4a019702a"],
+Cell[3226, 77, 90, 0, 70, "Item",ExpressionUUID->"37a326ae-caea-42c9-8a7c-c52b2d49dba0"]
+}
+]
+*)
+
+(* End of internal cache information *)

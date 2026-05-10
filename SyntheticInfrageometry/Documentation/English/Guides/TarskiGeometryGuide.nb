@@ -201,19 +201,19 @@ metric-layer Find* counterparts.\
 \>", "Text",ExpressionUUID->"cce03d12-cc8b-400c-974e-2e4c0de3df50"],
 
 Cell["\<\
-FindTarskiSegmentExtension[graph, a, b, c, d] finds a vertex x with B(a,b,x) \
+ExtendSegment[graph, a, b, c, d] finds a vertex x with B(a,b,x) \
 and d(b,x) = d(c,d). The A4 witness finder. Returns InfraPoint[{}] when no \
 such vertex exists on the graph.\
 \>", "Item",ExpressionUUID->"12500900-ab73-4b3d-9260-c0df1a8cca8a"],
 
 Cell["\<\
-FindTarskiReflection[graph, x, a] finds vertices x' with B(x,a,x') and d(a,x) \
+FindReflection[graph, x, a] finds vertices x' with B(x,a,x') and d(a,x) \
 = d(a,x'): the reflection of x through a. Multi-valued on graphs with \
 multiple geodesic continuations.\
 \>", "Item",ExpressionUUID->"922b574b-c588-44e6-a881-2636bf2d372a"],
 
 Cell["\<\
-FindTarskiMidpoint[graph, a, b] finds vertices m with B(a,m,b) and d(a,m) = \
+FindMidpoint[graph, a, b] finds vertices m with B(a,m,b) and d(a,m) = \
 d(m,b). Returns InfraPoint[{}] for odd-distance pairs \\u2014 no synthetic \
 midpoint exists. This is the fundamental difference from FindMidpoint, which \
 always returns a central interval element.\
@@ -224,7 +224,7 @@ Cell["Tutorial", "Section",ExpressionUUID->"9fb58b6e-0d8c-4974-aa4a-c268661f11c2
 Cell["\<\
 TarskiGeometryTutorial provides a runnable substrate panel, worked examples for \
 every axiom predicate, counterexample extraction on the Petersen graph, and a \
-side-by-side comparison of FindTarskiMidpoint versus FindMidpoint.\
+side-by-side comparison of FindMidpoint versus FindMidpoint.\
 \>", "Item",ExpressionUUID->"dd449ec1-b930-47c2-8a85-d7bdcb9fc4d3"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",

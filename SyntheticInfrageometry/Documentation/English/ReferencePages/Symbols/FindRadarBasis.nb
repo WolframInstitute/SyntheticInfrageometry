@@ -76,7 +76,7 @@ Cell["RadarBasisQ", "Item",ExpressionUUID->"a3e8443a-28c3-420e-8f13-4c834402395f
 
 Cell["RadarCoordinates", "Item",ExpressionUUID->"7764d16a-29e2-444e-b91f-28b4582cb9ab"],
 
-Cell["FindOrthogonalAxes", "Item",ExpressionUUID->"bff30bd3-9835-406a-8ba9-63b2b2c599f5"],
+Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"bff30bd3-9835-406a-8ba9-63b2b2c599f5"],
 
 Cell["CoordinatizationGuide", "Item",ExpressionUUID->"e6a2e801-1916-473f-a6f9-0ef004338c25"]
 },

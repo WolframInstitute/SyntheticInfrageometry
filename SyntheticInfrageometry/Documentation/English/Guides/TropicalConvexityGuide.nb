@@ -10,141 +10,123 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      8820,        183]
-NotebookOptionsPosition[      6067,        144]
-NotebookOutlinePosition[      6384,        158]
-CellTagsIndexPosition[      6341,        155]
+NotebookDataLength[      8114,        165]
+NotebookOptionsPosition[      5370,        126]
+NotebookOutlinePosition[      5687,        140]
+CellTagsIndexPosition[      5644,        137]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["Tropical Convexity (graph-translated)", "Title",ExpressionUUID->"c3f18c7a-2218-44bc-b1eb-cbbbaeeaa34c"],
+Cell["Tropical Convexity (graph-translated)", "Title",ExpressionUUID->"b30d141e-778e-40fb-bc15-f3963dd8081a"],
 
 Cell["\<\
 The graph translation of tropical convexity in (R^n)_min: tropical segments, \
 geodesically convex sets, the convex hull. This is sense 2 of \"tropical\" in \
 the literature -- the convex-figure side of the picture (Maclagan and \
-Sturmfels, Develin and Sturmfels) -- as opposed to sense 1, the min-plus \
-arithmetic on scalars and matrices (TropicalPlus, TropicalDot, ...) covered \
-in the TropicalOperations layer. Both senses are graph-side here: this layer \
-never instantiates loci in (R^n)_min directly; instead it recovers the same \
-combinatorial structure on graphs.\
-\>", "Text",ExpressionUUID->"ff6b9545-a2ac-4758-acb9-f057224f7749"],
+Sturmfels, Develin and Sturmfels). The companion sense 1 -- the min-plus \
+arithmetic on scalars and matrices -- now lives in the Code/ folder of the \
+dev repo as TropicalOperations.wl and is no longer part of the public paclet.\
+\
+\>", "Text",ExpressionUUID->"8e6783a4-2402-43d8-ad94-9fbc729aeaea"],
 
 Cell["\<\
 The reading: under the shortest-path metric, a tropical segment between two \
 graph vertices is the vertex set of any geodesic between them; a geodesically \
 convex set is one closed under FindSegment; the geodesic convex hull is the \
-smallest such superset. The first tropical axiom T1 -- existence of a \
-tropical segment between any two points -- becomes equivalent to \
-ConnectedGraphQ.\
-\>", "Text",ExpressionUUID->"6e638baa-c5b6-4057-8e5d-29b519eb6779"],
+smallest such superset.\
+\>", "Text",ExpressionUUID->"80ea2ab5-e634-4f21-bfc2-9f802a508f8e"],
 
-Cell["Setup", "Section",ExpressionUUID->"08d7376a-8376-4299-aae8-fcbf13c6b039"],
+Cell["Setup", "Section",ExpressionUUID->"ce043b2e-a03c-4357-975d-6027eea830cb"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"65dbbf5e-e1c0-44df-8ead-8808838bedf0"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"e31c7645-44ab-4d8d-9342-b1ea21058532"],
 
-Cell["Postulates", "Section",ExpressionUUID->"f15198e8-af44-4ad4-be14-83ff65b9cd46"],
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"8ec7cea0-a384-4815-8ca3-5ea17ca9d7bc"],
+
+Cell["Postulates", "Section",ExpressionUUID->"534205ad-c048-4ec4-aa79-11e07426e508"],
 
 Cell["\<\
-FindTropicalSegment -- enumerate tropical segments from u to v as sorted \
-vertex sets.\
-\>", "Item",ExpressionUUID->"7db339a6-1376-4222-ab0c-b5c68f53ba47"],
+FindSegment -- enumerate geodesics from u to v (the tropical segment \
+realisations on the graph).\
+\>", "Item",ExpressionUUID->"39815ba6-b587-4d33-b11c-f462f3985ca2"],
 
 Cell["\<\
 FindGeodesicConvexHull -- the smallest geodesically convex superset of a \
 vertex set.\
-\>", "Item",ExpressionUUID->"020cd0c2-b156-4f48-b722-de90a44080de"],
+\>", "Item",ExpressionUUID->"0f3c5907-e22b-4ee0-a057-b6e7073ee5f9"],
 
-Cell["Predicates", "Section",ExpressionUUID->"9edc2480-0279-4c5f-a5c9-d89782fb3808"],
-
-Cell["\<\
-TropicalSegmentQ -- test whether a vertex set realises a tropical segment \
-from u to v.\
-\>", "Item",ExpressionUUID->"44704c44-bbf2-4581-9987-904739f03869"],
+Cell["Predicates", "Section",ExpressionUUID->"7adeeb1f-367b-4d5a-afc6-0573a538d640"],
 
 Cell["\<\
 GeodesicallyConvexQ -- test whether a vertex set is closed under FindSegment.\
 \
-\>", "Item",ExpressionUUID->"03889784-ef53-43e8-a6da-009f087e042f"],
+\>", "Item",ExpressionUUID->"04f9e3d2-262a-4d68-b5bb-3f9da666441e"],
 
-Cell["\<\
-UniqueTropicalSegmentQ -- test whether the tropical segment from u to v is \
-single-valued.\
-\>", "Item",ExpressionUUID->"c1ccfc7c-5000-4ba6-b10d-c0f18cc8946a"],
+Cell["Examples", "Section",ExpressionUUID->"ce255393-bc6e-41d9-af62-42a453e66895"],
 
-Cell["\<\
-TropicalT1Q -- test the first tropical axiom: every two vertices admit a \
-tropical segment (= ConnectedGraphQ).\
-\>", "Item",ExpressionUUID->"e2660e3e-196b-4c8c-b065-5daa4f60a6f5"],
+Cell[BoxData[{Cell["All tropical segments between two corners of a 4 x 4 \
+grid.", "CodeText",ExpressionUUID->
+  "83bc2a10-cb48-4769-92e8-aa96b3817ce4"], "\n", \
+Cell["FindSegment[GridGraph[{4, 4}], 1, 16, All]", "Input",ExpressionUUID->
+  "5f3ad771-3ced-4c90-9bd6-17013fa35083"]}], "Input",ExpressionUUID->\
+"b0a8ed89-ea9a-4368-81e0-71657fba2f2d"],
 
-Cell["Connection to the TropicalOperations layer", "Section",ExpressionUUID->"5095c65a-e8f0-41fe-882a-41cb63e92f1f"],
+Cell[BoxData[{Cell["Geodesic convex hull of three vertices on a grid.", 
+  "CodeText",ExpressionUUID->
+  "b581fbae-ba22-4665-8e21-e23cdc6b5d98"], "\n", \
+Cell["FindGeodesicConvexHull[GridGraph[{4, 4}], {1, 4, 16}]", "Input",
+  ExpressionUUID->"f1b7bc86-4bd8-4494-b3e4-97fc53e87fdd"]}], "Input",Expressio\
+nUUID->"0369395d-d0fa-4d62-b5f6-d3adabb16661"],
 
-Cell["\<\
-The two senses of \"tropical\" are graph-side companions, not duplicates.\
-\>", "Text",ExpressionUUID->"29a5ce77-4272-4493-91a8-8e87c1346637"],
+Cell[BoxData[{Cell["Test whether a vertex set is geodesically convex.", 
+  "CodeText",ExpressionUUID->
+  "92c21dd8-0528-499b-bbf2-ced66195b929"], "\n", \
+Cell["GeodesicallyConvexQ[GridGraph[{4, 4}], {1, 2, 3, 4}]", "Input",
+  ExpressionUUID->"d66bff34-f371-4240-a17d-bb280ccfefc7"]}], "Input",Expressio\
+nUUID->"1b76aa9a-6aca-482e-b29d-4a6614921727"],
 
-Cell["\<\
-Sense 1 (TropicalOperations): TropicalPlus / TropicalTimes / TropicalDot / \
-TropicalMatrixPower live on numbers and matrices in the min-plus semiring. \
-The bridge to graphs is TropicalMatrixPower[A, k] === GraphDistanceMatrix[g] \
-for k >= diameter (where A is the cost-adjacency matrix); the matrix-form \
-triangle inequality is TropicalDot[D, D] === D.\
-\>", "Item",ExpressionUUID->"05dbdd02-aaec-454e-ad28-0fd9ea292868"],
+Cell["See also", "Section",ExpressionUUID->"3539223f-5f71-497d-979c-98d385db10a8"],
 
-Cell["\<\
-Sense 2 (this layer): tropical segments, hulls, T1 are read off geodesic \
-structure on the graph itself. The link to the matrix layer is via the \
-metric: a vertex set S is geodesically convex iff S x S satisfies the \
-tropical-idempotence relation under the restricted distance matrix.\
-\>", "Item",ExpressionUUID->"629142c8-6d8f-4250-bbb4-c88186a458b1"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"66e5ac6b-bdfd-4e1a-9347-9a982444786e"],
 
-Cell["Tutorial", "Section",ExpressionUUID->"c0ca12d7-d9ec-4d07-bd92-151ba419e812"],
+Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"63931547-fbb6-4f95-be12-479031c4bbd5"],
 
-Cell["See TropicalConvexityTutorial for runnable examples.", "Item",ExpressionUUID->"61c0bc82-f982-4379-89fd-0200edaa9cb1"],
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"9d968c1f-79e4-47e0-8362-7ef9dee781de"],
 
-Cell["See also", "Section",ExpressionUUID->"550f43c7-589d-49eb-a039-c3ab267ca0cc"],
+Cell["FindSegment", "Item",ExpressionUUID->"b7998565-21d1-4d9d-b8a2-cacf63c23d99"],
 
-Cell["\<\
-TropicalOperationsGuide -- the algebraic min-plus operations on numbers and \
-matrices.\
-\>", "Item",ExpressionUUID->"6de906cd-7160-491e-abd5-a13223d03984"],
+Cell["FindGeodesicConvexHull", "Item",ExpressionUUID->"f7404fcc-b204-4602-9fff-2db454303ea8"],
 
-Cell["\<\
-MetricAlgebraGuide -- MetricInterval, GeodesicCount, the \
-distance-multiplicity matrix, MedianVertices.\
-\>", "Item",ExpressionUUID->"5a911a90-3d1f-4195-b575-0577dc4c4a10"],
+Cell["GeodesicallyConvexQ", "Item",ExpressionUUID->"4b266f87-94d4-408e-8f74-4cb8065f8be2"],
 
-Cell["\<\
-EuclideanGeometryGuide -- FindSegment, the underlying geodesic enumeration.\
-\>", "Item",ExpressionUUID->"640635df-af8c-46e0-87aa-86cb3d546f25"],
+Cell["MetricInterval", "Item",ExpressionUUID->"245983da-0b04-491a-972a-d789f6a6954d"],
 
-Cell["References", "Section",ExpressionUUID->"3806ecc1-4d34-4f31-bd30-423bb9cf35f1"],
+Cell["References", "Section",ExpressionUUID->"51793320-d731-4eb8-a410-b3b765dde392"],
 
 Cell["\<\
 Maclagan and Sturmfels, Introduction to Tropical Geometry, AMS GSM 161, 2015, \
 https://janos.cs.technion.ac.il/COURSES/238900-13/Tropical/MaclaganSturmfels.\
 pdf\
-\>", "Item",ExpressionUUID->"2353f743-87b0-42fa-ad1c-d35d6a6bc0f8"],
+\>", "Item",ExpressionUUID->"ec23b879-8e86-4a09-82ad-5b7a9e6b668c"],
 
 Cell["\<\
 Develin and Sturmfels, Tropical Convexity, Documenta Math. 9, 1-27, 2004, \
 https://arxiv.org/abs/math/0308254\
-\>", "Item",ExpressionUUID->"f4c89f87-85c1-4a2a-b83e-6fb6f78bd81d"],
+\>", "Item",ExpressionUUID->"228ce266-f899-4880-8272-96ae38ce1a09"],
 
 Cell["\<\
 van der Pol, A Tropical Approach to the Median, in Combinatorial Convexity \
 (Bjorner, Linial, eds.), 2009 (median-graph background).\
-\>", "Item",ExpressionUUID->"c181c6da-704c-4790-a60d-27af63501dbd"],
+\>", "Item",ExpressionUUID->"781ce2d3-c81b-4176-908d-e99196fdc726"],
 
 Cell["\<\
 Mulder, The Interval Function of a Graph, Mathematical Centre Tracts 132, \
 Amsterdam 1980 (foundational treatment of geodesic convexity on graphs).\
-\>", "Item",ExpressionUUID->"029f2a41-ad37-4478-8c25-9d5910e36b06"]
+\>", "Item",ExpressionUUID->"4feb3fc7-9ace-4172-85aa-926f0d3f8fb3"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
 ]
 (* End of Notebook Content *)
 
@@ -157,34 +139,34 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 109, 0, 70, "Title",ExpressionUUID->"c3f18c7a-2218-44bc-b1eb-cbbbaeeaa34c"],
-Cell[666, 22, 654, 9, 70, "Text",ExpressionUUID->"ff6b9545-a2ac-4758-acb9-f057224f7749"],
-Cell[1323, 33, 470, 7, 70, "Text",ExpressionUUID->"6e638baa-c5b6-4057-8e5d-29b519eb6779"],
-Cell[1796, 42, 79, 0, 70, "Section",ExpressionUUID->"08d7376a-8376-4299-aae8-fcbf13c6b039"],
-Cell[1878, 44, 122, 0, 70, "Code",ExpressionUUID->"65dbbf5e-e1c0-44df-8ead-8808838bedf0"],
-Cell[2003, 46, 84, 0, 70, "Section",ExpressionUUID->"f15198e8-af44-4ad4-be14-83ff65b9cd46"],
-Cell[2090, 48, 166, 3, 70, "Item",ExpressionUUID->"7db339a6-1376-4222-ab0c-b5c68f53ba47"],
-Cell[2259, 53, 165, 3, 70, "Item",ExpressionUUID->"020cd0c2-b156-4f48-b722-de90a44080de"],
-Cell[2427, 58, 84, 0, 70, "Section",ExpressionUUID->"9edc2480-0279-4c5f-a5c9-d89782fb3808"],
-Cell[2514, 60, 167, 3, 70, "Item",ExpressionUUID->"44704c44-bbf2-4581-9987-904739f03869"],
-Cell[2684, 65, 158, 3, 70, "Item",ExpressionUUID->"03889784-ef53-43e8-a6da-009f087e042f"],
-Cell[2845, 70, 170, 3, 70, "Item",ExpressionUUID->"c1ccfc7c-5000-4ba6-b10d-c0f18cc8946a"],
-Cell[3018, 75, 191, 3, 70, "Item",ExpressionUUID->"e2660e3e-196b-4c8c-b065-5daa4f60a6f5"],
-Cell[3212, 80, 116, 0, 70, "Section",ExpressionUUID->"5095c65a-e8f0-41fe-882a-41cb63e92f1f"],
-Cell[3331, 82, 152, 2, 70, "Text",ExpressionUUID->"29a5ce77-4272-4493-91a8-8e87c1346637"],
-Cell[3486, 86, 435, 6, 70, "Item",ExpressionUUID->"05dbdd02-aaec-454e-ad28-0fd9ea292868"],
-Cell[3924, 94, 366, 5, 70, "Item",ExpressionUUID->"629142c8-6d8f-4250-bbb4-c88186a458b1"],
-Cell[4293, 101, 82, 0, 70, "Section",ExpressionUUID->"c0ca12d7-d9ec-4d07-bd92-151ba419e812"],
-Cell[4378, 103, 123, 0, 70, "Item",ExpressionUUID->"61c0bc82-f982-4379-89fd-0200edaa9cb1"],
-Cell[4504, 105, 82, 0, 70, "Section",ExpressionUUID->"550f43c7-589d-49eb-a039-c3ab267ca0cc"],
-Cell[4589, 107, 166, 3, 70, "Item",ExpressionUUID->"6de906cd-7160-491e-abd5-a13223d03984"],
-Cell[4758, 112, 183, 3, 70, "Item",ExpressionUUID->"5a911a90-3d1f-4195-b575-0577dc4c4a10"],
-Cell[4944, 117, 151, 2, 70, "Item",ExpressionUUID->"640635df-af8c-46e0-87aa-86cb3d546f25"],
-Cell[5098, 121, 84, 0, 70, "Section",ExpressionUUID->"3806ecc1-4d34-4f31-bd30-423bb9cf35f1"],
-Cell[5185, 123, 241, 4, 70, "Item",ExpressionUUID->"2353f743-87b0-42fa-ad1c-d35d6a6bc0f8"],
-Cell[5429, 129, 189, 3, 70, "Item",ExpressionUUID->"f4c89f87-85c1-4a2a-b83e-6fb6f78bd81d"],
-Cell[5621, 134, 212, 3, 70, "Item",ExpressionUUID->"c181c6da-704c-4790-a60d-27af63501dbd"],
-Cell[5836, 139, 227, 3, 70, "Item",ExpressionUUID->"029f2a41-ad37-4478-8c25-9d5910e36b06"]
+Cell[554, 20, 109, 0, 70, "Title",ExpressionUUID->"b30d141e-778e-40fb-bc15-f3963dd8081a"],
+Cell[666, 22, 541, 8, 70, "Text",ExpressionUUID->"8e6783a4-2402-43d8-ad94-9fbc729aeaea"],
+Cell[1210, 32, 338, 5, 70, "Text",ExpressionUUID->"80ea2ab5-e634-4f21-bfc2-9f802a508f8e"],
+Cell[1551, 39, 79, 0, 70, "Section",ExpressionUUID->"ce043b2e-a03c-4357-975d-6027eea830cb"],
+Cell[1633, 41, 91, 0, 70, "CodeText",ExpressionUUID->"e31c7645-44ab-4d8d-9342-b1ea21058532"],
+Cell[1727, 43, 122, 0, 70, "Code",ExpressionUUID->"8ec7cea0-a384-4815-8ca3-5ea17ca9d7bc"],
+Cell[1852, 45, 84, 0, 70, "Section",ExpressionUUID->"534205ad-c048-4ec4-aa79-11e07426e508"],
+Cell[1939, 47, 177, 3, 70, "Item",ExpressionUUID->"39815ba6-b587-4d33-b11c-f462f3985ca2"],
+Cell[2119, 52, 165, 3, 70, "Item",ExpressionUUID->"0f3c5907-e22b-4ee0-a057-b6e7073ee5f9"],
+Cell[2287, 57, 84, 0, 70, "Section",ExpressionUUID->"7adeeb1f-367b-4d5a-afc6-0573a538d640"],
+Cell[2374, 59, 158, 3, 70, "Item",ExpressionUUID->"04f9e3d2-262a-4d68-b5bb-3f9da666441e"],
+Cell[2535, 64, 82, 0, 70, "Section",ExpressionUUID->"ce255393-bc6e-41d9-af62-42a453e66895"],
+Cell[2620, 66, 348, 5, 70, "Input",ExpressionUUID->"b0a8ed89-ea9a-4368-81e0-71657fba2f2d"],
+Cell[2971, 73, 351, 5, 70, "Input",ExpressionUUID->"0369395d-d0fa-4d62-b5f6-d3adabb16661"],
+Cell[3325, 80, 350, 5, 70, "Input",ExpressionUUID->"1b76aa9a-6aca-482e-b29d-4a6614921727"],
+Cell[3678, 87, 82, 0, 70, "Section",ExpressionUUID->"3539223f-5f71-497d-979c-98d385db10a8"],
+Cell[3763, 89, 93, 0, 70, "Item",ExpressionUUID->"66e5ac6b-bdfd-4e1a-9347-9a982444786e"],
+Cell[3859, 91, 89, 0, 70, "Item",ExpressionUUID->"63931547-fbb6-4f95-be12-479031c4bbd5"],
+Cell[3951, 93, 85, 0, 70, "Item",ExpressionUUID->"9d968c1f-79e4-47e0-8362-7ef9dee781de"],
+Cell[4039, 95, 82, 0, 70, "Item",ExpressionUUID->"b7998565-21d1-4d9d-b8a2-cacf63c23d99"],
+Cell[4124, 97, 93, 0, 70, "Item",ExpressionUUID->"f7404fcc-b204-4602-9fff-2db454303ea8"],
+Cell[4220, 99, 90, 0, 70, "Item",ExpressionUUID->"4b266f87-94d4-408e-8f74-4cb8065f8be2"],
+Cell[4313, 101, 85, 0, 70, "Item",ExpressionUUID->"245983da-0b04-491a-972a-d789f6a6954d"],
+Cell[4401, 103, 84, 0, 70, "Section",ExpressionUUID->"51793320-d731-4eb8-a410-b3b765dde392"],
+Cell[4488, 105, 241, 4, 70, "Item",ExpressionUUID->"ec23b879-8e86-4a09-82ad-5b7a9e6b668c"],
+Cell[4732, 111, 189, 3, 70, "Item",ExpressionUUID->"228ce266-f899-4880-8272-96ae38ce1a09"],
+Cell[4924, 116, 212, 3, 70, "Item",ExpressionUUID->"781ce2d3-c81b-4176-908d-e99196fdc726"],
+Cell[5139, 121, 227, 3, 70, "Item",ExpressionUUID->"4feb3fc7-9ace-4172-85aa-926f0d3f8fb3"]
 }
 ]
 *)

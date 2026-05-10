@@ -1,0 +1,95 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      4264,         86]
+NotebookOptionsPosition[      2517,         58]
+NotebookOutlinePosition[      2834,         72]
+CellTagsIndexPosition[      2791,         69]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["GeodesicMultiplicityMatrix", "Title",ExpressionUUID->"5415a296-e877-4e8b-940b-06b9280b8ebf"],
+
+Cell["\<\
+GeodesicMultiplicityMatrix[graph] returns the pair {D, M} where D is the \
+distance matrix of graph and M[i, j] is the number of geodesics from vertex i \
+to vertex j. The multiplicity counterpart of the metric.\
+\>", "Text",ExpressionUUID->"d8180f42-a57d-45fb-846e-06e155962aef"],
+
+Cell["Setup", "Section",ExpressionUUID->"d31e95c0-3d03-4aa9-afac-f5b5285835e3"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"d8a3f3fe-a851-4c79-b558-e75d17b331b6"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"62a72883-a216-4ea8-9f83-eb58518f9d6b"],
+
+Cell["Usage", "Section",ExpressionUUID->"e53f8233-ef66-400f-9ca3-51479c54d549"],
+
+Cell["Distance and multiplicity matrices of the cycle C_5.", "CodeText",ExpressionUUID->"960b3b7f-6298-4617-a4d1-b5a2a97e7296"],
+
+Cell["GeodesicMultiplicityMatrix[CycleGraph[5]]", "Input",ExpressionUUID->"0c0f570a-8c93-46ae-8453-49cafd5af434"],
+
+Cell["Same on a 3x3 grid.", "CodeText",ExpressionUUID->"c0bab6c8-257c-4ec1-928b-9fa1ddd10e4f"],
+
+Cell["GeodesicMultiplicityMatrix[GridGraph[{3, 3}]]", "Input",ExpressionUUID->"0cd1966f-5dfd-47f8-a912-73d0a9191a00"],
+
+Cell["Examples", "Section",ExpressionUUID->"22111d8e-5bf8-4f50-bc96-6152c7602bb6"],
+
+Cell["Read off the global geodesic counts.", "CodeText",ExpressionUUID->"55ec8a00-7437-42ea-a8c1-5dafb3bd53cb"],
+
+Cell["Last @ GeodesicMultiplicityMatrix[GridGraph[{4, 4}]]", "Input",ExpressionUUID->"f4bb41e9-5b33-444a-801a-a1b80fdb8ed9"],
+
+Cell["See also", "Section",ExpressionUUID->"38b6cc99-ae19-4c77-b7c8-9723cc9599f9"],
+
+Cell["GeodesicMultiplicity", "Item",ExpressionUUID->"833187a2-e44e-4541-85ba-2c2b3416da12"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"030c984f-43b6-4f7e-8d18-5316d3f1af9a"],
+
+Cell["MedianVertices", "Item",ExpressionUUID->"3f598016-b5a7-4031-81ca-468bc8f1b54f"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 98, 0, 70, "Title",ExpressionUUID->"5415a296-e877-4e8b-940b-06b9280b8ebf"],
+Cell[655, 22, 290, 4, 70, "Text",ExpressionUUID->"d8180f42-a57d-45fb-846e-06e155962aef"],
+Cell[948, 28, 79, 0, 70, "Section",ExpressionUUID->"d31e95c0-3d03-4aa9-afac-f5b5285835e3"],
+Cell[1030, 30, 132, 0, 70, "CodeText",ExpressionUUID->"d8a3f3fe-a851-4c79-b558-e75d17b331b6"],
+Cell[1165, 32, 122, 0, 70, "Code",ExpressionUUID->"62a72883-a216-4ea8-9f83-eb58518f9d6b"],
+Cell[1290, 34, 79, 0, 70, "Section",ExpressionUUID->"e53f8233-ef66-400f-9ca3-51479c54d549"],
+Cell[1372, 36, 127, 0, 70, "CodeText",ExpressionUUID->"960b3b7f-6298-4617-a4d1-b5a2a97e7296"],
+Cell[1502, 38, 113, 0, 70, "Input",ExpressionUUID->"0c0f570a-8c93-46ae-8453-49cafd5af434"],
+Cell[1618, 40, 94, 0, 70, "CodeText",ExpressionUUID->"c0bab6c8-257c-4ec1-928b-9fa1ddd10e4f"],
+Cell[1715, 42, 117, 0, 70, "Input",ExpressionUUID->"0cd1966f-5dfd-47f8-a912-73d0a9191a00"],
+Cell[1835, 44, 82, 0, 70, "Section",ExpressionUUID->"22111d8e-5bf8-4f50-bc96-6152c7602bb6"],
+Cell[1920, 46, 111, 0, 70, "CodeText",ExpressionUUID->"55ec8a00-7437-42ea-a8c1-5dafb3bd53cb"],
+Cell[2034, 48, 124, 0, 70, "Input",ExpressionUUID->"f4bb41e9-5b33-444a-801a-a1b80fdb8ed9"],
+Cell[2161, 50, 82, 0, 70, "Section",ExpressionUUID->"38b6cc99-ae19-4c77-b7c8-9723cc9599f9"],
+Cell[2246, 52, 91, 0, 70, "Item",ExpressionUUID->"833187a2-e44e-4541-85ba-2c2b3416da12"],
+Cell[2340, 54, 85, 0, 70, "Item",ExpressionUUID->"030c984f-43b6-4f7e-8d18-5316d3f1af9a"],
+Cell[2428, 56, 85, 0, 70, "Item",ExpressionUUID->"3f598016-b5a7-4031-81ca-468bc8f1b54f"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -26,7 +26,7 @@ one per axis, of v's shortest-path projection onto each axis (non-negative \
 integers from each axis's path start). Each axis is a vertex list (line) or a \
 directed acyclic graph (DAG). OrthogonalCoordinates[graph, axes] returns the \
 Association of n-tuples for every vertex. OrthogonalCoordinates[graph, c, v] \
-auto-discovers orthogonal axes through center vertex c via FindOrthogonalAxes \
+auto-discovers orthogonal axes through center vertex c via FindOrthogonalFrame \
 and returns the Z-valued signed displacement of v from c. \
 OrthogonalCoordinates[graph, c] returns the Association of all signed \
 coordinates with c at the origin. OrthogonalCoordinates[graph, \
@@ -116,7 +116,7 @@ DirectedEdge[2, 3]}]}, OrthogonalCoordinates[g, {dag}]]\
 
 Cell["See also", "Section",ExpressionUUID->"a65ce2e7-c168-4dbb-a85e-150f5d111d81"],
 
-Cell["FindOrthogonalAxes", "Item",ExpressionUUID->"1536f595-876d-4b69-8d6f-b48b2270130e"],
+Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"1536f595-876d-4b69-8d6f-b48b2270130e"],
 
 Cell["RadarCoordinates", "Item",ExpressionUUID->"5bf57c48-c3e7-4fb2-a6f9-337e42d575b8"],
 

@@ -10,169 +10,151 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      9409,        185]
-NotebookOptionsPosition[      5592,        134]
-NotebookOutlinePosition[      5909,        148]
-CellTagsIndexPosition[      5866,        145]
+NotebookDataLength[     11435,        216]
+NotebookOptionsPosition[      6620,        154]
+NotebookOutlinePosition[      6937,        168]
+CellTagsIndexPosition[      6894,        165]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["SyntheticInfrageometry", "Title",ExpressionUUID->"d543e156-5864-4c4c-8e57-7c85aaa0cd95"],
+Cell["SyntheticInfrageometry", "Title",ExpressionUUID->"bb28de64-b107-4dd9-8f53-47d8901c080d"],
 
 Cell["\<\
 SyntheticInfrageometry organizes Euclidean (metric), path-space (selectors), \
 coordinatization, Tarski (betweenness + equidistance), projective \
-(incidence), tropical operations (min-plus arithmetic), tropical convexity \
-(graph-only), metric algebra, curvatures (Forman / Ollivier / Wolfram), and \
-visualization layers around multivalued constructions on graphs. Every \
-direction has a Guide (categorical overview) and a Tutorial (worked \
-walkthrough). This master guide is the entry point.\
-\>", "Text",ExpressionUUID->"1c3839a5-e20d-4124-8242-aa999686bb33"],
+(incidence), tropical convexity (graph-only), Alexandrov / \
+comparison-triangle, metric algebra, and visualization layers around \
+multivalued constructions on graphs and hypergraphs. Every direction has a \
+Guide (categorical overview) and a Tutorial (worked walkthrough). This master \
+guide is the entry point.\
+\>", "Text",ExpressionUUID->"86dbd888-1109-45d1-a2e5-14136a6061f0"],
 
-Cell["Setup", "Section",ExpressionUUID->"22f8ffa4-fdca-4f80-bbfb-69bf403f008c"],
+Cell["Setup", "Section",ExpressionUUID->"76685b1e-447e-46af-a945-a3f914fc857d"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"83705957-938b-48b7-8f86-f241b9b1ee3c"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"575fc9a0-644f-4599-8009-44c45839e370"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"00dae3a9-6cea-4907-92d3-bee00ec320e7"],
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"344c05ef-00ff-49f2-abc7-569ef57f8ed3"],
 
-Cell["Guides", "Section",ExpressionUUID->"b252d4a7-95dd-4d05-97d3-e21125513dc2"],
+Cell["Guides", "Section",ExpressionUUID->"acccabe8-b6f6-4753-ab66-4108accc2cf9"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"8da37d38-7e2a-4ce9-be83-2000a9ebd7d0"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"e1e79942-04dd-45db-b3f3-3a14d50b1bd4"],
 
-Cell["PathSpaceGuide", "Item",ExpressionUUID->"c16277ec-8a32-4b0a-be2e-218b99f6655c"],
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"0094fdab-9cbc-48a5-b8eb-dcc0fbffce3f"],
 
-Cell["CoordinatizationGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000001"],
+Cell["CoordinatizationGuide", "Item",ExpressionUUID->"0764719a-3a9b-485b-aeb7-bd96f4b7451e"],
 
-Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"075446b6-5c1f-49aa-a10d-aa3a0c93909c"],
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"12cd87b1-57af-406c-9626-8eb1ec9aff62"],
 
-Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000002"],
+Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"de92e44f-5e5b-4206-87df-e9e7e91b59e9"],
 
-Cell["TropicalOperationsGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000003"],
+Cell["TropicalConvexityGuide", "Item",ExpressionUUID->"43dfbdda-a58c-41f6-a290-e529942a5bbc"],
 
-Cell["TropicalConvexityGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000010"],
+Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"3ae79db3-a01c-4035-95dd-98d35e480995"],
 
-Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000004"],
+Cell["VisualizationGuide", "Item",ExpressionUUID->"1a7dcf9f-70ab-40a1-bfe2-cee14e5ab9d1"],
 
-Cell["CurvaturesGuide", "Item",ExpressionUUID->"0d648d45-27b6-4488-b184-93bc01941065"],
+Cell["Tutorials", "Section",ExpressionUUID->"c168d911-a571-4c4b-8098-dd17c096dcea"],
 
-Cell["VisualizationGuide", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000011"],
+Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"53d4668e-2e30-475b-9ae4-797c86e82794"],
 
-Cell["Tutorials", "Section",ExpressionUUID->"5322691a-c134-4c99-8c4f-f72e7e867da1"],
+Cell["PathSpaceTutorial", "Item",ExpressionUUID->"9dfe4337-08ee-4c0d-972f-2fb4b6436963"],
 
-Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"64a6a721-2131-444b-a995-081297f0e2b9"],
+Cell["CoordinatizationTutorial", "Item",ExpressionUUID->"08bafeae-2368-4e65-9062-619631c51505"],
 
-Cell["PathSpaceTutorial", "Item",ExpressionUUID->"7b69b051-998e-475c-b400-e4b38ee6d344"],
+Cell["TarskiGeometryTutorial", "Item",ExpressionUUID->"597466b6-4acb-4775-8a28-066b9a9b2fc2"],
 
-Cell["CoordinatizationTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000012"],
+Cell["ProjectiveGeometryTutorial", "Item",ExpressionUUID->"2e097007-0a27-40d9-bb72-0190bb06d561"],
 
-Cell["TarskiGeometryTutorial", "Item",ExpressionUUID->"3d5f7175-bda1-46cd-ac5a-b4011fe0d87c"],
+Cell["TropicalConvexityTutorial", "Item",ExpressionUUID->"ef11f95f-b805-403e-af8f-e7487823f23a"],
 
-Cell["ProjectiveGeometryTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000005"],
+Cell["MetricAlgebraTutorial", "Item",ExpressionUUID->"fc212caa-4d3f-4f2c-9ab6-144fcd9c8292"],
 
-Cell["TropicalOperationsTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000013"],
+Cell["VisualizationTutorial", "Item",ExpressionUUID->"4485b8d9-5f75-425f-91e4-4ee54d707193"],
 
-Cell["TropicalConvexityTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000014"],
+Cell["Core symbols", "Section",ExpressionUUID->"2ca893d3-a491-43b4-90fd-61676790e025"],
 
-Cell["MetricAlgebraTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000015"],
+Cell["InfraSceneHighlight", "Item",ExpressionUUID->"606cbb21-09d1-40f2-aca6-94437b416c79"],
 
-Cell["CurvaturesTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000016"],
+Cell["FindSegment", "Item",ExpressionUUID->"a92e7c25-8287-4b28-ad19-fb87c92caecb"],
 
-Cell["VisualizationTutorial", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000017"],
+Cell["FindMidpoint", "Item",ExpressionUUID->"0607ac2f-f4ec-410e-b698-6deb9a5bcad1"],
 
-Cell["Core symbols", "Section",ExpressionUUID->"cfed7f44-d9d4-4938-8e69-7121c40c79da"],
+Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"54d7b3b0-90c9-4b18-b3a7-e86787b27c4a"],
 
-Cell["InfraSceneHighlight", "Item",ExpressionUUID->"c23be6f1-4c39-483d-a8ea-72ad55c3fddc"],
+Cell["SelectPaths", "Item",ExpressionUUID->"2e6e03f6-c463-4a0c-b69c-1f68d801dd73"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"1caedf66-b4de-44c0-82f4-9263ff7b162b"],
+Cell["SelectCycles", "Item",ExpressionUUID->"6d4da086-4021-4228-a35f-cc31725a3617"],
 
-Cell["SelectPaths", "Item",ExpressionUUID->"e08d39a6-32d9-438a-9515-faa8dab2aec0"],
+Cell["TarskiAxiomQ", "Item",ExpressionUUID->"c32151b7-6efe-4ace-b084-0c80c3cf1245"],
 
-Cell["SelectCycles", "Item",ExpressionUUID->"7dcd49e8-b0ea-479a-ad68-9129f7dea443"],
+Cell["FindPencil", "Item",ExpressionUUID->"36f0dbe0-f06d-451d-b5da-5bce46e43284"],
 
-Cell["FormanRicci", "Item",ExpressionUUID->"d81eddcc-fa20-4a28-9944-bfc9e496345b"],
+Cell["FindCommonLine", "Item",ExpressionUUID->"aaf9047d-a28f-4cd1-8355-0496b1b5dd1f"],
 
-Cell["WolframRicci", "Item",ExpressionUUID->"c3033353-7d1a-43aa-8280-fffc7691cb81"],
+Cell["ProjectivePlaneGraphQ", "Item",ExpressionUUID->"27832150-a997-4136-9f77-87ff0b50e91b"],
 
-Cell["OllivierRicci", "Item",ExpressionUUID->"11e07fe6-c3b9-49b3-bf09-f9c3540158c1"],
+Cell["InfraScalarProduct", "Item",ExpressionUUID->"ece03d41-5d09-4328-b314-f8415947595b"],
 
-Cell["TarskiAxiomQ", "Item",ExpressionUUID->"84525bd4-55c1-448d-b077-8fa03331eddd"],
+Cell["InfraAngle", "Item",ExpressionUUID->"7af14642-9e05-44f2-8eaf-d523992bc70b"],
 
-Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"9a06d5a6-8f30-40b4-8a87-666636a43c94"],
+Cell["InfraCurvature", "Item",ExpressionUUID->"7a4babf6-0a7b-4733-af76-a69b8278f087"],
 
-Cell["FindPencil", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000006"],
+Cell["Algebraic substrate", "Section",ExpressionUUID->"8327fd3b-72c0-4064-b10c-bbdde2803a15"],
 
-Cell["FindCommonLine", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000007"],
+Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"ca1a213b-745d-48d9-bc2b-97be1ab60a2a"],
 
-Cell["ProjectivePlaneGraphQ", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000008"],
+Cell["MetricInterval", "Item",ExpressionUUID->"f9e041ef-78f5-4d51-a26e-599453aacc7f"],
 
-Cell["Algebraic substrate", "Section",ExpressionUUID->"485e2fd9-bc76-428e-a18c-fa6de0fe32bb"],
+Cell["GeodesicMultiplicity", "Item",ExpressionUUID->"42c74086-f9d4-43d4-97c8-8481207bdfcf"],
 
-Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"32fb562d-13d2-40cc-b18f-fd6780a8367a"],
+Cell["GeodesicMultiplicityMatrix", "Item",ExpressionUUID->"bde78492-d2fc-4272-a209-0d58213d2464"],
 
-Cell["MetricInterval", "Item",ExpressionUUID->"b7f4ca90-b7bd-4947-a136-73674311bb7d"],
+Cell["MedianVertices", "Item",ExpressionUUID->"24ccdb93-3382-45ad-b761-d73b8a04cc37"],
 
-Cell["GeodesicCount", "Item",ExpressionUUID->"c300397d-17a2-4dd0-b9e8-324f29884775"],
-
-Cell["DistanceMultiplicityMatrix", "Item",ExpressionUUID->"ca374a40-1a0e-4e1a-9d0a-e5bf3dce632d"],
-
-Cell["DistanceMatrixQ", "Item",ExpressionUUID->"16035671-9f08-4934-b49a-144ce089cd70"],
-
-Cell["MedianVertices", "Item",ExpressionUUID->"10a472e8-f91c-4e76-aac6-dcdabe10019b"],
-
-Cell["References", "Section",ExpressionUUID->"44bff92f-0cb3-4f73-ad15-ae4feffc83fa"],
+Cell["References", "Section",ExpressionUUID->"d7eab632-10c3-4ee6-91c8-fe898c801026"],
 
 Cell["\<\
 Hilbert, The Foundations of Geometry, Open Court 1971 (English translation), \
 https://www.gutenberg.org/ebooks/17384\
-\>", "Item",ExpressionUUID->"f0732b4b-7804-410a-bb2e-8a33be54549d"],
+\>", "Item",ExpressionUUID->"6dcbd01c-d3b6-460f-93d1-9bab5ee9b068"],
 
 Cell["\<\
 Tarski and Givant, Tarski's System of Geometry, Bulletin of Symbolic Logic \
 5(2), 175-214, 1999, \
 https://projecteuclid.org/journals/bulletin-of-symbolic-logic/volume-5/issue-\
 2/Tarskis-system-of-geometry/bsl/1182353717\
-\>", "Item",ExpressionUUID->"88afbc14-522b-46ad-b7fb-10c4b64c3507"],
+\>", "Item",ExpressionUUID->"de7439fd-834b-4a6d-a279-2bd3cdf2e8b1"],
 
 Cell["\<\
 Schwabhauser, Szmielew and Tarski, Metamathematische Methoden in der \
 Geometrie, Springer 1983, https://link.springer.com/book/9783540129585\
-\>", "Item",ExpressionUUID->"4d098297-8a1b-4bf5-a152-b73c0433d664"],
+\>", "Item",ExpressionUUID->"a9e25166-4abc-433d-9a2e-ff4c640d270c"],
 
 Cell["\<\
 Linial, Geodesic Geometry on Graphs, \
 https://www.cs.huji.ac.il/~nati/PAPERS/ge_ge_gr.pdf\
-\>", "Item",ExpressionUUID->"607efd9c-ccb9-4a66-8c27-dd09c1b70c19"],
+\>", "Item",ExpressionUUID->"5d66b031-b075-47b5-a87e-61df7ae49c97"],
 
 Cell["\<\
 Maclagan and Sturmfels, Introduction to Tropical Geometry, AMS GSM 161, 2015, \
 https://janos.cs.technion.ac.il/COURSES/238900-13/Tropical/MaclaganSturmfels.\
 pdf\
-\>", "Item",ExpressionUUID->"eb526f1b-c050-4cee-ab7e-47807183efdc"],
-
-Cell["\<\
-Ollivier, Ricci Curvature of Markov Chains on Metric Spaces, J. Funct. Anal. \
-256, 2009, https://arxiv.org/abs/math/0701886\
-\>", "Item",ExpressionUUID->"b2231d03-8507-44ea-a5bf-3b563ad29d68"],
-
-Cell["\<\
-Forman, Bochner's Method for Cell Complexes and Combinatorial Ricci \
-Curvature, Discrete Comput. Geom. 29, 2003\
-\>", "Item",ExpressionUUID->"11d3cc27-59ae-4b90-a582-4ed822526fce"],
-
-Cell["\<\
-Wolfram, A Class of Models with the Potential to Represent Fundamental \
-Physics, https://arxiv.org/abs/2004.08210\
-\>", "Item",ExpressionUUID->"63cf9c4d-841d-4881-bae9-e8c9d93b17fa"],
+\>", "Item",ExpressionUUID->"1008e29e-4687-416f-9994-ce94f6e96597"],
 
 Cell["\<\
 Whitehead, The Axioms of Projective Geometry, Cambridge University Press \
 1906, https://archive.org/details/cu31924001520455\
-\>", "Item",ExpressionUUID->"a4f1c1c1-aaa1-4cce-b1ce-aaaaaa000009"]
+\>", "Item",ExpressionUUID->"464fbbdb-c357-4c43-a75d-c37de495c78e"],
+
+Cell["\<\
+Burago, Burago and Ivanov, A Course in Metric Geometry, AMS GSM 33, 2001 \
+(CAT(k) and Alexandrov geometry background).\
+\>", "Item",ExpressionUUID->"073bc7f8-dbb7-4a70-8e9c-342c82a6a593"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"09bd8e93-7f29-4e76-a2aa-f06705fb4c0c"
+ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
 ]
 (* End of Notebook Content *)
 
@@ -185,46 +167,57 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 94, 0, 70, "Title",ExpressionUUID->"d543e156-5864-4c4c-8e57-7c85aaa0cd95"],
-Cell[651, 22, 474, 7, 70, "Text",ExpressionUUID->"1c3839a5-e20d-4124-8242-aa999686bb33"],
-Cell[1128, 31, 79, 0, 70, "Section",ExpressionUUID->"22f8ffa4-fdca-4f80-bbfb-69bf403f008c"],
-Cell[1210, 33, 91, 0, 70, "CodeText",ExpressionUUID->"83705957-938b-48b7-8f86-f241b9b1ee3c"],
-Cell[1304, 35, 122, 0, 70, "Code",ExpressionUUID->"00dae3a9-6cea-4907-92d3-bee00ec320e7"],
-Cell[1429, 37, 80, 0, 70, "Section",ExpressionUUID->"b252d4a7-95dd-4d05-97d3-e21125513dc2"],
-Cell[1512, 39, 90, 0, 70, "Item",ExpressionUUID->"8da37d38-7e2a-4ce9-be83-2000a9ebd7d0"],
-Cell[1605, 41, 85, 0, 70, "Item",ExpressionUUID->"c16277ec-8a32-4b0a-be2e-218b99f6655c"],
-Cell[1693, 43, 87, 0, 70, "Item",ExpressionUUID->"075446b6-5c1f-49aa-a10d-aa3a0c93909c"],
-Cell[1783, 45, 86, 0, 70, "Item",ExpressionUUID->"0d648d45-27b6-4488-b184-93bc01941065"],
-Cell[1872, 47, 83, 0, 70, "Section",ExpressionUUID->"5322691a-c134-4c99-8c4f-f72e7e867da1"],
-Cell[1958, 49, 93, 0, 70, "Item",ExpressionUUID->"64a6a721-2131-444b-a995-081297f0e2b9"],
-Cell[2054, 51, 88, 0, 70, "Item",ExpressionUUID->"7b69b051-998e-475c-b400-e4b38ee6d344"],
-Cell[2145, 53, 90, 0, 70, "Item",ExpressionUUID->"3d5f7175-bda1-46cd-ac5a-b4011fe0d87c"],
-Cell[2238, 55, 86, 0, 70, "Section",ExpressionUUID->"cfed7f44-d9d4-4938-8e69-7121c40c79da"],
-Cell[2327, 57, 90, 0, 70, "Item",ExpressionUUID->"c23be6f1-4c39-483d-a8ea-72ad55c3fddc"],
-Cell[2420, 59, 94, 0, 70, "Item",ExpressionUUID->"1caedf66-b4de-44c0-82f4-9263ff7b162b"],
-Cell[2517, 61, 83, 0, 70, "Item",ExpressionUUID->"e08d39a6-32d9-438a-9515-faa8dab2aec0"],
-Cell[2603, 63, 84, 0, 70, "Item",ExpressionUUID->"7dcd49e8-b0ea-479a-ad68-9129f7dea443"],
-Cell[2690, 65, 82, 0, 70, "Item",ExpressionUUID->"d81eddcc-fa20-4a28-9944-bfc9e496345b"],
-Cell[2775, 67, 83, 0, 70, "Item",ExpressionUUID->"c3033353-7d1a-43aa-8280-fffc7691cb81"],
-Cell[2861, 69, 84, 0, 70, "Item",ExpressionUUID->"11e07fe6-c3b9-49b3-bf09-f9c3540158c1"],
-Cell[2948, 71, 83, 0, 70, "Item",ExpressionUUID->"84525bd4-55c1-448d-b077-8fa03331eddd"],
-Cell[3034, 73, 89, 0, 70, "Item",ExpressionUUID->"9a06d5a6-8f30-40b4-8a87-666636a43c94"],
-Cell[3126, 75, 93, 0, 70, "Section",ExpressionUUID->"485e2fd9-bc76-428e-a18c-fa6de0fe32bb"],
-Cell[3222, 77, 89, 0, 70, "Item",ExpressionUUID->"32fb562d-13d2-40cc-b18f-fd6780a8367a"],
-Cell[3314, 79, 85, 0, 70, "Item",ExpressionUUID->"b7f4ca90-b7bd-4947-a136-73674311bb7d"],
-Cell[3402, 81, 84, 0, 70, "Item",ExpressionUUID->"c300397d-17a2-4dd0-b9e8-324f29884775"],
-Cell[3489, 83, 97, 0, 70, "Item",ExpressionUUID->"ca374a40-1a0e-4e1a-9d0a-e5bf3dce632d"],
-Cell[3589, 85, 86, 0, 70, "Item",ExpressionUUID->"16035671-9f08-4934-b49a-144ce089cd70"],
-Cell[3678, 87, 85, 0, 70, "Item",ExpressionUUID->"10a472e8-f91c-4e76-aac6-dcdabe10019b"],
-Cell[3766, 89, 84, 0, 70, "Section",ExpressionUUID->"44bff92f-0cb3-4f73-ad15-ae4feffc83fa"],
-Cell[3853, 91, 196, 3, 70, "Item",ExpressionUUID->"f0732b4b-7804-410a-bb2e-8a33be54549d"],
-Cell[4052, 96, 301, 5, 70, "Item",ExpressionUUID->"88afbc14-522b-46ad-b7fb-10c4b64c3507"],
-Cell[4356, 103, 220, 3, 70, "Item",ExpressionUUID->"4d098297-8a1b-4bf5-a152-b73c0433d664"],
-Cell[4579, 108, 169, 3, 70, "Item",ExpressionUUID->"607efd9c-ccb9-4a66-8c27-dd09c1b70c19"],
-Cell[4751, 113, 241, 4, 70, "Item",ExpressionUUID->"eb526f1b-c050-4cee-ab7e-47807183efdc"],
-Cell[4995, 119, 203, 3, 70, "Item",ExpressionUUID->"b2231d03-8507-44ea-a5bf-3b563ad29d68"],
-Cell[5201, 124, 191, 3, 70, "Item",ExpressionUUID->"11d3cc27-59ae-4b90-a582-4ed822526fce"],
-Cell[5395, 129, 193, 3, 70, "Item",ExpressionUUID->"63cf9c4d-841d-4881-bae9-e8c9d93b17fa"]
+Cell[554, 20, 94, 0, 70, "Title",ExpressionUUID->"bb28de64-b107-4dd9-8f53-47d8901c080d"],
+Cell[651, 22, 540, 8, 70, "Text",ExpressionUUID->"86dbd888-1109-45d1-a2e5-14136a6061f0"],
+Cell[1194, 32, 79, 0, 70, "Section",ExpressionUUID->"76685b1e-447e-46af-a945-a3f914fc857d"],
+Cell[1276, 34, 91, 0, 70, "CodeText",ExpressionUUID->"575fc9a0-644f-4599-8009-44c45839e370"],
+Cell[1370, 36, 122, 0, 70, "Code",ExpressionUUID->"344c05ef-00ff-49f2-abc7-569ef57f8ed3"],
+Cell[1495, 38, 80, 0, 70, "Section",ExpressionUUID->"acccabe8-b6f6-4753-ab66-4108accc2cf9"],
+Cell[1578, 40, 93, 0, 70, "Item",ExpressionUUID->"e1e79942-04dd-45db-b3f3-3a14d50b1bd4"],
+Cell[1674, 42, 85, 0, 70, "Item",ExpressionUUID->"0094fdab-9cbc-48a5-b8eb-dcc0fbffce3f"],
+Cell[1762, 44, 92, 0, 70, "Item",ExpressionUUID->"0764719a-3a9b-485b-aeb7-bd96f4b7451e"],
+Cell[1857, 46, 90, 0, 70, "Item",ExpressionUUID->"12cd87b1-57af-406c-9626-8eb1ec9aff62"],
+Cell[1950, 48, 94, 0, 70, "Item",ExpressionUUID->"de92e44f-5e5b-4206-87df-e9e7e91b59e9"],
+Cell[2047, 50, 93, 0, 70, "Item",ExpressionUUID->"43dfbdda-a58c-41f6-a290-e529942a5bbc"],
+Cell[2143, 52, 89, 0, 70, "Item",ExpressionUUID->"3ae79db3-a01c-4035-95dd-98d35e480995"],
+Cell[2235, 54, 89, 0, 70, "Item",ExpressionUUID->"1a7dcf9f-70ab-40a1-bfe2-cee14e5ab9d1"],
+Cell[2327, 56, 83, 0, 70, "Section",ExpressionUUID->"c168d911-a571-4c4b-8098-dd17c096dcea"],
+Cell[2413, 58, 96, 0, 70, "Item",ExpressionUUID->"53d4668e-2e30-475b-9ae4-797c86e82794"],
+Cell[2512, 60, 88, 0, 70, "Item",ExpressionUUID->"9dfe4337-08ee-4c0d-972f-2fb4b6436963"],
+Cell[2603, 62, 95, 0, 70, "Item",ExpressionUUID->"08bafeae-2368-4e65-9062-619631c51505"],
+Cell[2701, 64, 93, 0, 70, "Item",ExpressionUUID->"597466b6-4acb-4775-8a28-066b9a9b2fc2"],
+Cell[2797, 66, 97, 0, 70, "Item",ExpressionUUID->"2e097007-0a27-40d9-bb72-0190bb06d561"],
+Cell[2897, 68, 96, 0, 70, "Item",ExpressionUUID->"ef11f95f-b805-403e-af8f-e7487823f23a"],
+Cell[2996, 70, 92, 0, 70, "Item",ExpressionUUID->"fc212caa-4d3f-4f2c-9ab6-144fcd9c8292"],
+Cell[3091, 72, 92, 0, 70, "Item",ExpressionUUID->"4485b8d9-5f75-425f-91e4-4ee54d707193"],
+Cell[3186, 74, 86, 0, 70, "Section",ExpressionUUID->"2ca893d3-a491-43b4-90fd-61676790e025"],
+Cell[3275, 76, 90, 0, 70, "Item",ExpressionUUID->"606cbb21-09d1-40f2-aca6-94437b416c79"],
+Cell[3368, 78, 82, 0, 70, "Item",ExpressionUUID->"a92e7c25-8287-4b28-ad19-fb87c92caecb"],
+Cell[3453, 80, 83, 0, 70, "Item",ExpressionUUID->"0607ac2f-f4ec-410e-b698-6deb9a5bcad1"],
+Cell[3539, 82, 94, 0, 70, "Item",ExpressionUUID->"54d7b3b0-90c9-4b18-b3a7-e86787b27c4a"],
+Cell[3636, 84, 82, 0, 70, "Item",ExpressionUUID->"2e6e03f6-c463-4a0c-b69c-1f68d801dd73"],
+Cell[3721, 86, 83, 0, 70, "Item",ExpressionUUID->"6d4da086-4021-4228-a35f-cc31725a3617"],
+Cell[3807, 88, 83, 0, 70, "Item",ExpressionUUID->"c32151b7-6efe-4ace-b084-0c80c3cf1245"],
+Cell[3893, 90, 81, 0, 70, "Item",ExpressionUUID->"36f0dbe0-f06d-451d-b5da-5bce46e43284"],
+Cell[3977, 92, 85, 0, 70, "Item",ExpressionUUID->"aaf9047d-a28f-4cd1-8355-0496b1b5dd1f"],
+Cell[4065, 94, 92, 0, 70, "Item",ExpressionUUID->"27832150-a997-4136-9f77-87ff0b50e91b"],
+Cell[4160, 96, 89, 0, 70, "Item",ExpressionUUID->"ece03d41-5d09-4328-b314-f8415947595b"],
+Cell[4252, 98, 81, 0, 70, "Item",ExpressionUUID->"7af14642-9e05-44f2-8eaf-d523992bc70b"],
+Cell[4336, 100, 85, 0, 70, "Item",ExpressionUUID->"7a4babf6-0a7b-4733-af76-a69b8278f087"],
+Cell[4424, 102, 93, 0, 70, "Section",ExpressionUUID->"8327fd3b-72c0-4064-b10c-bbdde2803a15"],
+Cell[4520, 104, 89, 0, 70, "Item",ExpressionUUID->"ca1a213b-745d-48d9-bc2b-97be1ab60a2a"],
+Cell[4612, 106, 85, 0, 70, "Item",ExpressionUUID->"f9e041ef-78f5-4d51-a26e-599453aacc7f"],
+Cell[4700, 108, 91, 0, 70, "Item",ExpressionUUID->"42c74086-f9d4-43d4-97c8-8481207bdfcf"],
+Cell[4794, 110, 97, 0, 70, "Item",ExpressionUUID->"bde78492-d2fc-4272-a209-0d58213d2464"],
+Cell[4894, 112, 85, 0, 70, "Item",ExpressionUUID->"24ccdb93-3382-45ad-b761-d73b8a04cc37"],
+Cell[4982, 114, 84, 0, 70, "Section",ExpressionUUID->"d7eab632-10c3-4ee6-91c8-fe898c801026"],
+Cell[5069, 116, 196, 3, 70, "Item",ExpressionUUID->"6dcbd01c-d3b6-460f-93d1-9bab5ee9b068"],
+Cell[5268, 121, 301, 5, 70, "Item",ExpressionUUID->"de7439fd-834b-4a6d-a279-2bd3cdf2e8b1"],
+Cell[5572, 128, 220, 3, 70, "Item",ExpressionUUID->"a9e25166-4abc-433d-9a2e-ff4c640d270c"],
+Cell[5795, 133, 169, 3, 70, "Item",ExpressionUUID->"5d66b031-b075-47b5-a87e-61df7ae49c97"],
+Cell[5967, 138, 241, 4, 70, "Item",ExpressionUUID->"1008e29e-4687-416f-9994-ce94f6e96597"],
+Cell[6211, 144, 204, 3, 70, "Item",ExpressionUUID->"464fbbdb-c357-4c43-a75d-c37de495c78e"],
+Cell[6418, 149, 198, 3, 70, "Item",ExpressionUUID->"073bc7f8-dbb7-4a70-8e9c-342c82a6a593"]
 }
 ]
 *)

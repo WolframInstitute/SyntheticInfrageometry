@@ -1,0 +1,112 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5127,        103]
+NotebookOptionsPosition[      3102,         72]
+NotebookOutlinePosition[      3419,         86]
+CellTagsIndexPosition[      3376,         83]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["ComparisonTriangle", "Title",ExpressionUUID->"2c5b1ef1-c00f-47a7-bdc4-4f4ed74122e5"],
+
+Cell["\<\
+ComparisonTriangle[a, b, c] returns the Wolfram Triangle in R^2 with side \
+lengths {a, b, c} (a opposite p, b opposite q, c opposite r). \
+ComparisonTriangle[a, b, c, \"Curvature\" -> k] for k != 0 returns \
+InfraComparisonTriangle[<|...|>] in M_k^2 (spherical for k > 0, hyperbolic \
+for k < 0). ComparisonTriangle[graph, p, q, r, \"Curvature\" -> k] reads the \
+side lengths from graph.\
+\>", "Text",ExpressionUUID->"875ebd99-d36f-4d59-859d-f7efa3f1b4c7"],
+
+Cell["Setup", "Section",ExpressionUUID->"913242c0-f8e4-48a9-96f5-a06f3525c82b"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"9b6f0bf6-2728-46b3-a1a9-a8b3d595f92d"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"3ab1f22f-bc5c-472a-a5e1-dc0d2a2bb50c"],
+
+Cell["Usage", "Section",ExpressionUUID->"89327bb0-d620-4acf-b87a-e19336005b0c"],
+
+Cell["Comparison triangle in the Euclidean plane.", "CodeText",ExpressionUUID->"4ed82da1-c254-48f7-9420-82f5d279c010"],
+
+Cell["ComparisonTriangle[3, 4, 5]", "Input",ExpressionUUID->"06ac9ee9-5d65-4eef-8f9f-c54132ab0a94"],
+
+Cell["Comparison triangle in the hyperbolic plane.", "CodeText",ExpressionUUID->"e0d4fc4f-b005-4aa2-ae2a-438f30b9907d"],
+
+Cell["ComparisonTriangle[3, 4, 5, \"Curvature\" -> -1]", "Input",ExpressionUUID->"18b40730-5373-4602-bd9e-f4d86712046a"],
+
+Cell["Examples", "Section",ExpressionUUID->"93abcebf-a457-4bce-b48e-570a6cf45f59"],
+
+Cell["\<\
+Read side lengths from a graph: the comparison triangle for three corners of \
+a grid.\
+\>", "CodeText",ExpressionUUID->"ae6facbe-454f-4c9e-b9fe-fe9c8f7ed6d2"],
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, ComparisonTriangle[g, 1, 4, 16]]\
+\>", "Input",ExpressionUUID->"1c0c971e-0068-42d2-bd5e-4a3db14276c9"],
+
+Cell["Spherical comparison triangle with curvature 1.", "CodeText",ExpressionUUID->"980e0896-43be-4435-afad-d6d6b44d33b2"],
+
+Cell["ComparisonTriangle[1, 1, 1, \"Curvature\" -> 1]", "Input",ExpressionUUID->"31be8ccf-7816-4028-9707-820dd50ebd36"],
+
+Cell["See also", "Section",ExpressionUUID->"c048fdeb-ab29-4d8a-8d60-ef4cbad45555"],
+
+Cell["InfraComparisonTriangle", "Item",ExpressionUUID->"ea38cdad-6fb1-42ac-9d22-4d5baf9f663f"],
+
+Cell["CATInequalityQ", "Item",ExpressionUUID->"65445711-b74e-420d-aa36-eaaef7d0cd48"],
+
+Cell["InfraCurvature", "Item",ExpressionUUID->"6b8b0de4-522e-4b8f-ac96-f0ba1fe57c35"],
+
+Cell["InfraAngle", "Item",ExpressionUUID->"73485b80-33c8-43b6-9ef5-fb3252951c62"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"2c5b1ef1-c00f-47a7-bdc4-4f4ed74122e5"],
+Cell[647, 22, 468, 7, 70, "Text",ExpressionUUID->"875ebd99-d36f-4d59-859d-f7efa3f1b4c7"],
+Cell[1118, 31, 79, 0, 70, "Section",ExpressionUUID->"913242c0-f8e4-48a9-96f5-a06f3525c82b"],
+Cell[1200, 33, 132, 0, 70, "CodeText",ExpressionUUID->"9b6f0bf6-2728-46b3-a1a9-a8b3d595f92d"],
+Cell[1335, 35, 122, 0, 70, "Code",ExpressionUUID->"3ab1f22f-bc5c-472a-a5e1-dc0d2a2bb50c"],
+Cell[1460, 37, 79, 0, 70, "Section",ExpressionUUID->"89327bb0-d620-4acf-b87a-e19336005b0c"],
+Cell[1542, 39, 118, 0, 70, "CodeText",ExpressionUUID->"4ed82da1-c254-48f7-9420-82f5d279c010"],
+Cell[1663, 41, 99, 0, 70, "Input",ExpressionUUID->"06ac9ee9-5d65-4eef-8f9f-c54132ab0a94"],
+Cell[1765, 43, 119, 0, 70, "CodeText",ExpressionUUID->"e0d4fc4f-b005-4aa2-ae2a-438f30b9907d"],
+Cell[1887, 45, 120, 0, 70, "Input",ExpressionUUID->"18b40730-5373-4602-bd9e-f4d86712046a"],
+Cell[2010, 47, 82, 0, 70, "Section",ExpressionUUID->"93abcebf-a457-4bce-b48e-570a6cf45f59"],
+Cell[2095, 49, 169, 3, 70, "CodeText",ExpressionUUID->"ae6facbe-454f-4c9e-b9fe-fe9c8f7ed6d2"],
+Cell[2267, 54, 142, 2, 70, "Input",ExpressionUUID->"1c0c971e-0068-42d2-bd5e-4a3db14276c9"],
+Cell[2412, 58, 122, 0, 70, "CodeText",ExpressionUUID->"980e0896-43be-4435-afad-d6d6b44d33b2"],
+Cell[2537, 60, 119, 0, 70, "Input",ExpressionUUID->"31be8ccf-7816-4028-9707-820dd50ebd36"],
+Cell[2659, 62, 82, 0, 70, "Section",ExpressionUUID->"c048fdeb-ab29-4d8a-8d60-ef4cbad45555"],
+Cell[2744, 64, 94, 0, 70, "Item",ExpressionUUID->"ea38cdad-6fb1-42ac-9d22-4d5baf9f663f"],
+Cell[2841, 66, 85, 0, 70, "Item",ExpressionUUID->"65445711-b74e-420d-aa36-eaaef7d0cd48"],
+Cell[2929, 68, 85, 0, 70, "Item",ExpressionUUID->"6b8b0de4-522e-4b8f-ac96-f0ba1fe57c35"],
+Cell[3017, 70, 81, 0, 70, "Item",ExpressionUUID->"73485b80-33c8-43b6-9ef5-fb3252951c62"]
+}
+]
+*)
+
+(* End of internal cache information *)

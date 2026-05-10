@@ -1,0 +1,113 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      4868,        104]
+NotebookOptionsPosition[      3029,         75]
+NotebookOutlinePosition[      3346,         89]
+CellTagsIndexPosition[      3303,         86]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["InfraScalarProduct", "Title",ExpressionUUID->"2469d3d9-48c9-47c9-b919-167121b56b85"],
+
+Cell["\<\
+InfraScalarProduct[graph, o, u, v] returns the base-point-relative scalar \
+product of u and v with respect to o. Method -> \"Schoenberg\" (default) uses \
+the direct distance formula (d(o,u)^2 + d(o,v)^2 - d(u,v)^2)/2; Method -> \
+\"Parallelogram\" uses the polarization identity (||u+v||^2 - ||u-v||^2)/4 \
+via FindInfraLinearCombination.\
+\>", "Text",ExpressionUUID->"6d4a1fe5-b039-46ab-81b0-a5ec36a3c510"],
+
+Cell["Setup", "Section",ExpressionUUID->"cdf96a02-4f9a-452a-9195-64451e247147"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"1f6e31bb-3349-40e7-8872-6200c93cc494"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"a4738a22-87ed-4735-87bc-ee0a984205dc"],
+
+Cell["Usage", "Section",ExpressionUUID->"29af7e26-96d4-4eb3-8e55-90375c775864"],
+
+Cell["\<\
+Scalar product of two points in a 5x5 grid relative to the corner.\
+\>", "CodeText",ExpressionUUID->"5a750f40-d109-48f2-a6a9-051c20ab70a6"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}]}, InfraScalarProduct[g, 1, 5, 21]]\
+\>", "Input",ExpressionUUID->"b9df541e-0410-478c-8ebd-b19ab390430e"],
+
+Cell["Compare the two methods on the same triple.", "CodeText",ExpressionUUID->"bc65eafa-6eb7-4dc3-8f10-5ff8e4b790a4"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}]}, {InfraScalarProduct[g, 1, 5, 21, Method -> \
+\"Schoenberg\"], InfraScalarProduct[g, 1, 5, 21, Method -> \
+\"Parallelogram\"]}]\
+\>", "Input",ExpressionUUID->"b990b256-184a-4af5-ac85-414ed53eb22c"],
+
+Cell["Examples", "Section",ExpressionUUID->"0556c4d9-39a7-4659-af0e-c3d0f49f5d72"],
+
+Cell["\<\
+Orthogonality test: the scalar product of horizontal and vertical legs of a \
+grid relative to a corner is zero.\
+\>", "CodeText",ExpressionUUID->"f7bb3f08-36bc-4def-a069-a62f8787295d"],
+
+Cell["\<\
+With[{g = GridGraph[{4, 4}]}, InfraScalarProduct[g, 1, 4, 13]]\
+\>", "Input",ExpressionUUID->"40f0cc5d-eb5a-4bd7-968f-c132fa356f78"],
+
+Cell["See also", "Section",ExpressionUUID->"2244527e-d79b-439e-9f62-f6a9bd47df1b"],
+
+Cell["InfraAngle", "Item",ExpressionUUID->"99232e43-35e3-434b-a25b-29fb2ef96f24"],
+
+Cell["FindInfraLinearCombination", "Item",ExpressionUUID->"47fee577-bb48-4b18-b889-136fdd46683c"],
+
+Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"3c809d0f-4845-4b53-839a-bf9148e667d4"],
+
+Cell["FindRadarBasis", "Item",ExpressionUUID->"7a143e40-3f32-4a32-a4f0-419591c95050"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"2469d3d9-48c9-47c9-b919-167121b56b85"],
+Cell[647, 22, 419, 6, 70, "Text",ExpressionUUID->"6d4a1fe5-b039-46ab-81b0-a5ec36a3c510"],
+Cell[1069, 30, 79, 0, 70, "Section",ExpressionUUID->"cdf96a02-4f9a-452a-9195-64451e247147"],
+Cell[1151, 32, 132, 0, 70, "CodeText",ExpressionUUID->"1f6e31bb-3349-40e7-8872-6200c93cc494"],
+Cell[1286, 34, 122, 0, 70, "Code",ExpressionUUID->"a4738a22-87ed-4735-87bc-ee0a984205dc"],
+Cell[1411, 36, 79, 0, 70, "Section",ExpressionUUID->"29af7e26-96d4-4eb3-8e55-90375c775864"],
+Cell[1493, 38, 149, 2, 70, "CodeText",ExpressionUUID->"5a750f40-d109-48f2-a6a9-051c20ab70a6"],
+Cell[1645, 42, 142, 2, 70, "Input",ExpressionUUID->"b9df541e-0410-478c-8ebd-b19ab390430e"],
+Cell[1790, 46, 118, 0, 70, "CodeText",ExpressionUUID->"bc65eafa-6eb7-4dc3-8f10-5ff8e4b790a4"],
+Cell[1911, 48, 236, 4, 70, "Input",ExpressionUUID->"b990b256-184a-4af5-ac85-414ed53eb22c"],
+Cell[2150, 54, 82, 0, 70, "Section",ExpressionUUID->"0556c4d9-39a7-4659-af0e-c3d0f49f5d72"],
+Cell[2235, 56, 195, 3, 70, "CodeText",ExpressionUUID->"f7bb3f08-36bc-4def-a069-a62f8787295d"],
+Cell[2433, 61, 142, 2, 70, "Input",ExpressionUUID->"40f0cc5d-eb5a-4bd7-968f-c132fa356f78"],
+Cell[2578, 65, 82, 0, 70, "Section",ExpressionUUID->"2244527e-d79b-439e-9f62-f6a9bd47df1b"],
+Cell[2663, 67, 81, 0, 70, "Item",ExpressionUUID->"99232e43-35e3-434b-a25b-29fb2ef96f24"],
+Cell[2747, 69, 97, 0, 70, "Item",ExpressionUUID->"47fee577-bb48-4b18-b889-136fdd46683c"],
+Cell[2847, 71, 90, 0, 70, "Item",ExpressionUUID->"3c809d0f-4845-4b53-839a-bf9148e667d4"],
+Cell[2940, 73, 85, 0, 70, "Item",ExpressionUUID->"7a143e40-3f32-4a32-a4f0-419591c95050"]
+}
+]
+*)
+
+(* End of internal cache information *)

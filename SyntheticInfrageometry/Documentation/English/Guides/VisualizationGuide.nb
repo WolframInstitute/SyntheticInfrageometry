@@ -94,7 +94,7 @@ per direction class); flattens through [\"Rays\"] before dispatching to Paths.\
 \>", "Item",ExpressionUUID->"29c67f71-42da-441b-8274-375509ac962e"],
 
 Cell["\<\
-Wrapper accessors apply uniformly: [\"Realisations\"] (bare list), \
+Wrapper accessors apply uniformly: [\"Realizations\"] (bare list), \
 [\"Length\"], [\"Expand\"], [\"First\"]; wrapper[[i]] returns a wrapped \
 singleton, not the bare realisation.\
 \>", "Text",ExpressionUUID->"1191534a-87cf-4529-bf97-24344bdc89ce"],

@@ -116,9 +116,9 @@ Cell["TarskiStructure", "Item",ExpressionUUID->"423fa898-4cef-4ce9-a4dc-2fd0c55a
 
 Cell["TarskiAxiomQ", "Item",ExpressionUUID->"06266230-08b4-4f2d-8fee-57d55826e7c2"],
 
-Cell["FindTarskiMidpoint", "Item",ExpressionUUID->"ba8cca05-063e-4aa3-aceb-7360988c7606"],
+Cell["FindMidpoint", "Item",ExpressionUUID->"ba8cca05-063e-4aa3-aceb-7360988c7606"],
 
-Cell["FindTarskiReflection", "Item",ExpressionUUID->"031a652f-5992-42b8-9dd1-a17d7927deec"],
+Cell["FindReflection", "Item",ExpressionUUID->"031a652f-5992-42b8-9dd1-a17d7927deec"],
 
 Cell["MetricInterval", "Item",ExpressionUUID->"4aa8a657-0bb7-4696-89ae-d345f55e4523"]
 },

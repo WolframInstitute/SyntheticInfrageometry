@@ -1,0 +1,120 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5579,        111]
+NotebookOptionsPosition[      3464,         79]
+NotebookOutlinePosition[      3781,         93]
+CellTagsIndexPosition[      3738,         90]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindOrthogonalFrame", "Title",ExpressionUUID->"88aade29-5ba3-4cd9-bf56-9aa970f81301"],
+
+Cell["\<\
+FindOrthogonalFrame[graph, c] returns one orthogonal frame at centre c: a \
+list of full metric lines through c (with c strictly interior) that are \
+mutually perpendicular at c. FindOrthogonalFrame[graph, c, n] returns exactly \
+n distinct frames or $Failed; UpTo[n] returns up to n; All returns every \
+frame. The centre is a vertex or InfraPoint[{c1, ..., ck}]. Options: Method \
+(Automatic = \"Exhaustive\", or \"Greedy\"), \"AxisLength\" (half-axis depth \
+cap), \"AxisCount\" (Automatic | k | UpTo[k] | All), \"BranchSampleSize\". \
+For the no-centre form use FindSpanningAxes.\
+\>", "Text",ExpressionUUID->"8b830ca3-ccb7-4df9-ac13-7ed91ffc5a52"],
+
+Cell["Setup", "Section",ExpressionUUID->"c8844ecc-4344-4f19-ba17-bcaef5efbf22"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"378d36a0-c349-4ff8-98b2-0ff93546158a"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"e1418543-30a6-46d5-8fa4-efb018009754"],
+
+Cell["Usage", "Section",ExpressionUUID->"04468316-07df-4cc1-9dc5-8fb0b839ad07"],
+
+Cell["One orthogonal frame at the centre of a 5x5 grid.", "CodeText",ExpressionUUID->"9475ca91-1133-4389-91d2-e5fecdc2ec17"],
+
+Cell["With[{g = GridGraph[{5, 5}]}, FindOrthogonalFrame[g, 13]]", "Input",ExpressionUUID->"a95b2f91-962f-429f-9677-e5dc9da4ac55"],
+
+Cell["Visualize the frame.", "CodeText",ExpressionUUID->"60aeb81e-545a-4375-a676-92e7bc178fe0"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, FindOrthogonalFrame[g, \
+13]]]\
+\>", "Input",ExpressionUUID->"ae2234d9-cc0f-4e65-9eee-1eb13d5303a6"],
+
+Cell["Examples", "Section",ExpressionUUID->"11c8182d-21f7-48fa-a5fe-ff1dba6bd254"],
+
+Cell["Up to four orthogonal frames at a corner.", "CodeText",ExpressionUUID->"61ed12bc-7876-4205-98d2-2dec80e5a5ec"],
+
+Cell["\<\
+With[{g = GridGraph[{5, 5}]}, FindOrthogonalFrame[g, 1, UpTo[4]]]\
+\>", "Input",ExpressionUUID->"18865566-7345-4fa1-9579-accc65e94b07"],
+
+Cell["Greedy construction with a bounded axis length.", "CodeText",ExpressionUUID->"25175bf1-de1b-486b-b288-4081efdbf14b"],
+
+Cell["\<\
+With[{g = GridGraph[{6, 6}]}, FindOrthogonalFrame[g, 15, Method -> \
+\"Greedy\", \"AxisLength\" -> 3]]\
+\>", "Input",ExpressionUUID->"2c772f03-ec7c-425f-a80d-f38f72fae3af"],
+
+Cell["See also", "Section",ExpressionUUID->"5a7f6375-4a5a-4dfa-9f17-9615a3e31b63"],
+
+Cell["FindSpanningAxes", "Item",ExpressionUUID->"81c89327-4e71-478d-ba5b-db06440d9471"],
+
+Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"ba244fa1-da5e-4d24-b1ff-84612cafdae8"],
+
+Cell["FindRadarBasis", "Item",ExpressionUUID->"1b467254-3270-46fd-a853-6f73eca8e109"],
+
+Cell["FindPerpendicular", "Item",ExpressionUUID->"55b39292-db26-44f7-9d5b-0f4fdd681413"],
+
+Cell["InfraScalarProduct", "Item",ExpressionUUID->"363a3158-e3a0-42ce-a8b0-088900279e77"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"88aade29-5ba3-4cd9-bf56-9aa970f81301"],
+Cell[648, 22, 662, 9, 70, "Text",ExpressionUUID->"8b830ca3-ccb7-4df9-ac13-7ed91ffc5a52"],
+Cell[1313, 33, 79, 0, 70, "Section",ExpressionUUID->"c8844ecc-4344-4f19-ba17-bcaef5efbf22"],
+Cell[1395, 35, 132, 0, 70, "CodeText",ExpressionUUID->"378d36a0-c349-4ff8-98b2-0ff93546158a"],
+Cell[1530, 37, 122, 0, 70, "Code",ExpressionUUID->"e1418543-30a6-46d5-8fa4-efb018009754"],
+Cell[1655, 39, 79, 0, 70, "Section",ExpressionUUID->"04468316-07df-4cc1-9dc5-8fb0b839ad07"],
+Cell[1737, 41, 124, 0, 70, "CodeText",ExpressionUUID->"9475ca91-1133-4389-91d2-e5fecdc2ec17"],
+Cell[1864, 43, 129, 0, 70, "Input",ExpressionUUID->"a95b2f91-962f-429f-9677-e5dc9da4ac55"],
+Cell[1996, 45, 95, 0, 70, "CodeText",ExpressionUUID->"60aeb81e-545a-4375-a676-92e7bc178fe0"],
+Cell[2094, 47, 163, 3, 70, "Input",ExpressionUUID->"ae2234d9-cc0f-4e65-9eee-1eb13d5303a6"],
+Cell[2260, 52, 82, 0, 70, "Section",ExpressionUUID->"11c8182d-21f7-48fa-a5fe-ff1dba6bd254"],
+Cell[2345, 54, 116, 0, 70, "CodeText",ExpressionUUID->"61ed12bc-7876-4205-98d2-2dec80e5a5ec"],
+Cell[2464, 56, 145, 2, 70, "Input",ExpressionUUID->"18865566-7345-4fa1-9579-accc65e94b07"],
+Cell[2612, 60, 122, 0, 70, "CodeText",ExpressionUUID->"25175bf1-de1b-486b-b288-4081efdbf14b"],
+Cell[2737, 62, 182, 3, 70, "Input",ExpressionUUID->"2c772f03-ec7c-425f-a80d-f38f72fae3af"],
+Cell[2922, 67, 82, 0, 70, "Section",ExpressionUUID->"5a7f6375-4a5a-4dfa-9f17-9615a3e31b63"],
+Cell[3007, 69, 87, 0, 70, "Item",ExpressionUUID->"81c89327-4e71-478d-ba5b-db06440d9471"],
+Cell[3097, 71, 92, 0, 70, "Item",ExpressionUUID->"ba244fa1-da5e-4d24-b1ff-84612cafdae8"],
+Cell[3192, 73, 85, 0, 70, "Item",ExpressionUUID->"1b467254-3270-46fd-a853-6f73eca8e109"],
+Cell[3280, 75, 88, 0, 70, "Item",ExpressionUUID->"55b39292-db26-44f7-9d5b-0f4fdd681413"],
+Cell[3371, 77, 89, 0, 70, "Item",ExpressionUUID->"363a3158-e3a0-42ce-a8b0-088900279e77"]
+}
+]
+*)
+
+(* End of internal cache information *)

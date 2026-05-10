@@ -21,10 +21,11 @@ Notebook[{
 Cell["RadarCoordinates", "Title",ExpressionUUID->"480cc2aa-46f3-46dd-8415-4cb3efc4f5e2"],
 
 Cell["\<\
-RadarCoordinates[graph, v, basis] returns the spatial radar coordinates of v: \
+RadarCoordinates[graph, basis, v] returns the spatial radar coordinates of v: \
 the vector of graph distances (d(v, b1), d(v, b2), ..., d(v, bk)) from v to \
 each basis point. RadarCoordinates[graph, basis] returns the Association of \
-all vertices' radar coordinates.\
+all vertices' radar coordinates, so RadarCoordinates[graph, basis][v] is the \
+natural operator form.\
 \>", "Text",ExpressionUUID->"c3c9c6e7-6edc-4c54-b0f8-1d34f60bf807"],
 
 Cell["Setup", "Section",ExpressionUUID->"35bcf9aa-1257-4a66-ba6f-78200fffb96f"],
@@ -37,7 +38,7 @@ Cell["Usage", "Section",ExpressionUUID->"dbf0d33f-3bd2-469a-bf81-bfd4d7cb962f"],
 
 Cell["Distance vector of vertex 3 of P_5 to the basis {1}.", "CodeText",ExpressionUUID->"e3aace93-f366-40a9-b97e-d79edae9115d"],
 
-Cell["RadarCoordinates[PathGraph[Range[5]], 3, {1}]", "Input",ExpressionUUID->"780ada83-10f6-456c-94a1-e9cd3c20a013"],
+Cell["RadarCoordinates[PathGraph[Range[5]], {1}, 3]", "Input",ExpressionUUID->"780ada83-10f6-456c-94a1-e9cd3c20a013"],
 
 Cell["\<\
 Bulk form: every vertex's coordinates with respect to the path endpoints.\

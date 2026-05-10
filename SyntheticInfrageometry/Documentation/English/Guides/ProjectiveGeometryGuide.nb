@@ -129,7 +129,7 @@ constituents into a single list of vertex sequences for rendering.\
 \>", "Item",ExpressionUUID->"8c31c32f-632a-49e0-895e-36d2927f69a5"],
 
 Cell["\<\
-Standard wrapper accessors apply: [\"Realisations\"], [\"Length\"], [\"Expand\
+Standard wrapper accessors apply: [\"Realizations\"], [\"Length\"], [\"Expand\
 \"], [\"First\"], plus [[i]] for wrapped indexing. See APIConventions for the \
 full table.\
 \>", "Text",ExpressionUUID->"589cc2df-c2ac-46e9-a12f-cb4bd00f620a"],

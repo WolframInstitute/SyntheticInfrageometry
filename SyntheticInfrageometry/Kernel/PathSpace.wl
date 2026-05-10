@@ -142,7 +142,7 @@ SelectPaths[ _Graph, paths_List, "MostVisited", OptionsPattern[] ] :=
 SelectPaths[ graph_Graph, paths_List, criteria_List, opts : OptionsPattern[] ] :=
   Fold[ SelectPaths[ graph, #1, #2, opts ] &, paths, criteria ]
 
-SelectPaths[ graph_Graph, ( head : InfraSegment | InfraLine | InfraRay )[ paths_List ], crit_, opts : OptionsPattern[] ] :=
+SelectPaths[ graph_Graph, ( head : InfraSegment | InfraRay )[ paths_List ], crit_, opts : OptionsPattern[] ] :=
   head[ SelectPaths[ graph, paths, crit, opts ] ]
 
 SelectPaths[ graph_Graph, InfraPencil[ rays_List ], crit_, opts : OptionsPattern[] ] :=
@@ -277,7 +277,14 @@ resolveEmbeddingCoords[ _, coords_List ] := coords
    vertex -> {downstream DAG neighbors} for every vertex w on some geodesic
    from u to v.  A vertex w is in the DAG iff dist(u, w) + dist(w, v) =
    dist(u, v); edges go from layer k = dist(u, w) to layer k + 1.  Paths
-   from u to v through this DAG are exactly the geodesics. *)
+   from u to v through this DAG are exactly the geodesics.
+
+   geodesicDAGNeighbors[graph, c] is the single-source form: returns
+   vertex -> {downstream DAG neighbors} for every vertex reachable from c.
+   Edges go from layer k = dist(c, w) to layer k + 1.  Directed paths
+   c -> sink in this DAG are exactly the maximal geodesics from c.  The
+   form geodesicDAGNeighbors[graph, c, depth] truncates the DAG at the
+   given depth (vertices with dist(c, w) > depth are excluded). *)
 
 geodesicDAGNeighbors[ graph_Graph, u_, v_ ] :=
   Module[ { du, dv, total, dagVerts, dagSet },
@@ -290,6 +297,18 @@ geodesicDAGNeighbors[ graph_Graph, u_, v_ ] :=
     AssociationMap[
       w |-> Select[ AdjacencyList[ graph, w ],
         TrueQ[ dagSet[ # ] ] && du[ # ] == du[ w ] + 1 & ],
+      dagVerts
+    ]
+  ]
+
+geodesicDAGNeighbors[ graph_Graph, c_ ] :=
+  Module[ { dc, dagVerts, dagSet },
+    dc = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, c ] ];
+    dagVerts = Select[ VertexList[ graph ], dc[ # ] < Infinity & ];
+    dagSet = AssociationThread[ dagVerts, True ];
+    AssociationMap[
+      w |-> Select[ AdjacencyList[ graph, w ],
+        TrueQ[ dagSet[ # ] ] && dc[ # ] == dc[ w ] + 1 & ],
       dagVerts
     ]
   ]
@@ -317,6 +336,51 @@ generateEmbeddingPaths[ extendFn_, startPath_List, goalQ_, prune_ ] :=
 
 
 (* ===================== Path-domain subgraph constructors ===================== *)
+
+(* GeodesicGraph[g, c] is the BFS DAG of all geodesics from the source c:
+   a directed graph on the vertices reachable from c in g, with edge
+   u -> v whenever d(c, v) = d(c, u) + 1 and u-v is an edge of g.
+   Sources = {c}; sinks = vertices with no outgoing DAG edge (= peripheral
+   vertices reachable from c).  Directed paths c -> sink are exactly the
+   maximal geodesics from c.
+
+   GeodesicGraph[g, InfraPoint[{c1, ..., ck}]] is the multi-source variant:
+   distance from the source set is min_i d(ci, v); each vertex sits at its
+   minimum distance to the InfraPoint anchors.
+
+   Option "AxisLength" -> All | k truncates the DAG at depth k; vertices with
+   d(sources, v) > k are excluded. *)
+
+Options[ GeodesicGraph ] = { "AxisLength" -> All };
+
+GeodesicGraph[ g_Graph, c_, OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+  geodesicGraphFromDistances[ g, AssociationThread[ VertexList[ g ], GraphDistance[ g, c ] ],
+    OptionValue[ "AxisLength" ] ]
+
+GeodesicGraph[ g_Graph, InfraPoint[ vs_List ], OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+  geodesicGraphFromDistances[ g,
+    AssociationThread[ VertexList[ g ],
+      Min /@ Transpose[ GraphDistance[ g, # ] & /@ vs ] ],
+    OptionValue[ "AxisLength" ] ]
+
+geodesicGraphFromDistances[ g_Graph, dist_Association, depthSpec_ ] :=
+  Module[ { depth, dagVerts },
+    depth = Replace[ depthSpec, All -> Infinity ];
+    dagVerts = Select[ VertexList[ g ], dist[ # ] < Infinity && dist[ # ] <= depth & ];
+    Graph[ dagVerts,
+      Map[
+        e |-> With[ { u = e[[ 1 ]], v = e[[ 2 ]] },
+          Which[
+            dist[ v ] == dist[ u ] + 1, DirectedEdge[ u, v ],
+            dist[ u ] == dist[ v ] + 1, DirectedEdge[ v, u ],
+            True, Nothing
+          ]
+        ],
+        EdgeList @ UndirectedGraph @ Subgraph[ g, dagVerts ]
+      ]
+    ]
+  ]
+
 
 (* GeodesicSubgraph[g, pairs] returns the union of geodesics between the
    listed vertex pairs, as a single graph.  "PathThickness" -> 0 keeps one

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking:** `OrthogonalCoordinates` no longer auto-discovers a frame from a centre, and the `"Origin"` option is gone. The centre is now a required positional argument and the frame must be supplied explicitly. New canonical signatures: `OrthogonalCoordinates[graph, c, {a1, ..., an}, v]` and `OrthogonalCoordinates[graph, c, {a1, ..., an}]`. To recover the previous behaviour: `OrthogonalCoordinates[graph, c, FindOrthogonalFrame[graph, c]]`. The dropped overloads (`OrthogonalCoordinates[g, axes, v]`, `OrthogonalCoordinates[g, c, v]`, `OrthogonalCoordinates[g, c]`, `OrthogonalCoordinates[g, InfraPoint[...], v]`) and the `"Origin"` option no longer match a pattern, so calls fall through unevaluated.
+
 ## 0.8.3
 
 - New public `InfraExampleGraph[name, params]` — paclet-wide example-graph registry for guides, tutorials, and symbol-page demonstrations. Twelve keys covering the curvature spectrum (`"Grid"`, `"RectangleMesh"`, `"DiskMesh"`, `"SphereMesh"`, `"TriangularLattice"`, `"HexagonalLattice"`, `"RegularTree"`, `"Cayley"`) plus small named gems (`"Petersen"`, `"Heawood"`, `"MobiusKantor"`, `"Tutte"`). Mesh keys forward `MaxCellMeasure` / `AccuracyGoal` to `DiscretizeRegion`.

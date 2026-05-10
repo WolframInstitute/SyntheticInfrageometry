@@ -114,7 +114,7 @@ Cell["Compare the synthetic midpoint with the metric midpoint.", "CodeText",Expr
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   RowBox[{"FindTarskiMidpoint", "[", 
+   RowBox[{"FindMidpoint", "[", 
     RowBox[{
      RowBox[{"PathGraph", "[", 
       RowBox[{"Range", "[", "5", "]"}], "]"}], ",", "1", ",", "4", ",", 
@@ -129,7 +129,7 @@ b95a-c8a571a2ea2f"],
 Cell["Reflect a point through another point on the cube.", "CodeText",ExpressionUUID->"87951d64-757b-4564-913f-7f01b584324e"],
 
 Cell[BoxData[
- RowBox[{"FindTarskiReflection", "[", 
+ RowBox[{"FindReflection", "[", 
   RowBox[{
    RowBox[{"HypercubeGraph", "[", "3", "]"}], ",", "1", ",", "2", ",", 
    "All"}], "]"}]], "Input",ExpressionUUID->"d48cf121-4cb5-46bc-9b0e-\

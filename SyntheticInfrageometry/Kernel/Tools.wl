@@ -20,6 +20,11 @@ PackageScope[curvatureSpecQ]
 PackageScope[parseCurvatureSpec]
 PackageScope[dimensionSpecQ]
 PackageScope[radiiSpecQ]
+PackageScope[infraSpread]
+PackageScope[infraWrappedQ]
+PackageScope[infraCapBy]
+PackageScope[infraSpreadAndCartesian]
+PackageScope[infraUnionSpread]
 
 
 (* Path-space distances and selectors (HausdorffDistance, FrechetDistance,
@@ -228,13 +233,17 @@ radiiSpecQ[ _ ] := False
 
 
 (* parseCurvatureSpec normalises the "Curvature" sub-option of
-   Method -> "CurvatureMinimizing" into a uniform Association.
+   Method -> "CurvatureMinimizing" into a uniform Association.  The actual
+   curvature symbols live in the sister paclet WolframInstitute`Infrageometry`
+   (FormanRicciCurvature, WolframRicciCurvature); the user-facing "Method"
+   keyword is translated to the "MaxCellDimension" axis of the new
+   clique-complex Forman in buildEdgeKappa.
 
    Accepted shapes:
-     "Forman"                                      -> FormanRicci defaults
-     {"Forman",  Method -> "Simple" | "Triangles"} -> passes Method to FormanRicci
-     "Wolfram"                                     -> WolframRicci defaults
-     {"Wolfram", "Dimension" -> d, "Radii" -> r}   -> passes opts to WolframRicci
+     "Forman"                                      -> Forman / 1-skeleton
+     {"Forman",  Method -> "Simple" | "Triangles"} -> Simple = MaxCellDim 1, Triangles = 2
+     "Wolfram"                                     -> Wolfram defaults
+     {"Wolfram", "Dimension" -> d, "Radii" -> r}   -> passes opts to WolframRicciCurvature
 
    Returns <| "Head" -> "Forman" | "Wolfram", ...inner... |> on success and
    $Failed otherwise. *)
@@ -351,4 +360,67 @@ pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
       ( UndirectedEdge | DirectedEdge )[ u_, v_ ] /;
         MemberQ[ nodes, u ] && MemberQ[ nodes, v ] :> UndirectedEdge[ u, v ] ];
     Graph[ nodes, DeleteDuplicates[ Join[ paired, direct ] ] ]
+  ]
+
+
+(* ===================== Multi-realisation wrapper helpers ===================== *)
+
+(* Internal helpers that orchestrate the multi-realisation Infra* wrappers.
+   The wrapper heads themselves (InfraPoint, InfraSegment, ...) and their
+   accessor / Part / auto-flatten rules live in the per-primitive files.    *)
+
+(* infraWrappedQ[expr] tests whether expr is one of the multi-realisation
+   wrappers in single-_List-arg form. *)
+
+infraWrappedQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraPencil )[ _List ] ] := True
+infraWrappedQ[ _ ] := False
+
+(* infraSpread[anchor] is the source/endpoint-position adapter: a wrapped
+   anchor is spread into its realisations, an unwrapped value becomes a
+   singleton list, ready for Outer / Tuples / Cartesian iteration.
+   InfraPencil is excluded -- a pencil is an output, not an anchor.        *)
+
+infraSpread[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] := reps
+infraSpread[ other_ ] := { other }
+
+(* infraUnionSpread[entry] collapses a wrapped entry to the union of its
+   realisations, for set-conjunction Find* over a single _List argument
+   (FindCommonLine, FindCommonPoint).  Bare entries pass through as a
+   singleton list; the pencil case unwraps one level deeper through its
+   constituent InfraRays.                                                  *)
+
+infraUnionSpread[ InfraPoint[ reps_List ] ] := DeleteDuplicates @ reps
+infraUnionSpread[ ( InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] :=
+  Union @@ reps
+infraUnionSpread[ InfraPencil[ rays_List ] ] :=
+  Union @@ Catenate[ #[ "Realizations" ] & /@ rays ]
+infraUnionSpread[ other_ ] := { other }
+
+(* infraCapBy[wrapper, count] applies the standard count semantics
+   (n_Integer strict / UpTo[n] / All) to a wrapper.  Returns $Failed on
+   strict-n shortfall, otherwise a same-head wrapper.                       *)
+
+infraCapBy[ wrapper_?infraWrappedQ, All ] := wrapper
+
+infraCapBy[ wrapper_?infraWrappedQ, UpTo[ n_Integer ] ] :=
+  Head[ wrapper ][ Take[ wrapper[ "Realizations" ], UpTo[ n ] ] ]
+
+infraCapBy[ wrapper_?infraWrappedQ, n_Integer ] /; n <= wrapper[ "Length" ] :=
+  Head[ wrapper ][ Take[ wrapper[ "Realizations" ], n ] ]
+
+infraCapBy[ _?infraWrappedQ, _Integer ] := $Failed
+
+
+(* infraSpreadAndCartesian is the dispatch shell for source/endpoint anchors.
+   Each anchor is spread into its realisations (or treated as a singleton if
+   bare); the Cartesian product runs the single-pair core; bare-list results
+   are union-deduplicated and wrapped under wrapHead.  Strict-n shortfall on
+   any pair propagates as bare $Failed.                                       *)
+
+infraSpreadAndCartesian[ wrapHead_, count_, core_, anchors__ ] :=
+  With[ { results = core @@@ Tuples[ infraSpread /@ { anchors } ] },
+    If[ MemberQ[ results, $Failed ],
+      $Failed,
+      wrapHead[ DeleteDuplicates @ Flatten[ results, 1 ] ]
+    ]
   ]

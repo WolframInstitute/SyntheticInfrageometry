@@ -1,0 +1,127 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5815,        118]
+NotebookOptionsPosition[      3603,         85]
+NotebookOutlinePosition[      3920,         99]
+CellTagsIndexPosition[      3877,         96]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["ResistanceCoordinates", "Title",ExpressionUUID->"cf1aaf38-22d9-4434-a1d9-96db63a19bc8"],
+
+Cell["\<\
+ResistanceCoordinates[graph] returns the Association v -> Phi(v) of \
+resistance-matching spectral coordinates Phi(v) = (phi_i(v) / \
+Sqrt[lambda_i])_{i: lambda_i > 0}, satisfying ||Phi(u) - Phi(v)||^2 == \
+EffectiveResistance(u, v). ResistanceCoordinates[graph, v] returns one \
+coordinate vector; an InfraPoint query returns the per-realisation list. \
+Options: \"Rescaling\" (\"ResistanceMatching\" (default), \"None\", \
+\"Diffusion\" -> t), \"Dimension\" (Automatic, Integer, UpTo[k], All), \
+\"Origin\" (None or vertex / InfraPoint).\
+\>", "Text",ExpressionUUID->"58eb0826-be05-457f-85b2-e9bbfac8f51d"],
+
+Cell["Setup", "Section",ExpressionUUID->"22167a34-d8c5-469f-b214-73710b49bbad"],
+
+Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"5d35dd84-4ef6-4e1c-80b5-659a07dbfc88"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"4a9eb527-7abc-494d-9f46-cab5b6884847"],
+
+Cell["Usage", "Section",ExpressionUUID->"594c74f9-9e93-41fd-841b-9c3b2daa7f3b"],
+
+Cell["Resistance coordinates on a small cycle.", "CodeText",ExpressionUUID->"57583a6c-7b96-420b-bf38-a14d59ef13c4"],
+
+Cell["ResistanceCoordinates[CycleGraph[5]]", "Input",ExpressionUUID->"f347817a-f646-42a4-92b3-934d3861eabf"],
+
+Cell["Single-vertex query.", "CodeText",ExpressionUUID->"2076eb6a-71f4-4017-9f37-803145b33574"],
+
+Cell["ResistanceCoordinates[GridGraph[{4, 4}], 1]", "Input",ExpressionUUID->"72484bb2-96e3-48ed-b2a5-dcf4923aa1de"],
+
+Cell["Examples", "Section",ExpressionUUID->"309e71b8-0285-45c9-b11c-508ad99ab82e"],
+
+Cell["\<\
+Verify the matching identity ||Phi(u) - Phi(v)||^2 = R(u, v) on a path graph.\
+\
+\>", "CodeText",ExpressionUUID->"d44fd299-6655-4ad1-9866-d0f6e0a79de6"],
+
+Cell["\<\
+With[{g = PathGraph[Range[5]], coords},
+ coords = ResistanceCoordinates[g];
+ {Norm[coords[1] - coords[5]]^2, EffectiveResistance[g, 1, 5]}
+]\
+\>", "Input",ExpressionUUID->"e4fda941-4dc1-4c6a-8e2a-ef258ad6a31c"],
+
+Cell["Truncate to two leading components.", "CodeText",ExpressionUUID->"f69e16cb-a70b-44a3-8342-0e5f7051507d"],
+
+Cell["\<\
+ResistanceCoordinates[GridGraph[{4, 4}], 1, \"Dimension\" -> 2]\
+\>", "Input",ExpressionUUID->"71ed5198-671f-4cdd-bd92-47232faee682"],
+
+Cell["Diffusion-style rescaling at time t = 1.", "CodeText",ExpressionUUID->"ad6d6de8-115a-4820-93bf-1150d65b2215"],
+
+Cell["\<\
+ResistanceCoordinates[CycleGraph[6], 1, \"Rescaling\" -> (\"Diffusion\" -> 1)]\
+\>", "Input",ExpressionUUID->"8bb06952-7520-4f28-8ad6-aa7ab67ffa53"],
+
+Cell["See also", "Section",ExpressionUUID->"50eff78a-4e2c-4ced-beef-3c285cdc5593"],
+
+Cell["RadarCoordinates", "Item",ExpressionUUID->"c248056a-0e66-4184-94e2-6e0294ccf7bc"],
+
+Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"aaab74ad-6140-42c5-b23d-94187d7f7aad"],
+
+Cell["FindRadarBasis", "Item",ExpressionUUID->"9ca19eb3-59ef-4721-8e7d-900058069849"],
+
+Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"fabd5de3-95d4-404b-9858-e5ca0a6d4964"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 93, 0, 70, "Title",ExpressionUUID->"cf1aaf38-22d9-4434-a1d9-96db63a19bc8"],
+Cell[650, 22, 618, 9, 70, "Text",ExpressionUUID->"58eb0826-be05-457f-85b2-e9bbfac8f51d"],
+Cell[1271, 33, 79, 0, 70, "Section",ExpressionUUID->"22167a34-d8c5-469f-b214-73710b49bbad"],
+Cell[1353, 35, 132, 0, 70, "CodeText",ExpressionUUID->"5d35dd84-4ef6-4e1c-80b5-659a07dbfc88"],
+Cell[1488, 37, 122, 0, 70, "Code",ExpressionUUID->"4a9eb527-7abc-494d-9f46-cab5b6884847"],
+Cell[1613, 39, 79, 0, 70, "Section",ExpressionUUID->"594c74f9-9e93-41fd-841b-9c3b2daa7f3b"],
+Cell[1695, 41, 115, 0, 70, "CodeText",ExpressionUUID->"57583a6c-7b96-420b-bf38-a14d59ef13c4"],
+Cell[1813, 43, 108, 0, 70, "Input",ExpressionUUID->"f347817a-f646-42a4-92b3-934d3861eabf"],
+Cell[1924, 45, 95, 0, 70, "CodeText",ExpressionUUID->"2076eb6a-71f4-4017-9f37-803145b33574"],
+Cell[2022, 47, 115, 0, 70, "Input",ExpressionUUID->"72484bb2-96e3-48ed-b2a5-dcf4923aa1de"],
+Cell[2140, 49, 82, 0, 70, "Section",ExpressionUUID->"309e71b8-0285-45c9-b11c-508ad99ab82e"],
+Cell[2225, 51, 162, 3, 70, "CodeText",ExpressionUUID->"d44fd299-6655-4ad1-9866-d0f6e0a79de6"],
+Cell[2390, 56, 220, 5, 70, "Input",ExpressionUUID->"e4fda941-4dc1-4c6a-8e2a-ef258ad6a31c"],
+Cell[2613, 63, 110, 0, 70, "CodeText",ExpressionUUID->"f69e16cb-a70b-44a3-8342-0e5f7051507d"],
+Cell[2726, 65, 143, 2, 70, "Input",ExpressionUUID->"71ed5198-671f-4cdd-bd92-47232faee682"],
+Cell[2872, 69, 115, 0, 70, "CodeText",ExpressionUUID->"ad6d6de8-115a-4820-93bf-1150d65b2215"],
+Cell[2990, 71, 158, 2, 70, "Input",ExpressionUUID->"8bb06952-7520-4f28-8ad6-aa7ab67ffa53"],
+Cell[3151, 75, 82, 0, 70, "Section",ExpressionUUID->"50eff78a-4e2c-4ced-beef-3c285cdc5593"],
+Cell[3236, 77, 87, 0, 70, "Item",ExpressionUUID->"c248056a-0e66-4184-94e2-6e0294ccf7bc"],
+Cell[3326, 79, 92, 0, 70, "Item",ExpressionUUID->"aaab74ad-6140-42c5-b23d-94187d7f7aad"],
+Cell[3421, 81, 85, 0, 70, "Item",ExpressionUUID->"9ca19eb3-59ef-4721-8e7d-900058069849"],
+Cell[3509, 83, 90, 0, 70, "Item",ExpressionUUID->"fabd5de3-95d4-404b-9858-e5ca0a6d4964"]
+}
+]
+*)
+
+(* End of internal cache information *)

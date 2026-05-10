@@ -10,42 +10,79 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      6579,        155]
-NotebookOptionsPosition[      4444,        123]
-NotebookOutlinePosition[      4761,        137]
-CellTagsIndexPosition[      4718,        134]
+NotebookDataLength[      8184,        213]
+NotebookOptionsPosition[      5565,        165]
+NotebookOutlinePosition[      5958,        181]
+CellTagsIndexPosition[      5915,        178]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
+
+Cell[CellGroupData[{
 Cell["Euclidean Geometry Tutorial", "Title",ExpressionUUID->"ec449d37-5d3a-407e-aafb-71534b0ad421"],
 
 Cell["\<\
 A compact tour of the Euclidean layer on paths and grids: segments, spheres, \
-and the separating bisector.\
-\>", "Text",ExpressionUUID->"71effd71-0116-4cee-814d-257ad4e8bbc6"],
+and the separating bisector.
+Euclidean geometry is supported if there would be some affine structure.\
+\>", "Text",
+ CellChangeTimes->{{3.987089439010808*^9, 
+  3.987089457600532*^9}},ExpressionUUID->"71effd71-0116-4cee-814d-\
+257ad4e8bbc6"],
+
+Cell["\<\
+Affine geometry = projective geometry + choice of hyperplane at infinity . \
+Euclidean geometry = affine geometry + inner product .\
+\>", "Text",
+ CellChangeTimes->{{3.9870895682932367`*^9, 
+  3.987089570621019*^9}},ExpressionUUID->"137c4417-b2b7-40f8-b68a-\
+1d43f03a0441"],
+
+Cell["\<\
+Graph does not have a structure of a Euclidean space - real vector space with \
+inner product. \
+\>", "Text",
+ CellChangeTimes->{{3.9870895964262867`*^9, 
+  3.987089616793516*^9}},ExpressionUUID->"8cc41154-6e8f-44a1-8607-\
+9a0ca13f7546"],
+
+Cell[CellGroupData[{
 
 Cell["Setup", "Section",ExpressionUUID->"e749490e-80fa-4337-b20b-901a71910c16"],
 
-Cell["Load the paclet and define a path and a grid.", "CodeText",ExpressionUUID->"48c2d9ba-7e4b-4059-bf74-1ab4a5773aa5"],
-
 Cell[BoxData[
- RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
-  "]"}]], "Code",ExpressionUUID->"547130c4-f11c-49bb-ab9b-295205113771"],
+ RowBox[{
+  RowBox[{"PacletDirectoryLoad", "[", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"NotebookDirectory", "[", "]"}], ",", " ", "\"\<../../..\>\""}],
+      "}"}], "]"}], "]"}], ";"}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.987236867917878*^9, 3.987236893357332*^9}},
+ CellLabel->"In[4]:=",ExpressionUUID->"97faa8f3-f843-4d5c-89a0-783aba663a84"],
+
+Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",
+ CellChangeTimes->{{3.987182523057169*^9, 3.987182523262128*^9}, {
+  3.987236073493876*^9, 3.987236097253687*^9}},
+ CellLabel->"In[2]:=",ExpressionUUID->"eac4bb35-1bca-43ad-9858-6e0cf7098708"],
 
 Cell[BoxData[
  RowBox[{
-  RowBox[{
-   RowBox[{"{", 
-    RowBox[{"g1", ",", "g2"}], "}"}], "=", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"PathGraph", "[", 
-      RowBox[{"Range", "[", "5", "]"}], "]"}], ",", 
-     RowBox[{"GridGraph", "[", 
-      RowBox[{"{", 
-       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}]}], ";"}]], "Code",Expres\
-sionUUID->"1578b2fa-51e8-42f4-b13c-a1d45759f235"],
+  RowBox[{"g", "=", " ", 
+   RowBox[{"MeshConnectivityGraph", "[", " ", 
+    RowBox[{"DiscretizeRegion", "[", 
+     RowBox[{
+      RowBox[{"Rectangle", "[", "]"}], ",", " ", 
+      RowBox[{"MaxCellMeasure", "->", ".02"}], ",", " ", 
+      RowBox[{"PrecisionGoal", "->", "Infinity"}]}], "]"}], " ", "]"}]}], 
+  ";"}]], "Input",
+ InitializationCell->True,
+ CellLabel->"In[3]:=",ExpressionUUID->"a673a86f-7631-4730-b629-ed4d02d79b87"]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell["Segments", "Section",ExpressionUUID->"d3064aca-18a6-42e0-b244-e9795fd1aad3"],
 
@@ -66,30 +103,38 @@ Cell[BoxData[
      RowBox[{"FindSegment", "[", 
       RowBox[{"g2", ",", "1", ",", "16", ",", "All"}], "]"}], "\[Rule]", 
      "Blue"}], "}"}]}], "]"}]], "Input",ExpressionUUID->"f4920de6-3d3a-42c5-\
-bd60-83be18b407ee"],
+bd60-83be18b407ee"]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell["Circles", "Section",ExpressionUUID->"1bfbbbec-87e2-42e9-b91b-643ddf9cfac1"],
 
 Cell["Compute separating cycles around the grid centre.", "CodeText",ExpressionUUID->"b0f75ddc-1ee3-43ab-b7d2-daa9a6046191"],
 
 Cell[BoxData[
- RowBox[{"FindCircle", "[",
-  RowBox[{"g2", ",", "6", ",",
-   RowBox[{"{",
-    RowBox[{"1", ",", "2"}], "}"}], ",", "All"}], "]"}]], "Input",ExpressionUUID->"a764e439-488e-4754-ad04-c7e9027e2fd3"],
+ RowBox[{"FindCircle", "[", 
+  RowBox[{"g2", ",", "6", ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2"}], "}"}], ",", "All"}], "]"}]], "Input",ExpressionUU\
+ID->"a764e439-488e-4754-ad04-c7e9027e2fd3"],
 
 Cell["Render the separating-cycle bundle.", "CodeText",ExpressionUUID->"76b7dc90-1599-4ffd-9366-7c5f718eb9ca"],
 
 Cell[BoxData[
- RowBox[{"InfraSceneHighlight", "[",
-  RowBox[{"g2", ",",
-   RowBox[{"{",
+ RowBox[{"InfraSceneHighlight", "[", 
+  RowBox[{"g2", ",", 
+   RowBox[{"{", 
     RowBox[{
-     RowBox[{"FindCircle", "[",
-      RowBox[{"g2", ",", "6", ",",
-       RowBox[{"{",
-        RowBox[{"1", ",", "2"}], "}"}], ",", "All"}], "]"}], "\[Rule]",
-      "Green"}], "}"}]}], "]"}]], "Input",ExpressionUUID->"fc4c7855-d09e-4c5d-8810-028f824d6e2c"],
+     RowBox[{"FindCircle", "[", 
+      RowBox[{"g2", ",", "6", ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "2"}], "}"}], ",", "All"}], "]"}], "\[Rule]", 
+     "Green"}], "}"}]}], "]"}]], "Input",ExpressionUUID->"fc4c7855-d09e-4c5d-\
+8810-028f824d6e2c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell["Bisecting hyperplanes", "Section",ExpressionUUID->"7d6ea771-b8ae-49bb-b4df-d42b0a289c44"],
 
@@ -115,7 +160,11 @@ Cell[BoxData[
     RowBox[{
      RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", "All"}], "]"}]], "Input",Expr\
 essionUUID->"699f464a-50c4-4def-8db9-d8fcfecc8c53"]
+}, Open  ]]
+}, Open  ]]
 },
+WindowSize->{808, 911},
+WindowMargins->{{Automatic, 200}, {39, Automatic}},
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"44f98e3d-3313-40e3-9475-afdb24a065f6"
@@ -131,29 +180,42 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 96, 0, 70, "Title",ExpressionUUID->"ec449d37-5d3a-407e-aafb-71534b0ad421"],
-Cell[653, 22, 186, 3, 70, "Text",ExpressionUUID->"71effd71-0116-4cee-814d-257ad4e8bbc6"],
-Cell[842, 27, 79, 0, 70, "Section",ExpressionUUID->"e749490e-80fa-4337-b20b-901a71910c16"],
-Cell[924, 29, 120, 0, 70, "CodeText",ExpressionUUID->"48c2d9ba-7e4b-4059-bf74-1ab4a5773aa5"],
-Cell[1047, 31, 162, 2, 70, "Code",ExpressionUUID->"547130c4-f11c-49bb-ab9b-295205113771"],
-Cell[1212, 35, 392, 12, 70, "Code",ExpressionUUID->"1578b2fa-51e8-42f4-b13c-a1d45759f235"],
-Cell[1607, 49, 82, 0, 70, "Section",ExpressionUUID->"d3064aca-18a6-42e0-b244-e9795fd1aad3"],
-Cell[1692, 51, 129, 0, 70, "CodeText",ExpressionUUID->"92210a53-c779-48e0-96d9-cb9403da072a"],
-Cell[1824, 53, 168, 3, 70, "Input",ExpressionUUID->"5859cde5-bcf0-4603-ac60-0e66167fca15"],
-Cell[1995, 58, 123, 0, 70, "CodeText",ExpressionUUID->"ba17cd5d-59ea-4864-bbd7-a82eb7321a09"],
-Cell[2121, 60, 309, 8, 70, "Input",ExpressionUUID->"f4920de6-3d3a-42c5-bd60-83be18b407ee"],
-Cell[2433, 70, 81, 0, 70, "Section",ExpressionUUID->"1bfbbbec-87e2-42e9-b91b-643ddf9cfac1"],
-Cell[2517, 72, 124, 0, 70, "CodeText",ExpressionUUID->"b0f75ddc-1ee3-43ab-b7d2-daa9a6046191"],
-Cell[2644, 74, 282, 6, 70, "Input",ExpressionUUID->"a764e439-488e-4754-ad04-c7e9027e2fd3"],
-Cell[2929, 82, 110, 0, 70, "CodeText",ExpressionUUID->"76b7dc90-1599-4ffd-9366-7c5f718eb9ca"],
-Cell[3042, 84, 492, 12, 70, "Input",ExpressionUUID->"fc4c7855-d09e-4c5d-8810-028f824d6e2c"],
-Cell[3537, 98, 95, 0, 70, "Section",ExpressionUUID->"7d6ea771-b8ae-49bb-b4df-d42b0a289c44"],
-Cell[3635, 100, 144, 2, 70, "CodeText",ExpressionUUID->"ba490f78-d070-4e72-9e3a-f7bb08543bd3"],
-Cell[3782, 104, 179, 3, 70, "Input",ExpressionUUID->"7e822a87-8b49-49be-b20e-514361dc73d5"],
-Cell[3964, 109, 144, 2, 70, "CodeText",ExpressionUUID->"735f11b0-96e2-4386-8415-32cb0ce96dc6"],
-Cell[4111, 113, 329, 8, 70, "Input",ExpressionUUID->"699f464a-50c4-4def-8db9-d8fcfecc8c53"]
+Cell[CellGroupData[{
+Cell[576, 22, 99, 0, 96, "Title",ExpressionUUID->"ec449d37-5d3a-407e-aafb-71534b0ad421"],
+Cell[678, 24, 330, 7, 55, "Text",ExpressionUUID->"71effd71-0116-4cee-814d-257ad4e8bbc6"],
+Cell[1011, 33, 283, 6, 55, "Text",ExpressionUUID->"137c4417-b2b7-40f8-b68a-1d43f03a0441"],
+Cell[1297, 41, 247, 6, 33, "Text",ExpressionUUID->"8cc41154-6e8f-44a1-8607-9a0ca13f7546"],
+Cell[CellGroupData[{
+Cell[1569, 51, 79, 0, 66, "Section",ExpressionUUID->"e749490e-80fa-4337-b20b-901a71910c16"],
+Cell[1651, 53, 421, 10, 45, "Input",ExpressionUUID->"97faa8f3-f843-4d5c-89a0-783aba663a84",
+ InitializationCell->True],
+Cell[2075, 65, 260, 3, 51, "Code",ExpressionUUID->"eac4bb35-1bca-43ad-9858-6e0cf7098708"],
+Cell[2338, 70, 455, 11, 65, "Input",ExpressionUUID->"a673a86f-7631-4730-b629-ed4d02d79b87",
+ InitializationCell->True]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2830, 86, 82, 0, 66, "Section",ExpressionUUID->"d3064aca-18a6-42e0-b244-e9795fd1aad3"],
+Cell[2915, 88, 129, 0, 36, "CodeText",ExpressionUUID->"92210a53-c779-48e0-96d9-cb9403da072a"],
+Cell[3047, 90, 168, 3, 29, "Input",ExpressionUUID->"5859cde5-bcf0-4603-ac60-0e66167fca15"],
+Cell[3218, 95, 123, 0, 36, "CodeText",ExpressionUUID->"ba17cd5d-59ea-4864-bbd7-a82eb7321a09"],
+Cell[3344, 97, 309, 8, 29, "Input",ExpressionUUID->"f4920de6-3d3a-42c5-bd60-83be18b407ee"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3690, 110, 81, 0, 66, "Section",ExpressionUUID->"1bfbbbec-87e2-42e9-b91b-643ddf9cfac1"],
+Cell[3774, 112, 124, 0, 36, "CodeText",ExpressionUUID->"b0f75ddc-1ee3-43ab-b7d2-daa9a6046191"],
+Cell[3901, 114, 215, 5, 29, "Input",ExpressionUUID->"a764e439-488e-4754-ad04-c7e9027e2fd3"],
+Cell[4119, 121, 110, 0, 36, "CodeText",ExpressionUUID->"76b7dc90-1599-4ffd-9366-7c5f718eb9ca"],
+Cell[4232, 123, 365, 10, 29, "Input",ExpressionUUID->"fc4c7855-d09e-4c5d-8810-028f824d6e2c"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4634, 138, 95, 0, 66, "Section",ExpressionUUID->"7d6ea771-b8ae-49bb-b4df-d42b0a289c44"],
+Cell[4732, 140, 144, 2, 36, "CodeText",ExpressionUUID->"ba490f78-d070-4e72-9e3a-f7bb08543bd3"],
+Cell[4879, 144, 179, 3, 29, "Input",ExpressionUUID->"7e822a87-8b49-49be-b20e-514361dc73d5"],
+Cell[5061, 149, 144, 2, 36, "CodeText",ExpressionUUID->"735f11b0-96e2-4386-8415-32cb0ce96dc6"],
+Cell[5208, 153, 329, 8, 29, "Input",ExpressionUUID->"699f464a-50c4-4def-8db9-d8fcfecc8c53"]
+}, Open  ]]
+}, Open  ]]
 }
 ]
 *)
 
-(* End of internal cache information *)
