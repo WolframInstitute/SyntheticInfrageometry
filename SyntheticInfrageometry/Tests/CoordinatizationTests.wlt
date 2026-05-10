@@ -544,13 +544,13 @@ VerificationTest[
 ]
 
 
-(* "SelectCoordinate" default is Min: omitting the option matches passing Min. *)
+(* "SelectCoordinate" default is Median: omitting the option matches passing Median. *)
 
 VerificationTest[
   FindOrthogonalFrame[GridGraph[{4, 4}], 6, All] ===
-    FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, "SelectCoordinate" -> Min],
+    FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, "SelectCoordinate" -> Median],
   True,
-  TestID -> "FindOrthogonalFrame-SelectCoordinate-default-is-Min"
+  TestID -> "FindOrthogonalFrame-SelectCoordinate-default-is-Median"
 ]
 
 

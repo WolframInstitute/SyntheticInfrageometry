@@ -127,11 +127,11 @@ axisLayerIndex[ g_Graph, dag_Graph, v_ ] :=
 
    When the projection is multi-valued (ties), the "SelectCoordinate"
    option chooses what to return: a function applied to the tied list
-   (e.g. Min (default), Max, First, Last, Mean, Median, or any
-   user-supplied List -> ?Number), or All to keep the full tied list as
-   the per-axis coordinate.  The anchor side is always reduced via First,
-   so anchored coordinates broadcast cleanly when the per-axis value is
-   itself a list. *)
+   (e.g. Median (default, centers symmetric tied sets on c), Min, Max,
+   First, Last, Mean, or any user-supplied List -> ?Number), or All to
+   keep the full tied list as the per-axis coordinate.  The anchor side
+   is always reduced via First, so anchored coordinates broadcast cleanly
+   when the per-axis value is itself a list. *)
 
 selectCoordinate[ All, ix_List ] := ix
 selectCoordinate[ f_,   ix_List ] := f @ ix
@@ -148,7 +148,7 @@ perAxisAnchor[ axis_Graph, vs_List ] :=
   SelectFirst[ vs, MemberQ[ VertexList @ axis, # ] &, First @ vs ]
 
 
-Options[ OrthogonalCoordinates ] = { "SelectCoordinate" -> Min };
+Options[ OrthogonalCoordinates ] = { "SelectCoordinate" -> Median };
 
 (* Single vertex: signed displacement of v in the frame {a1, ..., an} centred at c *)
 OrthogonalCoordinates[ g_Graph, c_, axes_List, v_, opts : OptionsPattern[] ] /;
@@ -425,7 +425,7 @@ Options[ FindOrthogonalFrame ] = {
   "AxisLength"       -> All,
   "AxisCount"        -> Automatic,
   "BranchSampleSize" -> All,
-  "SelectCoordinate" -> Min
+  "SelectCoordinate" -> Median
 };
 
 
@@ -464,7 +464,7 @@ findOrthogonalFrameCore[ g_Graph, c_, count_, opts_List ] /; MemberQ[ VertexList
     sampleSize    = If[ method === "Greedy", All,
       "BranchSampleSize" /. opts /. "BranchSampleSize" -> All ];
     maxFrames = If[ method === "Greedy" && IntegerQ @ count, count, Infinity ];
-    sel       = "SelectCoordinate" /. opts /. "SelectCoordinate" -> Min;
+    sel       = "SelectCoordinate" /. opts /. "SelectCoordinate" -> Median;
     frames = orthogonalFrameDFS[ g, c, dag, axisCountSpec, minLength, sampleSize, maxFrames, sel ];
     If[ method === "Exhaustive", SortBy[ frames, frameSortKey ], frames ]
   ]
