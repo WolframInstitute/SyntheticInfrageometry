@@ -248,11 +248,11 @@ orthogonalGreedy[ g_Graph, paths_List, opts_List ] :=
    ============================================================
 
    FindOrthogonalFrame[g, c] returns a list of axes mutually perpendicular
-   at the centre c.  Each axis is a maximal metric line through c with c
-   strictly interior (no rays).  Algorithm: build GeodesicGraph[g, c] (BFS
-   DAG from c); enumerate candidate lines via antipodal DAG-vertex pairs;
-   DFS through the choice tree, filtering the DAG by perpendicularity at
-   each step.
+   at the centre c.  Each axis is wrapped as InfraSegment[{path}] (one
+   realisation: the maximal metric line through c with c strictly interior;
+   no rays).  Algorithm: build GeodesicGraph[g, c] (BFS DAG from c);
+   enumerate candidate lines via antipodal DAG-vertex pairs; DFS through
+   the choice tree, filtering the DAG by perpendicularity at each step.
 
    Math conditions (encoded by the helpers below):
 
@@ -516,22 +516,26 @@ FindSpanningAxes[ g_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 (* Vertex centre, calling triple.  count = 1 (default): one bare frame.
    count = n_Integer: list of n distinct frames or $Failed.  count = UpTo[n]:
-   up to n.  count = All: every distinct frame (Method default = "Exhaustive"). *)
+   up to n.  count = All: every distinct frame (Method default = "Exhaustive").
+   Each axis in a returned frame is wrapped as InfraSegment[{path}] (one
+   realisation, the metric line through c). *)
+
+wrapFrame[ frame_List ] := InfraSegment[ { # } ] & /@ frame
 
 FindOrthogonalFrame[ g_Graph, c_, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
   With[ { result = findOrthogonalFrameCore[ g, c, 1, { opts } ] },
-    If[ result =!= {}, First @ result, $Failed ]
+    If[ result =!= {}, wrapFrame @ First @ result, $Failed ]
   ]
 
 FindOrthogonalFrame[ g_Graph, c_, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
-  findOrthogonalFrameCore[ g, c, All, { opts } ]
+  wrapFrame /@ findOrthogonalFrameCore[ g, c, All, { opts } ]
 
 FindOrthogonalFrame[ g_Graph, c_, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
-  Take[ findOrthogonalFrameCore[ g, c, n, { opts } ], UpTo[ n ] ]
+  wrapFrame /@ Take[ findOrthogonalFrameCore[ g, c, n, { opts } ], UpTo[ n ] ]
 
 FindOrthogonalFrame[ g_Graph, c_, n_Integer, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
   With[ { result = findOrthogonalFrameCore[ g, c, n, { opts } ] },
-    If[ Length[ result ] >= n, Take[ result, n ], $Failed ]
+    If[ Length[ result ] >= n, wrapFrame /@ Take[ result, n ], $Failed ]
   ]
 
 (* InfraPoint centre: singleton degenerates to single-vertex centre.  Multi-vertex
@@ -543,18 +547,18 @@ FindOrthogonalFrame[ g_Graph, InfraPoint[ { v_ } ], rest___ ] :=
 
 FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   With[ { result = findOrthogonalFrameCore[ g, ip, 1, { opts } ] },
-    If[ result =!= {}, First @ result, $Failed ]
+    If[ result =!= {}, wrapFrame @ First @ result, $Failed ]
   ]
 
 FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], All, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
-  findOrthogonalFrameCore[ g, ip, All, { opts } ]
+  wrapFrame /@ findOrthogonalFrameCore[ g, ip, All, { opts } ]
 
 FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], UpTo[ n_Integer ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
-  Take[ findOrthogonalFrameCore[ g, ip, n, { opts } ], UpTo[ n ] ]
+  wrapFrame /@ Take[ findOrthogonalFrameCore[ g, ip, n, { opts } ], UpTo[ n ] ]
 
 FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], n_Integer, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   With[ { result = findOrthogonalFrameCore[ g, ip, n, { opts } ] },
-    If[ Length[ result ] >= n, Take[ result, n ], $Failed ]
+    If[ Length[ result ] >= n, wrapFrame /@ Take[ result, n ], $Failed ]
   ]
 
 

@@ -268,7 +268,7 @@ VerificationTest[
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
     With[{axes = FindOrthogonalFrame[g, 3]},
-      AllTrue[axes, MemberQ[#, 3] &]
+      AllTrue[axes, MemberQ[#["First"], 3] &]
     ]
   ],
   True,
@@ -428,7 +428,7 @@ VerificationTest[
 
 VerificationTest[
   Module[{g = PathGraph[Range[5]],
-          canonicalize = Sort[First @ Sort[{#, Reverse @ #}] & /@ #] &},
+          canonicalize = Sort[First @ Sort[{#, Reverse @ #}] & /@ (#["First"] & /@ #)] &},
     canonicalize @ FindOrthogonalFrame[g, InfraPoint[{3}]] ===
       canonicalize @ FindOrthogonalFrame[g, 3]
   ],
@@ -442,7 +442,7 @@ VerificationTest[
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
     With[{axes = FindOrthogonalFrame[g, InfraPoint[{2, 4}]]},
-      AllTrue[axes, MemberQ[#, 2] || MemberQ[#, 4] &]
+      AllTrue[axes, MemberQ[#["First"], 2] || MemberQ[#["First"], 4] &]
     ]
   ],
   True,
@@ -452,7 +452,7 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     With[{axes = FindOrthogonalFrame[g, InfraPoint[{6, 11}]]},
-      AllTrue[axes, MemberQ[#, 6] || MemberQ[#, 11] &]
+      AllTrue[axes, MemberQ[#["First"], 6] || MemberQ[#["First"], 11] &]
     ]
   ],
   True,
@@ -477,7 +477,7 @@ VerificationTest[
   With[{g = GridGraph[{3, 3}], c = 5},
     With[{axes = FindOrthogonalFrame[g, c]},
       AllTrue[Range @ Length @ axes,
-        i |-> AllTrue[axes[[i]],
+        i |-> AllTrue[axes[[i]]["First"],
           v |-> With[{coords = OrthogonalCoordinates[g, c, axes, v]},
             AllTrue[Range @ Length @ coords, j |-> j == i || coords[[j]] == 0]
           ]
@@ -494,7 +494,7 @@ VerificationTest[
 
 VerificationTest[
   With[{frame = FindOrthogonalFrame[PathGraph[Range[7]], 4]},
-    Length[frame] === 1 && Length[frame[[1]]] === 7
+    Length[frame] === 1 && Length[frame[[1]]["First"]] === 7
   ],
   True,
   TestID -> "FindOrthogonalFrame-path-line-longest"
@@ -505,7 +505,7 @@ VerificationTest[
    strictly antipodal at 1 (d_g(3, 7) = 4 = depth(3) + depth(7)). *)
 
 VerificationTest[
-  Sort[First @ Sort[{#, Reverse @ #}] & /@ FindOrthogonalFrame[GridGraph[{3, 3}], 1]],
+  Sort[First @ Sort[{#, Reverse @ #}] & /@ (#["First"] & /@ FindOrthogonalFrame[GridGraph[{3, 3}], 1])],
   Sort[First @ Sort[{#, Reverse @ #}] & /@ {{3, 2, 1, 4, 7}}],
   TestID -> "FindOrthogonalFrame-3x3grid-corner-L-bent-line"
 ]
