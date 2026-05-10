@@ -282,7 +282,7 @@ VerificationTest[
    integer. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{axes = FindOrthogonalFrame[g, 6]},
+    With[{axes = FindOrthogonalFrame[g, 6, All]},
       AllTrue[
         Catenate[OrthogonalCoordinates[g, 6, axes, #] & /@ VertexList[g]],
         IntegerQ
@@ -300,7 +300,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    Length @ FindOrthogonalFrame[g, 3]
+    Length @ FindOrthogonalFrame[g, 3, All]
   ],
   1,
   TestID -> "FindOrthogonalFrame-path-single-line"
@@ -310,14 +310,14 @@ VerificationTest[
    metric line through vertex 1.  FindOrthogonalFrame returns $Failed. *)
 
 VerificationTest[
-  FindOrthogonalFrame[PathGraph[Range[5]], 1],
+  FindOrthogonalFrame[PathGraph[Range[5]], 1, All],
   $Failed,
   TestID -> "FindOrthogonalFrame-path-endpoint-no-line"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{axes = FindOrthogonalFrame[g, 3]},
+    With[{axes = FindOrthogonalFrame[g, 3, All]},
       AllTrue[axes, MemberQ[#["First"], 3] &]
     ]
   ],
@@ -326,7 +326,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindOrthogonalFrame[PathGraph[Range[5]], 3, 100],
+  FindOrthogonalFrame[PathGraph[Range[5]], 3, All, 100],
   $Failed,
   TestID -> "FindOrthogonalFrame-strict-fail-too-many"
 ]
@@ -335,7 +335,7 @@ VerificationTest[
    centred at 5 there is at least one 2-axis frame (the row + column). *)
 
 VerificationTest[
-  With[{frame = FindOrthogonalFrame[GridGraph[{3, 3}], 5, "AxisCount" -> 2]},
+  With[{frame = FindOrthogonalFrame[GridGraph[{3, 3}], 5, All, "AxisCount" -> 2]},
     Length[frame] === 2
   ],
   True,
@@ -345,7 +345,7 @@ VerificationTest[
 (* "AxisCount" -> k impossible: no 5-axis frame exists on the 3x3 grid. *)
 
 VerificationTest[
-  FindOrthogonalFrame[GridGraph[{3, 3}], 5, "AxisCount" -> 5],
+  FindOrthogonalFrame[GridGraph[{3, 3}], 5, All, "AxisCount" -> 5],
   $Failed,
   TestID -> "FindOrthogonalFrame-AxisCount-exact-impossible"
 ]
@@ -353,7 +353,7 @@ VerificationTest[
 (* "AxisCount" -> UpTo[k] is a soft cap. *)
 
 VerificationTest[
-  With[{frame = FindOrthogonalFrame[GridGraph[{3, 3}], 5, "AxisCount" -> UpTo[2]]},
+  With[{frame = FindOrthogonalFrame[GridGraph[{3, 3}], 5, All, "AxisCount" -> UpTo[2]]},
     Length[frame] <= 2 && Length[frame] >= 1
   ],
   True,
@@ -414,17 +414,17 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{axes = FindOrthogonalFrame[g, 3]},
+    With[{axes = FindOrthogonalFrame[g, 3, All]},
       OrthogonalCoordinates[g, 3, axes, 3]
     ]
   ],
-  ConstantArray[0, Length @ FindOrthogonalFrame[PathGraph[Range[5]], 3]],
+  ConstantArray[0, Length @ FindOrthogonalFrame[PathGraph[Range[5]], 3, All]],
   TestID -> "OrthogonalCoordinates-center-maps-to-origin"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{axes = FindOrthogonalFrame[g, 3]},
+    With[{axes = FindOrthogonalFrame[g, 3, All]},
       AssociationQ @ OrthogonalCoordinates[g, 3, axes]
         && Length[OrthogonalCoordinates[g, 3, axes]] === 5
     ]
@@ -435,11 +435,11 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}], c = 6},
-    With[{axes = FindOrthogonalFrame[g, c]},
+    With[{axes = FindOrthogonalFrame[g, c, All]},
       OrthogonalCoordinates[g, c, axes, c]
     ]
   ],
-  ConstantArray[0, Length @ FindOrthogonalFrame[GridGraph[{4, 4}], 6]],
+  ConstantArray[0, Length @ FindOrthogonalFrame[GridGraph[{4, 4}], 6, All]],
   TestID -> "OrthogonalCoordinates-grid-center-self-zero"
 ]
 
@@ -467,7 +467,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{axes = FindOrthogonalFrame[g, 3]},
+    With[{axes = FindOrthogonalFrame[g, 3, All]},
       OrthogonalCoordinates[g, InfraPoint[{3}], axes, 3] ==
         OrthogonalCoordinates[g, 3, axes, 3]
     ]
@@ -479,8 +479,8 @@ VerificationTest[
 VerificationTest[
   Module[{g = PathGraph[Range[5]],
           canonicalize = Sort[First @ Sort[{#, Reverse @ #}] & /@ (#["First"] & /@ #)] &},
-    canonicalize @ FindOrthogonalFrame[g, InfraPoint[{3}]] ===
-      canonicalize @ FindOrthogonalFrame[g, 3]
+    canonicalize @ FindOrthogonalFrame[g, InfraPoint[{3}], All] ===
+      canonicalize @ FindOrthogonalFrame[g, 3, All]
   ],
   True,
   TestID -> "FindOrthogonalFrame-InfraPoint-singleton-equals-vertex"
@@ -491,7 +491,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{axes = FindOrthogonalFrame[g, InfraPoint[{2, 4}]]},
+    With[{axes = FindOrthogonalFrame[g, InfraPoint[{2, 4}], All]},
       AllTrue[axes, MemberQ[#["First"], 2] || MemberQ[#["First"], 4] &]
     ]
   ],
@@ -501,7 +501,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{axes = FindOrthogonalFrame[g, InfraPoint[{6, 11}]]},
+    With[{axes = FindOrthogonalFrame[g, InfraPoint[{6, 11}], All]},
       AllTrue[axes, MemberQ[#["First"], 6] || MemberQ[#["First"], 11] &]
     ]
   ],
@@ -515,7 +515,7 @@ VerificationTest[
    perpendicular axes (with Method -> Automatic = "Exhaustive"). *)
 
 VerificationTest[
-  Length @ FindOrthogonalFrame[GridGraph[{3, 3}], 5] >= 2,
+  Length @ FindOrthogonalFrame[GridGraph[{3, 3}], 5, All] >= 2,
   True,
   TestID -> "FindOrthogonalFrame-3x3grid-centre-multi-axis"
 ]
@@ -525,7 +525,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], c = 5},
-    With[{axes = FindOrthogonalFrame[g, c]},
+    With[{axes = FindOrthogonalFrame[g, c, All]},
       AllTrue[Range @ Length @ axes,
         i |-> AllTrue[axes[[i]]["First"],
           v |-> With[{coords = OrthogonalCoordinates[g, c, axes, v]},
@@ -543,7 +543,7 @@ VerificationTest[
    interior; the longest is the whole path 1..7. *)
 
 VerificationTest[
-  With[{frame = FindOrthogonalFrame[PathGraph[Range[7]], 4]},
+  With[{frame = FindOrthogonalFrame[PathGraph[Range[7]], 4, All]},
     Length[frame] === 1 && Length[frame[[1]]["First"]] === 7
   ],
   True,
@@ -555,7 +555,7 @@ VerificationTest[
    strictly antipodal at 1 (d_g(3, 7) = 4 = depth(3) + depth(7)). *)
 
 VerificationTest[
-  Sort[First @ Sort[{#, Reverse @ #}] & /@ (#["First"] & /@ FindOrthogonalFrame[GridGraph[{3, 3}], 1])],
+  Sort[First @ Sort[{#, Reverse @ #}] & /@ (#["First"] & /@ FindOrthogonalFrame[GridGraph[{3, 3}], 1, All])],
   Sort[First @ Sort[{#, Reverse @ #}] & /@ {{3, 2, 1, 4, 7}}],
   TestID -> "FindOrthogonalFrame-3x3grid-corner-L-bent-line"
 ]
@@ -564,8 +564,8 @@ VerificationTest[
    so the result is fully deterministic. *)
 
 VerificationTest[
-  FindOrthogonalFrame[GridGraph[{4, 4}], 6, Method -> "Greedy"] ===
-    FindOrthogonalFrame[GridGraph[{4, 4}], 6, Method -> "Greedy", "BranchSampleSize" -> 1],
+  FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, Method -> "Greedy"] ===
+    FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, Method -> "Greedy", "BranchSampleSize" -> 1],
   True,
   TestID -> "FindOrthogonalFrame-Greedy-ignores-BranchSampleSize"
 ]
@@ -573,8 +573,8 @@ VerificationTest[
 (* Determinism: same inputs always produce same output (no RandomPick). *)
 
 VerificationTest[
-  Module[{frame1 = FindOrthogonalFrame[GridGraph[{4, 4}], 6],
-          frame2 = FindOrthogonalFrame[GridGraph[{4, 4}], 6]},
+  Module[{frame1 = FindOrthogonalFrame[GridGraph[{4, 4}], 6, All],
+          frame2 = FindOrthogonalFrame[GridGraph[{4, 4}], 6, All]},
     frame1 === frame2
   ],
   True,
@@ -585,7 +585,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{axes = FindOrthogonalFrame[g, 5]},
+    With[{axes = FindOrthogonalFrame[g, 5, All]},
       OrthogonalCoordinates[g, 5, axes, 5] === ConstantArray[0, Length @ axes]
     ]
   ],
@@ -598,8 +598,8 @@ VerificationTest[
    passing "Centered" explicitly. *)
 
 VerificationTest[
-  FindOrthogonalFrame[GridGraph[{4, 4}], 6, All] ===
-    FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, "SelectCoordinate" -> "Centered"],
+  FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, All] ===
+    FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, All, "SelectCoordinate" -> "Centered"],
   True,
   TestID -> "FindOrthogonalFrame-SelectCoordinate-default-is-Centered"
 ]
@@ -611,7 +611,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], c = 5},
-    With[{axes = FindOrthogonalFrame[g, c]},
+    With[{axes = FindOrthogonalFrame[g, c, All]},
       AllTrue[Range @ Length @ axes,
         i |-> AllTrue[axes[[i]]["First"],
           v |-> With[{coords = OrthogonalCoordinates[g, c, axes, v,
@@ -648,7 +648,7 @@ VerificationTest[
   AllTrue[
     {Min, Max, Median, Mean, All},
     sel |-> MatchQ[
-      FindOrthogonalFrame[GridGraph[{3, 3}], 5, "SelectCoordinate" -> sel],
+      FindOrthogonalFrame[GridGraph[{3, 3}], 5, All, "SelectCoordinate" -> sel],
       {__WolframInstitute`SyntheticInfrageometry`InfraSegment}
     ]
   ],

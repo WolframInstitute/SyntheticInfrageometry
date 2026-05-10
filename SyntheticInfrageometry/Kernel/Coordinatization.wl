@@ -432,16 +432,15 @@ frameSortKey[ frame_List ] :=
 
 Options[ FindOrthogonalFrame ] = {
   Method             -> Automatic,
-  "AxisLength"       -> All,
   "AxisCount"        -> Automatic,
   "BranchSampleSize" -> All,
   "SelectCoordinate" -> "Centered"
 };
 
 
-(* parseAxisLengthSpec -- normalise "AxisLength" spec to a {min, max} pair.
-   Accepted forms:
-     All              -> {1, Infinity}        (any depth, default)
+(* parseAxisLengthSpec -- normalise the axisLength positional argument to a
+   {min, max} pair.  Accepted forms:
+     All              -> {1, Infinity}        (any depth)
      n_Integer        -> {n, n}               (depth exactly n; local axis
                                               filling the radius-n ball)
      UpTo[n]          -> {1, n}               (depth at most n)
@@ -465,9 +464,9 @@ resolveSearchMethod[ opts_List ] :=
    ranks the resulting frames by frameSortKey; for "Greedy" mode keeps DFS
    order (first n leaves found, deterministic via axisSortKey). *)
 
-findOrthogonalFrameCore[ g_Graph, c_, count_, opts_List ] /; MemberQ[ VertexList[ g ], c ] :=
+findOrthogonalFrameCore[ g_Graph, c_, axisLength_, count_, opts_List ] /; MemberQ[ VertexList[ g ], c ] :=
   Module[ { minLength, maxDepth, dag, axisCountSpec, sampleSize, method, maxFrames, sel, frames },
-    { minLength, maxDepth } = parseAxisLengthSpec[ "AxisLength" /. opts /. "AxisLength" -> All ];
+    { minLength, maxDepth } = parseAxisLengthSpec[ axisLength ];
     dag           = GeodesicGraph[ g, c, "AxisLength" -> Replace[ maxDepth, Infinity -> All ] ];
     axisCountSpec = "AxisCount" /. opts /. "AxisCount" -> Automatic;
     method        = resolveSearchMethod[ opts ];
@@ -484,10 +483,10 @@ findOrthogonalFrameCore[ g_Graph, c_, count_, opts_List ] /; MemberQ[ VertexList
    than allowing per-axis anchors, but cleanly composes with the
    single-source DFS engine). *)
 
-findOrthogonalFrameCore[ g_Graph, InfraPoint[ vs_List ], count_, opts_List ] :=
+findOrthogonalFrameCore[ g_Graph, InfraPoint[ vs_List ], axisLength_, count_, opts_List ] :=
   Module[ { perSource, allFrames, method, maxFrames, sortedFrames },
     method     = resolveSearchMethod[ opts ];
-    perSource  = Map[ findOrthogonalFrameCore[ g, #, All, opts ] &, vs ];
+    perSource  = Map[ findOrthogonalFrameCore[ g, #, axisLength, All, opts ] &, vs ];
     allFrames  = DeleteDuplicatesBy[ Catenate @ perSource, canonicalFrame ];
     sortedFrames = If[ method === "Exhaustive", SortBy[ allFrames, frameSortKey ], allFrames ];
     maxFrames = If[ count === All, Infinity, count ];
@@ -527,27 +526,32 @@ FindSpanningAxes[ g_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 (* ===================== FindOrthogonalFrame public dispatch ===================== *)
 
-(* Vertex centre, calling triple.  count = 1 (default): one bare frame.
-   count = n_Integer: list of n distinct frames or $Failed.  count = UpTo[n]:
-   up to n.  count = All: every distinct frame (Method default = "Exhaustive").
-   Each axis in a returned frame is wrapped as InfraSegment[{path}] (one
-   realisation, the metric line through c). *)
+(* Signature: FindOrthogonalFrame[graph, c, axisLength, count].
+   axisLength is a *required* positional argument (All | n_Integer | UpTo[n] |
+   {min, max}) -- the half-axis depth spec; All means unconstrained.  count
+   follows the calling triple: count = 1 (default, when omitted) returns one
+   bare frame; n_Integer returns n distinct frames or $Failed; UpTo[n] returns
+   up to n; All returns every distinct frame.  Each axis in a returned frame
+   is wrapped as InfraSegment[{path}] (one realisation, the metric line
+   through c). *)
 
 wrapFrame[ frame_List ] := InfraSegment[ { # } ] & /@ frame
 
-FindOrthogonalFrame[ g_Graph, c_, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
-  With[ { result = findOrthogonalFrameCore[ g, c, 1, { opts } ] },
+axisLengthPattern = All | _Integer | _UpTo | { _, _ };
+
+FindOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+  With[ { result = findOrthogonalFrameCore[ g, c, axisLength, 1, { opts } ] },
     If[ result =!= {}, wrapFrame @ First @ result, $Failed ]
   ]
 
-FindOrthogonalFrame[ g_Graph, c_, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
-  wrapFrame /@ findOrthogonalFrameCore[ g, c, All, { opts } ]
+FindOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+  wrapFrame /@ findOrthogonalFrameCore[ g, c, axisLength, All, { opts } ]
 
-FindOrthogonalFrame[ g_Graph, c_, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
-  wrapFrame /@ Take[ findOrthogonalFrameCore[ g, c, n, { opts } ], UpTo[ n ] ]
+FindOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+  wrapFrame /@ Take[ findOrthogonalFrameCore[ g, c, axisLength, n, { opts } ], UpTo[ n ] ]
 
-FindOrthogonalFrame[ g_Graph, c_, n_Integer, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
-  With[ { result = findOrthogonalFrameCore[ g, c, n, { opts } ] },
+FindOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+  With[ { result = findOrthogonalFrameCore[ g, c, axisLength, n, { opts } ] },
     If[ Length[ result ] >= n, wrapFrame /@ Take[ result, n ], $Failed ]
   ]
 
@@ -558,19 +562,19 @@ FindOrthogonalFrame[ g_Graph, c_, n_Integer, opts : OptionsPattern[] ] /; Member
 FindOrthogonalFrame[ g_Graph, InfraPoint[ { v_ } ], rest___ ] :=
   FindOrthogonalFrame[ g, v, rest ]
 
-FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
-  With[ { result = findOrthogonalFrameCore[ g, ip, 1, { opts } ] },
+FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+  With[ { result = findOrthogonalFrameCore[ g, ip, axisLength, 1, { opts } ] },
     If[ result =!= {}, wrapFrame @ First @ result, $Failed ]
   ]
 
-FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], All, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
-  wrapFrame /@ findOrthogonalFrameCore[ g, ip, All, { opts } ]
+FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+  wrapFrame /@ findOrthogonalFrameCore[ g, ip, axisLength, All, { opts } ]
 
-FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], UpTo[ n_Integer ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
-  wrapFrame /@ Take[ findOrthogonalFrameCore[ g, ip, n, { opts } ], UpTo[ n ] ]
+FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+  wrapFrame /@ Take[ findOrthogonalFrameCore[ g, ip, axisLength, n, { opts } ], UpTo[ n ] ]
 
-FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], n_Integer, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
-  With[ { result = findOrthogonalFrameCore[ g, ip, n, { opts } ] },
+FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+  With[ { result = findOrthogonalFrameCore[ g, ip, axisLength, n, { opts } ] },
     If[ Length[ result ] >= n, wrapFrame /@ Take[ result, n ], $Failed ]
   ]
 
