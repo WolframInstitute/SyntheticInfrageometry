@@ -146,6 +146,13 @@ PackageExport[InfraIntersectQ]
 
 (* InfraSceneVisualization.wl *)
 PackageExport[InfraSceneHighlight]
+PackageExport[$InfraPointColor]
+PackageExport[$InfraSegmentColor]
+PackageExport[$InfraShellColor]
+PackageExport[$InfraPlaneColor]
+PackageExport[$InfraCircleColor]
+PackageExport[$InfraRayColor]
+PackageExport[$InfraPencilColor]
 
 (* InfraSceneInteractive.wl *)
 PackageExport[PointViewer]

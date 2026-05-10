@@ -167,6 +167,14 @@ InfraIntersectQ::usage = "InfraIntersectQ[s1, s2] asserts that two sets intersec
 
 (* ===================== Highlights / Viewers ===================== *)
 
+$InfraPointColor::usage   = "Default highlight color for InfraPoint objects.";
+$InfraSegmentColor::usage = "Default highlight color for InfraSegment objects.";
+$InfraShellColor::usage   = "Default highlight color for InfraShell objects.";
+$InfraPlaneColor::usage   = "Default highlight color for InfraPlane objects.";
+$InfraCircleColor::usage  = "Default highlight color for InfraCircle objects.";
+$InfraRayColor::usage     = "Default highlight color for InfraRay objects.";
+$InfraPencilColor::usage  = "Default highlight color for InfraPencil objects.";
+
 InfraSceneHighlight::usage = "InfraSceneHighlight[g, multiObjects] renders a list of multi-objects diffusely on graph g, with intensity scaling by overlap within each object and color-blending across objects. Each entry is auto-classified by representation; explicit Infra* wrappers force the intended semantics, and `entry -> color` overrides the default per-head colour. Options: \"OpacityRange\", \"ThicknessRange\", \"PointSizeRange\".";
 InfraSceneViewer::usage = "InfraSceneViewer[scene, graph] is an interactive visualisation of an InfraScene on a graph; an optional third Association of pre-fixed bindings is supported. Controls: step slider, \"Fix & advance\", \"Reset\".";
 PointViewer::usage = "PointViewer[g] is an interactive viewer for selecting points in graph g. PointViewer[g, sym] stores the current selection in sym.";
