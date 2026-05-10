@@ -57,11 +57,14 @@ $InfraSceneHighlightPalette := Join[
    args and never collide.
    Each entry may be plain or wrapped as `entry -> color`. *)
 
-Options[ InfraSceneHighlight ] = {
-  "OpacityRange"   :> $InfraOpacityRange,
-  "ThicknessRange" :> $InfraThicknessRange,
-  "PointSizeRange" :> $InfraPointSizeRange
-};
+Options[ InfraSceneHighlight ] = Join[
+  {
+    "OpacityRange"   :> $InfraOpacityRange,
+    "ThicknessRange" :> $InfraThicknessRange,
+    "PointSizeRange" :> $InfraPointSizeRange
+  },
+  Options[ HighlightGraph ]
+];
 
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
   Module[ { triples, oRange, tRange, pRange, vEntries, eEntries, objects },
@@ -150,5 +153,6 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             last[[ 1 ]],
             Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) last[[ 2 ]] ],
             AbsolutePointSize[ pRange[[ 1 ]] + ( pRange[[ 2 ]] - pRange[[ 1 ]] ) last[[ 2 ]] ] ] ] ],
-        Merge[ vEntries, Identity ] ] ] ]
+        Merge[ vEntries, Identity ] ] ],
+      FilterRules[ { opts }, Options @ HighlightGraph ] ]
   ]
