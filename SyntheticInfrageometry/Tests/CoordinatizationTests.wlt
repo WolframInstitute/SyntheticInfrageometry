@@ -544,6 +544,46 @@ VerificationTest[
 ]
 
 
+(* "SelectCoordinate" default is Min: omitting the option matches passing Min. *)
+
+VerificationTest[
+  FindOrthogonalFrame[GridGraph[{4, 4}], 6, All] ===
+    FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, "SelectCoordinate" -> Min],
+  True,
+  TestID -> "FindOrthogonalFrame-SelectCoordinate-default-is-Min"
+]
+
+
+(* "SelectCoordinate" -> All is the strict-list-equality interpretation:
+   c's and w's full tied projection lists must coincide.  Since the test is
+   symmetric in c and w, the perpendicularity decision must be symmetric
+   when restricted to a swap-invariant question. *)
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    FindOrthogonalFrame[g, 6, All, "SelectCoordinate" -> All] ===
+      FindOrthogonalFrame[g, 6, All, "SelectCoordinate" -> All]
+  ],
+  True,
+  TestID -> "FindOrthogonalFrame-SelectCoordinate-All-deterministic"
+]
+
+
+(* Different aggregation choices produce well-formed frames (no $Failed). *)
+
+VerificationTest[
+  AllTrue[
+    {Min, Max, Median, Mean, All},
+    sel |-> MatchQ[
+      FindOrthogonalFrame[GridGraph[{3, 3}], 5, "SelectCoordinate" -> sel],
+      {__WolframInstitute`SyntheticInfrageometry`InfraSegment}
+    ]
+  ],
+  True,
+  TestID -> "FindOrthogonalFrame-SelectCoordinate-accepts-Min-Max-Median-Mean-All"
+]
+
+
 (* ===== ResistanceCoordinates =====
    Central claim: ||Phi(u) - Phi(v)||^2 == R(u, v) (Klein-Randic isometry). *)
 

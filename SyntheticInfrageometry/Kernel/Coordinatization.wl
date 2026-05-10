@@ -95,7 +95,7 @@ RadarCoordinates[ g_Graph, b_List, opts : OptionsPattern[] ] :=
    tied at the minimum graph distance.  The DAG form computes layers as
    shortest-path depth from the DAG's sources, then maps each tied
    projection vertex to its layer.  Callers (OrthogonalCoordinates,
-   projectsToOriginQ) reduce this list to a scalar via the
+   projectsToCenterQ) reduce this list to a scalar via the
    "SelectCoordinate" option. *)
 
 axisLayerIndex[ g_Graph, axis_List, v_ ] :=
@@ -330,22 +330,23 @@ axisSortKey[ axis_List ] :=
   { -Length[ axis ], Min[ axis, Reverse @ axis ] }
 
 
-(* projectsToCenterQ -- does w project to c on axis?  Membership test:
-   c's axis-index must be among w's tied closest positions on the axis
-   (= the "closest-to-centre" tie among w's projections is c itself).
-   This is the sel-agnostic perpendicularity condition; SelectCoordinate
-   only governs OrthogonalCoordinates' output reduction, not the
-   perpendicularity filter. *)
+(* projectsToCenterQ -- does w project to c on axis under tie-reducer sel?
+   Both sides of the comparison are reduced via selectCoordinate[sel, ...],
+   so the test matches the aggregation OrthogonalCoordinates uses for its
+   coordinate map: sel = Min (default) compares smallest tied projections;
+   sel = Median compares medians; sel = All compares the full tied lists. *)
 
-projectsToCenterQ[ g_Graph, axis_, c_, w_ ] :=
-  MemberQ[ axisLayerIndex[ g, axis, w ], First @ axisLayerIndex[ g, axis, c ] ]
+projectsToCenterQ[ g_Graph, axis_, c_, w_, sel_ ] :=
+  selectCoordinate[ sel, axisLayerIndex[ g, axis, w ] ] ===
+  selectCoordinate[ sel, axisLayerIndex[ g, axis, c ] ]
 
 
 (* restrictDagToCenter -- keep only DAG vertices that project to c on axis
-   (forward perpendicularity filter, applied between DFS levels). *)
+   under tie-reducer sel (forward perpendicularity filter, applied between
+   DFS levels). *)
 
-restrictDagToCenter[ g_Graph, dag_Graph, axis_List, c_ ] :=
-  Subgraph[ dag, Select[ VertexList[ dag ], projectsToCenterQ[ g, axis, c, # ] & ] ]
+restrictDagToCenter[ g_Graph, dag_Graph, axis_List, c_, sel_ ] :=
+  Subgraph[ dag, Select[ VertexList[ dag ], projectsToCenterQ[ g, axis, c, #, sel ] & ] ]
 
 
 (* canonicalFrame -- orientation-canonical form of a list of axes for
@@ -372,7 +373,7 @@ recurseDFSQ[ All       ][ _, vAxes_ ]       := vAxes =!= {}
 recurseDFSQ[ n_Integer ][ len_, vAxes_ ]    := len < n && vAxes =!= {}
 recurseDFSQ[ UpTo[ n_ ] ][ len_, vAxes_ ]   := len < n && vAxes =!= {}
 
-orthogonalFrameDFS[ g_Graph, c_, fullDag_Graph, axisCountSpec_, minLength_, sampleSize_, maxFrames_ ] :=
+orthogonalFrameDFS[ g_Graph, c_, fullDag_Graph, axisCountSpec_, minLength_, sampleSize_, maxFrames_, sel_ ] :=
   Module[ { frames = {}, canonForms = {}, dfs },
     dfs[ dag_, currentAxes_ ] :=
       Module[ { len, axisCands, validAxes, sortedAxes, sampledAxes, canon },
@@ -380,7 +381,7 @@ orthogonalFrameDFS[ g_Graph, c_, fullDag_Graph, axisCountSpec_, minLength_, samp
         axisCands = enumerateAxes[ g, dag, c, minLength ];
         validAxes = Select[ axisCands,
           cand |-> AllTrue[ currentAxes,
-            prev |-> AllTrue[ prev, w |-> projectsToCenterQ[ g, cand, c, w ] ]
+            prev |-> AllTrue[ prev, w |-> projectsToCenterQ[ g, cand, c, w, sel ] ]
           ]
         ];
         If[ recordFrameQ[ axisCountSpec ][ len, validAxes ],
@@ -398,7 +399,7 @@ orthogonalFrameDFS[ g_Graph, c_, fullDag_Graph, axisCountSpec_, minLength_, samp
             RandomSample[ sortedAxes, sampleSize ]
           ];
           Scan[
-            axis |-> dfs[ restrictDagToCenter[ g, dag, axis, c ], Append[ currentAxes, axis ] ],
+            axis |-> dfs[ restrictDagToCenter[ g, dag, axis, c, sel ], Append[ currentAxes, axis ] ],
             sampledAxes
           ]
         ]
@@ -423,7 +424,8 @@ Options[ FindOrthogonalFrame ] = {
   Method             -> Automatic,
   "AxisLength"       -> All,
   "AxisCount"        -> Automatic,
-  "BranchSampleSize" -> All
+  "BranchSampleSize" -> All,
+  "SelectCoordinate" -> Min
 };
 
 
@@ -454,7 +456,7 @@ resolveSearchMethod[ opts_List ] :=
    order (first n leaves found, deterministic via axisSortKey). *)
 
 findOrthogonalFrameCore[ g_Graph, c_, count_, opts_List ] /; MemberQ[ VertexList[ g ], c ] :=
-  Module[ { minLength, maxDepth, dag, axisCountSpec, sampleSize, method, maxFrames, frames },
+  Module[ { minLength, maxDepth, dag, axisCountSpec, sampleSize, method, maxFrames, sel, frames },
     { minLength, maxDepth } = parseAxisLengthSpec[ "AxisLength" /. opts /. "AxisLength" -> All ];
     dag           = GeodesicGraph[ g, c, "AxisLength" -> Replace[ maxDepth, Infinity -> All ] ];
     axisCountSpec = "AxisCount" /. opts /. "AxisCount" -> Automatic;
@@ -462,7 +464,8 @@ findOrthogonalFrameCore[ g_Graph, c_, count_, opts_List ] /; MemberQ[ VertexList
     sampleSize    = If[ method === "Greedy", All,
       "BranchSampleSize" /. opts /. "BranchSampleSize" -> All ];
     maxFrames = If[ method === "Greedy" && IntegerQ @ count, count, Infinity ];
-    frames = orthogonalFrameDFS[ g, c, dag, axisCountSpec, minLength, sampleSize, maxFrames ];
+    sel       = "SelectCoordinate" /. opts /. "SelectCoordinate" -> Min;
+    frames = orthogonalFrameDFS[ g, c, dag, axisCountSpec, minLength, sampleSize, maxFrames, sel ];
     If[ method === "Exhaustive", SortBy[ frames, frameSortKey ], frames ]
   ]
 
