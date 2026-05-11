@@ -11,7 +11,7 @@ FindPoint::usage = "FindPoint[graph] returns one vertex as InfraPoint[{v}]. Find
 FindMidpoint::usage = "FindMidpoint[graph, segment] returns the midpoint vertex of a segment. FindMidpoint[graph, p1, p2] returns one midpoint between p1 and p2 across all geodesics; with n / UpTo[n] / All controls multiplicity. Option: Method (\"Metric\" (default) | \"Tarski\" (synthetic from B and E) | \"Embedding\"; \"Spectral\", \"Resistance\" reserved).";
 FindReflection::usage = "FindReflection[graph, x, a] returns one vertex x' with B(x, a, x') and ax == ax' (reflection of x through a). With n / UpTo[n] / All controls multiplicity.";
 CompleteEquilateralTriangle::usage = "CompleteEquilateralTriangle[graph, p1, p2] returns one apex vertex equidistant from p1 and p2 at distance d(p1, p2) (Euclid I.1). With n / UpTo[n] / All controls multiplicity. Option: Method (\"Metric\" (default); \"Spectral\", \"Resistance\" reserved).";
-FindCommonPoint::usage = "FindCommonPoint[graph, lines] returns InfraPoint[{v}] for one vertex on every listed line, or $Failed. With n / UpTo[n] / All controls multiplicity. Entries may be bare vertex sequences or InfraSegment / InfraRay / InfraPencil wrappers.";
+FindCommonPoint::usage = "FindCommonPoint[graph, lines] returns InfraPoint[{v}] for one vertex on every listed line, or $Failed. With n / UpTo[n] / All controls multiplicity. Entries may be bare vertex sequences or InfraSegment / InfraRay wrappers.";
 
 (* ===================== InfraSegment ===================== *)
 
@@ -26,10 +26,13 @@ UniqueSegmentQ::usage = "UniqueSegmentQ[graph, u, v] tests whether the geodesic 
 FindLine::usage = "FindLine[graph, p1, p2] returns InfraSegment[{line}] for one maximal geodesic extension through p1 and p2. FindLine[graph, p1, p2, n] returns exactly n or $Failed; UpTo[n] returns up to n; All returns all. Options: \"Maximality\" (\"Extension\" (default) | \"Diameter\"), Method (shared with FindSegment).";
 FindParallel::usage = "FindParallel[graph, line, p] returns one line through p parallel to line, or $Failed. FindParallel[graph, line, p, n] returns exactly n or $Failed; UpTo[n] returns up to n; All returns all. Parallel = constant distance to line. Option: Method (\"Metric\" (default) | \"Embedding\").";
 FindPerpendicular::usage = "FindPerpendicular[graph, line, point] returns one foot of perpendicular from point to line (Euclid I.12: isosceles base midpoint). FindPerpendicular[graph, line, point, n] / UpTo[n] / All controls multiplicity. Option: Method (\"Metric\" (default) | \"Embedding\"; \"Spectral\", \"Resistance\" reserved).";
-FindCommonLine::usage = "FindCommonLine[graph, vertices] returns InfraSegment[{line}] for one canonical line containing every listed vertex, or $Failed. With n / UpTo[n] / All controls multiplicity. Entries may be bare vertices or InfraPoint / InfraSegment / InfraRay / InfraPencil wrappers.";
+FindCommonLine::usage = "FindCommonLine[graph, vertices] returns InfraSegment[{line}] for one canonical line containing every listed vertex, or $Failed. With n / UpTo[n] / All controls multiplicity. Entries may be bare vertices or InfraPoint / InfraSegment / InfraRay wrappers.";
 SegmentLineAngle::usage = "SegmentLineAngle[graph, p1, p2, line] (or SegmentLineAngle[graph, segment, line]) measures the distance from a segment endpoint to a line, given the other endpoint lies on the line. The name is historical -- the value is a length, not a normalised angle. Option: Method (\"Metric\" (default); \"Spectral\" reserved).";
 LineQ::usage = "LineQ[graph, segment] tests whether segment is a maximal geodesic.";
 ParallelQ::usage = "ParallelQ[graph, l1, l2] tests whether two lines are parallel (constant distance). ParallelQ[graph, l1, l2, threshold] allows distance variation up to threshold.";
+PencilDirections::usage = "PencilDirections[graph, O] returns the canonical maximal geodesics through O, one per projective direction class at O.";
+PencilCardinality::usage = "PencilCardinality[graph, O] returns the number of distinct direction classes at O.";
+LineCount::usage = "LineCount[graph] returns the number of distinct canonical maximal geodesics in graph.";
 
 (* ===================== InfraShell ===================== *)
 
@@ -52,18 +55,10 @@ FindBisectingHyperplane::usage = "FindBisectingHyperplane[graph, p1, p2] returns
 
 (* ===================== InfraRay ===================== *)
 
-InfraRay::usage = "InfraRay[{ray1, ray2, ...}] is the multi-realisation wrapper for a ray at a base vertex O: maximal geodesics through O sharing direction. Returned by FindRay and as constituents of FindPencil. Consumed by InfraSceneHighlight (sequential-edge semantics). See InfraPoint for accessor conventions.";
-FindRay::usage = "FindRay[graph, O, v] returns InfraRay[{ray}] for one maximal geodesic through O containing v. FindRay[graph, O, v, n] / UpTo[n] / All controls multiplicity. O and v accept InfraPoint[{...}] for multi-anchor spread.";
+InfraRay::usage = "InfraRay[{ray1, ray2, ...}] is the multi-realisation wrapper for a ray at a base vertex O: pointed half-lines starting at O. Each rep is a vertex sequence {O, ..., w} with w an inextensible endpoint. Returned by FindRay. Consumed by InfraSceneHighlight (sequential-edge semantics). See InfraPoint for accessor conventions.";
+FindRay::usage = "FindRay[graph, O, v] returns InfraRay[{ray}] for one pointed half-line from O in v's direction: the half of a maximal geodesic line through O and v starting at O and ending at the far inextensible endpoint. FindRay[graph, O, v, n] / UpTo[n] / All controls multiplicity. O and v accept InfraPoint[{...}] for multi-anchor spread.";
 
-(* ===================== InfraPencil ===================== *)
-
-InfraPencil::usage = "InfraPencil[{InfraRay[reps1], InfraRay[reps2], ...}] is the multi-constituent wrapper for a pencil at a base vertex O: K direction classes. Returned by FindPencil. Extra accessor [\"Rays\"] flattens every line-realisation across every direction. See InfraPoint for accessor conventions.";
-FindPencil::usage = "FindPencil[graph, O] returns the pencil at vertex O as InfraPencil[{InfraRay[reps_1], ...}]: K direction classes, each constituent InfraRay carrying every maximal geodesic through O sharing that direction. O accepts InfraPoint[{...}] for multi-anchor spread.";
-PencilDirections::usage = "PencilDirections[graph, O] returns the canonical lines through O, one per direction class.";
-PencilCardinality::usage = "PencilCardinality[graph, O] returns the number of distinct directions in the pencil at O.";
-LineCount::usage = "LineCount[graph] returns the number of distinct canonical maximal geodesics in graph.";
-
-(* ===================== InfraEuclideanSpace ===================== *)
+(* ===================== EuclideanSpace ===================== *)
 
 InfraScalarProduct::usage = "InfraScalarProduct[graph, o, u, v] returns the base-point-relative scalar product of u and v with respect to o. Option: Method (\"Schoenberg\" (default) -- direct distance formula (d(o,u)^2 + d(o,v)^2 - d(u,v)^2)/2; \"Parallelogram\" -- polarization identity (||u+v||^2 - ||u-v||^2)/4 via FindInfraLinearCombination).";
 FindInfraLinearCombination::usage = "FindInfraLinearCombination[graph, o, {{lambda1, u1}, {lambda2, u2}, ...}] returns the multi-valued vertex realisation of sum_i lambda_i u_i with base point o, computed as scaled-then-pairwise-summed left-to-right. With n / UpTo[n] / All controls multiplicity. Options: \"ScaleMethod\" (Automatic (default), \"Metric\", \"Line\", \"Midpoint\"); \"SumMethod\" (\"Metric\" (default), \"Parallel\").";
@@ -73,13 +68,13 @@ InfraAngle::usage = "InfraAngle[graph, {q1, p, q2}] returns an angle at p. Optio
 
 ComparisonTriangle::usage = "ComparisonTriangle[a, b, c] returns the Wolfram Triangle in R^2 with side lengths {a, b, c} (a opposite p, b opposite q, c opposite r). ComparisonTriangle[a, b, c, \"Curvature\" -> k] for k != 0 returns InfraComparisonTriangle[<|\"Sides\" -> ..., \"Curvature\" -> k, \"Angles\" -> {alpha_p, alpha_q, alpha_r}|>] in M_k^2. ComparisonTriangle[graph, p, q, r, \"Curvature\" -> k] reads the side lengths from the graph.";
 InfraComparisonTriangle::usage = "InfraComparisonTriangle[<|...|>] is the wrapper head for non-Euclidean comparison triangles returned by ComparisonTriangle. Accessors: [\"Sides\"], [\"Curvature\"], [\"Angles\"].";
-CATInequalityQ::usage = "CATInequalityQ[graph, {p, q, r}, k : 0] tests whether the geodesic triangle on {p, q, r} satisfies the CAT(k) thinness inequality d(apex, x) <= d_k_bar(x_bar) at every vertex x on every geodesic side. Returns Indeterminate when k > 0 and the triangle perimeter exceeds 2 Pi / Sqrt[k] (no spherical comparison fits).";
+CATInequalityQ::usage = "CATInequalityQ[graph, {p, q, r}, k : 0] tests whether the geodesic triangle on {p, q, r} satisfies the CAT(k) thinness inequality. Option Method (\"ApexSide\" (default) -- d(apex, x) <= d_k_bar(apex', x') for every interior vertex x on the side opposite to each apex; \"TwoRays\" -- d(x, y) <= d_k_bar(x', y') for every cross-ray pair (x, y) on the two rays emanating from each apex). Returns Indeterminate when k > 0 and the triangle perimeter exceeds 2 Pi / Sqrt[k].";
 InfraCurvature::usage = "InfraCurvature[graph, v] returns the local Alexandrov upper-curvature bound at v: L^2 times the supremum of per-triangle CAT bounds over all triangles whose three vertices sit inside B_L(v), with L = GraphDiameter[graph] by default. Option: \"Radius\" (Automatic | Integer L) selects the ball radius; reported curvature is rescaled by L^2 to match the (edge / L)^-2 unit convention. InfraCurvature[graph] returns an Association[v -> kappa_v] over all vertices.";
 
 (* ===================== PathSpace ===================== *)
 
-SelectPaths::usage = "SelectPaths[graph, paths, criterion] filters a path bundle by a path-space criterion (\"Central\", \"Peripheral\", \"MostVisited\", or a list of criteria folded left to right). Option: Method (\"Frechet\" (default) | \"Hausdorff\" | \"MeanFrechet\") for the metric criteria; ignored by \"MostVisited\". Accepts InfraSegment, InfraRay, and InfraPencil (mapped over its rays); preserves the wrapper. Operator form SelectPaths[graph, criterion, opts][paths].";
-SelectCycles::usage = "SelectCycles[graph, cycles, criterion] filters a cycle bundle (criterion: \"Central\", \"Peripheral\", \"MostVisited\", \"ShortestCircumference\", \"LongestCircumference\", or a list). Option: Method (\"Frechet\" (default) | \"Hausdorff\" | \"MeanFrechet\") for the metric criteria; ignored otherwise. Accepts InfraCircle[cycles_List]. Operator form SelectCycles[graph, criterion, opts][cycles].";
+SelectPath::usage = "SelectPath[graph, paths] returns one path drawn from the bundle treated as a finite metric space in path-space. SelectPath[graph, paths, n] returns exactly n or $Failed; UpTo[n] returns up to n; All returns the whole pool. Options mirror FindPoint: \"From\" (All (default), \"Center\", \"Periphery\", \"MostVisited\", anchor -> spec, InfraSegment[{...}] -> spec), \"Distance\" (None (default), \"Max\", d, {dMin, dMax}), \"Metric\" (\"Hausdorff\" (default), \"Frechet\", \"MeanFrechet\"), \"MaxCliques\". Accepts InfraSegment and InfraRay wrappers; preserves the wrapper. Operator form SelectPath[graph, n, opts][paths].";
+SelectCycle::usage = "SelectCycle[graph, cycles] returns one cycle drawn from the bundle in path-space. SelectCycle[graph, cycles, n] returns exactly n or $Failed; UpTo[n] returns up to n; All returns the whole pool. Options mirror SelectPath, with two extra \"From\" values: \"ShortestCircumference\", \"LongestCircumference\". Path-space metric distances factor cyclic rotation so they are rotation-invariant. Accepts InfraCircle[cycles_List]; preserves the wrapper. Operator form SelectCycle[graph, n, opts][cycles].";
 EmbeddingClosestPaths::usage = "EmbeddingClosestPaths[graph, paths, {p1, p2}] keeps the paths whose drawing under GraphEmbedding is Hausdorff-closest to the straight Euclidean segment p1-p2. Operator form EmbeddingClosestPaths[graph, {p1, p2}][paths].";
 EmbeddingClosestCycles::usage = "EmbeddingClosestCycles[graph, cycles, {center, radius}] keeps the cycles whose drawing under GraphEmbedding is Hausdorff-closest to the Euclidean circle of given centre and radius. Operator form EmbeddingClosestCycles[graph, {center, radius}][cycles].";
 GeodesicGraph::usage = "GeodesicGraph[graph, c] returns the BFS DAG rooted at c: a directed graph with edge u -> v whenever d(c, v) = d(c, u) + 1 and u-v is an edge of graph. Sinks are peripheral vertices reachable from c; directed paths c -> sink are exactly the maximal geodesics from c. Accepts InfraPoint[{c1, ..., ck}] for multi-source BFS. Option: \"AxisLength\" (truncate at depth k; default All).";
@@ -146,7 +141,9 @@ EnumerateGraphs::usage = "EnumerateGraphs[n, predQ] returns all connected n-vert
 
 (* ===================== Example graphs ===================== *)
 
-InfraExampleGraph::usage = "InfraExampleGraph[name, params] returns a canonical example graph from the paclet's registry, used as the running graph in guides, tutorials, and symbol-page demonstrations. InfraExampleGraph[] lists the available keys; InfraExampleGraph[name] uses default parameters. Keys cover the curvature spectrum: \"Grid\", \"RectangleMesh\", \"DiskMesh\", \"SphereMesh\", \"TriangularLattice\", \"HexagonalLattice\", \"RegularTree\", \"Cayley\", plus small named gems \"Petersen\", \"Heawood\", \"MobiusKantor\", \"Tutte\". Mesh keys forward MaxCellMeasure and AccuracyGoal to DiscretizeRegion.";
+PunchHole::usage = "PunchHole[g, r] removes the closed r-ball around a random vertex; PunchHole[g, c -> r] removes the closed r-ball around vertex c. For multiple holes, Fold[PunchHole, g, list].";
+
+TorusTessellation::usage = "TorusTessellation[shape, {m, n}] returns the vertex-transitive flat-torus Cayley graph carrying the regular {p, q}-tessellation, where shape is \"Rectangular\" ({4, 4}, 4-regular), \"Triangular\" ({3, 6}, 6-regular), or \"Hexagonal\" ({6, 3}, 3-regular).";
 
 (* ===================== Scenes ===================== *)
 
@@ -156,7 +153,7 @@ InfraInstance::usage = "InfraInstance[bindings] wraps a solved binding associati
 InfraGeometricStep::usage = "InfraGeometricStep[{hyp1, hyp2, ...}] groups hypotheses into a manual construction step. InfraGeometricStep[{hyps...}, label] adds a label.";
 InfraLine::usage = "InfraLine[p, q] represents maximal geodesic extensions through p and q. InfraLine[path] extends a given path. Multi-realisations are returned as InfraSegment[{...}] (the only path-shaped wrapper).";
 InfraIntersection::usage = "InfraIntersection[obj1, obj2] represents the vertex-set intersection of two geometric objects. Used in InfraScene hypotheses.";
-InfraDistance::usage = "InfraDistance[g, p, q] is the graph distance between p and q in g, where each is a bare vertex or any Infra* wrapper (InfraPoint, InfraSegment, InfraLine, InfraRay, InfraCircle, InfraShell, InfraPlane, InfraPencil); the result is aggregated over the cross-product of underlying vertex sets via the \"Aggregation\" option (Min default, also Max / Mean / any List -> Number). InfraDistance[p, q] without a graph is also recognised inside InfraScene assertions.";
+InfraDistance::usage = "InfraDistance[g, p, q] is the graph distance between p and q in g, where each is a bare vertex or any Infra* wrapper (InfraPoint, InfraSegment, InfraLine, InfraRay, InfraCircle, InfraShell, InfraPlane); the result is aggregated over the cross-product of underlying vertex sets via the \"Aggregation\" option (Min default, also Max / Mean / any List -> Number). InfraDistance[p, q] without a graph is also recognised inside InfraScene assertions.";
 InfraSegmentQ::usage = "InfraSegmentQ[s] asserts that s is a valid geodesic segment.";
 InfraShellQ::usage = "InfraShellQ[vs] asserts that vs is a valid metric shell.";
 InfraPlaneQ::usage = "InfraPlaneQ[h, p1, p2] asserts that h is a valid bisecting hyperplane between p1 and p2.";
@@ -173,7 +170,6 @@ $InfraShellColor::usage   = "Default highlight color for InfraShell objects.";
 $InfraPlaneColor::usage   = "Default highlight color for InfraPlane objects.";
 $InfraCircleColor::usage  = "Default highlight color for InfraCircle objects.";
 $InfraRayColor::usage     = "Default highlight color for InfraRay objects.";
-$InfraPencilColor::usage  = "Default highlight color for InfraPencil objects.";
 
 InfraSceneHighlight::usage = "InfraSceneHighlight[g, multiObjects] renders a list of multi-objects diffusely on graph g, with intensity scaling by overlap within each object and color-blending across objects. Each entry is auto-classified by representation; explicit Infra* wrappers force the intended semantics, and `entry -> color` overrides the default per-head colour. Options: \"OpacityRange\", \"ThicknessRange\", \"PointSizeRange\".";
 InfraSceneViewer::usage = "InfraSceneViewer[scene, graph] is an interactive visualisation of an InfraScene on a graph; an optional third Association of pre-fixed bindings is supported. Controls: step slider, \"Fix & advance\", \"Reset\".";

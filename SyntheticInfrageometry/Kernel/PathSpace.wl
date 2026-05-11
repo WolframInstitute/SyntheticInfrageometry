@@ -30,15 +30,40 @@ HausdorffDistance[ g_Graph, setX_List, setY_List ] :=
   ]
 
 
-(* Frechet-like distance between two equilength sequences: aggregator f
-   applied to the diagonal of pairwise distances (Max -> Frechet, Mean ->
-   averaged Frechet).  Index alignment is positional. *)
+(* Frechet-like distance between two sequences.  When lengths match the
+   aggregator f is applied to the diagonal of the pairwise distance matrix
+   (Max -> classical Frechet, Mean -> averaged Frechet).  When lengths
+   differ both sequences are linearly resampled to the common length
+   max(|X|, |Y|) before the diagonal is taken -- so the metric remains
+   well-defined on bundles with mixed path lengths. *)
 
 FrechetDistance[ d_List, setX_, setY_, f_ : Max ] :=
-  f[ Diagonal[ d[[ setX, setY ]] ] ]
+  If[ Length[ setX ] === Length[ setY ],
+    f[ Diagonal[ d[[ setX, setY ]] ] ],
+    With[ { m = Max[ Length[ setX ], Length[ setY ] ] },
+      f[ MapThread[ d[[ #1, #2 ]] &, { resamplePath[ setX, m ], resamplePath[ setY, m ] } ] ]
+    ]
+  ]
 
 FrechetDistance[ g_Graph, setX_List, setY_List, f_ : Max ] :=
-  f[ Diagonal[ Outer[ GraphDistance[ g, #1, #2 ] &, setX, setY, 1 ] ] ]
+  If[ Length[ setX ] === Length[ setY ],
+    f[ MapThread[ GraphDistance[ g, #1, #2 ] &, { setX, setY } ] ],
+    With[ { m = Max[ Length[ setX ], Length[ setY ] ] },
+      f[ MapThread[ GraphDistance[ g, #1, #2 ] &,
+        { setX[[ resamplePath[ setX, m ] ]], setY[[ resamplePath[ setY, m ] ]] } ] ]
+    ]
+  ]
+
+
+(* resamplePath[seq, m] returns m positional indices into seq, evenly
+   distributed (rounded), so a length-Length[seq] sequence stretches to
+   length m by linear sampling.  Used to align unequal-length sequences
+   before computing Frechet/MeanFrechet distance. *)
+
+resamplePath[ seq_List, m_Integer ] :=
+  If[ Length[ seq ] === m, Range[ m ],
+    Round @ Rescale[ Range[ m ], { 1, m }, { 1, Length[ seq ] } ]
+  ]
 
 
 (* Minimum graph distance between two vertex subsets. *)
@@ -107,89 +132,250 @@ pathFilterPairwiseDistances[ graph_Graph, paths_List, baseDist_, cyclic_ ] :=
 
 (* ===================== Path-space selectors ===================== *)
 
-(* SelectPaths[g, paths, criterion] / SelectCycles[g, cycles, criterion] are
-   chainable post-filters on the realisation bundles produced by Find* heads.
-   Criteria intrinsic to the bundle:
-     "Central"    - minimise the maximum path-space distance to the rest
-                    of the bundle (the metric centres);
-     "Peripheral" - maximise that eccentricity (the outliers).
-   Cycle-only criteria, length-based:
-     "ShortestCircumference", "LongestCircumference".
-   Option Method -> "Frechet" (default) | "Hausdorff" | "MeanFrechet" picks
-   the path-space metric for the Central / Peripheral criteria; the
-   circumference filters ignore Method.  SelectCycles uses cyclic rotation
-   when computing the path-space metric so the distance is rotation-invariant.
+(* SelectPath[g, paths, n] / SelectCycle[g, cycles, n] are chainable
+   post-filters on path-space treated as a finite metric space.  The bundle
+   is the set of "points"; the path-space metric ("Frechet", "Hausdorff",
+   "MeanFrechet") is the option "Metric" (default "Hausdorff", because it
+   is well-defined for mixed-length bundles without resampling).  The API
+   mirrors FindPoint exactly:
 
-   Wrappers: SelectPaths accepts InfraSegment[paths_List]; SelectCycles
-   accepts InfraCircle[cycles_List].  Each preserves its wrapper.
+     SelectPath[g, paths]              -- exactly 1 or $Failed (default n = 1)
+     SelectPath[g, paths, n_Integer]   -- exactly n or $Failed
+     SelectPath[g, paths, UpTo[n]]     -- up to n
+     SelectPath[g, paths, All]         -- whole pool
 
-   Chaining: a list of criteria is folded left-to-right.  Operator form
-   SelectPaths[g, criterion, opts][paths] (and SelectCycles likewise). *)
+   Options:
+     "From"     -> pool selector (default All).
+                   All                            : whole bundle
+                   "Center"                       : medoid pool (paths minimising
+                                                    max path-space distance)
+                   "Periphery"                    : eccentric pool (max it)
+                   "MostVisited"                  : mode of the visit measure
+                   path_List -> spec              : paths at distance spec
+                                                    from an anchor path; spec is
+                                                    a number, {dMin, dMax} range,
+                                                    or "Max"
+                   InfraSegment[{...}] -> spec    : multi-anchor intersection
+                                                    (every realisation matches)
+                   SelectCycle adds:
+                   "ShortestCircumference" / "LongestCircumference"
+     "Distance" -> mutual-distance constraint between the n returned paths.
+                   None (default), "Max" (max-spread n-clique), d, or {dMin, dMax}.
+     "Metric"   -> path-space metric: "Hausdorff" (default), "Frechet", "MeanFrechet"
+     "MaxCliques" -> All (default) -- mirrors FindPoint
 
-Options[ SelectPaths ]  = { Method -> "Frechet" };
-Options[ SelectCycles ] = { Method -> "Frechet" };
+   Wrappers: SelectPath accepts InfraSegment[paths] / InfraRay[paths];
+   SelectCycle accepts InfraCircle[cycles].  Each preserves its wrapper.
+   Operator form takes the count token: SelectPath[g, n, opts][paths]. *)
 
-SelectPaths[ graph_Graph, paths_List, "Central", opts : OptionsPattern[] ] :=
-  selectByPathSpaceMetric[ graph, paths, OptionValue[ Method ], False, Min ]
+Options[ SelectPath ] = {
+  "From"       -> All,
+  "Distance"   -> None,
+  "Metric"     -> "Hausdorff",
+  "MaxCliques" -> All
+};
 
-SelectPaths[ graph_Graph, paths_List, "Peripheral", opts : OptionsPattern[] ] :=
-  selectByPathSpaceMetric[ graph, paths, OptionValue[ Method ], False, Max ]
-
-SelectPaths[ _Graph, paths_List, "MostVisited", OptionsPattern[] ] :=
-  If[ Length[ paths ] <= 1, paths,
-    pickByVisitCount[ paths, sequentialEdges /@ paths ] ]
-
-SelectPaths[ graph_Graph, paths_List, criteria_List, opts : OptionsPattern[] ] :=
-  Fold[ SelectPaths[ graph, #1, #2, opts ] &, paths, criteria ]
-
-SelectPaths[ graph_Graph, ( head : InfraSegment | InfraRay )[ paths_List ], crit_, opts : OptionsPattern[] ] :=
-  head[ SelectPaths[ graph, paths, crit, opts ] ]
-
-SelectPaths[ graph_Graph, InfraPencil[ rays_List ], crit_, opts : OptionsPattern[] ] :=
-  InfraPencil[ SelectPaths[ graph, #, crit, opts ] & /@ rays ]
-
-SelectPaths[ graph_Graph, crit : ( _String | _List ), opts : OptionsPattern[] ] :=
-  SelectPaths[ graph, #, crit, opts ] &
-
-SelectCycles[ graph_Graph, cycles_List, "Central", opts : OptionsPattern[] ] :=
-  selectByPathSpaceMetric[ graph, cycles, OptionValue[ Method ], True, Min ]
-
-SelectCycles[ graph_Graph, cycles_List, "Peripheral", opts : OptionsPattern[] ] :=
-  selectByPathSpaceMetric[ graph, cycles, OptionValue[ Method ], True, Max ]
-
-SelectCycles[ _Graph, cycles_List, "ShortestCircumference", OptionsPattern[] ] :=
-  If[ Length[ cycles ] <= 1, cycles, MinimalBy[ cycles, Length ] ]
-
-SelectCycles[ _Graph, cycles_List, "LongestCircumference", OptionsPattern[] ] :=
-  If[ Length[ cycles ] <= 1, cycles, MaximalBy[ cycles, Length ] ]
-
-SelectCycles[ _Graph, cycles_List, "MostVisited", OptionsPattern[] ] :=
-  If[ Length[ cycles ] <= 1, cycles,
-    pickByVisitCount[ cycles, cycleEdges /@ cycles ] ]
-
-SelectCycles[ graph_Graph, cycles_List, criteria_List, opts : OptionsPattern[] ] :=
-  Fold[ SelectCycles[ graph, #1, #2, opts ] &, cycles, criteria ]
-
-SelectCycles[ graph_Graph, InfraCircle[ cycles_List ], crit_, opts : OptionsPattern[] ] :=
-  InfraCircle[ SelectCycles[ graph, cycles, crit, opts ] ]
-
-SelectCycles[ graph_Graph, crit : ( _String | _List ), opts : OptionsPattern[] ] :=
-  SelectCycles[ graph, #, crit, opts ] &
+Options[ SelectCycle ] = Options[ SelectPath ];
 
 
-selectByPathSpaceMetric[ _Graph, paths_List, _, _, _ ] /; Length[ paths ] <= 1 := paths
+SelectPath[ graph_Graph, paths_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+  selectFromPathSpace[ graph, paths, n, False,
+    OptionValue[ "From" ], OptionValue[ "Distance" ],
+    OptionValue[ "Metric" ], OptionValue[ "MaxCliques" ] ]
 
-selectByPathSpaceMetric[ graph_Graph, paths_List, method_String, cyclic_, extremum_ ] :=
-  Module[ { baseDist, pd, scores },
-    baseDist = Switch[ method,
-      "Frechet",     FrechetDistance,
-      "Hausdorff",   HausdorffDistance,
-      "MeanFrechet", FrechetDistance[ ##, Mean ] &,
-      _,             FrechetDistance
+SelectPath[ graph_Graph, paths_List, All, opts : OptionsPattern[] ] :=
+  SelectPath[ graph, paths, UpTo[ Length[ paths ] ], opts ]
+
+SelectPath[ graph_Graph, paths_List, n_Integer : 1, opts : OptionsPattern[] ] :=
+  With[ { result = SelectPath[ graph, paths, UpTo[ n ], opts ] },
+    If[ ListQ[ result ] && Length[ result ] < n, $Failed, result ] ]
+
+SelectPath[ graph_Graph, ( head : InfraSegment | InfraRay )[ paths_List ],
+            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  With[ { result = SelectPath[ graph, paths, countSpec, opts ] },
+    If[ result === $Failed, $Failed, head[ result ] ] ]
+
+SelectPath[ graph_Graph, countSpec : ( _Integer | UpTo[ _Integer ] | All ), opts : OptionsPattern[] ] :=
+  SelectPath[ graph, #, countSpec, opts ] &
+
+
+SelectCycle[ graph_Graph, cycles_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+  selectFromPathSpace[ graph, cycles, n, True,
+    OptionValue[ "From" ], OptionValue[ "Distance" ],
+    OptionValue[ "Metric" ], OptionValue[ "MaxCliques" ] ]
+
+SelectCycle[ graph_Graph, cycles_List, All, opts : OptionsPattern[] ] :=
+  SelectCycle[ graph, cycles, UpTo[ Length[ cycles ] ], opts ]
+
+SelectCycle[ graph_Graph, cycles_List, n_Integer : 1, opts : OptionsPattern[] ] :=
+  With[ { result = SelectCycle[ graph, cycles, UpTo[ n ], opts ] },
+    If[ ListQ[ result ] && Length[ result ] < n, $Failed, result ] ]
+
+SelectCycle[ graph_Graph, InfraCircle[ cycles_List ],
+             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  With[ { result = SelectCycle[ graph, cycles, countSpec, opts ] },
+    If[ result === $Failed, $Failed, InfraCircle[ result ] ] ]
+
+SelectCycle[ graph_Graph, countSpec : ( _Integer | UpTo[ _Integer ] | All ), opts : OptionsPattern[] ] :=
+  SelectCycle[ graph, #, countSpec, opts ] &
+
+
+(* selectFromPathSpace[graph, paths, nMax, cyclic, fromSpec, distSpec, metric, maxCl]
+   is the shared core for SelectPath and SelectCycle.  Returns up to nMax
+   paths, never fails; strict-n shortfall handling is left to the caller. *)
+
+selectFromPathSpace[ _Graph, paths_List, _Integer, _, _, _, _, _ ] /; Length[ paths ] <= 1 := paths
+
+selectFromPathSpace[ graph_Graph, paths_List, nMax_Integer, cyclic_,
+                     fromSpec_, distSpec_, metric_, maxCl_ ] :=
+  Module[ { baseDist, needsMatrix, pathMatrix, poolIdx, pool, subMatrix,
+            finiteMax, range, auxiliaryGraph, cliques, thresholds, picked, n },
+    baseDist = pathSpaceMetric[ metric ];
+    needsMatrix = MatchQ[ fromSpec, "Center" | "Periphery" | _Rule ]
+                || distSpec =!= None;
+    pathMatrix = If[ needsMatrix,
+      pathFilterPairwiseDistances[ graph, paths, baseDist, cyclic ], None ];
+    poolIdx = poolPositions[ graph, paths, fromSpec, pathMatrix, baseDist, cyclic ];
+    If[ poolIdx === {}, Return[ {} ] ];
+    pool = paths[[ poolIdx ]];
+    n = Min[ nMax, Length[ pool ] ];
+    If[ distSpec === None || n <= 1,
+      Return[ If[ n >= Length[ pool ], pool, RandomSample[ pool, n ] ] ] ];
+    subMatrix = pathMatrix[[ poolIdx, poolIdx ]];
+    finiteMax = Replace[ Max @ Select[ Flatten @ subMatrix, # < Infinity & ],
+      _?( ! NumericQ @ # & ) -> 0 ];
+    subMatrix = Replace[ subMatrix, Infinity -> finiteMax + 1, { 2 } ];
+    picked = Which[
+      distSpec === "Max",
+        thresholds = Reverse @ DeleteCases[ Union @@ subMatrix, 0 | _?( # > finiteMax & ) ];
+        cliques = {};
+        Do[
+          auxiliaryGraph = AdjacencyGraph[ pool,
+            UnitStep[ subMatrix - d ] * UnitStep[ finiteMax - subMatrix ]
+              * ( 1 - IdentityMatrix[ Length[ pool ] ] ) ];
+          cliques = FindClique[ auxiliaryGraph, { n, VertexCount[ auxiliaryGraph ] }, maxCl ];
+          If[ cliques =!= {}, Break[] ],
+          { d, thresholds }
+        ];
+        If[ cliques === {}, {}, RandomSample[ RandomChoice[ cliques ], UpTo[ n ] ] ],
+      True,
+        range = Replace[ distSpec,
+          { d_?NumericQ                  :> { d, finiteMax },
+            { dMin_?NumericQ, Infinity } :> { dMin, finiteMax },
+            { dMin_?NumericQ, dMax_?NumericQ } :> { dMin, dMax },
+            _ :> { 0, finiteMax } } ];
+        auxiliaryGraph = AdjacencyGraph[ pool,
+          UnitStep[ subMatrix - range[[ 1 ]] ] * UnitStep[ range[[ 2 ]] - subMatrix ]
+            * ( 1 - IdentityMatrix[ Length[ pool ] ] ) ];
+        cliques = FindClique[ auxiliaryGraph,
+          { Min[ n, VertexCount[ auxiliaryGraph ] ], VertexCount[ auxiliaryGraph ] }, maxCl ];
+        If[ cliques === {}, {}, RandomSample[ RandomChoice[ cliques ], UpTo[ n ] ] ]
     ];
-    pd = pathFilterPairwiseDistances[ graph, paths, baseDist, cyclic ];
-    scores = Max /@ pd;
-    Pick[ paths, scores, extremum[ scores ] ]
+    picked
+  ]
+
+
+(* pathSpaceMetric -- resolve the "Metric" option to a base path-space
+   distance function over a graph-distance matrix. *)
+
+pathSpaceMetric[ "Hausdorff"   ] := HausdorffDistance
+pathSpaceMetric[ "Frechet"     ] := FrechetDistance
+pathSpaceMetric[ "MeanFrechet" ] := FrechetDistance[ ##, Mean ] &
+pathSpaceMetric[ _             ] := HausdorffDistance
+
+
+(* poolPositions -- positions in paths satisfying the From specification.
+   All -> every index; "Center" / "Periphery" -> eccentricity extremes;
+   "MostVisited" -> max visit-score paths; anchor -> spec -> distance
+   constraint from one or more anchor paths. *)
+
+poolPositions[ _Graph, paths_List, All, _, _, _ ] := Range @ Length @ paths
+
+poolPositions[ _Graph, _List, "Center", pathMatrix_List, _, _ ] :=
+  With[ { scores = Max /@ pathMatrix },
+    Flatten @ Position[ scores, Min @ scores, { 1 }, Heads -> False ] ]
+
+poolPositions[ _Graph, _List, "Periphery", pathMatrix_List, _, _ ] :=
+  With[ { scores = Max /@ pathMatrix },
+    Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ] ]
+
+poolPositions[ _Graph, paths_List, "MostVisited", _, _, cyclic_ ] :=
+  visitPoolPositions[ paths, cyclic ]
+
+poolPositions[ _Graph, paths_List, "ShortestCircumference", _, _, _ ] :=
+  With[ { lens = Length /@ paths },
+    Flatten @ Position[ lens, Min @ lens, { 1 }, Heads -> False ] ]
+
+poolPositions[ _Graph, paths_List, "LongestCircumference", _, _, _ ] :=
+  With[ { lens = Length /@ paths },
+    Flatten @ Position[ lens, Max @ lens, { 1 }, Heads -> False ] ]
+
+poolPositions[ graph_Graph, paths_List, ( anchor_ -> spec_ ), _, baseDist_, cyclic_ ] :=
+  anchorDistancePool[ graph, paths, anchor, spec, baseDist, cyclic ]
+
+poolPositions[ _, paths_List, _, _, _, _ ] := Range @ Length @ paths
+
+
+(* visitPoolPositions -- positions of paths whose total vertex+edge visit
+   count across the bundle is maximal.  Uses sequentialEdges for paths and
+   cycleEdges for cycles (auto-closing the cycle list). *)
+
+visitPoolPositions[ paths_List, cyclic_ ] :=
+  With[ { edgesOf = If[ cyclic, cycleEdges, sequentialEdges ] },
+    With[ { edgeSeqs = edgesOf /@ paths },
+      With[ {
+          vCounts = Counts @ Catenate @ paths,
+          eCounts = Counts @ Catenate @ edgeSeqs },
+        With[ { scores = MapThread[
+            Total @ Lookup[ vCounts, #1, 0 ] + Total @ Lookup[ eCounts, #2, 0 ] &,
+            { paths, edgeSeqs } ] },
+          Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ] ] ] ] ]
+
+
+(* anchorDistancePool -- positions of paths whose path-space distance to
+   each anchor (vertex sequence or InfraSegment realisation) satisfies the
+   given spec (numeric d, {dMin, dMax} range, or "Max" -- max distance from
+   each anchor individually). *)
+
+anchorDistancePool[ graph_Graph, paths_List, anchor_, spec_, baseDist_, cyclic_ ] :=
+  Module[ { anchors, distMatrix, vertexIndex, distFn, anchorRows },
+    anchors = Replace[ anchor, {
+      ( InfraSegment | InfraRay | InfraCircle )[ reps_List ] :> reps,
+      seq_List /; AllTrue[ seq, ListQ ] :> seq,
+      seq_List :> { seq } } ];
+    If[ anchors === { }, Return[ { } ] ];
+    distMatrix = GraphDistanceMatrix[ graph ];
+    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
+    distFn = If[ cyclic,
+      ( Min @ Table[ baseDist[ #1, RotateLeft[ #2, k ], #3 ], { k, 0, Length[ #2 ] - 1 } ] & ),
+      baseDist ];
+    anchorRows = Table[
+      Map[ p |-> distFn[ distMatrix,
+        Lookup[ vertexIndex, a ], Lookup[ vertexIndex, p ] ], paths ],
+      { a, anchors } ];
+    Select[ Range @ Length @ paths,
+      i |-> AllTrue[ Range @ Length @ anchors,
+        a |-> anchorMatchQ[ anchorRows[[ a, i ]], anchorRows[[ a ]], spec ] ] ]
+  ]
+
+
+anchorMatchQ[ d_?NumericQ, _, target_?NumericQ ] := d == target
+anchorMatchQ[ d_?NumericQ, _, { lo_?NumericQ, hi_?NumericQ } ] := lo <= d <= hi
+anchorMatchQ[ d_?NumericQ, allDistsForAnchor_List, "Max" ] :=
+  d == Max @ Select[ allDistsForAnchor, NumericQ ]
+anchorMatchQ[ _, _, _ ] := False
+
+
+(* sequentialEdges[path] returns sorted undirected edges along the vertex
+   sequence; cycleEdges[cycle] does the same after auto-closing. *)
+
+sequentialEdges[ path_List ] :=
+  If[ Length[ path ] >= 2, Sort /@ Partition[ path, 2, 1 ], { } ]
+
+cycleEdges[ cycle_List ] :=
+  With[ { closed = If[ Length[ cycle ] >= 2 && First @ cycle === Last @ cycle,
+                       cycle, Append[ cycle, First @ cycle ] ] },
+    If[ Length[ closed ] >= 2, Sort /@ Partition[ closed, 2, 1 ], { } ]
   ]
 
 
@@ -441,35 +627,5 @@ PathSubgraph[ g_Graph, u_, v_, lengthSpec : ( _Integer | UpTo[ _Integer ] | All 
     If[ paths === { },
       Graph[ { }, { } ],
       GraphUnion @@ ( PathGraph[ #, DirectedEdges -> OptionValue[ "Directed" ] ] & /@ paths )
-    ]
-  ]
-
-
-(* sequentialEdges[path] returns sorted undirected edges along the vertex
-   sequence; cycleEdges[cycle] does the same after auto-closing.            *)
-
-sequentialEdges[ path_List ] :=
-  If[ Length[ path ] >= 2, Sort /@ Partition[ path, 2, 1 ], { } ]
-
-cycleEdges[ cycle_List ] :=
-  With[ { closed = If[ Length[ cycle ] >= 2 && First @ cycle === Last @ cycle,
-                       cycle, Append[ cycle, First @ cycle ] ] },
-    If[ Length[ closed ] >= 2, Sort /@ Partition[ closed, 2, 1 ], { } ]
-  ]
-
-
-(* pickByVisitCount[reps, edgesOfReps] picks the realisation(s) maximising
-   the sum of vertex visit counts plus edge visit counts across the bundle.
-   The bundle's visit measure is simply Counts of all vertex/edge incidences;
-   each realisation's score is the bundle-mass it intersects. *)
-
-pickByVisitCount[ reps_List, edges_List ] :=
-  With[ {
-      vCounts = Counts @ Catenate @ reps,
-      eCounts = Counts @ Catenate @ edges },
-    With[ { scores = MapThread[
-        Total @ Lookup[ vCounts, #1, 0 ] + Total @ Lookup[ eCounts, #2, 0 ] &,
-        { reps, edges } ] },
-      Pick[ reps, scores, Max @ scores ]
     ]
   ]

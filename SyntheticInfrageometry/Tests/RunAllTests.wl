@@ -16,8 +16,8 @@ Print[TestReport[FileNameJoin[{$testDir, "EuclideanPredicatesTests.wlt"}]]]
 Print["Running EuclideanConstructionsTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "EuclideanConstructionsTests.wlt"}]]]
 
-Print["Running InfraEuclideanSpaceTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraEuclideanSpaceTests.wlt"}]]]
+Print["Running EuclideanSpaceTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "EuclideanSpaceTests.wlt"}]]]
 
 Print["Running PathSpaceTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "PathSpaceTests.wlt"}]]]

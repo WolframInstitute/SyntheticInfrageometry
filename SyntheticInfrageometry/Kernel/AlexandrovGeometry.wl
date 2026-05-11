@@ -90,26 +90,52 @@ InfraComparisonTriangle[ data_Association ][ key_String ] := data[ key ]
 (* ===================== CATInequalityQ ===================== *)
 
 (* CATInequalityQ[g, {p, q, r}, k : 0]: discrete-vertex check of the CAT(k)
-   thinness inequality on each side at every interior geodesic-vertex
-   (vertices of MetricInterval at integer t in (0, sideLength)).  Returns
-   Indeterminate when k > 0 and the perimeter exceeds 2 Pi / Sqrt[k]. *)
+   thinness inequality on the geodesic triangle {p, q, r}.  Option Method:
+   "ApexSide" (default) tests d(apex, x)^2 <= d_k_bar(apex', x')^2 for every
+   apex and every interior vertex x on its opposite side; "TwoRays" tests
+   d(x, y)^2 <= d_k_bar(x', y')^2 for every cross-ray pair (x, y) on the two
+   rays emanating from each apex.  In a length space the two formulations are
+   equivalent (Bridson-Haefliger II.1.7); on a graph they are inequivalent,
+   because triangle sides are vertex sets, not arcs.  Returns Indeterminate
+   when k > 0 and the perimeter exceeds 2 Pi / Sqrt[k]. *)
 
-CATInequalityQ[ g_Graph, { p_, q_, r_ }, k_ : 0 ] :=
+Options[ CATInequalityQ ] = { Method -> "ApexSide" };
+
+CATInequalityQ[ g_Graph, { p_, q_, r_ }, Optional[ k_?NumericQ, 0 ], OptionsPattern[] ] :=
   Module[
     { a = GraphDistance[ g, q, r ], b = GraphDistance[ g, p, r ], c = GraphDistance[ g, p, q ],
-      sideOK },
+      sideOK, apexOK },
     If[ k > 0 && a + b + c >= 2 Pi / Sqrt[ k ], Return[ Indeterminate ] ];
-    sideOK[ apex_, end1_, end2_, oppLen_, sideQp_, sideQr_ ] :=
-      With[ { cosBeta = comparisonAngleCos[ sideQr, oppLen, sideQp, k ] },
-        AllTrue[ MetricInterval[ g, end1, end2 ],
-          With[ { x = #, t = GraphDistance[ g, end1, # ] },
-            t === 0 || t === oppLen ||
-            GraphDistance[ g, apex, x ]^2 <=
-              comparisonSideSquared[ sideQp, t, cosBeta, k ]
-          ] &
-        ]
-      ];
-    sideOK[ p, q, r, a, c, b ] && sideOK[ q, p, r, b, c, a ] && sideOK[ r, p, q, c, b, a ]
+    Switch[ OptionValue[ Method ],
+      "ApexSide",
+        sideOK[ apex_, end1_, end2_, oppLen_, sideQp_, sideQr_ ] :=
+          With[ { cosBeta = comparisonAngleCos[ sideQr, oppLen, sideQp, k ] },
+            AllTrue[ MetricInterval[ g, end1, end2 ],
+              With[ { x = #, t = GraphDistance[ g, end1, # ] },
+                t === 0 || t === oppLen ||
+                GraphDistance[ g, apex, x ]^2 <=
+                  comparisonSideSquared[ sideQp, t, cosBeta, k ]
+              ] &
+            ]
+          ];
+        sideOK[ p, q, r, a, c, b ] && sideOK[ q, p, r, b, c, a ] && sideOK[ r, p, q, c, b, a ],
+      "TwoRays",
+        apexOK[ apex_, end1_, end2_, lenAE1_, lenAE2_, oppLen_ ] :=
+          With[ { cosApex = comparisonAngleCos[ oppLen, lenAE1, lenAE2, k ] },
+            AllTrue[
+              Tuples[ { MetricInterval[ g, apex, end1 ], MetricInterval[ g, apex, end2 ] } ],
+              With[
+                { x = #[[ 1 ]], y = #[[ 2 ]],
+                  s = GraphDistance[ g, apex, #[[ 1 ]] ],
+                  t = GraphDistance[ g, apex, #[[ 2 ]] ] },
+                s === 0 || t === 0 ||
+                GraphDistance[ g, x, y ]^2 <=
+                  comparisonSideSquared[ s, t, cosApex, k ]
+              ] &
+            ]
+          ];
+        apexOK[ p, q, r, c, b, a ] && apexOK[ q, p, r, c, a, b ] && apexOK[ r, p, q, b, a, c ]
+    ]
   ]
 
 

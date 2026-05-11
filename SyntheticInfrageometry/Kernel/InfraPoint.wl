@@ -277,12 +277,11 @@ completeEquilateralTriangleCore[ graph_Graph, p1_, p2_,
 
 (* Vertices common to every listed line -- the intersection of the lines.
    Constructive companion of ConcurrentQ.  Each input line is either a
-   bare vertex sequence or a wrapped InfraSegment / InfraRay / InfraPencil;
-   wrapped entries contribute the union of their vertex realisations.    *)
+   bare vertex sequence or a wrapped InfraSegment / InfraRay; wrapped
+   entries contribute the union of their vertex realisations.            *)
 
 linePointSet[ InfraSegment[ reps_List ] ] := Union @@ reps
 linePointSet[ InfraRay    [ reps_List ] ] := Union @@ reps
-linePointSet[ InfraPencil [ rays_List ] ] := Union @@ Catenate[ #[ "Realizations" ] & /@ rays ]
 linePointSet[ line_List ] := line
 
 FindCommonPoint[ graph_Graph, lines_List, All ] :=

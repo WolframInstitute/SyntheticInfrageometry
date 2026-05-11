@@ -62,8 +62,9 @@ capBranches[ other_, _ ]                    := other
 
 (* The "Select" hypothesis option accepts None, a criterion string, or a list
    thereof.  "EmbeddingClosest" routes to EmbeddingClosestPaths/Cycles using
-   ctx ("Endpoints" for paths, "Center"+"Radius" for cycles); other criteria
-   route to SelectPaths / SelectCycles by the cyclic flag. *)
+   ctx ("Endpoints" for paths, "Center"+"Radius" for cycles); the legacy
+   criterion strings translate into the new SelectPath / SelectCycle "From"
+   pool spec with All count to preserve set-shaped semantics. *)
 applySelectOption[ _Graph, paths_, None, _, _ ] := paths
 applySelectOption[ graph_Graph, paths_, list_List, cyclic_, ctx_ ] :=
   Fold[ applySelectOption[ graph, #1, #2, cyclic, ctx ] &, paths, list ]
@@ -72,9 +73,13 @@ applySelectOption[ graph_Graph, paths_, "EmbeddingClosest", True,  ctx_ ] :=
 applySelectOption[ graph_Graph, paths_, "EmbeddingClosest", False, ctx_ ] :=
   EmbeddingClosestPaths[ graph, paths, ctx[ "Endpoints" ] ]
 applySelectOption[ graph_Graph, paths_, name_String, True,  _ ] :=
-  SelectCycles[ graph, paths, name ]
+  SelectCycle[ graph, paths, All, "From" -> selectFromName[ name ] ]
 applySelectOption[ graph_Graph, paths_, name_String, False, _ ] :=
-  SelectPaths[ graph, paths, name ]
+  SelectPath[ graph, paths, All, "From" -> selectFromName[ name ] ]
+
+selectFromName[ "Central"    ] := "Center"
+selectFromName[ "Peripheral" ] := "Periphery"
+selectFromName[ name_String  ] := name
 
 
 (* ===================== InfraDistance ===================== *)
@@ -89,8 +94,6 @@ infraVertexSet[ InfraPoint[ vs_List ] ] := vs
 infraVertexSet[ ( InfraSegment | InfraLine | InfraRay | InfraCircle
                 | InfraShell | InfraPlane )[ reps_List ] ] :=
   Union @@ reps
-infraVertexSet[ InfraPencil[ rays_List ] ] :=
-  Union @@ Map[ infraVertexSet, rays ]
 infraVertexSet[ v_ ] := { v }
 
 

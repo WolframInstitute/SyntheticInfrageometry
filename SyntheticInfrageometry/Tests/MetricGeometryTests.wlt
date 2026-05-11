@@ -239,4 +239,67 @@ VerificationTest[
   TestID -> "GeodesicallyConvexQ-CompleteGraph-arbitrary-true"
 ]
 
+(* ===== GeodesicallyConvexQ, Method -> "Weak" ===== *)
+
+VerificationTest[
+  GeodesicallyConvexQ[CycleGraph[6], {1, 2, 3, 4}],
+  False,
+  TestID -> "GeodesicallyConvexQ-CycleGraph6-arc-Strong-false"
+]
+
+VerificationTest[
+  GeodesicallyConvexQ[CycleGraph[6], {1, 2, 3, 4}, Method -> "Weak"],
+  True,
+  TestID -> "GeodesicallyConvexQ-CycleGraph6-arc-Weak-true"
+]
+
+VerificationTest[
+  GeodesicallyConvexQ[CycleGraph[4], {1, 3}, Method -> "Weak"],
+  False,
+  TestID -> "GeodesicallyConvexQ-CycleGraph4-antipodes-Weak-false"
+]
+
+VerificationTest[
+  GeodesicallyConvexQ[PathGraph[Range[5]], {2, 3, 4}, Method -> "Weak"],
+  True,
+  TestID -> "GeodesicallyConvexQ-PathGraph-interior-Weak-true"
+]
+
+VerificationTest[
+  GeodesicallyConvexQ[PathGraph[Range[5]], {1, 5}, Method -> "Weak"],
+  False,
+  TestID -> "GeodesicallyConvexQ-PathGraph-endpoints-Weak-false"
+]
+
+VerificationTest[
+  GeodesicallyConvexQ[GridGraph[{3, 3}], {1, 2, 3}, Method -> "Weak"],
+  True,
+  TestID -> "GeodesicallyConvexQ-GridGraph3x3-row-Weak-true"
+]
+
+VerificationTest[
+  GeodesicallyConvexQ[GridGraph[{3, 3}], {1, 9}, Method -> "Weak"],
+  False,
+  TestID -> "GeodesicallyConvexQ-GridGraph3x3-corners-Weak-false"
+]
+
+VerificationTest[
+  GeodesicallyConvexQ[PathGraph[Range[5]], {3}, Method -> "Weak"],
+  True,
+  TestID -> "GeodesicallyConvexQ-singleton-Weak-true"
+]
+
+VerificationTest[
+  GeodesicallyConvexQ[PathGraph[Range[5]], {}, Method -> "Weak"],
+  True,
+  TestID -> "GeodesicallyConvexQ-empty-Weak-true"
+]
+
+VerificationTest[
+  GeodesicallyConvexQ[CycleGraph[6], {1, 2, 3, 4}, Method -> "Strong"] ===
+    GeodesicallyConvexQ[CycleGraph[6], {1, 2, 3, 4}],
+  True,
+  TestID -> "GeodesicallyConvexQ-default-is-Strong"
+]
+
 EndTestSection[]

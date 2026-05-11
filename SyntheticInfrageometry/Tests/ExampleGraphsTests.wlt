@@ -1,139 +1,107 @@
 BeginTestSection["ExampleGraphs"]
 
-(* ===== InfraExampleGraph keys ===== *)
+(* ===== PunchHole ===== *)
 
 VerificationTest[
-  Length @ InfraExampleGraph[ ] >= 10,
-  True,
-  TestID -> "InfraExampleGraph-keys-non-empty"
-]
-
-VerificationTest[
-  MemberQ[ InfraExampleGraph[ ], "Grid" ] &&
-    MemberQ[ InfraExampleGraph[ ], "RectangleMesh" ] &&
-    MemberQ[ InfraExampleGraph[ ], "DiskMesh" ] &&
-    MemberQ[ InfraExampleGraph[ ], "SphereMesh" ],
-  True,
-  TestID -> "InfraExampleGraph-curvature-spectrum-keys"
-]
-
-(* ===== Lattice keys ===== *)
-
-VerificationTest[
-  Head @ InfraExampleGraph[ "Grid" ],
+  Head @ PunchHole[ GridGraph[ { 10, 10 } ], 1 ],
   Graph,
-  TestID -> "InfraExampleGraph-Grid-default"
+  TestID -> "PunchHole-random-returns-graph"
 ]
 
 VerificationTest[
-  VertexCount @ InfraExampleGraph[ "Grid", { 3, 3 } ],
-  9,
-  TestID -> "InfraExampleGraph-Grid-explicit"
+  VertexCount @ PunchHole[ GridGraph[ { 10, 10 } ], 0 ],
+  99,
+  TestID -> "PunchHole-radius-0-removes-one-vertex"
 ]
 
 VerificationTest[
-  Head @ InfraExampleGraph[ "TriangularLattice" ],
-  Graph,
-  TestID -> "InfraExampleGraph-TriangularLattice-default"
+  With[ { g = GridGraph[ { 11, 11 } ], c = 60 },
+    MemberQ[ VertexList @ PunchHole[ g, c -> 1 ], c ]
+  ],
+  False,
+  TestID -> "PunchHole-explicit-center-removed"
 ]
 
 VerificationTest[
-  Head @ InfraExampleGraph[ "HexagonalLattice" ],
-  Graph,
-  TestID -> "InfraExampleGraph-HexagonalLattice-default"
-]
-
-(* ===== Mesh keys ===== *)
-
-VerificationTest[
-  Head @ InfraExampleGraph[ "RectangleMesh" ],
-  Graph,
-  TestID -> "InfraExampleGraph-RectangleMesh-default"
-]
-
-VerificationTest[
-  With[ { coarse = InfraExampleGraph[ "RectangleMesh", { 3, 2 }, MaxCellMeasure -> 0.5 ],
-          fine   = InfraExampleGraph[ "RectangleMesh", { 3, 2 }, MaxCellMeasure -> 0.05 ] },
-    VertexCount[ coarse ] < VertexCount[ fine ]
+  With[ { g = Fold[ PunchHole, GridGraph[ { 12, 12 } ], { 2, 1 } ] },
+    VertexCount[ g ] < 144 && VertexCount[ g ] > 0
   ],
   True,
-  TestID -> "InfraExampleGraph-RectangleMesh-MaxCellMeasure-controls-resolution"
+  TestID -> "PunchHole-fold-over-radii-shrinks-graph"
 ]
 
 VerificationTest[
-  Head @ InfraExampleGraph[ "DiskMesh" ],
-  Graph,
-  TestID -> "InfraExampleGraph-DiskMesh-default"
+  VertexCount @ Fold[ PunchHole, GridGraph[ { 20, 20 } ], { } ],
+  400,
+  TestID -> "PunchHole-fold-empty-list-keeps-everything"
+]
+
+(* ===== TorusTessellation: vertex counts and regularity ===== *)
+
+VerificationTest[
+  VertexCount @ TorusTessellation[ "Rectangular", { 5, 5 } ],
+  25,
+  TestID -> "TorusTessellation-Rectangular-vertex-count"
 ]
 
 VerificationTest[
-  Head @ InfraExampleGraph[ "SphereMesh", 1, MaxCellMeasure -> 0.5 ],
-  Graph,
-  TestID -> "InfraExampleGraph-SphereMesh-coarse"
+  Union @ VertexDegree @ TorusTessellation[ "Rectangular", { 5, 5 } ],
+  { 4 },
+  TestID -> "TorusTessellation-Rectangular-is-4-regular"
 ]
 
-(* ===== Tree, Cayley ===== *)
+VerificationTest[
+  VertexCount @ TorusTessellation[ "Triangular", { 5, 5 } ],
+  25,
+  TestID -> "TorusTessellation-Triangular-vertex-count"
+]
 
 VerificationTest[
-  ConnectedGraphQ @ InfraExampleGraph[ "RegularTree", { 3, 3 } ],
+  Union @ VertexDegree @ TorusTessellation[ "Triangular", { 5, 5 } ],
+  { 6 },
+  TestID -> "TorusTessellation-Triangular-is-6-regular"
+]
+
+VerificationTest[
+  VertexCount @ TorusTessellation[ "Hexagonal", { 4, 4 } ],
+  32,
+  TestID -> "TorusTessellation-Hexagonal-vertex-count"
+]
+
+VerificationTest[
+  Union @ VertexDegree @ TorusTessellation[ "Hexagonal", { 4, 4 } ],
+  { 3 },
+  TestID -> "TorusTessellation-Hexagonal-is-3-regular"
+]
+
+(* ===== TorusTessellation: vertex-transitivity ===== *)
+
+VerificationTest[
+  VertexTransitiveGraphQ @ TorusTessellation[ "Rectangular", { 4, 4 } ],
   True,
-  TestID -> "InfraExampleGraph-RegularTree-connected"
+  TestID -> "TorusTessellation-Rectangular-is-vertex-transitive"
 ]
 
 VerificationTest[
-  AcyclicGraphQ @ UndirectedGraph @ InfraExampleGraph[ "RegularTree", { 3, 3 } ],
+  VertexTransitiveGraphQ @ TorusTessellation[ "Triangular", { 4, 4 } ],
   True,
-  TestID -> "InfraExampleGraph-RegularTree-acyclic"
+  TestID -> "TorusTessellation-Triangular-is-vertex-transitive"
 ]
 
 VerificationTest[
-  Head @ InfraExampleGraph[ "Cayley" ],
-  Graph,
-  TestID -> "InfraExampleGraph-Cayley-default"
-]
-
-(* ===== Named gems ===== *)
-
-VerificationTest[
-  VertexCount @ InfraExampleGraph[ "Petersen" ],
-  10,
-  TestID -> "InfraExampleGraph-Petersen-vertex-count"
-]
-
-VerificationTest[
-  VertexCount @ InfraExampleGraph[ "Heawood" ],
-  14,
-  TestID -> "InfraExampleGraph-Heawood-vertex-count"
-]
-
-VerificationTest[
-  VertexCount @ InfraExampleGraph[ "MobiusKantor" ],
-  16,
-  TestID -> "InfraExampleGraph-MobiusKantor-vertex-count"
-]
-
-VerificationTest[
-  Head @ InfraExampleGraph[ "Tutte" ],
-  Graph,
-  TestID -> "InfraExampleGraph-Tutte-default"
+  VertexTransitiveGraphQ @ TorusTessellation[ "Hexagonal", { 3, 3 } ],
+  True,
+  TestID -> "TorusTessellation-Hexagonal-is-vertex-transitive"
 ]
 
 (* ===== Composes with paclet primitives ===== *)
 
 VerificationTest[
-  With[ { g = InfraExampleGraph[ "Grid", { 3, 3 } ] },
-    Head @ FindSegment[ g, 1, 9, All ]
+  With[ { g = TorusTessellation[ "Rectangular", { 4, 4 } ] },
+    Head @ FindSegment[ g, First @ VertexList @ g, Last @ VertexList @ g, All ]
   ],
   InfraSegment,
-  TestID -> "InfraExampleGraph-Grid-feeds-FindSegment"
-]
-
-VerificationTest[
-  With[ { g = InfraExampleGraph[ "RegularTree", { 3, 2 } ] },
-    AssociationQ @ WolframInstitute`Infrageometry`FormanRicciCurvature[ g ]
-  ],
-  True,
-  TestID -> "InfraExampleGraph-RegularTree-feeds-FormanRicciCurvature"
+  TestID -> "TorusTessellation-Rectangular-feeds-FindSegment"
 ]
 
 EndTestSection[]

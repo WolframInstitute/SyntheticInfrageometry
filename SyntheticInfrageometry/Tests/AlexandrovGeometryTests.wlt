@@ -87,10 +87,51 @@ VerificationTest[
   TestID -> "CATInequalityQ-K3-vacuous-true"
 ]
 
+(* C6 with the equilateral triangle {1, 3, 5}: sides 2-2-2. Apex 1 sees the
+   opposite-side midpoint 4 at graph distance 3, while the Euclidean
+   comparison gives d_bar^2 = 3 < 9.  So C6 is not CAT(0) and the inequality
+   correctly fails -- this is the standard "cycles of length >= 5 fail CAT(0)"
+   counterexample. *)
 VerificationTest[
   CATInequalityQ[ CycleGraph[ 6 ], { 1, 3, 5 }, 0 ],
+  False,
+  TestID -> "CATInequalityQ-C6-equilateral-2-2-2-not-CAT0"
+]
+
+(* Default Method equals "ApexSide" (preserves backward compatibility). *)
+VerificationTest[
+  CATInequalityQ[ CycleGraph[ 6 ], { 1, 3, 5 }, 0 ] ===
+    CATInequalityQ[ CycleGraph[ 6 ], { 1, 3, 5 }, 0, Method -> "ApexSide" ],
   True,
-  TestID -> "CATInequalityQ-C6-equilateral-2-2-2-true"
+  TestID -> "CATInequalityQ-default-Method-equals-ApexSide"
+]
+
+(* TwoRays branch -- basic plumbing. *)
+
+VerificationTest[
+  CATInequalityQ[ PathGraph[ Range[ 5 ] ], { 1, 3, 5 }, 0, Method -> "TwoRays" ],
+  True,
+  TestID -> "CATInequalityQ-Path-degenerate-TwoRays-true"
+]
+
+VerificationTest[
+  CATInequalityQ[ CompleteGraph[ 3 ], { 1, 2, 3 }, 0, Method -> "TwoRays" ],
+  True,
+  TestID -> "CATInequalityQ-K3-vacuous-TwoRays-true"
+]
+
+(* C6 {1, 3, 5} is rejected by both formulations (not CAT(0)). *)
+VerificationTest[
+  CATInequalityQ[ CycleGraph[ 6 ], { 1, 3, 5 }, 0, Method -> "TwoRays" ],
+  False,
+  TestID -> "CATInequalityQ-C6-equilateral-2-2-2-TwoRays-not-CAT0"
+]
+
+(* The k > 0 perimeter guard fires the same way for either Method. *)
+VerificationTest[
+  CATInequalityQ[ CycleGraph[ 6 ], { 1, 3, 5 }, 4, Method -> "TwoRays" ],
+  Indeterminate,
+  TestID -> "CATInequalityQ-spherical-perimeter-too-large-Indeterminate"
 ]
 
 

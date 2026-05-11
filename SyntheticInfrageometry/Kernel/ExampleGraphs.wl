@@ -1,106 +1,50 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 
-(* ===================== Example graphs ===================== *)
+(* ===================== Hole punching ===================== *)
 
-(* InfraExampleGraph[name, params, opts] is the paclet's example-graph
-   registry, modelled on ExampleData.  A single addressable family used by
-   guides, tutorials, and symbol-page demonstrations as a canonical running
-   graph.  Graphs cover the curvature spectrum (flat lattice / Euclidean mesh
-   / negative-curvature tree / positive-curvature spherical mesh) plus
-   standard small named gems and Cayley graphs.
+(* PunchHole[g, r] removes the closed r-ball around a random vertex of g.
+   PunchHole[g, c -> r] removes the closed r-ball around vertex c.
+   For multiple holes, fold over a list:
+     Fold[PunchHole, g, {3, 2, 1}]                  -- three random holes
+     Fold[PunchHole, g, {c1 -> 2, c2 -> 1, 3}]      -- explicit + random  *)
 
-   Calling forms:
-     InfraExampleGraph[]                           -- list of available keys
-     InfraExampleGraph[name]                       -- default parameters
-     InfraExampleGraph[name, params, opts...]      -- with parameters
-*)
+PunchHole[ g_Graph, r_Integer ] :=
+  PunchHole[ g, RandomChoice @ VertexList @ g -> r ]
 
-$InfraExampleGraphRegistry = <|
-  "Grid"              -> { { 4, 4 }                  , "GridGraph rectangular lattice (4-regular interior)." },
-  "RectangleMesh"     -> { { 3., 2. }                , "Triangulated rectangle [0,a]x[0,b] via DiscretizeRegion." },
-  "DiskMesh"          -> { 1.                        , "Triangulated disk of radius r (mesh boundary effects mimic negative curvature)." },
-  "SphereMesh"        -> { 1.                        , "Triangulated sphere of radius r (positive curvature)." },
-  "TriangularLattice" -> { 5                         , "Triangular lattice of side n (6-regular interior)." },
-  "HexagonalLattice"  -> { { 3, 3, 3 }               , "Hexagonal lattice with row/column/diagonal parameters." },
-  "RegularTree"       -> { { 3, 3 }                  , "Tree of degree d and depth h (root has d leaves, others have d-1 children)." },
-  "Cayley"            -> { { "SymmetricGroup", 4 }   , "Cayley graph of a named finite group (FiniteGroupData)." },
-  "Petersen"          -> { None                      , "Petersen graph: 3-regular, girth 5, distance-regular." },
-  "Heawood"           -> { None                      , "Heawood graph: 3-regular bipartite, girth 6, point-line incidence of PG(2, 2)." },
-  "MobiusKantor"      -> { None                      , "Moebius-Kantor graph: 3-regular, girth 6, generalized Petersen GP(8, 3)." },
-  "Tutte"             -> { None                      , "Tutte 12-cage: 3-regular, girth 12." }
-|>;
+PunchHole[ g_Graph, c_ -> r_Integer ] :=
+  Subgraph[ g, Complement[ VertexList @ g, VertexList @ NeighborhoodGraph[ g, c, r ] ] ]
 
 
-InfraExampleGraph[ ] :=
-  Keys @ $InfraExampleGraphRegistry
+(* ===================== Torus tessellations ===================== *)
 
-InfraExampleGraph[ name_String, opts : OptionsPattern[ ] ] :=
-  InfraExampleGraph[ name, $InfraExampleGraphRegistry[ name ][[ 1 ]], opts ]
+(* TorusTessellation[shape, {m, n}] returns the vertex-transitive flat-torus
+   Cayley graph carrying the regular {p, q}-tessellation indicated by shape.
+     "Rectangular" -- {4, 4}, 4-regular, Cay(Z_m x Z_n, {+-e_1, +-e_2})
+     "Triangular"  -- {3, 6}, 6-regular, Cay(Z_m x Z_n, {+-e_1, +-e_2, +-(e_1+e_2)})
+     "Hexagonal"   -- {6, 3}, 3-regular, two-orbit Cay on Z_m x Z_n x Z_2 *)
 
-InfraExampleGraph[ "Grid", { m_Integer, n_Integer }, opts : OptionsPattern[ ] ] :=
-  GridGraph[ { m, n }, opts ]
+TorusTessellation[ "Rectangular", { m_Integer, n_Integer }, opts : OptionsPattern[ ] ] :=
+  Graph[ GraphProduct[ CycleGraph[ m ], CycleGraph[ n ], "Cartesian" ], opts ]
 
-InfraExampleGraph[ "RectangleMesh", { a_, b_ }, opts : OptionsPattern[ ] ] :=
-  meshGraph[ Rectangle[ { 0, 0 }, { a, b } ], { opts }, 0.1 ]
-
-InfraExampleGraph[ "DiskMesh", r_, opts : OptionsPattern[ ] ] :=
-  meshGraph[ Disk[ { 0, 0 }, r ], { opts }, 0.05 ]
-
-InfraExampleGraph[ "SphereMesh", r_, opts : OptionsPattern[ ] ] :=
-  meshGraph[ Sphere[ { 0, 0, 0 }, r ], { opts }, 0.05 ]
-
-
-meshGraph[ region_, opts_List, defaultMaxCell_ ] :=
-  With[ { mesh = DiscretizeRegion[ region,
-      MaxCellMeasure -> Replace[ MaxCellMeasure /. opts, MaxCellMeasure -> defaultMaxCell ],
-      Sequence @@ FilterRules[ opts, Except[ MaxCellMeasure ] ] ] },
-    MeshConnectivityGraph[ mesh, 0 ]
+TorusTessellation[ "Triangular", { m_Integer, n_Integer }, opts : OptionsPattern[ ] ] :=
+  Graph[
+    Flatten @ Table[
+      { { i, j } <-> { Mod[ i + 1, m ], j }
+      , { i, j } <-> { i, Mod[ j + 1, n ] }
+      , { i, j } <-> { Mod[ i + 1, m ], Mod[ j + 1, n ] } },
+      { i, 0, m - 1 }, { j, 0, n - 1 }
+    ],
+    opts
   ]
 
-InfraExampleGraph[ "TriangularLattice", n_Integer, opts : OptionsPattern[ ] ] :=
-  Graph[ GraphData[ { "Triangular", n } ], opts ]
-
-InfraExampleGraph[ "HexagonalLattice", { a_Integer, b_Integer, c_Integer }, opts : OptionsPattern[ ] ] :=
-  Graph[ GraphData[ { "HexagonalGrid", { a, b, c } } ], opts ]
-
-InfraExampleGraph[ "RegularTree", { degree_Integer, depth_Integer }, opts : OptionsPattern[ ] ] :=
-  Graph[ regularTreeEdges[ degree, depth ], opts, GraphLayout -> "RadialEmbedding" ]
-
-InfraExampleGraph[ "Cayley", group_, opts : OptionsPattern[ ] ] :=
-  Graph[ CayleyGraph[ FiniteGroupData[ group, "PermutationGroupRepresentation" ] ], opts ]
-
-InfraExampleGraph[ "Petersen", None, opts : OptionsPattern[ ] ] :=
-  Graph[ PetersenGraph[ ], opts ]
-
-InfraExampleGraph[ "Heawood", None, opts : OptionsPattern[ ] ] :=
-  Graph[ GraphData[ "HeawoodGraph" ], opts ]
-
-InfraExampleGraph[ "MobiusKantor", None, opts : OptionsPattern[ ] ] :=
-  Graph[ GraphData[ "MoebiusKantorGraph" ], opts ]
-
-InfraExampleGraph[ "Tutte", None, opts : OptionsPattern[ ] ] :=
-  Graph[ GraphData[ "Tutte12Cage" ], opts ]
-
-
-(* regularTreeEdges[degree, depth] enumerates the edge list of a rooted tree
-   in which the root has `degree` children and every internal vertex has
-   `degree - 1` children, of total depth `depth`.  Vertices are integers
-   1, 2, 3, ... in breadth-first order. *)
-
-regularTreeEdges[ degree_Integer, depth_Integer ] :=
-  Module[ { edges = { }, frontier = { 1 }, next, idx = 1, level },
-    Do[
-      next = { };
-      Do[
-        With[ { branching = If[ level == 1, degree, degree - 1 ] },
-          Do[ idx++; AppendTo[ edges, parent <-> idx ]; AppendTo[ next, idx ],
-              { branching } ]
-        ],
-        { parent, frontier }
-      ];
-      frontier = next,
-      { level, depth }
-    ];
-    edges
+TorusTessellation[ "Hexagonal", { m_Integer, n_Integer }, opts : OptionsPattern[ ] ] :=
+  Graph[
+    Flatten @ Table[
+      { { i, j, 0 } <-> { i, j, 1 }
+      , { i, j, 0 } <-> { Mod[ i - 1, m ], j, 1 }
+      , { i, j, 0 } <-> { i, Mod[ j - 1, n ], 1 } },
+      { i, 0, m - 1 }, { j, 0, n - 1 }
+    ],
+    opts
   ]

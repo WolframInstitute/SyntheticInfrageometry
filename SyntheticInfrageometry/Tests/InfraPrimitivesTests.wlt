@@ -15,12 +15,6 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraPencil[ { InfraPencil[ { InfraRay[ { { 1, 2 } } ] } ], InfraRay[ { { 1, 3 } } ] } ],
-  InfraPencil[ { InfraRay[ { { 1, 2 } } ], InfraRay[ { { 1, 3 } } ] } ],
-  TestID -> "InfraPencil-auto-flatten"
-]
-
-VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 }, { 1, 5, 3 } } ][[ 2 ]],
   InfraSegment[ { { 1, 4, 3 } } ],
   TestID -> "InfraSegment-Part-integer"
@@ -30,12 +24,6 @@ VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 }, { 1, 5, 3 } } ][[ 1 ;; 2 ]],
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
   TestID -> "InfraSegment-Part-span"
-]
-
-VerificationTest[
-  InfraPencil[ { InfraRay[ { { 1, 2 } } ], InfraRay[ { { 1, 3 } } ] } ][[ 1 ]],
-  InfraRay[ { { 1, 2 } } ],
-  TestID -> "InfraPencil-Part-integer-returns-ray"
 ]
 
 VerificationTest[

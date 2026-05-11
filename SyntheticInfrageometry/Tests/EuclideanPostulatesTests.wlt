@@ -177,12 +177,12 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = SelectPaths[g, FindSegment[g, 1, 9, All], "Central"]["Realizations"]},
+    With[{segs = SelectPath[g, FindSegment[g, 1, 9, All], All, "From" -> "Center", "Metric" -> "Frechet"]["Realizations"]},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
   True,
-  TestID -> "FindSegment-SelectPaths-Central-Frechet"
+  TestID -> "FindSegment-SelectPath-Center-Frechet"
 ]
 
 VerificationTest[
@@ -203,27 +203,27 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = SelectPaths[g, FindSegment[g, 1, 9, All], "Central", Method -> "Hausdorff"]["Realizations"]},
+    With[{segs = SelectPath[g, FindSegment[g, 1, 9, All], All, "From" -> "Center", "Metric" -> "Hausdorff"]["Realizations"]},
       Length[segs] >= 1
     ]
   ],
   True,
-  TestID -> "FindSegment-SelectPaths-Central-Hausdorff"
+  TestID -> "FindSegment-SelectPath-Center-Hausdorff"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = SelectPaths[g, FindSegment[g, 1, 9, All], "Peripheral"]["Realizations"]},
+    With[{segs = SelectPath[g, FindSegment[g, 1, 9, All], All, "From" -> "Periphery"]["Realizations"]},
       Length[segs] >= 1
     ]
   ],
   True,
-  TestID -> "FindSegment-SelectPaths-Peripheral-Frechet"
+  TestID -> "FindSegment-SelectPath-Periphery"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = (EmbeddingClosestPaths[g, {1, 9}] @ SelectPaths[g, "Central"] @ FindSegment[g, 1, 9, All])["Realizations"]},
+    With[{segs = (EmbeddingClosestPaths[g, {1, 9}] @ SelectPath[g, All, "From" -> "Center"] @ FindSegment[g, 1, 9, All])["Realizations"]},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
@@ -448,11 +448,11 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    SelectPaths[g, "Central"] @ FindSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]
+    SelectPath[g, All, "From" -> "Center"] @ FindSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]
   ],
   _InfraSegment,
   SameTest -> MatchQ,
-  TestID -> "FindSegment-CurvatureMinimizing-chains-with-SelectPaths"
+  TestID -> "FindSegment-CurvatureMinimizing-chains-with-SelectPath"
 ]
 
 VerificationTest[
@@ -667,12 +667,12 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{exts = Take[SelectPaths[g, FindLine[g, 5, 6, All], "Central"]["Realizations"], UpTo[3]]},
+    With[{exts = Take[SelectPath[g, FindLine[g, 5, 6, All], All, "From" -> "Center"]["Realizations"], UpTo[3]]},
       Length[exts] >= 1 && AllTrue[exts, Length[#] > 2 &]
     ]
   ],
   True,
-  TestID -> "FindLine-with-SelectPaths-Central"
+  TestID -> "FindLine-with-SelectPath-Center"
 ]
 
 VerificationTest[
@@ -769,7 +769,7 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     With[{circles = Take[
-        SelectCycles[g, FindCircle[g, 6, {1, 2}, All]["Realizations"], "LongestCircumference"],
+        SelectCycle[g, FindCircle[g, 6, {1, 2}, All]["Realizations"], All, "From" -> "LongestCircumference"],
         UpTo[1]]},
       Length[circles] >= 1 && AllTrue[circles, ListQ]
     ]
@@ -788,22 +788,22 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = SelectCycles[g, FindCircle[g, 6, {1, 2}, All]["Realizations"], "LongestCircumference"]},
+    With[{circles = SelectCycle[g, FindCircle[g, 6, {1, 2}, All]["Realizations"], All, "From" -> "LongestCircumference"]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
   True,
-  TestID -> "FindCircle-SelectCycles-LongestCircumference-uniform"
+  TestID -> "FindCircle-SelectCycle-LongestCircumference-uniform"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = SelectCycles[g, FindCircle[g, 6, {1, 2}, All]["Realizations"], "ShortestCircumference"]},
+    With[{circles = SelectCycle[g, FindCircle[g, 6, {1, 2}, All]["Realizations"], All, "From" -> "ShortestCircumference"]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
   True,
-  TestID -> "FindCircle-SelectCycles-ShortestCircumference"
+  TestID -> "FindCircle-SelectCycle-ShortestCircumference"
 ]
 
 (* ===== FindParallel ===== *)

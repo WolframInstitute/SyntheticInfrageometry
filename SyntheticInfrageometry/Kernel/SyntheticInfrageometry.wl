@@ -25,6 +25,9 @@ PackageExport[FindCommonLine]
 PackageExport[SegmentLineAngle]
 PackageExport[LineQ]
 PackageExport[ParallelQ]
+PackageExport[PencilDirections]
+PackageExport[PencilCardinality]
+PackageExport[LineCount]
 
 (* InfraShell.wl *)
 PackageExport[InfraShell]
@@ -46,14 +49,7 @@ PackageExport[FindBisectingHyperplane]
 PackageExport[InfraRay]
 PackageExport[FindRay]
 
-(* InfraPencil.wl *)
-PackageExport[InfraPencil]
-PackageExport[FindPencil]
-PackageExport[PencilDirections]
-PackageExport[PencilCardinality]
-PackageExport[LineCount]
-
-(* InfraEuclideanSpace.wl *)
+(* EuclideanSpace.wl *)
 PackageExport[InfraScalarProduct]
 PackageExport[FindInfraLinearCombination]
 PackageExport[InfraAngle]
@@ -65,8 +61,8 @@ PackageExport[CATInequalityQ]
 PackageExport[InfraCurvature]
 
 (* PathSpace.wl *)
-PackageExport[SelectPaths]
-PackageExport[SelectCycles]
+PackageExport[SelectPath]
+PackageExport[SelectCycle]
 PackageExport[EmbeddingClosestPaths]
 PackageExport[EmbeddingClosestCycles]
 PackageExport[GeodesicGraph]
@@ -126,7 +122,8 @@ PackageExport[ProjectivePlaneGraphQ]
 PackageExport[EnumerateGraphs]
 
 (* ExampleGraphs.wl *)
-PackageExport[InfraExampleGraph]
+PackageExport[PunchHole]
+PackageExport[TorusTessellation]
 
 (* InfraScene.wl *)
 PackageExport[InfraScene]
@@ -152,7 +149,6 @@ PackageExport[$InfraShellColor]
 PackageExport[$InfraPlaneColor]
 PackageExport[$InfraCircleColor]
 PackageExport[$InfraRayColor]
-PackageExport[$InfraPencilColor]
 
 (* InfraSceneInteractive.wl *)
 PackageExport[PointViewer]

@@ -100,10 +100,25 @@ FindGeodesicConvexHull[ graph_Graph, S_List ] :=
   ]
 
 
-(* GeodesicallyConvexQ: S equals its own geodesic-convex hull -- i.e.
-   closed under taking metric intervals between any two of its members. *)
+(* GeodesicallyConvexQ[graph, S, Method -> "Strong" | "Weak"]:
+   "Strong" (default) -- S is closed under MetricInterval, i.e. every
+   geodesic between any two members of S lies in S.
+   "Weak" -- for every pair in S there exists a geodesic of graph that
+   lies in S; equivalently Subgraph[graph, S] is isometric in graph. *)
 
-GeodesicallyConvexQ[ graph_Graph, S_List ] :=
-  With[ { set = Sort @ DeleteDuplicates @ S },
-    FindGeodesicConvexHull[ graph, set ] === set
+Options[ GeodesicallyConvexQ ] = { Method -> "Strong" };
+
+GeodesicallyConvexQ[ graph_Graph, S_List, OptionsPattern[] ] :=
+  Switch[ OptionValue[ Method ],
+    "Strong",
+      With[ { set = Sort @ DeleteDuplicates @ S },
+        FindGeodesicConvexHull[ graph, set ] === set
+      ],
+    "Weak",
+      With[ { set = DeleteDuplicates @ S, sub = Subgraph[ graph, DeleteDuplicates @ S ] },
+        AllTrue[
+          Subsets[ set, { 2 } ],
+          pair |-> GraphDistance[ sub, pair[[ 1 ]], pair[[ 2 ]] ] === GraphDistance[ graph, pair[[ 1 ]], pair[[ 2 ]] ]
+        ]
+      ]
   ]

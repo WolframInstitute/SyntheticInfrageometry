@@ -6,7 +6,6 @@ PackageExport[$InfraShellColor]
 PackageExport[$InfraPlaneColor]
 PackageExport[$InfraCircleColor]
 PackageExport[$InfraRayColor]
-PackageExport[$InfraPencilColor]
 PackageScope[$InfraSceneHighlightPalette]
 PackageScope[$InfraOpacityRange]
 PackageScope[$InfraThicknessRange]
@@ -19,14 +18,13 @@ $InfraShellColor   = RGBColor[ 0.30, 0.70, 0.50 ];
 $InfraPlaneColor   = RGBColor[ 0.55, 0.45, 0.80 ];
 $InfraCircleColor  = RGBColor[ 0.20, 0.55, 0.65 ];
 $InfraRayColor     = RGBColor[ 0.95, 0.65, 0.45 ];
-$InfraPencilColor  = RGBColor[ 0.85, 0.70, 0.30 ];
 
 $InfraOpacityRange   = { 0.40, 1.0 };
 $InfraThicknessRange = { 1.0, 5.0 };
 $InfraPointSizeRange = { 6, 14 };
 
 $InfraSceneHighlightPalette := Join[
-  { $InfraSegmentColor, $InfraShellColor, $InfraCircleColor, $InfraPointColor, $InfraRayColor, $InfraPencilColor },
+  { $InfraSegmentColor, $InfraShellColor, $InfraCircleColor, $InfraPointColor, $InfraRayColor },
   Table[ ColorData[ "DarkRainbow" ][ k / 5 ], { k, 1, 5 } ]
 ];
 
@@ -49,7 +47,6 @@ $InfraSceneHighlightPalette := Join[
      InfraPlane  [ {set1, set2, ...} ]       -- induced subgraph edges
      InfraCircle [ {cyc1, cyc2, ...} ]       -- sequential edges + auto-closure
      InfraRay    [ {ray1, ray2, ...} ]       -- sequential edges (Partition)
-     InfraPencil [ {InfraRay[..], ...} ]     -- flattens through ["Rays"] to Paths
 
    The arg shape (a single List) selects the rendering interpretation; the
    scene-construction shapes of these heads (e.g. `InfraSegment[p1, p2]`,
@@ -82,7 +79,6 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
               InfraPlane,   $InfraPlaneColor,
               InfraCircle,  $InfraCircleColor,
               InfraRay,     $InfraRayColor,
-              InfraPencil,  $InfraPencilColor,
               _,            $InfraSceneHighlightPalette[[
                               1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ] } ],
         {
@@ -92,7 +88,6 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           { InfraPlane  [ b_List ], c_ } :> { b, c, "Sets"   },
           { InfraCircle [ b_List ], c_ } :> { b, c, "Cycles" },
           { InfraRay    [ b_List ], c_ } :> { b, c, "Paths"  },
-          { p : InfraPencil[ _List ], c_ } :> { p[ "Rays" ], c, "Paths" },
           { b_, c_ }                     :> { b, c, Automatic }
         } ],
       multiObjects ];

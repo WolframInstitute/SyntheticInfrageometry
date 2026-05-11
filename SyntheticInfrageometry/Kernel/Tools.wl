@@ -372,13 +372,12 @@ pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
 (* infraWrappedQ[expr] tests whether expr is one of the multi-realisation
    wrappers in single-_List-arg form. *)
 
-infraWrappedQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraPencil )[ _List ] ] := True
+infraWrappedQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ _List ] ] := True
 infraWrappedQ[ _ ] := False
 
 (* infraSpread[anchor] is the source/endpoint-position adapter: a wrapped
    anchor is spread into its realisations, an unwrapped value becomes a
-   singleton list, ready for Outer / Tuples / Cartesian iteration.
-   InfraPencil is excluded -- a pencil is an output, not an anchor.        *)
+   singleton list, ready for Outer / Tuples / Cartesian iteration.        *)
 
 infraSpread[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] := reps
 infraSpread[ other_ ] := { other }
@@ -386,14 +385,11 @@ infraSpread[ other_ ] := { other }
 (* infraUnionSpread[entry] collapses a wrapped entry to the union of its
    realisations, for set-conjunction Find* over a single _List argument
    (FindCommonLine, FindCommonPoint).  Bare entries pass through as a
-   singleton list; the pencil case unwraps one level deeper through its
-   constituent InfraRays.                                                  *)
+   singleton list.                                                        *)
 
 infraUnionSpread[ InfraPoint[ reps_List ] ] := DeleteDuplicates @ reps
 infraUnionSpread[ ( InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] :=
   Union @@ reps
-infraUnionSpread[ InfraPencil[ rays_List ] ] :=
-  Union @@ Catenate[ #[ "Realizations" ] & /@ rays ]
 infraUnionSpread[ other_ ] := { other }
 
 (* infraCapBy[wrapper, count] applies the standard count semantics

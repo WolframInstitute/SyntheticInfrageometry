@@ -1,8 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[canonicalLine]
-PackageScope[allCanonicalLines]
-
 
 (* ===================== InfraRay wrapper ===================== *)
 
@@ -18,30 +15,28 @@ InfraRay[ reps_List ][ "Expand" ]       := InfraRay[ { # } ] & /@ reps
 InfraRay[ reps_List ][ "First" ]        := First @ reps
 
 
-(* canonicalLine and allCanonicalLines are projective-incidence helpers
-   shared with InfraPencil.wl and ProjectiveGeometry.wl. *)
-
-canonicalLine[ line_List ] := First @ Sort @ { line, Reverse[ line ] }
-
-allCanonicalLines[ graph_Graph ] :=
-  DeleteDuplicates @ Flatten[
-    canonicalLine /@ FindLine[ graph, #[[ 1 ]], #[[ 2 ]], All ][ "Realizations" ] & /@
-      Subsets[ VertexList[ graph ], { 2 } ],
-    1
-  ]
-
-
 (* ===================== FindRay ===================== *)
 
-(* A ray at base vertex origin in the direction of v is a maximal
-   geodesic through origin containing v -- the same shape as FindLine's
-   output, but framed projectively as "the line through origin in v's
-   direction".  FindRay enumerates every such line and returns them as
-   InfraRay[{ray1, ray2, ...}].  Multiple realisations belong to one
-   direction class (the equivalence class of canonicalLine).            *)
+(* A ray from origin in v's direction is a pointed half of a maximal
+   geodesic line through origin containing v: the vertex sequence
+   {origin, w_1, w_2, ..., w_k} with d(origin, w_i) = i and w_k an
+   inextensible endpoint on the half containing v.  Multiple realisations
+   come from the same direction class having multiple maximal-geodesic
+   representatives in the graph (e.g. antipodes on an even cycle).      *)
 
 findRayCore[ graph_Graph, origin_, v_ ] :=
-  DeleteDuplicatesBy[ FindLine[ graph, origin, v, All ][ "Realizations" ], canonicalLine ]
+  DeleteDuplicates @ Map[
+    line |->
+      With[ { oIdx = First[ FirstPosition[ line, origin, { 0 } ], 0 ],
+              vIdx = First[ FirstPosition[ line, v, { 0 } ], 0 ] },
+        Which[
+          oIdx == 0 || vIdx == 0, Nothing,
+          oIdx <= vIdx,           line[[ oIdx ;; -1 ]],
+          True,                   Reverse[ line[[ 1 ;; oIdx ]] ]
+        ]
+      ],
+    FindLine[ graph, origin, v, All ][ "Realizations" ]
+  ]
 
 FindRay[ graph_Graph, origin_, v_, All ] :=
   infraSpreadAndCartesian[ InfraRay, All, findRayCore[ graph, ##] &, origin, v ]

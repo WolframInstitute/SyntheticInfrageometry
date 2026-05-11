@@ -451,15 +451,6 @@ VerificationTest[
   TestID -> "InfraDistance-InfraShell-bare"
 ]
 
-(* InfraPencil recursion: the rays' realisations are pulled in via
-   infraVertexSet's Map. *)
-VerificationTest[
-  InfraDistance[GridGraph[{3, 3}],
-    InfraPencil[{InfraRay[{{5, 2}}], InfraRay[{{5, 4}}]}], 1],
-  1,
-  TestID -> "InfraDistance-InfraPencil-bare"
-]
-
 (* FindPoint returns InfraPoint[{v}]; InfraDistance accepts it directly,
    so callers no longer need First @ FindPoint[g, 1]["Realizations"]. *)
 VerificationTest[

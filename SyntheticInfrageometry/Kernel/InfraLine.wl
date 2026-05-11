@@ -5,11 +5,31 @@ PackageScope[findLineExtensions]
 PackageScope[findLineExtensionsWith]
 PackageScope[findParallelCore]
 PackageScope[findPerpendicularCore]
+PackageScope[canonicalLine]
+PackageScope[allCanonicalLines]
 
 
 (* InfraLine has no multi-realisation wrapper of its own: FindLine returns
    InfraSegment (a maximal geodesic is just a longest-form segment).  This
    file owns the line-shaped Find / construction / predicate operations.   *)
+
+
+(* ===================== canonicalLine / allCanonicalLines ===================== *)
+
+(* canonicalLine collapses the two orientations of a maximal geodesic to a
+   single canonical vertex sequence (lexicographic minimum of the line and
+   its reversal).  allCanonicalLines enumerates every canonical maximal
+   geodesic in the graph.  Used by PencilDirections, FindCommonLine,
+   ParallelQ, ProjectiveGeometry predicates.                                *)
+
+canonicalLine[ line_List ] := First @ Sort @ { line, Reverse[ line ] }
+
+allCanonicalLines[ graph_Graph ] :=
+  DeleteDuplicates @ Flatten[
+    canonicalLine /@ FindLine[ graph, #[[ 1 ]], #[[ 2 ]], All ][ "Realizations" ] & /@
+      Subsets[ VertexList[ graph ], { 2 } ],
+    1
+  ]
 
 
 (* ===================== FindLine ===================== *)
@@ -358,3 +378,21 @@ ParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
       Max[ lineDistances ] - Min[ lineDistances ] <= threshold
     ]
   ]
+
+
+(* ===================== PencilDirections / PencilCardinality / LineCount ===================== *)
+
+(* PencilDirections lists the canonical maximal geodesics through origin
+   - one per projective direction class at that vertex.  PencilCardinality
+   counts them.  LineCount is the projective-incidence "number of lines"
+   in the graph (canonical maximal geodesics overall).                    *)
+
+PencilDirections[ graph_Graph, origin_ ] :=
+  DeleteDuplicates @ Map[ canonicalLine, Flatten[
+    FindLine[ graph, origin, #, All ][ "Realizations" ] & /@
+      DeleteCases[ VertexList[ graph ], origin ],
+    1 ] ]
+
+PencilCardinality[ graph_Graph, origin_ ] := Length @ PencilDirections[ graph, origin ]
+
+LineCount[ graph_Graph ] := Length @ allCanonicalLines[ graph ]
