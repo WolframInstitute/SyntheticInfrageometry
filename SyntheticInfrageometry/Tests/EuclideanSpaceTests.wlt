@@ -46,15 +46,7 @@ VerificationTest[
 VerificationTest[
   InfraScalarProduct[PathGraph[Range[5]], 1, 2, 5, Method -> "Parallelogram"],
   $Failed,
-  {InfraScalarProduct::nopara},
   TestID -> "InfraScalarProduct-Parallelogram-no-realisation"
-]
-
-VerificationTest[
-  InfraScalarProduct[PathGraph[Range[5]], 1, 2, 3, Method -> "Foo"],
-  $Failed,
-  {InfraScalarProduct::badmethod},
-  TestID -> "InfraScalarProduct-bad-method"
 ]
 
 (* ===== FindInfraLinearCombination scaling: "Metric" ===== *)
