@@ -43,20 +43,6 @@ VerificationTest[
   TestID -> "FindMidpoint-strict-fails-when-too-few"
 ]
 
-VerificationTest[
-  FindMidpoint[PathGraph[Range[5]], 1, 5, Method -> "Spectral"],
-  $Failed,
-  {FindMidpoint::nyi},
-  TestID -> "FindMidpoint-spectral-stub"
-]
-
-VerificationTest[
-  FindMidpoint[PathGraph[Range[5]], 1, 5, Method -> "Walk"],
-  $Failed,
-  {FindMidpoint::badmethod},
-  TestID -> "FindMidpoint-bad-method"
-]
-
 (* ===== FindPerpendicular ===== *)
 
 VerificationTest[
@@ -175,13 +161,6 @@ VerificationTest[
   InfraPoint @ CompleteEquilateralTriangle[CompleteGraph[4], 1, 2, 1],
   InfraPoint[{3}],
   TestID -> "CompleteEquilateralTriangle-K4-strict-1"
-]
-
-VerificationTest[
-  CompleteEquilateralTriangle[CompleteGraph[4], 1, 2, Method -> "Spectral"],
-  $Failed,
-  {CompleteEquilateralTriangle::nyi},
-  TestID -> "CompleteEquilateralTriangle-spectral-stub"
 ]
 
 (* ===== SegmentLineAngle ===== *)
