@@ -43,7 +43,8 @@ resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
       InfraCircleQ[ c_ ]           :> CircleQ[ graph, c ],
       InfraLineQ[ s_ ]             :> LineQ[ graph, s ],
       InfraParallelQ[ l1_, l2_ ]   :> ParallelQ[ graph, l1, l2 ],
-      InfraIntersectQ[ s1_, s2_ ]  :> IntersectingQ[ s1, s2 ] }
+      InfraIntersectQ[ s1_, s2_ ]  :> IntersectingQ[ s1, s2 ],
+      InfraRevolutionQ[ vs_, axis_, profile_ ] :> RevolutionQ[ graph, vs, axis, profile ] }
 
 extractBranches[ opts_List ] :=
   Lookup[ Association @ opts, "Branches", All ]
@@ -304,6 +305,15 @@ dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_,
       #[[ 1, 1 ]] & /@ FindBisectingHyperplane[ graph, p1, p2, window, All ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],
+    extractBranches[ { opts } ] ]
+
+dispatchConstruction[ graph_Graph, InfraRevolution[ axis_, profile_, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      #[[ 1, 1 ]] & /@ FindRevolution[ graph, axis, profile, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindRevolution ] ] ],
+      "Select" /. { opts } /. "Select" -> None,
+      False, <| "Axis" -> axis, "Profile" -> profile |> ],
     extractBranches[ { opts } ] ]
 
 

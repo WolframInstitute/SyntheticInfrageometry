@@ -58,6 +58,14 @@ FindBisectingHyperplane::usage = "FindBisectingHyperplane[graph, p1, p2] returns
 InfraRay::usage = "InfraRay[{ray}] is the unary form (one pointed half-line from a base vertex O); InfraRay[{ray1, ..., rayk}] is the multi-realisation form. Each ray is a vertex sequence {O, ..., w} with w an inextensible endpoint. Find* returns a List of unary wrappers; wrap with InfraRay @ ... to collapse to multi via auto-flatten. Consumed by InfraSceneHighlight (sequential-edge semantics).";
 FindRay::usage = "FindRay[graph, O, v] returns {InfraRay[{ray}]} for one pointed half-line from O in v's direction: the half of a maximal geodesic line through O and v starting at O and ending at the far inextensible endpoint. FindRay[graph, O, v, n] returns a List of n unary InfraRay[{ray}] wrappers or $Failed; UpTo[n] / All controls multiplicity. O and v accept InfraPoint[{...}] for multi-anchor spread.";
 
+(* ===================== InfraRevolution ===================== *)
+
+InfraRevolution::usage = "InfraRevolution[{set}] is the unary form (one rotational vertex set around an axis with a per-axis-vertex radius profile); InfraRevolution[{set1, ..., setk}] is the multi-realisation form. Find* returns a List of unary wrappers; wrap with InfraRevolution @ ... to collapse to multi via auto-flatten. Scene-language constructor InfraRevolution[axis, profile] is used inside InfraScene. The multi form is consumed by InfraSceneHighlight (induced-subgraph semantics).";
+FindRevolution::usage = "FindRevolution[graph, axis, profile] returns {InfraRevolution[{set}]} for the rotational vertex set around axis whose i-th slab has radius profile[i] (Voronoi-closest membership). FindRevolution[graph, axis, profile, n] returns a List of n unary InfraRevolution[{set}] wrappers or $Failed; UpTo[n] returns up to n; All returns all. The profile may be NumericQ (constant), a List of length |axis|, an Association vertex -> radius, or any callable applied to index 1..|axis|. Axis accepts an InfraSegment[{...}] for multi-axis spread. Options: \"Form\" (\"Surface\" (default) | \"Solid\"), Method (\"Metric\" (default)).";
+FindCylinder::usage = "FindCylinder[graph, axis, r] returns {InfraRevolution[{set}]} for the constant-radius rotational set around axis. FindCylinder[graph, axis, r, n] / UpTo[n] / All controls multiplicity. Inherits FindRevolution options.";
+FindCone::usage = "FindCone[graph, axis, slope] returns {InfraRevolution[{set}]} for the cone of given slope with apex at axis[[1]]: radii are slope * Range[0, Length[axis] - 1]. FindCone[graph, axis, slope, n] / UpTo[n] / All controls multiplicity. Option \"Apex\" (First (default) | Last) flips the apex end; inherits remaining options from FindRevolution. Non-integer slope makes \"Form\" -> \"Surface\" trivially empty; use \"Form\" -> \"Solid\".";
+RevolutionQ::usage = "RevolutionQ[graph, vs, axis, profile] tests whether vs equals the rotational vertex set around axis with the given radius profile. Option \"Form\" matches FindRevolution.";
+
 (* ===================== EuclideanSpace ===================== *)
 
 InfraScalarProduct::usage = "InfraScalarProduct[graph, o, u, v] returns the base-point-relative scalar product of u and v with respect to o. Option: Method (\"Schoenberg\" (default) -- direct distance formula (d(o,u)^2 + d(o,v)^2 - d(u,v)^2)/2; \"Parallelogram\" -- polarization identity (||u+v||^2 - ||u-v||^2)/4 via FindInfraLinearCombination).";
@@ -161,6 +169,7 @@ InfraCircleQ::usage = "InfraCircleQ[c] asserts that c is a valid metric circle."
 InfraLineQ::usage = "InfraLineQ[s] asserts that s is a maximal geodesic.";
 InfraParallelQ::usage = "InfraParallelQ[l1, l2] asserts that two lines are parallel.";
 InfraIntersectQ::usage = "InfraIntersectQ[s1, s2] asserts that two sets intersect.";
+InfraRevolutionQ::usage = "InfraRevolutionQ[vs, axis, profile] asserts that vs is the rotational vertex set around axis with the given radius profile.";
 
 (* ===================== Highlights / Viewers ===================== *)
 

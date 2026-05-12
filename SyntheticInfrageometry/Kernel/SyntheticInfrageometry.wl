@@ -49,6 +49,13 @@ PackageExport[FindBisectingHyperplane]
 PackageExport[InfraRay]
 PackageExport[FindRay]
 
+(* InfraRevolution.wl *)
+PackageExport[InfraRevolution]
+PackageExport[FindRevolution]
+PackageExport[FindCylinder]
+PackageExport[FindCone]
+PackageExport[RevolutionQ]
+
 (* EuclideanSpace.wl *)
 PackageExport[InfraScalarProduct]
 PackageExport[FindInfraLinearCombination]
@@ -140,6 +147,7 @@ PackageExport[InfraCircleQ]
 PackageExport[InfraLineQ]
 PackageExport[InfraParallelQ]
 PackageExport[InfraIntersectQ]
+PackageExport[InfraRevolutionQ]
 
 (* InfraSceneVisualization.wl *)
 PackageExport[InfraSceneHighlight]
