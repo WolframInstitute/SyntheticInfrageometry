@@ -9,18 +9,13 @@ PackageScope[canonicalLine]
 PackageScope[allCanonicalLines]
 
 
-(* InfraLine has no multi-realisation wrapper of its own: FindLine returns
-   InfraSegment (a maximal geodesic is just a longest-form segment).  This
-   file owns the line-shaped Find / construction / predicate operations.   *)
+(* FindLine returns InfraSegment (a maximal geodesic is a longest-form segment);
+   this file owns the line-shaped Find / construction / predicate operations. *)
 
 
 (* ===================== canonicalLine / allCanonicalLines ===================== *)
 
-(* canonicalLine collapses the two orientations of a maximal geodesic to a
-   single canonical vertex sequence (lexicographic minimum of the line and
-   its reversal).  allCanonicalLines enumerates every canonical maximal
-   geodesic in the graph.  Used by PencilDirections, FindCommonLine,
-   ParallelQ, ProjectiveGeometry predicates.                                *)
+(* canonicalLine: lexicographic minimum of a line and its reversal. *)
 
 canonicalLine[ line_List ] := First @ Sort @ { line, Reverse[ line ] }
 
@@ -34,13 +29,8 @@ allCanonicalLines[ graph_Graph ] :=
 
 (* ===================== FindLine ===================== *)
 
-(* A line through p1 and p2 is a maximal geodesic extension: a vertex
-   sequence (a, ..., p1, ..., p2, ..., b) every contiguous sub-sequence of
-   which is a geodesic and that cannot be extended at either end without
-   breaking the geodesic property.  Method axis shared with FindSegment. *)
-
-FindLine::badmethod = "Method `1` is not supported by FindLine.";
-FindLine::nyi = "Pool `1` is not yet implemented for FindLine; use \"ShortestPaths\".";
+(* A line through p1, p2: a maximal geodesic extension (a, ..., p1, ..., p2, ..., b)
+   every contiguous sub-sequence of which is a geodesic, inextensible at both ends. *)
 
 Options[ FindLine ] = { "Maximality" -> "Extension", Method -> "Shortest" };
 
@@ -52,53 +42,46 @@ FindLine[ graph_Graph, p1_, p2_,
 
 findLineCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindLine ] ] /;
     MemberQ[ VertexList[ graph ], p1 ] :=
-  Module[ { spec, methodName, middles, allExtensions, diam },
-    spec = OptionValue[ FindLine, { opts }, Method ];
-    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, Automatic -> "Shortest", _ :> spec } ];
-    middles = Switch[ methodName,
-      "Shortest" | "Embedding", allGeodesics[ graph, p1, p2 ],
-      "ShortestPathExtension" | "CurvatureMinimizing",
-        With[ { paths = findSegmentCore[ graph, p1, p2, All, Method -> spec ] },
-          If[ paths === $Failed || ! ListQ[ paths ], { }, paths ]
-        ],
-      _, $Failed
-    ];
-    If[ middles === $Failed, Message[ FindLine::badmethod, spec ]; Return[ $Failed ] ];
-    allExtensions = Union @ Flatten[ findLineExtensions[ graph, # ] & /@ middles, 1 ];
-    If[ OptionValue[ FindLine, { opts }, "Maximality" ] === "Diameter",
-      diam = GraphDiameter[ graph ];
-      allExtensions = Select[ allExtensions, line |-> Length[ line ] - 1 == diam ]
-    ];
-    Switch[ methodName,
-      "Shortest" | "ShortestPathExtension" | "CurvatureMinimizing", allExtensions,
-      "Embedding",
-        With[ { embOpts = parseEmbeddingMethod[ spec ] },
-          If[ embOpts[ "Pool" ] =!= "ShortestPaths",
-            Message[ FindLine::nyi, embOpts[ "Pool" ] ]; allExtensions,
-            embeddingRankLines[ graph, allExtensions, p1, p2, embOpts ]
+  With[ { spec = OptionValue[ FindLine, { opts }, Method ] /. Automatic -> "Shortest" },
+    With[ { method = methodName[ spec ] },
+      With[ { middles = Switch[ method,
+                "Shortest" | "Embedding", allGeodesics[ graph, p1, p2 ],
+                "ShortestPathExtension" | "CurvatureMinimizing",
+                  With[ { paths = findSegmentCore[ graph, p1, p2, All, Method -> spec ] },
+                    If[ ListQ[ paths ], paths, { } ] ]
+              ] },
+        With[ { allExtensions = With[ { ext = Union @ Flatten[ findLineExtensions[ graph, # ] & /@ middles, 1 ] },
+                If[ OptionValue[ FindLine, { opts }, "Maximality" ] === "Diameter",
+                  Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
+                  ext ] ] },
+          Switch[ method,
+            "Shortest" | "ShortestPathExtension" | "CurvatureMinimizing", allExtensions,
+            "Embedding",
+              With[ { embOpts = parseEmbeddingMethod[ spec ] },
+                If[ embOpts[ "Pool" ] === "ShortestPaths",
+                  embeddingRankLines[ graph, allExtensions, p1, p2, embOpts ],
+                  allExtensions ]
+              ]
           ]
         ]
+      ]
     ]
   ]
 
-findLineCore[ _Graph, _, _, OptionsPattern[ FindLine ] ] := $Failed
-
 
 embeddingRankLines[ graph_Graph, lines_List, p1_, p2_, embOpts_Association ] :=
-  Module[ { coords, vertexIndex, ep },
-    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
-    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
-    ep = Lookup[ vertexIndex, { p1, p2 } ];
-    SortBy[ lines,
-      line |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, line ], ep ] ]
+  With[ { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
+          vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
+    With[ { ep = Lookup[ vertexIndex, { p1, p2 } ] },
+      SortBy[ lines,
+        line |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, line ], ep ] ]
+    ]
   ]
 
 
-(* findLineExtensions / findLineExtensionsWith take a segment and return
-   the maximal geodesic extensions through it.  The "With" form takes
-   prefix and suffix path-enumeration closures; ExtendSegment swaps in
-   extended-out / curvature-pulled enumerators for the non-Shortest
-   methods.                                                              *)
+(* Maximal geodesic extensions of a segment.  The "With" form takes prefix and
+   suffix path-enumeration closures (ExtendSegment swaps in extended-out /
+   curvature-pulled enumerators for the non-Shortest methods). *)
 
 findLineExtensions[ graph_Graph, segment_List ] :=
   findLineExtensionsWith[ graph, segment,
@@ -106,43 +89,37 @@ findLineExtensions[ graph_Graph, segment_List ] :=
     { p, e, da } |-> FindPath[ graph, p, e, { da }, All ] ]
 
 
+findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_ ] /; Length[ segment ] < 2 :=
+  { segment }
+
 findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_ ] :=
-  Module[ { p1, p2, d, extendBefore, extendAfter, pairs, maxPairs },
-    If[ Length[ segment ] < 2, Return[ { segment } ] ];
-    p1 = First[ segment ];
-    p2 = Last[ segment ];
-    d = GraphDistance[ graph, p1, p2 ];
-    extendBefore = Select[ VertexList[ graph ],
-      candidate |-> GraphDistance[ graph, candidate, p1 ] + d == GraphDistance[ graph, candidate, p2 ]
-    ];
-    extendAfter = Select[ VertexList[ graph ],
-      candidate |-> GraphDistance[ graph, candidate, p2 ] + d == GraphDistance[ graph, p1, candidate ]
-    ];
-    pairs = Tuples[ { extendBefore, extendAfter } ];
-    maxPairs = MaximalBy[ pairs, GraphDistance[ graph, #[[ 1 ]], #[[ 2 ]] ] & ];
-    If[ maxPairs === { { p1, p2 } }, Return[ { segment } ] ];
-    Flatten[
-      With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
-        With[ { db = GraphDistance[ graph, s, p1 ], da = GraphDistance[ graph, p2, e ] },
-          With[ { bp = If[ db == 0, { {} }, Most /@ prefixFn[ s, p1, db ] ],
-                  ap = If[ da == 0, { {} }, Rest /@ suffixFn[ p2, e, da ] ] },
-            Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ]
-          ]
+  With[ { p1 = First[ segment ], p2 = Last[ segment ],
+          d  = GraphDistance[ graph, First[ segment ], Last[ segment ] ] },
+    With[ { extendBefore = Select[ VertexList[ graph ],
+              c |-> GraphDistance[ graph, c, p1 ] + d == GraphDistance[ graph, c, p2 ] ],
+            extendAfter = Select[ VertexList[ graph ],
+              c |-> GraphDistance[ graph, c, p2 ] + d == GraphDistance[ graph, p1, c ] ] },
+      With[ { maxPairs = MaximalBy[ Tuples[ { extendBefore, extendAfter } ],
+                GraphDistance[ graph, #[[ 1 ]], #[[ 2 ]] ] & ] },
+        If[ maxPairs === { { p1, p2 } }, { segment },
+          Flatten[
+            With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
+              With[ { db = GraphDistance[ graph, s, p1 ], da = GraphDistance[ graph, p2, e ] },
+                With[ { bp = If[ db == 0, { {} }, Most /@ prefixFn[ s, p1, db ] ],
+                        ap = If[ da == 0, { {} }, Rest /@ suffixFn[ p2, e, da ] ] },
+                  Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ] ] ]
+            ] & /@ maxPairs,
+            1 ]
         ]
-      ] & /@ maxPairs,
-      1
+      ]
     ]
   ]
 
 
 (* ===================== FindParallel ===================== *)
 
-(* FindParallel[g, line, p] constructs parallels to line through p.
-   Method "Metric" (default): a parallel is the maximal sub-segment of a
-   maximal geodesic through p whose vertices all lie at distance
-   r = d(p, line) from line. *)
-
-FindParallel::badmethod = "Method `1` is not supported by FindParallel.";
+(* FindParallel[g, line, p]: maximal sub-segment of a maximal geodesic
+   through p whose vertices all lie at distance r = d(p, line) from line. *)
 
 Options[ FindParallel ] = { Method -> "Metric" };
 
@@ -154,69 +131,57 @@ FindParallel[ graph_Graph, line_, p_,
 
 findParallelCore[ graph_Graph, line_List, p_, opts : OptionsPattern[ FindParallel ] ] :=
   With[ { spec = OptionValue[ FindParallel, { opts }, Method ] },
-    With[ { methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ] },
-      Switch[ methodName,
-        "Metric", findParallelMetric[ graph, line, p ],
-        "Embedding",
-          With[ { embOpts = parseEmbeddingMethod[ spec, "LevelSet" ] },
-            embeddingRankParallels[ graph, findParallelMetric[ graph, line, p ], line, p, embOpts ]
-          ],
-        _, Message[ FindParallel::badmethod, methodName ]; $Failed
-      ]
+    Switch[ methodName @ spec,
+      "Metric", findParallelMetric[ graph, line, p ],
+      "Embedding",
+        embeddingRankParallels[ graph, findParallelMetric[ graph, line, p ], line, p,
+          parseEmbeddingMethod[ spec, "LevelSet" ] ]
     ]
   ]
 
 
 findParallelMetric[ graph_Graph, line_List, p_ ] :=
-  Module[ { lineDist, r, levelSet, segments, dedup, maximalThrough },
-    maximalThrough = { l, q, S } |-> With[
-      { idx = First[ FirstPosition[ l, q, { 0 } ], 0 ] },
-      If[ idx === 0, {},
-        With[
-          { lo = idx - LengthWhile[ Reverse @ Take[ l, idx - 1 ], MemberQ[ S, # ] & ],
-            hi = idx + LengthWhile[ Drop[ l, idx ], MemberQ[ S, # ] & ] },
-          l[[ lo ;; hi ]]
+  With[ { lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ] },
+    With[ { r = lineDist[ p ] },
+      If[ r === Infinity, { },
+        With[ { levelSet = Select[ VertexList[ graph ], lineDist[ # ] == r & ] },
+          With[ { segments = ( l |-> With[ { idx = First[ FirstPosition[ l, p, { 0 } ], 0 ] },
+                  If[ idx === 0, { },
+                    l[[
+                      idx - LengthWhile[ Reverse @ Take[ l, idx - 1 ], MemberQ[ levelSet, # ] & ]
+                      ;;
+                      idx + LengthWhile[ Drop[ l, idx ], MemberQ[ levelSet, # ] & ] ]] ] ]
+              ) /@ PencilDirections[ graph, p ] },
+            With[ { dedup = DeleteDuplicates[ canonicalLine /@ Select[ segments, Length[ # ] >= 2 & ] ] },
+              Select[ dedup,
+                a |-> ! AnyTrue[ dedup, b |-> Length[ b ] > Length[ a ] && SubsetQ[ b, a ] ] ]
+            ]
+          ]
         ]
       ]
-    ];
-    lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ];
-    r = lineDist[ p ];
-    If[ r === Infinity, Return[ {} ] ];
-    levelSet = Select[ VertexList[ graph ], lineDist[ # ] == r & ];
-    segments = maximalThrough[ #, p, levelSet ] & /@ PencilDirections[ graph, p ];
-    dedup = DeleteDuplicates[ canonicalLine /@ Select[ segments, Length[ # ] >= 2 & ] ];
-    Select[ dedup,
-      a |-> ! AnyTrue[ dedup, b |-> Length[ b ] > Length[ a ] && SubsetQ[ b, a ] ]
     ]
   ]
 
 
 embeddingRankParallels[ graph_Graph, parallels_List, line_List, p_, embOpts_Association ] :=
-  Module[ { coords, vertexIndex, lineDir, pCoord, refStart, refEnd, augmented, n },
-    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
-    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
-    lineDir = coords[[ vertexIndex[ Last[ line ] ] ]] - coords[[ vertexIndex[ First[ line ] ] ]];
-    pCoord = coords[[ vertexIndex[ p ] ]];
-    refStart = pCoord - lineDir / 2;
-    refEnd   = pCoord + lineDir / 2;
-    augmented = Append[ Append[ coords, refStart ], refEnd ];
-    n = Length[ coords ];
-    SortBy[ parallels,
-      par |-> EmbeddingHausdorffDistance[ augmented,
-        Lookup[ vertexIndex, par ], { n + 1, n + 2 } ] ]
+  With[ { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
+          vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
+    With[ { lineDir = coords[[ vertexIndex[ Last[ line ] ] ]] - coords[[ vertexIndex[ First[ line ] ] ]],
+            pCoord  = coords[[ vertexIndex[ p ] ]],
+            n = Length[ coords ] },
+      With[ { augmented = Join[ coords, { pCoord - lineDir / 2, pCoord + lineDir / 2 } ] },
+        SortBy[ parallels,
+          par |-> EmbeddingHausdorffDistance[ augmented, Lookup[ vertexIndex, par ], { n + 1, n + 2 } ] ]
+      ]
+    ]
   ]
 
 
 (* ===================== FindPerpendicular ===================== *)
 
-(* Foot of the perpendicular from point p to line L by Euclid I.12 (the
-   isosceles base midpoint construction): for each pair {a, b} of line
-   vertices equidistant from p, the midpoint of the line-arc between them
-   is a candidate foot.  Multi-valued; the union of all such midpoints
-   is returned. *)
-
-FindPerpendicular::nyi = "Method `1` is not yet implemented for FindPerpendicular; only \"Metric\" is currently available.";
-FindPerpendicular::badmethod = "Method `1` is not supported by FindPerpendicular.";
+(* Foot of the perpendicular from p to L (Euclid I.12, isosceles base midpoint):
+   for each pair {a, b} of L-vertices equidistant from p, the midpoint of the
+   line-arc from a to b along L is a candidate foot. *)
 
 Options[ FindPerpendicular ] = { Method -> "Metric" };
 
@@ -227,62 +192,55 @@ FindPerpendicular[ graph_Graph, line_, point_,
 
 
 findPerpendicularCore[ graph_Graph, line_List, point_, opts : OptionsPattern[ FindPerpendicular ] ] :=
-  Module[ { spec = OptionValue[ FindPerpendicular, { opts }, Method ], methodName, distances, byIndex },
-    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    Switch[ methodName,
+  With[ { spec = OptionValue[ FindPerpendicular, { opts }, Method ] },
+    Switch[ methodName @ spec,
       "Metric",
-        distances = GraphDistance[ graph, point, # ] & /@ line;
-        byIndex = Values @ GroupBy[ Range @ Length @ line, distances[[ # ]] & ];
-        Union @ Flatten @ Table[
-          Table[
-            With[ { lo = Min[ pair[[ 1 ]], pair[[ 2 ]] ], hi = Max[ pair[[ 1 ]], pair[[ 2 ]] ] },
-              If[ OddQ[ hi - lo ],
-                line[[ lo ;; hi ]][[ Ceiling[ ( hi - lo + 1 ) / 2 ] ]],
-                Nothing
-              ]
-            ],
-            { pair, Subsets[ group, { 2 } ] }
-          ],
-          { group, byIndex }
+        With[ { distances = GraphDistance[ graph, point, # ] & /@ line },
+          Union @ Flatten[
+            ( group |-> Map[
+                pair |-> With[ { lo = Min @@ pair, hi = Max @@ pair },
+                  If[ OddQ[ hi - lo ],
+                    line[[ lo ;; hi ]][[ Ceiling[ ( hi - lo + 1 ) / 2 ] ]],
+                    Nothing ] ],
+                Subsets[ group, { 2 } ] ]
+            ) /@ Values @ GroupBy[ Range @ Length @ line, distances[[ # ]] & ]
+          ]
         ],
       "Embedding",
-        With[ { embOpts = parseEmbeddingMethod[ spec ] },
-          embeddingRankPerpendicularFeet[ graph, line, point, embOpts ]
-        ],
-      "Spectral" | "Resistance", Message[ FindPerpendicular::nyi, methodName ]; $Failed,
-      _, Message[ FindPerpendicular::badmethod, methodName ]; $Failed
+        embeddingRankPerpendicularFeet[ graph, line, point, parseEmbeddingMethod @ spec ]
     ]
   ]
 
 
 embeddingRankPerpendicularFeet[ graph_Graph, line_List, point_, embOpts_Association ] :=
-  Module[ { coords, vertexIndex, lineStart, lineEnd, dir, dirNorm, pointCoord, foot },
-    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
-    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
-    lineStart = coords[[ vertexIndex[ First[ line ] ] ]];
-    lineEnd   = coords[[ vertexIndex[ Last[ line ] ] ]];
-    dir = lineEnd - lineStart;
-    dirNorm = dir . dir;
-    pointCoord = coords[[ vertexIndex[ point ] ]];
-    foot = If[ dirNorm == 0, lineStart,
-      lineStart + ( ( pointCoord - lineStart ) . dir / dirNorm ) * dir ];
-    SortBy[ line,
-      v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], foot ] ]
+  With[ { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
+          vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
+    With[ { lineStart = coords[[ vertexIndex[ First[ line ] ] ]],
+            lineEnd   = coords[[ vertexIndex[ Last[ line ] ] ]],
+            pointCoord = coords[[ vertexIndex[ point ] ]] },
+      With[ { dir = lineEnd - lineStart },
+        With[ { dirNorm = dir . dir },
+          With[ { foot = If[ dirNorm == 0, lineStart,
+                  lineStart + ( ( pointCoord - lineStart ) . dir / dirNorm ) * dir ] },
+            SortBy[ line, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], foot ] ]
+          ]
+        ]
+      ]
+    ]
   ]
 
 
 (* ===================== FindCommonLine ===================== *)
 
-(* Lines containing every vertex in the input list -- canonical maximal
-   geodesics through the first two listed vertices that also pass through
-   every other listed vertex.  Constructive companion of CollinearQ.    *)
+(* Canonical maximal geodesics through every vertex in verts. *)
 
 findCommonLineCore[ graph_Graph, verts_List ] :=
-  Module[ { uverts, candidates },
-    uverts = DeleteDuplicates @ Catenate[ infraUnionSpread /@ verts ];
-    If[ Length[ uverts ] < 2, Return[ {} ] ];
-    candidates = canonicalLine[ #[[ 1, 1 ]] ] & /@ FindLine[ graph, First @ uverts, uverts[[ 2 ]], All ];
-    DeleteDuplicates @ Select[ candidates, line |-> SubsetQ[ line, uverts ] ]
+  With[ { uverts = DeleteDuplicates @ Catenate[ infraUnionSpread /@ verts ] },
+    If[ Length[ uverts ] < 2, { },
+      DeleteDuplicates @ Select[
+        canonicalLine[ #[[ 1, 1 ]] ] & /@ FindLine[ graph, First @ uverts, uverts[[ 2 ]], All ],
+        line |-> SubsetQ[ line, uverts ] ]
+    ]
   ]
 
 FindCommonLine[ graph_Graph, verts_List,
@@ -294,23 +252,13 @@ FindCommonLine[ graph_Graph, verts_List,
 
 (* ===================== SegmentLineAngle ===================== *)
 
-(* Length-valued surrogate for the angle between segment p1 p2 and a line
-   L containing p1: returns d(p2, L) when p1 lies on L, Infinity otherwise. *)
-
-SegmentLineAngle::nyi = "Method `1` is not yet implemented for SegmentLineAngle; only \"Metric\" is currently available.";
-SegmentLineAngle::badmethod = "Method `1` is not supported by SegmentLineAngle.";
+(* Length-valued angle surrogate: d(p2, L) when p1 in L, Infinity otherwise. *)
 
 Options[ SegmentLineAngle ] = { Method -> "Metric" };
 
 SegmentLineAngle[ graph_Graph, p1_, p2_, line_List, opts : OptionsPattern[] ] :=
-  Module[ { method = OptionValue[ Method ] },
-    Switch[ method,
-      "Metric", If[ ! MemberQ[ line, p1 ], Infinity,
-        Min[ GraphDistance[ graph, p2, # ] & /@ line ] ],
-      "Spectral", Message[ SegmentLineAngle::nyi, method ]; $Failed,
-      _, Message[ SegmentLineAngle::badmethod, method ]; $Failed
-    ]
-  ]
+  If[ ! MemberQ[ line, p1 ], Infinity,
+    Min[ GraphDistance[ graph, p2, # ] & /@ line ] ]
 
 SegmentLineAngle[ graph_Graph, segment_List, line_List, opts : OptionsPattern[] ] /; Length[ segment ] >= 2 :=
   SegmentLineAngle[ graph, First[ segment ], Last[ segment ], line, opts ]
@@ -318,8 +266,7 @@ SegmentLineAngle[ graph_Graph, segment_List, line_List, opts : OptionsPattern[] 
 
 (* ===================== LineQ ===================== *)
 
-(* LineQ tests maximality: a segment is a line iff no extension preserves
-   the geodesic property (findLineExtensions returns the segment itself). *)
+(* A segment is a line iff no extension preserves the geodesic property. *)
 
 LineQ[ graph_Graph, segment_List ] :=
   SegmentQ[ graph, segment ] &&
@@ -328,31 +275,26 @@ LineQ[ graph_Graph, segment_List ] :=
 
 (* ===================== ParallelQ ===================== *)
 
-(* ParallelQ tests definition-alpha parallelism: l1 and l2 are parallel iff
-   they are disjoint and the distance from each vertex of l1 to l2 is
-   constant (up to threshold). *)
+(* Definition-alpha parallelism: l1 and l2 are disjoint and the distance from
+   each vertex of l1 to l2 is constant up to threshold. *)
 
 ParallelQ[ distanceMatrix_List, l1_List, l2_List, threshold_ : 0 ] :=
   If[ IntersectingQ[ l1, l2 ], False,
     With[ { lineDistances = Min[ distanceMatrix[[ #, l2 ]] ] & /@ l1 },
-      Max[ lineDistances ] - Min[ lineDistances ] <= threshold
-    ]
+      Max[ lineDistances ] - Min[ lineDistances ] <= threshold ]
   ]
 
 ParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
   If[ IntersectingQ[ l1, l2 ], False,
     With[ { lineDistances = Table[ Min[ GraphDistance[ graph, v, # ] & /@ l2 ], { v, l1 } ] },
-      Max[ lineDistances ] - Min[ lineDistances ] <= threshold
-    ]
+      Max[ lineDistances ] - Min[ lineDistances ] <= threshold ]
   ]
 
 
 (* ===================== PencilDirections / PencilCardinality / LineCount ===================== *)
 
-(* PencilDirections lists the canonical maximal geodesics through origin
-   - one per projective direction class at that vertex.  PencilCardinality
-   counts them.  LineCount is the projective-incidence "number of lines"
-   in the graph (canonical maximal geodesics overall).                    *)
+(* Canonical maximal geodesics through origin, one per projective direction class
+   at origin.  LineCount: canonical maximal geodesics overall. *)
 
 PencilDirections[ graph_Graph, origin_ ] :=
   DeleteDuplicates @ Map[ canonicalLine, Flatten[

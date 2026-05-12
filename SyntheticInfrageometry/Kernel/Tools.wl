@@ -24,6 +24,15 @@ PackageScope[infraSpread]
 PackageScope[infraCap]
 PackageScope[infraSpreadAndCartesian]
 PackageScope[infraUnionSpread]
+PackageScope[methodName]
+
+
+(* Normalise a Method option value to its leading method-name string:
+   "Metric"           -> "Metric"
+   {"Metric", opts__} -> "Metric"                                            *)
+
+methodName[ m_String ]          := m
+methodName[ { m_String, ___ } ] := m
 
 
 (* Path-space distances and selectors (HausdorffDistance, FrechetDistance,

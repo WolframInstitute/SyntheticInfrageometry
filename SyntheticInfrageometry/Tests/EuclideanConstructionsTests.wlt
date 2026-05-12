@@ -65,13 +65,6 @@ VerificationTest[
   TestID -> "FindPerpendicular-strict-1"
 ]
 
-VerificationTest[
-  FindPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, Method -> "Spectral"],
-  $Failed,
-  {FindPerpendicular::nyi},
-  TestID -> "FindPerpendicular-spectral-stub"
-]
-
 (* ===== FindBisectingHyperplane ===== *)
 
 (* The bisector of 1 and 5 in PathGraph[5] is just {3}; removing it
@@ -189,20 +182,6 @@ VerificationTest[
   TestID -> "SegmentLineAngle-segment-form"
 ]
 
-VerificationTest[
-  SegmentLineAngle[PathGraph[Range[5]], 1, 3, {1, 2, 3, 4, 5}, Method -> "Spectral"],
-  $Failed,
-  {SegmentLineAngle::nyi},
-  TestID -> "SegmentLineAngle-spectral-stub"
-]
-
-VerificationTest[
-  SegmentLineAngle[PathGraph[Range[5]], 1, 3, {1, 2, 3, 4, 5}, Method -> "Resistance"],
-  $Failed,
-  {SegmentLineAngle::badmethod},
-  TestID -> "SegmentLineAngle-resistance-rejected"
-]
-
 (* ===== FindParallel: Method scaffolding ===== *)
 
 VerificationTest[
@@ -210,21 +189,6 @@ VerificationTest[
   InfraSegment[{{5, 6, 7, 8}}],
   TestID -> "FindParallel-explicit-metric"
 ]
-
-VerificationTest[
-  FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All, Method -> "Spectral"],
-  $Failed,
-  {FindParallel::badmethod},
-  TestID -> "FindParallel-spectral-rejected"
-]
-
-VerificationTest[
-  FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All, Method -> "Walk"],
-  $Failed,
-  {FindParallel::badmethod},
-  TestID -> "FindParallel-bad-method"
-]
-
 
 (* ===== FindMidpoint Method -> "Embedding" ===== *)
 

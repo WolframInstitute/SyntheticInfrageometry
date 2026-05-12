@@ -128,10 +128,6 @@ findMidpointCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindMidpoint ] ]
   ]
 
 
-methodName[ m_String ]         := m
-methodName[ { m_String, ___ } ] := m
-
-
 (* Sort the metric interval (Pool -> "ShortestPaths") or every vertex (Pool -> "AllPaths")
    by Euclidean distance from each vertex's embedding coordinate to (coord(p1) + coord(p2)) / 2. *)
 
