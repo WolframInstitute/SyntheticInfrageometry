@@ -373,9 +373,9 @@ pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
    a multi-realisation wrapper or a List of unary wrappers (the Find* shape)
    spreads into its bare realisations; anything else becomes a singleton.  *)
 
-infraSpread[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraRevolution )[ reps_List ] ] := reps
+infraSpread[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] := reps
 infraSpread[ list_List ] /; AllTrue[ list,
-    MatchQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraRevolution )[ { _ } ] ] ] :=
+    MatchQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ { _ } ] ] ] :=
   First /@ list
 infraSpread[ other_ ] := { other }
 
@@ -385,7 +385,7 @@ infraSpread[ other_ ] := { other }
    singleton list.                                                        *)
 
 infraUnionSpread[ InfraPoint[ reps_List ] ] := DeleteDuplicates @ reps
-infraUnionSpread[ ( InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraRevolution )[ reps_List ] ] :=
+infraUnionSpread[ ( InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] :=
   Union @@ reps
 infraUnionSpread[ other_ ] := { other }
 

@@ -310,8 +310,8 @@ dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_,
 dispatchConstruction[ graph_Graph, InfraRevolution[ axis_, profile_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindRevolution[ graph, axis, profile, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindRevolution ] ] ],
+      { FindRevolution[ graph, axis, profile,
+          Sequence @@ FilterRules[ { opts }, Options[ FindRevolution ] ] ][[ 1, 1 ]] },
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Axis" -> axis, "Profile" -> profile |> ],
     extractBranches[ { opts } ] ]

@@ -14,7 +14,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 7, axis = { 2, 3, 4, 5, 6 } },
-    FindCylinder[ g, axis, 0, 1, "Form" -> "Solid" ][[ 1, 1, 1 ]] ],
+    FindCylinder[ g, axis, 0, "Form" -> "Solid" ][[ 1, 1 ]] ],
   { 2, 3, 4, 5, 6 },
   TestID -> "FindCylinder-PathGraph-r0-Solid-is-axis"
 ]
@@ -24,42 +24,9 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 9, axis = { 3, 4, 5, 6, 7 } },
-    FindCylinder[ g, axis, 1, 1, "Form" -> "Solid" ][[ 1, 1, 1 ]] ],
+    FindCylinder[ g, axis, 1, "Form" -> "Solid" ][[ 1, 1 ]] ],
   { 2, 3, 4, 5, 6, 7, 8 },
   TestID -> "FindCylinder-PathGraph-r1-Solid"
-]
-
-
-(* Calling triple n / UpTo[n] / All on a multi-axis (CycleGraph[6] has two
-   geodesics from 1 to 4).  Use radius 0 in Solid form so the two
-   geodesics produce distinct vertex sets (the axes themselves). *)
-
-VerificationTest[
-  With[ { g = CycleGraph @ 6, seg = FindSegment[ CycleGraph @ 6, 1, 4, All ] },
-    Length @ FindRevolution[ g, InfraSegment @ seg, 0, All, "Form" -> "Solid" ] ],
-  2,
-  TestID -> "FindRevolution-multi-axis-All"
-]
-
-VerificationTest[
-  With[ { g = CycleGraph @ 6, seg = FindSegment[ CycleGraph @ 6, 1, 4, All ] },
-    Length @ FindRevolution[ g, InfraSegment @ seg, 0, 1, "Form" -> "Solid" ] ],
-  1,
-  TestID -> "FindRevolution-multi-axis-n1"
-]
-
-VerificationTest[
-  With[ { g = CycleGraph @ 6, seg = FindSegment[ CycleGraph @ 6, 1, 4, All ] },
-    FindRevolution[ g, InfraSegment @ seg, 0, UpTo @ 10, "Form" -> "Solid" ] =!= $Failed ],
-  True,
-  TestID -> "FindRevolution-multi-axis-UpTo"
-]
-
-VerificationTest[
-  With[ { g = CycleGraph @ 6, seg = FindSegment[ CycleGraph @ 6, 1, 4, All ] },
-    FindRevolution[ g, InfraSegment @ seg, 0, 5, "Form" -> "Solid" ] ],
-  $Failed,
-  TestID -> "FindRevolution-multi-axis-n-shortfall"
 ]
 
 
@@ -68,23 +35,22 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ], axis = { 1, 2, 3, 4 } },
     With[ {
-        surf = FindRevolution[ g, axis, 1                       ][[ 1, 1, 1 ]],
-        sol  = FindRevolution[ g, axis, 1, 1, "Form" -> "Solid" ][[ 1, 1, 1 ]] },
+        surf = FindRevolution[ g, axis, 1                    ][[ 1, 1 ]],
+        sol  = FindRevolution[ g, axis, 1, "Form" -> "Solid" ][[ 1, 1 ]] },
       SubsetQ[ sol, surf ] ] ],
   True,
   TestID -> "FindRevolution-Surface-subset-Solid"
 ]
 
 
-(* Solid equals the union of capped-profile Surfaces.  Small integer profile
-   on a grid -- check by direct computation. *)
+(* Solid equals the union of capped-profile Surfaces. *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ], axis = { 1, 2, 3, 4, 5 }, prof = { 0, 1, 2, 1, 0 } },
     With[ {
-        sol   = FindRevolution[ g, axis, prof, 1, "Form" -> "Solid" ][[ 1, 1, 1 ]],
+        sol   = FindRevolution[ g, axis, prof, "Form" -> "Solid" ][[ 1, 1 ]],
         union = Sort[ Union @@ Table[
-          FindRevolution[ g, axis, Min[ #, k ] & /@ prof, 1, "Form" -> "Surface" ][[ 1, 1, 1 ]],
+          FindRevolution[ g, axis, Min[ #, k ] & /@ prof, "Form" -> "Surface" ][[ 1, 1 ]],
           { k, 0, Max @ prof } ] ] },
       Sort @ sol === union ] ],
   True,
@@ -96,8 +62,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ], axis = { 1, 2, 3, 4, 5 } },
-    FindCone[ g, axis, 1, 1, "Form" -> "Solid" ] ===
-    FindRevolution[ g, axis, Range[ 0, 4 ], 1, "Form" -> "Solid" ] ],
+    FindCone[ g, axis, 1, "Form" -> "Solid" ] ===
+    FindRevolution[ g, axis, Range[ 0, 4 ], "Form" -> "Solid" ] ],
   True,
   TestID -> "FindCone-slope1-matches-linear-profile"
 ]
@@ -107,8 +73,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ], axis = { 1, 2, 3, 4, 5 } },
-    FindCone[ g, axis, 1, 1, "Apex" -> Last, "Form" -> "Solid" ] ===
-    FindRevolution[ g, axis, Range[ 4, 0, -1 ], 1, "Form" -> "Solid" ] ],
+    FindCone[ g, axis, 1, "Apex" -> Last, "Form" -> "Solid" ] ===
+    FindRevolution[ g, axis, Range[ 4, 0, -1 ], "Form" -> "Solid" ] ],
   True,
   TestID -> "FindCone-Apex-Last-reverses-profile"
 ]
@@ -125,13 +91,11 @@ VerificationTest[
 ]
 
 
-(* Singleton axis degenerates to FindShell.  The non-axis Voronoi-closest
-   test reduces to the unique axis vertex, the comparison becomes
-   d(v, c) == r -- exactly the FindShell semantics. *)
+(* Singleton axis degenerates to FindShell. *)
 
 VerificationTest[
   With[ { g = PetersenGraph[] },
-    FindRevolution[ g, { 1 }, 2 ][[ 1, 1, 1 ]] ===
+    FindRevolution[ g, { 1 }, 2 ][[ 1, 1 ]] ===
     Sort @ Select[ VertexList @ g, GraphDistance[ g, 1, # ] === 2 & ] ],
   True,
   TestID -> "FindRevolution-singleton-axis-equals-FindShell"
@@ -142,14 +106,14 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 5 },
-    FindRevolution[ g, { 3 }, 100, 1, "Form" -> "Solid" ][[ 1, 1, 1 ]] === Sort @ VertexList @ g ],
+    FindRevolution[ g, { 3 }, 100, "Form" -> "Solid" ][[ 1, 1 ]] === Sort @ VertexList @ g ],
   True,
   TestID -> "FindRevolution-large-radius-Solid-is-all"
 ]
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 5 },
-    FindRevolution[ g, { 3 }, 100 ][[ 1, 1, 1 ]] ],
+    FindRevolution[ g, { 3 }, 100 ][[ 1, 1 ]] ],
   { },
   TestID -> "FindRevolution-large-radius-Surface-is-empty"
 ]
@@ -159,7 +123,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ], axis = { 1, 2, 3, 4, 5 }, prof = { 0, 1, 2, 1, 0 } },
-    With[ { vs = FindRevolution[ g, axis, prof, 1, "Form" -> "Solid" ][[ 1, 1, 1 ]] },
+    With[ { vs = FindRevolution[ g, axis, prof, "Form" -> "Solid" ][[ 1, 1 ]] },
       RevolutionQ[ g, vs, axis, prof, "Form" -> "Solid" ] ] ],
   True,
   TestID -> "RevolutionQ-round-trip-Solid"
@@ -167,7 +131,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ], axis = { 1, 2, 3, 4, 5 }, prof = { 0, 1, 2, 1, 0 } },
-    With[ { vs = FindRevolution[ g, axis, prof, 1, "Form" -> "Surface" ][[ 1, 1, 1 ]] },
+    With[ { vs = FindRevolution[ g, axis, prof, "Form" -> "Surface" ][[ 1, 1 ]] },
       RevolutionQ[ g, vs, axis, prof, "Form" -> "Surface" ] ] ],
   True,
   TestID -> "RevolutionQ-round-trip-Surface"
@@ -178,8 +142,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ], axis = { 1, 2, 3, 4 } },
-    FindRevolution[ g, axis, <| 1 -> 0, 2 -> 1, 3 -> 1, 4 -> 0 |>, 1, "Form" -> "Solid" ] ===
-    FindRevolution[ g, axis, { 0, 1, 1, 0 }, 1, "Form" -> "Solid" ] ],
+    FindRevolution[ g, axis, <| 1 -> 0, 2 -> 1, 3 -> 1, 4 -> 0 |>, "Form" -> "Solid" ] ===
+    FindRevolution[ g, axis, { 0, 1, 1, 0 }, "Form" -> "Solid" ] ],
   True,
   TestID -> "FindRevolution-Association-equals-List"
 ]
