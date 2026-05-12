@@ -21,8 +21,7 @@ PackageScope[parseCurvatureSpec]
 PackageScope[dimensionSpecQ]
 PackageScope[radiiSpecQ]
 PackageScope[infraSpread]
-PackageScope[infraWrappedQ]
-PackageScope[infraCapBy]
+PackageScope[infraCap]
 PackageScope[infraSpreadAndCartesian]
 PackageScope[infraUnionSpread]
 
@@ -365,21 +364,19 @@ pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
 
 (* ===================== Multi-realisation wrapper helpers ===================== *)
 
-(* Internal helpers that orchestrate the multi-realisation Infra* wrappers.
-   The wrapper heads themselves (InfraPoint, InfraSegment, ...) and their
-   accessor / Part / auto-flatten rules live in the per-primitive files.    *)
+(* Internal helpers that orchestrate the Infra* wrapper system.  Find*
+   functions return a List of unary wrappers InfraX[{r}]; the multi-realisation
+   wrapper InfraX[{r1, ..., rk}] is constructed by wrapping such a list -- the
+   auto-flatten rule in each per-primitive file collapses the result.        *)
 
-(* infraWrappedQ[expr] tests whether expr is one of the multi-realisation
-   wrappers in single-_List-arg form. *)
-
-infraWrappedQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ _List ] ] := True
-infraWrappedQ[ _ ] := False
-
-(* infraSpread[anchor] is the source/endpoint-position adapter: a wrapped
-   anchor is spread into its realisations, an unwrapped value becomes a
-   singleton list, ready for Outer / Tuples / Cartesian iteration.        *)
+(* infraSpread[anchor] adapts an anchor for one slot of a Cartesian product:
+   a multi-realisation wrapper or a List of unary wrappers (the Find* shape)
+   spreads into its bare realisations; anything else becomes a singleton.  *)
 
 infraSpread[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] := reps
+infraSpread[ list_List ] /; AllTrue[ list,
+    MatchQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ { _ } ] ] ] :=
+  First /@ list
 infraSpread[ other_ ] := { other }
 
 (* infraUnionSpread[entry] collapses a wrapped entry to the union of its
@@ -392,31 +389,27 @@ infraUnionSpread[ ( InfraSegment | InfraShell | InfraPlane | InfraCircle | Infra
   Union @@ reps
 infraUnionSpread[ other_ ] := { other }
 
-(* infraCapBy[wrapper, count] applies the standard count semantics
-   (n_Integer strict / UpTo[n] / All) to a wrapper.  Returns $Failed on
-   strict-n shortfall, otherwise a same-head wrapper.                       *)
+(* infraCap[list, count] applies the standard count semantics (n_Integer
+   strict / UpTo[n] / All) to a bare list of realisations.  Returns $Failed
+   on strict-n shortfall, otherwise a bare list.                            *)
 
-infraCapBy[ wrapper_?infraWrappedQ, All ] := wrapper
-
-infraCapBy[ wrapper_?infraWrappedQ, UpTo[ n_Integer ] ] :=
-  Head[ wrapper ][ Take[ wrapper[ "Realizations" ], UpTo[ n ] ] ]
-
-infraCapBy[ wrapper_?infraWrappedQ, n_Integer ] /; n <= wrapper[ "Length" ] :=
-  Head[ wrapper ][ Take[ wrapper[ "Realizations" ], n ] ]
-
-infraCapBy[ _?infraWrappedQ, _Integer ] := $Failed
+infraCap[ list_List, All ]                              := list
+infraCap[ list_List, UpTo[ n_Integer ] ]                := Take[ list, UpTo[ n ] ]
+infraCap[ list_List, n_Integer ] /; n <= Length[ list ] := Take[ list, n ]
+infraCap[ _List, _Integer ]                             := $Failed
 
 
 (* infraSpreadAndCartesian is the dispatch shell for source/endpoint anchors.
    Each anchor is spread into its realisations (or treated as a singleton if
    bare); the Cartesian product runs the single-pair core; bare-list results
-   are union-deduplicated and wrapped under wrapHead.  Strict-n shortfall on
-   any pair propagates as bare $Failed.                                       *)
+   are union-deduplicated, capped, and wrapped one-at-a-time under wrapHead.
+   Strict-n shortfall on any pair propagates as bare $Failed.               *)
 
 infraSpreadAndCartesian[ wrapHead_, count_, core_, anchors__ ] :=
   With[ { results = core @@@ Tuples[ infraSpread /@ { anchors } ] },
-    If[ MemberQ[ results, $Failed ],
-      $Failed,
-      wrapHead[ DeleteDuplicates @ Flatten[ results, 1 ] ]
+    If[ MemberQ[ results, $Failed ], $Failed,
+      With[ { capped = infraCap[ DeleteDuplicates @ Flatten[ results, 1 ], count ] },
+        If[ capped === $Failed, $Failed, wrapHead[ { # } ] & /@ capped ]
+      ]
     ]
   ]

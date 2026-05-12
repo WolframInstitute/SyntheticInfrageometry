@@ -318,7 +318,7 @@ VerificationTest[
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
     With[{axes = FindOrthogonalFrame[g, 3, All]},
-      AllTrue[axes, MemberQ[#["First"], 3] &]
+      AllTrue[axes, MemberQ[#[[ 1, 1 ]], 3] &]
     ]
   ],
   True,
@@ -478,7 +478,7 @@ VerificationTest[
 
 VerificationTest[
   Module[{g = PathGraph[Range[5]],
-          canonicalize = Sort[First @ Sort[{#, Reverse @ #}] & /@ (#["First"] & /@ #)] &},
+          canonicalize = Sort[First @ Sort[{#, Reverse @ #}] & /@ (#[[ 1, 1 ]] & /@ #)] &},
     canonicalize @ FindOrthogonalFrame[g, InfraPoint[{3}], All] ===
       canonicalize @ FindOrthogonalFrame[g, 3, All]
   ],
@@ -492,7 +492,7 @@ VerificationTest[
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
     With[{axes = FindOrthogonalFrame[g, InfraPoint[{2, 4}], All]},
-      AllTrue[axes, MemberQ[#["First"], 2] || MemberQ[#["First"], 4] &]
+      AllTrue[axes, MemberQ[#[[ 1, 1 ]], 2] || MemberQ[#[[ 1, 1 ]], 4] &]
     ]
   ],
   True,
@@ -502,7 +502,7 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     With[{axes = FindOrthogonalFrame[g, InfraPoint[{6, 11}], All]},
-      AllTrue[axes, MemberQ[#["First"], 6] || MemberQ[#["First"], 11] &]
+      AllTrue[axes, MemberQ[#[[ 1, 1 ]], 6] || MemberQ[#[[ 1, 1 ]], 11] &]
     ]
   ],
   True,
@@ -527,7 +527,7 @@ VerificationTest[
   With[{g = GridGraph[{3, 3}], c = 5},
     With[{axes = FindOrthogonalFrame[g, c, All]},
       AllTrue[Range @ Length @ axes,
-        i |-> AllTrue[axes[[i]]["First"],
+        i |-> AllTrue[First @ First @ axes[[i]],
           v |-> With[{coords = OrthogonalCoordinates[g, c, axes, v]},
             AllTrue[Range @ Length @ coords, j |-> j == i || coords[[j]] == 0]
           ]
@@ -544,7 +544,7 @@ VerificationTest[
 
 VerificationTest[
   With[{frame = FindOrthogonalFrame[PathGraph[Range[7]], 4, All]},
-    Length[frame] === 1 && Length[frame[[1]]["First"]] === 7
+    Length[frame] === 1 && Length[First @ First @ frame[[1]]] === 7
   ],
   True,
   TestID -> "FindOrthogonalFrame-path-line-longest"
@@ -555,7 +555,7 @@ VerificationTest[
    strictly antipodal at 1 (d_g(3, 7) = 4 = depth(3) + depth(7)). *)
 
 VerificationTest[
-  Sort[First @ Sort[{#, Reverse @ #}] & /@ (#["First"] & /@ FindOrthogonalFrame[GridGraph[{3, 3}], 1, All])],
+  Sort[First @ Sort[{#, Reverse @ #}] & /@ (#[[ 1, 1 ]] & /@ FindOrthogonalFrame[GridGraph[{3, 3}], 1, All])],
   Sort[First @ Sort[{#, Reverse @ #}] & /@ {{3, 2, 1, 4, 7}}],
   TestID -> "FindOrthogonalFrame-3x3grid-corner-L-bent-line"
 ]
@@ -613,7 +613,7 @@ VerificationTest[
   With[{g = GridGraph[{3, 3}], c = 5},
     With[{axes = FindOrthogonalFrame[g, c, All]},
       AllTrue[Range @ Length @ axes,
-        i |-> AllTrue[axes[[i]]["First"],
+        i |-> AllTrue[First @ First @ axes[[i]],
           v |-> With[{coords = OrthogonalCoordinates[g, c, axes, v,
               "SelectCoordinate" -> "Centered"]},
             AllTrue[Range @ Length @ coords, j |-> j == i || coords[[j]] == 0]

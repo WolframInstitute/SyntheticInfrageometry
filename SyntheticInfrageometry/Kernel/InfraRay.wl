@@ -1,18 +1,15 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+PackageScope[findRayCore]
+
 
 (* ===================== InfraRay wrapper ===================== *)
 
+(* InfraRay[{ray}] is the unary form; InfraRay[{ray1, ..., rayk}] is the
+   multi-realisation form.  Only auto-flatten on nested wrappers. *)
+
 InfraRay[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraRay[ _List ] ] ] :=
   InfraRay[ Flatten[ reps /. InfraRay[ xs_List ] :> xs, 1 ] ]
-
-InfraRay /: Part[ InfraRay[ reps_List ], i_Integer ] := InfraRay[ { reps[[ i ]] } ]
-InfraRay /: Part[ InfraRay[ reps_List ], spec_ ]     := InfraRay[ reps[[ spec ]] ]
-
-InfraRay[ reps_List ][ "Realizations" ] := reps
-InfraRay[ reps_List ][ "Length" ]       := Length @ reps
-InfraRay[ reps_List ][ "Expand" ]       := InfraRay[ { # } ] & /@ reps
-InfraRay[ reps_List ][ "First" ]        := First @ reps
 
 
 (* ===================== FindRay ===================== *)
@@ -35,20 +32,9 @@ findRayCore[ graph_Graph, origin_, v_ ] :=
           True,                   Reverse[ line[[ 1 ;; oIdx ]] ]
         ]
       ],
-    FindLine[ graph, origin, v, All ][ "Realizations" ]
+    #[[ 1, 1 ]] & /@ FindLine[ graph, origin, v, All ]
   ]
 
-FindRay[ graph_Graph, origin_, v_, All ] :=
-  infraSpreadAndCartesian[ InfraRay, All, findRayCore[ graph, ##] &, origin, v ]
-
-FindRay[ graph_Graph, origin_, v_, UpTo[ n_Integer ] ] :=
-  With[ { result = FindRay[ graph, origin, v, All ] },
-    If[ result === $Failed, $Failed,
-      InfraRay[ Take[ result[ "Realizations" ], UpTo[ n ] ] ]
-    ]
-  ]
-
-FindRay[ graph_Graph, origin_, v_, n_Integer : 1 ] :=
-  With[ { result = FindRay[ graph, origin, v, UpTo[ n ] ] },
-    If[ result === $Failed || result[ "Length" ] < n, $Failed, result ]
-  ]
+FindRay[ graph_Graph, origin_, v_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+  infraSpreadAndCartesian[ InfraRay, count, findRayCore[ graph, ##] &, origin, v ]

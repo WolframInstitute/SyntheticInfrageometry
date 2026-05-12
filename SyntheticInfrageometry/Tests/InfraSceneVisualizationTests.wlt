@@ -1,6 +1,6 @@
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Head @ InfraSceneHighlight[ g, { FindSegment[ g, 1, 16, All ] } ]
+    Head @ InfraSceneHighlight[ g, { InfraSegment @ FindSegment[ g, 1, 16, All ] } ]
   ],
   Graph,
   TestID -> "InfraSceneHighlight-single-multiobject"
@@ -9,7 +9,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     Head @ InfraSceneHighlight[ g,
-      { FindLine[ g, 1, 9, All ] -> RGBColor[ 0.8, 0.2, 0.2 ] } ]
+      { InfraSegment @ FindLine[ g, 1, 9, All ] -> RGBColor[ 0.8, 0.2, 0.2 ] } ]
   ],
   Graph,
   TestID -> "InfraSceneHighlight-explicit-color-rule"
@@ -31,7 +31,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Head @ InfraSceneHighlight[ g, { FindPoint[ g, 5 ] } ]
+    Head @ InfraSceneHighlight[ g, { InfraPoint @ FindPoint[ g, 5 ] } ]
   ],
   Graph,
   TestID -> "InfraSceneHighlight-vertex-singletons"
@@ -40,8 +40,8 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Head @ InfraSceneHighlight[ g,
-      { FindSegment[ g, 1, 16, All ] -> Blue,
-        { 1, 16 }                    -> Red } ]
+      { InfraSegment @ FindSegment[ g, 1, 16, All ] -> Blue,
+        { 1, 16 }                                   -> Red } ]
   ],
   Graph,
   TestID -> "InfraSceneHighlight-multiple-objects-blend"
@@ -50,8 +50,8 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Head @ InfraSceneHighlight[ g,
-      { FindSegment[ g, 1, 16, All ] -> Blue,
-        FindCircle[ g, 1, 2, All ] -> Green } ]
+      { InfraSegment @ FindSegment[ g, 1, 16, All ] -> Blue,
+        InfraCircle @ FindCircle[ g, 1, 2, All ] -> Green } ]
   ],
   Graph,
   TestID -> "InfraSceneHighlight-mixed-segment-and-circle"
@@ -81,7 +81,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
-          { FindShell[ g, 1, { 1, 2 }, All ] -> Green } ] },
+          { InfraShell @ FindShell[ g, 1, { 1, 2 }, All ] -> Green } ] },
       Length @ Cases[ styles, _UndirectedEdge -> _, Infinity ] > 0
     ]
   ],
@@ -144,7 +144,7 @@ VerificationTest[
         Rectangle[], MaxCellMeasure -> 0.1 ] },
     With[ {
         vs  = VertexList @ g,
-        seg = FindSegment[ g,
+        seg = InfraSegment @ FindSegment[ g,
           First @ VertexList @ g, Last @ VertexList @ g, All ] },
       MatchQ[ First @ vs, { _, _ } ] &&
       Length @ Cases[

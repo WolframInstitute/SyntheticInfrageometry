@@ -5,16 +5,11 @@ PackageScope[findCircleCore]
 
 (* ===================== InfraCircle wrapper ===================== *)
 
+(* InfraCircle[{cycle}] is the unary form; InfraCircle[{cycle1, ..., cyclek}]
+   is the multi-realisation form.  Only auto-flatten on nested wrappers. *)
+
 InfraCircle[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraCircle[ _List ] ] ] :=
   InfraCircle[ Flatten[ reps /. InfraCircle[ xs_List ] :> xs, 1 ] ]
-
-InfraCircle /: Part[ InfraCircle[ reps_List ], i_Integer ] := InfraCircle[ { reps[[ i ]] } ]
-InfraCircle /: Part[ InfraCircle[ reps_List ], spec_ ]     := InfraCircle[ reps[[ spec ]] ]
-
-InfraCircle[ reps_List ][ "Realizations" ] := reps
-InfraCircle[ reps_List ][ "Length" ]       := Length @ reps
-InfraCircle[ reps_List ][ "Expand" ]       := InfraCircle[ { # } ] & /@ reps
-InfraCircle[ reps_List ][ "First" ]        := First @ reps
 
 
 (* ===================== FindCircle ===================== *)
@@ -32,12 +27,11 @@ Options[ FindCircle ] = { Method -> "Metric" };
 FindCircle[ graph_Graph, p_, r_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraCircle, count,
-    findCircleCore[ graph, ##, count, opts ] &, p, r ]
+    findCircleCore[ graph, ##, opts ] &, p, r ]
 
 
-findCircleCore[ graph_Graph, p_, r_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindCircle ] ] :=
-  Module[ { range, levelSet, radius, levelGraph, allCycles, vertexCycles, separating, spec, methodName, ranked },
+findCircleCore[ graph_Graph, p_, r_, opts : OptionsPattern[ FindCircle ] ] :=
+  Module[ { range, levelSet, radius, levelGraph, allCycles, vertexCycles, separating, spec, methodName },
     range = Replace[ r, d_?NumericQ :> { d, d } ];
     levelSet = Select[ VertexList[ graph ],
       range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ];
@@ -50,7 +44,7 @@ findCircleCore[ graph_Graph, p_, r_,
     ];
     spec = OptionValue[ FindCircle, { opts }, Method ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    ranked = Switch[ methodName,
+    Switch[ methodName,
       "Metric", separating,
       "Embedding",
         With[ { embOpts = parseEmbeddingMethod[ spec, "LevelSet" ] },
@@ -60,14 +54,6 @@ findCircleCore[ graph_Graph, p_, r_,
           ]
         ],
       _, Message[ FindCircle::badmethod, spec ]; $Failed
-    ];
-    Which[
-      ranked === $Failed, $Failed,
-      MatchQ[ count, _Integer ] && Length[ ranked ] < count, $Failed,
-      MatchQ[ count, _Integer ],          Take[ ranked, count ],
-      MatchQ[ count, UpTo[ _Integer ] ],  Take[ ranked, count ],
-      count === All,                       ranked,
-      True,                                ranked
     ]
   ]
 

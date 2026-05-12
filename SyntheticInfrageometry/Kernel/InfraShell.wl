@@ -5,16 +5,11 @@ PackageScope[findShellCore]
 
 (* ===================== InfraShell wrapper ===================== *)
 
+(* InfraShell[{set}] is the unary form; InfraShell[{set1, ..., setk}] is the
+   multi-realisation form.  Only auto-flatten on nested wrappers. *)
+
 InfraShell[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraShell[ _List ] ] ] :=
   InfraShell[ Flatten[ reps /. InfraShell[ xs_List ] :> xs, 1 ] ]
-
-InfraShell /: Part[ InfraShell[ reps_List ], i_Integer ] := InfraShell[ { reps[[ i ]] } ]
-InfraShell /: Part[ InfraShell[ reps_List ], spec_ ]     := InfraShell[ reps[[ spec ]] ]
-
-InfraShell[ reps_List ][ "Realizations" ] := reps
-InfraShell[ reps_List ][ "Length" ]       := Length @ reps
-InfraShell[ reps_List ][ "Expand" ]       := InfraShell[ { # } ] & /@ reps
-InfraShell[ reps_List ][ "First" ]        := First @ reps
 
 
 (* ===================== FindShell ===================== *)
@@ -32,31 +27,22 @@ Options[ FindShell ] = { Method -> "Metric" };
 FindShell[ graph_Graph, p_, r_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraShell, count,
-    findShellCore[ graph, ##, count, opts ] &, p, r ]
+    findShellCore[ graph, ##, opts ] &, p, r ]
 
 
-findShellCore[ graph_Graph, p_, r_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindShell ] ] :=
-  Module[ { spec, methodName, range, levelSet, radius, shells },
+findShellCore[ graph_Graph, p_, r_, opts : OptionsPattern[ FindShell ] ] :=
+  Module[ { spec, methodName, range, levelSet, radius },
     spec = OptionValue[ FindShell, { opts }, Method ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
     range = Replace[ r, d_?NumericQ :> { d, d } ];
     levelSet = Select[ VertexList[ graph ],
       range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ];
     radius = If[ NumericQ[ r ], r, Mean[ r ] ];
-    shells = Switch[ methodName,
+    Switch[ methodName,
       "Metric",     { levelSet },
       "Separating", FindMinimalSeparatingSubgraphs[ graph, levelSet, p, radius ],
       "Embedding",  embeddingRankShellVertices[ graph, p, radius, levelSet, parseEmbeddingMethod[ spec, "LevelSet" ] ],
       _,            Message[ FindShell::badmethod, spec ]; $Failed
-    ];
-    Which[
-      shells === $Failed, $Failed,
-      MatchQ[ count, _Integer ] && Length[ shells ] < count, $Failed,
-      MatchQ[ count, _Integer ],          Take[ shells, count ],
-      MatchQ[ count, UpTo[ _Integer ] ],  Take[ shells, count ],
-      count === All,                       shells,
-      True,                                shells
     ]
   ]
 

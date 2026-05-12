@@ -2,38 +2,32 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageScope[findPointPool]
 PackageScope[findMidpointCore]
+PackageScope[findReflectionCore]
 PackageScope[completeEquilateralTriangleCore]
 
 
 (* ===================== InfraPoint wrapper ===================== *)
 
-(* InfraPoint[reps_List] is the multi-realisation wrapper for points:
-   auto-flatten on nested wrappers, Part returns wrapped sub-list,
-   accessors ["Realizations"] / ["Length"] / ["Expand"] / ["First"]. *)
+(* InfraPoint[{v}] is the unary form; InfraPoint[{v1, ..., vk}] is the
+   multi-realisation form.  The only wrapper rule is auto-flatten: wrapping
+   a List of InfraPoint[_List] entries collapses them into a single multi
+   wrapper.  This is what makes  InfraPoint @ FindPoint[g, n]  work.       *)
 
 InfraPoint[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPoint[ _List ] ] ] :=
   InfraPoint[ Flatten[ reps /. InfraPoint[ xs_List ] :> xs, 1 ] ]
 
-InfraPoint /: Part[ InfraPoint[ reps_List ], i_Integer ] := InfraPoint[ { reps[[ i ]] } ]
-InfraPoint /: Part[ InfraPoint[ reps_List ], spec_ ]     := InfraPoint[ reps[[ spec ]] ]
-
-InfraPoint[ reps_List ][ "Realizations" ] := reps
-InfraPoint[ reps_List ][ "Length" ]       := Length @ reps
-InfraPoint[ reps_List ][ "Expand" ]       := InfraPoint[ { # } ] & /@ reps
-InfraPoint[ reps_List ][ "First" ]        := First @ reps
-
 
 (* ===================== FindPoint ===================== *)
 
-(* FindPoint[g, n] returns n vertices of the graph (the existence postulate
-   for points), wrapped as InfraPoint[{v1, ..., vn}].  With "Distance" -> r
-   the n vertices form a clique in the r-distance graph (mutually at least
-   r apart), realising "n points spread out by r"; with "From" the candidate
-   pool is restricted -- "Center", "Periphery", a vertex, a vertex list,
-   InfraPoint[{a, b, ...}] (multi-anchor pool), origin -> dist (single
-   anchor at given distance, where dist is a number, {dMin, dMax} range, or
-   "Max"), or InfraPoint[{a, b, ...}] -> dist (multi-anchor intersection:
-   vertices satisfying dist from EVERY anchor).                             *)
+(* FindPoint[g, n] returns a List of n unary InfraPoint[{v}] wrappers (the
+   existence postulate for points).  With "Distance" -> r the n vertices are
+   mutually at exactly distance r; with "Distance" -> {dMin, dMax} they are
+   mutually within that range (Infinity in dMax means finiteMax); with
+   "From" the candidate pool is restricted -- "Center", "Periphery", a
+   vertex, a vertex list, InfraPoint[{a, b, ...}] (multi-anchor pool),
+   origin -> dist (single anchor at given distance, where dist is a number,
+   {dMin, dMax} range, or "Max"), or InfraPoint[{a, b, ...}] -> dist
+   (multi-anchor intersection: vertices satisfying dist from EVERY anchor). *)
 
 Options[ FindPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
 
@@ -59,7 +53,7 @@ FindPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
           { d, thresholds }
         ];
         If[ cliques === {}, {}, RandomSample[ RandomChoice[ cliques ], UpTo[ n ] ] ],
-        range = Replace[ dist, { d_?NumericQ :> { d, finiteMax }, { dMin_, dMax_ } :> { dMin, dMax /. Infinity -> finiteMax } } ];
+        range = Replace[ dist, { d_?NumericQ :> { d, d }, { dMin_, dMax_ } :> { dMin, dMax /. Infinity -> finiteMax } } ];
         auxiliaryGraph = AdjacencyGraph[ pool,
           UnitStep[ distMatrix - range[[ 1 ]] ] * UnitStep[ range[[ 2 ]] - distMatrix ] *
             (1 - IdentityMatrix[ Length[ vertexIndex ] ]) ];
@@ -67,7 +61,7 @@ FindPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
         If[ cliques === {}, {}, RandomSample[ RandomChoice[ cliques ], UpTo[ n ] ] ]
       ]
     ];
-    InfraPoint[ picked ]
+    InfraPoint[ { # } ] & /@ picked
   ]
 
 FindPoint[ graph_Graph, All, opts : OptionsPattern[] ] :=
@@ -75,7 +69,7 @@ FindPoint[ graph_Graph, All, opts : OptionsPattern[] ] :=
 
 FindPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
   With[ { result = FindPoint[ graph, UpTo[ n ], opts ] },
-    If[ result[ "Length" ] < n, $Failed, result ]
+    If[ Length[ result ] < n, $Failed, result ]
   ]
 
 
@@ -88,9 +82,7 @@ findPointPool[ graph_Graph, _String ]     := VertexList[ graph ]
 findPointPool[ graph_Graph, InfraPoint[ reps_List ] ] := reps
 
 findPointPool[ graph_Graph, ( origin_ -> spec_ ) ] :=
-  With[ {
-      anchors = If[ MatchQ[ origin, InfraPoint[ _List ] ],
-        origin[ "Realizations" ], { origin } ] },
+  With[ { anchors = infraSpread[ origin ] },
     With[ {
         anchorDists = Association @ Map[ a |-> a -> GraphDistance[ graph, a ], anchors ],
         vertexIndex = AssociationThread[ VertexList[ graph ] -> Range @ VertexCount[ graph ] ] },
@@ -102,6 +94,7 @@ findPointPool[ graph_Graph, ( origin_ -> spec_ ) ] :=
   ]
 
 findPointPool[ graph_Graph, v_ ] /; MemberQ[ VertexList[ graph ], v ] := { v }
+findPointPool[ graph_Graph, list_List ] /; AllTrue[ list, MatchQ[ InfraPoint[ { _ } ] ] ] := First /@ list
 findPointPool[ graph_Graph, list_List ] := list
 findPointPool[ graph_Graph, _ ]         := VertexList[ graph ]
 
@@ -134,10 +127,10 @@ FindMidpoint[ graph_Graph, segment_List, opts : OptionsPattern[] ] /; Length[ se
   Module[ { spec = OptionValue[ Method ], methodName },
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
     Switch[ methodName,
-      "Metric",   InfraPoint[ { segment[[ Ceiling[ Length[ segment ] / 2 ] ]] } ],
+      "Metric",   { InfraPoint[ { segment[[ Ceiling[ Length[ segment ] / 2 ] ]] } ] },
       "Embedding",
         With[ { embOpts = parseEmbeddingMethod[ spec ] },
-          InfraPoint[ { First @ embeddingRankMidpoints[ graph, First[ segment ], Last[ segment ], embOpts ] } ]
+          { InfraPoint[ { First @ embeddingRankMidpoints[ graph, First[ segment ], Last[ segment ], embOpts ] } ] }
         ],
       "Spectral" | "Resistance", Message[ FindMidpoint::nyi, methodName ]; $Failed,
       _, Message[ FindMidpoint::badmethod, methodName ]; $Failed
@@ -147,14 +140,13 @@ FindMidpoint[ graph_Graph, segment_List, opts : OptionsPattern[] ] /; Length[ se
 FindMidpoint[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraPoint, count,
-    findMidpointCore[ graph, ##, count, opts ] &, p1, p2 ]
+    findMidpointCore[ graph, ##, opts ] &, p1, p2 ]
 
 
-findMidpointCore[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindMidpoint ] ] :=
-  Module[ { spec = OptionValue[ FindMidpoint, { opts }, Method ], methodName, segs, midpoints },
+findMidpointCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindMidpoint ] ] :=
+  Module[ { spec = OptionValue[ FindMidpoint, { opts }, Method ], methodName, segs },
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    midpoints = Switch[ methodName,
+    Switch[ methodName,
       "Metric",
         segs = allGeodesics[ graph, p1, p2 ];
         If[ segs === {}, {},
@@ -170,14 +162,6 @@ findMidpointCore[ graph_Graph, p1_, p2_,
         ],
       "Spectral" | "Resistance", Message[ FindMidpoint::nyi, methodName ]; $Failed,
       _, Message[ FindMidpoint::badmethod, methodName ]; $Failed
-    ];
-    Which[
-      midpoints === $Failed, $Failed,
-      MatchQ[ count, _Integer ] && Length[ midpoints ] < count, $Failed,
-      MatchQ[ count, _Integer ],          Take[ midpoints, count ],
-      MatchQ[ count, UpTo[ _Integer ] ],  Take[ midpoints, count ],
-      count === All,                       midpoints,
-      True,                                midpoints
     ]
   ]
 
@@ -210,23 +194,18 @@ embeddingRankMidpoints[ graph_Graph, p1_, p2_, embOpts_Association ] :=
    with multiple geodesics admit several).  Synthetic recipe -- built
    purely from BetweennessQ and graph distance. *)
 
-FindReflection[ graph_Graph, x_, a_, All ] :=
+FindReflection[ graph_Graph, x_, a_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+  infraSpreadAndCartesian[ InfraPoint, count,
+    findReflectionCore[ graph, ##] &, x, a ]
+
+
+findReflectionCore[ graph_Graph, x_, a_ ] :=
   With[ { r = GraphDistance[ graph, a, x ] },
-    If[ r === Infinity, InfraPoint[ {} ],
-      InfraPoint @ Select[ VertexList[ graph ],
-        y |-> BetweennessQ[ graph, x, a, y ] && GraphDistance[ graph, a, y ] === r
-      ]
+    If[ r === Infinity, {},
+      Select[ VertexList[ graph ],
+        y |-> BetweennessQ[ graph, x, a, y ] && GraphDistance[ graph, a, y ] === r ]
     ]
-  ]
-
-FindReflection[ graph_Graph, x_, a_, UpTo[ n_Integer ] ] :=
-  With[ { result = FindReflection[ graph, x, a, All ] },
-    InfraPoint @ Take[ result[ "Realizations" ], UpTo[ n ] ]
-  ]
-
-FindReflection[ graph_Graph, x_, a_, n_Integer : 1 ] :=
-  With[ { result = FindReflection[ graph, x, a, UpTo[ n ] ] },
-    If[ result[ "Length" ] < n, $Failed, result ]
   ]
 
 
@@ -244,31 +223,24 @@ Options[ CompleteEquilateralTriangle ] = { Method -> "Metric" };
 CompleteEquilateralTriangle[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraPoint, count,
-    completeEquilateralTriangleCore[ graph, ##, count, opts ] &, p1, p2 ]
+    completeEquilateralTriangleCore[ graph, ##, opts ] &, p1, p2 ]
 
 
 completeEquilateralTriangleCore[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ CompleteEquilateralTriangle ] ] :=
-  Module[ { method = OptionValue[ CompleteEquilateralTriangle, { opts }, Method ], r, apexes },
-    apexes = Switch[ method,
+    opts : OptionsPattern[ CompleteEquilateralTriangle ] ] :=
+  With[ { method = OptionValue[ CompleteEquilateralTriangle, { opts }, Method ] },
+    Switch[ method,
       "Metric",
-        r = GraphDistance[ graph, p1, p2 ];
-        If[ r === Infinity, {},
-          Intersection[
-            Select[ VertexList[ graph ], GraphDistance[ graph, p1, # ] == r & ],
-            Select[ VertexList[ graph ], GraphDistance[ graph, p2, # ] == r & ]
+        With[ { r = GraphDistance[ graph, p1, p2 ] },
+          If[ r === Infinity, {},
+            Intersection[
+              Select[ VertexList[ graph ], GraphDistance[ graph, p1, # ] == r & ],
+              Select[ VertexList[ graph ], GraphDistance[ graph, p2, # ] == r & ]
+            ]
           ]
         ],
       "Spectral" | "Resistance", Message[ CompleteEquilateralTriangle::nyi, method ]; $Failed,
       _, Message[ CompleteEquilateralTriangle::badmethod, method ]; $Failed
-    ];
-    Which[
-      apexes === $Failed, $Failed,
-      MatchQ[ count, _Integer ] && Length[ apexes ] < count, $Failed,
-      MatchQ[ count, _Integer ],          Take[ apexes, count ],
-      MatchQ[ count, UpTo[ _Integer ] ],  Take[ apexes, count ],
-      count === All,                       apexes,
-      True,                                apexes
     ]
   ]
 
@@ -284,18 +256,11 @@ linePointSet[ InfraSegment[ reps_List ] ] := Union @@ reps
 linePointSet[ InfraRay    [ reps_List ] ] := Union @@ reps
 linePointSet[ line_List ] := line
 
-FindCommonPoint[ graph_Graph, lines_List, All ] :=
-  If[ Length[ lines ] == 0,
-    InfraPoint[ {} ],
-    InfraPoint[ Apply[ Intersection, linePointSet /@ lines ] ]
-  ]
-
-FindCommonPoint[ graph_Graph, lines_List, UpTo[ n_Integer ] ] :=
-  With[ { result = FindCommonPoint[ graph, lines, All ] },
-    InfraPoint[ Take[ result[ "Realizations" ], UpTo[ n ] ] ]
-  ]
-
-FindCommonPoint[ graph_Graph, lines_List, n_Integer : 1 ] :=
-  With[ { result = FindCommonPoint[ graph, lines, UpTo[ n ] ] },
-    If[ result[ "Length" ] < n, $Failed, result ]
+FindCommonPoint[ graph_Graph, lines_List,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+  With[ { vs = If[ Length[ lines ] == 0, {},
+        Apply[ Intersection, linePointSet /@ lines ] ] },
+    With[ { capped = infraCap[ vs, count ] },
+      If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
+    ]
   ]

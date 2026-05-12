@@ -178,15 +178,18 @@ Options[ SelectPath ] = {
 Options[ SelectCycle ] = Options[ SelectPath ];
 
 
-SelectPath[ graph_Graph, paths_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+SelectPath[ graph_Graph, paths_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] /;
+    paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraRay )[ { _ } ] ] ] :=
   selectFromPathSpace[ graph, paths, n, False,
     OptionValue[ "From" ], OptionValue[ "Distance" ],
     OptionValue[ "Metric" ], OptionValue[ "MaxCliques" ] ]
 
-SelectPath[ graph_Graph, paths_List, All, opts : OptionsPattern[] ] :=
+SelectPath[ graph_Graph, paths_List, All, opts : OptionsPattern[] ] /;
+    paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraRay )[ { _ } ] ] ] :=
   SelectPath[ graph, paths, UpTo[ Length[ paths ] ], opts ]
 
-SelectPath[ graph_Graph, paths_List, n_Integer : 1, opts : OptionsPattern[] ] :=
+SelectPath[ graph_Graph, paths_List, n_Integer : 1, opts : OptionsPattern[] ] /;
+    paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraRay )[ { _ } ] ] ] :=
   With[ { result = SelectPath[ graph, paths, UpTo[ n ], opts ] },
     If[ ListQ[ result ] && Length[ result ] < n, $Failed, result ] ]
 
@@ -195,19 +198,33 @@ SelectPath[ graph_Graph, ( head : InfraSegment | InfraRay )[ paths_List ],
   With[ { result = SelectPath[ graph, paths, countSpec, opts ] },
     If[ result === $Failed, $Failed, head[ result ] ] ]
 
+(* Symmetric form: a List of unary InfraSegment / InfraRay wrappers (the Find*
+   return shape) routes through the bare-paths core and re-wraps each result
+   under the matching head. *)
+
+SelectPath[ graph_Graph, list_List,
+            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
+    list =!= { } && AllTrue[ list, MatchQ[ ( InfraSegment | InfraRay )[ { _ } ] ] ] :=
+  With[ { head = Head @ First @ list,
+          result = SelectPath[ graph, #[[ 1, 1 ]] & /@ list, countSpec, opts ] },
+    If[ result === $Failed, $Failed, head[ { # } ] & /@ result ] ]
+
 SelectPath[ graph_Graph, countSpec : ( _Integer | UpTo[ _Integer ] | All ), opts : OptionsPattern[] ] :=
   SelectPath[ graph, #, countSpec, opts ] &
 
 
-SelectCycle[ graph_Graph, cycles_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+SelectCycle[ graph_Graph, cycles_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] /;
+    cycles === { } || ! AllTrue[ cycles, MatchQ[ InfraCircle[ { _ } ] ] ] :=
   selectFromPathSpace[ graph, cycles, n, True,
     OptionValue[ "From" ], OptionValue[ "Distance" ],
     OptionValue[ "Metric" ], OptionValue[ "MaxCliques" ] ]
 
-SelectCycle[ graph_Graph, cycles_List, All, opts : OptionsPattern[] ] :=
+SelectCycle[ graph_Graph, cycles_List, All, opts : OptionsPattern[] ] /;
+    cycles === { } || ! AllTrue[ cycles, MatchQ[ InfraCircle[ { _ } ] ] ] :=
   SelectCycle[ graph, cycles, UpTo[ Length[ cycles ] ], opts ]
 
-SelectCycle[ graph_Graph, cycles_List, n_Integer : 1, opts : OptionsPattern[] ] :=
+SelectCycle[ graph_Graph, cycles_List, n_Integer : 1, opts : OptionsPattern[] ] /;
+    cycles === { } || ! AllTrue[ cycles, MatchQ[ InfraCircle[ { _ } ] ] ] :=
   With[ { result = SelectCycle[ graph, cycles, UpTo[ n ], opts ] },
     If[ ListQ[ result ] && Length[ result ] < n, $Failed, result ] ]
 
@@ -215,6 +232,15 @@ SelectCycle[ graph_Graph, InfraCircle[ cycles_List ],
              countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   With[ { result = SelectCycle[ graph, cycles, countSpec, opts ] },
     If[ result === $Failed, $Failed, InfraCircle[ result ] ] ]
+
+(* Symmetric form: a List of unary InfraCircle wrappers routes through the
+   bare-cycles core and re-wraps each result under InfraCircle. *)
+
+SelectCycle[ graph_Graph, list_List,
+             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
+    list =!= { } && AllTrue[ list, MatchQ[ InfraCircle[ { _ } ] ] ] :=
+  With[ { result = SelectCycle[ graph, #[[ 1, 1 ]] & /@ list, countSpec, opts ] },
+    If[ result === $Failed, $Failed, InfraCircle[ { # } ] & /@ result ] ]
 
 SelectCycle[ graph_Graph, countSpec : ( _Integer | UpTo[ _Integer ] | All ), opts : OptionsPattern[] ] :=
   SelectCycle[ graph, #, countSpec, opts ] &
@@ -385,9 +411,12 @@ cycleEdges[ cycle_List ] :=
    segment between p1 and p2 under the graph's drawing -- i.e. the paths
    that look most like the chord. *)
 
-EmbeddingClosestPaths[ graph_Graph, paths_List, { p1_, p2_ } ] /; Length[ paths ] <= 1 := paths
+EmbeddingClosestPaths[ graph_Graph, paths_List, { p1_, p2_ } ] /;
+    Length[ paths ] <= 1 &&
+    ( paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraRay )[ { _ } ] ] ] ) := paths
 
-EmbeddingClosestPaths[ graph_Graph, paths_List, { p1_, p2_ } ] :=
+EmbeddingClosestPaths[ graph_Graph, paths_List, { p1_, p2_ } ] /;
+    paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraRay )[ { _ } ] ] ] :=
   Module[ { coords, vertexIndex, ep },
     coords = resolveEmbeddingCoords[ graph, Automatic ];
     vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
@@ -399,6 +428,14 @@ EmbeddingClosestPaths[ graph_Graph, paths_List, { p1_, p2_ } ] :=
 EmbeddingClosestPaths[ graph_Graph, InfraSegment[ paths_List ], { p1_, p2_ } ] :=
   InfraSegment[ EmbeddingClosestPaths[ graph, paths, { p1, p2 } ] ]
 
+(* List of unary InfraSegment / InfraRay wrappers: route through bare core,
+   re-wrap each result. *)
+
+EmbeddingClosestPaths[ graph_Graph, list_List, { p1_, p2_ } ] /;
+    list =!= { } && AllTrue[ list, MatchQ[ ( InfraSegment | InfraRay )[ { _ } ] ] ] :=
+  With[ { head = Head @ First @ list },
+    head[ { # } ] & /@ EmbeddingClosestPaths[ graph, #[[ 1, 1 ]] & /@ list, { p1, p2 } ] ]
+
 EmbeddingClosestPaths[ graph_Graph, { p1_, p2_ } ] :=
   EmbeddingClosestPaths[ graph, #, { p1, p2 } ] &
 
@@ -407,9 +444,12 @@ EmbeddingClosestPaths[ graph_Graph, { p1_, p2_ } ] :=
    of given centre and radius under the graph's drawing -- the visually
    roundest cycles. *)
 
-EmbeddingClosestCycles[ graph_Graph, cycles_List, { center_, radius_ } ] /; Length[ cycles ] <= 1 := cycles
+EmbeddingClosestCycles[ graph_Graph, cycles_List, { center_, radius_ } ] /;
+    Length[ cycles ] <= 1 &&
+    ( cycles === { } || ! AllTrue[ cycles, MatchQ[ InfraCircle[ { _ } ] ] ] ) := cycles
 
-EmbeddingClosestCycles[ graph_Graph, cycles_List, { center_, radius_ } ] :=
+EmbeddingClosestCycles[ graph_Graph, cycles_List, { center_, radius_ } ] /;
+    cycles === { } || ! AllTrue[ cycles, MatchQ[ InfraCircle[ { _ } ] ] ] :=
   Module[ { coords, vertexIndex, centerIdx },
     coords = resolveEmbeddingCoords[ graph, Automatic ];
     vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
@@ -420,6 +460,11 @@ EmbeddingClosestCycles[ graph_Graph, cycles_List, { center_, radius_ } ] :=
 
 EmbeddingClosestCycles[ graph_Graph, InfraCircle[ cycles_List ], { center_, radius_ } ] :=
   InfraCircle[ EmbeddingClosestCycles[ graph, cycles, { center, radius } ] ]
+
+EmbeddingClosestCycles[ graph_Graph, list_List, { center_, radius_ } ] /;
+    list =!= { } && AllTrue[ list, MatchQ[ InfraCircle[ { _ } ] ] ] :=
+  InfraCircle[ { # } ] & /@
+    EmbeddingClosestCycles[ graph, #[[ 1, 1 ]] & /@ list, { center, radius } ]
 
 EmbeddingClosestCycles[ graph_Graph, { center_, radius_ } ] :=
   EmbeddingClosestCycles[ graph, #, { center, radius } ] &

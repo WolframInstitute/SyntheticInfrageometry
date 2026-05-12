@@ -5,16 +5,11 @@ PackageScope[findBisectingHyperplaneCore]
 
 (* ===================== InfraPlane wrapper ===================== *)
 
+(* InfraPlane[{set}] is the unary form; InfraPlane[{set1, ..., setk}] is the
+   multi-realisation form.  Only auto-flatten on nested wrappers. *)
+
 InfraPlane[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPlane[ _List ] ] ] :=
   InfraPlane[ Flatten[ reps /. InfraPlane[ xs_List ] :> xs, 1 ] ]
-
-InfraPlane /: Part[ InfraPlane[ reps_List ], i_Integer ] := InfraPlane[ { reps[[ i ]] } ]
-InfraPlane /: Part[ InfraPlane[ reps_List ], spec_ ]     := InfraPlane[ reps[[ spec ]] ]
-
-InfraPlane[ reps_List ][ "Realizations" ] := reps
-InfraPlane[ reps_List ][ "Length" ]       := Length @ reps
-InfraPlane[ reps_List ][ "Expand" ]       := InfraPlane[ { # } ] & /@ reps
-InfraPlane[ reps_List ][ "First" ]        := First @ reps
 
 
 (* ===================== FindBisectingHyperplane ===================== *)
@@ -40,21 +35,12 @@ FindBisectingHyperplane[ graph_Graph, p1_, p2_,
 FindBisectingHyperplane[ graph_Graph, p1_, p2_,
     window : { _Integer, _Integer }, count : ( _Integer | UpTo[ _Integer ] | All ) ] :=
   infraSpreadAndCartesian[ InfraPlane, count,
-    findBisectingHyperplaneCore[ graph, ##, window, count ] &, p1, p2 ]
+    findBisectingHyperplaneCore[ graph, ##, window ] &, p1, p2 ]
 
 
-findBisectingHyperplaneCore[ graph_Graph, p1_, p2_,
-    { lo_Integer, hi_Integer }, count : ( _Integer | UpTo[ _Integer ] | All ) ] :=
-  Module[ { bisector, hyperplanes },
-    bisector = Pick[ VertexList[ graph ],
-      MapThread[ { x, y } |-> lo <= x - y <= hi,
-        { GraphDistance[ graph, p1 ], GraphDistance[ graph, p2 ] } ] ];
-    hyperplanes = FindPairSeparators[ graph, Complement[ bisector, { p1, p2 } ], p1, p2 ];
-    Which[
-      MatchQ[ count, _Integer ] && Length[ hyperplanes ] < count, $Failed,
-      MatchQ[ count, _Integer ],          Take[ hyperplanes, count ],
-      MatchQ[ count, UpTo[ _Integer ] ],  Take[ hyperplanes, count ],
-      count === All,                       hyperplanes,
-      True,                                hyperplanes
-    ]
+findBisectingHyperplaneCore[ graph_Graph, p1_, p2_, { lo_Integer, hi_Integer } ] :=
+  With[ { bisector = Pick[ VertexList[ graph ],
+        MapThread[ { x, y } |-> lo <= x - y <= hi,
+          { GraphDistance[ graph, p1 ], GraphDistance[ graph, p2 ] } ] ] },
+    FindPairSeparators[ graph, Complement[ bisector, { p1, p2 } ], p1, p2 ]
   ]

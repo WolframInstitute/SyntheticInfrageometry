@@ -26,7 +26,7 @@ canonicalLine[ line_List ] := First @ Sort @ { line, Reverse[ line ] }
 
 allCanonicalLines[ graph_Graph ] :=
   DeleteDuplicates @ Flatten[
-    canonicalLine /@ FindLine[ graph, #[[ 1 ]], #[[ 2 ]], All ][ "Realizations" ] & /@
+    canonicalLine[ #[[ 1, 1 ]] ] & /@ FindLine[ graph, #[[ 1 ]], #[[ 2 ]], All ] & /@
       Subsets[ VertexList[ graph ], { 2 } ],
     1
   ]
@@ -47,13 +47,12 @@ Options[ FindLine ] = { "Maximality" -> "Extension", Method -> "Shortest" };
 FindLine[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraSegment, count,
-    findLineCore[ graph, ##, count, opts ] &, p1, p2 ]
+    findLineCore[ graph, ##, opts ] &, p1, p2 ]
 
 
-findLineCore[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindLine ] ] /;
+findLineCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindLine ] ] /;
     MemberQ[ VertexList[ graph ], p1 ] :=
-  Module[ { spec, methodName, middles, allExtensions, diam, ranked },
+  Module[ { spec, methodName, middles, allExtensions, diam },
     spec = OptionValue[ FindLine, { opts }, Method ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, Automatic -> "Shortest", _ :> spec } ];
     middles = Switch[ methodName,
@@ -70,7 +69,7 @@ findLineCore[ graph_Graph, p1_, p2_,
       diam = GraphDiameter[ graph ];
       allExtensions = Select[ allExtensions, line |-> Length[ line ] - 1 == diam ]
     ];
-    ranked = Switch[ methodName,
+    Switch[ methodName,
       "Shortest" | "ShortestPathExtension" | "CurvatureMinimizing", allExtensions,
       "Embedding",
         With[ { embOpts = parseEmbeddingMethod[ spec ] },
@@ -79,17 +78,10 @@ findLineCore[ graph_Graph, p1_, p2_,
             embeddingRankLines[ graph, allExtensions, p1, p2, embOpts ]
           ]
         ]
-    ];
-    Which[
-      MatchQ[ count, _Integer ] && Length[ ranked ] < count, $Failed,
-      MatchQ[ count, _Integer ],                              Take[ ranked, count ],
-      MatchQ[ count, UpTo[ _Integer ] ],                      Take[ ranked, count ],
-      count === All,                                          ranked,
-      True,                                                   ranked
     ]
   ]
 
-findLineCore[ _Graph, _, _, _, OptionsPattern[ FindLine ] ] := $Failed
+findLineCore[ _Graph, _, _, OptionsPattern[ FindLine ] ] := $Failed
 
 
 embeddingRankLines[ graph_Graph, lines_List, p1_, p2_, embOpts_Association ] :=
@@ -157,29 +149,20 @@ Options[ FindParallel ] = { Method -> "Metric" };
 FindParallel[ graph_Graph, line_, p_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraSegment, count,
-    findParallelCore[ graph, ##, count, opts ] &, line, p ]
+    findParallelCore[ graph, ##, opts ] &, line, p ]
 
 
-findParallelCore[ graph_Graph, line_List, p_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindParallel ] ] :=
-  Module[ { spec, methodName, parallels },
-    spec = OptionValue[ FindParallel, { opts }, Method ];
-    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    parallels = Switch[ methodName,
-      "Metric", findParallelMetric[ graph, line, p ],
-      "Embedding",
-        With[ { embOpts = parseEmbeddingMethod[ spec, "LevelSet" ] },
-          embeddingRankParallels[ graph, findParallelMetric[ graph, line, p ], line, p, embOpts ]
-        ],
-      _, Message[ FindParallel::badmethod, methodName ]; $Failed
-    ];
-    Which[
-      parallels === $Failed, $Failed,
-      MatchQ[ count, _Integer ] && Length[ parallels ] < count, $Failed,
-      MatchQ[ count, _Integer ],          Take[ parallels, count ],
-      MatchQ[ count, UpTo[ _Integer ] ],  Take[ parallels, count ],
-      count === All,                       parallels,
-      True,                                parallels
+findParallelCore[ graph_Graph, line_List, p_, opts : OptionsPattern[ FindParallel ] ] :=
+  With[ { spec = OptionValue[ FindParallel, { opts }, Method ] },
+    With[ { methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ] },
+      Switch[ methodName,
+        "Metric", findParallelMetric[ graph, line, p ],
+        "Embedding",
+          With[ { embOpts = parseEmbeddingMethod[ spec, "LevelSet" ] },
+            embeddingRankParallels[ graph, findParallelMetric[ graph, line, p ], line, p, embOpts ]
+          ],
+        _, Message[ FindParallel::badmethod, methodName ]; $Failed
+      ]
     ]
   ]
 
@@ -240,14 +223,13 @@ Options[ FindPerpendicular ] = { Method -> "Metric" };
 FindPerpendicular[ graph_Graph, line_, point_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraPoint, count,
-    findPerpendicularCore[ graph, ##, count, opts ] &, line, point ]
+    findPerpendicularCore[ graph, ##, opts ] &, line, point ]
 
 
-findPerpendicularCore[ graph_Graph, line_List, point_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindPerpendicular ] ] :=
-  Module[ { spec = OptionValue[ FindPerpendicular, { opts }, Method ], methodName, distances, byIndex, feet },
+findPerpendicularCore[ graph_Graph, line_List, point_, opts : OptionsPattern[ FindPerpendicular ] ] :=
+  Module[ { spec = OptionValue[ FindPerpendicular, { opts }, Method ], methodName, distances, byIndex },
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
-    feet = Switch[ methodName,
+    Switch[ methodName,
       "Metric",
         distances = GraphDistance[ graph, point, # ] & /@ line;
         byIndex = Values @ GroupBy[ Range @ Length @ line, distances[[ # ]] & ];
@@ -269,14 +251,6 @@ findPerpendicularCore[ graph_Graph, line_List, point_,
         ],
       "Spectral" | "Resistance", Message[ FindPerpendicular::nyi, methodName ]; $Failed,
       _, Message[ FindPerpendicular::badmethod, methodName ]; $Failed
-    ];
-    Which[
-      feet === $Failed, $Failed,
-      MatchQ[ count, _Integer ] && Length[ feet ] < count, $Failed,
-      MatchQ[ count, _Integer ],          Take[ feet, count ],
-      MatchQ[ count, UpTo[ _Integer ] ],  Take[ feet, count ],
-      count === All,                       feet,
-      True,                                feet
     ]
   ]
 
@@ -307,21 +281,14 @@ findCommonLineCore[ graph_Graph, verts_List ] :=
   Module[ { uverts, candidates },
     uverts = DeleteDuplicates @ Catenate[ infraUnionSpread /@ verts ];
     If[ Length[ uverts ] < 2, Return[ {} ] ];
-    candidates = canonicalLine /@ FindLine[ graph, First @ uverts, uverts[[ 2 ]], All ][ "Realizations" ];
+    candidates = canonicalLine[ #[[ 1, 1 ]] ] & /@ FindLine[ graph, First @ uverts, uverts[[ 2 ]], All ];
     DeleteDuplicates @ Select[ candidates, line |-> SubsetQ[ line, uverts ] ]
   ]
 
-FindCommonLine[ graph_Graph, verts_List, All ] :=
-  InfraSegment[ findCommonLineCore[ graph, verts ] ]
-
-FindCommonLine[ graph_Graph, verts_List, UpTo[ n_Integer ] ] :=
-  With[ { result = FindCommonLine[ graph, verts, All ] },
-    InfraSegment[ Take[ result[ "Realizations" ], UpTo[ n ] ] ]
-  ]
-
-FindCommonLine[ graph_Graph, verts_List, n_Integer : 1 ] :=
-  With[ { result = FindCommonLine[ graph, verts, UpTo[ n ] ] },
-    If[ result[ "Length" ] < n, $Failed, result ]
+FindCommonLine[ graph_Graph, verts_List,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+  With[ { capped = infraCap[ findCommonLineCore[ graph, verts ], count ] },
+    If[ capped === $Failed, $Failed, InfraSegment[ { # } ] & /@ capped ]
   ]
 
 
@@ -389,7 +356,7 @@ ParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
 
 PencilDirections[ graph_Graph, origin_ ] :=
   DeleteDuplicates @ Map[ canonicalLine, Flatten[
-    FindLine[ graph, origin, #, All ][ "Realizations" ] & /@
+    Map[ #[[ 1, 1 ]] &, FindLine[ graph, origin, #, All ] ] & /@
       DeleteCases[ VertexList[ graph ], origin ],
     1 ] ]
 

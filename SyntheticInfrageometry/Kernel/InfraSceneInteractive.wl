@@ -54,7 +54,7 @@ SegmentViewer[ g_Graph ] :=
       With[ {
           segments = If[ p1 === p2 || GraphDistance[ g, p1, p2 ] === Infinity, {},
             Take[
-              applySelectOption[ g, FindSegment[ g, p1, p2, All ][ "Realizations" ],
+              applySelectOption[ g, #[[ 1, 1 ]] & /@ FindSegment[ g, p1, p2, All ],
                 sel, False, <| "Endpoints" -> { p1, p2 } |> ],
               UpTo[ n ] ] ] },
         EventHandler[
@@ -92,7 +92,7 @@ ShellViewer[ g_Graph ] :=
       seed;
       With[ {
           shells = If[ r < 1, {},
-            Take[ FindShell[ g, p, r, All, Method -> method ][ "Realizations" ], UpTo[ n ] ] ] },
+            #[[ 1, 1 ]] & /@ Take[ FindShell[ g, p, r, All, Method -> method ], UpTo[ n ] ] ] },
         EventHandler[
           HighlightGraph[
             InfraSceneHighlight[ g, { InfraShell[ shells ] -> $InfraShellColor } ],
@@ -127,7 +127,7 @@ CircleViewer[ g_Graph ] :=
       With[ {
           circles = If[ r < 1, {},
             Take[
-              applySelectOption[ g, FindCircle[ g, p, r, All ][ "Realizations" ],
+              applySelectOption[ g, #[[ 1, 1 ]] & /@ FindCircle[ g, p, r, All ],
                 sel, True, <| "Center" -> p, "Radius" -> r |> ],
               UpTo[ n ] ] ] },
         EventHandler[

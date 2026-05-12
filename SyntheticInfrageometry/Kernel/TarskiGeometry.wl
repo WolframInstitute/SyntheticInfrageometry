@@ -112,8 +112,8 @@ TarskiCongruenceIdentityQ[ graph_Graph ] :=
 TarskiSegmentConstructionQ[ graph_Graph ] :=
   Module[ { vs = VertexList[ graph ] },
     AllTrue[ Tuples[ vs, 4 ],
-      tuple |-> ExtendSegment[ graph,
-        tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ][ "Length" ] > 0
+      tuple |-> Length @ ExtendSegment[ graph,
+        tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ] > 0
     ]
   ]
 
@@ -309,8 +309,8 @@ tarskiBetweennessIdentityCounter[ graph_Graph ] :=
 tarskiSegmentConstructionCounter[ graph_Graph ] :=
   Module[ { vs = VertexList[ graph ] },
     Select[ Tuples[ vs, 4 ],
-      tuple |-> ExtendSegment[ graph,
-        tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ][ "Length" ] === 0
+      tuple |-> Length @ ExtendSegment[ graph,
+        tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ] === 0
     ]
   ]
 

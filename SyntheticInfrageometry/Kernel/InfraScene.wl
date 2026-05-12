@@ -94,6 +94,11 @@ infraVertexSet[ InfraPoint[ vs_List ] ] := vs
 infraVertexSet[ ( InfraSegment | InfraLine | InfraRay | InfraCircle
                 | InfraShell | InfraPlane )[ reps_List ] ] :=
   Union @@ reps
+infraVertexSet[ list_List ] /;
+    list =!= { } && AllTrue[ list,
+      MatchQ[ ( InfraPoint | InfraSegment | InfraLine | InfraRay |
+                InfraCircle | InfraShell | InfraPlane )[ { _ } ] ] ] :=
+  infraVertexSet[ Head[ First @ list ] @ ( #[[ 1, 1 ]] & /@ list ) ]
 infraVertexSet[ v_ ] := { v }
 
 
@@ -247,7 +252,7 @@ dispatchConstruction[ graph_Graph, InfraPoint[ n_Integer, opts___Rule ] ] :=
 dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      FindSegment[ graph, p1, p2, All ][ "Realizations" ],
+      #[[ 1, 1 ]] & /@ FindSegment[ graph, p1, p2, All ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]
@@ -264,8 +269,8 @@ dispatchConstruction[ graph_Graph, InfraLine[ p1_, p2_, opts___Rule ] ] /;
   MemberQ[ VertexList @ graph, p1 ] :=
   capBranches[
     applySelectOption[ graph,
-      FindLine[ graph, p1, p2, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindLine ] ] ][ "Realizations" ],
+      #[[ 1, 1 ]] & /@ FindLine[ graph, p1, p2, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindLine ] ] ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]
@@ -273,8 +278,8 @@ dispatchConstruction[ graph_Graph, InfraLine[ p1_, p2_, opts___Rule ] ] /;
 dispatchConstruction[ graph_Graph, InfraShell[ center_, r_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      FindShell[ graph, center, r, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindShell ] ] ][ "Realizations" ],
+      #[[ 1, 1 ]] & /@ FindShell[ graph, center, r, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindShell ] ] ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Center" -> center,
                 "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
@@ -283,7 +288,7 @@ dispatchConstruction[ graph_Graph, InfraShell[ center_, r_, opts___Rule ] ] :=
 dispatchConstruction[ graph_Graph, InfraCircle[ center_, r_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      FindCircle[ graph, center, r, All ][ "Realizations" ],
+      #[[ 1, 1 ]] & /@ FindCircle[ graph, center, r, All ],
       "Select" /. { opts } /. "Select" -> None,
       True, <| "Center" -> center,
                "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
@@ -296,7 +301,7 @@ dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_,
     window : { _Integer, _Integer }, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      FindBisectingHyperplane[ graph, p1, p2, window, All ][ "Realizations" ],
+      #[[ 1, 1 ]] & /@ FindBisectingHyperplane[ graph, p1, p2, window, All ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]

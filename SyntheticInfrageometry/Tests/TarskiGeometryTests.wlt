@@ -269,19 +269,19 @@ VerificationTest[
 (* ===== ExtendSegment (Tarski 5-vertex form, formerly FindTarskiSegmentExtension) ===== *)
 
 VerificationTest[
-  ExtendSegment[PathGraph[Range[5]], 1, 2, 1, 2, All],
+  InfraPoint @ ExtendSegment[PathGraph[Range[5]], 1, 2, 1, 2, All],
   InfraPoint[{3}],
   TestID -> "ExtendSegment-Tarski-PathGraph-extends-by-one"
 ]
 
 VerificationTest[
-  ExtendSegment[PathGraph[Range[5]], 1, 2, 1, 3, All],
+  InfraPoint @ ExtendSegment[PathGraph[Range[5]], 1, 2, 1, 3, All],
   InfraPoint[{4}],
   TestID -> "ExtendSegment-Tarski-PathGraph-extends-by-two"
 ]
 
 VerificationTest[
-  ExtendSegment[PathGraph[Range[5]], 1, 2, 1, 5, All],
+  InfraPoint @ ExtendSegment[PathGraph[Range[5]], 1, 2, 1, 5, All],
   InfraPoint[{}],
   TestID -> "ExtendSegment-Tarski-PathGraph-no-room"
 ]
@@ -293,13 +293,13 @@ VerificationTest[
 ]
 
 VerificationTest[
-  ExtendSegment[PathGraph[Range[5]], 1, 2, 1, 5, UpTo[1]],
+  InfraPoint @ ExtendSegment[PathGraph[Range[5]], 1, 2, 1, 5, UpTo[1]],
   InfraPoint[{}],
   TestID -> "ExtendSegment-Tarski-PathGraph-UpTo-empty-not-failed"
 ]
 
 VerificationTest[
-  ExtendSegment[CycleGraph[6], 1, 2, 1, 2, All]["Length"] >= 1,
+  Length @ ExtendSegment[CycleGraph[6], 1, 2, 1, 2, All] >= 1,
   True,
   TestID -> "ExtendSegment-Tarski-CycleGraph-has-extension"
 ]
@@ -307,13 +307,13 @@ VerificationTest[
 (* ===== FindMidpoint with Method -> "Tarski" (formerly FindTarskiMidpoint) ===== *)
 
 VerificationTest[
-  FindMidpoint[PathGraph[Range[5]], 1, 5, All, Method -> "Tarski"],
+  InfraPoint @ FindMidpoint[PathGraph[Range[5]], 1, 5, All, Method -> "Tarski"],
   InfraPoint[{3}],
   TestID -> "FindMidpoint-Tarski-PathGraph-even-distance-hit"
 ]
 
 VerificationTest[
-  FindMidpoint[PathGraph[Range[5]], 1, 4, All, Method -> "Tarski"],
+  InfraPoint @ FindMidpoint[PathGraph[Range[5]], 1, 4, All, Method -> "Tarski"],
   InfraPoint[{}],
   TestID -> "FindMidpoint-Tarski-PathGraph-odd-distance-miss"
 ]
@@ -325,19 +325,19 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindMidpoint[PathGraph[Range[5]], 1, 4, UpTo[1], Method -> "Tarski"],
+  InfraPoint @ FindMidpoint[PathGraph[Range[5]], 1, 4, UpTo[1], Method -> "Tarski"],
   InfraPoint[{}],
   TestID -> "FindMidpoint-Tarski-PathGraph-odd-distance-UpTo-empty"
 ]
 
 VerificationTest[
-  Sort @ FindMidpoint[CycleGraph[4], 1, 3, All, Method -> "Tarski"]["Realizations"],
+  Sort @ (#[[ 1, 1 ]] & /@ FindMidpoint[CycleGraph[4], 1, 3, All, Method -> "Tarski"]),
   {2, 4},
   TestID -> "FindMidpoint-Tarski-CycleGraph4-antipodes-two-midpoints"
 ]
 
 VerificationTest[
-  FindMidpoint[CycleGraph[4], 1, 3, UpTo[1], Method -> "Tarski"]["Length"],
+  Length @ FindMidpoint[CycleGraph[4], 1, 3, UpTo[1], Method -> "Tarski"],
   1,
   TestID -> "FindMidpoint-Tarski-CycleGraph4-UpTo-caps"
 ]
@@ -345,19 +345,19 @@ VerificationTest[
 (* ===== FindReflection ===== *)
 
 VerificationTest[
-  FindReflection[PathGraph[Range[5]], 1, 2, All],
+  InfraPoint @ FindReflection[PathGraph[Range[5]], 1, 2, All],
   InfraPoint[{3}],
   TestID -> "FindReflection-PathGraph-adjacent"
 ]
 
 VerificationTest[
-  FindReflection[PathGraph[Range[5]], 1, 3, All],
+  InfraPoint @ FindReflection[PathGraph[Range[5]], 1, 3, All],
   InfraPoint[{5}],
   TestID -> "FindReflection-PathGraph-distance-two"
 ]
 
 VerificationTest[
-  FindReflection[PathGraph[Range[5]], 1, 4, All],
+  InfraPoint @ FindReflection[PathGraph[Range[5]], 1, 4, All],
   InfraPoint[{}],
   TestID -> "FindReflection-PathGraph-no-room"
 ]
@@ -369,13 +369,13 @@ VerificationTest[
 ]
 
 VerificationTest[
-  MemberQ[FindReflection[CycleGraph[6], 1, 2, All]["Realizations"], 3],
+  MemberQ[(#[[ 1, 1 ]] & /@ FindReflection[CycleGraph[6], 1, 2, All]), 3],
   True,
   TestID -> "FindReflection-CycleGraph6-includes-3"
 ]
 
 VerificationTest[
-  FindReflection[HypercubeGraph[3], 1, 2, All]["Length"] >= 2,
+  Length @ FindReflection[HypercubeGraph[3], 1, 2, All] >= 2,
   True,
   TestID -> "FindReflection-HypercubeGraph-multi-valued"
 ]

@@ -6,16 +6,11 @@ PackageScope[extendSegmentCore]
 
 (* ===================== InfraSegment wrapper ===================== *)
 
+(* InfraSegment[{path}] is the unary form; InfraSegment[{path1, ..., pathk}]
+   is the multi-realisation form.  Only auto-flatten on nested wrappers. *)
+
 InfraSegment[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraSegment[ _List ] ] ] :=
   InfraSegment[ Flatten[ reps /. InfraSegment[ xs_List ] :> xs, 1 ] ]
-
-InfraSegment /: Part[ InfraSegment[ reps_List ], i_Integer ] := InfraSegment[ { reps[[ i ]] } ]
-InfraSegment /: Part[ InfraSegment[ reps_List ], spec_ ]     := InfraSegment[ reps[[ spec ]] ]
-
-InfraSegment[ reps_List ][ "Realizations" ] := reps
-InfraSegment[ reps_List ][ "Length" ]       := Length @ reps
-InfraSegment[ reps_List ][ "Expand" ]       := InfraSegment[ { # } ] & /@ reps
-InfraSegment[ reps_List ][ "First" ]        := First @ reps
 
 
 (* ===================== Messages ===================== *)
@@ -44,7 +39,7 @@ FindSegment[ graph_Graph, p1_, p2_,
 
 findSegmentCore[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindSegment ] ] :=
-  Module[ { spec = OptionValue[ FindSegment, { opts }, Method ], methodName, prune, shortestPathWindow, pool, curvature, curvatureSpec, dagNbrs, edgeKappa, d, paths },
+  Module[ { spec = OptionValue[ FindSegment, { opts }, Method ], methodName, prune, shortestPathWindow, pool, curvature, curvatureSpec, dagNbrs, edgeKappa, d },
     If[ p1 === p2, Return[ { } ] ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
     { prune, shortestPathWindow, pool, curvature } = Replace[ spec, {
@@ -59,7 +54,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
     } ];
     Switch[ methodName,
       "Shortest",
-        paths = If[ count === 1,
+        If[ count === 1,
           With[ { path = FindShortestPath[ graph, p1, p2 ] },
             If[ path === { }, { }, { path } ]
           ],
@@ -67,8 +62,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
           If[ d === Infinity, { },
             FindPath[ graph, p1, p2, { d }, count /. UpTo[ k_ ] :> k ]
           ]
-        ];
-        If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ],
+        ],
       "ShortestPathExtension",
         Which[
           ! pruningSpecQ[ prune ],
@@ -76,8 +70,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
           ! shortestPathWindowSpecQ[ shortestPathWindow ],
             Message[ FindSegment::badwindow, shortestPathWindow ]; $Failed,
           True,
-            paths = extendedOutPaths[ graph, p1, p2, prune, shortestPathWindow, countLimit[ count ] ];
-            If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
+            extendedOutPaths[ graph, p1, p2, prune, shortestPathWindow, countLimit[ count ] ]
         ],
       "CurvatureMinimizing",
         curvatureSpec = parseCurvatureSpec[ curvature ];
@@ -91,8 +84,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
           True,
             dagNbrs = If[ pool === "ShortestPaths", geodesicDAGNeighbors[ graph, p1, p2 ], Automatic ];
             edgeKappa = buildEdgeKappa[ graph, curvatureSpec ];
-            paths = pulledPaths[ graph, p1, p2, edgeKappa, prune, countLimit[ count ], dagNbrs ];
-            If[ MatchQ[ count, _Integer ] && Length[ paths ] < count, $Failed, paths ]
+            pulledPaths[ graph, p1, p2, edgeKappa, prune, countLimit[ count ], dagNbrs ]
         ],
       "Embedding",
         With[ { embOpts = parseEmbeddingMethod[ spec ] },
@@ -102,10 +94,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
             ! poolSpecQ[ embOpts[ "Pool" ] ],
               Message[ FindSegment::badpool, embOpts[ "Pool" ] ]; $Failed,
             True,
-              paths = embeddingFindSegmentPaths[ graph, p1, p2, embOpts ];
-              With[ { result = takeUpTo[ paths, countLimit[ count ] ] },
-                If[ MatchQ[ count, _Integer ] && Length[ result ] < count, $Failed, result ]
-              ]
+              takeUpTo[ embeddingFindSegmentPaths[ graph, p1, p2, embOpts ], countLimit[ count ] ]
           ]
         ],
       _, Message[ FindSegment::badmethod, spec ]; $Failed
@@ -176,33 +165,26 @@ Options[ ExtendSegment ] = { Method -> "Shortest" };
 ExtendSegment[ graph_Graph, segment_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraSegment, count,
-    extendSegmentCore[ graph, ##, count, opts ] &, segment ]
+    extendSegmentCore[ graph, ##, opts ] &, segment ]
 
 
 (* 5-vertex ExtendSegment: Tarski synthetic extension (axiom A4). *)
 
-ExtendSegment[ graph_Graph, a_, b_, c_, d_, All, OptionsPattern[] ] :=
+ExtendSegment[ graph_Graph, a_, b_, c_, d_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, OptionsPattern[] ] :=
   With[ { target = GraphDistance[ graph, c, d ] },
-    If[ target === Infinity, InfraPoint[ {} ],
-      InfraPoint @ Select[ VertexList[ graph ],
-        x |-> BetweennessQ[ graph, a, b, x ] && GraphDistance[ graph, b, x ] === target ]
+    With[ { vs = If[ target === Infinity, {},
+        Select[ VertexList[ graph ],
+          x |-> BetweennessQ[ graph, a, b, x ] && GraphDistance[ graph, b, x ] === target ] ] },
+      With[ { capped = infraCap[ vs, count ] },
+        If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
+      ]
     ]
   ]
 
-ExtendSegment[ graph_Graph, a_, b_, c_, d_, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  With[ { result = ExtendSegment[ graph, a, b, c, d, All, opts ] },
-    InfraPoint @ Take[ result[ "Realizations" ], UpTo[ n ] ]
-  ]
 
-ExtendSegment[ graph_Graph, a_, b_, c_, d_, n_Integer : 1, opts : OptionsPattern[] ] :=
-  With[ { result = ExtendSegment[ graph, a, b, c, d, UpTo[ n ], opts ] },
-    If[ result[ "Length" ] < n, $Failed, result ]
-  ]
-
-
-extendSegmentCore[ graph_Graph, segment_List,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ ExtendSegment ] ] :=
-  Module[ { spec, methodName, prune, shortestPathWindow, curvature, curvatureSpec, edgeKappa, paths },
+extendSegmentCore[ graph_Graph, segment_List, opts : OptionsPattern[ ExtendSegment ] ] :=
+  Module[ { spec, methodName, prune, shortestPathWindow, curvature, curvatureSpec, edgeKappa },
     If[ Length[ segment ] < 2, Return[ { segment } ] ];
     spec = OptionValue[ ExtendSegment, { opts }, Method ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, Automatic -> "Shortest", _ :> spec } ];
@@ -215,7 +197,7 @@ extendSegmentCore[ graph_Graph, segment_List,
       },
       _ :> { Infinity, 2, "Forman" }
     } ];
-    paths = Switch[ methodName,
+    Switch[ methodName,
       "Shortest",
         findLineExtensions[ graph, segment ],
       "ShortestPathExtension",
@@ -245,15 +227,6 @@ extendSegmentCore[ graph_Graph, segment_List,
       "Embedding",
         embeddingExtendSegment[ graph, segment, parseEmbeddingMethod[ spec ] ],
       _, Message[ ExtendSegment::badmethod, spec ]; $Failed
-    ];
-    Which[
-      paths === $Failed, $Failed,
-      MatchQ[ count, _Integer ],
-        With[ { result = Take[ paths, UpTo[ count ] ] },
-          If[ Length[ result ] < count, $Failed, result ] ],
-      MatchQ[ count, UpTo[ _Integer ] ], Take[ paths, count ],
-      count === All, paths,
-      True, paths
     ]
   ]
 

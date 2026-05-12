@@ -32,8 +32,8 @@ InfraScalarProduct[ graph_Graph, o_, u_, v_, OptionsPattern[] ] :=
       ],
     "Parallelogram",
       Module[ { plus, minus, vals },
-        plus  = FindInfraLinearCombination[ graph, o, { { 1, u }, {  1, v } }, All, "ScaleMethod" -> "Line" ][ "Realizations" ];
-        minus = FindInfraLinearCombination[ graph, o, { { 1, u }, { -1, v } }, All, "ScaleMethod" -> "Line" ][ "Realizations" ];
+        plus  = #[[ 1, 1 ]] & /@ FindInfraLinearCombination[ graph, o, { { 1, u }, {  1, v } }, All, "ScaleMethod" -> "Line" ];
+        minus = #[[ 1, 1 ]] & /@ FindInfraLinearCombination[ graph, o, { { 1, u }, { -1, v } }, All, "ScaleMethod" -> "Line" ];
         If[ plus === { } || minus === { },
           Message[ InfraScalarProduct::nopara ]; $Failed,
           vals = DeleteDuplicates @ Flatten @ Outer[
@@ -94,7 +94,7 @@ findInfraScale[ graph_Graph, o_, u_, lambda_, "Line" ] :=
     Which[ lambda == 0, Return[ { o } ], lambda == 1, Return[ { u } ] ];
     r = GraphDistance[ graph, o, u ];
     If[ r === Infinity, Return[ { } ] ];
-    lines = Quiet @ FindLine[ graph, o, u, All ][ "Realizations" ];
+    lines = #[[ 1, 1 ]] & /@ Quiet @ FindLine[ graph, o, u, All ];
     If[ ! ListQ[ lines ] || lines === { }, Return[ { } ] ];
     snap = line |->
       With[ { oIdx = First @ FirstPosition[ line, o, { 0 } ],
@@ -166,14 +166,14 @@ findInfraSum[ graph_Graph, o_, u_, v_, "Metric" ] :=
 
 findInfraSum[ graph_Graph, o_, u_, v_, "Parallel" ] :=
   Module[ { linesOV, linesOU, parallelsAtU, parallelsAtV },
-    linesOV = Quiet @ FindLine[ graph, o, v, All ][ "Realizations" ];
-    linesOU = Quiet @ FindLine[ graph, o, u, All ][ "Realizations" ];
+    linesOV = #[[ 1, 1 ]] & /@ Quiet @ FindLine[ graph, o, v, All ];
+    linesOU = #[[ 1, 1 ]] & /@ Quiet @ FindLine[ graph, o, u, All ];
     If[ ! ListQ[ linesOV ] || ! ListQ[ linesOU ], Return[ { } ] ];
     parallelsAtU = Flatten[
-      ( Quiet @ FindParallel[ graph, #, u, All ][ "Realizations" ] ) & /@ linesOV, 1
+      ( #[[ 1, 1 ]] & /@ Quiet @ FindParallel[ graph, #, u, All ] ) & /@ linesOV, 1
     ];
     parallelsAtV = Flatten[
-      ( Quiet @ FindParallel[ graph, #, v, All ][ "Realizations" ] ) & /@ linesOU, 1
+      ( #[[ 1, 1 ]] & /@ Quiet @ FindParallel[ graph, #, v, All ] ) & /@ linesOU, 1
     ];
     DeleteDuplicates @ DeleteCases[
       Flatten @ Outer[ Intersection, parallelsAtU, parallelsAtV, 1 ],
@@ -198,10 +198,9 @@ Options[ FindInfraLinearCombination ] = {
 
 FindInfraLinearCombination[ graph_Graph, o_, terms_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  Module[ { lambdas = terms[[ All, 1 ]], us = terms[[ All, 2 ]],
-            scaleM = OptionValue[ "ScaleMethod" ], sumM = OptionValue[ "SumMethod" ],
-            result },
-    result = infraSpreadAndCartesian[ InfraPoint, count,
+  With[ { lambdas = terms[[ All, 1 ]], us = terms[[ All, 2 ]],
+          scaleM = OptionValue[ "ScaleMethod" ], sumM = OptionValue[ "SumMethod" ] },
+    infraSpreadAndCartesian[ InfraPoint, count,
       Function[ Null,
         With[ { thisO = #1, thisUs = { ##2 } },
           With[ { scaled = MapThread[ findInfraScale[ graph, thisO, #2, #1, scaleM ] &,
@@ -221,13 +220,6 @@ FindInfraLinearCombination[ graph_Graph, o_, terms_List,
         ]
       ],
       o, Sequence @@ us
-    ];
-    Which[
-      result === $Failed, $Failed,
-      count === All, result,
-      MatchQ[ count, UpTo[ _Integer ] ], InfraPoint @ Take[ result[ "Realizations" ], count ],
-      MatchQ[ count, _Integer ] && Length[ result[ "Realizations" ] ] < count, $Failed,
-      MatchQ[ count, _Integer ], InfraPoint @ Take[ result[ "Realizations" ], count ]
     ]
   ]
 

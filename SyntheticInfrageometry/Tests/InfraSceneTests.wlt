@@ -452,10 +452,10 @@ VerificationTest[
 ]
 
 (* FindPoint returns InfraPoint[{v}]; InfraDistance accepts it directly,
-   so callers no longer need First @ FindPoint[g, 1]["Realizations"]. *)
+   so callers no longer need First @ (#[[ 1, 1 ]] & /@ FindPoint[g, 1]). *)
 VerificationTest[
   With[{g = GridGraph[{3, 3}], fp = FindPoint[GridGraph[{3, 3}], 1]},
-    InfraDistance[g, fp, 9] === GraphDistance[g, First @ fp["Realizations"], 9]
+    InfraDistance[g, fp, 9] === GraphDistance[g, First @ (#[[ 1, 1 ]] & /@ fp), 9]
   ],
   True,
   TestID -> "InfraDistance-FindPoint-no-extraction"

@@ -166,7 +166,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    AllTrue[FindBisectingHyperplane[g, 1, 5, All]["Realizations"], h |-> SeparatesQ[g, h, 1, 5]]
+    AllTrue[(#[[ 1, 1 ]] & /@ FindBisectingHyperplane[g, 1, 5, All]), h |-> SeparatesQ[g, h, 1, 5]]
   ],
   True,
   TestID -> "SeparatesQ-bisecting-hyperplane-path"
