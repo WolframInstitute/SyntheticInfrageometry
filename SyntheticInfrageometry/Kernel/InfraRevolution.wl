@@ -9,29 +9,36 @@ InfraRevolution[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraRevolution[ _List ] 
 
 (* ===================== FindRevolution ===================== *)
 
-(* For each axis vertex a, take its Voronoi slab in the axis ({v : a is closest
-   axis vertex to v}) intersected with the closed ball of radius profile[a]
-   (Solid) or the sphere of that radius (Surface).  Union over axis vertices. *)
+(* Multi-axis rotational object.  At position i along the axis, the position
+   vertex set is the union of axes[[k, i]] over all axes k.  Profile is
+   indexed by position (1..L+1).  Membership: v is in iff for some position
+   i with d(v, positions[[i]]) minimal across positions, the form test
+   holds on (that distance, profile[i]).                                  *)
 
 Options[ FindRevolution ] = { "Form" -> "Surface", Method -> "Metric" };
 
 FindRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
-  With[ { axisList = toVertexSet @ axis,
-          cmp = If[ OptionValue[ "Form" ] === "Solid", LessEqual, Equal ] },
-    With[ { radii = profileRadii[ profile, axisList ] },
-      InfraRevolution[ { Sort[ Union @@ ( ( axisPoint |->
-        Select[ VertexList @ NeighborhoodGraph[ graph, axisPoint, radii[ axisPoint ] ],
-          v |-> Min[ GraphDistance[ graph, v, # ] & /@ axisList ] === GraphDistance[ graph, v, axisPoint ]
-                  && cmp[ GraphDistance[ graph, v, axisPoint ], radii[ axisPoint ] ] ]
-      ) /@ axisList ) ] } ]
+  With[ { cmp = If[ OptionValue[ "Form" ] === "Solid", LessEqual, Equal ],
+          positions = DeleteDuplicates /@ Transpose @ parseAxes @ axis },
+    With[ { radii = profileRadii[ profile, Length @ positions ] },
+      InfraRevolution[ { Sort[ Union @@ MapThread[
+        Function[ { posVerts, r, i },
+          Select[ VertexList @ NeighborhoodGraph[ graph, posVerts, r ],
+            v |-> With[ { dists = Min[ GraphDistance[ graph, v, # ] & /@ # ] & /@ positions },
+              dists[[ i ]] === Min @ dists && cmp[ dists[[ i ]], r ] ] ] ],
+        { positions, radii, Range @ Length @ positions } ] ] } ]
     ]
   ]
 
 
-profileRadii[ r_?NumericQ, axis_ ]      := AssociationThread[ axis, ConstantArray[ r, Length @ axis ] ]
-profileRadii[ prof_List, axis_ ]        := AssociationThread[ axis, prof ]
-profileRadii[ prof_Association, axis_ ] := prof
-profileRadii[ prof_, axis_ ]            := AssociationThread[ axis, prof /@ Range @ Length @ axis ]
+parseAxes[ InfraSegment[ paths_List ] ] := paths
+parseAxes[ paths : { _List, ___List } ] := paths
+parseAxes[ path_List ]                  := { path }
+
+
+profileRadii[ r_?NumericQ, n_Integer ] := ConstantArray[ r, n ]
+profileRadii[ prof_List, n_Integer ]   := prof
+profileRadii[ prof_, n_Integer ]       := prof /@ Range[ n ]
 
 
 (* ===================== FindCylinder ===================== *)
@@ -47,11 +54,10 @@ FindCylinder[ graph_Graph, axis_, radius_, opts : OptionsPattern[ ] ] :=
 Options[ FindCone ] = Join[ Options[ FindRevolution ], { "Apex" -> First } ];
 
 FindCone[ graph_Graph, axis_, slope_, opts : OptionsPattern[ ] ] :=
-  With[ { axisList = toVertexSet @ axis },
-    FindRevolution[ graph, axisList,
-      slope * If[ OptionValue[ "Apex" ] === Last,
-        Range[ Length @ axisList - 1, 0, -1 ],
-        Range[ 0, Length @ axisList - 1 ] ],
+  With[ { n = Length @ First @ parseAxes @ axis,
+          apex = OptionValue[ "Apex" ] },
+    FindRevolution[ graph, axis,
+      slope * If[ apex === Last, Range[ n - 1, 0, -1 ], Range[ 0, n - 1 ] ],
       FilterRules[ { opts }, Options[ FindRevolution ] ] ]
   ]
 

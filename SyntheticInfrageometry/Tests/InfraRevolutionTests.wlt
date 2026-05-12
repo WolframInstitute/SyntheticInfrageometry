@@ -147,3 +147,27 @@ VerificationTest[
   True,
   TestID -> "FindRevolution-Association-equals-List"
 ]
+
+
+(* Multi-axis (two geodesics in CycleGraph[6] form a thick axis;
+   profile { 0, 1, 0, 0 } picks up the off-axis position-2 vertex 6
+   in addition to vertex 2, which the single-axis case misses). *)
+
+VerificationTest[
+  With[ { g = CycleGraph[ 6 ] },
+    FindRevolution[ g,
+      InfraSegment[ { { 1, 2, 3, 4 }, { 1, 6, 5, 4 } } ],
+      { 0, 1, 0, 0 }, "Form" -> "Solid" ][[ 1, 1 ]] ],
+  { 1, 2, 3, 4, 5, 6 },
+  TestID -> "FindRevolution-multi-axis-thick"
+]
+
+
+(* Single-axis variant of the same profile gives a strictly smaller set. *)
+
+VerificationTest[
+  With[ { g = CycleGraph[ 6 ] },
+    FindRevolution[ g, { 1, 2, 3, 4 }, { 0, 1, 0, 0 }, "Form" -> "Solid" ][[ 1, 1 ]] ],
+  { 1, 2, 3, 4 },
+  TestID -> "FindRevolution-single-axis-thinner"
+]
