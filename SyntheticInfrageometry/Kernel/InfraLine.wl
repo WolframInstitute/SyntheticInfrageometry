@@ -13,20 +13,6 @@ PackageScope[allCanonicalLines]
    this file owns the line-shaped Find / construction / predicate operations. *)
 
 
-(* ===================== canonicalLine / allCanonicalLines ===================== *)
-
-(* canonicalLine: lexicographic minimum of a line and its reversal. *)
-
-canonicalLine[ line_List ] := First @ Sort @ { line, Reverse[ line ] }
-
-allCanonicalLines[ graph_Graph ] :=
-  DeleteDuplicates @ Flatten[
-    canonicalLine[ #[[ 1, 1 ]] ] & /@ FindLine[ graph, #[[ 1 ]], #[[ 2 ]], All ] & /@
-      Subsets[ VertexList[ graph ], { 2 } ],
-    1
-  ]
-
-
 (* ===================== FindLine ===================== *)
 
 (* A line through p1, p2: a maximal geodesic extension (a, ..., p1, ..., p2, ..., b)
@@ -305,3 +291,19 @@ PencilDirections[ graph_Graph, origin_ ] :=
 PencilCardinality[ graph_Graph, origin_ ] := Length @ PencilDirections[ graph, origin ]
 
 LineCount[ graph_Graph ] := Length @ allCanonicalLines[ graph ]
+
+
+(* ===================== Helpers: canonical lines ===================== *)
+
+(* canonicalLine: lexicographic minimum of a line and its reversal.
+   allCanonicalLines: every canonical maximal geodesic in the graph
+   (consumed by PencilDirections, LineCount, and ProjectiveGeometry.wl). *)
+
+canonicalLine[ line_List ] := First @ Sort @ { line, Reverse[ line ] }
+
+allCanonicalLines[ graph_Graph ] :=
+  DeleteDuplicates @ Flatten[
+    canonicalLine[ #[[ 1, 1 ]] ] & /@ FindLine[ graph, #[[ 1 ]], #[[ 2 ]], All ] & /@
+      Subsets[ VertexList[ graph ], { 2 } ],
+    1
+  ]

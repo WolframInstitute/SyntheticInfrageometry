@@ -17,151 +17,6 @@ InfraHomotopy[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraHomotopy[ _List ] ] ] 
   InfraHomotopy[ Flatten[ reps /. InfraHomotopy[ xs_List ] :> xs, 1 ] ]
 
 
-(* ===================== Face resolution ===================== *)
-
-(* resolveFaces[g, spec] -> List of vertex sequences (faces), each a closed walk
-   in g.  Length-2 faces {a, b} encode backtrack reduction a -> b -> a;
-   length-k faces (k >= 3) come from FindCycle[g, {k}, All]. *)
-
-resolveFaces[ graph_Graph, Automatic ] := resolveFaces[ graph, { 2, 3 } ]
-
-resolveFaces[ graph_Graph, n_Integer ] /; n >= 2 := resolveFaces[ graph, Range[ 2, n ] ]
-
-resolveFaces[ graph_Graph, lengths_List ] /; AllTrue[ lengths, IntegerQ[ # ] && # >= 2 & ] :=
-  Join @@ ( facesOfLength[ graph, # ] & /@ lengths )
-
-resolveFaces[ graph_Graph, All ] :=
-  Join[
-    facesOfLength[ graph, 2 ],
-    Select[
-      First /@ # & /@ FindCycle[ graph, Infinity, All ],
-      chordlessCycleQ[ graph, # ] & ]
-  ]
-
-resolveFaces[ graph_Graph, "Fundamental" ] := First /@ # & /@ FindFundamentalCycles[ graph ]
-
-resolveFaces[ graph_Graph, faces : { __List } ] := faces
-
-resolveFaces[ _Graph, { } ] := { }
-
-
-facesOfLength[ graph_Graph, 2 ] := { #[[ 1 ]], #[[ 2 ]] } & /@ EdgeList[ graph ]
-
-facesOfLength[ graph_Graph, k_Integer ] /; k >= 3 := First /@ # & /@ FindCycle[ graph, { k }, All ]
-
-
-(* A cycle is chordless iff no non-cyclically-adjacent pair of vertices is
-   joined by a graph edge. *)
-
-chordlessCycleQ[ graph_Graph, cycle_List ] :=
-  With[ { k = Length[ cycle ] },
-    AllTrue[
-      Subsets[ Range[ k ], { 2 } ],
-      { i, j } |->
-        Abs[ i - j ] === 1 || Abs[ i - j ] === k - 1 ||
-        ! EdgeQ[ graph, UndirectedEdge[ cycle[[ i ]], cycle[[ j ]] ] ]
-    ]
-  ]
-
-
-(* ===================== Face moves ===================== *)
-
-(* faceMoves[face] enumerates all ordered (oldArc, newArc) pairs from a face.
-   For closed walk (f_1, ..., f_k), each cut (s, L) gives oldArc = L edges
-   starting at slot s+1, newArc = the complementary k-L edges (reversed to
-   share endpoints).  Both face orientations are included so the rewrite is
-   direction-symmetric. *)
-
-faceMoves[ face_List ] /; Length[ face ] < 2 := { }
-
-faceMoves[ face_List ] :=
-  With[ { k = Length[ face ],
-          doubled    = Join[ face, face ],
-          revDoubled = Join[ Reverse @ face, Reverse @ face ] },
-    DeleteDuplicates @ Select[
-      Join[
-        Flatten[ Table[
-          { doubled[[ s + 1 ;; s + L + 1 ]],
-            Reverse @ doubled[[ s + L + 1 ;; s + k + 1 ]] },
-          { s, 0, k - 1 }, { L, 0, k } ], 1 ],
-        Flatten[ Table[
-          { revDoubled[[ s + 1 ;; s + L + 1 ]],
-            Reverse @ revDoubled[[ s + L + 1 ;; s + k + 1 ]] },
-          { s, 0, k - 1 }, { L, 0, k } ], 1 ]
-      ],
-      #[[ 1 ]] =!= #[[ 2 ]] &
-    ]
-  ]
-
-
-(* Slide oldArc through path as a contiguous sub-walk; every match yields
-   one rewritten path with oldArc replaced by newArc. *)
-
-applyMove[ path_List, { oldArc_List, newArc_List } ] :=
-  With[ { arcLen = Length[ oldArc ], pathLen = Length[ path ] },
-    If[ arcLen > pathLen, { },
-      Cases[
-        Table[
-          If[ path[[ i ;; i + arcLen - 1 ]] === oldArc,
-            Join[ path[[ ;; i - 1 ]], newArc, path[[ i + arcLen ;; ]] ],
-            Nothing ],
-          { i, 1, pathLen - arcLen + 1 } ],
-        _List ]
-    ]
-  ]
-
-
-pathNeighbors[ path_List, moves_List ] :=
-  DeleteDuplicates @ Flatten[ applyMove[ path, # ] & /@ moves, 1 ]
-
-
-(* ===================== BFS in path space ===================== *)
-
-(* Breadth-first search over walks with the elementary face moves as the
-   transition relation.  parent maps each visited walk to its predecessor;
-   the chain p_0 -> ... -> p_k is reconstructed by walking parent backwards.
-   Pruned by maxLen (walk length cap) and maxMoves (chain depth cap).
-   Wolfram's BreadthFirstScan works over graph vertices, not arbitrary
-   path-spaces -- hence the hand-rolled While loop. *)
-
-homotopyBFS[ graph_Graph, p1_List, p2_List, faces_List, maxLen_, maxMoves_ ] :=
-  Module[ { moves, parent, frontier, nextFrontier, found = False, layer = 0 },
-    If[ First[ p1 ] =!= First[ p2 ] || Last[ p1 ] =!= Last[ p2 ], Return[ { } ] ];
-    If[ p1 === p2, Return[ { { p1 } } ] ];
-    moves = If[ faces === { }, { }, Join @@ ( faceMoves /@ faces ) ];
-    parent = <| p1 -> None |>;
-    frontier = { p1 };
-    While[ ! found && frontier =!= { } && layer < maxMoves,
-      nextFrontier = { };
-      Scan[
-        p |->
-          Scan[
-            q |->
-              If[ ! KeyExistsQ[ parent, q ] && Length[ q ] <= maxLen,
-                AssociateTo[ parent, q -> p ];
-                If[ q === p2, found = True ];
-                AppendTo[ nextFrontier, q ]
-              ],
-            pathNeighbors[ p, moves ]
-          ],
-        frontier
-      ];
-      frontier = nextFrontier;
-      layer++
-    ];
-    If[ found, { reconstructChain[ parent, p2 ] }, { } ]
-  ]
-
-
-reconstructChain[ parent_Association, target_List ] :=
-  Module[ { chain = { target }, current = target },
-    While[ parent[ current ] =!= None,
-      current = parent[ current ];
-      PrependTo[ chain, current ] ];
-    chain
-  ]
-
-
 (* ===================== FindHomotopy ===================== *)
 
 (* A homotopy from p1 to p2: a finite sequence of elementary face moves, each
@@ -197,8 +52,8 @@ findHomotopyCore[ graph_Graph, p1_List, p2_List, opts : OptionsPattern[ FindHomo
 
 (* ===================== HomotopicQ ===================== *)
 
-(* True iff a face-move chain takes p1 to p2.  Spreads over multi-realisations
-   via Cartesian product: every (p1_i, p2_j) pair must be homotopic. *)
+(* True iff a face-move chain takes p1 to p2.  Multi-realisations spread via
+   Cartesian product: every (p1_i, p2_j) pair must be homotopic. *)
 
 Options[ HomotopicQ ] = Options[ FindHomotopy ];
 
@@ -218,9 +73,6 @@ HomotopicQ[ graph_Graph, p1_, p2_, opts : OptionsPattern[ ] ] :=
 
 Options[ NullHomotopicQ ]   = Options[ FindHomotopy ];
 Options[ FindNullHomotopy ] = Options[ FindHomotopy ];
-
-closeWalk[ cycle_List ] :=
-  If[ First[ cycle ] === Last[ cycle ], cycle, Append[ cycle, First[ cycle ] ] ]
 
 NullHomotopicQ[ graph_Graph, cycle_List, opts : OptionsPattern[ ] ] :=
   With[ { closed = closeWalk[ cycle ] },
@@ -273,4 +125,147 @@ ReducePath[ graph_Graph, path_List, opts : OptionsPattern[ ] ] :=
       If[ next =!= $Failed, current = next; shortened = True ]
     ];
     current
+  ]
+
+
+(* ===================== Helpers ===================== *)
+
+closeWalk[ cycle_List ] :=
+  If[ First[ cycle ] === Last[ cycle ], cycle, Append[ cycle, First[ cycle ] ] ]
+
+
+(* resolveFaces[g, spec] -> List of vertex sequences (faces), each a closed walk
+   in g.  Length-2 faces {a, b} encode backtrack reduction a -> b -> a;
+   length-k faces (k >= 3) come from FindCycle[g, {k}, All]. *)
+
+resolveFaces[ graph_Graph, Automatic ] := resolveFaces[ graph, { 2, 3 } ]
+
+resolveFaces[ graph_Graph, n_Integer ] /; n >= 2 := resolveFaces[ graph, Range[ 2, n ] ]
+
+resolveFaces[ graph_Graph, lengths_List ] /; AllTrue[ lengths, IntegerQ[ # ] && # >= 2 & ] :=
+  Join @@ ( facesOfLength[ graph, # ] & /@ lengths )
+
+resolveFaces[ graph_Graph, All ] :=
+  Join[
+    facesOfLength[ graph, 2 ],
+    Select[
+      First /@ # & /@ FindCycle[ graph, Infinity, All ],
+      chordlessCycleQ[ graph, # ] & ]
+  ]
+
+resolveFaces[ graph_Graph, "Fundamental" ] := First /@ # & /@ FindFundamentalCycles[ graph ]
+
+resolveFaces[ graph_Graph, faces : { __List } ] := faces
+
+resolveFaces[ _Graph, { } ] := { }
+
+
+facesOfLength[ graph_Graph, 2 ] := { #[[ 1 ]], #[[ 2 ]] } & /@ EdgeList[ graph ]
+
+facesOfLength[ graph_Graph, k_Integer ] /; k >= 3 := First /@ # & /@ FindCycle[ graph, { k }, All ]
+
+
+(* A cycle is chordless iff no non-cyclically-adjacent pair of vertices is
+   joined by a graph edge. *)
+
+chordlessCycleQ[ graph_Graph, cycle_List ] :=
+  With[ { k = Length[ cycle ] },
+    AllTrue[
+      Subsets[ Range[ k ], { 2 } ],
+      { i, j } |->
+        Abs[ i - j ] === 1 || Abs[ i - j ] === k - 1 ||
+        ! EdgeQ[ graph, UndirectedEdge[ cycle[[ i ]], cycle[[ j ]] ] ]
+    ]
+  ]
+
+
+(* faceMoves[face]: ordered (oldArc, newArc) pairs.  For closed walk
+   (f_1, ..., f_k), each cut (s, L) yields oldArc = L edges from slot s+1,
+   newArc = the complementary k-L edges (reversed to share endpoints).  Both
+   orientations included so the rewrite is direction-symmetric. *)
+
+faceMoves[ face_List ] /; Length[ face ] < 2 := { }
+
+faceMoves[ face_List ] :=
+  With[ { k = Length[ face ],
+          doubled    = Join[ face, face ],
+          revDoubled = Join[ Reverse @ face, Reverse @ face ] },
+    DeleteDuplicates @ Select[
+      Join[
+        Flatten[ Table[
+          { doubled[[ s + 1 ;; s + L + 1 ]],
+            Reverse @ doubled[[ s + L + 1 ;; s + k + 1 ]] },
+          { s, 0, k - 1 }, { L, 0, k } ], 1 ],
+        Flatten[ Table[
+          { revDoubled[[ s + 1 ;; s + L + 1 ]],
+            Reverse @ revDoubled[[ s + L + 1 ;; s + k + 1 ]] },
+          { s, 0, k - 1 }, { L, 0, k } ], 1 ]
+      ],
+      #[[ 1 ]] =!= #[[ 2 ]] &
+    ]
+  ]
+
+
+(* Slide oldArc through path as a contiguous sub-walk; every match yields
+   one rewritten path with oldArc replaced by newArc. *)
+
+applyMove[ path_List, { oldArc_List, newArc_List } ] :=
+  With[ { arcLen = Length[ oldArc ], pathLen = Length[ path ] },
+    If[ arcLen > pathLen, { },
+      Cases[
+        Table[
+          If[ path[[ i ;; i + arcLen - 1 ]] === oldArc,
+            Join[ path[[ ;; i - 1 ]], newArc, path[[ i + arcLen ;; ]] ],
+            Nothing ],
+          { i, 1, pathLen - arcLen + 1 } ],
+        _List ]
+    ]
+  ]
+
+
+pathNeighbors[ path_List, moves_List ] :=
+  DeleteDuplicates @ Flatten[ applyMove[ path, # ] & /@ moves, 1 ]
+
+
+(* Breadth-first search over walks with the elementary face moves as the
+   transition relation.  parent maps each visited walk to its predecessor;
+   the chain p_0 -> ... -> p_k is reconstructed by walking parent backwards.
+   Wolfram's BreadthFirstScan works over graph vertices, not arbitrary
+   path-spaces -- hence the hand-rolled While loop. *)
+
+homotopyBFS[ graph_Graph, p1_List, p2_List, faces_List, maxLen_, maxMoves_ ] :=
+  Module[ { moves, parent, frontier, nextFrontier, found = False, layer = 0 },
+    If[ First[ p1 ] =!= First[ p2 ] || Last[ p1 ] =!= Last[ p2 ], Return[ { } ] ];
+    If[ p1 === p2, Return[ { { p1 } } ] ];
+    moves = If[ faces === { }, { }, Join @@ ( faceMoves /@ faces ) ];
+    parent = <| p1 -> None |>;
+    frontier = { p1 };
+    While[ ! found && frontier =!= { } && layer < maxMoves,
+      nextFrontier = { };
+      Scan[
+        p |->
+          Scan[
+            q |->
+              If[ ! KeyExistsQ[ parent, q ] && Length[ q ] <= maxLen,
+                AssociateTo[ parent, q -> p ];
+                If[ q === p2, found = True ];
+                AppendTo[ nextFrontier, q ]
+              ],
+            pathNeighbors[ p, moves ]
+          ],
+        frontier
+      ];
+      frontier = nextFrontier;
+      layer++
+    ];
+    If[ found, { reconstructChain[ parent, p2 ] }, { } ]
+  ]
+
+
+reconstructChain[ parent_Association, target_List ] :=
+  Module[ { chain = { target }, current = target },
+    While[ parent[ current ] =!= None,
+      current = parent[ current ];
+      PrependTo[ chain, current ] ];
+    chain
   ]
