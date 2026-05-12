@@ -322,41 +322,6 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> "Bogus"],
-    FindSegment::badmethod],
-  $Failed,
-  TestID -> "FindSegment-bad-method"
-]
-
-VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"ShortestPathExtension", "Pruning" -> -1}],
-    FindSegment::badpruning],
-  $Failed,
-  TestID -> "FindSegment-bad-pruning"
-]
-
-VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 0}],
-    FindSegment::badwindow],
-  $Failed,
-  TestID -> "FindSegment-bad-lookback-zero"
-]
-
-VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> -1}],
-    FindSegment::badwindow],
-  $Failed,
-  TestID -> "FindSegment-bad-lookback-negative"
-]
-
-VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 1.5}],
-    FindSegment::badwindow],
-  $Failed,
-  TestID -> "FindSegment-bad-lookback-fractional"
-]
-
-VerificationTest[
   InfraSegment @ FindSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "ShortestPathExtension"],
   InfraSegment[{}],
   TestID -> "FindSegment-ShortestPathExtension-same-point-empty"
@@ -457,13 +422,6 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"CurvatureMinimizing", "Curvature" -> {"Forman", Method -> "Quadrilaterals"}}],
-    FindSegment::badcurvature],
-  $Failed,
-  TestID -> "FindSegment-CurvatureMinimizing-bad-Forman-Method"
-]
-
-VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     BlockRandom[
       Length @ FindSegment[g, 1, 16, All, Method -> {"CurvatureMinimizing", "Pruning" -> 1}] <= 1,
@@ -472,13 +430,6 @@ VerificationTest[
   ],
   True,
   TestID -> "FindSegment-CurvatureMinimizing-pruning-beam-1"
-]
-
-VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"CurvatureMinimizing", "Pruning" -> -1}],
-    FindSegment::badpruning],
-  $Failed,
-  TestID -> "FindSegment-CurvatureMinimizing-bad-pruning"
 ]
 
 VerificationTest[
@@ -535,14 +486,6 @@ VerificationTest[
   InfraSegment[{{1, 3}}],
   TestID -> "FindSegment-CurvatureMinimizing-Constraint-default-target-adjacent"
 ]
-
-VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"CurvatureMinimizing", "Pool" -> "Bogus"}],
-    FindSegment::badpool],
-  $Failed,
-  TestID -> "FindSegment-CurvatureMinimizing-bad-Constraint"
-]
-
 
 (* ===== FindSegment Method -> "CurvatureMinimizing": CurvatureMethod -> "Wolfram" ===== *)
 
@@ -615,30 +558,6 @@ VerificationTest[
   True,
   TestID -> "FindSegment-CurvatureMinimizing-CurvatureMethod-default-is-Forman"
 ]
-
-VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9, Method -> {"CurvatureMinimizing", "Curvature" -> "Bogus"}],
-    FindSegment::badcurvature],
-  $Failed,
-  TestID -> "FindSegment-CurvatureMinimizing-bad-CurvatureMethod"
-]
-
-VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9,
-      Method -> {"CurvatureMinimizing", "Curvature" -> {"Wolfram", "Dimension" -> "two"}}],
-    FindSegment::badcurvature],
-  $Failed,
-  TestID -> "FindSegment-CurvatureMinimizing-Wolfram-bad-dimension"
-]
-
-VerificationTest[
-  Quiet[FindSegment[GridGraph[{3, 3}], 1, 9,
-      Method -> {"CurvatureMinimizing", "Curvature" -> {"Wolfram", "Radii" -> {3, 1}}}],
-    FindSegment::badcurvature],
-  $Failed,
-  TestID -> "FindSegment-CurvatureMinimizing-Wolfram-bad-radii"
-]
-
 
 (* ===== FindLine ===== *)
 
