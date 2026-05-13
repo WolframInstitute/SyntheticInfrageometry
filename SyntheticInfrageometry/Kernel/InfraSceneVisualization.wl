@@ -6,6 +6,7 @@ PackageExport[$InfraShellColor]
 PackageExport[$InfraPlaneColor]
 PackageExport[$InfraCircleColor]
 PackageExport[$InfraRayColor]
+PackageExport[$InfraObjectColor]
 PackageScope[$InfraSceneHighlightPalette]
 PackageScope[$InfraOpacityRange]
 PackageScope[$InfraThicknessRange]
@@ -18,6 +19,7 @@ $InfraShellColor   = RGBColor[ 0.30, 0.70, 0.50 ];
 $InfraPlaneColor   = RGBColor[ 0.55, 0.45, 0.80 ];
 $InfraCircleColor  = RGBColor[ 0.20, 0.55, 0.65 ];
 $InfraRayColor     = RGBColor[ 0.95, 0.65, 0.45 ];
+$InfraObjectColor  = RGBColor[ 0.55, 0.70, 0.85 ];
 
 $InfraOpacityRange   = { 0.40, 1.0 };
 $InfraThicknessRange = { 1.0, 5.0 };
@@ -64,7 +66,7 @@ Options[ InfraSceneHighlight ] = Join[
 ];
 
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
-  Module[ { triples, oRange, tRange, pRange, vEntries, eEntries, objects },
+  Module[ { triples, knotTriples, oRange, tRange, pRange, vEntries, eEntries, objects },
 
     objects = DeleteCases[ multiObjects,
       _[ $Failed ] | ( _[ $Failed ] -> _ ) | ( _ -> _[ $Failed ] ) ];
@@ -73,46 +75,61 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
       { item, idx } |-> Replace[
         If[ MatchQ[ item, _Rule ], List @@ item,
           { item, Switch[ Head @ item,
-              InfraPoint,   $InfraPointColor,
-              InfraSegment, $InfraSegmentColor,
-              InfraShell,   $InfraShellColor,
-              InfraPlane,   $InfraPlaneColor,
-              InfraCircle,  $InfraCircleColor,
-              InfraRay,     $InfraRayColor,
-              _,            $InfraSceneHighlightPalette[[
-                              1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ] } ],
+              InfraPoint,    $InfraPointColor,
+              InfraSegment,  $InfraSegmentColor,
+              InfraShell,    $InfraShellColor,
+              InfraPlane,    $InfraPlaneColor,
+              InfraCircle,   $InfraCircleColor,
+              InfraRay,      $InfraRayColor,
+              InfraObject,   $InfraObjectColor,
+              InfraPolyline, $InfraSegmentColor,
+              _,             $InfraSceneHighlightPalette[[
+                               1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ] } ],
         {
-          { InfraPoint  [ b_List ], c_ } :> { b, c, "Points" },
-          { InfraSegment[ b_List ], c_ } :> { b, c, "Paths"  },
-          { InfraShell  [ b_List ], c_ } :> { b, c, "Sets"   },
-          { InfraPlane  [ b_List ], c_ } :> { b, c, "Sets"   },
-          { InfraCircle [ b_List ], c_ } :> { b, c, "Cycles" },
-          { InfraRay    [ b_List ], c_ } :> { b, c, "Paths"  },
-          { b_, c_ }                     :> { b, c, Automatic }
+          { InfraPoint   [ b_List ], c_ } :> { b, c, "Points" },
+          { InfraSegment [ b_List ], c_ } :> { b, c, "Paths"  },
+          { InfraShell   [ b_List ], c_ } :> { b, c, "Sets"   },
+          { InfraPlane   [ b_List ], c_ } :> { b, c, "Sets"   },
+          { InfraCircle  [ b_List ], c_ } :> { b, c, "Cycles" },
+          { InfraRay     [ b_List ], c_ } :> { b, c, "Paths"  },
+          { InfraObject  [ b_List ], c_ } :> { { b }, c, "Sets"  },
+          { InfraPolyline[ b_List ], c_ } :> { polylineToVertexSeqs[ b ], c, "Paths" },
+          { b_, c_ }                      :> { b, c, Automatic }
         } ],
       multiObjects ];
+
+    (* Each InfraPolyline item additionally emits a knot triple (the leg
+       endpoints rendered as points in $InfraPointColor).  Drawn on top of
+       the path so the subdivision is visible.  *)
+    knotTriples = Cases[ multiObjects,
+      ( InfraPolyline[ b_List ] | ( InfraPolyline[ b_List ] -> _ ) ) :>
+        { polylineToKnotVertices[ b ], $InfraPointColor, "PointSet" } ];
+
+    triples = Join[ triples, knotTriples ];
     oRange = OptionValue[ "OpacityRange" ];
     tRange = OptionValue[ "ThicknessRange" ];
     pRange = OptionValue[ "PointSizeRange" ];
 
     With[ {
         repVerts = { type, rep } |-> Switch[ type,
-          "Points", { rep },
-          "Paths",  rep,
-          "Cycles", rep,
-          "Sets",   rep,
-          _,        If[ MemberQ[ VertexList @ graph, rep ], { rep }, rep ]
+          "Points",   { rep },
+          "Paths",    rep,
+          "Cycles",   rep,
+          "Sets",     rep,
+          "PointSet", rep,
+          _,          If[ MemberQ[ VertexList @ graph, rep ], { rep }, rep ]
         ],
         repEdges = { type, rep } |-> Switch[ type,
-          "Points", {},
-          "Paths",  If[ Length @ rep >= 2, Sort /@ Partition[ rep, 2, 1 ], {} ],
-          "Cycles", With[ {
+          "Points",   {},
+          "Paths",    If[ Length @ rep >= 2, Sort /@ Partition[ rep, 2, 1 ], {} ],
+          "Cycles",   With[ {
               closed = If[ Length @ rep >= 2 && First @ rep === Last @ rep,
                 rep, Append[ rep, First @ rep ] ] },
             If[ Length @ closed >= 2, Sort /@ Partition[ closed, 2, 1 ], {} ] ],
-          "Sets",   Sort /@ ( List @@@ EdgeList @ Subgraph[ graph, rep ] ),
-          _,        If[ MemberQ[ VertexList @ graph, rep ], {},
-                      Sort /@ ( List @@@ EdgeList @ Subgraph[ graph, rep ] ) ]
+          "Sets",     Sort /@ ( List @@@ EdgeList @ Subgraph[ graph, rep ] ),
+          "PointSet", {},
+          _,          If[ MemberQ[ VertexList @ graph, rep ], {},
+                        Sort /@ ( List @@@ EdgeList @ Subgraph[ graph, rep ] ) ]
         ] },
 
       vEntries = MapThread[

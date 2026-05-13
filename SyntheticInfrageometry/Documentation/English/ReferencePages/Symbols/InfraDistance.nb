@@ -10,25 +10,103 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1515,         43]
-NotebookOptionsPosition[       973,         28]
-NotebookOutlinePosition[      1290,         42]
-CellTagsIndexPosition[      1247,         39]
+NotebookDataLength[      6883,        146]
+NotebookOptionsPosition[      4106,        106]
+NotebookOutlinePosition[      4423,        120]
+CellTagsIndexPosition[      4380,        117]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for InfraDistance\"", "Input",ExpressionUUID->"8197b44f-71c1-4f99-9cc9-5fd9fe5c3875"],
+Cell["InfraDistance", "Title",ExpressionUUID->"10dc1d31-028f-45e6-9849-c049ef5c8df1"],
 
-Cell["?InfraDistance", "Input",ExpressionUUID->"4f06b03d-112e-4b2a-86b9-78b1c74ee764"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b42ff0cc-5cbf-4e43-9524-8d2c4e76d0a4"],
 
-Cell["Information[InfraDistance, LongForm -> True]", "Input",ExpressionUUID->"c1281cd8-ce40-4184-8c14-0650595f3b4c"],
+Cell["\<\
+InfraDistance[g, p, q] is the graph distance between p and q in g, where each \
+is a bare vertex or any Infra* wrapper. The result is aggregated over the \
+cross-product of underlying vertex sets via the \"Aggregation\" option (Min \
+default, also Max / Mean / any List -> Number). InfraDistance[p, q] without a \
+graph is also recognised inside InfraScene assertions.\
+\>", "Text",ExpressionUUID->"37596c11-41be-48ac-acfa-1edaa8a3294d"],
 
-Cell["Definition[InfraDistance]", "Input",ExpressionUUID->"e95706b5-9c98-4963-b5f7-4ee49ec88a31"]
+Cell["Setup", "Section",ExpressionUUID->"52392055-8a2d-49f5-b416-46421c372a3d"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"8ae70f3d-a9c2-4fe8-be4d-3e588df3f079"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"ac6e40b1-493c-4c14-bbc6-809c6ea8f2b6"],
+
+Cell["Examples", "Section",ExpressionUUID->"9e9830ec-87c0-4e80-93a5-c67a8c54b534"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"7a206c9f-0045-4118-8795-b42ec2584855"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Distance between two grid vertices."]], "Input",Expre\
+ssionUUID->"c9d3e68a-94cc-4de7-92bf-defa28ac2d20"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"81e23945-3335-40c3-bcde-ccf2ecb8292b"],
+
+Cell[BoxData[
+ $CellContext`buildCell["InfraDistance[GridGraph[{3, 3}], 1, 9]"]], "Input",Ex\
+pressionUUID->"31da3cd9-2fb0-40a4-8108-03efbf20ea45"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"244232da-dfa0-463d-8248-50f11199dff4"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "Distance between a vertex and a multi-realised InfraPoint (Min by \
+default)."]], "Input",ExpressionUUID->"4c26116c-06be-4f65-98db-aa5cd4f31c06"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"a475086b-c74a-444d-a60e-0f51039cb2a0"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "InfraDistance[GridGraph[{3, 3}], 1, InfraPoint[{5, 9}]]"]], "Input",Expressi\
+onUUID->"292a6568-4071-42b8-8494-805a3a27fbfc"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"dcc3f3b3-71e1-4206-881a-55ebf48b7521"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Max aggregation."]], "Input",ExpressionUUID->"f244f8d8-e574-44de-b4e4-7a0e005ca6e7"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"5a37e325-a933-4daf-b345-df6eea1b7b77"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "InfraDistance[GridGraph[{3, 3}], 1, InfraPoint[{5, 9}], \"Aggregation\" -> \
+Max]"]], "Input",ExpressionUUID->"97b900e8-89bc-47dd-b00d-6351c28159cf"],
+
+Cell["See Also", "Section",ExpressionUUID->"471e398c-5edb-4fd4-a449-47293ff8c4f1"],
+
+Cell["InfraPoint", "Item",ExpressionUUID->"138f94c1-030f-4bfe-9428-8b2da3b22e82"],
+
+Cell["InfraSegment", "Item",ExpressionUUID->"42643828-82e0-433a-a75e-fa7c98818ea5"],
+
+Cell["InfraScene", "Item",ExpressionUUID->"1dd67612-2663-4c58-a056-b2f68595e5a4"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"ed93f3dc-8771-45a3-8a40-bd6f373943a8"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"22ba57a3-8030-4eed-91fa-1b7ce4129d10"],
+
+Cell["VisualizationGuide", "Item",ExpressionUUID->"b89653a8-ac11-475b-99f2-f71987d931e7"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"f991c78c-b5ac-40d5-be05-e80c94ace687"],
+
+Cell["VisualizationTutorial", "Item",ExpressionUUID->"26747088-b035-45e1-a1fc-d9c29b57db62"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +119,35 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 107, 0, 70, "Input",ExpressionUUID->"8197b44f-71c1-4f99-9cc9-5fd9fe5c3875"],
-Cell[664, 22, 86, 0, 70, "Input",ExpressionUUID->"4f06b03d-112e-4b2a-86b9-78b1c74ee764"],
-Cell[753, 24, 116, 0, 70, "Input",ExpressionUUID->"c1281cd8-ce40-4184-8c14-0650595f3b4c"],
-Cell[872, 26, 97, 0, 70, "Input",ExpressionUUID->"e95706b5-9c98-4963-b5f7-4ee49ec88a31"]
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"10dc1d31-028f-45e6-9849-c049ef5c8df1"],
+Cell[642, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b42ff0cc-5cbf-4e43-9524-8d2c4e76d0a4"],
+Cell[735, 24, 447, 6, 70, "Text",ExpressionUUID->"37596c11-41be-48ac-acfa-1edaa8a3294d"],
+Cell[1185, 32, 79, 0, 70, "Section",ExpressionUUID->"52392055-8a2d-49f5-b416-46421c372a3d"],
+Cell[1267, 34, 91, 0, 70, "CodeText",ExpressionUUID->"8ae70f3d-a9c2-4fe8-be4d-3e588df3f079"],
+Cell[1361, 36, 192, 4, 70, "Code",ExpressionUUID->"ac6e40b1-493c-4c14-bbc6-809c6ea8f2b6",
+ InitializationCell->True],
+Cell[1556, 42, 82, 0, 70, "Section",ExpressionUUID->"9e9830ec-87c0-4e80-93a5-c67a8c54b534"],
+Cell[1641, 44, 115, 1, 70, "Input",ExpressionUUID->"7a206c9f-0045-4118-8795-b42ec2584855"],
+Cell[1759, 47, 144, 2, 70, "Input",ExpressionUUID->"c9d3e68a-94cc-4de7-92bf-defa28ac2d20"],
+Cell[1906, 51, 112, 1, 70, "Input",ExpressionUUID->"81e23945-3335-40c3-bcde-ccf2ecb8292b"],
+Cell[2021, 54, 147, 2, 70, "Input",ExpressionUUID->"31da3cd9-2fb0-40a4-8108-03efbf20ea45"],
+Cell[2171, 58, 115, 1, 70, "Input",ExpressionUUID->"244232da-dfa0-463d-8248-50f11199dff4"],
+Cell[2289, 61, 186, 3, 70, "Input",ExpressionUUID->"4c26116c-06be-4f65-98db-aa5cd4f31c06"],
+Cell[2478, 66, 112, 1, 70, "Input",ExpressionUUID->"a475086b-c74a-444d-a60e-0f51039cb2a0"],
+Cell[2593, 69, 166, 3, 70, "Input",ExpressionUUID->"292a6568-4071-42b8-8494-805a3a27fbfc"],
+Cell[2762, 74, 115, 1, 70, "Input",ExpressionUUID->"dcc3f3b3-71e1-4206-881a-55ebf48b7521"],
+Cell[2880, 77, 123, 1, 70, "Input",ExpressionUUID->"f244f8d8-e574-44de-b4e4-7a0e005ca6e7"],
+Cell[3006, 80, 112, 1, 70, "Input",ExpressionUUID->"5a37e325-a933-4daf-b345-df6eea1b7b77"],
+Cell[3121, 83, 190, 3, 70, "Input",ExpressionUUID->"97b900e8-89bc-47dd-b00d-6351c28159cf"],
+Cell[3314, 88, 82, 0, 70, "Section",ExpressionUUID->"471e398c-5edb-4fd4-a449-47293ff8c4f1"],
+Cell[3399, 90, 81, 0, 70, "Item",ExpressionUUID->"138f94c1-030f-4bfe-9428-8b2da3b22e82"],
+Cell[3483, 92, 83, 0, 70, "Item",ExpressionUUID->"42643828-82e0-433a-a75e-fa7c98818ea5"],
+Cell[3569, 94, 81, 0, 70, "Item",ExpressionUUID->"1dd67612-2663-4c58-a056-b2f68595e5a4"],
+Cell[3653, 96, 85, 0, 70, "Item",ExpressionUUID->"ed93f3dc-8771-45a3-8a40-bd6f373943a8"],
+Cell[3741, 98, 88, 0, 70, "Section",ExpressionUUID->"22ba57a3-8030-4eed-91fa-1b7ce4129d10"],
+Cell[3832, 100, 89, 0, 70, "Item",ExpressionUUID->"b89653a8-ac11-475b-99f2-f71987d931e7"],
+Cell[3924, 102, 83, 0, 70, "Section",ExpressionUUID->"f991c78c-b5ac-40d5-be05-e80c94ace687"],
+Cell[4010, 104, 92, 0, 70, "Item",ExpressionUUID->"26747088-b035-45e1-a1fc-d9c29b57db62"]
 }
 ]
 *)

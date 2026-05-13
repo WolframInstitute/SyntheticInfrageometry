@@ -10,76 +10,107 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5579,        111]
-NotebookOptionsPosition[      3464,         79]
-NotebookOutlinePosition[      3781,         93]
-CellTagsIndexPosition[      3738,         90]
+NotebookDataLength[      7142,        150]
+NotebookOptionsPosition[      4362,        110]
+NotebookOutlinePosition[      4679,        124]
+CellTagsIndexPosition[      4636,        121]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindOrthogonalFrame", "Title",ExpressionUUID->"88aade29-5ba3-4cd9-bf56-9aa970f81301"],
+Cell["FindOrthogonalFrame", "Title",ExpressionUUID->"81a65855-ca22-4fd7-b499-cffec09aae80"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"f7f20e0e-e2c0-4238-bcaa-cec7497c0569"],
 
 Cell["\<\
-FindOrthogonalFrame[graph, c] returns one orthogonal frame at centre c: a \
-list of full metric lines through c (with c strictly interior) that are \
-mutually perpendicular at c. FindOrthogonalFrame[graph, c, n] returns exactly \
-n distinct frames or $Failed; UpTo[n] returns up to n; All returns every \
-frame. The centre is a vertex or InfraPoint[{c1, ..., ck}]. Options: Method \
-(Automatic = \"Exhaustive\", or \"Greedy\"), \"AxisLength\" (half-axis depth \
-cap), \"AxisCount\" (Automatic | k | UpTo[k] | All), \"BranchSampleSize\". \
-For the no-centre form use FindSpanningAxes.\
-\>", "Text",ExpressionUUID->"8b830ca3-ccb7-4df9-ac13-7ed91ffc5a52"],
+FindOrthogonalFrame[g, c, axisLength] returns one orthogonal frame at centre \
+c with each axis half-depth constrained by axisLength (All | n_Integer | \
+UpTo[n] | {min, max}): a list of InfraSegment axes (full metric lines through \
+c, c strictly interior), mutually perpendicular at c. FindOrthogonalFrame[g, \
+c, axisLength, n] / UpTo[n] / All controls the number of distinct frames. \
+Centre is a vertex or InfraPoint[{c1, \[Ellipsis], ck}]. Options: Method \
+(Automatic = \"Exhaustive\", or \"Greedy\"), \"AxisCount\" (Automatic | k | \
+UpTo[k] | All), \"BranchSampleSize\", \"SelectCoordinate\". For the no-centre \
+form use FindSpanningAxes.\
+\>", "Text",ExpressionUUID->"100f96a3-16d2-4cae-8d28-9ee86dce9b09"],
 
-Cell["Setup", "Section",ExpressionUUID->"c8844ecc-4344-4f19-ba17-bcaef5efbf22"],
+Cell["Setup", "Section",ExpressionUUID->"3b76685b-0b0d-4bbc-b909-2d12c7639d6d"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"378d36a0-c349-4ff8-98b2-0ff93546158a"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"37fa2652-63df-4dad-ae74-46a955ab9582"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"e1418543-30a6-46d5-8fa4-efb018009754"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"592b12e1-d08d-4e3f-b6fe-6a1e1ff00890"],
 
-Cell["Usage", "Section",ExpressionUUID->"04468316-07df-4cc1-9dc5-8fb0b839ad07"],
+Cell["Examples", "Section",ExpressionUUID->"a108da3b-fe99-4785-a13c-a54356f3b632"],
 
-Cell["One orthogonal frame at the centre of a 5x5 grid.", "CodeText",ExpressionUUID->"9475ca91-1133-4389-91d2-e5fecdc2ec17"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"bc7ef293-7aa6-4ac9-af20-b971dcbc1c06"],
 
-Cell["With[{g = GridGraph[{5, 5}]}, FindOrthogonalFrame[g, 13]]", "Input",ExpressionUUID->"a95b2f91-962f-429f-9677-e5dc9da4ac55"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "One orthogonal frame at the centre of a 3x3 grid."]], "Input",ExpressionUUID\
+->"8ff4841f-42e2-418f-9a52-6f93b434751c"],
 
-Cell["Visualize the frame.", "CodeText",ExpressionUUID->"60aeb81e-545a-4375-a676-92e7bc178fe0"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"a28fe0fa-a3fe-4ea0-baa9-f7d9a6706661"],
 
-Cell["\<\
-With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, FindOrthogonalFrame[g, \
-13]]]\
-\>", "Input",ExpressionUUID->"ae2234d9-cc0f-4e65-9eee-1eb13d5303a6"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindOrthogonalFrame[GridGraph[{3, 3}], 5, All]"]], "Input",ExpressionUUID->\
+"297b8a37-1afb-4659-bb27-464631411e00"],
 
-Cell["Examples", "Section",ExpressionUUID->"11c8182d-21f7-48fa-a5fe-ff1dba6bd254"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"c9880da2-c4fb-450d-a022-732adb4593e0"],
 
-Cell["Up to four orthogonal frames at a corner.", "CodeText",ExpressionUUID->"61ed12bc-7876-4205-98d2-2dec80e5a5ec"],
+Cell[BoxData[
+ $CellContext`buildCell["All frames."]], "Input",ExpressionUUID->"6ef22159-77dc-496e-aaff-63f2e8ccd347"],
 
-Cell["\<\
-With[{g = GridGraph[{5, 5}]}, FindOrthogonalFrame[g, 1, UpTo[4]]]\
-\>", "Input",ExpressionUUID->"18865566-7345-4fa1-9579-accc65e94b07"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"9184ce8e-c51c-4167-a97c-4b962e4046c7"],
 
-Cell["Greedy construction with a bounded axis length.", "CodeText",ExpressionUUID->"25175bf1-de1b-486b-b288-4081efdbf14b"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindOrthogonalFrame[GridGraph[{3, 3}], 5, All, All]"]], "Input",ExpressionUU\
+ID->"3d9ae6ab-5eef-456c-aa7a-7c10972dc785"],
 
-Cell["\<\
-With[{g = GridGraph[{6, 6}]}, FindOrthogonalFrame[g, 15, Method -> \
-\"Greedy\", \"AxisLength\" -> 3]]\
-\>", "Input",ExpressionUUID->"2c772f03-ec7c-425f-a80d-f38f72fae3af"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"9a1b163c-5a15-40dc-af17-ba806fc41f40"],
 
-Cell["See also", "Section",ExpressionUUID->"5a7f6375-4a5a-4dfa-9f17-9615a3e31b63"],
+Cell[BoxData[
+ $CellContext`buildCell["Greedy method."]], "Input",ExpressionUUID->"a882729c-1bba-4083-bbee-2203e2b8d6c8"],
 
-Cell["FindSpanningAxes", "Item",ExpressionUUID->"81c89327-4e71-478d-ba5b-db06440d9471"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"2eb22602-5eea-4195-b90f-1da9d30bd1fc"],
 
-Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"ba244fa1-da5e-4d24-b1ff-84612cafdae8"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindOrthogonalFrame[GridGraph[{5, 5}], 13, All, Method -> \"Greedy\"]"]], \
+"Input",ExpressionUUID->"48d68728-277c-4744-a8bc-93fe579ffc47"],
 
-Cell["FindRadarBasis", "Item",ExpressionUUID->"1b467254-3270-46fd-a853-6f73eca8e109"],
+Cell["See Also", "Section",ExpressionUUID->"42312d3e-3bed-4e2a-919d-c2b6dabb3f4a"],
 
-Cell["FindPerpendicular", "Item",ExpressionUUID->"55b39292-db26-44f7-9d5b-0f4fdd681413"],
+Cell["FindSpanningAxes", "Item",ExpressionUUID->"1d53165f-e722-47d9-9066-8cb3a0aa4930"],
 
-Cell["InfraScalarProduct", "Item",ExpressionUUID->"363a3158-e3a0-42ce-a8b0-088900279e77"]
+Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"cbb1e73a-b983-4bf3-9f0f-3e47cb156c31"],
+
+Cell["FindRadarBasis", "Item",ExpressionUUID->"3235e06f-b367-4d11-b911-8eb73af6165c"],
+
+Cell["FindPerpendicular", "Item",ExpressionUUID->"e070e645-d4ae-4f4e-9546-763ec8051d44"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"837f5b39-5cc9-4f49-ad1f-14f463f6dea9"],
+
+Cell["CoordinatizationGuide", "Item",ExpressionUUID->"d8dd3d74-e3a7-4ba1-b503-0b0ad6e5f253"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"06cf537e-a2fe-44df-9134-398f884fcfff"],
+
+Cell["CoordinatizationTutorial", "Item",ExpressionUUID->"e40d13a4-2d47-4380-9356-3312ede894d1"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -92,27 +123,35 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"88aade29-5ba3-4cd9-bf56-9aa970f81301"],
-Cell[648, 22, 662, 9, 70, "Text",ExpressionUUID->"8b830ca3-ccb7-4df9-ac13-7ed91ffc5a52"],
-Cell[1313, 33, 79, 0, 70, "Section",ExpressionUUID->"c8844ecc-4344-4f19-ba17-bcaef5efbf22"],
-Cell[1395, 35, 132, 0, 70, "CodeText",ExpressionUUID->"378d36a0-c349-4ff8-98b2-0ff93546158a"],
-Cell[1530, 37, 122, 0, 70, "Code",ExpressionUUID->"e1418543-30a6-46d5-8fa4-efb018009754"],
-Cell[1655, 39, 79, 0, 70, "Section",ExpressionUUID->"04468316-07df-4cc1-9dc5-8fb0b839ad07"],
-Cell[1737, 41, 124, 0, 70, "CodeText",ExpressionUUID->"9475ca91-1133-4389-91d2-e5fecdc2ec17"],
-Cell[1864, 43, 129, 0, 70, "Input",ExpressionUUID->"a95b2f91-962f-429f-9677-e5dc9da4ac55"],
-Cell[1996, 45, 95, 0, 70, "CodeText",ExpressionUUID->"60aeb81e-545a-4375-a676-92e7bc178fe0"],
-Cell[2094, 47, 163, 3, 70, "Input",ExpressionUUID->"ae2234d9-cc0f-4e65-9eee-1eb13d5303a6"],
-Cell[2260, 52, 82, 0, 70, "Section",ExpressionUUID->"11c8182d-21f7-48fa-a5fe-ff1dba6bd254"],
-Cell[2345, 54, 116, 0, 70, "CodeText",ExpressionUUID->"61ed12bc-7876-4205-98d2-2dec80e5a5ec"],
-Cell[2464, 56, 145, 2, 70, "Input",ExpressionUUID->"18865566-7345-4fa1-9579-accc65e94b07"],
-Cell[2612, 60, 122, 0, 70, "CodeText",ExpressionUUID->"25175bf1-de1b-486b-b288-4081efdbf14b"],
-Cell[2737, 62, 182, 3, 70, "Input",ExpressionUUID->"2c772f03-ec7c-425f-a80d-f38f72fae3af"],
-Cell[2922, 67, 82, 0, 70, "Section",ExpressionUUID->"5a7f6375-4a5a-4dfa-9f17-9615a3e31b63"],
-Cell[3007, 69, 87, 0, 70, "Item",ExpressionUUID->"81c89327-4e71-478d-ba5b-db06440d9471"],
-Cell[3097, 71, 92, 0, 70, "Item",ExpressionUUID->"ba244fa1-da5e-4d24-b1ff-84612cafdae8"],
-Cell[3192, 73, 85, 0, 70, "Item",ExpressionUUID->"1b467254-3270-46fd-a853-6f73eca8e109"],
-Cell[3280, 75, 88, 0, 70, "Item",ExpressionUUID->"55b39292-db26-44f7-9d5b-0f4fdd681413"],
-Cell[3371, 77, 89, 0, 70, "Item",ExpressionUUID->"363a3158-e3a0-42ce-a8b0-088900279e77"]
+Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"81a65855-ca22-4fd7-b499-cffec09aae80"],
+Cell[648, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"f7f20e0e-e2c0-4238-bcaa-cec7497c0569"],
+Cell[741, 24, 727, 10, 70, "Text",ExpressionUUID->"100f96a3-16d2-4cae-8d28-9ee86dce9b09"],
+Cell[1471, 36, 79, 0, 70, "Section",ExpressionUUID->"3b76685b-0b0d-4bbc-b909-2d12c7639d6d"],
+Cell[1553, 38, 91, 0, 70, "CodeText",ExpressionUUID->"37fa2652-63df-4dad-ae74-46a955ab9582"],
+Cell[1647, 40, 192, 4, 70, "Code",ExpressionUUID->"592b12e1-d08d-4e3f-b6fe-6a1e1ff00890",
+ InitializationCell->True],
+Cell[1842, 46, 82, 0, 70, "Section",ExpressionUUID->"a108da3b-fe99-4785-a13c-a54356f3b632"],
+Cell[1927, 48, 115, 1, 70, "Input",ExpressionUUID->"bc7ef293-7aa6-4ac9-af20-b971dcbc1c06"],
+Cell[2045, 51, 160, 3, 70, "Input",ExpressionUUID->"8ff4841f-42e2-418f-9a52-6f93b434751c"],
+Cell[2208, 56, 112, 1, 70, "Input",ExpressionUUID->"a28fe0fa-a3fe-4ea0-baa9-f7d9a6706661"],
+Cell[2323, 59, 157, 3, 70, "Input",ExpressionUUID->"297b8a37-1afb-4659-bb27-464631411e00"],
+Cell[2483, 64, 115, 1, 70, "Input",ExpressionUUID->"c9880da2-c4fb-450d-a022-732adb4593e0"],
+Cell[2601, 67, 118, 1, 70, "Input",ExpressionUUID->"6ef22159-77dc-496e-aaff-63f2e8ccd347"],
+Cell[2722, 70, 112, 1, 70, "Input",ExpressionUUID->"9184ce8e-c51c-4167-a97c-4b962e4046c7"],
+Cell[2837, 73, 162, 3, 70, "Input",ExpressionUUID->"3d9ae6ab-5eef-456c-aa7a-7c10972dc785"],
+Cell[3002, 78, 115, 1, 70, "Input",ExpressionUUID->"9a1b163c-5a15-40dc-af17-ba806fc41f40"],
+Cell[3120, 81, 121, 1, 70, "Input",ExpressionUUID->"a882729c-1bba-4083-bbee-2203e2b8d6c8"],
+Cell[3244, 84, 112, 1, 70, "Input",ExpressionUUID->"2eb22602-5eea-4195-b90f-1da9d30bd1fc"],
+Cell[3359, 87, 180, 3, 70, "Input",ExpressionUUID->"48d68728-277c-4744-a8bc-93fe579ffc47"],
+Cell[3542, 92, 82, 0, 70, "Section",ExpressionUUID->"42312d3e-3bed-4e2a-919d-c2b6dabb3f4a"],
+Cell[3627, 94, 87, 0, 70, "Item",ExpressionUUID->"1d53165f-e722-47d9-9066-8cb3a0aa4930"],
+Cell[3717, 96, 92, 0, 70, "Item",ExpressionUUID->"cbb1e73a-b983-4bf3-9f0f-3e47cb156c31"],
+Cell[3812, 98, 85, 0, 70, "Item",ExpressionUUID->"3235e06f-b367-4d11-b911-8eb73af6165c"],
+Cell[3900, 100, 88, 0, 70, "Item",ExpressionUUID->"e070e645-d4ae-4f4e-9546-763ec8051d44"],
+Cell[3991, 102, 88, 0, 70, "Section",ExpressionUUID->"837f5b39-5cc9-4f49-ad1f-14f463f6dea9"],
+Cell[4082, 104, 92, 0, 70, "Item",ExpressionUUID->"d8dd3d74-e3a7-4ba1-b503-0b0ad6e5f253"],
+Cell[4177, 106, 83, 0, 70, "Section",ExpressionUUID->"06cf537e-a2fe-44df-9134-398f884fcfff"],
+Cell[4263, 108, 95, 0, 70, "Item",ExpressionUUID->"e40d13a4-2d47-4380-9356-3312ede894d1"]
 }
 ]
 *)

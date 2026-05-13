@@ -18,11 +18,13 @@ PackageScope[parseEmbeddingMethod]
    space.  Calling triple n_Integer | UpTo[n] | All (default n = 1); options
    "From" (pool selector: All, "Center", "Periphery", "MostVisited", anchor
    -> spec, multi-anchor InfraSegment[{...}] -> spec; "Shortest/LongestCircumference"
-   on SelectCycle), "Distance" (mutual-distance constraint: None, "Max",
-   numeric, range), "Metric" ("Hausdorff" default, "Frechet", "MeanFrechet"),
-   "MaxCliques".  Wrappers preserved: SelectPath accepts InfraSegment[paths]
-   / InfraRay[paths]; SelectCycle accepts InfraCircle[cycles].  Operator
-   form: SelectPath[g, n, opts][paths]. *)
+   on SelectCycle; "MinCurvature" / "MaxCurvature" with optional nested
+   {curvSpec, aggregator} where curvSpec is "Forman" | "Wolfram" | "Ollivier"
+   and aggregator is "Mean" | "Total" | "Max"), "Distance" (mutual-distance
+   constraint: None, "Max", numeric, range), "Metric" ("Hausdorff" default,
+   "Frechet", "MeanFrechet"), "MaxCliques".  Wrappers preserved: SelectPath
+   accepts InfraSegment[paths] / InfraRay[paths]; SelectCycle accepts
+   InfraCircle[cycles].  Operator form: SelectPath[g, n, opts][paths]. *)
 
 Options[ SelectPath ] = {
   "From"       -> All,
@@ -432,7 +434,59 @@ poolPositions[ _Graph, paths_List, "LongestCircumference", _, _, _ ] :=
 poolPositions[ graph_Graph, paths_List, ( anchor_ -> spec_ ), _, baseDist_, cyclic_ ] :=
   anchorDistancePool[ graph, paths, anchor, spec, baseDist, cyclic ]
 
+poolPositions[ graph_Graph, paths_List, fromSpec : ( "MinCurvature" | { "MinCurvature", ___ } ), _, _, _ ] :=
+  With[ { parsed = parseCurvatureFromSpec[ fromSpec ] },
+    With[ { scores = pathCurvatureScores[ graph, paths, parsed[[ 1 ]], parsed[[ 2 ]] ] },
+      Flatten @ Position[ scores, Min @ scores, { 1 }, Heads -> False ] ] ]
+
+poolPositions[ graph_Graph, paths_List, fromSpec : ( "MaxCurvature" | { "MaxCurvature", ___ } ), _, _, _ ] :=
+  With[ { parsed = parseCurvatureFromSpec[ fromSpec ] },
+    With[ { scores = pathCurvatureScores[ graph, paths, parsed[[ 1 ]], parsed[[ 2 ]] ] },
+      Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ] ] ]
+
 poolPositions[ _, paths_List, _, _, _, _ ] := Range @ Length @ paths
+
+
+(* parseCurvatureFromSpec normalises the "From" -> "MinCurvature" /
+   "MaxCurvature" forms into { curvatureSpec, aggregator } where curvatureSpec
+   is parseCurvatureSpec output and aggregator is a function.  Defaults:
+   Forman curvature, Mean aggregation. *)
+
+parseCurvatureFromSpec[ "MinCurvature" | "MaxCurvature" ] :=
+  { parseCurvatureSpec[ "Forman" ], Mean }
+
+parseCurvatureFromSpec[ { _, curv_ } ] :=
+  { parseCurvatureSpec[ curv ], Mean }
+
+parseCurvatureFromSpec[ { _, curv_, agg_ } ] :=
+  { parseCurvatureSpec[ curv ], aggregatorFn[ agg ] }
+
+
+aggregatorFn[ "Mean"  | Mean  ] := Mean
+aggregatorFn[ "Total" | "Sum" | Total ] := Total
+aggregatorFn[ "Max"   | Max   ] := Max
+aggregatorFn[ f_ ] := f
+
+
+(* pathCurvatureScores[g, paths, curvatureSpec, aggregator]: scalar score per
+   path.  Edge curvatures (Forman, Ollivier) aggregate over path edges;
+   vertex curvatures (Wolfram) aggregate over path vertices.  Empty edge list
+   degenerates to 0 (length-1 path under an edge curvature). *)
+
+pathCurvatureScores[ graph_Graph, paths_List, curvatureSpec_, aggregator_ ] :=
+  Switch[ curvatureSpec[ "Head" ],
+    "Forman",
+      With[ { kappa = formanEdgeKappa[ graph, curvatureSpec ] },
+        ( If[ Length[ # ] < 2, 0,
+            aggregator[ kappa @@@ Partition[ #, 2, 1 ] ] ] ) & /@ paths ],
+    "Wolfram",
+      With[ { kappa = wolframVertexKappa[ graph, curvatureSpec ] },
+        aggregator[ kappa /@ # ] & /@ paths ],
+    "Ollivier",
+      With[ { kappa = ollivierEdgeKappa[ graph, curvatureSpec ] },
+        ( If[ Length[ # ] < 2, 0,
+            aggregator[ kappa @@@ Partition[ #, 2, 1 ] ] ] ) & /@ paths ]
+  ]
 
 
 (* Positions of paths whose total vertex + edge visit count across the

@@ -2,6 +2,9 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageScope[findSegmentCore]
 PackageScope[extendSegmentCore]
+PackageScope[formanEdgeKappa]
+PackageScope[wolframVertexKappa]
+PackageScope[ollivierEdgeKappa]
 
 
 (* ===================== InfraSegment wrapper ===================== *)
@@ -15,7 +18,7 @@ InfraSegment[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraSegment[ _List ] ] ] :=
 (* A segment between p1 and p2: a geodesic vertex sequence
    (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2) and consecutive vi adjacent. *)
 
-Options[ FindSegment ] = { Method -> "Shortest" };
+Options[ FindSegment ] = { Method -> "ShortestPath" };
 
 FindSegment[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
@@ -30,7 +33,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
   With[ { spec = OptionValue[ FindSegment, { opts }, Method ] },
     With[ { subOpts = Replace[ spec, { { _String, rest___ } :> { rest }, _ :> { } } ] },
       Switch[ methodName @ spec,
-        "Shortest",
+        "ShortestPath",
           If[ count === 1,
             With[ { path = FindShortestPath[ graph, p1, p2 ] },
               If[ path === { }, { }, { path } ] ],
@@ -61,11 +64,11 @@ findSegmentCore[ graph_Graph, p1_, p2_,
   ]
 
 
-(* buildEdgeKappa[g, spec]: (v, w) |-> kappa(v, w) closure that the
-   CurvatureMinimizing frontier sweep MinimalBy's on.  Forwards the Forman
-   "Method" spec to MaxCellDimension on the sister paclet's curvature symbol. *)
+(* Per-edge / per-vertex curvature lookups.  Shared by buildEdgeKappa (the
+   pulledPaths frontier sweep) and by pathCurvatureScores in PathSpace.wl
+   (the SelectPath "MinCurvature" pool selector). *)
 
-buildEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Forman", "Method" -> formanMethod_ } ] ] :=
+formanEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Forman", "Method" -> formanMethod_ } ] ] :=
   With[ { fEdges = WolframInstitute`Infrageometry`FormanRicciCurvature[
         graph, "MaxCellDimension" -> If[ formanMethod === "Triangles", 2, 1 ] ] },
     With[ { fSym = Join[ fEdges,
@@ -76,12 +79,35 @@ buildEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Forman", "Method" -> 
     ]
   ]
 
-buildEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Wolfram", "Dimension" -> dim_, "Radii" -> radii_ } ] ] :=
-  With[ { vertexKappa = If[ radii === Automatic,
-        WolframInstitute`Infrageometry`WolframRicciCurvature[ graph, "Dimension" -> dim ],
-        WolframInstitute`Infrageometry`WolframRicciCurvature[ graph, radii, "Dimension" -> dim ] ] },
-    { v, w } |-> vertexKappa[ w ]
+wolframVertexKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Wolfram", "Dimension" -> dim_, "Radii" -> radii_ } ] ] :=
+  If[ radii === Automatic,
+    WolframInstitute`Infrageometry`WolframRicciCurvature[ graph, "Dimension" -> dim ],
+    WolframInstitute`Infrageometry`WolframRicciCurvature[ graph, radii, "Dimension" -> dim ] ]
+
+ollivierEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Ollivier" } ] ] :=
+  With[ { oEdges = WolframInstitute`Infrageometry`OllivierRicciCurvature[ graph ] },
+    With[ { oSym = Join[ oEdges,
+            AssociationThread[
+              UndirectedEdge[ #[[ 2 ]], #[[ 1 ]] ] & /@ Keys[ oEdges ],
+              Values[ oEdges ] ] ] },
+      { v, w } |-> oSym[ UndirectedEdge[ v, w ] ]
+    ]
   ]
+
+
+(* buildEdgeKappa[g, spec]: (v, w) |-> kappa(v, w) closure that the
+   CurvatureMinimizing frontier sweep MinimalBy's on.  For vertex-curvature
+   heads the asymmetric mapping {v, w} |-> kappa(w) is used (legal for a
+   greedy frontier sweep that picks one neighbour at a time). *)
+
+buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "Forman" ] ] :=
+  formanEdgeKappa[ graph, spec ]
+
+buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "Wolfram" ] ] :=
+  With[ { kappa = wolframVertexKappa[ graph, spec ] }, { v, w } |-> kappa[ w ] ]
+
+buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "Ollivier" ] ] :=
+  ollivierEdgeKappa[ graph, spec ]
 
 
 embeddingFindSegmentPaths[ graph_Graph, p1_, p2_, embOpts_Association ] :=
@@ -107,7 +133,7 @@ embeddingFindSegmentPaths[ graph_Graph, p1_, p2_, embOpts_Association ] :=
    ExtendSegment[g, a, b, c, d, n] is the Tarski A4 synthetic-extension axiom:
    x with B(a, b, x) and d(b, x) == d(c, d). *)
 
-Options[ ExtendSegment ] = { Method -> "Shortest" };
+Options[ ExtendSegment ] = { Method -> "ShortestPath", "Length" -> Automatic, "Pruning" -> Infinity };
 
 ExtendSegment[ graph_Graph, segment_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
@@ -131,33 +157,47 @@ extendSegmentCore[ graph_Graph, segment_List, opts : OptionsPattern[ ExtendSegme
     Length[ segment ] < 2 := { segment }
 
 extendSegmentCore[ graph_Graph, segment_List, opts : OptionsPattern[ ExtendSegment ] ] :=
-  With[ { spec = OptionValue[ ExtendSegment, { opts }, Method ] /. Automatic -> "Shortest" },
+  With[ { spec = OptionValue[ ExtendSegment, { opts }, Method ] /. Automatic -> "ShortestPath",
+          lengthCap = OptionValue[ ExtendSegment, { opts }, "Length" ],
+          pruning = OptionValue[ ExtendSegment, { opts }, "Pruning" ] },
     With[ { subOpts = Replace[ spec, { { _String, rest___ } :> { rest }, _ :> { } } ] },
-      Switch[ methodName @ spec,
-        "Shortest",
-          findLineExtensions[ graph, segment ],
-        "ShortestPathExtension",
-          With[ { prune  = "Pruning"            /. subOpts /. "Pruning"            -> Infinity,
-                  window = "ShortestPathWindow" /. subOpts /. "ShortestPathWindow" -> 2 },
-            findLineExtensionsWith[ graph, segment,
-              { s, p, db } |-> extendedOutPaths[ graph, s, p, prune, window, Infinity ],
-              { p, e, da } |-> extendedOutPaths[ graph, p, e, prune, window, Infinity ] ]
-          ],
-        "CurvatureMinimizing",
-          With[ { prune = "Pruning" /. subOpts /. "Pruning" -> Infinity,
-                  curvatureSpec = parseCurvatureSpec[
-                    "Curvature" /. subOpts /. "Curvature" -> "Forman" ] },
-            With[ { edgeKappa = buildEdgeKappa[ graph, curvatureSpec ] },
+      With[ { rawExtensions = Switch[ methodName @ spec,
+          "ShortestPath",
+            findLineExtensions[ graph, segment, pruning ],
+          "Greedy",
+            findLineExtensionsGreedy[ graph, segment ],
+          "ShortestPathExtension",
+            With[ { prune  = "Pruning"            /. subOpts /. "Pruning"            -> Infinity,
+                    window = "ShortestPathWindow" /. subOpts /. "ShortestPathWindow" -> 2 },
               findLineExtensionsWith[ graph, segment,
-                { s, p, db } |-> pulledPaths[ graph, s, p, edgeKappa, prune, Infinity, Automatic ],
-                { p, e, da } |-> pulledPaths[ graph, p, e, edgeKappa, prune, Infinity, Automatic ] ]
-            ]
-          ],
-        "Embedding",
-          embeddingExtendSegment[ graph, segment, parseEmbeddingMethod[ spec ] ]
+                { s, p, db } |-> extendedOutPaths[ graph, s, p, prune, window, Infinity ],
+                { p, e, da } |-> extendedOutPaths[ graph, p, e, prune, window, Infinity ] ]
+            ],
+          "CurvatureMinimizing",
+            With[ { prune = "Pruning" /. subOpts /. "Pruning" -> Infinity,
+                    curvatureSpec = parseCurvatureSpec[
+                      "Curvature" /. subOpts /. "Curvature" -> "Forman" ] },
+              With[ { edgeKappa = buildEdgeKappa[ graph, curvatureSpec ] },
+                findLineExtensionsWith[ graph, segment,
+                  { s, p, db } |-> pulledPaths[ graph, s, p, edgeKappa, prune, Infinity, Automatic ],
+                  { p, e, da } |-> pulledPaths[ graph, p, e, edgeKappa, prune, Infinity, Automatic ] ]
+              ]
+            ],
+          "Embedding",
+            embeddingExtendSegment[ graph, segment, parseEmbeddingMethod[ spec ] ]
+      ] },
+        If[ IntegerQ @ lengthCap,
+          truncateAroundOriginal[ #, segment, lengthCap ] & /@ rawExtensions,
+          rawExtensions ]
       ]
     ]
   ]
+
+
+truncateAroundOriginal[ ext_List, segment_List, n_Integer ] :=
+  With[ { offset = First @ First @ SequencePosition[ ext, segment ] },
+    Take[ ext, { Max[ 1, offset - n ],
+                 Min[ Length @ ext, offset + Length @ segment - 1 + n ] } ] ]
 
 
 embeddingExtendSegment[ graph_Graph, segment_List, embOpts_Association ] :=

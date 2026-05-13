@@ -1,0 +1,129 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5412,        120]
+NotebookOptionsPosition[      3274,         87]
+NotebookOutlinePosition[      3591,        101]
+CellTagsIndexPosition[      3548,         98]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["TorusTessellation", "Title",ExpressionUUID->"56473336-e084-4ebc-8c2c-3596e6f9ff5b"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"e5218fc1-42c5-4c0b-bd70-44a23616171e"],
+
+Cell["\<\
+TorusTessellation[shape, {m, n}] returns the vertex-transitive flat-torus \
+Cayley graph carrying the regular {p, q}-tessellation, where shape is \
+\"Rectangular\" ({4, 4}, 4-regular), \"Triangular\" ({3, 6}, 6-regular), or \
+\"Hexagonal\" ({6, 3}, 3-regular).\
+\>", "Text",ExpressionUUID->"38977c77-01ed-4c02-9af0-086812e57215"],
+
+Cell["Setup", "Section",ExpressionUUID->"b82f1b0c-92c6-4933-be06-18ef91e6cec0"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"c115ad66-24df-40f8-b882-4e8a86681db7"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"ca68407e-3a5e-4d98-b284-914577a6d825"],
+
+Cell["Examples", "Section",ExpressionUUID->"ad026f6d-f101-414e-b397-5e9a417831ba"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"ac14f58b-4ab3-488b-a04f-34263bc17afe"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Rectangular 4x4 flat torus."]], "Input",ExpressionUUID->"64e99a7a-0965-4e1d-ac55-aae44b6631cd"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"53a9f7df-33b3-4048-ab0f-02deb1e39b8c"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "TorusTessellation[\"Rectangular\", {4, 4}]"]], "Input",ExpressionUUID->\
+"58f466f8-ba5e-4bb5-b433-60bb48701678"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"54a8d118-62b1-4f08-ab64-614113001f67"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Triangular 4x4 flat torus."]], "Input",ExpressionUUID->"51756819-83c2-4abe-9d34-72fb3119f74c"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"ece58a73-b378-4a32-b7e9-1fdc1da02088"],
+
+Cell[BoxData[
+ $CellContext`buildCell["TorusTessellation[\"Triangular\", {4, 4}]"]], "Input",\
+ExpressionUUID->"1ab71534-6801-48a1-ad14-005666150d01"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"46e5a090-390f-4fc3-a2ae-8d246e10316a"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Hexagonal 4x4 flat torus."]], "Input",ExpressionUUID->"0471c867-a26e-4062-bbf9-29ebfbaf6202"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"9fe6c128-ed00-4c1c-9fac-26a4acdbc293"],
+
+Cell[BoxData[
+ $CellContext`buildCell["TorusTessellation[\"Hexagonal\", {4, 4}]"]], "Input",\
+ExpressionUUID->"0707dd1a-6c26-464b-9e5c-78d50d9fa292"],
+
+Cell["See Also", "Section",ExpressionUUID->"22060526-3d38-447f-b20f-991d20d50cdc"],
+
+Cell["PunchHole", "Item",ExpressionUUID->"cb90e4bf-c5ab-4651-a207-cc4e2979efa7"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 89, 0, 70, "Title",ExpressionUUID->"56473336-e084-4ebc-8c2c-3596e6f9ff5b"],
+Cell[646, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"e5218fc1-42c5-4c0b-bd70-44a23616171e"],
+Cell[739, 24, 339, 5, 70, "Text",ExpressionUUID->"38977c77-01ed-4c02-9af0-086812e57215"],
+Cell[1081, 31, 79, 0, 70, "Section",ExpressionUUID->"b82f1b0c-92c6-4933-be06-18ef91e6cec0"],
+Cell[1163, 33, 91, 0, 70, "CodeText",ExpressionUUID->"c115ad66-24df-40f8-b882-4e8a86681db7"],
+Cell[1257, 35, 192, 4, 70, "Code",ExpressionUUID->"ca68407e-3a5e-4d98-b284-914577a6d825",
+ InitializationCell->True],
+Cell[1452, 41, 82, 0, 70, "Section",ExpressionUUID->"ad026f6d-f101-414e-b397-5e9a417831ba"],
+Cell[1537, 43, 115, 1, 70, "Input",ExpressionUUID->"ac14f58b-4ab3-488b-a04f-34263bc17afe"],
+Cell[1655, 46, 134, 1, 70, "Input",ExpressionUUID->"64e99a7a-0965-4e1d-ac55-aae44b6631cd"],
+Cell[1792, 49, 112, 1, 70, "Input",ExpressionUUID->"53a9f7df-33b3-4048-ab0f-02deb1e39b8c"],
+Cell[1907, 52, 153, 3, 70, "Input",ExpressionUUID->"58f466f8-ba5e-4bb5-b433-60bb48701678"],
+Cell[2063, 57, 115, 1, 70, "Input",ExpressionUUID->"54a8d118-62b1-4f08-ab64-614113001f67"],
+Cell[2181, 60, 133, 1, 70, "Input",ExpressionUUID->"51756819-83c2-4abe-9d34-72fb3119f74c"],
+Cell[2317, 63, 112, 1, 70, "Input",ExpressionUUID->"ece58a73-b378-4a32-b7e9-1fdc1da02088"],
+Cell[2432, 66, 150, 2, 70, "Input",ExpressionUUID->"1ab71534-6801-48a1-ad14-005666150d01"],
+Cell[2585, 70, 115, 1, 70, "Input",ExpressionUUID->"46e5a090-390f-4fc3-a2ae-8d246e10316a"],
+Cell[2703, 73, 132, 1, 70, "Input",ExpressionUUID->"0471c867-a26e-4062-bbf9-29ebfbaf6202"],
+Cell[2838, 76, 112, 1, 70, "Input",ExpressionUUID->"9fe6c128-ed00-4c1c-9fac-26a4acdbc293"],
+Cell[2953, 79, 149, 2, 70, "Input",ExpressionUUID->"0707dd1a-6c26-464b-9e5c-78d50d9fa292"],
+Cell[3105, 83, 82, 0, 70, "Section",ExpressionUUID->"22060526-3d38-447f-b20f-991d20d50cdc"],
+Cell[3190, 85, 80, 0, 70, "Item",ExpressionUUID->"cb90e4bf-c5ab-4651-a207-cc4e2979efa7"]
+}
+]
+*)
+
+(* End of internal cache information *)

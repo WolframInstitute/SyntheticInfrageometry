@@ -10,80 +10,90 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5529,        115]
-NotebookOptionsPosition[      3413,         83]
-NotebookOutlinePosition[      3730,         97]
-CellTagsIndexPosition[      3687,         94]
+NotebookDataLength[      6084,        129]
+NotebookOptionsPosition[      3678,         93]
+NotebookOutlinePosition[      3995,        107]
+CellTagsIndexPosition[      3952,        104]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindInfraLinearCombination", "Title",ExpressionUUID->"9ce8914d-f900-4f40-b8a8-da2b1c00a1db"],
+Cell["FindInfraLinearCombination", "Title",ExpressionUUID->"00ee8f72-8830-4f7f-8e15-e957a7e782f1"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"2d007646-918b-4cf6-a5a2-3baf5c24d6d4"],
 
 Cell["\<\
-FindInfraLinearCombination[graph, o, {{lambda1, u1}, {lambda2, u2}, ...}] \
+FindInfraLinearCombination[g, o, {{lambda1, u1}, {lambda2, u2}, \[Ellipsis]}] \
 returns the multi-valued vertex realisation of sum_i lambda_i u_i with base \
-point o, computed left-to-right by scaling each term and then pairwise \
-summing. The fourth argument n / UpTo[n] / All controls multiplicity. \
-Options: \"ScaleMethod\" (Automatic, \"Metric\", \"Line\", \"Midpoint\"); \
-\"SumMethod\" (\"Metric\", \"Parallel\").\
-\>", "Text",ExpressionUUID->"f165b527-23ae-498d-98c3-970ba406a658"],
+point o, computed as scaled-then-pairwise-summed left-to-right. Returns a \
+List of unary InfraPoint[{v}] wrappers; n / UpTo[n] / All control \
+multiplicity. Options: \"ScaleMethod\" (Automatic (default), \"Metric\", \
+\"Line\", \"Midpoint\"); \"SumMethod\" (\"Metric\" (default), \"Parallel\").\
+\>", "Text",ExpressionUUID->"12ef209f-195f-4eb7-a476-66c1667e2423"],
 
-Cell["Setup", "Section",ExpressionUUID->"0dafb298-7aca-409e-b076-e614dfe8ff6d"],
+Cell["Setup", "Section",ExpressionUUID->"d83ecffc-2755-4011-b540-13dd9e398eb2"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"cc103fe3-8f94-4662-90bf-65522dbf1910"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"1dce1989-35d2-4c4e-ae40-45a579d579f5"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"4b93339b-7604-4265-b307-2f99969714cc"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"9a11649d-f7e1-4354-82e6-60ce0a5b36dd"],
 
-Cell["Usage", "Section",ExpressionUUID->"9f1c1467-3c24-4b1b-a803-cb955d041c09"],
+Cell["Examples", "Section",ExpressionUUID->"a8bb4d55-ff53-4382-aa7f-04732312ca58"],
 
-Cell["Realize 2 * u relative to base point o on a path graph.", "CodeText",ExpressionUUID->"93ff6433-c66e-457b-aae0-6311a71acb43"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"7332fb9a-6297-4ff4-b8c2-8ed3a9bc5a30"],
 
-Cell["\<\
-With[{g = PathGraph[Range[10]]}, FindInfraLinearCombination[g, 1, {{2, 3}}, \
-All]]\
-\>", "Input",ExpressionUUID->"66d98682-acd0-4abe-acfc-7031092d35d4"],
+Cell[BoxData[
+ $CellContext`buildCell["Linear combination 2*u with base point o."]], "Input",\
+ExpressionUUID->"f133ea09-68ca-4d74-9d38-b6a3496612f3"],
 
-Cell["Sum two unit vectors u + v on a 5x5 grid.", "CodeText",ExpressionUUID->"7a829e73-fd3d-410d-9e36-1685e539a55c"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"a86eacf3-ed1e-4adb-82e5-a1c1047bce4b"],
 
-Cell["\<\
-With[{g = GridGraph[{5, 5}]}, FindInfraLinearCombination[g, 1, {{1, 2}, {1, \
-6}}, All]]\
-\>", "Input",ExpressionUUID->"980cb558-669b-45bb-a079-0e12e610c272"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindInfraLinearCombination[PathGraph[Range[7]], 1, {{2, 2}}, All]"]], \
+"Input",ExpressionUUID->"b5f87d2c-84a8-44eb-9fe7-fedb3e410f96"],
 
-Cell["Examples", "Section",ExpressionUUID->"5f938752-9707-4018-87c8-f47a5d1e1061"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"da53166b-ceff-4215-8424-9b869273c183"],
 
-Cell["Combine scaling and summation: u + (-1) v.", "CodeText",ExpressionUUID->"6dc10deb-ba54-454c-859b-da0cfa6ae02c"],
+Cell[BoxData[
+ $CellContext`buildCell["Two-term combination u + v on a grid."]], "Input",Exp\
+ressionUUID->"9223453f-75a3-4e71-94d5-4c4c9ffd3729"],
 
-Cell["\<\
-With[{g = GridGraph[{5, 5}]}, FindInfraLinearCombination[g, 13, {{1, 5}, {-1, \
-21}}, All]]\
-\>", "Input",ExpressionUUID->"6607af4c-f630-4407-8dfc-cc7be76de7a6"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"63a78408-e838-43fe-a755-c2d28b94404a"],
 
-Cell["\<\
-Switch to the line-based scaling rule for half-integer scalars.\
-\>", "CodeText",ExpressionUUID->"016320e3-eea0-4ff3-9d83-1205dc85347f"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindInfraLinearCombination[GridGraph[{3, 3}], 5, {{1, 2}, {1, 6}}, All]"]], \
+"Input",ExpressionUUID->"9dc29626-440b-48de-97cb-4166ffc4f80f"],
 
-Cell["\<\
-With[{g = PathGraph[Range[10]]}, FindInfraLinearCombination[g, 1, {{1/2, 5}}, \
-All, \"ScaleMethod\" -> \"Line\"]]\
-\>", "Input",ExpressionUUID->"6b3faf62-8092-42c7-989f-4aaf18010111"],
+Cell["See Also", "Section",ExpressionUUID->"539a919a-80f8-4862-8688-a019776e9553"],
 
-Cell["See also", "Section",ExpressionUUID->"5f8de931-83b5-464a-a24f-b9027226b3b7"],
+Cell["InfraScalarProduct", "Item",ExpressionUUID->"6c7d261d-add4-41d8-8cf4-8d9108262407"],
 
-Cell["InfraScalarProduct", "Item",ExpressionUUID->"a0f7a1f9-f98a-48e4-864f-6b077a81d755"],
+Cell["InfraPoint", "Item",ExpressionUUID->"f07ebd5e-323d-4c23-b1ea-48cfd524869e"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"f9fe4f06-6923-4833-90f9-a0719bd2cdc8"],
+Cell["FindMidpoint", "Item",ExpressionUUID->"237ed11f-f104-477d-ad89-18fdd2329380"],
 
-Cell["ExtendSegment", "Item",ExpressionUUID->"e06eb67a-b30e-421c-8ffd-6168a6bda1ca"],
+Cell["ResistanceCoordinates", "Item",ExpressionUUID->"6811d617-71c9-432a-9075-3b654df276cd"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"f358cff1-e42d-4ed9-aeb2-dc53afb2fc1c"],
+Cell["Related Guides", "Section",ExpressionUUID->"ec64bdb1-7797-4cb9-a783-c6c1a59b08eb"],
 
-Cell["FindParallel", "Item",ExpressionUUID->"7316b85d-f271-40b4-9ad9-bb33cd56a421"]
+Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"4a765890-9521-437f-9382-9134596df9dc"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"b89c09b7-22f1-468e-bc03-be6ca8aa0c5e"],
+
+Cell["MetricAlgebraTutorial", "Item",ExpressionUUID->"a49a832d-1f04-4b6a-b39c-02b5221076b6"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -96,27 +106,31 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 98, 0, 70, "Title",ExpressionUUID->"9ce8914d-f900-4f40-b8a8-da2b1c00a1db"],
-Cell[655, 22, 495, 7, 70, "Text",ExpressionUUID->"f165b527-23ae-498d-98c3-970ba406a658"],
-Cell[1153, 31, 79, 0, 70, "Section",ExpressionUUID->"0dafb298-7aca-409e-b076-e614dfe8ff6d"],
-Cell[1235, 33, 132, 0, 70, "CodeText",ExpressionUUID->"cc103fe3-8f94-4662-90bf-65522dbf1910"],
-Cell[1370, 35, 122, 0, 70, "Code",ExpressionUUID->"4b93339b-7604-4265-b307-2f99969714cc"],
-Cell[1495, 37, 79, 0, 70, "Section",ExpressionUUID->"9f1c1467-3c24-4b1b-a803-cb955d041c09"],
-Cell[1577, 39, 130, 0, 70, "CodeText",ExpressionUUID->"93ff6433-c66e-457b-aae0-6311a71acb43"],
-Cell[1710, 41, 163, 3, 70, "Input",ExpressionUUID->"66d98682-acd0-4abe-acfc-7031092d35d4"],
-Cell[1876, 46, 116, 0, 70, "CodeText",ExpressionUUID->"7a829e73-fd3d-410d-9e36-1685e539a55c"],
-Cell[1995, 48, 168, 3, 70, "Input",ExpressionUUID->"980cb558-669b-45bb-a079-0e12e610c272"],
-Cell[2166, 53, 82, 0, 70, "Section",ExpressionUUID->"5f938752-9707-4018-87c8-f47a5d1e1061"],
-Cell[2251, 55, 117, 0, 70, "CodeText",ExpressionUUID->"6dc10deb-ba54-454c-859b-da0cfa6ae02c"],
-Cell[2371, 57, 171, 3, 70, "Input",ExpressionUUID->"6607af4c-f630-4407-8dfc-cc7be76de7a6"],
-Cell[2545, 62, 146, 2, 70, "CodeText",ExpressionUUID->"016320e3-eea0-4ff3-9d83-1205dc85347f"],
-Cell[2694, 66, 194, 3, 70, "Input",ExpressionUUID->"6b3faf62-8092-42c7-989f-4aaf18010111"],
-Cell[2891, 71, 82, 0, 70, "Section",ExpressionUUID->"5f8de931-83b5-464a-a24f-b9027226b3b7"],
-Cell[2976, 73, 89, 0, 70, "Item",ExpressionUUID->"a0f7a1f9-f98a-48e4-864f-6b077a81d755"],
-Cell[3068, 75, 83, 0, 70, "Item",ExpressionUUID->"f9fe4f06-6923-4833-90f9-a0719bd2cdc8"],
-Cell[3154, 77, 84, 0, 70, "Item",ExpressionUUID->"e06eb67a-b30e-421c-8ffd-6168a6bda1ca"],
-Cell[3241, 79, 82, 0, 70, "Item",ExpressionUUID->"f358cff1-e42d-4ed9-aeb2-dc53afb2fc1c"],
-Cell[3326, 81, 83, 0, 70, "Item",ExpressionUUID->"7316b85d-f271-40b4-9ad9-bb33cd56a421"]
+Cell[554, 20, 98, 0, 70, "Title",ExpressionUUID->"00ee8f72-8830-4f7f-8e15-e957a7e782f1"],
+Cell[655, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"2d007646-918b-4cf6-a5a2-3baf5c24d6d4"],
+Cell[748, 24, 532, 7, 70, "Text",ExpressionUUID->"12ef209f-195f-4eb7-a476-66c1667e2423"],
+Cell[1283, 33, 79, 0, 70, "Section",ExpressionUUID->"d83ecffc-2755-4011-b540-13dd9e398eb2"],
+Cell[1365, 35, 91, 0, 70, "CodeText",ExpressionUUID->"1dce1989-35d2-4c4e-ae40-45a579d579f5"],
+Cell[1459, 37, 192, 4, 70, "Code",ExpressionUUID->"9a11649d-f7e1-4354-82e6-60ce0a5b36dd",
+ InitializationCell->True],
+Cell[1654, 43, 82, 0, 70, "Section",ExpressionUUID->"a8bb4d55-ff53-4382-aa7f-04732312ca58"],
+Cell[1739, 45, 115, 1, 70, "Input",ExpressionUUID->"7332fb9a-6297-4ff4-b8c2-8ed3a9bc5a30"],
+Cell[1857, 48, 150, 2, 70, "Input",ExpressionUUID->"f133ea09-68ca-4d74-9d38-b6a3496612f3"],
+Cell[2010, 52, 112, 1, 70, "Input",ExpressionUUID->"a86eacf3-ed1e-4adb-82e5-a1c1047bce4b"],
+Cell[2125, 55, 176, 3, 70, "Input",ExpressionUUID->"b5f87d2c-84a8-44eb-9fe7-fedb3e410f96"],
+Cell[2304, 60, 115, 1, 70, "Input",ExpressionUUID->"da53166b-ceff-4215-8424-9b869273c183"],
+Cell[2422, 63, 146, 2, 70, "Input",ExpressionUUID->"9223453f-75a3-4e71-94d5-4c4c9ffd3729"],
+Cell[2571, 67, 112, 1, 70, "Input",ExpressionUUID->"63a78408-e838-43fe-a755-c2d28b94404a"],
+Cell[2686, 70, 182, 3, 70, "Input",ExpressionUUID->"9dc29626-440b-48de-97cb-4166ffc4f80f"],
+Cell[2871, 75, 82, 0, 70, "Section",ExpressionUUID->"539a919a-80f8-4862-8688-a019776e9553"],
+Cell[2956, 77, 89, 0, 70, "Item",ExpressionUUID->"6c7d261d-add4-41d8-8cf4-8d9108262407"],
+Cell[3048, 79, 81, 0, 70, "Item",ExpressionUUID->"f07ebd5e-323d-4c23-b1ea-48cfd524869e"],
+Cell[3132, 81, 83, 0, 70, "Item",ExpressionUUID->"237ed11f-f104-477d-ad89-18fdd2329380"],
+Cell[3218, 83, 92, 0, 70, "Item",ExpressionUUID->"6811d617-71c9-432a-9075-3b654df276cd"],
+Cell[3313, 85, 88, 0, 70, "Section",ExpressionUUID->"ec64bdb1-7797-4cb9-a783-c6c1a59b08eb"],
+Cell[3404, 87, 89, 0, 70, "Item",ExpressionUUID->"4a765890-9521-437f-9382-9134596df9dc"],
+Cell[3496, 89, 83, 0, 70, "Section",ExpressionUUID->"b89c09b7-22f1-468e-bc03-be6ca8aa0c5e"],
+Cell[3582, 91, 92, 0, 70, "Item",ExpressionUUID->"a49a832d-1f04-4b6a-b39c-02b5221076b6"]
 }
 ]
 *)

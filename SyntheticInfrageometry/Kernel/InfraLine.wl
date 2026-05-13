@@ -3,6 +3,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageScope[findLineCore]
 PackageScope[findLineExtensions]
 PackageScope[findLineExtensionsWith]
+PackageScope[findLineExtensionsGreedy]
 PackageScope[findParallelCore]
 PackageScope[findPerpendicularCore]
 PackageScope[canonicalLine]
@@ -18,7 +19,7 @@ PackageScope[allCanonicalLines]
 (* A line through p1, p2: a maximal geodesic extension (a, ..., p1, ..., p2, ..., b)
    every contiguous sub-sequence of which is a geodesic, inextensible at both ends. *)
 
-Options[ FindLine ] = { "Maximality" -> "Extension", Method -> "Shortest" };
+Options[ FindLine ] = { "Maximality" -> "Extension", Method -> "ShortestPath", "Pruning" -> Infinity };
 
 FindLine[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
@@ -28,20 +29,27 @@ FindLine[ graph_Graph, p1_, p2_,
 
 findLineCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindLine ] ] /;
     MemberQ[ VertexList[ graph ], p1 ] :=
-  With[ { spec = OptionValue[ FindLine, { opts }, Method ] /. Automatic -> "Shortest" },
+  With[ { spec = OptionValue[ FindLine, { opts }, Method ] /. Automatic -> "ShortestPath",
+          pruning = OptionValue[ FindLine, { opts }, "Pruning" ] },
     With[ { method = methodName[ spec ] },
       With[ { middles = Switch[ method,
-                "Shortest" | "Embedding", allGeodesics[ graph, p1, p2 ],
+                "ShortestPath" | "Greedy" | "Embedding", allGeodesics[ graph, p1, p2 ],
                 "ShortestPathExtension" | "CurvatureMinimizing",
                   With[ { paths = findSegmentCore[ graph, p1, p2, All, Method -> spec ] },
                     If[ ListQ[ paths ], paths, { } ] ]
               ] },
-        With[ { allExtensions = With[ { ext = Union @ Flatten[ findLineExtensions[ graph, # ] & /@ middles, 1 ] },
+        With[ { allExtensions = With[ { ext = Union @ Flatten[
+                  Switch[ method,
+                    "Greedy",
+                      findLineExtensionsGreedy[ graph, # ] & /@ middles,
+                    _,
+                      findLineExtensions[ graph, #, pruning ] & /@ middles
+                  ], 1 ] },
                 If[ OptionValue[ FindLine, { opts }, "Maximality" ] === "Diameter",
                   Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
                   ext ] ] },
           Switch[ method,
-            "Shortest" | "ShortestPathExtension" | "CurvatureMinimizing", allExtensions,
+            "ShortestPath" | "ShortestPathExtension" | "CurvatureMinimizing" | "Greedy", allExtensions,
             "Embedding",
               With[ { embOpts = parseEmbeddingMethod[ spec ] },
                 If[ embOpts[ "Pool" ] === "ShortestPaths",
@@ -65,40 +73,82 @@ embeddingRankLines[ graph_Graph, lines_List, p1_, p2_, embOpts_Association ] :=
   ]
 
 
-(* Maximal geodesic extensions of a segment.  The "With" form takes prefix and
-   suffix path-enumeration closures (ExtendSegment swaps in extended-out /
-   curvature-pulled enumerators for the non-Shortest methods). *)
+(* Maximal geodesic extensions of a segment.  Asymmetric: each side is
+   extended independently to its maximal admissible length; among pairs
+   that achieve a valid joint geodesic (degenerate triangle inequality
+   d(s, e) == d(s, p1) + d + d(p2, e)) we keep those with maximum total
+   extension length b_s + a_e.  The "With" form takes prefix and suffix
+   path-enumeration closures (ExtendSegment swaps in extended-out /
+   curvature-pulled enumerators for the non-ShortestPath methods). *)
 
-findLineExtensions[ graph_Graph, segment_List ] :=
+findLineExtensions[ graph_Graph, segment_List, pruning_ : Infinity ] :=
   findLineExtensionsWith[ graph, segment,
-    { s, p, db } |-> FindPath[ graph, s, p, { db }, All ],
-    { p, e, da } |-> FindPath[ graph, p, e, { da }, All ] ]
+    { s, p, db } |-> applyPruning[ FindPath[ graph, s, p, { db }, All ], pruning ],
+    { p, e, da } |-> applyPruning[ FindPath[ graph, p, e, { da }, All ], pruning ] ]
 
-
-findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_ ] /; Length[ segment ] < 2 :=
-  { segment }
 
 findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_ ] :=
+  findLineExtensionsWith[ graph, segment, prefixFn, suffixFn, True & ]
+
+findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_, admissible_ ] /; Length[ segment ] < 2 :=
+  { segment }
+
+findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_, admissible_ ] :=
   With[ { p1 = First[ segment ], p2 = Last[ segment ],
           d  = GraphDistance[ graph, First[ segment ], Last[ segment ] ] },
     With[ { extendBefore = Select[ VertexList[ graph ],
-              c |-> GraphDistance[ graph, c, p1 ] + d == GraphDistance[ graph, c, p2 ] ],
-            extendAfter = Select[ VertexList[ graph ],
-              c |-> GraphDistance[ graph, c, p2 ] + d == GraphDistance[ graph, p1, c ] ] },
-      With[ { maxPairs = MaximalBy[ Tuples[ { extendBefore, extendAfter } ],
-                GraphDistance[ graph, #[[ 1 ]], #[[ 2 ]] ] & ] },
-        If[ maxPairs === { { p1, p2 } }, { segment },
-          Flatten[
-            With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
-              With[ { db = GraphDistance[ graph, s, p1 ], da = GraphDistance[ graph, p2, e ] },
-                With[ { bp = If[ db == 0, { {} }, Most /@ prefixFn[ s, p1, db ] ],
-                        ap = If[ da == 0, { {} }, Rest /@ suffixFn[ p2, e, da ] ] },
-                  Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ] ] ]
-            ] & /@ maxPairs,
-            1 ]
+              c |-> admissible[ c ] && GraphDistance[ graph, c, p1 ] + d == GraphDistance[ graph, c, p2 ] ],
+            extendAfter  = Select[ VertexList[ graph ],
+              c |-> admissible[ c ] && GraphDistance[ graph, c, p2 ] + d == GraphDistance[ graph, p1, c ] ] },
+      With[ { validPairs = Select[ Tuples[ { extendBefore, extendAfter } ],
+              pair |-> GraphDistance[ graph, pair[[1]], pair[[2]] ] ==
+                       GraphDistance[ graph, pair[[1]], p1 ] + d + GraphDistance[ graph, p2, pair[[2]] ] ] },
+        With[ { maxPairs = MaximalBy[ validPairs,
+                GraphDistance[ graph, #[[1]], p1 ] + GraphDistance[ graph, p2, #[[2]] ] & ] },
+          If[ maxPairs === { } || maxPairs === { { p1, p2 } }, { segment },
+            Flatten[
+              With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
+                With[ { db = GraphDistance[ graph, s, p1 ], da = GraphDistance[ graph, p2, e ] },
+                  With[ { bp = If[ db == 0, { {} },
+                                  Most /@ Select[ prefixFn[ s, p1, db ], AllTrue[ #, admissible ] & ] ],
+                          ap = If[ da == 0, { {} },
+                                  Rest /@ Select[ suffixFn[ p2, e, da ], AllTrue[ #, admissible ] & ] ] },
+                    Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ] ] ]
+              ] & /@ maxPairs,
+              1 ]
+          ]
         ]
       ]
     ]
+  ]
+
+
+(* Greedy maximal geodesic extension: walk vertex-by-vertex outward from each
+   endpoint, accepting the first neighbor that extends the geodesic by one
+   step.  Returns exactly one chain — maximally inextensible but not
+   necessarily of maximum total length. *)
+
+findLineExtensionsGreedy[ graph_Graph, segment_List ] :=
+  findLineExtensionsGreedy[ graph, segment, True & ]
+
+findLineExtensionsGreedy[ graph_Graph, segment_List, admissible_ ] :=
+  { greedyWalkBoth[ graph, segment, admissible ] }
+
+greedyWalkBoth[ graph_Graph, segment_List, admissible_ ] /; Length[ segment ] < 2 := segment
+
+greedyWalkBoth[ graph_Graph, segment_List, admissible_ ] :=
+  With[ { p1 = First[ segment ], p2 = Last[ segment ],
+          d  = GraphDistance[ graph, First[ segment ], Last[ segment ] ] },
+    Join[ Reverse @ greedyWalk[ graph, p1, p2, d, admissible ],
+          segment,
+          greedyWalk[ graph, p2, p1, d, admissible ] ] ]
+
+
+greedyWalk[ graph_Graph, h_, a_, db_, admissible_ ] :=
+  With[ { v = SelectFirst[ AdjacencyList[ graph, h ],
+            c |-> admissible[ c ] && GraphDistance[ graph, c, a ] == db + 1, Missing[] ] },
+    If[ MissingQ[ v ], { },
+      Prepend[ greedyWalk[ graph, v, a, db + 1, admissible ], v ] ]
   ]
 
 
@@ -107,7 +157,7 @@ findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_ ] :=
 (* FindParallel[g, line, p]: maximal sub-segment of a maximal geodesic
    through p whose vertices all lie at distance r = d(p, line) from line. *)
 
-Options[ FindParallel ] = { Method -> "Metric" };
+Options[ FindParallel ] = { Method -> "ShortestPath", "Pruning" -> Infinity };
 
 FindParallel[ graph_Graph, line_, p_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
@@ -116,32 +166,52 @@ FindParallel[ graph_Graph, line_, p_,
 
 
 findParallelCore[ graph_Graph, line_List, p_, opts : OptionsPattern[ FindParallel ] ] :=
-  With[ { spec = OptionValue[ FindParallel, { opts }, Method ] },
+  With[ { spec = OptionValue[ FindParallel, { opts }, Method ] /. Automatic -> "ShortestPath",
+          pruning = OptionValue[ FindParallel, { opts }, "Pruning" ] },
     Switch[ methodName @ spec,
-      "Metric", findParallelMetric[ graph, line, p ],
+      "ShortestPath", findParallelExtensions[ graph, line, p, pruning ],
+      "Greedy",       findParallelExtensionsGreedy[ graph, line, p ],
       "Embedding",
-        embeddingRankParallels[ graph, findParallelMetric[ graph, line, p ], line, p,
+        embeddingRankParallels[ graph, findParallelExtensions[ graph, line, p, pruning ], line, p,
           parseEmbeddingMethod[ spec, "LevelSet" ] ]
     ]
   ]
 
 
-findParallelMetric[ graph_Graph, line_List, p_ ] :=
+(* Maximal level-set geodesics through p: every vertex of the result lies at
+   distance r = d(p, line) from line, and the chain is a geodesic in graph.
+   Seeded by each level-set neighbor of p, extended on both sides via the
+   line-extension machinery with an extra admissibility predicate. *)
+
+findParallelExtensions[ graph_Graph, line_List, p_, pruning_ : Infinity ] :=
   With[ { lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ] },
     With[ { r = lineDist[ p ] },
       If[ r === Infinity, { },
-        With[ { levelSet = Select[ VertexList[ graph ], lineDist[ # ] == r & ] },
-          With[ { segments = ( l |-> With[ { idx = First[ FirstPosition[ l, p, { 0 } ], 0 ] },
-                  If[ idx === 0, { },
-                    l[[
-                      idx - LengthWhile[ Reverse @ Take[ l, idx - 1 ], MemberQ[ levelSet, # ] & ]
-                      ;;
-                      idx + LengthWhile[ Drop[ l, idx ], MemberQ[ levelSet, # ] & ] ]] ] ]
-              ) /@ PencilDirections[ graph, p ] },
-            With[ { dedup = DeleteDuplicates[ canonicalLine /@ Select[ segments, Length[ # ] >= 2 & ] ] },
-              Select[ dedup,
-                a |-> ! AnyTrue[ dedup, b |-> Length[ b ] > Length[ a ] && SubsetQ[ b, a ] ] ]
+        With[ { admissible = c |-> lineDist[ c ] == r },
+          With[ { seeds = Select[ AdjacencyList[ graph, p ], admissible ] },
+            With[ { chains = Flatten[
+                    findLineExtensionsWith[ graph, { p, # },
+                      { s, q, db } |-> applyPruning[ FindPath[ graph, s, q, { db }, All ], pruning ],
+                      { q, e, da } |-> applyPruning[ FindPath[ graph, q, e, { da }, All ], pruning ],
+                      admissible ] & /@ seeds,
+                    1 ] },
+              DeleteDuplicates @ Map[ canonicalLine, Select[ chains, Length[ # ] >= 2 & ] ]
             ]
+          ]
+        ]
+      ]
+    ]
+  ]
+
+
+findParallelExtensionsGreedy[ graph_Graph, line_List, p_ ] :=
+  With[ { lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ] },
+    With[ { r = lineDist[ p ] },
+      If[ r === Infinity, { },
+        With[ { admissible = c |-> lineDist[ c ] == r },
+          With[ { seed = SelectFirst[ AdjacencyList[ graph, p ], admissible, Missing[] ] },
+            If[ MissingQ[ seed ], { { p } },
+              { greedyWalkBoth[ graph, { p, seed }, admissible ] } ]
           ]
         ]
       ]

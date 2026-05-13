@@ -49,7 +49,13 @@ PackageExport[FindBisectingHyperplane]
 PackageExport[InfraRay]
 PackageExport[FindRay]
 
+(* InfraPolyline.wl *)
+PackageExport[InfraPolyline]
+PackageExport[FindPolylineSubdivision]
+PackageExport[PolylineQ]
+
 (* InfraRevolution.wl *)
+PackageExport[InfraObject]
 PackageExport[InfraRevolution]
 PackageExport[FindRevolution]
 PackageExport[FindCylinder]
@@ -60,6 +66,12 @@ PackageExport[RevolutionQ]
 PackageExport[InfraScalarProduct]
 PackageExport[FindInfraLinearCombination]
 PackageExport[InfraAngle]
+
+(* InfraCurveGeometry.wl *)
+PackageExport[TurningAngles]
+PackageExport[TotalCurvature]
+PackageExport[TotalAbsoluteCurvature]
+PackageExport[TurningNumber]
 
 (* AlexandrovGeometry.wl *)
 PackageExport[ComparisonTriangle]
@@ -75,6 +87,17 @@ PackageExport[EmbeddingClosestCycles]
 PackageExport[GeodesicGraph]
 PackageExport[GeodesicSubgraph]
 PackageExport[PathSubgraph]
+
+(* Homotopy.wl *)
+PackageExport[InfraHomotopy]
+PackageExport[FindHomotopy]
+PackageExport[FindNullHomotopy]
+PackageExport[HomotopicQ]
+PackageExport[NullHomotopicQ]
+PackageExport[ReducePath]
+PackageExport[HomotopyMoveType]
+PackageExport[HomotopyMoveTypes]
+PackageExport[HomotopicLoopsQ]
 
 (* MetricGeometry.wl *)
 PackageExport[MetricInterval]
@@ -157,6 +180,7 @@ PackageExport[$InfraShellColor]
 PackageExport[$InfraPlaneColor]
 PackageExport[$InfraCircleColor]
 PackageExport[$InfraRayColor]
+PackageExport[$InfraObjectColor]
 
 (* InfraSceneInteractive.wl *)
 PackageExport[PointViewer]

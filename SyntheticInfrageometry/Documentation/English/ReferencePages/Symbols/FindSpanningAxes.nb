@@ -10,69 +10,85 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5147,        103]
-NotebookOptionsPosition[      3121,         72]
-NotebookOutlinePosition[      3438,         86]
-CellTagsIndexPosition[      3395,         83]
+NotebookDataLength[      5781,        123]
+NotebookOptionsPosition[      3465,         88]
+NotebookOutlinePosition[      3782,        102]
+CellTagsIndexPosition[      3739,         99]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindSpanningAxes", "Title",ExpressionUUID->"a005a57e-ba18-4748-b475-ba7401e2d719"],
+Cell["FindSpanningAxes", "Title",ExpressionUUID->"4779bb55-30e9-4480-b331-fbe3ab550cbc"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"a524e579-6a04-458d-86d6-fe05b9cb10ff"],
 
 Cell["\<\
-FindSpanningAxes[graph, n] returns n mutually well-separated longest \
-geodesics across graph (greedy, no fixed centre) or $Failed; UpTo[n] returns \
-up to n; All returns every axis above the separation threshold. Options: \
-\"AxisDistance\" (\"MinEndpoint\" | \"Hausdorff\" | \"Separation\"), \
-\"MinLength\", \"MinSeparation\", \"AxisThickness\", \"RandomPick\". For axes \
-through a fixed centre vertex use FindOrthogonalFrame.\
-\>", "Text",ExpressionUUID->"44e597e9-2e7b-47e9-8939-8bb95a0b71fe"],
+FindSpanningAxes[g, n] returns n mutually well-separated longest geodesics \
+across g (greedy, no fixed centre) or $Failed; UpTo[n] returns up to n; All \
+returns every axis above the separation threshold. Options: \"AxisDistance\" \
+(\"MinEndpoint\" | \"Hausdorff\" | \"Separation\"), \"MinLength\", \
+\"MinSeparation\", \"AxisThickness\", \"RandomPick\". For axes through a \
+fixed centre use FindOrthogonalFrame.\
+\>", "Text",ExpressionUUID->"c3512613-2abb-41bb-8e61-2223fe4d1f58"],
 
-Cell["Setup", "Section",ExpressionUUID->"f768f549-ea4d-484e-a080-0f149e52ec30"],
+Cell["Setup", "Section",ExpressionUUID->"0fc7b7ac-68f4-421d-a25a-04402a1aff94"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"b2496e30-fc55-4f7b-9d34-a435020ceb45"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"afc1b444-25e0-48e3-a1f7-89b1a5dc2f2c"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"d955f6c3-b228-42c0-898f-067e3f1072aa"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"4e9668eb-cc0c-4822-8fbc-fa3805790e03"],
 
-Cell["Usage", "Section",ExpressionUUID->"baa6322e-aaae-4390-affa-2a1e8904b12f"],
+Cell["Examples", "Section",ExpressionUUID->"9434f70c-861f-4602-93b9-5167ff90b71c"],
 
-Cell["Two well-separated longest geodesics on a 5x5 grid.", "CodeText",ExpressionUUID->"8a42e0c5-8d2f-4579-a611-6feb76a769be"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"622e4bff-13f3-4652-bcd5-efea3442422d"],
 
-Cell["FindSpanningAxes[GridGraph[{5, 5}], 2]", "Input",ExpressionUUID->"90ecc65c-3684-4d1b-b70f-d398b37e8d3a"],
+Cell[BoxData[
+ $CellContext`buildCell["Three spanning axes on a 4x4 grid."]], "Input",Expres\
+sionUUID->"50928f85-7e8c-414b-850c-0f577a6121eb"],
 
-Cell["Visualize the spanning axes.", "CodeText",ExpressionUUID->"5f2bc531-84d9-4431-bc3e-40b668d90df4"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"21ad2ee1-bbe3-427e-91f0-27eda107112b"],
 
-Cell["\<\
-With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, FindSpanningAxes[g, 2]]]\
-\
-\>", "Input",ExpressionUUID->"bddce114-e074-4adb-81fa-e8e41758be9e"],
+Cell[BoxData[
+ $CellContext`buildCell["FindSpanningAxes[GridGraph[{4, 4}], 3]"]], "Input",Ex\
+pressionUUID->"024b0362-1b5a-4bfe-a9ff-fc9510bd41f9"],
 
-Cell["Examples", "Section",ExpressionUUID->"f059e63f-04cb-47ea-ac48-d8dc57603d41"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"b5583f2f-b1af-47f4-8348-86265d663484"],
 
-Cell["All axes above the separation threshold.", "CodeText",ExpressionUUID->"56922098-6595-44f2-843e-c351c48c3a6d"],
+Cell[BoxData[
+ $CellContext`buildCell["All spanning axes."]], "Input",ExpressionUUID->"b8436527-75ed-4ae6-9dbd-8c17d5067cbe"],
 
-Cell["FindSpanningAxes[GridGraph[{4, 4}], All]", "Input",ExpressionUUID->"58902469-1c34-4b6a-9ff1-c119d91a3134"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"feaab7b3-4dc8-412e-9998-63873dd370f0"],
 
-Cell["Switch to Hausdorff separation.", "CodeText",ExpressionUUID->"d4cf907c-75c2-4baa-82e8-1e9a556a807c"],
+Cell[BoxData[
+ $CellContext`buildCell["FindSpanningAxes[GridGraph[{4, 4}], All]"]], "Input",\
+ExpressionUUID->"a9dd87ba-4e97-4c21-894d-99f6622139f3"],
 
-Cell["\<\
-FindSpanningAxes[GridGraph[{6, 6}], 3, \"AxisDistance\" -> \"Hausdorff\"]\
-\>", "Input",ExpressionUUID->"5fe307de-6cb5-4307-9698-ab02a51896b7"],
+Cell["See Also", "Section",ExpressionUUID->"fa6d21f7-c2eb-4e39-8d08-db970746794b"],
 
-Cell["See also", "Section",ExpressionUUID->"0c224e15-6b2f-4cdf-ade9-81f724e7cac5"],
+Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"e894e8f2-adf0-434c-a35c-50985a22d647"],
 
-Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"1a96b535-e657-4a8d-a9c2-e727c5ae7737"],
+Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"2bac51dc-828c-4edf-a591-b4ebb5781880"],
 
-Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"5dd10bf0-17bc-451c-9c81-829f664817ce"],
+Cell["FindRadarBasis", "Item",ExpressionUUID->"17eb1ecd-689b-4675-bd08-986838fa383e"],
 
-Cell["FindRadarBasis", "Item",ExpressionUUID->"ea326176-7c08-43a1-b842-ad4fbc12a6e6"],
+Cell["Related Guides", "Section",ExpressionUUID->"94837068-4789-4eba-a48d-4e7c3b9695ff"],
 
-Cell["SelectPaths", "Item",ExpressionUUID->"49c4e9e0-a055-40e4-b655-e1756b2f2263"]
+Cell["CoordinatizationGuide", "Item",ExpressionUUID->"616d3667-3f08-4b74-bdb1-1dadb28952e5"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"638ded62-f0fa-418d-9b7e-74f66907d5da"],
+
+Cell["CoordinatizationTutorial", "Item",ExpressionUUID->"0331d98d-1090-4295-9b81-152ae73ccab1"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -85,26 +101,30 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 88, 0, 70, "Title",ExpressionUUID->"a005a57e-ba18-4748-b475-ba7401e2d719"],
-Cell[645, 22, 509, 7, 70, "Text",ExpressionUUID->"44e597e9-2e7b-47e9-8939-8bb95a0b71fe"],
-Cell[1157, 31, 79, 0, 70, "Section",ExpressionUUID->"f768f549-ea4d-484e-a080-0f149e52ec30"],
-Cell[1239, 33, 132, 0, 70, "CodeText",ExpressionUUID->"b2496e30-fc55-4f7b-9d34-a435020ceb45"],
-Cell[1374, 35, 122, 0, 70, "Code",ExpressionUUID->"d955f6c3-b228-42c0-898f-067e3f1072aa"],
-Cell[1499, 37, 79, 0, 70, "Section",ExpressionUUID->"baa6322e-aaae-4390-affa-2a1e8904b12f"],
-Cell[1581, 39, 126, 0, 70, "CodeText",ExpressionUUID->"8a42e0c5-8d2f-4579-a611-6feb76a769be"],
-Cell[1710, 41, 110, 0, 70, "Input",ExpressionUUID->"90ecc65c-3684-4d1b-b70f-d398b37e8d3a"],
-Cell[1823, 43, 103, 0, 70, "CodeText",ExpressionUUID->"5f2bc531-84d9-4431-bc3e-40b668d90df4"],
-Cell[1929, 45, 159, 3, 70, "Input",ExpressionUUID->"bddce114-e074-4adb-81fa-e8e41758be9e"],
-Cell[2091, 50, 82, 0, 70, "Section",ExpressionUUID->"f059e63f-04cb-47ea-ac48-d8dc57603d41"],
-Cell[2176, 52, 115, 0, 70, "CodeText",ExpressionUUID->"56922098-6595-44f2-843e-c351c48c3a6d"],
-Cell[2294, 54, 112, 0, 70, "Input",ExpressionUUID->"58902469-1c34-4b6a-9ff1-c119d91a3134"],
-Cell[2409, 56, 106, 0, 70, "CodeText",ExpressionUUID->"d4cf907c-75c2-4baa-82e8-1e9a556a807c"],
-Cell[2518, 58, 153, 2, 70, "Input",ExpressionUUID->"5fe307de-6cb5-4307-9698-ab02a51896b7"],
-Cell[2674, 62, 82, 0, 70, "Section",ExpressionUUID->"0c224e15-6b2f-4cdf-ade9-81f724e7cac5"],
-Cell[2759, 64, 90, 0, 70, "Item",ExpressionUUID->"1a96b535-e657-4a8d-a9c2-e727c5ae7737"],
-Cell[2852, 66, 92, 0, 70, "Item",ExpressionUUID->"5dd10bf0-17bc-451c-9c81-829f664817ce"],
-Cell[2947, 68, 85, 0, 70, "Item",ExpressionUUID->"ea326176-7c08-43a1-b842-ad4fbc12a6e6"],
-Cell[3035, 70, 82, 0, 70, "Item",ExpressionUUID->"49c4e9e0-a055-40e4-b655-e1756b2f2263"]
+Cell[554, 20, 88, 0, 70, "Title",ExpressionUUID->"4779bb55-30e9-4480-b331-fbe3ab550cbc"],
+Cell[645, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"a524e579-6a04-458d-86d6-fe05b9cb10ff"],
+Cell[738, 24, 494, 7, 70, "Text",ExpressionUUID->"c3512613-2abb-41bb-8e61-2223fe4d1f58"],
+Cell[1235, 33, 79, 0, 70, "Section",ExpressionUUID->"0fc7b7ac-68f4-421d-a25a-04402a1aff94"],
+Cell[1317, 35, 91, 0, 70, "CodeText",ExpressionUUID->"afc1b444-25e0-48e3-a1f7-89b1a5dc2f2c"],
+Cell[1411, 37, 192, 4, 70, "Code",ExpressionUUID->"4e9668eb-cc0c-4822-8fbc-fa3805790e03",
+ InitializationCell->True],
+Cell[1606, 43, 82, 0, 70, "Section",ExpressionUUID->"9434f70c-861f-4602-93b9-5167ff90b71c"],
+Cell[1691, 45, 115, 1, 70, "Input",ExpressionUUID->"622e4bff-13f3-4652-bcd5-efea3442422d"],
+Cell[1809, 48, 143, 2, 70, "Input",ExpressionUUID->"50928f85-7e8c-414b-850c-0f577a6121eb"],
+Cell[1955, 52, 112, 1, 70, "Input",ExpressionUUID->"21ad2ee1-bbe3-427e-91f0-27eda107112b"],
+Cell[2070, 55, 147, 2, 70, "Input",ExpressionUUID->"024b0362-1b5a-4bfe-a9ff-fc9510bd41f9"],
+Cell[2220, 59, 115, 1, 70, "Input",ExpressionUUID->"b5583f2f-b1af-47f4-8348-86265d663484"],
+Cell[2338, 62, 125, 1, 70, "Input",ExpressionUUID->"b8436527-75ed-4ae6-9dbd-8c17d5067cbe"],
+Cell[2466, 65, 112, 1, 70, "Input",ExpressionUUID->"feaab7b3-4dc8-412e-9998-63873dd370f0"],
+Cell[2581, 68, 149, 2, 70, "Input",ExpressionUUID->"a9dd87ba-4e97-4c21-894d-99f6622139f3"],
+Cell[2733, 72, 82, 0, 70, "Section",ExpressionUUID->"fa6d21f7-c2eb-4e39-8d08-db970746794b"],
+Cell[2818, 74, 90, 0, 70, "Item",ExpressionUUID->"e894e8f2-adf0-434c-a35c-50985a22d647"],
+Cell[2911, 76, 92, 0, 70, "Item",ExpressionUUID->"2bac51dc-828c-4edf-a591-b4ebb5781880"],
+Cell[3006, 78, 85, 0, 70, "Item",ExpressionUUID->"17eb1ecd-689b-4675-bd08-986838fa383e"],
+Cell[3094, 80, 88, 0, 70, "Section",ExpressionUUID->"94837068-4789-4eba-a48d-4e7c3b9695ff"],
+Cell[3185, 82, 92, 0, 70, "Item",ExpressionUUID->"616d3667-3f08-4b74-bdb1-1dadb28952e5"],
+Cell[3280, 84, 83, 0, 70, "Section",ExpressionUUID->"638ded62-f0fa-418d-9b7e-74f66907d5da"],
+Cell[3366, 86, 95, 0, 70, "Item",ExpressionUUID->"0331d98d-1090-4295-9b81-152ae73ccab1"]
 }
 ]
 *)

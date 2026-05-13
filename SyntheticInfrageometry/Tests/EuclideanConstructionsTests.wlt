@@ -185,9 +185,9 @@ VerificationTest[
 (* ===== FindParallel: Method scaffolding ===== *)
 
 VerificationTest[
-  InfraSegment @ FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All, Method -> "Metric"],
+  InfraSegment @ FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All, Method -> "ShortestPath"],
   InfraSegment[{{5, 6, 7, 8}}],
-  TestID -> "FindParallel-explicit-metric"
+  TestID -> "FindParallel-explicit-shortestpath"
 ]
 
 (* ===== FindMidpoint Method -> "Embedding" ===== *)
@@ -226,6 +226,19 @@ VerificationTest[
   First @ First @ First @ FindPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ],
   3,
   TestID -> "FindPerpendicular-Embedding-closest-foot-is-projection"
+]
+
+
+(* FindMidpoint "Tarski" recipe is local: depends only on B(p1, d(p1, p2)). *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 10, 10 } ], p1 = 23, p2 = 67 },
+    Sort @ (#[[ 1, 1 ]] & /@ FindMidpoint[ g, p1, p2, All, Method -> "Tarski" ]) ===
+      Sort @ (#[[ 1, 1 ]] & /@
+        FindMidpoint[ NeighborhoodGraph[ g, p1, GraphDistance[ g, p1, p2 ] ], p1, p2, All, Method -> "Tarski" ])
+  ],
+  True,
+  TestID -> "FindMidpoint-Tarski-locality"
 ]
 
 EndTestSection[]

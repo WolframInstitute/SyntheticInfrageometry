@@ -31,16 +31,20 @@ FindShell[ graph_Graph, p_, r_,
 
 
 findShellCore[ graph_Graph, p_, r_, opts : OptionsPattern[ FindShell ] ] :=
-  Module[ { spec, methodName, range, levelSet, radius },
+  Module[ { spec, methodName, range, localG, levelSet, radius },
     spec = OptionValue[ FindShell, { opts }, Method ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
     range = Replace[ r, d_?NumericQ :> { d, d } ];
-    levelSet = Select[ VertexList[ graph ],
-      range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ];
+    (* Localize: level surface + one outside layer for the SeparatingSetQ test. *)
+    localG = If[ NumericQ[ range[[ 2 ]] ],
+                 NeighborhoodGraph[ graph, p, Ceiling[ range[[ 2 ]] ] + 1 ], graph ];
+    levelSet = Select[ VertexList[ localG ],
+      range[[ 1 ]] <= GraphDistance[ localG, p, # ] <= range[[ 2 ]] & ];
     radius = If[ NumericQ[ r ], r, Mean[ r ] ];
     Switch[ methodName,
       "Metric",     { levelSet },
-      "Separating", FindMinimalSeparatingSubgraphs[ graph, levelSet, p, radius ],
+      "Separating", FindMinimalSeparatingSubgraphs[ localG, levelSet, p, radius ],
+      (* Embedding uses global GraphEmbedding -> keep the original graph. *)
       "Embedding",  embeddingRankShellVertices[ graph, p, radius, levelSet, parseEmbeddingMethod[ spec, "LevelSet" ] ],
       _,            Message[ FindShell::badmethod, spec ]; $Failed
     ]

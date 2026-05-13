@@ -323,4 +323,103 @@ VerificationTest[
   TestID -> "PathSubgraph-integer-equals-UpTo"
 ]
 
+(* ===== SelectPath -- MinCurvature / MaxCurvature pool selectors ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ],
+          paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    MemberQ[ paths, First @ SelectPath[ g, paths, 1, "From" -> "MinCurvature" ] ]
+  ],
+  True,
+  TestID -> "SelectPath-MinCurvature-returns-member-of-bundle"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ],
+          segment = InfraSegment @ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    Head @ SelectPath[ g, segment, 1, "From" -> "MinCurvature" ]
+  ],
+  InfraSegment,
+  TestID -> "SelectPath-MinCurvature-wrapper-preserved"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ],
+          paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    Sort @ SelectPath[ g, paths, All, "From" -> "MinCurvature" ] ===
+      Sort @ SelectPath[ g, paths, All, "From" -> { "MinCurvature", "Forman" } ] ===
+      Sort @ SelectPath[ g, paths, All, "From" -> { "MinCurvature", "Forman", "Mean" } ]
+  ],
+  True,
+  TestID -> "SelectPath-MinCurvature-bare-equals-full-spec"
+]
+
+VerificationTest[
+  Module[ { g = GridGraph[ { 3, 3 } ], paths, kappaRaw, kappaSym, score, scores, picked },
+    paths = #[[ 1, 1 ]] & /@ FindSegment[ g, 1, 9, All ];
+    kappaRaw = WolframInstitute`Infrageometry`FormanRicciCurvature[ g, "MaxCellDimension" -> 1 ];
+    kappaSym = Join[ kappaRaw,
+      AssociationThread[ Reverse /@ Keys[ kappaRaw ], Values[ kappaRaw ] ] ];
+    score[ path_ ] := Mean[ kappaSym /@ ( UndirectedEdge @@@ Partition[ path, 2, 1 ] ) ];
+    scores = score /@ paths;
+    picked = First @ SelectPath[ g, paths, 1, "From" -> "MinCurvature" ];
+    score[ picked ] == Min[ scores ]
+  ],
+  True,
+  TestID -> "SelectPath-MinCurvature-score-equals-min"
+]
+
+VerificationTest[
+  Module[ { g = GridGraph[ { 3, 3 } ], paths, kappaRaw, kappaSym, score, scores, picked },
+    paths = #[[ 1, 1 ]] & /@ FindSegment[ g, 1, 9, All ];
+    kappaRaw = WolframInstitute`Infrageometry`FormanRicciCurvature[ g, "MaxCellDimension" -> 1 ];
+    kappaSym = Join[ kappaRaw,
+      AssociationThread[ Reverse /@ Keys[ kappaRaw ], Values[ kappaRaw ] ] ];
+    score[ path_ ] := Mean[ kappaSym /@ ( UndirectedEdge @@@ Partition[ path, 2, 1 ] ) ];
+    scores = score /@ paths;
+    picked = First @ SelectPath[ g, paths, 1, "From" -> { "MaxCurvature", "Forman" } ];
+    score[ picked ] == Max[ scores ]
+  ],
+  True,
+  TestID -> "SelectPath-MaxCurvature-score-equals-max"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ],
+          paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    Length @ SelectPath[ g, paths, UpTo[ 3 ], "From" -> "MinCurvature" ] <= 3
+  ],
+  True,
+  TestID -> "SelectPath-MinCurvature-UpTo-soft"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ],
+          paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    SubsetQ[ paths, SelectPath[ g, paths, All, "From" -> "MinCurvature" ] ]
+  ],
+  True,
+  TestID -> "SelectPath-MinCurvature-All-returns-subset"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ],
+          segment = InfraSegment @ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    Head @ ( SelectPath[ g, 1, "From" -> "MinCurvature" ] @ segment )
+  ],
+  InfraSegment,
+  TestID -> "SelectPath-MinCurvature-operator-form-preserves-wrapper"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ],
+          paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    Sort @ SelectPath[ g, paths, All, "From" -> { "MinCurvature", "Forman", "Total" } ] ===
+    Sort @ SelectPath[ g, paths, All, "From" -> { "MinCurvature", "Forman", "Mean"  } ]
+  ],
+  True,
+  TestID -> "SelectPath-MinCurvature-Total-equals-Mean-on-equal-length-bundle"
+]
+
+
 EndTestSection[]

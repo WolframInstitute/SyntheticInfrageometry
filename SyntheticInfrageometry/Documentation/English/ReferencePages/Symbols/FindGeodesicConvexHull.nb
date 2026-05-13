@@ -10,25 +10,88 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1552,         43]
-NotebookOptionsPosition[      1009,         28]
-NotebookOutlinePosition[      1326,         42]
-CellTagsIndexPosition[      1283,         39]
+NotebookDataLength[      5778,        127]
+NotebookOptionsPosition[      3373,         91]
+NotebookOutlinePosition[      3690,        105]
+CellTagsIndexPosition[      3647,        102]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for FindGeodesicConvexHull\"", "Input",ExpressionUUID->"a6c43367-15a4-4243-b54d-cc3d0682e0ed"],
+Cell["FindGeodesicConvexHull", "Title",ExpressionUUID->"c5c7c6a1-9b81-4524-8a8e-5de7be1b4fb8"],
 
-Cell["?FindGeodesicConvexHull", "Input",ExpressionUUID->"36677a83-6520-41de-b021-1e1f70f091b5"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"ab7b888e-87a0-43f9-9cf7-45b0b011cae7"],
 
-Cell["Information[FindGeodesicConvexHull, LongForm -> True]", "Input",ExpressionUUID->"f7752481-cbb4-481a-894c-31e406a828b4"],
+Cell["\<\
+FindGeodesicConvexHull[g, S] returns the smallest superset of S closed under \
+MetricInterval, as a sorted vertex list. Graph-intrinsic shadow of tropical \
+convexity.\
+\>", "Text",ExpressionUUID->"b608334f-9383-4d2b-8dfd-2566750789b2"],
 
-Cell["Definition[FindGeodesicConvexHull]", "Input",ExpressionUUID->"2b5c7b33-d9dd-4992-8cf0-600ffca5f24a"]
+Cell["Setup", "Section",ExpressionUUID->"706fe56a-08bb-4757-aaae-cccc46ea3a3d"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"53ad5079-1331-4f44-b5aa-d1e65c9cd9c6"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"04085523-5e04-4617-9634-8456570d42b2"],
+
+Cell["Examples", "Section",ExpressionUUID->"ef795925-f7ce-4dc1-af18-60acef728327"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"65eb741a-1680-4169-9312-e38b3979534f"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Convex hull of three grid vertices."]], "Input",Expre\
+ssionUUID->"0258a5f8-1bfd-4d38-9426-0f660179f9e1"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"21f98dc1-8d6d-492c-adb0-0e170edb3f02"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindGeodesicConvexHull[GridGraph[{4, 4}], {1, 4, 13}]"]], "Input",Expression\
+UUID->"5cfc5b95-9c79-4afa-bb1c-e4ee4f7a7554"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"6d7efa84-2fb4-43f2-af6d-35a1ea7b2902"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "Convex hull of a single pair is the metric interval."]], "Input",ExpressionU\
+UID->"2180ecdb-1174-48ce-b7aa-fc9587885fc0"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"e8742d44-5c99-4973-a9c1-07b840454222"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindGeodesicConvexHull[GridGraph[{3, 3}], {1, 9}]"]], "Input",ExpressionUUID\
+->"36399eee-c863-4b24-9a40-f343c5a09063"],
+
+Cell["See Also", "Section",ExpressionUUID->"37abb23b-25bf-4515-a76d-74d6ed115e2a"],
+
+Cell["GeodesicallyConvexQ", "Item",ExpressionUUID->"fc4eefb0-3680-4e7e-94de-553a72aadea0"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"d90b8c9f-7dd6-461f-a7c3-8a19965b1a81"],
+
+Cell["MedianVertices", "Item",ExpressionUUID->"19ec5432-4bb1-46fd-b29b-1ddd987277c9"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"b4dffae6-f687-4818-882a-8fe1980892e5"],
+
+Cell["TropicalConvexityGuide", "Item",ExpressionUUID->"0f1355ee-0fec-4be4-ba79-bbe3e4ec32e6"],
+
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"07c0d5f5-240f-4831-a9fe-5b8e552bd7e4"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"20377ae1-b9e9-47be-9b7f-1dc6797b994b"],
+
+Cell["TropicalConvexityTutorial", "Item",ExpressionUUID->"7b8c694f-f7b6-41a0-ada3-a11f02b3ccc5"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +104,31 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 116, 0, 70, "Input",ExpressionUUID->"a6c43367-15a4-4243-b54d-cc3d0682e0ed"],
-Cell[673, 22, 95, 0, 70, "Input",ExpressionUUID->"36677a83-6520-41de-b021-1e1f70f091b5"],
-Cell[771, 24, 125, 0, 70, "Input",ExpressionUUID->"f7752481-cbb4-481a-894c-31e406a828b4"],
-Cell[899, 26, 106, 0, 70, "Input",ExpressionUUID->"2b5c7b33-d9dd-4992-8cf0-600ffca5f24a"]
+Cell[554, 20, 94, 0, 70, "Title",ExpressionUUID->"c5c7c6a1-9b81-4524-8a8e-5de7be1b4fb8"],
+Cell[651, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"ab7b888e-87a0-43f9-9cf7-45b0b011cae7"],
+Cell[744, 24, 246, 4, 70, "Text",ExpressionUUID->"b608334f-9383-4d2b-8dfd-2566750789b2"],
+Cell[993, 30, 79, 0, 70, "Section",ExpressionUUID->"706fe56a-08bb-4757-aaae-cccc46ea3a3d"],
+Cell[1075, 32, 91, 0, 70, "CodeText",ExpressionUUID->"53ad5079-1331-4f44-b5aa-d1e65c9cd9c6"],
+Cell[1169, 34, 192, 4, 70, "Code",ExpressionUUID->"04085523-5e04-4617-9634-8456570d42b2",
+ InitializationCell->True],
+Cell[1364, 40, 82, 0, 70, "Section",ExpressionUUID->"ef795925-f7ce-4dc1-af18-60acef728327"],
+Cell[1449, 42, 115, 1, 70, "Input",ExpressionUUID->"65eb741a-1680-4169-9312-e38b3979534f"],
+Cell[1567, 45, 144, 2, 70, "Input",ExpressionUUID->"0258a5f8-1bfd-4d38-9426-0f660179f9e1"],
+Cell[1714, 49, 112, 1, 70, "Input",ExpressionUUID->"21f98dc1-8d6d-492c-adb0-0e170edb3f02"],
+Cell[1829, 52, 164, 3, 70, "Input",ExpressionUUID->"5cfc5b95-9c79-4afa-bb1c-e4ee4f7a7554"],
+Cell[1996, 57, 115, 1, 70, "Input",ExpressionUUID->"6d7efa84-2fb4-43f2-af6d-35a1ea7b2902"],
+Cell[2114, 60, 163, 3, 70, "Input",ExpressionUUID->"2180ecdb-1174-48ce-b7aa-fc9587885fc0"],
+Cell[2280, 65, 112, 1, 70, "Input",ExpressionUUID->"e8742d44-5c99-4973-a9c1-07b840454222"],
+Cell[2395, 68, 160, 3, 70, "Input",ExpressionUUID->"36399eee-c863-4b24-9a40-f343c5a09063"],
+Cell[2558, 73, 82, 0, 70, "Section",ExpressionUUID->"37abb23b-25bf-4515-a76d-74d6ed115e2a"],
+Cell[2643, 75, 90, 0, 70, "Item",ExpressionUUID->"fc4eefb0-3680-4e7e-94de-553a72aadea0"],
+Cell[2736, 77, 85, 0, 70, "Item",ExpressionUUID->"d90b8c9f-7dd6-461f-a7c3-8a19965b1a81"],
+Cell[2824, 79, 85, 0, 70, "Item",ExpressionUUID->"19ec5432-4bb1-46fd-b29b-1ddd987277c9"],
+Cell[2912, 81, 88, 0, 70, "Section",ExpressionUUID->"b4dffae6-f687-4818-882a-8fe1980892e5"],
+Cell[3003, 83, 93, 0, 70, "Item",ExpressionUUID->"0f1355ee-0fec-4be4-ba79-bbe3e4ec32e6"],
+Cell[3099, 85, 85, 0, 70, "Item",ExpressionUUID->"07c0d5f5-240f-4831-a9fe-5b8e552bd7e4"],
+Cell[3187, 87, 83, 0, 70, "Section",ExpressionUUID->"20377ae1-b9e9-47be-9b7f-1dc6797b994b"],
+Cell[3273, 89, 96, 0, 70, "Item",ExpressionUUID->"7b8c694f-f7b6-41a0-ada3-a11f02b3ccc5"]
 }
 ]
 *)

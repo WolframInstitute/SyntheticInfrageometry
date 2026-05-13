@@ -10,88 +10,121 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      6085,        124]
-NotebookOptionsPosition[      3873,         91]
-NotebookOutlinePosition[      4190,        105]
-CellTagsIndexPosition[      4147,        102]
+NotebookDataLength[      7971,        169]
+NotebookOptionsPosition[      4729,        124]
+NotebookOutlinePosition[      5046,        138]
+CellTagsIndexPosition[      5003,        135]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindMidpoint", "Title",ExpressionUUID->"0486bba9-324e-4c78-88d7-bb43238d56c1"],
+Cell["FindMidpoint", "Title",ExpressionUUID->"6782be88-e460-4ae0-a84b-d29d9f76c3fb"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"76d2013a-351f-40e1-8364-75762e805450"],
 
 Cell["\<\
-FindMidpoint[graph, p1, p2] returns InfraPoint[{midpoint, ...}] for the \
-midpoint vertices between p1 and p2 across all geodesics (the central \
-elements of each geodesic). FindMidpoint[graph, segment] returns the midpoint \
-of an explicit vertex sequence as a wrapped singleton. Multi-valued in \
-general -- returns the union of distinct midpoint vertices.\
-\>", "Text",ExpressionUUID->"df22a307-94ea-46b7-abd7-fc0354b7d03a"],
+FindMidpoint[g, p1, p2] returns a midpoint between p1 and p2 across all \
+geodesics. Two-argument form FindMidpoint[g, segment] returns the midpoint of \
+a specific segment. Returns a List of unary InfraPoint[{v}] wrappers; n / \
+UpTo[n] / All control multiplicity. Option Method (\"Metric\" (default) | \
+\"Tarski\" (synthetic from B and E) | \"Embedding\").\
+\>", "Text",ExpressionUUID->"b52b9f82-0cc0-443e-bf94-a9c17c098f0e"],
 
-Cell["Setup", "Section",ExpressionUUID->"e88b0d95-a5be-4524-9764-ec5b0e3025d5"],
+Cell["Setup", "Section",ExpressionUUID->"1d844254-116f-469d-966e-37671c4d6bea"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"5175290b-b172-4d7d-8687-632186fbf57b"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"15f34368-3316-4b98-8bc1-eac303fe2e1c"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"04d87e57-7af7-4117-a929-3a4c9838c47b"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"71908254-0667-4637-93ea-14f0f05a3e9d"],
 
-Cell["Usage", "Section",ExpressionUUID->"3c24eea4-8ec4-4d7c-befe-98cf777d6466"],
+Cell["Examples", "Section",ExpressionUUID->"b6eda911-884f-47df-af34-16eb9b60e7a4"],
 
-Cell["\<\
-Find the midpoint(s) between two corners of a 4x4 grid -- visualize geodesics \
-in blue, midpoints in red.\
-\>", "CodeText",ExpressionUUID->"e434b7c9-1ba0-4da2-b201-614472be3fb0"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"edf309df-a754-4d9a-a392-6ff250e930b4"],
 
-Cell["\<\
-With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindSegment[g, 1, 16, \
-All] -> Blue, FindMidpoint[g, 1, 16, All] -> Red}]]\
-\>", "Input",ExpressionUUID->"d4786f43-efff-4325-b9e6-cd6960c6b75c"],
+Cell[BoxData[
+ $CellContext`buildCell["Unique midpoint of an odd-length path."]], "Input",Ex\
+pressionUUID->"1a0394b5-0ef6-4ef3-96c9-04b266ff91b6"],
 
-Cell["Read the realisations.", "CodeText",ExpressionUUID->"36adca9b-542d-4f61-bc16-06a4d19c70af"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"267219a1-3a71-4f38-b066-c53fb7ec6fc2"],
 
-Cell["FindMidpoint[GridGraph[{4, 4}], 1, 16, All][\"Realizations\"]", "Input",ExpressionUUID->"15a689b5-739a-4bd9-b11a-4ca3250b18d5"],
+Cell[BoxData[
+ $CellContext`buildCell["FindMidpoint[PathGraph[Range[7]], 1, 7]"]], "Input",E\
+xpressionUUID->"a9846ddd-554a-440f-aa0c-b6e8980a6a3f"],
 
-Cell["Examples", "Section",ExpressionUUID->"2e74546a-5c05-4805-b43c-94f979455889"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"12a1dfcf-b6e5-474f-8092-c49c75b73174"],
 
-Cell["On a path graph the midpoint is unique.", "CodeText",ExpressionUUID->"85820950-ce8c-4d98-ae65-363a5cc27fdf"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "All midpoints on the diagonal of a grid (multi-realisation)."]], "Input",Exp\
+ressionUUID->"113ab643-d9d6-4df5-ad71-fa9a3a6aeaa7"],
 
-Cell["\<\
-With[{g = PathGraph[Range[7]]}, InfraSceneHighlight[g, {FindSegment[g, 1, 7] \
--> Blue, FindMidpoint[g, 1, 7] -> Red}]]\
-\>", "Input",ExpressionUUID->"30817d7d-55bf-4fc7-9d6f-a8ed938c767a"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"8d0f7ca3-35c2-419a-9054-18654bf2d427"],
 
-Cell["\<\
-On a cycle there is one midpoint vertex when the distance between the points \
-is even, two when odd (across the two geodesics).\
-\>", "CodeText",ExpressionUUID->"1b34e158-6e3f-485c-bf4e-04b134c1e9d1"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindMidpoint[GridGraph[{3, 3}], 1, 9, All]"]], "Input",ExpressionUUID->\
+"26d5823a-c6fd-4cd8-a68a-6070ae031f5c"],
 
-Cell["\<\
-With[{g = CycleGraph[8]}, InfraSceneHighlight[g, {FindSegment[g, 1, 5, All] \
--> Blue, FindMidpoint[g, 1, 5, All] -> Red}]]\
-\>", "Input",ExpressionUUID->"670ff565-df77-4699-8dba-219c53dc0801"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"21fcb7c9-97e2-4663-a183-b5293abe09ce"],
 
-Cell["\<\
-Method -> \"Embedding\" ranks pool vertices by Euclidean distance to the \
-midpoint of the line segment under the graph drawing.\
-\>", "CodeText",ExpressionUUID->"ecb88971-0d8a-46b4-9bef-04e82158271f"],
+Cell[BoxData[
+ $CellContext`buildCell["Midpoint on a specific segment."]], "Input",Expressio\
+nUUID->"6bf00ae3-7600-43b6-8283-e4ba7864c965"],
 
-Cell["\<\
-With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, {FindSegment[g, 1, 25, \
-All] -> Blue, FindMidpoint[g, 1, 25, All, Method -> \"Embedding\"] -> Red}]]\
-\>", "Input",ExpressionUUID->"6593a797-ad6f-48c7-81ba-6a2106784a81"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"4a2e8df6-fe91-4678-8f7f-02a2984ddad0"],
 
-Cell["See also", "Section",ExpressionUUID->"80544f5a-f955-4e0a-81f7-24d02636b57f"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindMidpoint[GridGraph[{3, 3}], {1, 2, 5, 8, 9}]"]], "Input",ExpressionUUID->\
+"bbd074e3-94ad-46d3-be47-1f323969fce8"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"59e8fc5f-2f37-46c6-9296-e17c46e9f95e"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"65f92657-b628-4e43-a23c-1d33a0cd6941"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"4a7898ea-44c8-4ccd-8c45-ad714bd1ac8e"],
+Cell[BoxData[
+ $CellContext`buildCell["Tarski synthetic midpoint via B and E."]], "Input",Ex\
+pressionUUID->"8ed71b9b-4eaa-45d2-a4ca-a70a9b1e7257"],
 
-Cell["FindReflection", "Item",ExpressionUUID->"80aeb8f3-ad7f-4fa8-9e24-790a5aeacd52"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"6446fdff-3e25-425e-96d7-3395b1bd21f5"],
 
-Cell["InfraSceneHighlight", "Item",ExpressionUUID->"56357a6f-518b-403f-8d88-0bd73ea2fc74"]
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindMidpoint[CycleGraph[8], 1, 5, All, Method -> \"Tarski\"]"]], "Input",Exp\
+ressionUUID->"805165b7-69ab-4909-8784-4f7aea752fb4"],
+
+Cell["See Also", "Section",ExpressionUUID->"9b4738ab-ceea-4e6a-a842-7d20be7cdc99"],
+
+Cell["InfraPoint", "Item",ExpressionUUID->"73501744-2ab2-49b2-8c7e-ba8263016b60"],
+
+Cell["FindReflection", "Item",ExpressionUUID->"6c6501ad-7eb5-4a61-b6c0-70ac79d641c5"],
+
+Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"e42d3017-7b5e-40ae-815d-39d80cad7aa2"],
+
+Cell["BetweennessQ", "Item",ExpressionUUID->"b0420189-9554-469f-af25-d89f9eddce3c"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"c29dfaea-9e00-4b36-83d6-6da5177b3c88"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"a96392c5-b1d9-475c-af5f-3d68f3846538"],
+
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"a5f813be-56e9-49bd-9109-a0fa661f5f02"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"415b790b-9f98-4348-817d-c49b446244f7"],
+
+Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"c3b2c54d-775e-4875-b3f3-01d55e7abbfb"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"6dc4a242-813d-4352-ac44-d8bf3ee96084"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -104,28 +137,40 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"0486bba9-324e-4c78-88d7-bb43238d56c1"],
-Cell[641, 22, 437, 6, 70, "Text",ExpressionUUID->"df22a307-94ea-46b7-abd7-fc0354b7d03a"],
-Cell[1081, 30, 79, 0, 70, "Section",ExpressionUUID->"e88b0d95-a5be-4524-9764-ec5b0e3025d5"],
-Cell[1163, 32, 132, 0, 70, "CodeText",ExpressionUUID->"5175290b-b172-4d7d-8687-632186fbf57b"],
-Cell[1298, 34, 122, 0, 70, "Code",ExpressionUUID->"04d87e57-7af7-4117-a929-3a4c9838c47b"],
-Cell[1423, 36, 79, 0, 70, "Section",ExpressionUUID->"3c24eea4-8ec4-4d7c-befe-98cf777d6466"],
-Cell[1505, 38, 189, 3, 70, "CodeText",ExpressionUUID->"e434b7c9-1ba0-4da2-b201-614472be3fb0"],
-Cell[1697, 43, 209, 3, 70, "Input",ExpressionUUID->"d4786f43-efff-4325-b9e6-cd6960c6b75c"],
-Cell[1909, 48, 97, 0, 70, "CodeText",ExpressionUUID->"36adca9b-542d-4f61-bc16-06a4d19c70af"],
-Cell[2009, 50, 133, 0, 70, "Input",ExpressionUUID->"15a689b5-739a-4bd9-b11a-4ca3250b18d5"],
-Cell[2145, 52, 82, 0, 70, "Section",ExpressionUUID->"2e74546a-5c05-4805-b43c-94f979455889"],
-Cell[2230, 54, 114, 0, 70, "CodeText",ExpressionUUID->"85820950-ce8c-4d98-ae65-363a5cc27fdf"],
-Cell[2347, 56, 199, 3, 70, "Input",ExpressionUUID->"30817d7d-55bf-4fc7-9d6f-a8ed938c767a"],
-Cell[2549, 61, 211, 3, 70, "CodeText",ExpressionUUID->"1b34e158-6e3f-485c-bf4e-04b134c1e9d1"],
-Cell[2763, 66, 203, 3, 70, "Input",ExpressionUUID->"670ff565-df77-4699-8dba-219c53dc0801"],
-Cell[2969, 71, 211, 3, 70, "CodeText",ExpressionUUID->"ecb88971-0d8a-46b4-9bef-04e82158271f"],
-Cell[3183, 76, 234, 3, 70, "Input",ExpressionUUID->"6593a797-ad6f-48c7-81ba-6a2106784a81"],
-Cell[3420, 81, 82, 0, 70, "Section",ExpressionUUID->"80544f5a-f955-4e0a-81f7-24d02636b57f"],
-Cell[3505, 83, 82, 0, 70, "Item",ExpressionUUID->"59e8fc5f-2f37-46c6-9296-e17c46e9f95e"],
-Cell[3590, 85, 94, 0, 70, "Item",ExpressionUUID->"4a7898ea-44c8-4ccd-8c45-ad714bd1ac8e"],
-Cell[3687, 87, 89, 0, 70, "Item",ExpressionUUID->"80aeb8f3-ad7f-4fa8-9e24-790a5aeacd52"],
-Cell[3779, 89, 90, 0, 70, "Item",ExpressionUUID->"56357a6f-518b-403f-8d88-0bd73ea2fc74"]
+Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"6782be88-e460-4ae0-a84b-d29d9f76c3fb"],
+Cell[641, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"76d2013a-351f-40e1-8364-75762e805450"],
+Cell[734, 24, 438, 6, 70, "Text",ExpressionUUID->"b52b9f82-0cc0-443e-bf94-a9c17c098f0e"],
+Cell[1175, 32, 79, 0, 70, "Section",ExpressionUUID->"1d844254-116f-469d-966e-37671c4d6bea"],
+Cell[1257, 34, 91, 0, 70, "CodeText",ExpressionUUID->"15f34368-3316-4b98-8bc1-eac303fe2e1c"],
+Cell[1351, 36, 192, 4, 70, "Code",ExpressionUUID->"71908254-0667-4637-93ea-14f0f05a3e9d",
+ InitializationCell->True],
+Cell[1546, 42, 82, 0, 70, "Section",ExpressionUUID->"b6eda911-884f-47df-af34-16eb9b60e7a4"],
+Cell[1631, 44, 115, 1, 70, "Input",ExpressionUUID->"edf309df-a754-4d9a-a392-6ff250e930b4"],
+Cell[1749, 47, 147, 2, 70, "Input",ExpressionUUID->"1a0394b5-0ef6-4ef3-96c9-04b266ff91b6"],
+Cell[1899, 51, 112, 1, 70, "Input",ExpressionUUID->"267219a1-3a71-4f38-b066-c53fb7ec6fc2"],
+Cell[2014, 54, 148, 2, 70, "Input",ExpressionUUID->"a9846ddd-554a-440f-aa0c-b6e8980a6a3f"],
+Cell[2165, 58, 115, 1, 70, "Input",ExpressionUUID->"12a1dfcf-b6e5-474f-8092-c49c75b73174"],
+Cell[2283, 61, 171, 3, 70, "Input",ExpressionUUID->"113ab643-d9d6-4df5-ad71-fa9a3a6aeaa7"],
+Cell[2457, 66, 112, 1, 70, "Input",ExpressionUUID->"8d0f7ca3-35c2-419a-9054-18654bf2d427"],
+Cell[2572, 69, 153, 3, 70, "Input",ExpressionUUID->"26d5823a-c6fd-4cd8-a68a-6070ae031f5c"],
+Cell[2728, 74, 115, 1, 70, "Input",ExpressionUUID->"21fcb7c9-97e2-4663-a183-b5293abe09ce"],
+Cell[2846, 77, 140, 2, 70, "Input",ExpressionUUID->"6bf00ae3-7600-43b6-8283-e4ba7864c965"],
+Cell[2989, 81, 112, 1, 70, "Input",ExpressionUUID->"4a2e8df6-fe91-4678-8f7f-02a2984ddad0"],
+Cell[3104, 84, 159, 3, 70, "Input",ExpressionUUID->"bbd074e3-94ad-46d3-be47-1f323969fce8"],
+Cell[3266, 89, 115, 1, 70, "Input",ExpressionUUID->"65f92657-b628-4e43-a23c-1d33a0cd6941"],
+Cell[3384, 92, 147, 2, 70, "Input",ExpressionUUID->"8ed71b9b-4eaa-45d2-a4ca-a70a9b1e7257"],
+Cell[3534, 96, 112, 1, 70, "Input",ExpressionUUID->"6446fdff-3e25-425e-96d7-3395b1bd21f5"],
+Cell[3649, 99, 171, 3, 70, "Input",ExpressionUUID->"805165b7-69ab-4909-8784-4f7aea752fb4"],
+Cell[3823, 104, 82, 0, 70, "Section",ExpressionUUID->"9b4738ab-ceea-4e6a-a842-7d20be7cdc99"],
+Cell[3908, 106, 81, 0, 70, "Item",ExpressionUUID->"73501744-2ab2-49b2-8c7e-ba8263016b60"],
+Cell[3992, 108, 85, 0, 70, "Item",ExpressionUUID->"6c6501ad-7eb5-4a61-b6c0-70ac79d641c5"],
+Cell[4080, 110, 94, 0, 70, "Item",ExpressionUUID->"e42d3017-7b5e-40ae-815d-39d80cad7aa2"],
+Cell[4177, 112, 83, 0, 70, "Item",ExpressionUUID->"b0420189-9554-469f-af25-d89f9eddce3c"],
+Cell[4263, 114, 88, 0, 70, "Section",ExpressionUUID->"c29dfaea-9e00-4b36-83d6-6da5177b3c88"],
+Cell[4354, 116, 93, 0, 70, "Item",ExpressionUUID->"a96392c5-b1d9-475c-af5f-3d68f3846538"],
+Cell[4450, 118, 90, 0, 70, "Item",ExpressionUUID->"a5f813be-56e9-49bd-9109-a0fa661f5f02"],
+Cell[4543, 120, 83, 0, 70, "Section",ExpressionUUID->"415b790b-9f98-4348-817d-c49b446244f7"],
+Cell[4629, 122, 96, 0, 70, "Item",ExpressionUUID->"c3b2c54d-775e-4875-b3f3-01d55e7abbfb"]
 }
 ]
 *)

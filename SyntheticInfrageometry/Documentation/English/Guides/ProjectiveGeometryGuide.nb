@@ -10,214 +10,107 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     14296,        281]
-NotebookOptionsPosition[      9259,        217]
-NotebookOutlinePosition[      9576,        231]
-CellTagsIndexPosition[      9533,        228]
+NotebookDataLength[      7818,        156]
+NotebookOptionsPosition[      4508,        110]
+NotebookOutlinePosition[      4825,        124]
+CellTagsIndexPosition[      4782,        121]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["Projective Geometry", "Title",ExpressionUUID->"ae07c403-b053-4d1b-bb62-7c8bdc755d58"],
+Cell["Projective Geometry", "Title",ExpressionUUID->"6954daae-25b3-4479-a7cb-79b6127d7aa8"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"83d23b14-f0ff-42ce-b1de-421efa8074db"],
 
 Cell["\<\
-The projective layer reconstructs incidence geometry on graphs: pencils at a \
-point, rays in a direction, common lines through several points, common \
-points of several lines, and the Whitehead axioms for projective planes. \
-Every Find* function returns a wrapped Infra* multi-realisation object; \
-predicates test the corresponding incidence pattern.\
-\>", "Text",ExpressionUUID->"48373755-c5f5-4166-8140-c534f178b455"],
+The projective layer treats incidence \[LongDash] points on lines, lines \
+through points, directions at a centre \[LongDash] as first-class graph \
+predicates. It exposes the Whitehead axiom triple W1\[Dash]W3 and a synthetic \
+projective-plane test.\
+\>", "Text",ExpressionUUID->"f14709b7-898b-4f5f-95f6-32cf6ddf8d70"],
+
+Cell["Setup", "Section",ExpressionUUID->"dd71bb3e-2018-457f-bac0-b9208c04d519"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"150075b2-9749-4720-aa95-f3c4d88e53b5"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"5e1051ed-0f1b-416e-9499-a39117dc2246"],
+
+Cell["Pointwise predicates", "Section",ExpressionUUID->"a271cd2d-2b04-4c53-a3ed-4c0c37fe90fb"],
+
+Cell["SameDirectionQ", "Item",ExpressionUUID->"0725beca-8aeb-43f1-bd38-ad9276b6a8d6"],
+
+Cell["CollinearQ", "Item",ExpressionUUID->"5441fc46-563e-4112-b000-1ab95b9e4585"],
+
+Cell["ConcurrentQ", "Item",ExpressionUUID->"dc6ff3a3-fe0b-4917-b4ec-207e69670794"],
+
+Cell["Uniqueness predicates", "Section",ExpressionUUID->"2567d73f-e945-4bff-b17b-83ce88546d0d"],
+
+Cell["UniquePencilQ", "Item",ExpressionUUID->"9dfb97f8-6501-414e-8edb-3e7d647b4fd2"],
+
+Cell["UniqueCollinearQ", "Item",ExpressionUUID->"83b6cd87-c50d-4469-aa27-11fd94d55613"],
+
+Cell["UniqueConcurrentQ", "Item",ExpressionUUID->"e0c30020-b4e6-41de-9cee-6c1878d4bb37"],
+
+Cell["Pencil readouts", "Section",ExpressionUUID->"ac39fdd7-497b-4b74-9b02-2ea4ecb43ffe"],
+
+Cell["PencilDirections", "Item",ExpressionUUID->"c4b9e748-68f7-4884-9b32-3babb12c337f"],
+
+Cell["PencilCardinality", "Item",ExpressionUUID->"7cd4be1b-9395-4189-8e25-12f4f25b6f40"],
+
+Cell["LineCount", "Item",ExpressionUUID->"b05ecd81-f1c1-4993-84ea-de0bae83b18c"],
+
+Cell["Whitehead axioms", "Section",ExpressionUUID->"b88ae61a-204f-41e9-89d0-3bb979f65a4d"],
+
+Cell["WhiteheadW1Q \[LongDash] every line has at least three vertices", "Item",ExpressionUUID->"c49a45fa-46d7-47e3-8972-d77456598cc3"],
 
 Cell["\<\
-The layer's vocabulary is incidence-only -- which points lie on which lines \
--- so it depends on FindLine from the Euclidean kernel but ignores metric \
-quantities like distance, angle, or curvature.\
-\>", "Text",ExpressionUUID->"be0adb8d-9759-4151-a49b-1cb122740302"],
+WhiteheadW2Q \[LongDash] through any two distinct vertices there is exactly \
+one line\
+\>", "Item",ExpressionUUID->"b245afc8-022f-48ab-8d8c-074cc0b97263"],
 
-Cell["Setup", "Section",ExpressionUUID->"78dadb14-e09a-4d60-ade7-422eb0f61cca"],
+Cell["WhiteheadW3Q \[LongDash] intersection / Pasch-type axiom", "Item",ExpressionUUID->"cee3bbe9-4912-4a8b-a122-c8f2e5ceb56c"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"a1e2961c-3e52-4a59-8232-c95e0c35bdf4"],
+Cell["ProjectivePlaneGraphQ \[LongDash] W1 \[And] W2 \[And] W3 with \
+non-degeneracy", "Item",ExpressionUUID->"1bd335b3-02ed-4939-9a8e-\
+2f0e23acae86"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"f312474a-c2af-4b1d-a240-a396bf8bbd2d"],
+Cell["Find-shaped primitives", "Section",ExpressionUUID->"15366d5b-a460-49f7-80e0-caca86943983"],
 
-Cell["Pencil postulates", "Section",ExpressionUUID->"ce40b035-c7a4-4144-80d1-6bda8293845b"],
+Cell["FindRay", "Item",ExpressionUUID->"f33b7e98-dc1e-4099-9cd0-d829e442c0c1"],
 
-Cell["\<\
-A pencil at a vertex O is the set of all maximal-geodesic direction classes \
-through O. The constituent rays of a pencil carry the per-direction \
-multi-line refinement.\
-\>", "Text",ExpressionUUID->"6562382a-1581-4d3c-9fdb-92c8144d0cfc"],
+Cell["FindCommonLine", "Item",ExpressionUUID->"189c54fa-cea9-4e62-b765-8a1e0ab9157f"],
 
-Cell["FindPencil", "Item",ExpressionUUID->"8272af44-53a5-4d00-b5d2-3b9bca31dff7"],
+Cell["FindCommonPoint", "Item",ExpressionUUID->"358ef36a-89bc-4927-bb3b-12a74459a130"],
 
-Cell["FindRay", "Item",ExpressionUUID->"59ef9d2b-3ce1-4751-82d5-c7ddcb13513f"],
+Cell["Tutorial", "Section",ExpressionUUID->"f75f3b6c-18c1-4a8c-af3e-239e17af3e75"],
 
-Cell["PencilDirections", "Item",ExpressionUUID->"dd9ca0b0-e025-4f11-8b79-adeeabb9e496"],
+Cell["See ProjectiveGeometryTutorial for runnable examples.", "Item",ExpressionUUID->"318fa787-7ac5-4910-8489-815dfc1d0f21"],
 
-Cell["PencilCardinality", "Item",ExpressionUUID->"4744db44-f502-4ab9-9ba7-9d6abd012aea"],
-
-Cell["LineCount", "Item",ExpressionUUID->"fe793eb2-3d29-4cc2-8ccd-e1f3ee7ba3dc"],
-
-Cell["Incidence postulates", "Section",ExpressionUUID->"9731c791-ac7b-4fe3-8c2b-47f096c1b886"],
+Cell["References", "Section",ExpressionUUID->"aa983f1a-3bf9-4665-8b39-c66e64e6243b"],
 
 Cell["\<\
-Find* duals: lines through a set of points, points on a set of lines.\
-\>", "Text",ExpressionUUID->"a83519fa-0c83-4fe5-a228-4379627db8d0"],
+Whitehead, The Axioms of Projective Geometry, Cambridge University Press \
+1906, https://archive.org/details/cu31924001520455\
+\>", "Item",ExpressionUUID->"c5f01ad9-d3cd-479c-8d1d-39bf931f44ee"],
 
-Cell["FindCommonLine", "Item",ExpressionUUID->"302198b3-5f14-4971-b17b-c6e4b811a34c"],
-
-Cell["FindCommonPoint", "Item",ExpressionUUID->"4b636d36-ffc1-454b-a1c5-08274dad7bff"],
-
-Cell["Pointwise predicates", "Section",ExpressionUUID->"f60ba4e6-c18f-4ddf-a189-e64b85a18b8a"],
-
-Cell["SameDirectionQ", "Item",ExpressionUUID->"4e0ee96b-815e-434f-8a53-2a0a448d1f0c"],
-
-Cell["CollinearQ", "Item",ExpressionUUID->"91357583-e158-468c-88a3-d83313010017"],
-
-Cell["ConcurrentQ", "Item",ExpressionUUID->"0aac8359-2fb4-4396-aeee-3617fa04c022"],
-
-Cell["UniquePencilQ", "Item",ExpressionUUID->"8b8f7f9f-0de3-495d-befa-779c656d729d"],
-
-Cell["UniqueCollinearQ", "Item",ExpressionUUID->"838b3620-2382-4a53-9703-256253d0b573"],
-
-Cell["UniqueConcurrentQ", "Item",ExpressionUUID->"55c0b898-c370-4470-a355-ae94bc25acf1"],
-
-Cell["Whitehead axioms (projective-plane test)", "Section",ExpressionUUID->"7ca9b99e-7efc-411a-8386-47f9b9d7ea39"],
+Cell["Veblen and Young, Projective Geometry, Ginn 1910", "Item",ExpressionUUID->"04d512b1-1803-4488-a852-4eee75978514"],
 
 Cell["\<\
-The three Whitehead incidence axioms for projective planes restated on \
-graphs, plus a non-degeneracy clause.\
-\>", "Text",ExpressionUUID->"c6676a69-e54b-446f-92b0-e4aec89ec0b4"],
-
-Cell["WhiteheadW1Q -- every line has at least three vertices.", "Item",ExpressionUUID->"7ad1cc20-77dd-4b78-b857-23fa9a11c4fd"],
+Hartshorne, Foundations of Projective Geometry, Benjamin 1967\
+\>", "Item",ExpressionUUID->"d8679d32-10eb-4abd-bbb4-ea985eb9014a"],
 
 Cell["\<\
-WhiteheadW2Q -- through any two distinct vertices there is exactly one line \
-(geodetic property).\
-\>", "Item",ExpressionUUID->"7ecd2caf-7555-419e-8abc-3341b357d412"],
-
-Cell["\<\
-WhiteheadW3Q -- the four-vertex axiom: if some line through {A,B} meets some \
-line through {C,D}, then some line through {A,C} meets some line through \
-{B,D}. O(|V|^4); use only on small graphs.\
-\>", "Item",ExpressionUUID->"3dfcc049-d276-42fa-af98-fbf54dccc900"],
-
-Cell["\<\
-ProjectivePlaneGraphQ -- W1 && W2 && W3 with non-degeneracy (some four \
-vertices, no three collinear).\
-\>", "Item",ExpressionUUID->"76f06833-2b3f-4cdf-87e0-d307ddee0a38"],
-
-Cell["Multi-realisation wrappers", "Section",ExpressionUUID->"5dabd220-c3e5-472c-a98d-1db133f66744"],
-
-Cell["\<\
-The projective layer adds two new wrapper heads to the paclet's seven-head \
-Infra* roster.\
-\>", "Text",ExpressionUUID->"8c111248-d5da-4e03-a3af-8245101fa8e2"],
-
-Cell["\<\
-InfraRay[{ray1, ray2, ...}] -- multi-CANDIDATE wrapper for a ray at a base \
-vertex O. Each ray\\u1d62 is a vertex sequence (a maximal geodesic through O \
-sharing one direction). Mirrors InfraSegment exactly.\
-\>", "Item",ExpressionUUID->"69aa1d97-cfbf-4d6c-9d4f-f4c1f807e771"],
-
-Cell["\<\
-InfraPencil[{InfraRay[reps_1], ..., InfraRay[reps_K]}] -- multi-CONSTITUENT \
-wrapper for a pencil. Each constituent InfraRay is one direction class; the \
-pencil's [\"Length\"] is K (the cardinality of direction classes), not the \
-total line count. The pencil-specific [\"Rays\"] accessor flattens through \
-constituents into a single list of vertex sequences for rendering.\
-\>", "Item",ExpressionUUID->"8c31c32f-632a-49e0-895e-36d2927f69a5"],
-
-Cell["\<\
-Standard wrapper accessors apply: [\"Realizations\"], [\"Length\"], [\"Expand\
-\"], [\"First\"], plus [[i]] for wrapped indexing. See APIConventions for the \
-full table.\
-\>", "Text",ExpressionUUID->"589cc2df-c2ac-46e9-a12f-cb4bd00f620a"],
-
-Cell["Multi-anchor spread", "Section",ExpressionUUID->"2efe8a1d-0095-46ab-b1b0-8c80bc6c2f37"],
-
-Cell["\<\
-Find* functions in the projective layer accept Infra* anchors and spread \
-Cartesian over their realisations.\
-\>", "Text",ExpressionUUID->"47170c7d-b296-4868-a2c9-8a27cb7c780d"],
-
-Cell["\<\
-FindRay[g, InfraPoint[{O1, O2}], v, n] runs the single-pair core for each \
-origin choice, unions the resulting rays.\
-\>", "Item",ExpressionUUID->"5b6e82a2-d18b-4aab-8a3a-9843fe7eead2"],
-
-Cell["\<\
-FindPencil[g, InfraPoint[{O1, O2}]] unions the constituent InfraRays from \
-each origin into one pencil.\
-\>", "Item",ExpressionUUID->"e3557686-c348-4ee9-82b0-ee69c07aad5c"],
-
-Cell["\<\
-FindCommonLine[g, {InfraPoint[{a, b}], c, ...}] collapses each entry to its \
-vertex set and searches for canonical lines containing the union.\
-\>", "Item",ExpressionUUID->"483d4ae6-f071-4d85-bd09-084a2d884e34"],
-
-Cell["\<\
-FindCommonPoint[g, {InfraSegment[{...}], InfraRay[{...}], ...}] intersects \
-the vertex sets of every wrapped or bare line.\
-\>", "Item",ExpressionUUID->"7c6294a4-2bbf-4f75-99fb-fc2e34d17ba4"],
-
-Cell["Visualization", "Section",ExpressionUUID->"efc5f5f4-d28a-4453-960c-e54e753e8590"],
-
-Cell["\<\
-InfraSceneHighlight dispatches both new heads to Paths rendering. The pencil \
-flattens through [\"Rays\"], so the apex O gets natural visual emphasis (it \
-appears in every constituent ray, so the count-weighting raises its opacity).\
-\
-\>", "Text",ExpressionUUID->"5b4228c3-cb1f-4db1-bb71-3fa6bb3cf99e"],
-
-Cell["\<\
-InfraSceneHighlight[g, {FindPencil[g, O] -> Red}] renders the pencil at O.\
-\>", "Item",ExpressionUUID->"3bba04ed-7022-4da7-879a-eac4c245c5fd"],
-
-Cell["\<\
-InfraSceneHighlight[g, {FindRay[g, O, v, All] -> Blue}] renders every line \
-through O sharing direction with v.\
-\>", "Item",ExpressionUUID->"d6eebcf4-9122-4774-a574-1fe0e644e2e5"],
-
-Cell["Tutorial", "Section",ExpressionUUID->"3d8453d7-a269-4a4a-b4ac-e9a1dcaf545e"],
-
-Cell["\<\
-See ProjectiveGeometryTutorial for runnable examples on paths, cycles, grids, \
-and small projective planes.\
-\>", "Item",ExpressionUUID->"8457d83b-1966-4709-912f-0a0ea24f6867"],
-
-Cell["References", "Section",ExpressionUUID->"59c9bc0f-81be-4163-bcc4-831f40747f2f"],
-
-Cell["\<\
-Whitehead, The Axioms of Projective Geometry, Cambridge Tracts in Mathematics \
-and Mathematical Physics no. 4, Cambridge University Press 1906, \
-https://archive.org/details/cu31924001520455\
-\>", "Item",ExpressionUUID->"521b4003-e8e3-423e-a2e1-48fbcc1da550"],
-
-Cell["\<\
-Hartshorne, Foundations of Projective Geometry, W. A. Benjamin, 1967 \
-(lecture-note style; covers Whitehead's incidence axioms and Desargues / \
-Pappus configurations).\
-\>", "Item",ExpressionUUID->"32d26602-157b-48b3-904f-bca2399715ec"],
-
-Cell["\<\
-Coxeter, Projective Geometry, Springer 2nd ed. 1987, ISBN 978-0-387-96532-1.\
-\>", "Item",ExpressionUUID->"1e40e4f1-2088-4eb5-ad25-f54df5e29fe8"],
-
-Cell["\<\
-Beutelspacher and Rosenbaum, Projective Geometry: From Foundations to \
-Applications, Cambridge University Press 1998, ISBN 978-0-521-48364-3.\
-\>", "Item",ExpressionUUID->"eff81aca-3836-4ebb-8661-d402d82bbb1c"],
-
-Cell["\<\
-Doyle and Snell, Random Walks and Electric Networks, MAA 1984, \
-https://arxiv.org/abs/math/0001057 (background for the deferred Resistance \
-metric on which projective Find* could one day be parameterised).\
-\>", "Item",ExpressionUUID->"25cc9e5b-0e5c-4e0a-92cb-0d93cb158468"]
+Beutelspacher and Rosenbaum, Projective Geometry: from foundations to \
+applications, CUP 1998\
+\>", "Item",ExpressionUUID->"2e0b2e5d-a9da-41d1-a3c7-0205aecdcae0"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -230,59 +123,41 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 88, 0, 70, "Title",ExpressionUUID->"ae07c403-b053-4d1b-bb62-7c8bdc755d58"],
-Cell[645, 22, 433, 6, 70, "Text",ExpressionUUID->"48373755-c5f5-4166-8140-c534f178b455"],
-Cell[1081, 30, 279, 4, 70, "Text",ExpressionUUID->"be0adb8d-9759-4151-a49b-1cb122740302"],
-Cell[1363, 36, 79, 0, 70, "Section",ExpressionUUID->"78dadb14-e09a-4d60-ade7-422eb0f61cca"],
-Cell[1445, 38, 91, 0, 70, "CodeText",ExpressionUUID->"a1e2961c-3e52-4a59-8232-c95e0c35bdf4"],
-Cell[1539, 40, 122, 0, 70, "Code",ExpressionUUID->"f312474a-c2af-4b1d-a240-a396bf8bbd2d"],
-Cell[1664, 42, 91, 0, 70, "Section",ExpressionUUID->"ce40b035-c7a4-4144-80d1-6bda8293845b"],
-Cell[1758, 44, 249, 4, 70, "Text",ExpressionUUID->"6562382a-1581-4d3c-9fdb-92c8144d0cfc"],
-Cell[2010, 50, 81, 0, 70, "Item",ExpressionUUID->"8272af44-53a5-4d00-b5d2-3b9bca31dff7"],
-Cell[2094, 52, 78, 0, 70, "Item",ExpressionUUID->"59ef9d2b-3ce1-4751-82d5-c7ddcb13513f"],
-Cell[2175, 54, 87, 0, 70, "Item",ExpressionUUID->"dd9ca0b0-e025-4f11-8b79-adeeabb9e496"],
-Cell[2265, 56, 88, 0, 70, "Item",ExpressionUUID->"4744db44-f502-4ab9-9ba7-9d6abd012aea"],
-Cell[2356, 58, 80, 0, 70, "Item",ExpressionUUID->"fe793eb2-3d29-4cc2-8ccd-e1f3ee7ba3dc"],
-Cell[2439, 60, 94, 0, 70, "Section",ExpressionUUID->"9731c791-ac7b-4fe3-8c2b-47f096c1b886"],
-Cell[2536, 62, 148, 2, 70, "Text",ExpressionUUID->"a83519fa-0c83-4fe5-a228-4379627db8d0"],
-Cell[2687, 66, 85, 0, 70, "Item",ExpressionUUID->"302198b3-5f14-4971-b17b-c6e4b811a34c"],
-Cell[2775, 68, 86, 0, 70, "Item",ExpressionUUID->"4b636d36-ffc1-454b-a1c5-08274dad7bff"],
-Cell[2864, 70, 94, 0, 70, "Section",ExpressionUUID->"f60ba4e6-c18f-4ddf-a189-e64b85a18b8a"],
-Cell[2961, 72, 85, 0, 70, "Item",ExpressionUUID->"4e0ee96b-815e-434f-8a53-2a0a448d1f0c"],
-Cell[3049, 74, 81, 0, 70, "Item",ExpressionUUID->"91357583-e158-468c-88a3-d83313010017"],
-Cell[3133, 76, 82, 0, 70, "Item",ExpressionUUID->"0aac8359-2fb4-4396-aeee-3617fa04c022"],
-Cell[3218, 78, 84, 0, 70, "Item",ExpressionUUID->"8b8f7f9f-0de3-495d-befa-779c656d729d"],
-Cell[3305, 80, 87, 0, 70, "Item",ExpressionUUID->"838b3620-2382-4a53-9703-256253d0b573"],
-Cell[3395, 82, 88, 0, 70, "Item",ExpressionUUID->"55c0b898-c370-4470-a355-ae94bc25acf1"],
-Cell[3486, 84, 114, 0, 70, "Section",ExpressionUUID->"7ca9b99e-7efc-411a-8386-47f9b9d7ea39"],
-Cell[3603, 86, 189, 3, 70, "Text",ExpressionUUID->"c6676a69-e54b-446f-92b0-e4aec89ec0b4"],
-Cell[3795, 91, 126, 0, 70, "Item",ExpressionUUID->"7ad1cc20-77dd-4b78-b857-23fa9a11c4fd"],
-Cell[3924, 93, 177, 3, 70, "Item",ExpressionUUID->"7ecd2caf-7555-419e-8abc-3341b357d412"],
-Cell[4104, 98, 275, 4, 70, "Item",ExpressionUUID->"3dfcc049-d276-42fa-af98-fbf54dccc900"],
-Cell[4382, 104, 182, 3, 70, "Item",ExpressionUUID->"76f06833-2b3f-4cdf-87e0-d307ddee0a38"],
-Cell[4567, 109, 100, 0, 70, "Section",ExpressionUUID->"5dabd220-c3e5-472c-a98d-1db133f66744"],
-Cell[4670, 111, 170, 3, 70, "Text",ExpressionUUID->"8c111248-d5da-4e03-a3af-8245101fa8e2"],
-Cell[4843, 116, 288, 4, 70, "Item",ExpressionUUID->"69aa1d97-cfbf-4d6c-9d4f-f4c1f807e771"],
-Cell[5134, 122, 455, 6, 70, "Item",ExpressionUUID->"8c31c32f-632a-49e0-895e-36d2927f69a5"],
-Cell[5592, 130, 249, 4, 70, "Text",ExpressionUUID->"589cc2df-c2ac-46e9-a12f-cb4bd00f620a"],
-Cell[5844, 136, 93, 0, 70, "Section",ExpressionUUID->"2efe8a1d-0095-46ab-b1b0-8c80bc6c2f37"],
-Cell[5940, 138, 188, 3, 70, "Text",ExpressionUUID->"47170c7d-b296-4868-a2c9-8a27cb7c780d"],
-Cell[6131, 143, 196, 3, 70, "Item",ExpressionUUID->"5b6e82a2-d18b-4aab-8a3a-9843fe7eead2"],
-Cell[6330, 148, 183, 3, 70, "Item",ExpressionUUID->"e3557686-c348-4ee9-82b0-ee69c07aad5c"],
-Cell[6516, 153, 222, 3, 70, "Item",ExpressionUUID->"483d4ae6-f071-4d85-bd09-084a2d884e34"],
-Cell[6741, 158, 202, 3, 70, "Item",ExpressionUUID->"7c6294a4-2bbf-4f75-99fb-fc2e34d17ba4"],
-Cell[6946, 163, 87, 0, 70, "Section",ExpressionUUID->"efc5f5f4-d28a-4453-960c-e54e753e8590"],
-Cell[7036, 165, 315, 5, 70, "Text",ExpressionUUID->"5b4228c3-cb1f-4db1-bb71-3fa6bb3cf99e"],
-Cell[7354, 172, 153, 2, 70, "Item",ExpressionUUID->"3bba04ed-7022-4da7-879a-eac4c245c5fd"],
-Cell[7510, 176, 191, 3, 70, "Item",ExpressionUUID->"d6eebcf4-9122-4774-a574-1fe0e644e2e5"],
-Cell[7704, 181, 82, 0, 70, "Section",ExpressionUUID->"3d8453d7-a269-4a4a-b4ac-e9a1dcaf545e"],
-Cell[7789, 183, 184, 3, 70, "Item",ExpressionUUID->"8457d83b-1966-4709-912f-0a0ea24f6867"],
-Cell[7976, 188, 84, 0, 70, "Section",ExpressionUUID->"59c9bc0f-81be-4163-bcc4-831f40747f2f"],
-Cell[8063, 190, 270, 4, 70, "Item",ExpressionUUID->"521b4003-e8e3-423e-a2e1-48fbcc1da550"],
-Cell[8336, 196, 248, 4, 70, "Item",ExpressionUUID->"32d26602-157b-48b3-904f-bca2399715ec"],
-Cell[8587, 202, 155, 2, 70, "Item",ExpressionUUID->"1e40e4f1-2088-4eb5-ad25-f54df5e29fe8"],
-Cell[8745, 206, 221, 3, 70, "Item",ExpressionUUID->"eff81aca-3836-4ebb-8661-d402d82bbb1c"],
-Cell[8969, 211, 286, 4, 70, "Item",ExpressionUUID->"25cc9e5b-0e5c-4e0a-92cb-0d93cb158468"]
+Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"6954daae-25b3-4479-a7cb-79b6127d7aa8"],
+Cell[648, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"83d23b14-f0ff-42ce-b1de-421efa8074db"],
+Cell[741, 24, 330, 5, 70, "Text",ExpressionUUID->"f14709b7-898b-4f5f-95f6-32cf6ddf8d70"],
+Cell[1074, 31, 79, 0, 70, "Section",ExpressionUUID->"dd71bb3e-2018-457f-bac0-b9208c04d519"],
+Cell[1156, 33, 91, 0, 70, "CodeText",ExpressionUUID->"150075b2-9749-4720-aa95-f3c4d88e53b5"],
+Cell[1250, 35, 192, 4, 70, "Code",ExpressionUUID->"5e1051ed-0f1b-416e-9499-a39117dc2246",
+ InitializationCell->True],
+Cell[1445, 41, 94, 0, 70, "Section",ExpressionUUID->"a271cd2d-2b04-4c53-a3ed-4c0c37fe90fb"],
+Cell[1542, 43, 85, 0, 70, "Item",ExpressionUUID->"0725beca-8aeb-43f1-bd38-ad9276b6a8d6"],
+Cell[1630, 45, 81, 0, 70, "Item",ExpressionUUID->"5441fc46-563e-4112-b000-1ab95b9e4585"],
+Cell[1714, 47, 82, 0, 70, "Item",ExpressionUUID->"dc6ff3a3-fe0b-4917-b4ec-207e69670794"],
+Cell[1799, 49, 95, 0, 70, "Section",ExpressionUUID->"2567d73f-e945-4bff-b17b-83ce88546d0d"],
+Cell[1897, 51, 84, 0, 70, "Item",ExpressionUUID->"9dfb97f8-6501-414e-8edb-3e7d647b4fd2"],
+Cell[1984, 53, 87, 0, 70, "Item",ExpressionUUID->"83b6cd87-c50d-4469-aa27-11fd94d55613"],
+Cell[2074, 55, 88, 0, 70, "Item",ExpressionUUID->"e0c30020-b4e6-41de-9cee-6c1878d4bb37"],
+Cell[2165, 57, 89, 0, 70, "Section",ExpressionUUID->"ac39fdd7-497b-4b74-9b02-2ea4ecb43ffe"],
+Cell[2257, 59, 87, 0, 70, "Item",ExpressionUUID->"c4b9e748-68f7-4884-9b32-3babb12c337f"],
+Cell[2347, 61, 88, 0, 70, "Item",ExpressionUUID->"7cd4be1b-9395-4189-8e25-12f4f25b6f40"],
+Cell[2438, 63, 80, 0, 70, "Item",ExpressionUUID->"b05ecd81-f1c1-4993-84ea-de0bae83b18c"],
+Cell[2521, 65, 90, 0, 70, "Section",ExpressionUUID->"b88ae61a-204f-41e9-89d0-3bb979f65a4d"],
+Cell[2614, 67, 134, 0, 70, "Item",ExpressionUUID->"c49a45fa-46d7-47e3-8972-d77456598cc3"],
+Cell[2751, 69, 165, 3, 70, "Item",ExpressionUUID->"b245afc8-022f-48ab-8d8c-074cc0b97263"],
+Cell[2919, 74, 127, 0, 70, "Item",ExpressionUUID->"cee3bbe9-4912-4a8b-a122-c8f2e5ceb56c"],
+Cell[3049, 76, 151, 2, 70, "Item",ExpressionUUID->"1bd335b3-02ed-4939-9a8e-2f0e23acae86"],
+Cell[3203, 80, 96, 0, 70, "Section",ExpressionUUID->"15366d5b-a460-49f7-80e0-caca86943983"],
+Cell[3302, 82, 78, 0, 70, "Item",ExpressionUUID->"f33b7e98-dc1e-4099-9cd0-d829e442c0c1"],
+Cell[3383, 84, 85, 0, 70, "Item",ExpressionUUID->"189c54fa-cea9-4e62-b765-8a1e0ab9157f"],
+Cell[3471, 86, 86, 0, 70, "Item",ExpressionUUID->"358ef36a-89bc-4927-bb3b-12a74459a130"],
+Cell[3560, 88, 82, 0, 70, "Section",ExpressionUUID->"f75f3b6c-18c1-4a8c-af3e-239e17af3e75"],
+Cell[3645, 90, 124, 0, 70, "Item",ExpressionUUID->"318fa787-7ac5-4910-8489-815dfc1d0f21"],
+Cell[3772, 92, 84, 0, 70, "Section",ExpressionUUID->"aa983f1a-3bf9-4665-8b39-c66e64e6243b"],
+Cell[3859, 94, 204, 3, 70, "Item",ExpressionUUID->"c5f01ad9-d3cd-479c-8d1d-39bf931f44ee"],
+Cell[4066, 99, 119, 0, 70, "Item",ExpressionUUID->"04d512b1-1803-4488-a852-4eee75978514"],
+Cell[4188, 101, 140, 2, 70, "Item",ExpressionUUID->"d8679d32-10eb-4abd-bbb4-ea985eb9014a"],
+Cell[4331, 105, 173, 3, 70, "Item",ExpressionUUID->"2e0b2e5d-a9da-41d1-a3c7-0205aecdcae0"]
 }
 ]
 *)

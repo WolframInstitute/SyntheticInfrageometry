@@ -10,25 +10,87 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1523,         43]
-NotebookOptionsPosition[       981,         28]
-NotebookOutlinePosition[      1298,         42]
-CellTagsIndexPosition[      1255,         39]
+NotebookDataLength[      5856,        126]
+NotebookOptionsPosition[      3450,         90]
+NotebookOutlinePosition[      3767,        104]
+CellTagsIndexPosition[      3724,        101]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for FindCommonPoint\"", "Input",ExpressionUUID->"a2df272b-c2c6-47aa-a61f-ba3b268a75c3"],
+Cell["FindCommonPoint", "Title",ExpressionUUID->"1027f481-48b8-4a0d-b5d1-e8efc0eb91db"],
 
-Cell["?FindCommonPoint", "Input",ExpressionUUID->"1e231cb0-7699-46df-b189-5d5745f5877c"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"3ffa642b-8332-40d1-b3c8-a2fcd0977a49"],
 
-Cell["Information[FindCommonPoint, LongForm -> True]", "Input",ExpressionUUID->"199f8be1-1549-416f-a50e-4954c5f11935"],
+Cell["\<\
+FindCommonPoint[g, lines] returns the vertices lying on every line in the \
+given list. Returns a List of unary InfraPoint[{v}] wrappers or $Failed; n / \
+UpTo[n] / All control multiplicity. Entries may be bare vertex sequences or \
+InfraSegment / InfraRay wrappers.\
+\>", "Text",ExpressionUUID->"cd9ad76c-4776-4143-af88-94bbd7a5d9c0"],
 
-Cell["Definition[FindCommonPoint]", "Input",ExpressionUUID->"c5f4a1bc-8d36-4bac-a9e5-7d79ad9982d5"]
+Cell["Setup", "Section",ExpressionUUID->"0bd11f60-0d14-4782-a6a7-699efbc76081"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"3311d5a0-b3f1-49b5-afaf-7a21e0a1b7da"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"1487461e-6b99-4b6f-b473-e564c97d834b"],
+
+Cell["Examples", "Section",ExpressionUUID->"aad6c2c3-1672-4267-ab04-ad9624747924"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"f79cec7a-e0cf-45c6-9b23-a27521dc75ac"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Intersection of two crossing diagonals."]], "Input",E\
+xpressionUUID->"96bee2b3-9890-4912-96b8-27d83cb2e6ee"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"10540ec9-d618-49fd-b2e1-48c580f7b10e"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindCommonPoint[GridGraph[{3, 3}], {{1, 5, 9}, {3, 5, 7}}, All]"]], "Input",\
+ExpressionUUID->"a93945b1-e294-4705-9f49-3418023b80df"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"de90792f-592b-4b61-872b-1b051f108522"],
+
+Cell[BoxData[
+ $CellContext`buildCell["No common point."]], "Input",ExpressionUUID->"a0a09ac4-7b32-48c8-816a-be39b17fdaea"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"f2e9be23-e49e-472c-aa5b-ecc6f2a9a366"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindCommonPoint[GridGraph[{3, 3}], {{1, 2, 3}, {7, 8, 9}}, UpTo[1]]"]], \
+"Input",ExpressionUUID->"68217ff2-a13a-47c6-9b91-53c98bc7be3d"],
+
+Cell["See Also", "Section",ExpressionUUID->"1baecbb8-e2b0-4835-9b4a-9fb2e484c684"],
+
+Cell["InfraPoint", "Item",ExpressionUUID->"f6c8175e-6997-4e83-be47-f2addcb42a44"],
+
+Cell["FindCommonLine", "Item",ExpressionUUID->"ca574a32-039e-40f8-83ec-11e60ba1355c"],
+
+Cell["ConcurrentQ", "Item",ExpressionUUID->"8d2babeb-02b2-4d74-b582-869a0f7020cc"],
+
+Cell["UniqueConcurrentQ", "Item",ExpressionUUID->"9525f1bd-0618-4928-a098-d45f41405801"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"a728b61f-2a17-4c41-b5cc-c854a8230751"],
+
+Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"150bc8bd-3ea3-4c1b-83ed-fa27a2aedbba"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"40da5353-6be0-4acf-a0a0-fd496e37bc3c"],
+
+Cell["ProjectiveGeometryTutorial", "Item",ExpressionUUID->"c3093549-81b0-465e-a499-b950fb6d8c68"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +103,31 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 109, 0, 70, "Input",ExpressionUUID->"a2df272b-c2c6-47aa-a61f-ba3b268a75c3"],
-Cell[666, 22, 88, 0, 70, "Input",ExpressionUUID->"1e231cb0-7699-46df-b189-5d5745f5877c"],
-Cell[757, 24, 118, 0, 70, "Input",ExpressionUUID->"199f8be1-1549-416f-a50e-4954c5f11935"],
-Cell[878, 26, 99, 0, 70, "Input",ExpressionUUID->"c5f4a1bc-8d36-4bac-a9e5-7d79ad9982d5"]
+Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"1027f481-48b8-4a0d-b5d1-e8efc0eb91db"],
+Cell[644, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"3ffa642b-8332-40d1-b3c8-a2fcd0977a49"],
+Cell[737, 24, 345, 5, 70, "Text",ExpressionUUID->"cd9ad76c-4776-4143-af88-94bbd7a5d9c0"],
+Cell[1085, 31, 79, 0, 70, "Section",ExpressionUUID->"0bd11f60-0d14-4782-a6a7-699efbc76081"],
+Cell[1167, 33, 91, 0, 70, "CodeText",ExpressionUUID->"3311d5a0-b3f1-49b5-afaf-7a21e0a1b7da"],
+Cell[1261, 35, 192, 4, 70, "Code",ExpressionUUID->"1487461e-6b99-4b6f-b473-e564c97d834b",
+ InitializationCell->True],
+Cell[1456, 41, 82, 0, 70, "Section",ExpressionUUID->"aad6c2c3-1672-4267-ab04-ad9624747924"],
+Cell[1541, 43, 115, 1, 70, "Input",ExpressionUUID->"f79cec7a-e0cf-45c6-9b23-a27521dc75ac"],
+Cell[1659, 46, 148, 2, 70, "Input",ExpressionUUID->"96bee2b3-9890-4912-96b8-27d83cb2e6ee"],
+Cell[1810, 50, 112, 1, 70, "Input",ExpressionUUID->"10540ec9-d618-49fd-b2e1-48c580f7b10e"],
+Cell[1925, 53, 174, 3, 70, "Input",ExpressionUUID->"a93945b1-e294-4705-9f49-3418023b80df"],
+Cell[2102, 58, 115, 1, 70, "Input",ExpressionUUID->"de90792f-592b-4b61-872b-1b051f108522"],
+Cell[2220, 61, 123, 1, 70, "Input",ExpressionUUID->"a0a09ac4-7b32-48c8-816a-be39b17fdaea"],
+Cell[2346, 64, 112, 1, 70, "Input",ExpressionUUID->"f2e9be23-e49e-472c-aa5b-ecc6f2a9a366"],
+Cell[2461, 67, 178, 3, 70, "Input",ExpressionUUID->"68217ff2-a13a-47c6-9b91-53c98bc7be3d"],
+Cell[2642, 72, 82, 0, 70, "Section",ExpressionUUID->"1baecbb8-e2b0-4835-9b4a-9fb2e484c684"],
+Cell[2727, 74, 81, 0, 70, "Item",ExpressionUUID->"f6c8175e-6997-4e83-be47-f2addcb42a44"],
+Cell[2811, 76, 85, 0, 70, "Item",ExpressionUUID->"ca574a32-039e-40f8-83ec-11e60ba1355c"],
+Cell[2899, 78, 82, 0, 70, "Item",ExpressionUUID->"8d2babeb-02b2-4d74-b582-869a0f7020cc"],
+Cell[2984, 80, 88, 0, 70, "Item",ExpressionUUID->"9525f1bd-0618-4928-a098-d45f41405801"],
+Cell[3075, 82, 88, 0, 70, "Section",ExpressionUUID->"a728b61f-2a17-4c41-b5cc-c854a8230751"],
+Cell[3166, 84, 94, 0, 70, "Item",ExpressionUUID->"150bc8bd-3ea3-4c1b-83ed-fa27a2aedbba"],
+Cell[3263, 86, 83, 0, 70, "Section",ExpressionUUID->"40da5353-6be0-4acf-a0a0-fd496e37bc3c"],
+Cell[3349, 88, 97, 0, 70, "Item",ExpressionUUID->"c3093549-81b0-465e-a499-b950fb6d8c68"]
 }
 ]
 *)

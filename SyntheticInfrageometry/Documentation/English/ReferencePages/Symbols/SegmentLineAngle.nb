@@ -10,25 +10,73 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1528,         43]
-NotebookOptionsPosition[       985,         28]
-NotebookOutlinePosition[      1302,         42]
-CellTagsIndexPosition[      1259,         39]
+NotebookDataLength[      4844,        107]
+NotebookOptionsPosition[      2896,         76]
+NotebookOutlinePosition[      3213,         90]
+CellTagsIndexPosition[      3170,         87]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for SegmentLineAngle\"", "Input",ExpressionUUID->"31beae7e-af7d-4b11-a2b3-fe47927f409a"],
+Cell["SegmentLineAngle", "Title",ExpressionUUID->"0a79478c-a6c4-4554-87e2-acaa1264ee2b"],
 
-Cell["?SegmentLineAngle", "Input",ExpressionUUID->"fe929c1d-156d-4584-b579-64018c5b6421"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"203d9059-8f79-4190-b7c4-10a128a32aa7"],
 
-Cell["Information[SegmentLineAngle, LongForm -> True]", "Input",ExpressionUUID->"c21be311-13f4-4cef-b1af-0c47143ea4e4"],
+Cell["\<\
+SegmentLineAngle[g, p1, p2, line] (or SegmentLineAngle[g, segment, line]) \
+measures the distance from one endpoint of a segment to a line, given that \
+the other endpoint lies on the line. The name is historical \[LongDash] the \
+value is a length, not a normalised angle. Option Method (\"Metric\" \
+(default); \"Spectral\" reserved).\
+\>", "Text",ExpressionUUID->"ca297a92-feb9-4f46-96da-eeb7920ac585"],
 
-Cell["Definition[SegmentLineAngle]", "Input",ExpressionUUID->"83280451-82c4-475c-bbe9-d597c8f12ae6"]
+Cell["Setup", "Section",ExpressionUUID->"4b4997dc-83c9-4454-97ae-1957cac2c840"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"c2cf1659-4bd3-4fe0-b717-21a5a057311f"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"32b47a75-bdb6-4005-9c95-2c28540b28cd"],
+
+Cell["Examples", "Section",ExpressionUUID->"86777904-8bcd-4e7d-ac2e-7824dc882a84"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"9be4b9ff-3fe9-4c45-9805-b1144f573edf"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "Distance from p1 = 1 to line {2, 5, 8} given p2 = 2."]], "Input",ExpressionU\
+UID->"2e22d858-023b-4379-bb8c-fb75e47beee1"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"f851311f-d2e4-4c51-9dbb-a80ba9bfdb0e"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "SegmentLineAngle[GridGraph[{3, 3}], 1, 2, {2, 5, 8}]"]], "Input",ExpressionU\
+UID->"42bf7b4e-e6f3-4f0d-9f6c-78f37efea1fb"],
+
+Cell["See Also", "Section",ExpressionUUID->"63c4a917-14c9-4643-bea9-8d33ce07ddc3"],
+
+Cell["InfraAngle", "Item",ExpressionUUID->"c2dfd913-9c80-4e90-b6d9-66e78e302d25"],
+
+Cell["FindPerpendicular", "Item",ExpressionUUID->"22a06db0-6a9a-414a-97ae-ee4f9c67d040"],
+
+Cell["FindParallel", "Item",ExpressionUUID->"855916f4-434e-4e21-8293-c84777ddd7f7"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"79b0681a-1780-4122-b9cf-53a9f8440be1"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"6e441364-2d89-4091-8158-fe5a37ac5591"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"6ea0a671-1c11-46af-82da-b8f0954d5361"],
+
+Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"4146a2d5-2721-43a6-8fb1-dce58ab84c7e"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +89,26 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 110, 0, 70, "Input",ExpressionUUID->"31beae7e-af7d-4b11-a2b3-fe47927f409a"],
-Cell[667, 22, 89, 0, 70, "Input",ExpressionUUID->"fe929c1d-156d-4584-b579-64018c5b6421"],
-Cell[759, 24, 119, 0, 70, "Input",ExpressionUUID->"c21be311-13f4-4cef-b1af-0c47143ea4e4"],
-Cell[881, 26, 100, 0, 70, "Input",ExpressionUUID->"83280451-82c4-475c-bbe9-d597c8f12ae6"]
+Cell[554, 20, 88, 0, 70, "Title",ExpressionUUID->"0a79478c-a6c4-4554-87e2-acaa1264ee2b"],
+Cell[645, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"203d9059-8f79-4190-b7c4-10a128a32aa7"],
+Cell[738, 24, 415, 6, 70, "Text",ExpressionUUID->"ca297a92-feb9-4f46-96da-eeb7920ac585"],
+Cell[1156, 32, 79, 0, 70, "Section",ExpressionUUID->"4b4997dc-83c9-4454-97ae-1957cac2c840"],
+Cell[1238, 34, 91, 0, 70, "CodeText",ExpressionUUID->"c2cf1659-4bd3-4fe0-b717-21a5a057311f"],
+Cell[1332, 36, 192, 4, 70, "Code",ExpressionUUID->"32b47a75-bdb6-4005-9c95-2c28540b28cd",
+ InitializationCell->True],
+Cell[1527, 42, 82, 0, 70, "Section",ExpressionUUID->"86777904-8bcd-4e7d-ac2e-7824dc882a84"],
+Cell[1612, 44, 115, 1, 70, "Input",ExpressionUUID->"9be4b9ff-3fe9-4c45-9805-b1144f573edf"],
+Cell[1730, 47, 163, 3, 70, "Input",ExpressionUUID->"2e22d858-023b-4379-bb8c-fb75e47beee1"],
+Cell[1896, 52, 112, 1, 70, "Input",ExpressionUUID->"f851311f-d2e4-4c51-9dbb-a80ba9bfdb0e"],
+Cell[2011, 55, 163, 3, 70, "Input",ExpressionUUID->"42bf7b4e-e6f3-4f0d-9f6c-78f37efea1fb"],
+Cell[2177, 60, 82, 0, 70, "Section",ExpressionUUID->"63c4a917-14c9-4643-bea9-8d33ce07ddc3"],
+Cell[2262, 62, 81, 0, 70, "Item",ExpressionUUID->"c2dfd913-9c80-4e90-b6d9-66e78e302d25"],
+Cell[2346, 64, 88, 0, 70, "Item",ExpressionUUID->"22a06db0-6a9a-414a-97ae-ee4f9c67d040"],
+Cell[2437, 66, 83, 0, 70, "Item",ExpressionUUID->"855916f4-434e-4e21-8293-c84777ddd7f7"],
+Cell[2523, 68, 88, 0, 70, "Section",ExpressionUUID->"79b0681a-1780-4122-b9cf-53a9f8440be1"],
+Cell[2614, 70, 93, 0, 70, "Item",ExpressionUUID->"6e441364-2d89-4091-8158-fe5a37ac5591"],
+Cell[2710, 72, 83, 0, 70, "Section",ExpressionUUID->"6ea0a671-1c11-46af-82da-b8f0954d5361"],
+Cell[2796, 74, 96, 0, 70, "Item",ExpressionUUID->"4146a2d5-2721-43a6-8fb1-dce58ab84c7e"]
 }
 ]
 *)

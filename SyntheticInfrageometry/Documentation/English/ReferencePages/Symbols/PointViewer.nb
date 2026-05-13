@@ -10,25 +10,69 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1507,         43]
-NotebookOptionsPosition[       965,         28]
-NotebookOutlinePosition[      1282,         42]
-CellTagsIndexPosition[      1239,         39]
+NotebookDataLength[      4741,        104]
+NotebookOptionsPosition[      2704,         72]
+NotebookOutlinePosition[      3021,         86]
+CellTagsIndexPosition[      2978,         83]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for PointViewer\"", "Input",ExpressionUUID->"000f96aa-09a3-4aa3-b37d-120c1b1a1be5"],
+Cell["PointViewer", "Title",ExpressionUUID->"8b321e5d-d583-418b-b8cd-7117fcf26366"],
 
-Cell["?PointViewer", "Input",ExpressionUUID->"68e4a24c-f6c9-4ae0-bb7a-03ff3095f3e5"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"4e98682f-88d0-4a24-b503-1d1178c82560"],
 
-Cell["Information[PointViewer, LongForm -> True]", "Input",ExpressionUUID->"a59f2d7b-1724-4245-b310-6092fb50a957"],
+Cell["\<\
+PointViewer[g] is an interactive viewer for selecting points in g. \
+PointViewer[g, sym] stores the current selection in sym.\
+\>", "Text",ExpressionUUID->"4d0b3e6e-83c8-40cb-9222-24c554b892d0"],
 
-Cell["Definition[PointViewer]", "Input",ExpressionUUID->"5894ae9b-7a02-4601-b6b9-fe32166afafa"]
+Cell["Setup", "Section",ExpressionUUID->"84908b47-f281-45fa-af79-353230b47dbc"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"f53b9b34-9d27-4d5a-a8d3-f5aba63719f0"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"6ce94261-c868-4750-baba-80f9dd991bf5"],
+
+Cell["Examples", "Section",ExpressionUUID->"d65a292a-106c-476d-bcac-d2ea0b138388"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"9cee0271-45d4-4796-8d60-eb12458a7563"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Interactive point picker."]], "Input",ExpressionUUID->"e431800b-1b38-42e0-91f2-873094dfc661"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"ae22bb11-7585-414a-89c2-500e609536f2"],
+
+Cell[BoxData[
+ $CellContext`buildCell["PointViewer[GridGraph[{4, 4}]]"]], "Input",Expression\
+UUID->"baec6153-7712-4c54-aa73-c90669fd413d"],
+
+Cell["See Also", "Section",ExpressionUUID->"df438641-c386-4fcc-aa6f-ed942e9b7c90"],
+
+Cell["SegmentViewer", "Item",ExpressionUUID->"8ac8575b-599e-4868-8226-149d1395ec5b"],
+
+Cell["ShellViewer", "Item",ExpressionUUID->"246e40c0-b60d-4e90-b517-0056fc1be84e"],
+
+Cell["CircleViewer", "Item",ExpressionUUID->"4f900fa2-29cf-49e0-978e-c4532fe64987"],
+
+Cell["InfraSceneViewer", "Item",ExpressionUUID->"983bd767-f077-4ef7-9b90-4500d5aa78de"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"c3900404-b86c-4eff-8406-57b9df7443e8"],
+
+Cell["VisualizationGuide", "Item",ExpressionUUID->"14964cce-fc8d-471f-bf11-6705b83c3285"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"f9c40701-4c6b-48c7-918f-0f43d498a14c"],
+
+Cell["VisualizationTutorial", "Item",ExpressionUUID->"55993f94-893b-43fa-b68a-ae7b5e53dd77"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +85,27 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 105, 0, 70, "Input",ExpressionUUID->"000f96aa-09a3-4aa3-b37d-120c1b1a1be5"],
-Cell[662, 22, 84, 0, 70, "Input",ExpressionUUID->"68e4a24c-f6c9-4ae0-bb7a-03ff3095f3e5"],
-Cell[749, 24, 114, 0, 70, "Input",ExpressionUUID->"a59f2d7b-1724-4245-b310-6092fb50a957"],
-Cell[866, 26, 95, 0, 70, "Input",ExpressionUUID->"5894ae9b-7a02-4601-b6b9-fe32166afafa"]
+Cell[554, 20, 83, 0, 70, "Title",ExpressionUUID->"8b321e5d-d583-418b-b8cd-7117fcf26366"],
+Cell[640, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"4e98682f-88d0-4a24-b503-1d1178c82560"],
+Cell[733, 24, 204, 3, 70, "Text",ExpressionUUID->"4d0b3e6e-83c8-40cb-9222-24c554b892d0"],
+Cell[940, 29, 79, 0, 70, "Section",ExpressionUUID->"84908b47-f281-45fa-af79-353230b47dbc"],
+Cell[1022, 31, 91, 0, 70, "CodeText",ExpressionUUID->"f53b9b34-9d27-4d5a-a8d3-f5aba63719f0"],
+Cell[1116, 33, 192, 4, 70, "Code",ExpressionUUID->"6ce94261-c868-4750-baba-80f9dd991bf5",
+ InitializationCell->True],
+Cell[1311, 39, 82, 0, 70, "Section",ExpressionUUID->"d65a292a-106c-476d-bcac-d2ea0b138388"],
+Cell[1396, 41, 115, 1, 70, "Input",ExpressionUUID->"9cee0271-45d4-4796-8d60-eb12458a7563"],
+Cell[1514, 44, 132, 1, 70, "Input",ExpressionUUID->"e431800b-1b38-42e0-91f2-873094dfc661"],
+Cell[1649, 47, 112, 1, 70, "Input",ExpressionUUID->"ae22bb11-7585-414a-89c2-500e609536f2"],
+Cell[1764, 50, 139, 2, 70, "Input",ExpressionUUID->"baec6153-7712-4c54-aa73-c90669fd413d"],
+Cell[1906, 54, 82, 0, 70, "Section",ExpressionUUID->"df438641-c386-4fcc-aa6f-ed942e9b7c90"],
+Cell[1991, 56, 84, 0, 70, "Item",ExpressionUUID->"8ac8575b-599e-4868-8226-149d1395ec5b"],
+Cell[2078, 58, 82, 0, 70, "Item",ExpressionUUID->"246e40c0-b60d-4e90-b517-0056fc1be84e"],
+Cell[2163, 60, 83, 0, 70, "Item",ExpressionUUID->"4f900fa2-29cf-49e0-978e-c4532fe64987"],
+Cell[2249, 62, 87, 0, 70, "Item",ExpressionUUID->"983bd767-f077-4ef7-9b90-4500d5aa78de"],
+Cell[2339, 64, 88, 0, 70, "Section",ExpressionUUID->"c3900404-b86c-4eff-8406-57b9df7443e8"],
+Cell[2430, 66, 89, 0, 70, "Item",ExpressionUUID->"14964cce-fc8d-471f-bf11-6705b83c3285"],
+Cell[2522, 68, 83, 0, 70, "Section",ExpressionUUID->"f9c40701-4c6b-48c7-918f-0f43d498a14c"],
+Cell[2608, 70, 92, 0, 70, "Item",ExpressionUUID->"55993f94-893b-43fa-b68a-ae7b5e53dd77"]
 }
 ]
 *)

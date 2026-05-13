@@ -10,65 +10,101 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5210,        100]
-NotebookOptionsPosition[      3094,         68]
-NotebookOutlinePosition[      3411,         82]
-CellTagsIndexPosition[      3368,         79]
+NotebookDataLength[      6827,        144]
+NotebookOptionsPosition[      4051,        104]
+NotebookOutlinePosition[      4368,        118]
+CellTagsIndexPosition[      4325,        115]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["GeodesicGraph", "Title",ExpressionUUID->"7cae2f26-b4ba-41bd-a465-93910a43d468"],
+Cell["GeodesicGraph", "Title",ExpressionUUID->"ba4055ba-3b43-41e2-b7d3-d06c6137afd1"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"63b1302f-95a9-4897-9df3-6e947bbf69a6"],
 
 Cell["\<\
-GeodesicGraph[graph, c] returns the BFS DAG rooted at c: a directed graph \
-with edge u -> v whenever d(c, v) = d(c, u) + 1 and u-v is an edge of graph. \
-Sinks are peripheral vertices reachable from c; directed paths c -> sink are \
-exactly the maximal geodesics from c. Accepts InfraPoint[{c1, ..., ck}] for \
-multi-source BFS. Option \"AxisLength\" truncates at depth k (default All).\
-\>", "Text",ExpressionUUID->"e5ee8c89-1c11-4fb0-bac0-ba563ff8eeca"],
+GeodesicGraph[g, c] returns the BFS DAG rooted at c: a directed graph with \
+edge u -> v whenever d(c, v) = d(c, u) + 1 and u-v is an edge of g. Sinks are \
+peripheral vertices reachable from c; directed paths c -> sink are exactly \
+the maximal geodesics from c. Accepts InfraPoint[{c1, \[Ellipsis], ck}] for \
+multi-source BFS. Option \"AxisLength\" (truncate at depth k; default All).\
+\>", "Text",ExpressionUUID->"384da8d8-3052-4687-94ec-53959d5ced3d"],
 
-Cell["Setup", "Section",ExpressionUUID->"69489031-a66f-4669-9d5a-232f96fd5739"],
+Cell["Setup", "Section",ExpressionUUID->"792ce012-3ef2-4066-9829-4cc58f37ad51"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"e6029a8f-6316-4671-b7f5-c0993c5bc550"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"d6b6213d-9540-45a8-b57f-100ff08e01c8"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"6ae0e62e-5da2-417f-90b8-0c52bbad1859"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"8c30a0b5-7c81-45c5-8ba4-f7b0e38cf935"],
 
-Cell["Usage", "Section",ExpressionUUID->"4ac95d2b-c549-41e6-bf26-855bc9fbeb63"],
+Cell["Examples", "Section",ExpressionUUID->"16bc8bcb-586f-40d5-999f-0d6326363b24"],
 
-Cell["BFS DAG rooted at the corner of a 4x4 grid.", "CodeText",ExpressionUUID->"1e0b4981-6ba2-4367-9ded-7b117f940d1b"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"6ae4dd4d-f048-42e0-8008-8e7f53302a2a"],
 
-Cell["GeodesicGraph[GridGraph[{4, 4}], 1]", "Input",ExpressionUUID->"f89c6450-de9d-4e30-90de-cfc1e2957048"],
+Cell[BoxData[
+ $CellContext`buildCell["BFS DAG from the centre of a grid."]], "Input",Expres\
+sionUUID->"4c928bf0-3718-4097-ba96-4061c616009b"],
 
-Cell["Truncate the DAG at depth 2.", "CodeText",ExpressionUUID->"e9d8a39a-ac98-4cb7-be73-9695d84cc0d9"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"839ace41-904c-410f-af69-af02f960ad77"],
 
-Cell["GeodesicGraph[GridGraph[{4, 4}], 1, \"AxisLength\" -> 2]", "Input",ExpressionUUID->"9f4417ee-9b9c-442a-b5a6-cc79edf65ab1"],
+Cell[BoxData[
+ $CellContext`buildCell["GeodesicGraph[GridGraph[{3, 3}], 5]"]], "Input",Expre\
+ssionUUID->"6b8516e2-e593-45e4-ab01-176bd9010384"],
 
-Cell["Examples", "Section",ExpressionUUID->"b1eb31dc-b69e-4075-8534-d575f9607cdb"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"98fd341e-2a52-4904-a671-b1e034d43489"],
 
-Cell["Multi-source BFS from a vertex set.", "CodeText",ExpressionUUID->"3633c9dd-08f1-407a-8a24-71f08a3c53cf"],
+Cell[BoxData[
+ $CellContext`buildCell["Truncate at depth 1."]], "Input",ExpressionUUID->"e06eb65e-ebd4-499e-b8ca-4673f1807c23"],
 
-Cell["GeodesicGraph[GridGraph[{4, 4}], InfraPoint[{1, 4}]]", "Input",ExpressionUUID->"7625293d-b3da-4866-be01-1f7c90960621"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"b2ff4b53-3eed-4458-bc56-54e6dc40d09d"],
 
-Cell["On a cycle every vertex is at distance <= floor(n/2).", "CodeText",ExpressionUUID->"971bbea0-1c51-4a5a-ae31-5c564cdda392"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "GeodesicGraph[GridGraph[{4, 4}], 6, \"AxisLength\" -> 1]"]], "Input",Express\
+ionUUID->"16a86fea-2693-4773-a3b3-cd0d4e01df33"],
 
-Cell["GeodesicGraph[CycleGraph[8], 1]", "Input",ExpressionUUID->"58631396-da46-46ca-8b67-d55f984dd978"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"3d58aa39-4cd1-4fb4-a7ea-cf4c8db1eee5"],
 
-Cell["See also", "Section",ExpressionUUID->"9797fa8b-3571-46c6-83c9-f2266fa056d6"],
+Cell[BoxData[
+ $CellContext`buildCell["Multi-source BFS."]], "Input",ExpressionUUID->"4c5690db-0c98-4c09-a586-32daf3f12498"],
 
-Cell["GeodesicSubgraph", "Item",ExpressionUUID->"6692c9f3-3f19-41d2-9058-45a4563848df"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"7e27bf1d-e824-46b8-9630-05b17416a3d7"],
 
-Cell["PathSubgraph", "Item",ExpressionUUID->"352d916c-ea78-41a4-9a9e-dcdc98a20142"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "GeodesicGraph[GridGraph[{3, 3}], InfraPoint[{1, 9}]]"]], "Input",ExpressionU\
+UID->"5b26a277-c16a-4cfe-b116-da71628ca8dc"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"550abe01-c49b-458b-9598-2fe5a03db2b2"],
+Cell["See Also", "Section",ExpressionUUID->"a23ee41d-cc08-477e-8b4c-e91079ec9225"],
 
-Cell["MetricInterval", "Item",ExpressionUUID->"0386fde3-7ba1-46c0-8244-cc96a3161c68"],
+Cell["GeodesicSubgraph", "Item",ExpressionUUID->"fd381d30-e53e-4262-8693-4ed583ec79ef"],
 
-Cell["GeodesicMultiplicity", "Item",ExpressionUUID->"5fbe5e91-be4f-4c19-868a-0a979e0a1ee6"]
+Cell["PathSubgraph", "Item",ExpressionUUID->"7b3b9b35-f11a-4492-beba-94354dc5ae92"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"2ac10e49-b41a-4596-82b3-64a46dc78a07"],
+
+Cell["GeodesicMultiplicityMatrix", "Item",ExpressionUUID->"f6df83d8-2362-4111-bb8a-9f86f97b71c0"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"96f55ec0-c69d-49d7-96da-778993709941"],
+
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"496fcf67-3b55-4f72-8b71-480ff955a15b"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"21819a75-b92a-4a25-a0ab-f98c6192aff7"],
+
+Cell["PathSpaceTutorial", "Item",ExpressionUUID->"02259fe9-470f-4c10-88a5-a33ac5d0aa1c"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -81,27 +117,35 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"7cae2f26-b4ba-41bd-a465-93910a43d468"],
-Cell[642, 22, 466, 6, 70, "Text",ExpressionUUID->"e5ee8c89-1c11-4fb0-bac0-ba563ff8eeca"],
-Cell[1111, 30, 79, 0, 70, "Section",ExpressionUUID->"69489031-a66f-4669-9d5a-232f96fd5739"],
-Cell[1193, 32, 132, 0, 70, "CodeText",ExpressionUUID->"e6029a8f-6316-4671-b7f5-c0993c5bc550"],
-Cell[1328, 34, 122, 0, 70, "Code",ExpressionUUID->"6ae0e62e-5da2-417f-90b8-0c52bbad1859"],
-Cell[1453, 36, 79, 0, 70, "Section",ExpressionUUID->"4ac95d2b-c549-41e6-bf26-855bc9fbeb63"],
-Cell[1535, 38, 118, 0, 70, "CodeText",ExpressionUUID->"1e0b4981-6ba2-4367-9ded-7b117f940d1b"],
-Cell[1656, 40, 107, 0, 70, "Input",ExpressionUUID->"f89c6450-de9d-4e30-90de-cfc1e2957048"],
-Cell[1766, 42, 103, 0, 70, "CodeText",ExpressionUUID->"e9d8a39a-ac98-4cb7-be73-9695d84cc0d9"],
-Cell[1872, 44, 128, 0, 70, "Input",ExpressionUUID->"9f4417ee-9b9c-442a-b5a6-cc79edf65ab1"],
-Cell[2003, 46, 82, 0, 70, "Section",ExpressionUUID->"b1eb31dc-b69e-4075-8534-d575f9607cdb"],
-Cell[2088, 48, 110, 0, 70, "CodeText",ExpressionUUID->"3633c9dd-08f1-407a-8a24-71f08a3c53cf"],
-Cell[2201, 50, 124, 0, 70, "Input",ExpressionUUID->"7625293d-b3da-4866-be01-1f7c90960621"],
-Cell[2328, 52, 128, 0, 70, "CodeText",ExpressionUUID->"971bbea0-1c51-4a5a-ae31-5c564cdda392"],
-Cell[2459, 54, 103, 0, 70, "Input",ExpressionUUID->"58631396-da46-46ca-8b67-d55f984dd978"],
-Cell[2565, 56, 82, 0, 70, "Section",ExpressionUUID->"9797fa8b-3571-46c6-83c9-f2266fa056d6"],
-Cell[2650, 58, 87, 0, 70, "Item",ExpressionUUID->"6692c9f3-3f19-41d2-9058-45a4563848df"],
-Cell[2740, 60, 83, 0, 70, "Item",ExpressionUUID->"352d916c-ea78-41a4-9a9e-dcdc98a20142"],
-Cell[2826, 62, 82, 0, 70, "Item",ExpressionUUID->"550abe01-c49b-458b-9598-2fe5a03db2b2"],
-Cell[2911, 64, 85, 0, 70, "Item",ExpressionUUID->"0386fde3-7ba1-46c0-8244-cc96a3161c68"],
-Cell[2999, 66, 91, 0, 70, "Item",ExpressionUUID->"5fbe5e91-be4f-4c19-868a-0a979e0a1ee6"]
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"ba4055ba-3b43-41e2-b7d3-d06c6137afd1"],
+Cell[642, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"63b1302f-95a9-4897-9df3-6e947bbf69a6"],
+Cell[735, 24, 466, 6, 70, "Text",ExpressionUUID->"384da8d8-3052-4687-94ec-53959d5ced3d"],
+Cell[1204, 32, 79, 0, 70, "Section",ExpressionUUID->"792ce012-3ef2-4066-9829-4cc58f37ad51"],
+Cell[1286, 34, 91, 0, 70, "CodeText",ExpressionUUID->"d6b6213d-9540-45a8-b57f-100ff08e01c8"],
+Cell[1380, 36, 192, 4, 70, "Code",ExpressionUUID->"8c30a0b5-7c81-45c5-8ba4-f7b0e38cf935",
+ InitializationCell->True],
+Cell[1575, 42, 82, 0, 70, "Section",ExpressionUUID->"16bc8bcb-586f-40d5-999f-0d6326363b24"],
+Cell[1660, 44, 115, 1, 70, "Input",ExpressionUUID->"6ae4dd4d-f048-42e0-8008-8e7f53302a2a"],
+Cell[1778, 47, 143, 2, 70, "Input",ExpressionUUID->"4c928bf0-3718-4097-ba96-4061c616009b"],
+Cell[1924, 51, 112, 1, 70, "Input",ExpressionUUID->"839ace41-904c-410f-af69-af02f960ad77"],
+Cell[2039, 54, 144, 2, 70, "Input",ExpressionUUID->"6b8516e2-e593-45e4-ab01-176bd9010384"],
+Cell[2186, 58, 115, 1, 70, "Input",ExpressionUUID->"98fd341e-2a52-4904-a671-b1e034d43489"],
+Cell[2304, 61, 127, 1, 70, "Input",ExpressionUUID->"e06eb65e-ebd4-499e-b8ca-4673f1807c23"],
+Cell[2434, 64, 112, 1, 70, "Input",ExpressionUUID->"b2ff4b53-3eed-4458-bc56-54e6dc40d09d"],
+Cell[2549, 67, 167, 3, 70, "Input",ExpressionUUID->"16a86fea-2693-4773-a3b3-cd0d4e01df33"],
+Cell[2719, 72, 115, 1, 70, "Input",ExpressionUUID->"3d58aa39-4cd1-4fb4-a7ea-cf4c8db1eee5"],
+Cell[2837, 75, 124, 1, 70, "Input",ExpressionUUID->"4c5690db-0c98-4c09-a586-32daf3f12498"],
+Cell[2964, 78, 112, 1, 70, "Input",ExpressionUUID->"7e27bf1d-e824-46b8-9630-05b17416a3d7"],
+Cell[3079, 81, 163, 3, 70, "Input",ExpressionUUID->"5b26a277-c16a-4cfe-b116-da71628ca8dc"],
+Cell[3245, 86, 82, 0, 70, "Section",ExpressionUUID->"a23ee41d-cc08-477e-8b4c-e91079ec9225"],
+Cell[3330, 88, 87, 0, 70, "Item",ExpressionUUID->"fd381d30-e53e-4262-8693-4ed583ec79ef"],
+Cell[3420, 90, 83, 0, 70, "Item",ExpressionUUID->"7b3b9b35-f11a-4492-beba-94354dc5ae92"],
+Cell[3506, 92, 85, 0, 70, "Item",ExpressionUUID->"2ac10e49-b41a-4596-82b3-64a46dc78a07"],
+Cell[3594, 94, 97, 0, 70, "Item",ExpressionUUID->"f6df83d8-2362-4111-bb8a-9f86f97b71c0"],
+Cell[3694, 96, 88, 0, 70, "Section",ExpressionUUID->"96f55ec0-c69d-49d7-96da-778993709941"],
+Cell[3785, 98, 85, 0, 70, "Item",ExpressionUUID->"496fcf67-3b55-4f72-8b71-480ff955a15b"],
+Cell[3873, 100, 83, 0, 70, "Section",ExpressionUUID->"21819a75-b92a-4a25-a0ab-f98c6192aff7"],
+Cell[3959, 102, 88, 0, 70, "Item",ExpressionUUID->"02259fe9-470f-4c10-88a5-a33ac5d0aa1c"]
 }
 ]
 *)

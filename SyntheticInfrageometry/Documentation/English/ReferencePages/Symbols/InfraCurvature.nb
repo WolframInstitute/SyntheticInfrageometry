@@ -10,67 +10,106 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5192,        101]
-NotebookOptionsPosition[      3166,         70]
-NotebookOutlinePosition[      3483,         84]
-CellTagsIndexPosition[      3440,         81]
+NotebookDataLength[      7122,        150]
+NotebookOptionsPosition[      4254,        109]
+NotebookOutlinePosition[      4571,        123]
+CellTagsIndexPosition[      4528,        120]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraCurvature", "Title",ExpressionUUID->"ff7a8242-a1a5-46a5-8db7-8a80d672e56e"],
+Cell["InfraCurvature", "Title",ExpressionUUID->"2f02f095-ab95-4fbd-948e-c34ca9b545f3"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"ae83c13d-e74c-4b8a-96b7-0735bbfc5f98"],
 
 Cell["\<\
-InfraCurvature[graph, v] returns the local Alexandrov upper-curvature bound \
-at v: L^2 times the supremum of per-triangle CAT bounds over all triangles \
-whose three vertices sit inside the ball B_L(v), with L = \
-GraphDiameter[graph] by default. The reported curvature is rescaled by L^2 to \
-match the (edge / L)^-2 unit convention. Option \"Radius\" (Automatic | \
-Integer L) selects the ball radius. InfraCurvature[graph] returns an \
-Association v -> kappa_v over all vertices.\
-\>", "Text",ExpressionUUID->"401659f8-21b1-4d8e-9cde-1e3e41a8d552"],
+InfraCurvature[g, v] returns the local Alexandrov upper-curvature bound at v: \
+L^2 times the supremum of per-triangle CAT bounds over all triangles whose \
+three vertices sit inside B_L(v), with L = GraphDiameter[g] by default. \
+Option \"Radius\" (Automatic | Integer L) selects the ball radius; reported \
+curvature is rescaled by L^2 to match the (edge / L)^-2 unit convention. \
+InfraCurvature[g] returns an Association v -> kappa_v over all vertices.\
+\>", "Text",ExpressionUUID->"dcb4005a-7639-4aa9-9bed-eab31fa13fc9"],
 
-Cell["Setup", "Section",ExpressionUUID->"fc5ea40a-8555-4e25-8230-cc79b27eb4bf"],
+Cell["Setup", "Section",ExpressionUUID->"b74e4f69-ccd9-4514-af89-47a6bec054d3"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"c4f18bc0-9fb6-41cf-a874-3763dcc2c0d0"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"1ade6834-58b8-435a-9486-a33502ce49e7"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"ff3c25c3-6741-4242-a63c-4d9cbffb7dc5"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"94869ee2-7901-45c8-8dd3-7aeff56ea669"],
 
-Cell["Usage", "Section",ExpressionUUID->"0bf58ee2-64d8-4800-b10d-1184af01f4e5"],
+Cell["Examples", "Section",ExpressionUUID->"a59cb09c-59d0-42ab-b703-63f7152caf6b"],
 
-Cell["Local Alexandrov curvature at the corner of a 4x4 grid.", "CodeText",ExpressionUUID->"79529da3-f02a-4a2e-88e5-1c592a0bb018"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"ce940548-a12f-4fa1-9f5d-ec112bc88862"],
 
-Cell["With[{g = GridGraph[{4, 4}]}, InfraCurvature[g, 1]]", "Input",ExpressionUUID->"640bc2ec-11a3-48ce-8200-58c6333dcb30"],
+Cell[BoxData[
+ $CellContext`buildCell["Curvature at the centre of a 4x4 grid."]], "Input",Ex\
+pressionUUID->"b5167b06-eb53-48a6-9cb7-7174795b84d6"],
 
-Cell["Curvature map over all vertices of a small grid.", "CodeText",ExpressionUUID->"21601ccb-7af3-442a-8846-23153d48395c"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"ca6ed742-fabe-411f-a21d-55db43aee5eb"],
 
-Cell["InfraCurvature[GridGraph[{3, 3}]]", "Input",ExpressionUUID->"9626015d-8530-477a-9794-fb6f7caf4562"],
+Cell[BoxData[
+ $CellContext`buildCell["InfraCurvature[GridGraph[{4, 4}], 6]"]], "Input",Expr\
+essionUUID->"05fef5b3-51eb-4423-bf26-6aec4cfd8313"],
 
-Cell["Examples", "Section",ExpressionUUID->"2c9454de-f7ed-4f10-ae7d-2a4fddd405fc"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"adf3c414-c915-4954-b479-94c3e0a5058c"],
 
-Cell["Trees are CAT(0): all curvatures non-positive.", "CodeText",ExpressionUUID->"1cb9eb76-de89-4395-9cf3-9d4ae9e14dcd"],
+Cell[BoxData[
+ $CellContext`buildCell["Curvature at every vertex of a 3x3 grid."]], "Input",\
+ExpressionUUID->"8054c262-4cf7-4e39-9fa4-97a1ae0b254d"],
 
-Cell["With[{g = CompleteGraph[{2, 3}]}, InfraCurvature[g]]", "Input",ExpressionUUID->"d73f00b4-4531-4d0b-a64b-3b4c1b7c8881"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"de7e0151-f745-4d10-ad46-675a2e59cbc4"],
 
-Cell["Limit the comparison radius around v.", "CodeText",ExpressionUUID->"a17f7cb4-f7c4-4ad0-a45e-a091f1d67f7f"],
+Cell[BoxData[
+ $CellContext`buildCell["InfraCurvature[GridGraph[{3, 3}]]"]], "Input",Express\
+ionUUID->"8ace8631-eb10-4ad7-b7e8-3e0108ad9975"],
 
-Cell["\<\
-With[{g = GridGraph[{5, 5}]}, InfraCurvature[g, 13, \"Radius\" -> 2]]\
-\>", "Input",ExpressionUUID->"f964acb9-ce36-4f96-a1c5-b2c619d460d6"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"95c9ec14-a315-430c-9abc-8fa08cbd419d"],
 
-Cell["See also", "Section",ExpressionUUID->"7e3bebeb-17c4-42c3-a57f-2ac051974de8"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "Restrict the radius used for the supremum."]], "Input",ExpressionUUID->\
+"5d19c4f3-4ad5-4095-afc4-0fdfc1189369"],
 
-Cell["CATInequalityQ", "Item",ExpressionUUID->"247614df-da80-48f1-bbb3-53baf20395b3"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"39ed620f-f211-4d16-a02a-870e1d99a870"],
 
-Cell["ComparisonTriangle", "Item",ExpressionUUID->"ac8e007c-5e9e-42ae-a6dd-41ead4651e36"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "InfraCurvature[GridGraph[{4, 4}], 6, \"Radius\" -> 2]"]], "Input",Expression\
+UUID->"319fc3df-dff2-4427-a091-d004ff64495b"],
 
-Cell["InfraAngle", "Item",ExpressionUUID->"5e35212d-9001-4ead-8b41-7df666ae510b"],
+Cell["See Also", "Section",ExpressionUUID->"a8e06a02-1821-4b99-9ca4-962369698f32"],
 
-Cell["MetricInterval", "Item",ExpressionUUID->"4f4f1652-14a6-4336-aaaf-74b3f51697ac"]
+Cell["CATInequalityQ", "Item",ExpressionUUID->"cf0a7aba-a94e-4eb3-b0e3-4e762c53b27c"],
+
+Cell["ComparisonTriangle", "Item",ExpressionUUID->"1733932a-bbf7-4132-8a92-a0f1945c2bbb"],
+
+Cell["InfraComparisonTriangle", "Item",ExpressionUUID->"d98210d1-57c3-4a8c-bc5c-d9eb35223015"],
+
+Cell["InfraAngle", "Item",ExpressionUUID->"7450c0e4-3c1b-4639-8643-3bf15f60ccba"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"6af89f13-c9c6-4eb6-8855-54688b1a5a74"],
+
+Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"a38a1f90-26bb-4fc6-a727-7a6f11bb774c"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"872bb11a-946b-4ee4-9b07-aad9cf0f7869"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"dcf212e3-b5d5-44f6-ae92-5cea1e6ef720"],
+
+Cell["MetricAlgebraTutorial", "Item",ExpressionUUID->"96ab91e5-fa4d-4ead-9df5-f46a930fe04a"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"0f00b569-33fb-443a-b383-2fe88b55480a"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -83,26 +122,36 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"ff7a8242-a1a5-46a5-8db7-8a80d672e56e"],
-Cell[643, 22, 562, 8, 70, "Text",ExpressionUUID->"401659f8-21b1-4d8e-9cde-1e3e41a8d552"],
-Cell[1208, 32, 79, 0, 70, "Section",ExpressionUUID->"fc5ea40a-8555-4e25-8230-cc79b27eb4bf"],
-Cell[1290, 34, 132, 0, 70, "CodeText",ExpressionUUID->"c4f18bc0-9fb6-41cf-a874-3763dcc2c0d0"],
-Cell[1425, 36, 122, 0, 70, "Code",ExpressionUUID->"ff3c25c3-6741-4242-a63c-4d9cbffb7dc5"],
-Cell[1550, 38, 79, 0, 70, "Section",ExpressionUUID->"0bf58ee2-64d8-4800-b10d-1184af01f4e5"],
-Cell[1632, 40, 130, 0, 70, "CodeText",ExpressionUUID->"79529da3-f02a-4a2e-88e5-1c592a0bb018"],
-Cell[1765, 42, 123, 0, 70, "Input",ExpressionUUID->"640bc2ec-11a3-48ce-8200-58c6333dcb30"],
-Cell[1891, 44, 123, 0, 70, "CodeText",ExpressionUUID->"21601ccb-7af3-442a-8846-23153d48395c"],
-Cell[2017, 46, 105, 0, 70, "Input",ExpressionUUID->"9626015d-8530-477a-9794-fb6f7caf4562"],
-Cell[2125, 48, 82, 0, 70, "Section",ExpressionUUID->"2c9454de-f7ed-4f10-ae7d-2a4fddd405fc"],
-Cell[2210, 50, 121, 0, 70, "CodeText",ExpressionUUID->"1cb9eb76-de89-4395-9cf3-9d4ae9e14dcd"],
-Cell[2334, 52, 124, 0, 70, "Input",ExpressionUUID->"d73f00b4-4531-4d0b-a64b-3b4c1b7c8881"],
-Cell[2461, 54, 112, 0, 70, "CodeText",ExpressionUUID->"a17f7cb4-f7c4-4ad0-a45e-a091f1d67f7f"],
-Cell[2576, 56, 149, 2, 70, "Input",ExpressionUUID->"f964acb9-ce36-4f96-a1c5-b2c619d460d6"],
-Cell[2728, 60, 82, 0, 70, "Section",ExpressionUUID->"7e3bebeb-17c4-42c3-a57f-2ac051974de8"],
-Cell[2813, 62, 85, 0, 70, "Item",ExpressionUUID->"247614df-da80-48f1-bbb3-53baf20395b3"],
-Cell[2901, 64, 89, 0, 70, "Item",ExpressionUUID->"ac8e007c-5e9e-42ae-a6dd-41ead4651e36"],
-Cell[2993, 66, 81, 0, 70, "Item",ExpressionUUID->"5e35212d-9001-4ead-8b41-7df666ae510b"],
-Cell[3077, 68, 85, 0, 70, "Item",ExpressionUUID->"4f4f1652-14a6-4336-aaaf-74b3f51697ac"]
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"2f02f095-ab95-4fbd-948e-c34ca9b545f3"],
+Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"ae83c13d-e74c-4b8a-96b7-0735bbfc5f98"],
+Cell[736, 24, 535, 7, 70, "Text",ExpressionUUID->"dcb4005a-7639-4aa9-9bed-eab31fa13fc9"],
+Cell[1274, 33, 79, 0, 70, "Section",ExpressionUUID->"b74e4f69-ccd9-4514-af89-47a6bec054d3"],
+Cell[1356, 35, 91, 0, 70, "CodeText",ExpressionUUID->"1ade6834-58b8-435a-9486-a33502ce49e7"],
+Cell[1450, 37, 192, 4, 70, "Code",ExpressionUUID->"94869ee2-7901-45c8-8dd3-7aeff56ea669",
+ InitializationCell->True],
+Cell[1645, 43, 82, 0, 70, "Section",ExpressionUUID->"a59cb09c-59d0-42ab-b703-63f7152caf6b"],
+Cell[1730, 45, 115, 1, 70, "Input",ExpressionUUID->"ce940548-a12f-4fa1-9f5d-ec112bc88862"],
+Cell[1848, 48, 147, 2, 70, "Input",ExpressionUUID->"b5167b06-eb53-48a6-9cb7-7174795b84d6"],
+Cell[1998, 52, 112, 1, 70, "Input",ExpressionUUID->"ca6ed742-fabe-411f-a21d-55db43aee5eb"],
+Cell[2113, 55, 145, 2, 70, "Input",ExpressionUUID->"05fef5b3-51eb-4423-bf26-6aec4cfd8313"],
+Cell[2261, 59, 115, 1, 70, "Input",ExpressionUUID->"adf3c414-c915-4954-b479-94c3e0a5058c"],
+Cell[2379, 62, 149, 2, 70, "Input",ExpressionUUID->"8054c262-4cf7-4e39-9fa4-97a1ae0b254d"],
+Cell[2531, 66, 112, 1, 70, "Input",ExpressionUUID->"de7e0151-f745-4d10-ad46-675a2e59cbc4"],
+Cell[2646, 69, 142, 2, 70, "Input",ExpressionUUID->"8ace8631-eb10-4ad7-b7e8-3e0108ad9975"],
+Cell[2791, 73, 115, 1, 70, "Input",ExpressionUUID->"95c9ec14-a315-430c-9abc-8fa08cbd419d"],
+Cell[2909, 76, 153, 3, 70, "Input",ExpressionUUID->"5d19c4f3-4ad5-4095-afc4-0fdfc1189369"],
+Cell[3065, 81, 112, 1, 70, "Input",ExpressionUUID->"39ed620f-f211-4d16-a02a-870e1d99a870"],
+Cell[3180, 84, 164, 3, 70, "Input",ExpressionUUID->"319fc3df-dff2-4427-a091-d004ff64495b"],
+Cell[3347, 89, 82, 0, 70, "Section",ExpressionUUID->"a8e06a02-1821-4b99-9ca4-962369698f32"],
+Cell[3432, 91, 85, 0, 70, "Item",ExpressionUUID->"cf0a7aba-a94e-4eb3-b0e3-4e762c53b27c"],
+Cell[3520, 93, 89, 0, 70, "Item",ExpressionUUID->"1733932a-bbf7-4132-8a92-a0f1945c2bbb"],
+Cell[3612, 95, 94, 0, 70, "Item",ExpressionUUID->"d98210d1-57c3-4a8c-bc5c-d9eb35223015"],
+Cell[3709, 97, 81, 0, 70, "Item",ExpressionUUID->"7450c0e4-3c1b-4639-8643-3bf15f60ccba"],
+Cell[3793, 99, 88, 0, 70, "Section",ExpressionUUID->"6af89f13-c9c6-4eb6-8855-54688b1a5a74"],
+Cell[3884, 101, 89, 0, 70, "Item",ExpressionUUID->"a38a1f90-26bb-4fc6-a727-7a6f11bb774c"],
+Cell[3976, 103, 93, 0, 70, "Item",ExpressionUUID->"872bb11a-946b-4ee4-9b07-aad9cf0f7869"],
+Cell[4072, 105, 83, 0, 70, "Section",ExpressionUUID->"dcf212e3-b5d5-44f6-ae92-5cea1e6ef720"],
+Cell[4158, 107, 92, 0, 70, "Item",ExpressionUUID->"96ab91e5-fa4d-4ead-9df5-f46a930fe04a"]
 }
 ]
 *)

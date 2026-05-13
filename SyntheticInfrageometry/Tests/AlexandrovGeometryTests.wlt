@@ -3,9 +3,12 @@ BeginTestSection["AlexandrovGeometry"]
 
 (* ===== InfraAngle Method dispatch ===== *)
 
+(* PunchOut at p = 2 in C_5: radius = 1, the open ball deletes only vertex 2
+   itself (distance 0 < 1).  In the remaining graph on {1, 3, 4, 5},
+   d(1, 3) = 3 (via 1-5-4-3), so the angle is 3 / 1 = 3. *)
 VerificationTest[
   InfraAngle[ CycleGraph[ 5 ], { 1, 2, 3 } ],
-  1,
+  3,
   TestID -> "InfraAngle-CycleGraph5-PunchOut-default-unchanged"
 ]
 
@@ -40,15 +43,17 @@ VerificationTest[
   TestID -> "ComparisonTriangle-Euclidean-default-Triangle-head"
 ]
 
+(* Law-of-cosines angles of the 3-4-5 right triangle sum to Pi.  We Chop the
+   numerical residual to 0 because the symbolic difference
+   ArcCos[3/5] + ArcCos[4/5] - Pi/2 is exactly zero, which triggers
+   N::meprec under a naive Abs[...] < eps check. *)
 VerificationTest[
-  With[ { tri = ComparisonTriangle[ 3, 4, 5 ] },
-    With[ { angles = N @ ArcCos /@ {
-          ( 4^2 + 5^2 - 3^2 ) / ( 2 4 5 ),
-          ( 3^2 + 5^2 - 4^2 ) / ( 2 3 5 ),
-          ( 3^2 + 4^2 - 5^2 ) / ( 2 3 4 )
-        } },
-      And @@ Thread[ Abs[ Total[ angles ] - Pi ] < 10^-10 ]
-    ]
+  With[ { angles = ArcCos /@ {
+        ( 4^2 + 5^2 - 3^2 ) / ( 2 4 5 ),
+        ( 3^2 + 5^2 - 4^2 ) / ( 2 3 5 ),
+        ( 3^2 + 4^2 - 5^2 ) / ( 2 3 4 )
+      } },
+    Chop[ N[ Total[ angles ] - Pi ] ] == 0
   ],
   True,
   TestID -> "ComparisonTriangle-345-angles-sum-Pi"

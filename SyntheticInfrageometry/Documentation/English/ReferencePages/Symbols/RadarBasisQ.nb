@@ -10,67 +10,80 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5163,        102]
-NotebookOptionsPosition[      3041,         70]
-NotebookOutlinePosition[      3358,         84]
-CellTagsIndexPosition[      3315,         81]
+NotebookDataLength[      5323,        117]
+NotebookOptionsPosition[      3098,         83]
+NotebookOutlinePosition[      3415,         97]
+CellTagsIndexPosition[      3372,         94]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["RadarBasisQ", "Title",ExpressionUUID->"349ab34c-1eaf-4efd-8fc2-56d401c7094e"],
+Cell["RadarBasisQ", "Title",ExpressionUUID->"ad86445a-d5ab-4502-bdc1-4e63f5f9ea41"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"03f04d7f-9c17-430b-ba69-70665b204cd2"],
 
 Cell["\<\
-RadarBasisQ[graph, basis] tests whether a vertex list resolves the graph: the \
-distance map v |-> (d(v, b))_{b in basis} is injective. Returns True or \
-False. The predicate companion of FindRadarBasis.\
-\>", "Text",ExpressionUUID->"ad5066af-b87b-4d47-814d-71a4d7616aed"],
+RadarBasisQ[g, basis] tests whether basis is a radar basis (resolving set): \
+every vertex has a unique distance vector to the basis.\
+\>", "Text",ExpressionUUID->"fc64741b-d9e8-4fcc-bef7-f6f83747c7a9"],
 
-Cell["Setup", "Section",ExpressionUUID->"42e08561-11a3-43df-ba62-c954399a13f1"],
+Cell["Setup", "Section",ExpressionUUID->"3b3a80ce-2ed3-4b82-b4a4-86a90b2e6294"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"1d57b54a-e180-4fa4-a08a-e14108a154f2"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"37c9a534-7c6d-46fa-a96f-2c9faaf5646c"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"9c9ca8e0-a592-488d-a969-11d02450ed37"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"8a431121-f897-4211-9f43-70a3bc10c4dd"],
 
-Cell["Usage", "Section",ExpressionUUID->"d7628dad-e90e-49db-96ab-1841722cf65a"],
+Cell["Examples", "Section",ExpressionUUID->"e492b553-6299-411a-b392-e1b33e25ec1b"],
 
-Cell["\<\
-Two non-antipodal vertices of the 6-cycle resolve every position.\
-\>", "CodeText",ExpressionUUID->"0f426372-ee8e-42ae-8aaa-2b372c504f42"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"c1dcca4a-a071-4f35-b60d-390c88eef47a"],
 
-Cell["RadarBasisQ[CycleGraph[6], {1, 2}]", "Input",ExpressionUUID->"268efca1-9a80-4a3c-9585-03ac5450ab2a"],
+Cell[BoxData[
+ $CellContext`buildCell["Two vertices resolve a path graph."]], "Input",Expres\
+sionUUID->"aba097cd-a810-4d8f-a771-5b76bdab1eee"],
 
-Cell["\<\
-Two antipodal vertices of an even cycle do NOT resolve every vertex.\
-\>", "CodeText",ExpressionUUID->"6d8efa88-f8e9-4b61-ac69-b9f82b5239b0"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"8117cf7a-0a36-4f8d-ba27-845408e10f20"],
 
-Cell["RadarBasisQ[CycleGraph[6], {1, 4}]", "Input",ExpressionUUID->"e273d388-c80b-47aa-ae8f-cc61eeefc408"],
+Cell[BoxData[
+ $CellContext`buildCell["RadarBasisQ[PathGraph[Range[5]], {1, 2}]"]], "Input",\
+ExpressionUUID->"5d1b2e28-f35c-43f6-813d-08bb6e73fdb3"],
 
-Cell["Examples", "Section",ExpressionUUID->"c6970586-46a5-4e19-90df-1856b9f0187e"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"13694ae0-414e-4a92-afcc-6ef38dd9e409"],
 
-Cell["An endpoint of a path resolves the entire path.", "CodeText",ExpressionUUID->"913df161-33f8-43ba-bab4-3dba3e21a154"],
+Cell[BoxData[
+ $CellContext`buildCell["A single vertex does not resolve a cycle."]], "Input",\
+ExpressionUUID->"f857f7a8-30e0-40fd-90d6-694e5170f3cf"],
 
-Cell["RadarBasisQ[PathGraph[Range[5]], {1}]", "Input",ExpressionUUID->"e194b1c9-47e5-45f1-8ed7-2c28a482f085"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"6537f5af-b406-4b63-a19a-22fa0f28f13c"],
 
-Cell["A single vertex of a cycle is not a resolving set.", "CodeText",ExpressionUUID->"9a83b306-1926-4f0e-ba9b-17b3af94a3cd"],
+Cell[BoxData[
+ $CellContext`buildCell["RadarBasisQ[CycleGraph[6], {1}]"]], "Input",Expressio\
+nUUID->"8a8f0195-9443-4b1f-a2aa-ea4dfd55b93d"],
 
-Cell["RadarBasisQ[CycleGraph[6], {1}]", "Input",ExpressionUUID->"0878f7ef-6069-45da-bdca-27fb534d44fb"],
+Cell["See Also", "Section",ExpressionUUID->"e1ab1283-71ce-4c61-9bea-40f3511c440f"],
 
-Cell["On a 4 x 4 grid, the four corners resolve every vertex.", "CodeText",ExpressionUUID->"806ae6ce-26a8-46cd-94cf-d5805b1f0c20"],
+Cell["FindRadarBasis", "Item",ExpressionUUID->"ebead95e-6996-4cc6-a9c7-1711d91a896c"],
 
-Cell["RadarBasisQ[GridGraph[{4, 4}], {1, 4, 13, 16}]", "Input",ExpressionUUID->"a03a01ed-2395-4130-a758-094d1e46d8bb"],
+Cell["RadarCoordinates", "Item",ExpressionUUID->"abb77756-75a1-45ac-91f4-434708b6d033"],
 
-Cell["See also", "Section",ExpressionUUID->"742ef034-8917-4933-b8e3-c7df4bdff2e6"],
+Cell["Related Guides", "Section",ExpressionUUID->"8b374b51-2919-4439-b8e2-ce4ad76dccb7"],
 
-Cell["FindRadarBasis", "Item",ExpressionUUID->"ef2a7a19-cc72-4170-81ba-d5e8e16ceda0"],
+Cell["CoordinatizationGuide", "Item",ExpressionUUID->"a639ccd9-23aa-492f-b704-58e235bc0284"],
 
-Cell["RadarCoordinates", "Item",ExpressionUUID->"4d3426ef-074b-4ab4-a4c9-a64e3e7bf35b"],
+Cell["Tutorials", "Section",ExpressionUUID->"8b03013e-86bf-4ab7-9cd9-12b016ce429c"],
 
-Cell["CoordinatizationGuide", "Item",ExpressionUUID->"6a779b21-253f-40f6-874f-533b194920fa"]
+Cell["CoordinatizationTutorial", "Item",ExpressionUUID->"8e3d14c9-4baa-4872-add3-a79141b2ffbf"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d2c1c499-01d7-433e-a353-e9264d068cc9"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -83,27 +96,29 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 83, 0, 70, "Title",ExpressionUUID->"349ab34c-1eaf-4efd-8fc2-56d401c7094e"],
-Cell[640, 22, 282, 4, 70, "Text",ExpressionUUID->"ad5066af-b87b-4d47-814d-71a4d7616aed"],
-Cell[925, 28, 79, 0, 70, "Section",ExpressionUUID->"42e08561-11a3-43df-ba62-c954399a13f1"],
-Cell[1007, 30, 132, 0, 70, "CodeText",ExpressionUUID->"1d57b54a-e180-4fa4-a08a-e14108a154f2"],
-Cell[1142, 32, 122, 0, 70, "Code",ExpressionUUID->"9c9ca8e0-a592-488d-a969-11d02450ed37"],
-Cell[1267, 34, 79, 0, 70, "Section",ExpressionUUID->"d7628dad-e90e-49db-96ab-1841722cf65a"],
-Cell[1349, 36, 148, 2, 70, "CodeText",ExpressionUUID->"0f426372-ee8e-42ae-8aaa-2b372c504f42"],
-Cell[1500, 40, 106, 0, 70, "Input",ExpressionUUID->"268efca1-9a80-4a3c-9585-03ac5450ab2a"],
-Cell[1609, 42, 151, 2, 70, "CodeText",ExpressionUUID->"6d8efa88-f8e9-4b61-ac69-b9f82b5239b0"],
-Cell[1763, 46, 106, 0, 70, "Input",ExpressionUUID->"e273d388-c80b-47aa-ae8f-cc61eeefc408"],
-Cell[1872, 48, 82, 0, 70, "Section",ExpressionUUID->"c6970586-46a5-4e19-90df-1856b9f0187e"],
-Cell[1957, 50, 122, 0, 70, "CodeText",ExpressionUUID->"913df161-33f8-43ba-bab4-3dba3e21a154"],
-Cell[2082, 52, 109, 0, 70, "Input",ExpressionUUID->"e194b1c9-47e5-45f1-8ed7-2c28a482f085"],
-Cell[2194, 54, 125, 0, 70, "CodeText",ExpressionUUID->"9a83b306-1926-4f0e-ba9b-17b3af94a3cd"],
-Cell[2322, 56, 103, 0, 70, "Input",ExpressionUUID->"0878f7ef-6069-45da-bdca-27fb534d44fb"],
-Cell[2428, 58, 130, 0, 70, "CodeText",ExpressionUUID->"806ae6ce-26a8-46cd-94cf-d5805b1f0c20"],
-Cell[2561, 60, 118, 0, 70, "Input",ExpressionUUID->"a03a01ed-2395-4130-a758-094d1e46d8bb"],
-Cell[2682, 62, 82, 0, 70, "Section",ExpressionUUID->"742ef034-8917-4933-b8e3-c7df4bdff2e6"],
-Cell[2767, 64, 85, 0, 70, "Item",ExpressionUUID->"ef2a7a19-cc72-4170-81ba-d5e8e16ceda0"],
-Cell[2855, 66, 87, 0, 70, "Item",ExpressionUUID->"4d3426ef-074b-4ab4-a4c9-a64e3e7bf35b"],
-Cell[2945, 68, 92, 0, 70, "Item",ExpressionUUID->"6a779b21-253f-40f6-874f-533b194920fa"]
+Cell[554, 20, 83, 0, 70, "Title",ExpressionUUID->"ad86445a-d5ab-4502-bdc1-4e63f5f9ea41"],
+Cell[640, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"03f04d7f-9c17-430b-ba69-70665b204cd2"],
+Cell[733, 24, 212, 3, 70, "Text",ExpressionUUID->"fc64741b-d9e8-4fcc-bef7-f6f83747c7a9"],
+Cell[948, 29, 79, 0, 70, "Section",ExpressionUUID->"3b3a80ce-2ed3-4b82-b4a4-86a90b2e6294"],
+Cell[1030, 31, 91, 0, 70, "CodeText",ExpressionUUID->"37c9a534-7c6d-46fa-a96f-2c9faaf5646c"],
+Cell[1124, 33, 192, 4, 70, "Code",ExpressionUUID->"8a431121-f897-4211-9f43-70a3bc10c4dd",
+ InitializationCell->True],
+Cell[1319, 39, 82, 0, 70, "Section",ExpressionUUID->"e492b553-6299-411a-b392-e1b33e25ec1b"],
+Cell[1404, 41, 115, 1, 70, "Input",ExpressionUUID->"c1dcca4a-a071-4f35-b60d-390c88eef47a"],
+Cell[1522, 44, 143, 2, 70, "Input",ExpressionUUID->"aba097cd-a810-4d8f-a771-5b76bdab1eee"],
+Cell[1668, 48, 112, 1, 70, "Input",ExpressionUUID->"8117cf7a-0a36-4f8d-ba27-845408e10f20"],
+Cell[1783, 51, 149, 2, 70, "Input",ExpressionUUID->"5d1b2e28-f35c-43f6-813d-08bb6e73fdb3"],
+Cell[1935, 55, 115, 1, 70, "Input",ExpressionUUID->"13694ae0-414e-4a92-afcc-6ef38dd9e409"],
+Cell[2053, 58, 150, 2, 70, "Input",ExpressionUUID->"f857f7a8-30e0-40fd-90d6-694e5170f3cf"],
+Cell[2206, 62, 112, 1, 70, "Input",ExpressionUUID->"6537f5af-b406-4b63-a19a-22fa0f28f13c"],
+Cell[2321, 65, 140, 2, 70, "Input",ExpressionUUID->"8a8f0195-9443-4b1f-a2aa-ea4dfd55b93d"],
+Cell[2464, 69, 82, 0, 70, "Section",ExpressionUUID->"e1ab1283-71ce-4c61-9bea-40f3511c440f"],
+Cell[2549, 71, 85, 0, 70, "Item",ExpressionUUID->"ebead95e-6996-4cc6-a9c7-1711d91a896c"],
+Cell[2637, 73, 87, 0, 70, "Item",ExpressionUUID->"abb77756-75a1-45ac-91f4-434708b6d033"],
+Cell[2727, 75, 88, 0, 70, "Section",ExpressionUUID->"8b374b51-2919-4439-b8e2-ce4ad76dccb7"],
+Cell[2818, 77, 92, 0, 70, "Item",ExpressionUUID->"a639ccd9-23aa-492f-b704-58e235bc0284"],
+Cell[2913, 79, 83, 0, 70, "Section",ExpressionUUID->"8b03013e-86bf-4ab7-9cd9-12b016ce429c"],
+Cell[2999, 81, 95, 0, 70, "Item",ExpressionUUID->"8e3d14c9-4baa-4872-add3-a79141b2ffbf"]
 }
 ]
 *)

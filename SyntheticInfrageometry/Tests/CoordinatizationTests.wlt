@@ -791,4 +791,16 @@ VerificationTest[
 ]
 
 
+(* Bounded axisLength makes the answer depend only on B(c, 2 axisLength). *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 10, 10 } ], c = 45 },
+    FindOrthogonalFrame[ g, c, 2, All ] ===
+      FindOrthogonalFrame[ NeighborhoodGraph[ g, c, 4 ], c, 2, All ]
+  ],
+  True,
+  TestID -> "FindOrthogonalFrame-locality"
+]
+
+
 EndTestSection[]

@@ -471,7 +471,7 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
     SubsetQ[
-      Sort @ (#[[ 1, 1 ]] & /@ FindSegment[g, 1, 9, All, Method -> "Shortest"]),
+      Sort @ (#[[ 1, 1 ]] & /@ FindSegment[g, 1, 9, All, Method -> "ShortestPath"]),
       Sort @ (#[[ 1, 1 ]] & /@ FindSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"])
     ]
   ],
@@ -783,7 +783,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Sort @ (#[[ 1, 1 ]] & /@ FindSegment[ g, 1, 16, All, Method -> "Embedding" ]) ===
-      Sort @ (#[[ 1, 1 ]] & /@ FindSegment[ g, 1, 16, All, Method -> "Shortest" ])
+      Sort @ (#[[ 1, 1 ]] & /@ FindSegment[ g, 1, 16, All, Method -> "ShortestPath" ])
   ],
   True,
   TestID -> "FindSegment-Embedding-Geodesic-All-equals-Shortest-set"
@@ -902,7 +902,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Sort @ (#[[ 1, 1 ]] & /@ FindLine[ g, 1, 16, All, Method -> "Shortest" ]) ===
+    Sort @ (#[[ 1, 1 ]] & /@ FindLine[ g, 1, 16, All, Method -> "ShortestPath" ]) ===
       Sort @ (#[[ 1, 1 ]] & /@ FindLine[ g, 1, 16, All, Method -> Automatic ])
   ],
   True,
@@ -913,7 +913,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { lines = FindLine[ g, 1, 16, All, Method -> "ShortestPathExtension" ] },
       MatchQ[ lines, { InfraSegment[ { _ } ] .. } ] &&
-        Length @ lines >= Length @ FindLine[ g, 1, 16, All, Method -> "Shortest" ]
+        Length @ lines >= Length @ FindLine[ g, 1, 16, All, Method -> "ShortestPath" ]
     ]
   ],
   True,
@@ -949,7 +949,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { seg = First @ First @ First @ FindSegment[ g, 1, 6, All ] },
-      Sort @ (#[[ 1, 1 ]] & /@ ExtendSegment[ g, seg, All, Method -> "Shortest" ]) ===
+      Sort @ (#[[ 1, 1 ]] & /@ ExtendSegment[ g, seg, All, Method -> "ShortestPath" ]) ===
         Sort @ Select[ (#[[ 1, 1 ]] & /@ FindLine[ g, 1, 6, All ]),
           lst |-> Length[ lst ] >= Length[ seg ] && MemberQ[ Partition[ lst, Length @ seg, 1 ], seg ] ]
     ]
@@ -993,16 +993,41 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph[ Range[ 5 ] ] },
-    InfraSegment @ ExtendSegment[ g, { 2, 3 }, 1, Method -> "Shortest" ] === InfraSegment[ { { 1, 2, 3, 4, 5 } } ]
+    InfraSegment @ ExtendSegment[ g, { 2, 3 }, 1, Method -> "ShortestPath" ] === InfraSegment[ { { 1, 2, 3, 4, 5 } } ]
   ],
   True,
   TestID -> "ExtendSegment-PathGraph-recovers-full-path"
 ]
 
 VerificationTest[
-  ExtendSegment[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 99, Method -> "Shortest" ],
+  ExtendSegment[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 99, Method -> "ShortestPath" ],
   $Failed,
   TestID -> "ExtendSegment-strict-undersupply-Failed"
+]
+
+
+(* FindShell / FindCircle: a bounded radius makes the answer depend only on
+   the ball B(p, r + 1) / B(p, r + 2) around the centre.  The "Metric" and
+   "Separating" recipes are graph-intrinsic; the "Embedding" recipe still
+   uses the full graph for its spectral coordinates, so the local-vs-global
+   cross-check is for "Metric" / "Separating". *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 10, 10 } ], p = 45 },
+    Sort @ (#[[ 1, 1 ]] & /@ FindShell[ g, p, 2, All ]) ===
+      Sort @ (#[[ 1, 1 ]] & /@ FindShell[ NeighborhoodGraph[ g, p, 3 ], p, 2, All ])
+  ],
+  True,
+  TestID -> "FindShell-locality-Metric"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 10, 10 } ], p = 45 },
+    Sort[ Sort /@ (#[[ 1, 1 ]] & /@ FindCircle[ g, p, { 1, 2 }, All ]) ] ===
+      Sort[ Sort /@ (#[[ 1, 1 ]] & /@ FindCircle[ NeighborhoodGraph[ g, p, 4 ], p, { 1, 2 }, All ]) ]
+  ],
+  True,
+  TestID -> "FindCircle-locality-Metric"
 ]
 
 EndTestSection[]

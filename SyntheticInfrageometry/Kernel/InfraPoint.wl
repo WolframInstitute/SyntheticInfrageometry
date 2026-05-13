@@ -120,8 +120,10 @@ findMidpointCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindMidpoint ] ]
       "Metric",
         DeleteDuplicates[ #[[ Ceiling[ Length[ # ] / 2 ] ]] & /@ allGeodesics[ graph, p1, p2 ] ],
       "Tarski",
-        Select[ VertexList[ graph ],
-          m |-> BetweennessQ[ graph, p1, m, p2 ] && GraphDistance[ graph, p1, m ] === GraphDistance[ graph, m, p2 ] ],
+        (* Localize: midpoints live on shortest p1-p2 paths, all within B(p1, d(p1,p2)). *)
+        With[ { localG = NeighborhoodGraph[ graph, p1, GraphDistance[ graph, p1, p2 ] ] },
+          Select[ VertexList[ localG ],
+            m |-> BetweennessQ[ localG, p1, m, p2 ] && GraphDistance[ localG, p1, m ] === GraphDistance[ localG, m, p2 ] ] ],
       "Embedding",
         embeddingRankMidpoints[ graph, p1, p2, parseEmbeddingMethod @ OptionValue[ FindMidpoint, { opts }, Method ] ]
     ]
@@ -158,8 +160,11 @@ FindReflection[ graph_Graph, x_, a_,
 findReflectionCore[ graph_Graph, x_, a_ ] :=
   With[ { r = GraphDistance[ graph, a, x ] },
     If[ r === Infinity, {},
-      Select[ VertexList[ graph ],
-        y |-> BetweennessQ[ graph, x, a, y ] && GraphDistance[ graph, a, y ] === r ] ]
+      (* Localize: reflection lives in B(a, r), straddle-paths stay in B(a, 2 r). *)
+      With[ { localG = NeighborhoodGraph[ graph, a, 2 r ] },
+        Select[ VertexList[ localG ],
+          y |-> BetweennessQ[ localG, x, a, y ] && GraphDistance[ localG, a, y ] === r ] ]
+    ]
   ]
 
 

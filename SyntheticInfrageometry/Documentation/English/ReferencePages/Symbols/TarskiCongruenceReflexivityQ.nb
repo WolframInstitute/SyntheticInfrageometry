@@ -10,119 +10,82 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      7034,        156]
-NotebookOptionsPosition[      4729,        122]
-NotebookOutlinePosition[      5046,        136]
-CellTagsIndexPosition[      5003,        133]
+NotebookDataLength[      5483,        120]
+NotebookOptionsPosition[      3166,         85]
+NotebookOutlinePosition[      3483,         99]
+CellTagsIndexPosition[      3440,         96]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["TarskiCongruenceReflexivityQ", "Title",ExpressionUUID->"82891b67-187c-49a0-a049-6eb57ab7497e"],
+Cell["TarskiCongruenceReflexivityQ", "Title",ExpressionUUID->"dd8b5554-ca5e-4b0a-9b04-2cf9ee493508"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"efa9155e-3bfd-4688-afbc-dc9bd0f11921"],
 
 Cell["\<\
-TarskiCongruenceReflexivityQ[graph] tests Tarski axiom A1: for all a, b, ab \
-== ba. Always True on undirected simple graphs.\
-\>", "Text",ExpressionUUID->"c5179fed-588d-44a8-b2b0-831c353f2c38"],
+TarskiCongruenceReflexivityQ[g] tests Tarski axiom A1 (ab == ba). Always True \
+on undirected simple graphs.\
+\>", "Text",ExpressionUUID->"795226ca-843b-4ead-b3f9-9c9a884e6cf8"],
 
-Cell["Setup", "Section",ExpressionUUID->"faa1ab91-665b-46a2-a72a-b2527dfc4f9e"],
+Cell["Setup", "Section",ExpressionUUID->"0ca37f35-04e4-4b46-a773-dedb0023f5f7"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"e7c7d079-1e29-4746-bd63-216cb97ae8f4"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"9fd1b35f-0521-4a65-a9fa-d44bf7e7b0b6"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
-  "]"}]], "Code",ExpressionUUID->"c5dd8e42-df7b-4a6e-8d55-b012b2534ff0"],
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"248261b9-63d5-44e8-86ab-cf88d85d6251"],
 
-Cell["Usage", "Section",ExpressionUUID->"fa87de9d-37c8-4145-9b2b-687b1b078c77"],
-
-Cell["Evaluate the axiom predicate on a path graph.", "CodeText",ExpressionUUID->"c8f4907f-147a-458d-8069-137efcd5eae2"],
-
-Cell[BoxData[
- RowBox[{"TarskiCongruenceReflexivityQ", "[", 
-  RowBox[{"PathGraph", "[", 
-   RowBox[{"Range", "[", "5", "]"}], "]"}], "]"}]], "Input",ExpressionUUID->\
-"3290cee1-e597-4267-b944-6c960586eb24"],
-
-Cell["Evaluate the same predicate on a second substrate.", "CodeText",ExpressionUUID->"db49bdb8-e52d-4f72-91cc-78137a54dc0d"],
+Cell["Examples", "Section",ExpressionUUID->"12da95e0-cd11-43aa-8070-8f740a75b151"],
 
 Cell[BoxData[
- RowBox[{"TarskiCongruenceReflexivityQ", "[", 
-  RowBox[{"Graph", "[", 
-   RowBox[{
-    RowBox[{"{", 
-     RowBox[{"1", ",", "2", ",", "3", ",", "4", ",", "5", ",", "6"}], "}"}], ",", 
-    RowBox[{"{", 
-     RowBox[{"Null", ",", 
-      RowBox[{"SparseArray", "[", 
-       RowBox[{"Automatic", ",", 
-        RowBox[{"{", 
-         RowBox[{"6", ",", "6"}], "}"}], ",", "0", ",", 
-        RowBox[{"{", 
-         RowBox[{"1", ",", 
-          RowBox[{"{", 
-           RowBox[{
-            RowBox[{"{", 
-             RowBox[{
-             "0", ",", "2", ",", "4", ",", "6", ",", "8", ",", "10", ",", 
-              "12"}], "}"}], ",", 
-            RowBox[{"{", 
-             RowBox[{
-              RowBox[{"{", "2", "}"}], ",", 
-              RowBox[{"{", "6", "}"}], ",", 
-              RowBox[{"{", "1", "}"}], ",", 
-              RowBox[{"{", "3", "}"}], ",", 
-              RowBox[{"{", "2", "}"}], ",", 
-              RowBox[{"{", "4", "}"}], ",", 
-              RowBox[{"{", "3", "}"}], ",", 
-              RowBox[{"{", "5", "}"}], ",", 
-              RowBox[{"{", "4", "}"}], ",", 
-              RowBox[{"{", "6", "}"}], ",", 
-              RowBox[{"{", "1", "}"}], ",", 
-              RowBox[{"{", "5", "}"}]}], "}"}]}], "}"}], ",", "Pattern"}], 
-         "}"}]}], "]"}]}], "}"}], ",", 
-    RowBox[{"{", 
-     RowBox[{"GraphLayout", "\[Rule]", "\"\<CircularEmbedding\>\""}], "}"}]}],
-    "]"}], "]"}]], "Input",ExpressionUUID->"45f19973-cc76-4d8c-b5c9-\
-d2bf9d81d970"],
-
-Cell["Examples", "Section",ExpressionUUID->"9c16b3c1-f07d-4ea7-9d63-01c92645d336"],
-
-Cell["Compare with the dashboard entry.", "CodeText",ExpressionUUID->"d52bcbad-4ad0-4048-aa5a-a0258eafecc7"],
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"44ceb857-1939-4126-a451-ff961fb800dc"],
 
 Cell[BoxData[
- RowBox[{"TarskiAxiomQ", "[", 
-  RowBox[{"PathGraph", "[", 
-   RowBox[{"Range", "[", "5", "]"}], "]"}], "]"}]], "Input",ExpressionUUID->\
-"9497ec07-a212-42eb-ae59-78dd236a86f4"],
-
-Cell["Evaluate the predicate on a grid as a second check.", "CodeText",ExpressionUUID->"d0ff935d-bf58-489e-af3f-d7345cbbc194"],
+ $CellContext`buildCell["A1 on a path graph."]], "Input",ExpressionUUID->"defcdfbf-a69a-47b3-9f6d-6af20968ae9b"],
 
 Cell[BoxData[
- RowBox[{"TarskiCongruenceReflexivityQ", "[", 
-  RowBox[{"GridGraph", "[", 
-   RowBox[{"{", 
-    RowBox[{"3", ",", "3"}], "}"}], "]"}], "]"}]], "Input",ExpressionUUID->\
-"36f257b8-908b-412f-aac1-fa7b61777699"],
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"41458484-a0e7-4148-927e-a240fcd3b24f"],
 
-Cell["See also", "Section",ExpressionUUID->"cef8ae76-28fc-4745-a44c-d1729b03db39"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "TarskiCongruenceReflexivityQ[PathGraph[Range[5]]]"]], "Input",ExpressionUUID\
+->"c51120e3-cadc-44f3-af0e-4577a4502089"],
 
-Cell["BetweennessQ", "Item",ExpressionUUID->"eaad3931-2ed7-435d-a7d0-001a84d50f41"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"2ac02f7d-8532-4ca8-8a3b-5f189fc14e94"],
 
-Cell["EquidistanceQ", "Item",ExpressionUUID->"bd7a4b05-092c-4441-b10c-51f6b77978c6"],
+Cell[BoxData[
+ $CellContext`buildCell["A1 on a grid."]], "Input",ExpressionUUID->"3d2a1e0f-e488-496f-9dff-8ec08259511f"],
 
-Cell["TarskiStructure", "Item",ExpressionUUID->"45030826-b1eb-476c-b040-18d6860c1d16"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"69b8c23a-294e-4784-92fa-b9934a1a455d"],
 
-Cell["TarskiAxiomQ", "Item",ExpressionUUID->"b60f8d05-dd53-4fc4-b365-bdb97bb9353f"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "TarskiCongruenceReflexivityQ[GridGraph[{3, 3}]]"]], "Input",ExpressionUUID->\
+"38b1c552-d10d-4d71-a26b-40847adeea66"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"d8777414-6790-4643-a40f-94a8b198a960"],
+Cell["See Also", "Section",ExpressionUUID->"4d9acf9e-74cd-426b-81ab-24d572c5dac7"],
 
-Cell["FindReflection", "Item",ExpressionUUID->"ebfb0572-123f-495d-9669-f6bf8c40fe01"],
+Cell["TarskiAxiomQ", "Item",ExpressionUUID->"603a529b-b7a3-4899-91ff-cb5936d60a37"],
 
-Cell["MetricInterval", "Item",ExpressionUUID->"a2236713-0188-462e-b171-90f974f0cea7"]
+Cell["TarskiCongruenceTransitivityQ", "Item",ExpressionUUID->"fa6677b2-f0fe-4bb4-b763-93f3c7b9f11b"],
+
+Cell["EquidistanceQ", "Item",ExpressionUUID->"ddafc525-43fa-46d9-bbf6-60cfaf3f1f82"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"4811f459-8d1c-4a5f-9fa1-b337df4c6a52"],
+
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"b6408002-bd11-440a-bdba-c04838765d66"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"91af0493-787c-422f-a2f7-5659e52d8af3"],
+
+Cell["TarskiGeometryTutorial", "Item",ExpressionUUID->"cc47dc51-ff71-4db2-b6b6-17810ebe69d8"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"44f98e3d-3313-40e3-9475-afdb24a065f6"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -135,29 +98,30 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 100, 0, 70, "Title",ExpressionUUID->"82891b67-187c-49a0-a049-6eb57ab7497e"],
-Cell[657, 22, 204, 3, 70, "Text",ExpressionUUID->"c5179fed-588d-44a8-b2b0-831c353f2c38"],
-Cell[864, 27, 79, 0, 70, "Section",ExpressionUUID->"faa1ab91-665b-46a2-a72a-b2527dfc4f9e"],
-Cell[946, 29, 132, 0, 70, "CodeText",ExpressionUUID->"e7c7d079-1e29-4746-bd63-216cb97ae8f4"],
-Cell[1081, 31, 162, 2, 70, "Code",ExpressionUUID->"c5dd8e42-df7b-4a6e-8d55-b012b2534ff0"],
-Cell[1246, 35, 79, 0, 70, "Section",ExpressionUUID->"fa87de9d-37c8-4145-9b2b-687b1b078c77"],
-Cell[1328, 37, 120, 0, 70, "CodeText",ExpressionUUID->"c8f4907f-147a-458d-8069-137efcd5eae2"],
-Cell[1451, 39, 207, 4, 70, "Input",ExpressionUUID->"3290cee1-e597-4267-b944-6c960586eb24"],
-Cell[1661, 45, 125, 0, 70, "CodeText",ExpressionUUID->"db49bdb8-e52d-4f72-91cc-78137a54dc0d"],
-Cell[1789, 47, 1484, 38, 70, "Input",ExpressionUUID->"45f19973-cc76-4d8c-b5c9-d2bf9d81d970"],
-Cell[3276, 87, 82, 0, 70, "Section",ExpressionUUID->"9c16b3c1-f07d-4ea7-9d63-01c92645d336"],
-Cell[3361, 89, 108, 0, 70, "CodeText",ExpressionUUID->"d52bcbad-4ad0-4048-aa5a-a0258eafecc7"],
-Cell[3472, 91, 191, 4, 70, "Input",ExpressionUUID->"9497ec07-a212-42eb-ae59-78dd236a86f4"],
-Cell[3666, 97, 126, 0, 70, "CodeText",ExpressionUUID->"d0ff935d-bf58-489e-af3f-d7345cbbc194"],
-Cell[3795, 99, 223, 5, 70, "Input",ExpressionUUID->"36f257b8-908b-412f-aac1-fa7b61777699"],
-Cell[4021, 106, 82, 0, 70, "Section",ExpressionUUID->"cef8ae76-28fc-4745-a44c-d1729b03db39"],
-Cell[4106, 108, 83, 0, 70, "Item",ExpressionUUID->"eaad3931-2ed7-435d-a7d0-001a84d50f41"],
-Cell[4192, 110, 84, 0, 70, "Item",ExpressionUUID->"bd7a4b05-092c-4441-b10c-51f6b77978c6"],
-Cell[4279, 112, 86, 0, 70, "Item",ExpressionUUID->"45030826-b1eb-476c-b040-18d6860c1d16"],
-Cell[4368, 114, 83, 0, 70, "Item",ExpressionUUID->"b60f8d05-dd53-4fc4-b365-bdb97bb9353f"],
-Cell[4454, 116, 89, 0, 70, "Item",ExpressionUUID->"d8777414-6790-4643-a40f-94a8b198a960"],
-Cell[4546, 118, 91, 0, 70, "Item",ExpressionUUID->"ebfb0572-123f-495d-9669-f6bf8c40fe01"],
-Cell[4640, 120, 85, 0, 70, "Item",ExpressionUUID->"a2236713-0188-462e-b171-90f974f0cea7"]
+Cell[554, 20, 100, 0, 70, "Title",ExpressionUUID->"dd8b5554-ca5e-4b0a-9b04-2cf9ee493508"],
+Cell[657, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"efa9155e-3bfd-4688-afbc-dc9bd0f11921"],
+Cell[750, 24, 187, 3, 70, "Text",ExpressionUUID->"795226ca-843b-4ead-b3f9-9c9a884e6cf8"],
+Cell[940, 29, 79, 0, 70, "Section",ExpressionUUID->"0ca37f35-04e4-4b46-a773-dedb0023f5f7"],
+Cell[1022, 31, 91, 0, 70, "CodeText",ExpressionUUID->"9fd1b35f-0521-4a65-a9fa-d44bf7e7b0b6"],
+Cell[1116, 33, 192, 4, 70, "Code",ExpressionUUID->"248261b9-63d5-44e8-86ab-cf88d85d6251",
+ InitializationCell->True],
+Cell[1311, 39, 82, 0, 70, "Section",ExpressionUUID->"12da95e0-cd11-43aa-8070-8f740a75b151"],
+Cell[1396, 41, 115, 1, 70, "Input",ExpressionUUID->"44ceb857-1939-4126-a451-ff961fb800dc"],
+Cell[1514, 44, 126, 1, 70, "Input",ExpressionUUID->"defcdfbf-a69a-47b3-9f6d-6af20968ae9b"],
+Cell[1643, 47, 112, 1, 70, "Input",ExpressionUUID->"41458484-a0e7-4148-927e-a240fcd3b24f"],
+Cell[1758, 50, 160, 3, 70, "Input",ExpressionUUID->"c51120e3-cadc-44f3-af0e-4577a4502089"],
+Cell[1921, 55, 115, 1, 70, "Input",ExpressionUUID->"2ac02f7d-8532-4ca8-8a3b-5f189fc14e94"],
+Cell[2039, 58, 120, 1, 70, "Input",ExpressionUUID->"3d2a1e0f-e488-496f-9dff-8ec08259511f"],
+Cell[2162, 61, 112, 1, 70, "Input",ExpressionUUID->"69b8c23a-294e-4784-92fa-b9934a1a455d"],
+Cell[2277, 64, 158, 3, 70, "Input",ExpressionUUID->"38b1c552-d10d-4d71-a26b-40847adeea66"],
+Cell[2438, 69, 82, 0, 70, "Section",ExpressionUUID->"4d9acf9e-74cd-426b-81ab-24d572c5dac7"],
+Cell[2523, 71, 83, 0, 70, "Item",ExpressionUUID->"603a529b-b7a3-4899-91ff-cb5936d60a37"],
+Cell[2609, 73, 100, 0, 70, "Item",ExpressionUUID->"fa6677b2-f0fe-4bb4-b763-93f3c7b9f11b"],
+Cell[2712, 75, 84, 0, 70, "Item",ExpressionUUID->"ddafc525-43fa-46d9-bbf6-60cfaf3f1f82"],
+Cell[2799, 77, 88, 0, 70, "Section",ExpressionUUID->"4811f459-8d1c-4a5f-9fa1-b337df4c6a52"],
+Cell[2890, 79, 90, 0, 70, "Item",ExpressionUUID->"b6408002-bd11-440a-bdba-c04838765d66"],
+Cell[2983, 81, 83, 0, 70, "Section",ExpressionUUID->"91af0493-787c-422f-a2f7-5659e52d8af3"],
+Cell[3069, 83, 93, 0, 70, "Item",ExpressionUUID->"cc47dc51-ff71-4db2-b6b6-17810ebe69d8"]
 }
 ]
 *)

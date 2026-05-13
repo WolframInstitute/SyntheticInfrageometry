@@ -19,8 +19,14 @@ Print[TestReport[FileNameJoin[{$testDir, "EuclideanConstructionsTests.wlt"}]]]
 Print["Running EuclideanSpaceTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "EuclideanSpaceTests.wlt"}]]]
 
+Print["Running InfraCurveGeometryTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraCurveGeometryTests.wlt"}]]]
+
 Print["Running PathSpaceTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "PathSpaceTests.wlt"}]]]
+
+Print["Running HomotopyTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "HomotopyTests.wlt"}]]]
 
 Print["Running MetricGeometryTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "MetricGeometryTests.wlt"}]]]
@@ -36,6 +42,9 @@ Print[TestReport[FileNameJoin[{$testDir, "SpectralGeometryTests.wlt"}]]]
 
 Print["Running InfraPrimitivesTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "InfraPrimitivesTests.wlt"}]]]
+
+Print["Running InfraPolylineTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraPolylineTests.wlt"}]]]
 
 Print["Running InfraRevolutionTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "InfraRevolutionTests.wlt"}]]]

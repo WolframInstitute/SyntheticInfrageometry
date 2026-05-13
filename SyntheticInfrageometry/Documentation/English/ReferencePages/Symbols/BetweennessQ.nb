@@ -10,25 +10,101 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1511,         43]
-NotebookOptionsPosition[       969,         28]
-NotebookOutlinePosition[      1286,         42]
-CellTagsIndexPosition[      1243,         39]
+NotebookDataLength[      6723,        145]
+NotebookOptionsPosition[      3859,        104]
+NotebookOutlinePosition[      4176,        118]
+CellTagsIndexPosition[      4133,        115]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for BetweennessQ\"", "Input",ExpressionUUID->"ab9fbbd1-af2a-4245-b3df-7d5359441d34"],
+Cell["BetweennessQ", "Title",ExpressionUUID->"821a1f72-6bb8-4da7-8b7e-f0b5c54bb2fc"],
 
-Cell["?BetweennessQ", "Input",ExpressionUUID->"c6729229-15db-4f4f-8e32-8e47ba823603"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"67925f1f-908a-4123-b761-a80b572e23c8"],
 
-Cell["Information[BetweennessQ, LongForm -> True]", "Input",ExpressionUUID->"5f89a60c-08de-4110-9e24-d9c494842310"],
+Cell["\<\
+BetweennessQ[g, u, w, v] tests Tarski's betweenness B(u, w, v): w lies on a \
+geodesic from u to v.\
+\>", "Text",ExpressionUUID->"08990686-28de-4ac7-802e-177710dcf55f"],
 
-Cell["Definition[BetweennessQ]", "Input",ExpressionUUID->"dcaf4007-6a61-4070-a7c8-572954a6faa6"]
+Cell["Setup", "Section",ExpressionUUID->"dd569fe0-f213-4351-abfc-3332b08c505a"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"230c6b83-738c-4e86-bc88-aa3c6347bddb"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"e25de809-6006-4021-837c-3cb84cbe3b5b"],
+
+Cell["Examples", "Section",ExpressionUUID->"c9931cfa-c982-41e4-809b-3f3deb57ba13"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"505633ac-5357-4912-83d6-0310fb69ff21"],
+
+Cell[BoxData[
+ $CellContext`buildCell["3 lies between 1 and 5 on a path graph."]], "Input",E\
+xpressionUUID->"9f3616d1-70a1-48d3-ade0-946765574d1a"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"2c1ec831-7dcc-4f5d-aa25-e94dd4976f6d"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "BetweennessQ[PathGraph[Range[6]], 1, 3, 5]"]], "Input",ExpressionUUID->\
+"1f134d60-fe3f-4820-91e2-de3993f0ad2c"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"49854de8-1b4c-4d37-9b0a-2b6cbeff036b"],
+
+Cell[BoxData[
+ $CellContext`buildCell["4 does not lie between 1 and 3."]], "Input",Expressio\
+nUUID->"71b7a958-eeb5-4ace-aed2-dc6b04c050c3"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"554133c5-42a6-4b61-b40d-1d9d2740ff08"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "BetweennessQ[PathGraph[Range[6]], 1, 4, 3]"]], "Input",ExpressionUUID->\
+"1963971e-bf9d-4dc1-a1c2-5668a8cdec03"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"e5e793d0-d20b-459d-a1ef-6114978d604a"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Betweenness on a grid."]], "Input",ExpressionUUID->"ef95ed07-2e8e-46a6-a60c-8a2ae2ac0de3"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"48f4768f-0dcc-4879-b13b-18a9efc466f1"],
+
+Cell[BoxData[
+ $CellContext`buildCell["BetweennessQ[GridGraph[{3, 3}], 1, 5, 9]"]], "Input",\
+ExpressionUUID->"407c923c-4e1d-4edd-bbe6-585169c5d1f8"],
+
+Cell["See Also", "Section",ExpressionUUID->"2c59fc2e-b76a-4bf5-8bca-15c392897380"],
+
+Cell["EquidistanceQ", "Item",ExpressionUUID->"c347479c-fcb3-40ea-83a6-1166b4693a7d"],
+
+Cell["TarskiStructure", "Item",ExpressionUUID->"976e2e3e-f0eb-4b7c-b0bc-320ec2aa8ad9"],
+
+Cell["TarskiBetweennessTensor", "Item",ExpressionUUID->"59aaf26b-9f86-45f8-b400-89933c7391f1"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"6bde545a-3336-441c-9e51-5115a0cadb59"],
+
+Cell["FindMidpoint", "Item",ExpressionUUID->"96aba2a0-e2a3-40db-bf76-2da97e1f1b39"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"fe5c5bf8-e302-49c1-84d9-776a86587c4b"],
+
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"514b53f0-af7d-4f4e-8cf4-eb4d1b2cf009"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"73083fd7-fb7b-4013-b3af-924634312a15"],
+
+Cell["TarskiGeometryTutorial", "Item",ExpressionUUID->"29dec9ba-49fe-4bc7-8fd1-17875d25cec9"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"4683f7b6-aed1-4b1d-ba35-fce7a84eba6f"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +117,36 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 106, 0, 70, "Input",ExpressionUUID->"ab9fbbd1-af2a-4245-b3df-7d5359441d34"],
-Cell[663, 22, 85, 0, 70, "Input",ExpressionUUID->"c6729229-15db-4f4f-8e32-8e47ba823603"],
-Cell[751, 24, 115, 0, 70, "Input",ExpressionUUID->"5f89a60c-08de-4110-9e24-d9c494842310"],
-Cell[869, 26, 96, 0, 70, "Input",ExpressionUUID->"dcaf4007-6a61-4070-a7c8-572954a6faa6"]
+Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"821a1f72-6bb8-4da7-8b7e-f0b5c54bb2fc"],
+Cell[641, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"67925f1f-908a-4123-b761-a80b572e23c8"],
+Cell[734, 24, 178, 3, 70, "Text",ExpressionUUID->"08990686-28de-4ac7-802e-177710dcf55f"],
+Cell[915, 29, 79, 0, 70, "Section",ExpressionUUID->"dd569fe0-f213-4351-abfc-3332b08c505a"],
+Cell[997, 31, 91, 0, 70, "CodeText",ExpressionUUID->"230c6b83-738c-4e86-bc88-aa3c6347bddb"],
+Cell[1091, 33, 192, 4, 70, "Code",ExpressionUUID->"e25de809-6006-4021-837c-3cb84cbe3b5b",
+ InitializationCell->True],
+Cell[1286, 39, 82, 0, 70, "Section",ExpressionUUID->"c9931cfa-c982-41e4-809b-3f3deb57ba13"],
+Cell[1371, 41, 115, 1, 70, "Input",ExpressionUUID->"505633ac-5357-4912-83d6-0310fb69ff21"],
+Cell[1489, 44, 148, 2, 70, "Input",ExpressionUUID->"9f3616d1-70a1-48d3-ade0-946765574d1a"],
+Cell[1640, 48, 112, 1, 70, "Input",ExpressionUUID->"2c1ec831-7dcc-4f5d-aa25-e94dd4976f6d"],
+Cell[1755, 51, 153, 3, 70, "Input",ExpressionUUID->"1f134d60-fe3f-4820-91e2-de3993f0ad2c"],
+Cell[1911, 56, 115, 1, 70, "Input",ExpressionUUID->"49854de8-1b4c-4d37-9b0a-2b6cbeff036b"],
+Cell[2029, 59, 140, 2, 70, "Input",ExpressionUUID->"71b7a958-eeb5-4ace-aed2-dc6b04c050c3"],
+Cell[2172, 63, 112, 1, 70, "Input",ExpressionUUID->"554133c5-42a6-4b61-b40d-1d9d2740ff08"],
+Cell[2287, 66, 153, 3, 70, "Input",ExpressionUUID->"1963971e-bf9d-4dc1-a1c2-5668a8cdec03"],
+Cell[2443, 71, 115, 1, 70, "Input",ExpressionUUID->"e5e793d0-d20b-459d-a1ef-6114978d604a"],
+Cell[2561, 74, 129, 1, 70, "Input",ExpressionUUID->"ef95ed07-2e8e-46a6-a60c-8a2ae2ac0de3"],
+Cell[2693, 77, 112, 1, 70, "Input",ExpressionUUID->"48f4768f-0dcc-4879-b13b-18a9efc466f1"],
+Cell[2808, 80, 149, 2, 70, "Input",ExpressionUUID->"407c923c-4e1d-4edd-bbe6-585169c5d1f8"],
+Cell[2960, 84, 82, 0, 70, "Section",ExpressionUUID->"2c59fc2e-b76a-4bf5-8bca-15c392897380"],
+Cell[3045, 86, 84, 0, 70, "Item",ExpressionUUID->"c347479c-fcb3-40ea-83a6-1166b4693a7d"],
+Cell[3132, 88, 86, 0, 70, "Item",ExpressionUUID->"976e2e3e-f0eb-4b7c-b0bc-320ec2aa8ad9"],
+Cell[3221, 90, 94, 0, 70, "Item",ExpressionUUID->"59aaf26b-9f86-45f8-b400-89933c7391f1"],
+Cell[3318, 92, 85, 0, 70, "Item",ExpressionUUID->"6bde545a-3336-441c-9e51-5115a0cadb59"],
+Cell[3406, 94, 83, 0, 70, "Item",ExpressionUUID->"96aba2a0-e2a3-40db-bf76-2da97e1f1b39"],
+Cell[3492, 96, 88, 0, 70, "Section",ExpressionUUID->"fe5c5bf8-e302-49c1-84d9-776a86587c4b"],
+Cell[3583, 98, 90, 0, 70, "Item",ExpressionUUID->"514b53f0-af7d-4f4e-8cf4-eb4d1b2cf009"],
+Cell[3676, 100, 83, 0, 70, "Section",ExpressionUUID->"73083fd7-fb7b-4013-b3af-924634312a15"],
+Cell[3762, 102, 93, 0, 70, "Item",ExpressionUUID->"29dec9ba-49fe-4bc7-8fd1-17875d25cec9"]
 }
 ]
 *)

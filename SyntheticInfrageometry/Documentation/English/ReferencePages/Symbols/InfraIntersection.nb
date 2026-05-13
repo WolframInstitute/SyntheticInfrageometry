@@ -10,25 +10,83 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1532,         43]
-NotebookOptionsPosition[       989,         28]
-NotebookOutlinePosition[      1306,         42]
-CellTagsIndexPosition[      1263,         39]
+NotebookDataLength[      5513,        121]
+NotebookOptionsPosition[      3198,         86]
+NotebookOutlinePosition[      3515,        100]
+CellTagsIndexPosition[      3472,         97]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for InfraIntersection\"", "Input",ExpressionUUID->"31f162d1-045c-4548-a720-384e913182c6"],
+Cell["InfraIntersection", "Title",ExpressionUUID->"c8e1852b-68dd-469b-b7d3-5a61f4ab6291"],
 
-Cell["?InfraIntersection", "Input",ExpressionUUID->"f73892b8-7867-46f8-9ffd-94056abf43d8"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"002505f0-414f-449c-b8f3-203dc19cabdb"],
 
-Cell["Information[InfraIntersection, LongForm -> True]", "Input",ExpressionUUID->"0382074b-869c-4adb-bf4f-3e1525e37744"],
+Cell["\<\
+InfraIntersection[obj1, obj2] represents the vertex-set intersection of two \
+geometric objects. Used in InfraScene hypotheses.\
+\>", "Text",ExpressionUUID->"4b04a2bc-0466-46e6-8860-1434a6b32f5b"],
 
-Cell["Definition[InfraIntersection]", "Input",ExpressionUUID->"d2c21e5a-2656-40aa-97b0-381cabeb05c4"]
+Cell["Setup", "Section",ExpressionUUID->"c9802a77-0fbb-48af-a7a8-cab6f77ffc0d"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"a4b31365-9307-4b48-b92f-0b568a035ced"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"7dbf24ef-91bd-4a8b-a0c3-df88d5bbd7b9"],
+
+Cell["Examples", "Section",ExpressionUUID->"1faa34c2-aedf-4d5f-bcef-b8015dfc934b"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"735075fd-eb9d-4b8e-ba83-a44ff63c2f43"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Intersection of two shells."]], "Input",ExpressionUUID->"6d55770f-63e5-47a9-be47-68abb9cb3272"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"32e55a4d-70dc-4d76-8b34-894dd7cbec39"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "InfraIntersection[InfraShell[1, 2], InfraShell[9, 2]]"]], "Input",Expression\
+UUID->"2947c22b-7c54-4e4c-a169-bb95ff438f9c"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"473c6cca-6aa0-45ab-a4b6-70eb9f213783"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Intersection of a shell and a line."]], "Input",Expre\
+ssionUUID->"a8100457-81be-4964-917c-9f67ffdbc385"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"927dcf0b-a3cb-4233-b69f-1ca372cfd62e"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "InfraIntersection[InfraShell[5, 1], InfraLine[1, 9]]"]], "Input",ExpressionU\
+UID->"78e18577-5627-4486-8582-89c646bba1a8"],
+
+Cell["See Also", "Section",ExpressionUUID->"bb0488e5-667a-49e9-a87e-cc50aad72435"],
+
+Cell["InfraScene", "Item",ExpressionUUID->"a0a32dca-b49d-492d-a1a6-a64057b10bec"],
+
+Cell["FindInfraScene", "Item",ExpressionUUID->"e6351d24-eb13-48cc-b4e0-71b6cf62cc8c"],
+
+Cell["InfraIntersectQ", "Item",ExpressionUUID->"17ccd8b6-97ff-45be-88f8-7fa40d4bdbc5"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"96af4d37-7d61-4e91-89dd-a94eafda0553"],
+
+Cell["VisualizationGuide", "Item",ExpressionUUID->"419a1e38-8ded-4f64-bff0-bf76c58e5057"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"d1f455e7-77ad-42a5-a847-92fba0982f43"],
+
+Cell["VisualizationTutorial", "Item",ExpressionUUID->"847b20c3-b5b7-4e25-9fb2-edd0d9e02459"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +99,30 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 111, 0, 70, "Input",ExpressionUUID->"31f162d1-045c-4548-a720-384e913182c6"],
-Cell[668, 22, 90, 0, 70, "Input",ExpressionUUID->"f73892b8-7867-46f8-9ffd-94056abf43d8"],
-Cell[761, 24, 120, 0, 70, "Input",ExpressionUUID->"0382074b-869c-4adb-bf4f-3e1525e37744"],
-Cell[884, 26, 101, 0, 70, "Input",ExpressionUUID->"d2c21e5a-2656-40aa-97b0-381cabeb05c4"]
+Cell[554, 20, 89, 0, 70, "Title",ExpressionUUID->"c8e1852b-68dd-469b-b7d3-5a61f4ab6291"],
+Cell[646, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"002505f0-414f-449c-b8f3-203dc19cabdb"],
+Cell[739, 24, 206, 3, 70, "Text",ExpressionUUID->"4b04a2bc-0466-46e6-8860-1434a6b32f5b"],
+Cell[948, 29, 79, 0, 70, "Section",ExpressionUUID->"c9802a77-0fbb-48af-a7a8-cab6f77ffc0d"],
+Cell[1030, 31, 91, 0, 70, "CodeText",ExpressionUUID->"a4b31365-9307-4b48-b92f-0b568a035ced"],
+Cell[1124, 33, 192, 4, 70, "Code",ExpressionUUID->"7dbf24ef-91bd-4a8b-a0c3-df88d5bbd7b9",
+ InitializationCell->True],
+Cell[1319, 39, 82, 0, 70, "Section",ExpressionUUID->"1faa34c2-aedf-4d5f-bcef-b8015dfc934b"],
+Cell[1404, 41, 115, 1, 70, "Input",ExpressionUUID->"735075fd-eb9d-4b8e-ba83-a44ff63c2f43"],
+Cell[1522, 44, 134, 1, 70, "Input",ExpressionUUID->"6d55770f-63e5-47a9-be47-68abb9cb3272"],
+Cell[1659, 47, 112, 1, 70, "Input",ExpressionUUID->"32e55a4d-70dc-4d76-8b34-894dd7cbec39"],
+Cell[1774, 50, 164, 3, 70, "Input",ExpressionUUID->"2947c22b-7c54-4e4c-a169-bb95ff438f9c"],
+Cell[1941, 55, 115, 1, 70, "Input",ExpressionUUID->"473c6cca-6aa0-45ab-a4b6-70eb9f213783"],
+Cell[2059, 58, 144, 2, 70, "Input",ExpressionUUID->"a8100457-81be-4964-917c-9f67ffdbc385"],
+Cell[2206, 62, 112, 1, 70, "Input",ExpressionUUID->"927dcf0b-a3cb-4233-b69f-1ca372cfd62e"],
+Cell[2321, 65, 163, 3, 70, "Input",ExpressionUUID->"78e18577-5627-4486-8582-89c646bba1a8"],
+Cell[2487, 70, 82, 0, 70, "Section",ExpressionUUID->"bb0488e5-667a-49e9-a87e-cc50aad72435"],
+Cell[2572, 72, 81, 0, 70, "Item",ExpressionUUID->"a0a32dca-b49d-492d-a1a6-a64057b10bec"],
+Cell[2656, 74, 85, 0, 70, "Item",ExpressionUUID->"e6351d24-eb13-48cc-b4e0-71b6cf62cc8c"],
+Cell[2744, 76, 86, 0, 70, "Item",ExpressionUUID->"17ccd8b6-97ff-45be-88f8-7fa40d4bdbc5"],
+Cell[2833, 78, 88, 0, 70, "Section",ExpressionUUID->"96af4d37-7d61-4e91-89dd-a94eafda0553"],
+Cell[2924, 80, 89, 0, 70, "Item",ExpressionUUID->"419a1e38-8ded-4f64-bff0-bf76c58e5057"],
+Cell[3016, 82, 83, 0, 70, "Section",ExpressionUUID->"d1f455e7-77ad-42a5-a847-92fba0982f43"],
+Cell[3102, 84, 92, 0, 70, "Item",ExpressionUUID->"847b20c3-b5b7-4e25-9fb2-edd0d9e02459"]
 }
 ]
 *)

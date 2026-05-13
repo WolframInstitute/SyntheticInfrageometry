@@ -10,25 +10,106 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1491,         43]
-NotebookOptionsPosition[       949,         28]
-NotebookOutlinePosition[      1266,         42]
-CellTagsIndexPosition[      1223,         39]
+NotebookDataLength[      7026,        150]
+NotebookOptionsPosition[      4158,        109]
+NotebookOutlinePosition[      4475,        123]
+CellTagsIndexPosition[      4432,        120]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for FindRay\"", "Input",ExpressionUUID->"7676af18-a498-488c-836b-068e7f3f50bb"],
+Cell["FindRay", "Title",ExpressionUUID->"9e7e40a7-304b-475d-b70e-9fe97f56e9fb"],
 
-Cell["?FindRay", "Input",ExpressionUUID->"75c41fb2-88dd-4293-8f3b-cf58d5023a35"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"355f2304-0ff1-4d0a-aef0-97b93495b191"],
 
-Cell["Information[FindRay, LongForm -> True]", "Input",ExpressionUUID->"96c79cc6-1c1b-4d0f-a7d0-c2839ad738a1"],
+Cell["\<\
+FindRay[g, O, v] returns one pointed half-line from O in v's direction: the \
+half of a maximal geodesic line through O and v starting at O and ending at \
+the far inextensible endpoint. Returns a List of unary InfraRay[{ray}] \
+wrappers; n / UpTo[n] / All control multiplicity. O and v accept InfraPoint[{\
+\[Ellipsis]}] for multi-anchor spread.\
+\>", "Text",ExpressionUUID->"0dcbfc35-ea05-470a-b05e-2e64dc53bf10"],
 
-Cell["Definition[FindRay]", "Input",ExpressionUUID->"ad5e3081-6cb3-441f-ad8e-8e46d201d312"]
+Cell["Setup", "Section",ExpressionUUID->"200d1101-b0b6-4870-9584-8a3e97bc7973"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"b47fa0a5-9e2f-45d2-82e9-96d39eb697a3"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"5d83a1d5-bf35-4695-9875-1313c65bdd66"],
+
+Cell["Examples", "Section",ExpressionUUID->"d53ffef6-7a7a-4983-8eed-fcb694a4c4c8"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"93cf9310-842f-4772-8d46-ee7e4f43e4e4"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "One ray from grid centre in vertex 6's direction."]], "Input",ExpressionUUID\
+->"d485a7d4-ebc1-48ee-9d70-f586740ee610"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"05c8747b-17e4-481e-89e9-d0f675497633"],
+
+Cell[BoxData[
+ $CellContext`buildCell["FindRay[GridGraph[{3, 3}], 5, 6]"]], "Input",Expressi\
+onUUID->"421583a7-bb13-4296-b597-15ba5eef7743"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"9d47cc34-595b-46a1-b970-4cd4a91de609"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "All rays from the centre in vertex 6's direction."]], "Input",ExpressionUUID\
+->"4101d4ea-e9f4-4f23-b476-75a938cb503d"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"765f1487-5a93-4929-8b44-6368aecb7a5d"],
+
+Cell[BoxData[
+ $CellContext`buildCell["FindRay[GridGraph[{3, 3}], 5, 6, All]"]], "Input",Exp\
+ressionUUID->"92dba43d-bc77-4772-afa8-a383a8978dc7"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"fb4fde6d-5224-4945-8af1-b4b605f59531"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Diffuse rendering."]], "Input",ExpressionUUID->"0fae77a1-ab3b-47d5-9b93-19e310f9ad36"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"f937d112-2439-4c42-b842-44b84eca6a0e"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "With[{g = GridGraph[{3, 3}]}, InfraSceneHighlight[g, {FindRay[g, 5, 6, All] \
+-> Orange}]]"]], "Input",ExpressionUUID->"057402ee-9c05-4758-8aca-\
+2069a9b8b442"],
+
+Cell["See Also", "Section",ExpressionUUID->"0f83ec5f-e309-414c-bc87-931f7ed015a1"],
+
+Cell["InfraRay", "Item",ExpressionUUID->"58a81898-50b3-426d-a31a-0c4fb4986f19"],
+
+Cell["FindLine", "Item",ExpressionUUID->"74c8fdd4-6f35-4383-a4b7-b4606adf1f39"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"56ac1570-c808-497b-bebd-6109b72a26b7"],
+
+Cell["PencilDirections", "Item",ExpressionUUID->"5ad7ccf0-ce60-4580-a3d6-312373c2b774"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"2ec6723c-8955-4f99-a8e3-4167cdd02752"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"b70754c1-2de7-45e7-9c15-c4f8aafdb909"],
+
+Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"5083ca28-0be8-4e5d-9889-53a53ea4f356"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"03fbd689-4d8c-4d82-813b-28dbda7b44af"],
+
+Cell["ProjectiveGeometryTutorial", "Item",ExpressionUUID->"805391d4-1fdf-49c1-ac1b-5ab477a61e02"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +122,36 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 101, 0, 70, "Input",ExpressionUUID->"7676af18-a498-488c-836b-068e7f3f50bb"],
-Cell[658, 22, 80, 0, 70, "Input",ExpressionUUID->"75c41fb2-88dd-4293-8f3b-cf58d5023a35"],
-Cell[741, 24, 110, 0, 70, "Input",ExpressionUUID->"96c79cc6-1c1b-4d0f-a7d0-c2839ad738a1"],
-Cell[854, 26, 91, 0, 70, "Input",ExpressionUUID->"ad5e3081-6cb3-441f-ad8e-8e46d201d312"]
+Cell[554, 20, 79, 0, 70, "Title",ExpressionUUID->"9e7e40a7-304b-475d-b70e-9fe97f56e9fb"],
+Cell[636, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"355f2304-0ff1-4d0a-aef0-97b93495b191"],
+Cell[729, 24, 425, 6, 70, "Text",ExpressionUUID->"0dcbfc35-ea05-470a-b05e-2e64dc53bf10"],
+Cell[1157, 32, 79, 0, 70, "Section",ExpressionUUID->"200d1101-b0b6-4870-9584-8a3e97bc7973"],
+Cell[1239, 34, 91, 0, 70, "CodeText",ExpressionUUID->"b47fa0a5-9e2f-45d2-82e9-96d39eb697a3"],
+Cell[1333, 36, 192, 4, 70, "Code",ExpressionUUID->"5d83a1d5-bf35-4695-9875-1313c65bdd66",
+ InitializationCell->True],
+Cell[1528, 42, 82, 0, 70, "Section",ExpressionUUID->"d53ffef6-7a7a-4983-8eed-fcb694a4c4c8"],
+Cell[1613, 44, 115, 1, 70, "Input",ExpressionUUID->"93cf9310-842f-4772-8d46-ee7e4f43e4e4"],
+Cell[1731, 47, 160, 3, 70, "Input",ExpressionUUID->"d485a7d4-ebc1-48ee-9d70-f586740ee610"],
+Cell[1894, 52, 112, 1, 70, "Input",ExpressionUUID->"05c8747b-17e4-481e-89e9-d0f675497633"],
+Cell[2009, 55, 141, 2, 70, "Input",ExpressionUUID->"421583a7-bb13-4296-b597-15ba5eef7743"],
+Cell[2153, 59, 115, 1, 70, "Input",ExpressionUUID->"9d47cc34-595b-46a1-b970-4cd4a91de609"],
+Cell[2271, 62, 160, 3, 70, "Input",ExpressionUUID->"4101d4ea-e9f4-4f23-b476-75a938cb503d"],
+Cell[2434, 67, 112, 1, 70, "Input",ExpressionUUID->"765f1487-5a93-4929-8b44-6368aecb7a5d"],
+Cell[2549, 70, 146, 2, 70, "Input",ExpressionUUID->"92dba43d-bc77-4772-afa8-a383a8978dc7"],
+Cell[2698, 74, 115, 1, 70, "Input",ExpressionUUID->"fb4fde6d-5224-4945-8af1-b4b605f59531"],
+Cell[2816, 77, 125, 1, 70, "Input",ExpressionUUID->"0fae77a1-ab3b-47d5-9b93-19e310f9ad36"],
+Cell[2944, 80, 112, 1, 70, "Input",ExpressionUUID->"f937d112-2439-4c42-b842-44b84eca6a0e"],
+Cell[3059, 83, 201, 4, 70, "Input",ExpressionUUID->"057402ee-9c05-4758-8aca-2069a9b8b442"],
+Cell[3263, 89, 82, 0, 70, "Section",ExpressionUUID->"0f83ec5f-e309-414c-bc87-931f7ed015a1"],
+Cell[3348, 91, 79, 0, 70, "Item",ExpressionUUID->"58a81898-50b3-426d-a31a-0c4fb4986f19"],
+Cell[3430, 93, 79, 0, 70, "Item",ExpressionUUID->"74c8fdd4-6f35-4383-a4b7-b4606adf1f39"],
+Cell[3512, 95, 82, 0, 70, "Item",ExpressionUUID->"56ac1570-c808-497b-bebd-6109b72a26b7"],
+Cell[3597, 97, 87, 0, 70, "Item",ExpressionUUID->"5ad7ccf0-ce60-4580-a3d6-312373c2b774"],
+Cell[3687, 99, 88, 0, 70, "Section",ExpressionUUID->"2ec6723c-8955-4f99-a8e3-4167cdd02752"],
+Cell[3778, 101, 93, 0, 70, "Item",ExpressionUUID->"b70754c1-2de7-45e7-9c15-c4f8aafdb909"],
+Cell[3874, 103, 94, 0, 70, "Item",ExpressionUUID->"5083ca28-0be8-4e5d-9889-53a53ea4f356"],
+Cell[3971, 105, 83, 0, 70, "Section",ExpressionUUID->"03fbd689-4d8c-4d82-813b-28dbda7b44af"],
+Cell[4057, 107, 97, 0, 70, "Item",ExpressionUUID->"805391d4-1fdf-49c1-ac1b-5ab477a61e02"]
 }
 ]
 *)

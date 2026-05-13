@@ -10,226 +10,133 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     14049,        282]
-NotebookOptionsPosition[      9993,        229]
-NotebookOutlinePosition[     10310,        243]
-CellTagsIndexPosition[     10267,        240]
+NotebookDataLength[      9702,        188]
+NotebookOptionsPosition[      5830,        136]
+NotebookOutlinePosition[      6147,        150]
+CellTagsIndexPosition[      6104,        147]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["Tarski Geometry Guide", "Title",ExpressionUUID->"9d870de9-3472-4242-9a19-ccc61ba1545f"],
+Cell["Tarski Geometry", "Title",ExpressionUUID->"64a7f3be-8eaa-4594-b58d-5fcd30fca1a4"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"0db24bee-545e-47af-bfe5-2a7215f50db7"],
 
 Cell["\<\
-First-order axiomatic geometry on graphs, in the style of Alfred Tarski's \
-1959 axiomatization. Two primitive relations \\u2014 betweenness and \
-equidistance \\u2014 expressed directly as graph-metric predicates; eleven \
-axioms expressed as graph predicates; two Tarski-only constructions defined \
-without any metric arithmetic.\
-\>", "Text",ExpressionUUID->"dfd64b42-7a08-4d8d-a239-6a6bce761318"],
+The Tarski layer hosts the two primitives (betweenness B and equidistance ==) \
+plus the eleven first-class axioms A1\[Dash]A11, each as its own predicate on \
+a graph. The dashboard predicate TarskiAxiomQ collects all eleven; \
+FindTarskiCounterexample produces witnesses of failure.\
+\>", "Text",ExpressionUUID->"c33843ec-3daf-4598-be4e-cf745cb4fcee"],
+
+Cell["Setup", "Section",ExpressionUUID->"09f2b225-cb0c-4d93-b78a-e3373facecf4"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"ef2b9f97-2d3f-43f0-8f54-f501bb86082e"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"7ddde3bc-f080-4928-9421-a3fea1aa1de9"],
+
+Cell["Primitives", "Section",ExpressionUUID->"1b0ccb8d-44af-450e-bf6b-a18f1a4b87cf"],
+
+Cell["BetweennessQ", "Item",ExpressionUUID->"8cff7c28-5b3b-4309-ae3c-980c6ec1d314"],
+
+Cell["EquidistanceQ", "Item",ExpressionUUID->"aab39044-e5f3-43bc-a27b-e90f1bb2e514"],
+
+Cell["Memoized bundles", "Section",ExpressionUUID->"a33314bd-d091-412a-9b08-171d6ba2cb2e"],
+
+Cell["TarskiStructure", "Item",ExpressionUUID->"3c600001-a50e-46e3-9828-5a2975c6b7e7"],
+
+Cell["TarskiBetweennessTensor", "Item",ExpressionUUID->"1f69d8f6-9c53-4479-bd0d-749d7e69038d"],
+
+Cell["TarskiEquidistanceClasses", "Item",ExpressionUUID->"901260bd-052f-477a-93aa-4187e4083e0a"],
+
+Cell["The eleven axioms", "Section",ExpressionUUID->"d0d81aa1-3cbe-4612-98b8-8804fa06cedd"],
+
+Cell["TarskiCongruenceReflexivityQ \[LongDash] A1: ab == ba", "Item",ExpressionUUID->"548650d4-402c-48b4-a6d2-b515738919fe"],
+
+Cell["TarskiCongruenceTransitivityQ \[LongDash] A2: transitivity of ==", \
+"Item",ExpressionUUID->"2071f89d-fe66-4532-9a75-fdd3ccde0eea"],
+
+Cell["TarskiCongruenceIdentityQ \[LongDash] A3: ab == cc implies a == b", \
+"Item",ExpressionUUID->"c61418d9-762e-484b-acbe-650a5a65165d"],
+
+Cell["TarskiSegmentConstructionQ \[LongDash] A4: segment construction", "Item",ExpressionUUID->"e2df9c7c-b8af-4366-974e-c62c30261541"],
+
+Cell["TarskiFiveSegmentsQ \[LongDash] A5: five segments", "Item",ExpressionUUID->"2d6adada-4991-4647-b11a-41edf3fe80de"],
+
+Cell["TarskiBetweennessIdentityQ \[LongDash] A6: B(a, b, a) implies a == b", \
+"Item",ExpressionUUID->"17553cb1-5e4a-4b0e-a451-05d0dc98c330"],
+
+Cell["TarskiInnerPaschQ \[LongDash] A7: Inner Pasch", "Item",ExpressionUUID->"49de5d08-34b9-4a52-9ffe-09f72e70868e"],
+
+Cell["TarskiLowerDimensionQ \[LongDash] A8: three non-collinear points \
+exist", "Item",ExpressionUUID->"8866ba4b-3b65-4294-bd63-84eb0915b4e9"],
 
 Cell["\<\
-Tarski's axiomatization is the most parsimonious classical foundation for \
-geometry: only points as objects, only two relations, and eleven first-order \
-axioms that recover elementary plane geometry. For the infra-observer on a \
-graph, betweenness and equidistance are exactly the relations accessible via \
-shortest-path measurements. Every axiom becomes a testable question about the \
-graph's metric structure.\
-\>", "Text",ExpressionUUID->"dd9cfa11-9e09-4bdc-b3ba-a8ebf781f13f"],
-
-Cell["Primitive Relations", "Section",ExpressionUUID->"e495f609-9fac-4480-b8a9-5440d6ac0733"],
+TarskiUpperDimensionQ \[LongDash] A9: three points equidistant from two \
+distinct points are collinear\
+\>", "Item",ExpressionUUID->"b1bc11e7-8a08-4f77-9bce-ae54af2d12ec"],
 
 Cell["\<\
-The two relations that generate all of Tarski's geometry. Both are defined \
-directly from GraphDistance.\
-\>", "Text",ExpressionUUID->"185d4b2e-f1b0-49cd-96a9-7c6cfcb14d9f"],
+TarskiEuclidAxiomQ \[LongDash] A10: Euclid's parallel-axiom variant \
+(currently a stub)\
+\>", "Item",ExpressionUUID->"55395c24-3d84-4910-b79b-79431f92e77c"],
 
 Cell["\<\
-BetweennessQ[graph, a, b, c] returns True when vertex b lies on a geodesic \
-from a to c, i.e. when d(a,b) + d(b,c) = d(a,c). This is the graph-metric \
-reading of Tarski's B(a,b,c).\
-\>", "Item",ExpressionUUID->"d97c127a-9b8c-4e64-b507-0c4006966740"],
+TarskiContinuityQ \[LongDash] A11: Dedekind continuity (always False on \
+finite graphs)\
+\>", "Item",ExpressionUUID->"ab0a0fa2-ddb3-4034-9f4f-1e668f1c4d70"],
+
+Cell["Dashboard and counterexamples", "Section",ExpressionUUID->"aa9cc5d2-d02d-44dc-8e95-7c0260c9e2a0"],
+
+Cell["TarskiAxiomQ", "Item",ExpressionUUID->"d6ec48af-ccce-432a-b1f8-7df421451538"],
+
+Cell["FindTarskiCounterexample", "Item",ExpressionUUID->"06d86aca-7090-4066-b39a-a2877b9a100e"],
+
+Cell["Tarski-recipe variants on primitive Find-functions", "Section",ExpressionUUID->"188cb928-4c47-4f07-8bee-3806f2e07695"],
 
 Cell["\<\
-EquidistanceQ[graph, a, b, c, d] returns True when d(a,b) = d(c,d). This is \
-the graph-metric reading of Tarski's ab \\u2261 cd (segment congruence).\
-\>", "Item",ExpressionUUID->"dbeb00c6-6d77-4e74-854d-412d3478970b"],
+Tarski synthetic versions of standard Euclidean constructions are folded into \
+Method -> \"Tarski\".\
+\>", "Text",ExpressionUUID->"d95008e1-7b57-44fb-b823-a6a9fe50afd5"],
+
+Cell["FindMidpoint with Method -> \"Tarski\"", "Item",ExpressionUUID->"1cfa8729-a146-44fd-9999-fd2d0051c360"],
+
+Cell["The 5-vertex ExtendSegment form (A4 in finder shape)", "Item",ExpressionUUID->"34bcf39d-a323-4361-bd8e-c4174e94610d"],
+
+Cell["FindReflection (synthetic from B and =)", "Item",ExpressionUUID->"1f476adc-591e-4de4-9477-4e96c936d6bf"],
+
+Cell["Tutorial", "Section",ExpressionUUID->"0ab9991e-e464-45a7-9c80-a47e1f856ac9"],
+
+Cell["See TarskiGeometryTutorial for runnable examples.", "Item",ExpressionUUID->"8a854cb0-6154-46de-b361-d889075c1386"],
+
+Cell["References", "Section",ExpressionUUID->"760a595a-32b1-41f6-b7fb-b5acca46c222"],
 
 Cell["\<\
-MetricInterval[graph, u, v] returns the full set { w : BetweennessQ[graph, u, \
-w, v] }, i.e. the union of all u-v geodesics. This is I(u,v) in the Tarski \
-literature.\
-\>", "Item",ExpressionUUID->"b618f141-cc64-42d8-bbba-d9afe757cba4"],
-
-Cell["Hypermatrix Substrate", "Section",ExpressionUUID->"1efedcd0-7981-4746-b102-bf1cdd06b493"],
-
-Cell["\<\
-TarskiStructure memoizes the complete Tarski substrate of a graph into a \
-single Association. This makes repeated axiom queries fast: the distance \
-matrix and betweenness tensor are computed once.\
-\>", "Text",ExpressionUUID->"20fb175e-11f6-4fa3-bcb5-bd80affbed0c"],
+Tarski and Givant, Tarski's System of Geometry, Bull. Symb. Logic 5(2), \
+175-214, 1999, \
+https://projecteuclid.org/journals/bulletin-of-symbolic-logic/volume-5/issue-\
+2/Tarskis-system-of-geometry/bsl/1182353717\
+\>", "Item",ExpressionUUID->"f58de625-add1-4f7a-ae44-19e4b9222004"],
 
 Cell["\<\
-TarskiStructure[graph] returns an Association with keys Vertices, \
-VertexIndex, Distances, Betweenness, Equidistance, and Diameter.\
-\>", "Item",ExpressionUUID->"c119a8f7-a8f6-4a47-af3e-ba90e5725461"],
+Schwabhauser, Szmielew and Tarski, Metamathematische Methoden in der \
+Geometrie, Springer 1983\
+\>", "Item",ExpressionUUID->"a4c61f6a-1c45-4b68-bc14-ee4ff3860cc1"],
 
 Cell["\<\
-TarskiBetweennessTensor[graph] projects out the sparse rank-3 tensor B[i,j,k] \
-= 1 iff B(v_i, v_j, v_k). Sparse on most graphs; the NonzeroPositions are the \
-betweenness witnesses.\
-\>", "Item",ExpressionUUID->"c48ac92e-8906-4396-b864-5b45099c774e"],
+Beeson, Foundations of Constructive Geometry: Euclid Book I, Mem. AMS \
+234(1102), 2014\
+\>", "Item",ExpressionUUID->"b3374f12-e8f7-4adf-8f66-0776f5d9d521"],
 
-Cell["\<\
-TarskiEquidistanceClasses[graph] projects out the partition of unordered \
-vertex pairs by distance value. Checking ab \\u2261 cd is a partition lookup \
-rather than an n^4 scan.\
-\>", "Item",ExpressionUUID->"e1b4dc4f-1d1b-4396-a6e0-6f4a2e2bea2e"],
-
-Cell["Axiom Predicates", "Section",ExpressionUUID->"935ad9b4-1c02-481f-b0f3-73685762ef79"],
-
-Cell["\<\
-Each of the eleven Tarski axioms is a first-class predicate. \
-TarskiAxiomQ[graph] composes all eleven into a dashboard Association.\
-\>", "Text",ExpressionUUID->"fa6a4c28-6a96-4a60-9772-429ce55e08d8"],
-
-Cell["\<\
-Always True on any connected undirected simple graph (trivial axioms)\
-\>", "Subsection",ExpressionUUID->"dbf44ed7-8564-4894-9698-a7de40ae609d"],
-
-Cell["\<\
-TarskiCongruenceReflexivityQ: A1 \\u2014 ab \\u2261 ba. Distance is symmetric.\
-\>", "Item",ExpressionUUID->"72fc864c-0403-468c-9a52-6832e5d096e7"],
-
-Cell["\<\
-TarskiCongruenceTransitivityQ: A2 \\u2014 transitivity of equidistance. \
-Tautology of equality; returns True without scanning.\
-\>", "Item",ExpressionUUID->"edce461e-c56d-4539-9483-53fb85730ff2"],
-
-Cell["\<\
-TarskiCongruenceIdentityQ: A3 \\u2014 ab \\u2261 cc implies a = b. Distance \
-zero only for the same vertex.\
-\>", "Item",ExpressionUUID->"9ea629ce-68b1-45f1-9456-8ad1fa251d37"],
-
-Cell["\<\
-TarskiBetweennessIdentityQ: A6 \\u2014 B(a,b,a) implies a = b. Betweenness \
-forces 2d(a,b) = 0.\
-\>", "Item",ExpressionUUID->"c5bade4e-8e30-4a1b-bf82-441bd8f795d2"],
-
-Cell["Always False on any finite graph (structural failures)", "Subsection",ExpressionUUID->"b80859a3-0193-414c-b426-21e70c25b7cb"],
-
-Cell["\<\
-TarskiSegmentConstructionQ: A4 \\u2014 every segment can be freely extended \
-to any prescribed length. False on all finite graphs: the substrate is \
-bounded and cannot always provide the required vertex.\
-\>", "Item",ExpressionUUID->"4551681d-6ee8-4767-bebd-02406a8c532a"],
-
-Cell["\<\
-TarskiContinuityQ: A11 \\u2014 first-order Dedekind completeness. \
-Structurally unsatisfiable on any finite discrete graph. The failure has no \
-finite vertex-tuple witness.\
-\>", "Item",ExpressionUUID->"9eace87b-2186-4fc8-8689-23f582c893f3"],
-
-Cell["Geometrically interesting (graph-dependent) axioms", "Subsection",ExpressionUUID->"600145c3-e200-4e01-86cb-759adea893b7"],
-
-Cell["\<\
-TarskiFiveSegmentsQ: A5 \\u2014 a triangle-congruence theorem. True on median \
-graphs (trees, hypercubes); fails on graphs with non-unique geodesics or \
-mismatched distance multiplicities.\
-\>", "Item",ExpressionUUID->"8628ef7d-19c5-4e73-a67b-65c7098e9008"],
-
-Cell["\<\
-TarskiInnerPaschQ: A7 \\u2014 if B(a,p,c) and B(b,q,c) then there exists x in \
-I(p,b) intersect I(q,a). The median-graph axiom in disguise. True on paths, \
-cycles, grids, hypercubes; False on the Petersen graph.\
-\>", "Item",ExpressionUUID->"44adb5fd-d276-4daa-8451-2d042450aa18"],
-
-Cell["\<\
-TarskiLowerDimensionQ: A8 \\u2014 there exist three non-collinear points. \
-False only on path-like (1-dimensional) graphs.\
-\>", "Item",ExpressionUUID->"4049e37f-91cd-4c72-9056-d3d69822fa20"],
-
-Cell["\<\
-TarskiUpperDimensionQ: A9 \\u2014 three points equidistant from two distinct \
-points must be collinear. Fails on hypercubes and grids of effective \
-dimension 3 or more.\
-\>", "Item",ExpressionUUID->"ee96b15c-deba-4095-8bf4-b1903a4d7c2b"],
-
-Cell["\<\
-TarskiEuclidAxiomQ: A10 \\u2014 the parallel postulate in Tarski's \
-betweenness/equidistance formulation. Currently returns Indeterminate pending \
-the Gupta perpendicular-foot construction.\
-\>", "Item",ExpressionUUID->"b4478074-a435-405c-93eb-22d410abb69c"],
-
-Cell["\<\
-TarskiAxiomQ: convenience dashboard \\u2014 returns all eleven results as a \
-single Association keyed by descriptive axiom names.\
-\>", "Item",ExpressionUUID->"514795fa-ff77-454b-8f7a-63e2bf142af7"],
-
-Cell["Counterexample Finders", "Section",ExpressionUUID->"8eba7b0f-7f67-4c2a-adf4-db1291e18b77"],
-
-Cell["\<\
-For every universal axiom, FindTarskiCounterexample returns explicit vertex \
-tuples that witness the failure. The standard strict / UpTo[n] / All triple \
-applies.\
-\>", "Text",ExpressionUUID->"2d0be0b8-c6c4-4655-8678-17320afb0707"],
-
-Cell["\<\
-FindTarskiCounterexample[graph, TarskiInnerPaschQ, UpTo[1]] returns one \
-5-tuple (a,b,c,p,q) for which the betweenness premises hold but the interval \
-intersection is empty.\
-\>", "Item",ExpressionUUID->"9c8667a8-3f32-49e0-b494-481bef9f8b28"],
-
-Cell["\<\
-FindTarskiCounterexample[graph, TarskiSegmentConstructionQ, All] returns \
-every 4-tuple (a,b,c,d) for which no segment extension exists.\
-\>", "Item",ExpressionUUID->"e9c710d8-63df-4a65-bd81-d12289ce9c70"],
-
-Cell["\<\
-FindTarskiCounterexample[graph, TarskiContinuityQ] issues \
-FindTarskiCounterexample::nowitness and returns $Failed: A11 has no finite \
-witness.\
-\>", "Item",ExpressionUUID->"bfb4e6f5-a470-4b2b-ba82-3b8bb1754cdc"],
-
-Cell["Constructions from B and E", "Section",ExpressionUUID->"67464bdc-7f74-4129-b011-3b673172860c"],
-
-Cell["\<\
-Two Tarski-style constructions defined purely from betweenness and \
-equidistance. No metric centrality, no Method dispatch, no interval-center \
-heuristics. The key contrast: these impose stricter conditions than the \
-metric-layer Find* counterparts.\
-\>", "Text",ExpressionUUID->"cce03d12-cc8b-400c-974e-2e4c0de3df50"],
-
-Cell["\<\
-ExtendSegment[graph, a, b, c, d] finds a vertex x with B(a,b,x) \
-and d(b,x) = d(c,d). The A4 witness finder. Returns InfraPoint[{}] when no \
-such vertex exists on the graph.\
-\>", "Item",ExpressionUUID->"12500900-ab73-4b3d-9260-c0df1a8cca8a"],
-
-Cell["\<\
-FindReflection[graph, x, a] finds vertices x' with B(x,a,x') and d(a,x) \
-= d(a,x'): the reflection of x through a. Multi-valued on graphs with \
-multiple geodesic continuations.\
-\>", "Item",ExpressionUUID->"922b574b-c588-44e6-a881-2636bf2d372a"],
-
-Cell["\<\
-FindMidpoint[graph, a, b] finds vertices m with B(a,m,b) and d(a,m) = \
-d(m,b). Returns InfraPoint[{}] for odd-distance pairs \\u2014 no synthetic \
-midpoint exists. This is the fundamental difference from FindMidpoint, which \
-always returns a central interval element.\
-\>", "Item",ExpressionUUID->"aa082b02-cfd8-48a1-acfd-92ea4d3bae30"],
-
-Cell["Tutorial", "Section",ExpressionUUID->"9fb58b6e-0d8c-4974-aa4a-c268661f11c2"],
-
-Cell["\<\
-TarskiGeometryTutorial provides a runnable substrate panel, worked examples for \
-every axiom predicate, counterexample extraction on the Petersen graph, and a \
-side-by-side comparison of FindMidpoint versus FindMidpoint.\
-\>", "Item",ExpressionUUID->"dd449ec1-b930-47c2-8a85-d7bdcb9fc4d3"]
+Cell["Mulder, The Interval Function of a Graph (graph betweenness)", "Item",ExpressionUUID->"1c469b65-d620-43c6-a683-ff412101a2a2"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"4683f7b6-aed1-4b1d-ba35-fce7a84eba6f"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -242,48 +149,47 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"9d870de9-3472-4242-9a19-ccc61ba1545f"],
-Cell[647, 22, 411, 6, 70, "Text",ExpressionUUID->"dfd64b42-7a08-4d8d-a239-6a6bce761318"],
-Cell[1061, 30, 495, 7, 70, "Text",ExpressionUUID->"dd9cfa11-9e09-4bdc-b3ba-a8ebf781f13f"],
-Cell[1559, 39, 93, 0, 70, "Section",ExpressionUUID->"e495f609-9fac-4480-b8a9-5440d6ac0733"],
-Cell[1655, 41, 184, 3, 70, "Text",ExpressionUUID->"185d4b2e-f1b0-49cd-96a9-7c6cfcb14d9f"],
-Cell[1842, 46, 261, 4, 70, "Item",ExpressionUUID->"d97c127a-9b8c-4e64-b507-0c4006966740"],
-Cell[2106, 52, 229, 3, 70, "Item",ExpressionUUID->"dbeb00c6-6d77-4e74-854d-412d3478970b"],
-Cell[2338, 57, 247, 4, 70, "Item",ExpressionUUID->"b618f141-cc64-42d8-bbba-d9afe757cba4"],
-Cell[2588, 63, 95, 0, 70, "Section",ExpressionUUID->"1efedcd0-7981-4746-b102-bf1cdd06b493"],
-Cell[2686, 65, 277, 4, 70, "Text",ExpressionUUID->"20fb175e-11f6-4fa3-bcb5-bd80affbed0c"],
-Cell[2966, 71, 211, 3, 70, "Item",ExpressionUUID->"c119a8f7-a8f6-4a47-af3e-ba90e5725461"],
-Cell[3180, 76, 261, 4, 70, "Item",ExpressionUUID->"c48ac92e-8906-4396-b864-5b45099c774e"],
-Cell[3444, 82, 257, 4, 70, "Item",ExpressionUUID->"e1b4dc4f-1d1b-4396-a6e0-6f4a2e2bea2e"],
-Cell[3704, 88, 90, 0, 70, "Section",ExpressionUUID->"935ad9b4-1c02-481f-b0f3-73685762ef79"],
-Cell[3797, 90, 211, 3, 70, "Text",ExpressionUUID->"fa6a4c28-6a96-4a60-9772-429ce55e08d8"],
-Cell[4011, 95, 154, 2, 70, "Subsection",ExpressionUUID->"dbf44ed7-8564-4894-9698-a7de40ae609d"],
-Cell[4168, 99, 157, 2, 70, "Item",ExpressionUUID->"72fc864c-0403-468c-9a52-6832e5d096e7"],
-Cell[4328, 103, 206, 3, 70, "Item",ExpressionUUID->"edce461e-c56d-4539-9483-53fb85730ff2"],
-Cell[4537, 108, 187, 3, 70, "Item",ExpressionUUID->"9ea629ce-68b1-45f1-9456-8ad1fa251d37"],
-Cell[4727, 113, 175, 3, 70, "Item",ExpressionUUID->"c5bade4e-8e30-4a1b-bf82-441bd8f795d2"],
-Cell[4905, 118, 131, 0, 70, "Subsection",ExpressionUUID->"b80859a3-0193-414c-b426-21e70c25b7cb"],
-Cell[5039, 120, 284, 4, 70, "Item",ExpressionUUID->"4551681d-6ee8-4767-bebd-02406a8c532a"],
-Cell[5326, 126, 253, 4, 70, "Item",ExpressionUUID->"9eace87b-2186-4fc8-8689-23f582c893f3"],
-Cell[5582, 132, 127, 0, 70, "Subsection",ExpressionUUID->"600145c3-e200-4e01-86cb-759adea893b7"],
-Cell[5712, 134, 269, 4, 70, "Item",ExpressionUUID->"8628ef7d-19c5-4e73-a67b-65c7098e9008"],
-Cell[5984, 140, 292, 4, 70, "Item",ExpressionUUID->"44adb5fd-d276-4daa-8451-2d042450aa18"],
-Cell[6279, 146, 202, 3, 70, "Item",ExpressionUUID->"4049e37f-91cd-4c72-9056-d3d69822fa20"],
-Cell[6484, 151, 249, 4, 70, "Item",ExpressionUUID->"ee96b15c-deba-4095-8bf4-b1903a4d7c2b"],
-Cell[6736, 157, 270, 4, 70, "Item",ExpressionUUID->"b4478074-a435-405c-93eb-22d410abb69c"],
-Cell[7009, 163, 209, 3, 70, "Item",ExpressionUUID->"514795fa-ff77-454b-8f7a-63e2bf142af7"],
-Cell[7221, 168, 96, 0, 70, "Section",ExpressionUUID->"8eba7b0f-7f67-4c2a-adf4-db1291e18b77"],
-Cell[7320, 170, 243, 4, 70, "Text",ExpressionUUID->"2d0be0b8-c6c4-4655-8678-17320afb0707"],
-Cell[7566, 176, 254, 4, 70, "Item",ExpressionUUID->"9c8667a8-3f32-49e0-b494-481bef9f8b28"],
-Cell[7823, 182, 216, 3, 70, "Item",ExpressionUUID->"e9c710d8-63df-4a65-bd81-d12289ce9c70"],
-Cell[8042, 187, 224, 4, 70, "Item",ExpressionUUID->"bfb4e6f5-a470-4b2b-ba82-3b8bb1754cdc"],
-Cell[8269, 193, 100, 0, 70, "Section",ExpressionUUID->"67464bdc-7f74-4129-b011-3b673172860c"],
-Cell[8372, 195, 331, 5, 70, "Text",ExpressionUUID->"cce03d12-cc8b-400c-974e-2e4c0de3df50"],
-Cell[8706, 202, 267, 4, 70, "Item",ExpressionUUID->"12500900-ab73-4b3d-9260-c0df1a8cca8a"],
-Cell[8976, 208, 263, 4, 70, "Item",ExpressionUUID->"922b574b-c588-44e6-a881-2636bf2d372a"],
-Cell[9242, 214, 355, 5, 70, "Item",ExpressionUUID->"aa082b02-cfd8-48a1-acfd-92ea4d3bae30"],
-Cell[9600, 221, 82, 0, 70, "Section",ExpressionUUID->"9fb58b6e-0d8c-4974-aa4a-c268661f11c2"],
-Cell[9685, 223, 304, 4, 70, "Item",ExpressionUUID->"dd449ec1-b930-47c2-8a85-d7bdcb9fc4d3"]
+Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"64a7f3be-8eaa-4594-b58d-5fcd30fca1a4"],
+Cell[644, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"0db24bee-545e-47af-bfe5-2a7215f50db7"],
+Cell[737, 24, 363, 5, 70, "Text",ExpressionUUID->"c33843ec-3daf-4598-be4e-cf745cb4fcee"],
+Cell[1103, 31, 79, 0, 70, "Section",ExpressionUUID->"09f2b225-cb0c-4d93-b78a-e3373facecf4"],
+Cell[1185, 33, 91, 0, 70, "CodeText",ExpressionUUID->"ef2b9f97-2d3f-43f0-8f54-f501bb86082e"],
+Cell[1279, 35, 192, 4, 70, "Code",ExpressionUUID->"7ddde3bc-f080-4928-9421-a3fea1aa1de9",
+ InitializationCell->True],
+Cell[1474, 41, 84, 0, 70, "Section",ExpressionUUID->"1b0ccb8d-44af-450e-bf6b-a18f1a4b87cf"],
+Cell[1561, 43, 83, 0, 70, "Item",ExpressionUUID->"8cff7c28-5b3b-4309-ae3c-980c6ec1d314"],
+Cell[1647, 45, 84, 0, 70, "Item",ExpressionUUID->"aab39044-e5f3-43bc-a27b-e90f1bb2e514"],
+Cell[1734, 47, 90, 0, 70, "Section",ExpressionUUID->"a33314bd-d091-412a-9b08-171d6ba2cb2e"],
+Cell[1827, 49, 86, 0, 70, "Item",ExpressionUUID->"3c600001-a50e-46e3-9828-5a2975c6b7e7"],
+Cell[1916, 51, 94, 0, 70, "Item",ExpressionUUID->"1f69d8f6-9c53-4479-bd0d-749d7e69038d"],
+Cell[2013, 53, 96, 0, 70, "Item",ExpressionUUID->"901260bd-052f-477a-93aa-4187e4083e0a"],
+Cell[2112, 55, 91, 0, 70, "Section",ExpressionUUID->"d0d81aa1-3cbe-4612-98b8-8804fa06cedd"],
+Cell[2206, 57, 124, 0, 70, "Item",ExpressionUUID->"548650d4-402c-48b4-a6d2-b515738919fe"],
+Cell[2333, 59, 137, 1, 70, "Item",ExpressionUUID->"2071f89d-fe66-4532-9a75-fdd3ccde0eea"],
+Cell[2473, 62, 138, 1, 70, "Item",ExpressionUUID->"c61418d9-762e-484b-acbe-650a5a65165d"],
+Cell[2614, 65, 134, 0, 70, "Item",ExpressionUUID->"e2df9c7c-b8af-4366-974e-c62c30261541"],
+Cell[2751, 67, 120, 0, 70, "Item",ExpressionUUID->"2d6adada-4991-4647-b11a-41edf3fe80de"],
+Cell[2874, 69, 141, 1, 70, "Item",ExpressionUUID->"17553cb1-5e4a-4b0e-a451-05d0dc98c330"],
+Cell[3018, 72, 116, 0, 70, "Item",ExpressionUUID->"49de5d08-34b9-4a52-9ffe-09f72e70868e"],
+Cell[3137, 74, 143, 1, 70, "Item",ExpressionUUID->"8866ba4b-3b65-4294-bd63-84eb0915b4e9"],
+Cell[3283, 77, 182, 3, 70, "Item",ExpressionUUID->"b1bc11e7-8a08-4f77-9bce-ae54af2d12ec"],
+Cell[3468, 82, 167, 3, 70, "Item",ExpressionUUID->"55395c24-3d84-4910-b79b-79431f92e77c"],
+Cell[3638, 87, 167, 3, 70, "Item",ExpressionUUID->"ab0a0fa2-ddb3-4034-9f4f-1e668f1c4d70"],
+Cell[3808, 92, 103, 0, 70, "Section",ExpressionUUID->"aa9cc5d2-d02d-44dc-8e95-7c0260c9e2a0"],
+Cell[3914, 94, 83, 0, 70, "Item",ExpressionUUID->"d6ec48af-ccce-432a-b1f8-7df421451538"],
+Cell[4000, 96, 95, 0, 70, "Item",ExpressionUUID->"06d86aca-7090-4066-b39a-a2877b9a100e"],
+Cell[4098, 98, 124, 0, 70, "Section",ExpressionUUID->"188cb928-4c47-4f07-8bee-3806f2e07695"],
+Cell[4225, 100, 180, 3, 70, "Text",ExpressionUUID->"d95008e1-7b57-44fb-b823-a6a9fe50afd5"],
+Cell[4408, 105, 109, 0, 70, "Item",ExpressionUUID->"1cfa8729-a146-44fd-9999-fd2d0051c360"],
+Cell[4520, 107, 123, 0, 70, "Item",ExpressionUUID->"34bcf39d-a323-4361-bd8e-c4174e94610d"],
+Cell[4646, 109, 110, 0, 70, "Item",ExpressionUUID->"1f476adc-591e-4de4-9477-4e96c936d6bf"],
+Cell[4759, 111, 82, 0, 70, "Section",ExpressionUUID->"0ab9991e-e464-45a7-9c80-a47e1f856ac9"],
+Cell[4844, 113, 120, 0, 70, "Item",ExpressionUUID->"8a854cb0-6154-46de-b361-d889075c1386"],
+Cell[4967, 115, 84, 0, 70, "Section",ExpressionUUID->"760a595a-32b1-41f6-b7fb-b5acca46c222"],
+Cell[5054, 117, 292, 5, 70, "Item",ExpressionUUID->"f58de625-add1-4f7a-ae44-19e4b9222004"],
+Cell[5349, 124, 174, 3, 70, "Item",ExpressionUUID->"a4c61f6a-1c45-4b68-bc14-ee4ff3860cc1"],
+Cell[5526, 129, 166, 3, 70, "Item",ExpressionUUID->"b3374f12-e8f7-4adf-8f66-0776f5d9d521"],
+Cell[5695, 134, 131, 0, 70, "Item",ExpressionUUID->"1c469b65-d620-43c6-a683-ff412101a2a2"]
 }
 ]
 *)

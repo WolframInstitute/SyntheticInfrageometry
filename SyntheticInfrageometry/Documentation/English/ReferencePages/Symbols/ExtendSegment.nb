@@ -10,94 +10,109 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      6144,        129]
-NotebookOptionsPosition[      4021,         97]
-NotebookOutlinePosition[      4338,        111]
-CellTagsIndexPosition[      4295,        108]
+NotebookDataLength[      7354,        154]
+NotebookOptionsPosition[      4394,        112]
+NotebookOutlinePosition[      4711,        126]
+CellTagsIndexPosition[      4668,        123]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["ExtendSegment", "Title",ExpressionUUID->"09b62e6c-eacd-45df-a372-1d38b0bc90da"],
+Cell["ExtendSegment", "Title",ExpressionUUID->"2cee83bc-bce9-4f4b-bf5a-5354d07c79b4"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"83db8df3-dd48-46ca-af66-b3cf59a3149b"],
 
 Cell["\<\
-ExtendSegment[graph, segment] extends a vertex sequence to a maximal line \
-whose middle part is segment, returning InfraSegment[{line}]. The candidate \
-before / after vertices are selected by the geodesic relation d(s, p1) + \
-d(p1, p2) == d(s, p2), so the line's outer endpoints are \
-graph-distance-maximal regardless of method. Method axis matches FindSegment \
-/ FindLine: \"Shortest\" (default; geodesic prefix / suffix paths) | \
-\"ShortestPathExtension\" | \"CurvatureMinimizing\" | \"Embedding\".\
-\>", "Text",ExpressionUUID->"f55b7070-8295-436d-9a69-4735b47f9aba"],
+ExtendSegment[g, segment] extends segment to a maximal line whose middle part \
+is segment, returned as a List of unary InfraSegment[{line}] wrappers. \
+Accepts a bare vertex sequence or an InfraSegment wrapper. Method (shared \
+with FindSegment) controls extension strategy. ExtendSegment[g, a, b, c, d, \
+n] is the Tarski synthetic-extension form (axiom A4 in finder shape): returns \
+unary InfraPoint[{x}] wrappers for x with B(a, b, x) and d(b, x) == d(c, d).\
+\>", "Text",ExpressionUUID->"e3896497-232e-43fa-8216-dc6d75ae1bda"],
 
-Cell["Setup", "Section",ExpressionUUID->"fa71904d-a843-41ee-bd6b-692e2a1d3da2"],
+Cell["Setup", "Section",ExpressionUUID->"e64085d1-513e-49b7-9e45-c209a01bcf1b"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"b7358066-7990-4fe0-a067-0ce6a04731eb"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"779310a4-23a7-4c62-b8c7-bfe6de0d6a2f"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"4c3fb2ee-5efe-4d29-b1e7-587195b8f20e"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"85decfec-f138-47d0-912b-71829ff0a1b7"],
 
-Cell["Usage", "Section",ExpressionUUID->"e8268fa3-f304-4a21-837b-0f0a24eaa8c0"],
+Cell["Examples", "Section",ExpressionUUID->"e1c642cb-0fc6-415e-a589-4c5e05f75231"],
 
-Cell["\<\
-Extend the short segment {6, 11} on a 4x4 grid to a maximal line; visualize \
-input segment in blue and the extension in red.\
-\>", "CodeText",ExpressionUUID->"f3a03dcb-c58c-4402-96fa-db9b45c43c1d"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"9e1076d0-2126-4acd-94cf-3d8af2805742"],
 
-Cell["\<\
-With[{g = GridGraph[{4, 4}], seg = {6, 11}}, InfraSceneHighlight[g, \
-{ExtendSegment[g, seg] -> Red, InfraSegment[{seg}] -> Blue}]]\
-\>", "Input",ExpressionUUID->"66001fb6-f7e5-484f-931c-a150b86fde89"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "One maximal extension of an interior sub-path of a 4x4 grid."]], "Input",Exp\
+ressionUUID->"64a679be-4c89-4ca4-a6b3-44d02dd92580"],
 
-Cell["Enumerate every maximal extension and overlay the bundle.", "CodeText",ExpressionUUID->"1cbca659-1e1d-4b96-ab85-f2f6213f8773"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"aa2af454-bf4f-466e-be30-b392ce189dd5"],
 
-Cell["\<\
-With[{g = GridGraph[{4, 4}], seg = {6, 11}}, InfraSceneHighlight[g, \
-{ExtendSegment[g, seg, All] -> Red, InfraSegment[{seg}] -> Blue}]]\
-\>", "Input",ExpressionUUID->"9aaed964-a9d4-4770-9aa7-8fa8c1526fdc"],
+Cell[BoxData[
+ $CellContext`buildCell["ExtendSegment[GridGraph[{4, 4}], {6, 11}]"]], "Input",\
+ExpressionUUID->"c00250b2-8781-48a4-bf41-72a1a5b40162"],
 
-Cell["Examples", "Section",ExpressionUUID->"a2edd2c2-4464-4560-b748-ddd70baff0bc"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"4a605dbd-339b-4ac9-a92a-b719ff2c767d"],
 
-Cell["\<\
-Extending a single edge gives the bundle of all longest geodesics through \
-that edge.\
-\>", "CodeText",ExpressionUUID->"cbbaa71d-e09b-4286-95d7-ef84403e830e"],
+Cell[BoxData[
+ $CellContext`buildCell["All maximal extensions."]], "Input",ExpressionUUID->"44fe0ec7-a120-4013-8a19-592923b115b9"],
 
-Cell["\<\
-With[{g = GridGraph[{4, 4}], seg = {6, 7}}, InfraSceneHighlight[g, \
-{ExtendSegment[g, seg, All] -> Red, InfraSegment[{seg}] -> Blue}]]\
-\>", "Input",ExpressionUUID->"355c5119-d7ad-4e6b-adb1-51a0087de506"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"ce34ed60-c0d0-4246-a86c-c6a820e350ee"],
 
-Cell["\<\
-Method -> \"CurvatureMinimizing\" extends with curvature-pulled prefix / \
-suffix paths.\
-\>", "CodeText",ExpressionUUID->"654b186a-741a-44ee-810c-e7ad92a8476b"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "ExtendSegment[GridGraph[{4, 4}], {6, 11}, All]"]], "Input",ExpressionUUID->\
+"f0429b64-4cb4-4272-9ef1-68c5e92b6aa6"],
 
-Cell["\<\
-With[{g = GridGraph[{4, 4}], seg = {6, 11}}, InfraSceneHighlight[g, \
-{ExtendSegment[g, seg, All, Method -> \"CurvatureMinimizing\"] -> Red, \
-InfraSegment[{seg}] -> Blue}]]\
-\>", "Input",ExpressionUUID->"41ede486-e4a8-4a85-a407-1d3e060df2f5"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"f319cf69-66b9-4caa-90f6-37afa9076cff"],
 
-Cell["\<\
-Round-trip: extending a geodesic between corners is itself a maximal line.\
-\>", "CodeText",ExpressionUUID->"4205c23a-4280-4b1e-8810-c35245d02427"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "Tarski A4: extend segment 1-2 by an extra distance d(3, 4) on a path."]], \
+"Input",ExpressionUUID->"e0f36556-8401-4fbb-96cd-6121e6890122"],
 
-Cell["\<\
-With[{g = GridGraph[{4, 4}]}, ExtendSegment[g, FindSegment[g, 1, \
-16][\"First\"]][\"First\"]]\
-\>", "Input",ExpressionUUID->"dcab5c56-9c9e-43aa-9f38-e9567ae1282b"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"39b932c9-bf02-489e-91e0-68fdab979a30"],
 
-Cell["See also", "Section",ExpressionUUID->"bfe030f6-50c3-48b1-be90-7eb97643f194"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "ExtendSegment[PathGraph[Range[10]], 1, 2, 3, 4, All]"]], "Input",ExpressionU\
+UID->"3a0eeebf-ddd0-4df1-b0d2-d26bb9655ac9"],
 
-Cell["FindLine", "Item",ExpressionUUID->"91eae320-c17d-4a74-8f00-5946ec1722e2"],
+Cell["See Also", "Section",ExpressionUUID->"3771e541-1745-46f6-a35e-31cda7761e85"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"ae8906ec-a7fd-42e6-a8bd-7f77a7e58975"],
+Cell["InfraSegment", "Item",ExpressionUUID->"adcf04b3-f4d3-4edd-a345-41cbe95c37a0"],
 
-Cell["InfraSceneHighlight", "Item",ExpressionUUID->"f00809f7-7dab-4466-82a6-78b043d69740"]
+Cell["FindLine", "Item",ExpressionUUID->"a69fad78-0380-4cd4-b31d-10fe9b29a2e4"],
+
+Cell["FindSegment", "Item",ExpressionUUID->"f9e0d6f9-926a-45ee-99c7-9c9fdc7f8aa5"],
+
+Cell["BetweennessQ", "Item",ExpressionUUID->"4bc94f99-1b1e-404e-befa-cefdae0fdb8f"],
+
+Cell["TarskiSegmentConstructionQ", "Item",ExpressionUUID->"89a52e7e-91d7-4127-97c8-0f9a04e56e3f"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"57ff3db0-6af5-4588-b275-ce4b59666ea4"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"e50beaf2-e1d3-464d-9004-c3ded8c4a255"],
+
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"58f0c56b-565c-4900-b4f7-a54dc425701b"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"949c5237-95d6-412f-ba50-a97b64a68298"],
+
+Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"9b0bd70c-b8ed-4438-8330-e8909d7564fa"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"6dc4a242-813d-4352-ac44-d8bf3ee96084"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -110,27 +125,37 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"09b62e6c-eacd-45df-a372-1d38b0bc90da"],
-Cell[642, 22, 585, 8, 70, "Text",ExpressionUUID->"f55b7070-8295-436d-9a69-4735b47f9aba"],
-Cell[1230, 32, 79, 0, 70, "Section",ExpressionUUID->"fa71904d-a843-41ee-bd6b-692e2a1d3da2"],
-Cell[1312, 34, 132, 0, 70, "CodeText",ExpressionUUID->"b7358066-7990-4fe0-a067-0ce6a04731eb"],
-Cell[1447, 36, 122, 0, 70, "Code",ExpressionUUID->"4c3fb2ee-5efe-4d29-b1e7-587195b8f20e"],
-Cell[1572, 38, 79, 0, 70, "Section",ExpressionUUID->"e8268fa3-f304-4a21-837b-0f0a24eaa8c0"],
-Cell[1654, 40, 208, 3, 70, "CodeText",ExpressionUUID->"f3a03dcb-c58c-4402-96fa-db9b45c43c1d"],
-Cell[1865, 45, 211, 3, 70, "Input",ExpressionUUID->"66001fb6-f7e5-484f-931c-a150b86fde89"],
-Cell[2079, 50, 132, 0, 70, "CodeText",ExpressionUUID->"1cbca659-1e1d-4b96-ab85-f2f6213f8773"],
-Cell[2214, 52, 216, 3, 70, "Input",ExpressionUUID->"9aaed964-a9d4-4770-9aa7-8fa8c1526fdc"],
-Cell[2433, 57, 82, 0, 70, "Section",ExpressionUUID->"a2edd2c2-4464-4560-b748-ddd70baff0bc"],
-Cell[2518, 59, 169, 3, 70, "CodeText",ExpressionUUID->"cbbaa71d-e09b-4286-95d7-ef84403e830e"],
-Cell[2690, 64, 215, 3, 70, "Input",ExpressionUUID->"355c5119-d7ad-4e6b-adb1-51a0087de506"],
-Cell[2908, 69, 171, 3, 70, "CodeText",ExpressionUUID->"654b186a-741a-44ee-810c-e7ad92a8476b"],
-Cell[3082, 74, 253, 4, 70, "Input",ExpressionUUID->"41ede486-e4a8-4a85-a407-1d3e060df2f5"],
-Cell[3338, 80, 157, 2, 70, "CodeText",ExpressionUUID->"4205c23a-4280-4b1e-8810-c35245d02427"],
-Cell[3498, 84, 174, 3, 70, "Input",ExpressionUUID->"dcab5c56-9c9e-43aa-9f38-e9567ae1282b"],
-Cell[3675, 89, 82, 0, 70, "Section",ExpressionUUID->"bfe030f6-50c3-48b1-be90-7eb97643f194"],
-Cell[3760, 91, 79, 0, 70, "Item",ExpressionUUID->"91eae320-c17d-4a74-8f00-5946ec1722e2"],
-Cell[3842, 93, 82, 0, 70, "Item",ExpressionUUID->"ae8906ec-a7fd-42e6-a8bd-7f77a7e58975"],
-Cell[3927, 95, 90, 0, 70, "Item",ExpressionUUID->"f00809f7-7dab-4466-82a6-78b043d69740"]
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"2cee83bc-bce9-4f4b-bf5a-5354d07c79b4"],
+Cell[642, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"83db8df3-dd48-46ca-af66-b3cf59a3149b"],
+Cell[735, 24, 542, 7, 70, "Text",ExpressionUUID->"e3896497-232e-43fa-8216-dc6d75ae1bda"],
+Cell[1280, 33, 79, 0, 70, "Section",ExpressionUUID->"e64085d1-513e-49b7-9e45-c209a01bcf1b"],
+Cell[1362, 35, 91, 0, 70, "CodeText",ExpressionUUID->"779310a4-23a7-4c62-b8c7-bfe6de0d6a2f"],
+Cell[1456, 37, 192, 4, 70, "Code",ExpressionUUID->"85decfec-f138-47d0-912b-71829ff0a1b7",
+ InitializationCell->True],
+Cell[1651, 43, 82, 0, 70, "Section",ExpressionUUID->"e1c642cb-0fc6-415e-a589-4c5e05f75231"],
+Cell[1736, 45, 115, 1, 70, "Input",ExpressionUUID->"9e1076d0-2126-4acd-94cf-3d8af2805742"],
+Cell[1854, 48, 171, 3, 70, "Input",ExpressionUUID->"64a679be-4c89-4ca4-a6b3-44d02dd92580"],
+Cell[2028, 53, 112, 1, 70, "Input",ExpressionUUID->"aa2af454-bf4f-466e-be30-b392ce189dd5"],
+Cell[2143, 56, 150, 2, 70, "Input",ExpressionUUID->"c00250b2-8781-48a4-bf41-72a1a5b40162"],
+Cell[2296, 60, 115, 1, 70, "Input",ExpressionUUID->"4a605dbd-339b-4ac9-a92a-b719ff2c767d"],
+Cell[2414, 63, 130, 1, 70, "Input",ExpressionUUID->"44fe0ec7-a120-4013-8a19-592923b115b9"],
+Cell[2547, 66, 112, 1, 70, "Input",ExpressionUUID->"ce34ed60-c0d0-4246-a86c-c6a820e350ee"],
+Cell[2662, 69, 157, 3, 70, "Input",ExpressionUUID->"f0429b64-4cb4-4272-9ef1-68c5e92b6aa6"],
+Cell[2822, 74, 115, 1, 70, "Input",ExpressionUUID->"f319cf69-66b9-4caa-90f6-37afa9076cff"],
+Cell[2940, 77, 180, 3, 70, "Input",ExpressionUUID->"e0f36556-8401-4fbb-96cd-6121e6890122"],
+Cell[3123, 82, 112, 1, 70, "Input",ExpressionUUID->"39b932c9-bf02-489e-91e0-68fdab979a30"],
+Cell[3238, 85, 163, 3, 70, "Input",ExpressionUUID->"3a0eeebf-ddd0-4df1-b0d2-d26bb9655ac9"],
+Cell[3404, 90, 82, 0, 70, "Section",ExpressionUUID->"3771e541-1745-46f6-a35e-31cda7761e85"],
+Cell[3489, 92, 83, 0, 70, "Item",ExpressionUUID->"adcf04b3-f4d3-4edd-a345-41cbe95c37a0"],
+Cell[3575, 94, 79, 0, 70, "Item",ExpressionUUID->"a69fad78-0380-4cd4-b31d-10fe9b29a2e4"],
+Cell[3657, 96, 82, 0, 70, "Item",ExpressionUUID->"f9e0d6f9-926a-45ee-99c7-9c9fdc7f8aa5"],
+Cell[3742, 98, 83, 0, 70, "Item",ExpressionUUID->"4bc94f99-1b1e-404e-befa-cefdae0fdb8f"],
+Cell[3828, 100, 97, 0, 70, "Item",ExpressionUUID->"89a52e7e-91d7-4127-97c8-0f9a04e56e3f"],
+Cell[3928, 102, 88, 0, 70, "Section",ExpressionUUID->"57ff3db0-6af5-4588-b275-ce4b59666ea4"],
+Cell[4019, 104, 93, 0, 70, "Item",ExpressionUUID->"e50beaf2-e1d3-464d-9004-c3ded8c4a255"],
+Cell[4115, 106, 90, 0, 70, "Item",ExpressionUUID->"58f0c56b-565c-4900-b4f7-a54dc425701b"],
+Cell[4208, 108, 83, 0, 70, "Section",ExpressionUUID->"949c5237-95d6-412f-ba50-a97b64a68298"],
+Cell[4294, 110, 96, 0, 70, "Item",ExpressionUUID->"9b0bd70c-b8ed-4438-8330-e8909d7564fa"]
 }
 ]
 *)

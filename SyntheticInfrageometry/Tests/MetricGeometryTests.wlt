@@ -38,85 +38,85 @@ VerificationTest[
   TestID -> "MetricInterval-disconnected-empty"
 ]
 
-(* ===== GeodesicCount ===== *)
+(* ===== GeodesicMultiplicity ===== *)
 
 VerificationTest[
-  GeodesicCount[PathGraph[Range[5]], 1, 5],
+  GeodesicMultiplicity[PathGraph[Range[5]], 1, 5],
   1,
-  TestID -> "GeodesicCount-PathGraph-unique"
+  TestID -> "GeodesicMultiplicity-PathGraph-unique"
 ]
 
 VerificationTest[
-  GeodesicCount[CycleGraph[4], 1, 3],
+  GeodesicMultiplicity[CycleGraph[4], 1, 3],
   2,
-  TestID -> "GeodesicCount-CycleGraph4-antipodes-two"
+  TestID -> "GeodesicMultiplicity-CycleGraph4-antipodes-two"
 ]
 
 VerificationTest[
-  GeodesicCount[GridGraph[{3, 3}], 1, 9],
+  GeodesicMultiplicity[GridGraph[{3, 3}], 1, 9],
   6,
-  TestID -> "GeodesicCount-GridGraph3x3-six"
+  TestID -> "GeodesicMultiplicity-GridGraph3x3-six"
 ]
 
 VerificationTest[
-  GeodesicCount[CompleteGraph[5], 1, 2],
+  GeodesicMultiplicity[CompleteGraph[5], 1, 2],
   1,
-  TestID -> "GeodesicCount-CompleteGraph-edge"
+  TestID -> "GeodesicMultiplicity-CompleteGraph-edge"
 ]
 
 VerificationTest[
-  GeodesicCount[Graph[{1, 2, 3, 4}, {1 <-> 2, 3 <-> 4}], 1, 3],
+  GeodesicMultiplicity[Graph[{1, 2, 3, 4}, {1 <-> 2, 3 <-> 4}], 1, 3],
   0,
-  TestID -> "GeodesicCount-disconnected-zero"
+  TestID -> "GeodesicMultiplicity-disconnected-zero"
 ]
 
 VerificationTest[
-  GeodesicCount[PathGraph[Range[5]], 3, 3],
+  GeodesicMultiplicity[PathGraph[Range[5]], 3, 3],
   1,
-  TestID -> "GeodesicCount-self-one"
+  TestID -> "GeodesicMultiplicity-self-one"
 ]
 
 VerificationTest[
-  (* Sanity check: GeodesicCount agrees with explicit enumeration via FindPath *)
+  (* Sanity check: GeodesicMultiplicity agrees with explicit enumeration via FindPath *)
   With[{g = GridGraph[{3, 3}], d = GraphDistance[GridGraph[{3, 3}], 1, 9]},
-    GeodesicCount[g, 1, 9] === Length[FindPath[g, 1, 9, {d}, All]]
+    GeodesicMultiplicity[g, 1, 9] === Length[FindPath[g, 1, 9, {d}, All]]
   ],
   True,
-  TestID -> "GeodesicCount-matches-enumeration"
+  TestID -> "GeodesicMultiplicity-matches-enumeration"
 ]
 
-(* ===== DistanceMultiplicityMatrix ===== *)
+(* ===== GeodesicMultiplicityMatrix ===== *)
 
 VerificationTest[
-  With[{dm = DistanceMultiplicityMatrix[CycleGraph[4]]},
+  With[{dm = GeodesicMultiplicityMatrix[CycleGraph[4]]},
     {Dimensions[dm[[1]]], Dimensions[dm[[2]]]}
   ],
   {{4, 4}, {4, 4}},
-  TestID -> "DistanceMultiplicityMatrix-shape"
+  TestID -> "GeodesicMultiplicityMatrix-shape"
 ]
 
 VerificationTest[
-  With[{dm = DistanceMultiplicityMatrix[CycleGraph[4]]},
+  With[{dm = GeodesicMultiplicityMatrix[CycleGraph[4]]},
     dm[[1]] === GraphDistanceMatrix[CycleGraph[4]]
   ],
   True,
-  TestID -> "DistanceMultiplicityMatrix-D-matches-GraphDistanceMatrix"
+  TestID -> "GeodesicMultiplicityMatrix-D-matches-GraphDistanceMatrix"
 ]
 
 VerificationTest[
-  With[{dm = DistanceMultiplicityMatrix[CycleGraph[4]]},
+  With[{dm = GeodesicMultiplicityMatrix[CycleGraph[4]]},
     dm[[2, 1, 3]]
   ],
   2,
-  TestID -> "DistanceMultiplicityMatrix-CycleGraph4-antipode-multiplicity-two"
+  TestID -> "GeodesicMultiplicityMatrix-CycleGraph4-antipode-multiplicity-two"
 ]
 
 VerificationTest[
-  With[{dm = DistanceMultiplicityMatrix[PathGraph[Range[5]]]},
+  With[{dm = GeodesicMultiplicityMatrix[PathGraph[Range[5]]]},
     AllTrue[Flatten[dm[[2]]], # == 1 &]
   ],
   True,
-  TestID -> "DistanceMultiplicityMatrix-PathGraph-all-unique"
+  TestID -> "GeodesicMultiplicityMatrix-PathGraph-all-unique"
 ]
 
 (* ===== MedianVertices ===== *)

@@ -10,25 +10,84 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1532,         43]
-NotebookOptionsPosition[       989,         28]
-NotebookOutlinePosition[      1306,         42]
-CellTagsIndexPosition[      1263,         39]
+NotebookDataLength[      5507,        122]
+NotebookOptionsPosition[      3193,         87]
+NotebookOutlinePosition[      3510,        101]
+CellTagsIndexPosition[      3467,         98]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for PencilCardinality\"", "Input",ExpressionUUID->"7a9fac2d-6b9c-4bb0-812e-c17b935a93e9"],
+Cell["PencilCardinality", "Title",ExpressionUUID->"61cfdfa8-fb7c-45b6-935b-d3c0a7e425e0"],
 
-Cell["?PencilCardinality", "Input",ExpressionUUID->"8d88eb94-f114-4119-a115-9d859baf43b5"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"e649ee4c-8b1c-4c30-bff6-a039ef9ccd8b"],
 
-Cell["Information[PencilCardinality, LongForm -> True]", "Input",ExpressionUUID->"e4462961-f237-4b28-bc54-74f2a00708bc"],
+Cell["\<\
+PencilCardinality[g, O] returns the number of distinct direction classes at O.\
+\>", "Text",ExpressionUUID->"0deab8f1-a06a-4cd7-8a9b-d26f055c5a69"],
 
-Cell["Definition[PencilCardinality]", "Input",ExpressionUUID->"351e04bb-b9ba-4128-9a74-75a328ef09a2"]
+Cell["Setup", "Section",ExpressionUUID->"3f9ef492-2121-4bb1-aa88-070db4026dd9"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"f2c94aa2-65d4-46dc-aba7-c64456a6a462"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"bea62d7a-0c5d-41ff-a752-83ce7ecaac61"],
+
+Cell["Examples", "Section",ExpressionUUID->"6c1f466d-d0e5-4bc8-aa37-ad9ac1e0a01b"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"9a1bba4b-bfdb-4ad3-a61f-497c37d21250"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "Four directions at the centre of a 3x3 grid."]], "Input",ExpressionUUID->\
+"c0263d3e-fd25-4f4e-886b-3dcb3266ef37"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"fb7ff723-a434-47a8-b2ae-77a0d691f4fd"],
+
+Cell[BoxData[
+ $CellContext`buildCell["PencilCardinality[GridGraph[{3, 3}], 5]"]], "Input",E\
+xpressionUUID->"b0c330ff-fc58-422f-b837-07dcab3649c9"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"19cb89f1-704d-4742-9a78-224ff62f2b2a"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Cardinality at every vertex."]], "Input",ExpressionUU\
+ID->"85a80c6e-264f-48a1-99e6-932ad7237d8d"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"61b149e5-da76-411e-a07d-0c7f47f85797"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "With[{g = GridGraph[{3, 3}]}, AssociationMap[PencilCardinality[g, #] &, \
+VertexList[g]]]"]], "Input",ExpressionUUID->"d12cf093-97ed-42ff-a3b8-\
+18a04f9a7fb8"],
+
+Cell["See Also", "Section",ExpressionUUID->"89b09187-7dbb-4066-9e32-2e572dc0b2cb"],
+
+Cell["PencilDirections", "Item",ExpressionUUID->"a4d3ef3a-6e87-4595-918a-7f124c4df7af"],
+
+Cell["LineCount", "Item",ExpressionUUID->"91c0a9a5-7f3a-4234-a470-a25ebd4b22dc"],
+
+Cell["UniquePencilQ", "Item",ExpressionUUID->"c6eef2d6-d881-4dc2-95c9-9ff174d19c12"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"d5ba39a6-b5df-417b-8cf3-ec444e953848"],
+
+Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"a57355b5-0193-47c4-8f3a-5d389e3bdbe8"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"5c6d13be-7cb0-4b4e-9b0f-a8bbc1124e46"],
+
+Cell["ProjectiveGeometryTutorial", "Item",ExpressionUUID->"be67b325-6dc2-47c6-b22e-6a9d23aaa83d"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +100,30 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 111, 0, 70, "Input",ExpressionUUID->"7a9fac2d-6b9c-4bb0-812e-c17b935a93e9"],
-Cell[668, 22, 90, 0, 70, "Input",ExpressionUUID->"8d88eb94-f114-4119-a115-9d859baf43b5"],
-Cell[761, 24, 120, 0, 70, "Input",ExpressionUUID->"e4462961-f237-4b28-bc54-74f2a00708bc"],
-Cell[884, 26, 101, 0, 70, "Input",ExpressionUUID->"351e04bb-b9ba-4128-9a74-75a328ef09a2"]
+Cell[554, 20, 89, 0, 70, "Title",ExpressionUUID->"61cfdfa8-fb7c-45b6-935b-d3c0a7e425e0"],
+Cell[646, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"e649ee4c-8b1c-4c30-bff6-a039ef9ccd8b"],
+Cell[739, 24, 157, 2, 70, "Text",ExpressionUUID->"0deab8f1-a06a-4cd7-8a9b-d26f055c5a69"],
+Cell[899, 28, 79, 0, 70, "Section",ExpressionUUID->"3f9ef492-2121-4bb1-aa88-070db4026dd9"],
+Cell[981, 30, 91, 0, 70, "CodeText",ExpressionUUID->"f2c94aa2-65d4-46dc-aba7-c64456a6a462"],
+Cell[1075, 32, 192, 4, 70, "Code",ExpressionUUID->"bea62d7a-0c5d-41ff-a752-83ce7ecaac61",
+ InitializationCell->True],
+Cell[1270, 38, 82, 0, 70, "Section",ExpressionUUID->"6c1f466d-d0e5-4bc8-aa37-ad9ac1e0a01b"],
+Cell[1355, 40, 115, 1, 70, "Input",ExpressionUUID->"9a1bba4b-bfdb-4ad3-a61f-497c37d21250"],
+Cell[1473, 43, 155, 3, 70, "Input",ExpressionUUID->"c0263d3e-fd25-4f4e-886b-3dcb3266ef37"],
+Cell[1631, 48, 112, 1, 70, "Input",ExpressionUUID->"fb7ff723-a434-47a8-b2ae-77a0d691f4fd"],
+Cell[1746, 51, 148, 2, 70, "Input",ExpressionUUID->"b0c330ff-fc58-422f-b837-07dcab3649c9"],
+Cell[1897, 55, 115, 1, 70, "Input",ExpressionUUID->"19cb89f1-704d-4742-9a78-224ff62f2b2a"],
+Cell[2015, 58, 137, 2, 70, "Input",ExpressionUUID->"85a80c6e-264f-48a1-99e6-932ad7237d8d"],
+Cell[2155, 62, 112, 1, 70, "Input",ExpressionUUID->"61b149e5-da76-411e-a07d-0c7f47f85797"],
+Cell[2270, 65, 200, 4, 70, "Input",ExpressionUUID->"d12cf093-97ed-42ff-a3b8-18a04f9a7fb8"],
+Cell[2473, 71, 82, 0, 70, "Section",ExpressionUUID->"89b09187-7dbb-4066-9e32-2e572dc0b2cb"],
+Cell[2558, 73, 87, 0, 70, "Item",ExpressionUUID->"a4d3ef3a-6e87-4595-918a-7f124c4df7af"],
+Cell[2648, 75, 80, 0, 70, "Item",ExpressionUUID->"91c0a9a5-7f3a-4234-a470-a25ebd4b22dc"],
+Cell[2731, 77, 84, 0, 70, "Item",ExpressionUUID->"c6eef2d6-d881-4dc2-95c9-9ff174d19c12"],
+Cell[2818, 79, 88, 0, 70, "Section",ExpressionUUID->"d5ba39a6-b5df-417b-8cf3-ec444e953848"],
+Cell[2909, 81, 94, 0, 70, "Item",ExpressionUUID->"a57355b5-0193-47c4-8f3a-5d389e3bdbe8"],
+Cell[3006, 83, 83, 0, 70, "Section",ExpressionUUID->"5c6d13be-7cb0-4b4e-9b0f-a8bbc1124e46"],
+Cell[3092, 85, 97, 0, 70, "Item",ExpressionUUID->"be67b325-6dc2-47c6-b22e-6a9d23aaa83d"]
 }
 ]
 *)

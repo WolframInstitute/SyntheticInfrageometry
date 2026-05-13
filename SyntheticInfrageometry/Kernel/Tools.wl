@@ -196,6 +196,9 @@ parseCurvatureSpec[ { "Wolfram", innerOpts___ } ] :=
      "Dimension" -> "Dimension" /. { innerOpts } /. "Dimension" -> Automatic,
      "Radii"     -> "Radii"     /. { innerOpts } /. "Radii"     -> Automatic |>
 
+parseCurvatureSpec[ "Ollivier" ] :=
+  <| "Head" -> "Ollivier" |>
+
 
 (* ===================== Separating sets ===================== *)
 
@@ -284,9 +287,9 @@ pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
    wrapper or a List of unary wrappers spreads into its bare realisations;
    anything else becomes a singleton. *)
 
-infraSpread[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] := reps
+infraSpread[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraPolyline )[ reps_List ] ] := reps
 infraSpread[ list_List ] /; AllTrue[ list,
-    MatchQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ { _ } ] ] ] :=
+    MatchQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraPolyline )[ { _ } ] ] ] :=
   First /@ list
 infraSpread[ other_ ] := { other }
 
@@ -298,6 +301,7 @@ infraSpread[ other_ ] := { other }
 infraUnionSpread[ InfraPoint[ reps_List ] ] := DeleteDuplicates @ reps
 infraUnionSpread[ ( InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] :=
   Union @@ reps
+infraUnionSpread[ InfraPolyline[ reps_List ] ] := Union @@ polylineToVertexSeqs[ reps ]
 infraUnionSpread[ other_ ] := { other }
 
 

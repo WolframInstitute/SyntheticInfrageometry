@@ -10,25 +10,84 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1491,         43]
-NotebookOptionsPosition[       949,         28]
-NotebookOutlinePosition[      1266,         42]
-CellTagsIndexPosition[      1223,         39]
+NotebookDataLength[      5536,        122]
+NotebookOptionsPosition[      3221,         87]
+NotebookOutlinePosition[      3538,        101]
+CellTagsIndexPosition[      3495,         98]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for CircleQ\"", "Input",ExpressionUUID->"261e1b15-b7e7-4ad5-be0f-2c5a12450e29"],
+Cell["CircleQ", "Title",ExpressionUUID->"788cca7a-71f4-4657-b88d-8b7665945671"],
 
-Cell["?CircleQ", "Input",ExpressionUUID->"70b47ff8-7f2c-4c6d-b1c5-f3e7c84a4892"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"72d8462f-2e61-4413-b9b0-debcd5ac7fd4"],
 
-Cell["Information[CircleQ, LongForm -> True]", "Input",ExpressionUUID->"90520586-4b78-4d63-a7b2-1f698e26bcf7"],
+Cell["\<\
+CircleQ[g, cycle] tests whether the vertex sequence cycle is a metric circle: \
+a cyclic edge chain whose vertex set is a metric shell. Accepts both open and \
+closed input.\
+\>", "Text",ExpressionUUID->"8b39e59b-7466-412d-9314-cac33f37b33f"],
 
-Cell["Definition[CircleQ]", "Input",ExpressionUUID->"cdc18502-d7d9-4bdb-9ba7-b3d91dec5e81"]
+Cell["Setup", "Section",ExpressionUUID->"150576c1-423f-4e2a-bd23-89e43888c078"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"eafea20b-c973-466a-854f-e2ce31803e8c"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"01eef288-3604-4d7a-b960-a074d4377d01"],
+
+Cell["Examples", "Section",ExpressionUUID->"c535bbb7-df67-4fbb-9475-4225aef3837d"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"beadf872-3c54-4997-93f5-8c5361e6fd00"],
+
+Cell[BoxData[
+ $CellContext`buildCell["A 4-cycle around the grid centre."]], "Input",Express\
+ionUUID->"852193b2-4790-478c-9beb-afc61b30c8a7"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"67a8a730-af94-4fc5-9f02-26fe4652949d"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CircleQ[GridGraph[{3, 3}], {2, 4, 8, 6}]"]], "Input",\
+ExpressionUUID->"1b30d777-ed14-4fb1-9914-7136101c8444"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"17ff6d4c-37cb-4c48-8277-57ee32eda48a"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "Not a metric circle (vertex set is not a shell)."]], "Input",ExpressionUUID->\
+"1497badf-5ef5-4497-a341-46c0fd665ec0"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"d26d0c2b-464e-48f6-a71b-b2a2ed467d91"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CircleQ[GridGraph[{3, 3}], {1, 2, 3}]"]], "Input",Exp\
+ressionUUID->"725cef7c-93be-4366-bdd6-3bfc90fb18ee"],
+
+Cell["See Also", "Section",ExpressionUUID->"6aa9b1cc-781a-48f6-ad47-763997df5fea"],
+
+Cell["FindCircle", "Item",ExpressionUUID->"86de9051-d156-4930-b755-1e0bd56d8bf5"],
+
+Cell["InfraCircle", "Item",ExpressionUUID->"8548b251-b676-4a43-aaa2-e3c5954e6e09"],
+
+Cell["ShellQ", "Item",ExpressionUUID->"3b8d6101-04ee-4146-a7cf-b19a1b6af481"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"1bb27a5b-6e31-4195-9bac-31f40407fded"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"667cec22-d2ce-45d9-9c24-bd821dfe1e89"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"880b5a44-b368-4021-aa7c-1cb7c14cfa1e"],
+
+Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"efca3224-1264-4baa-8c8d-473163610add"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +100,30 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 101, 0, 70, "Input",ExpressionUUID->"261e1b15-b7e7-4ad5-be0f-2c5a12450e29"],
-Cell[658, 22, 80, 0, 70, "Input",ExpressionUUID->"70b47ff8-7f2c-4c6d-b1c5-f3e7c84a4892"],
-Cell[741, 24, 110, 0, 70, "Input",ExpressionUUID->"90520586-4b78-4d63-a7b2-1f698e26bcf7"],
-Cell[854, 26, 91, 0, 70, "Input",ExpressionUUID->"cdc18502-d7d9-4bdb-9ba7-b3d91dec5e81"]
+Cell[554, 20, 79, 0, 70, "Title",ExpressionUUID->"788cca7a-71f4-4657-b88d-8b7665945671"],
+Cell[636, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"72d8462f-2e61-4413-b9b0-debcd5ac7fd4"],
+Cell[729, 24, 252, 4, 70, "Text",ExpressionUUID->"8b39e59b-7466-412d-9314-cac33f37b33f"],
+Cell[984, 30, 79, 0, 70, "Section",ExpressionUUID->"150576c1-423f-4e2a-bd23-89e43888c078"],
+Cell[1066, 32, 91, 0, 70, "CodeText",ExpressionUUID->"eafea20b-c973-466a-854f-e2ce31803e8c"],
+Cell[1160, 34, 192, 4, 70, "Code",ExpressionUUID->"01eef288-3604-4d7a-b960-a074d4377d01",
+ InitializationCell->True],
+Cell[1355, 40, 82, 0, 70, "Section",ExpressionUUID->"c535bbb7-df67-4fbb-9475-4225aef3837d"],
+Cell[1440, 42, 115, 1, 70, "Input",ExpressionUUID->"beadf872-3c54-4997-93f5-8c5361e6fd00"],
+Cell[1558, 45, 142, 2, 70, "Input",ExpressionUUID->"852193b2-4790-478c-9beb-afc61b30c8a7"],
+Cell[1703, 49, 112, 1, 70, "Input",ExpressionUUID->"67a8a730-af94-4fc5-9f02-26fe4652949d"],
+Cell[1818, 52, 149, 2, 70, "Input",ExpressionUUID->"1b30d777-ed14-4fb1-9914-7136101c8444"],
+Cell[1970, 56, 115, 1, 70, "Input",ExpressionUUID->"17ff6d4c-37cb-4c48-8277-57ee32eda48a"],
+Cell[2088, 59, 159, 3, 70, "Input",ExpressionUUID->"1497badf-5ef5-4497-a341-46c0fd665ec0"],
+Cell[2250, 64, 112, 1, 70, "Input",ExpressionUUID->"d26d0c2b-464e-48f6-a71b-b2a2ed467d91"],
+Cell[2365, 67, 146, 2, 70, "Input",ExpressionUUID->"725cef7c-93be-4366-bdd6-3bfc90fb18ee"],
+Cell[2514, 71, 82, 0, 70, "Section",ExpressionUUID->"6aa9b1cc-781a-48f6-ad47-763997df5fea"],
+Cell[2599, 73, 81, 0, 70, "Item",ExpressionUUID->"86de9051-d156-4930-b755-1e0bd56d8bf5"],
+Cell[2683, 75, 82, 0, 70, "Item",ExpressionUUID->"8548b251-b676-4a43-aaa2-e3c5954e6e09"],
+Cell[2768, 77, 77, 0, 70, "Item",ExpressionUUID->"3b8d6101-04ee-4146-a7cf-b19a1b6af481"],
+Cell[2848, 79, 88, 0, 70, "Section",ExpressionUUID->"1bb27a5b-6e31-4195-9bac-31f40407fded"],
+Cell[2939, 81, 93, 0, 70, "Item",ExpressionUUID->"667cec22-d2ce-45d9-9c24-bd821dfe1e89"],
+Cell[3035, 83, 83, 0, 70, "Section",ExpressionUUID->"880b5a44-b368-4021-aa7c-1cb7c14cfa1e"],
+Cell[3121, 85, 96, 0, 70, "Item",ExpressionUUID->"efca3224-1264-4baa-8c8d-473163610add"]
 }
 ]
 *)

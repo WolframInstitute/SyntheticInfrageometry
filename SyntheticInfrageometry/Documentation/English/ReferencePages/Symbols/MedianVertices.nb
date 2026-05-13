@@ -10,25 +10,88 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1519,         43]
-NotebookOptionsPosition[       977,         28]
-NotebookOutlinePosition[      1294,         42]
-CellTagsIndexPosition[      1251,         39]
+NotebookDataLength[      5883,        128]
+NotebookOptionsPosition[      3388,         91]
+NotebookOutlinePosition[      3705,        105]
+CellTagsIndexPosition[      3662,        102]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for MedianVertices\"", "Input",ExpressionUUID->"3b6a1904-05b3-4211-a10b-6c7ee4a2b4ea"],
+Cell["MedianVertices", "Title",ExpressionUUID->"caec7edf-3b7c-4b8d-bdd0-b6ac8334ca45"],
 
-Cell["?MedianVertices", "Input",ExpressionUUID->"1a60bc0d-3d2c-48e5-9777-d79887e395b7"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"4e76f37a-f57a-498b-8676-00a33613805e"],
 
-Cell["Information[MedianVertices, LongForm -> True]", "Input",ExpressionUUID->"6121d55b-bb9a-46f8-8f05-4051b2a79148"],
+Cell["\<\
+MedianVertices[g, vs] returns the vertices minimising the sum of distances to \
+vs. A graph is a median graph iff every triple has a unique median.\
+\>", "Text",ExpressionUUID->"8c95a45d-460d-4f0e-8bba-2bc902420d95"],
 
-Cell["Definition[MedianVertices]", "Input",ExpressionUUID->"afa6a116-09ee-4292-8b80-60e2b0cff825"]
+Cell["Setup", "Section",ExpressionUUID->"6a582438-6790-4782-ab21-81bc9578ee82"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"6fd69b61-e6d3-465a-9edc-c3bdf6555a9b"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"0040e2af-b4d4-4ecf-8e6d-2ff256bcc8f4"],
+
+Cell["Examples", "Section",ExpressionUUID->"2222e71b-38cf-40d5-8d17-0a7eb8a778af"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"bf476356-fb3a-499c-80c1-6b09207c1cc7"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Median of a triple in a grid."]], "Input",ExpressionU\
+UID->"a76bfe97-7103-41fe-8f09-4d7d165a60d5"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"58cf94e6-693f-4a85-b41c-297a45350d0a"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "MedianVertices[GridGraph[{3, 3}], {1, 3, 7}]"]], "Input",ExpressionUUID->\
+"bc7dad3d-3962-43d4-bb51-07aaef0ff083"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"a6df795f-0dee-4c38-9ad4-bce55727f57a"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Median of a pair is the metric interval."]], "Input",\
+ExpressionUUID->"66b07c7c-a2a7-4334-a805-5341a13c7978"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"9f7bffd4-5c92-4499-9e01-78f13089650b"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "MedianVertices[PathGraph[Range[7]], {1, 7}]"]], "Input",ExpressionUUID->\
+"99d20035-93df-45ae-a9e9-4fe3bbdd2f6f"],
+
+Cell["See Also", "Section",ExpressionUUID->"1c231187-9ebd-45c0-a21c-d5211af2c40a"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"17153873-8d81-43af-9526-68608c5c65d0"],
+
+Cell["FindMidpoint", "Item",ExpressionUUID->"4678c293-df2b-4a03-8551-d5be124a6e25"],
+
+Cell["TarskiFiveSegmentsQ", "Item",ExpressionUUID->"31f7594b-dec1-476e-856e-3c8d7ecf080b"],
+
+Cell["TarskiInnerPaschQ", "Item",ExpressionUUID->"8202c523-37f6-4343-930a-66dcfdda8970"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"89d0ac82-e0f3-4ad9-8fee-9b131a7dba33"],
+
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"3d3730ff-5f1d-400a-b920-16900977959b"],
+
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"d14d1888-501e-4118-b03e-72d4a5f932e4"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"ed01f29c-9531-45b2-990f-52a118698120"],
+
+Cell["PathSpaceTutorial", "Item",ExpressionUUID->"60cc14aa-9755-4465-aab7-f14275fa60e4"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +104,32 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 108, 0, 70, "Input",ExpressionUUID->"3b6a1904-05b3-4211-a10b-6c7ee4a2b4ea"],
-Cell[665, 22, 87, 0, 70, "Input",ExpressionUUID->"1a60bc0d-3d2c-48e5-9777-d79887e395b7"],
-Cell[755, 24, 117, 0, 70, "Input",ExpressionUUID->"6121d55b-bb9a-46f8-8f05-4051b2a79148"],
-Cell[875, 26, 98, 0, 70, "Input",ExpressionUUID->"afa6a116-09ee-4292-8b80-60e2b0cff825"]
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"caec7edf-3b7c-4b8d-bdd0-b6ac8334ca45"],
+Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"4e76f37a-f57a-498b-8676-00a33613805e"],
+Cell[736, 24, 226, 3, 70, "Text",ExpressionUUID->"8c95a45d-460d-4f0e-8bba-2bc902420d95"],
+Cell[965, 29, 79, 0, 70, "Section",ExpressionUUID->"6a582438-6790-4782-ab21-81bc9578ee82"],
+Cell[1047, 31, 91, 0, 70, "CodeText",ExpressionUUID->"6fd69b61-e6d3-465a-9edc-c3bdf6555a9b"],
+Cell[1141, 33, 192, 4, 70, "Code",ExpressionUUID->"0040e2af-b4d4-4ecf-8e6d-2ff256bcc8f4",
+ InitializationCell->True],
+Cell[1336, 39, 82, 0, 70, "Section",ExpressionUUID->"2222e71b-38cf-40d5-8d17-0a7eb8a778af"],
+Cell[1421, 41, 115, 1, 70, "Input",ExpressionUUID->"bf476356-fb3a-499c-80c1-6b09207c1cc7"],
+Cell[1539, 44, 138, 2, 70, "Input",ExpressionUUID->"a76bfe97-7103-41fe-8f09-4d7d165a60d5"],
+Cell[1680, 48, 112, 1, 70, "Input",ExpressionUUID->"58cf94e6-693f-4a85-b41c-297a45350d0a"],
+Cell[1795, 51, 155, 3, 70, "Input",ExpressionUUID->"bc7dad3d-3962-43d4-bb51-07aaef0ff083"],
+Cell[1953, 56, 115, 1, 70, "Input",ExpressionUUID->"a6df795f-0dee-4c38-9ad4-bce55727f57a"],
+Cell[2071, 59, 149, 2, 70, "Input",ExpressionUUID->"66b07c7c-a2a7-4334-a805-5341a13c7978"],
+Cell[2223, 63, 112, 1, 70, "Input",ExpressionUUID->"9f7bffd4-5c92-4499-9e01-78f13089650b"],
+Cell[2338, 66, 154, 3, 70, "Input",ExpressionUUID->"99d20035-93df-45ae-a9e9-4fe3bbdd2f6f"],
+Cell[2495, 71, 82, 0, 70, "Section",ExpressionUUID->"1c231187-9ebd-45c0-a21c-d5211af2c40a"],
+Cell[2580, 73, 85, 0, 70, "Item",ExpressionUUID->"17153873-8d81-43af-9526-68608c5c65d0"],
+Cell[2668, 75, 83, 0, 70, "Item",ExpressionUUID->"4678c293-df2b-4a03-8551-d5be124a6e25"],
+Cell[2754, 77, 90, 0, 70, "Item",ExpressionUUID->"31f7594b-dec1-476e-856e-3c8d7ecf080b"],
+Cell[2847, 79, 88, 0, 70, "Item",ExpressionUUID->"8202c523-37f6-4343-930a-66dcfdda8970"],
+Cell[2938, 81, 88, 0, 70, "Section",ExpressionUUID->"89d0ac82-e0f3-4ad9-8fee-9b131a7dba33"],
+Cell[3029, 83, 85, 0, 70, "Item",ExpressionUUID->"3d3730ff-5f1d-400a-b920-16900977959b"],
+Cell[3117, 85, 90, 0, 70, "Item",ExpressionUUID->"d14d1888-501e-4118-b03e-72d4a5f932e4"],
+Cell[3210, 87, 83, 0, 70, "Section",ExpressionUUID->"ed01f29c-9531-45b2-990f-52a118698120"],
+Cell[3296, 89, 88, 0, 70, "Item",ExpressionUUID->"60cc14aa-9755-4465-aab7-f14275fa60e4"]
 }
 ]
 *)

@@ -10,79 +10,85 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5961,        117]
-NotebookOptionsPosition[      3561,         82]
-NotebookOutlinePosition[      3878,         96]
-CellTagsIndexPosition[      3835,         93]
+NotebookDataLength[      5705,        124]
+NotebookOptionsPosition[      3300,         88]
+NotebookOutlinePosition[      3617,        102]
+CellTagsIndexPosition[      3574,         99]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindRadarBasis", "Title",ExpressionUUID->"45ad08b0-2e7c-47cb-ac45-e90a0dff8d31"],
+Cell["FindRadarBasis", "Title",ExpressionUUID->"496527cf-b17a-4398-a89e-f08fe9b4b26d"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"29b96a1a-4331-4a53-85e7-e9a35cc0784b"],
 
 Cell["\<\
-FindRadarBasis[graph] returns one spatial radar basis (resolving set) of \
-graph -- a vertex set B of minimum size such that the distance map v |-> \
-(d(v, b))_{b in B} is injective. FindRadarBasis[graph, n] returns up to n \
-bases of ascending size. FindRadarBasis[graph, n, m] restricts the candidate \
-basis sizes: m can be All (default), an integer (max size), {min, max}, or \
-{exact}.\
-\>", "Text",ExpressionUUID->"1d080f22-aff2-429c-8a7e-4b7f76a1b3a8"],
+FindRadarBasis[g, n, m] returns up to n radar bases (resolving sets); m \
+specifies basis sizes (All, an integer, {min, max}, or {exact}).\
+\>", "Text",ExpressionUUID->"259a5151-3f2a-4595-83a3-a82480c87f8e"],
 
-Cell["Setup", "Section",ExpressionUUID->"c0f4b67b-ac9e-4884-b274-33ccbe61311a"],
+Cell["Setup", "Section",ExpressionUUID->"4262c94e-13e1-44fb-b4c7-02c71f6b88dc"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"37844882-d3cf-4159-bffc-c77eb61cf880"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"a515e0d3-7446-4f42-aa4d-ceff2e749037"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"5b86c558-c573-460d-ba24-e4bcf85c9107"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"02e2d89d-5d64-4803-add6-c3565f11641a"],
 
-Cell["Usage", "Section",ExpressionUUID->"e56c3d20-ba3c-4377-8d4e-152968d1b7a0"],
+Cell["Examples", "Section",ExpressionUUID->"6b2d6671-114d-4071-921a-cde515df4120"],
 
-Cell["One radar basis of a 6-cycle.", "CodeText",ExpressionUUID->"d2947e46-bb6f-4ec4-b7fb-0e0518f0ae4b"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"a86cbdc1-a3e2-47c9-9d91-ab7e2d2e665f"],
 
-Cell["FindRadarBasis[CycleGraph[6]]", "Input",ExpressionUUID->"c24f710c-124c-48bd-a10a-3d69600031db"],
+Cell[BoxData[
+ $CellContext`buildCell["All minimal radar bases of a path graph."]], "Input",\
+ExpressionUUID->"54a51685-fe7c-4efd-84dd-e290d397417e"],
 
-Cell["Three smallest radar bases.", "CodeText",ExpressionUUID->"fbb49dd7-70a9-45fa-ab4c-1682a84ca3b1"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"9f5e53ee-2574-4490-b0b5-74af858c32fa"],
 
-Cell["FindRadarBasis[CycleGraph[6], 3]", "Input",ExpressionUUID->"facf8594-2abb-4f8d-b637-dfa017a82681"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindRadarBasis[PathGraph[Range[5]], All, All]"]], "Input",ExpressionUUID->\
+"fd91445c-bee4-4dbf-9f5d-97d0e482f625"],
 
-Cell["Examples", "Section",ExpressionUUID->"0e678d15-ce43-49a2-9b50-2088aeedef3e"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"e9d3da50-768f-4db0-a3e6-8748307f7ae3"],
 
-Cell["\<\
-Resolving sets of small graphs are tight: trees with few leaves have small \
-metric dimension.\
-\>", "CodeText",ExpressionUUID->"36ab7082-c437-4642-bb3e-26b8be53d372"],
+Cell[BoxData[
+ $CellContext`buildCell["Up to three radar bases of size 2."]], "Input",Expres\
+sionUUID->"7b0d6f0d-59a5-4408-8d62-b1819125e533"],
 
-Cell["FindRadarBasis[PathGraph[Range[7]]]", "Input",ExpressionUUID->"1029dff0-d96e-4c48-a522-9107d46af02a"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"ffb96233-ed33-47da-9b12-c1c5c3c3e265"],
 
-Cell["\<\
-On a 4 x 4 grid, two corners suffice to resolve every vertex.\
-\>", "CodeText",ExpressionUUID->"389ffaa0-ca9d-4127-87a7-caf4f9bd4aac"],
+Cell[BoxData[
+ $CellContext`buildCell["FindRadarBasis[GridGraph[{3, 3}], 3, 2]"]], "Input",E\
+xpressionUUID->"8886f445-4d0b-4467-83b6-24e9e7adae8c"],
 
-Cell["FindRadarBasis[GridGraph[{4, 4}]]", "Input",ExpressionUUID->"29888e9a-791d-4158-942e-8651fb45f4d1"],
+Cell["See Also", "Section",ExpressionUUID->"6a908a84-59ef-4a8c-8794-58002d5f5632"],
 
-Cell["Verify that the returned set really is a resolving set.", "CodeText",ExpressionUUID->"fb9c08ea-2c11-4772-bbb5-43c45d7538a4"],
+Cell["RadarBasisQ", "Item",ExpressionUUID->"06539fad-a470-4a66-b79f-615bc0b5b7c7"],
 
-Cell["\<\
-With[{g = CycleGraph[6]}, RadarBasisQ[g, First @ FindRadarBasis[g]]]\
-\>", "Input",ExpressionUUID->"e3e2bcbb-8069-42ba-a964-59d0dbf4bea6"],
+Cell["RadarCoordinates", "Item",ExpressionUUID->"e4b0c886-7b3c-4457-abf7-5f1583732e82"],
 
-Cell["Restrict the search to bases of size exactly 3.", "CodeText",ExpressionUUID->"206f7276-10cd-4d6e-8394-86c852e9a7dd"],
+Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"6dd1fc62-9fc4-4a97-9243-5cb9baee08cb"],
 
-Cell["FindRadarBasis[CycleGraph[6], 3, {3}]", "Input",ExpressionUUID->"3fe3ad2c-3477-412d-8492-dd5969fa87c1"],
+Cell["FindSpanningAxes", "Item",ExpressionUUID->"d2d6672d-7896-4bdd-aa27-d800b067f4e0"],
 
-Cell["See also", "Section",ExpressionUUID->"23d21157-51ca-44a2-a712-c14b54cf02df"],
+Cell["Related Guides", "Section",ExpressionUUID->"f6e1098e-2017-4590-a758-663434cc7e68"],
 
-Cell["RadarBasisQ", "Item",ExpressionUUID->"a3e8443a-28c3-420e-8f13-4c834402395f"],
+Cell["CoordinatizationGuide", "Item",ExpressionUUID->"79ecd432-ce25-4d31-8cb7-11d2a9262260"],
 
-Cell["RadarCoordinates", "Item",ExpressionUUID->"7764d16a-29e2-444e-b91f-28b4582cb9ab"],
+Cell["Tutorials", "Section",ExpressionUUID->"75218fac-787e-4bcb-908c-a47fc2339d98"],
 
-Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"bff30bd3-9835-406a-8ba9-63b2b2c599f5"],
-
-Cell["CoordinatizationGuide", "Item",ExpressionUUID->"e6a2e801-1916-473f-a6f9-0ef004338c25"]
+Cell["CoordinatizationTutorial", "Item",ExpressionUUID->"833a245a-5f38-4016-9697-6cdf29c7caaf"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d2c1c499-01d7-433e-a353-e9264d068cc9"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -95,30 +101,31 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"45ad08b0-2e7c-47cb-ac45-e90a0dff8d31"],
-Cell[643, 22, 469, 7, 70, "Text",ExpressionUUID->"1d080f22-aff2-429c-8a7e-4b7f76a1b3a8"],
-Cell[1115, 31, 79, 0, 70, "Section",ExpressionUUID->"c0f4b67b-ac9e-4884-b274-33ccbe61311a"],
-Cell[1197, 33, 132, 0, 70, "CodeText",ExpressionUUID->"37844882-d3cf-4159-bffc-c77eb61cf880"],
-Cell[1332, 35, 122, 0, 70, "Code",ExpressionUUID->"5b86c558-c573-460d-ba24-e4bcf85c9107"],
-Cell[1457, 37, 79, 0, 70, "Section",ExpressionUUID->"e56c3d20-ba3c-4377-8d4e-152968d1b7a0"],
-Cell[1539, 39, 104, 0, 70, "CodeText",ExpressionUUID->"d2947e46-bb6f-4ec4-b7fb-0e0518f0ae4b"],
-Cell[1646, 41, 101, 0, 70, "Input",ExpressionUUID->"c24f710c-124c-48bd-a10a-3d69600031db"],
-Cell[1750, 43, 102, 0, 70, "CodeText",ExpressionUUID->"fbb49dd7-70a9-45fa-ab4c-1682a84ca3b1"],
-Cell[1855, 45, 104, 0, 70, "Input",ExpressionUUID->"facf8594-2abb-4f8d-b637-dfa017a82681"],
-Cell[1962, 47, 82, 0, 70, "Section",ExpressionUUID->"0e678d15-ce43-49a2-9b50-2088aeedef3e"],
-Cell[2047, 49, 177, 3, 70, "CodeText",ExpressionUUID->"36ab7082-c437-4642-bb3e-26b8be53d372"],
-Cell[2227, 54, 107, 0, 70, "Input",ExpressionUUID->"1029dff0-d96e-4c48-a522-9107d46af02a"],
-Cell[2337, 56, 144, 2, 70, "CodeText",ExpressionUUID->"389ffaa0-ca9d-4127-87a7-caf4f9bd4aac"],
-Cell[2484, 60, 105, 0, 70, "Input",ExpressionUUID->"29888e9a-791d-4158-942e-8651fb45f4d1"],
-Cell[2592, 62, 130, 0, 70, "CodeText",ExpressionUUID->"fb9c08ea-2c11-4772-bbb5-43c45d7538a4"],
-Cell[2725, 64, 148, 2, 70, "Input",ExpressionUUID->"e3e2bcbb-8069-42ba-a964-59d0dbf4bea6"],
-Cell[2876, 68, 122, 0, 70, "CodeText",ExpressionUUID->"206f7276-10cd-4d6e-8394-86c852e9a7dd"],
-Cell[3001, 70, 109, 0, 70, "Input",ExpressionUUID->"3fe3ad2c-3477-412d-8492-dd5969fa87c1"],
-Cell[3113, 72, 82, 0, 70, "Section",ExpressionUUID->"23d21157-51ca-44a2-a712-c14b54cf02df"],
-Cell[3198, 74, 82, 0, 70, "Item",ExpressionUUID->"a3e8443a-28c3-420e-8f13-4c834402395f"],
-Cell[3283, 76, 87, 0, 70, "Item",ExpressionUUID->"7764d16a-29e2-444e-b91f-28b4582cb9ab"],
-Cell[3373, 78, 89, 0, 70, "Item",ExpressionUUID->"bff30bd3-9835-406a-8ba9-63b2b2c599f5"],
-Cell[3465, 80, 92, 0, 70, "Item",ExpressionUUID->"e6a2e801-1916-473f-a6f9-0ef004338c25"]
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"496527cf-b17a-4398-a89e-f08fe9b4b26d"],
+Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"29b96a1a-4331-4a53-85e7-e9a35cc0784b"],
+Cell[736, 24, 217, 3, 70, "Text",ExpressionUUID->"259a5151-3f2a-4595-83a3-a82480c87f8e"],
+Cell[956, 29, 79, 0, 70, "Section",ExpressionUUID->"4262c94e-13e1-44fb-b4c7-02c71f6b88dc"],
+Cell[1038, 31, 91, 0, 70, "CodeText",ExpressionUUID->"a515e0d3-7446-4f42-aa4d-ceff2e749037"],
+Cell[1132, 33, 192, 4, 70, "Code",ExpressionUUID->"02e2d89d-5d64-4803-add6-c3565f11641a",
+ InitializationCell->True],
+Cell[1327, 39, 82, 0, 70, "Section",ExpressionUUID->"6b2d6671-114d-4071-921a-cde515df4120"],
+Cell[1412, 41, 115, 1, 70, "Input",ExpressionUUID->"a86cbdc1-a3e2-47c9-9d91-ab7e2d2e665f"],
+Cell[1530, 44, 149, 2, 70, "Input",ExpressionUUID->"54a51685-fe7c-4efd-84dd-e290d397417e"],
+Cell[1682, 48, 112, 1, 70, "Input",ExpressionUUID->"9f5e53ee-2574-4490-b0b5-74af858c32fa"],
+Cell[1797, 51, 156, 3, 70, "Input",ExpressionUUID->"fd91445c-bee4-4dbf-9f5d-97d0e482f625"],
+Cell[1956, 56, 115, 1, 70, "Input",ExpressionUUID->"e9d3da50-768f-4db0-a3e6-8748307f7ae3"],
+Cell[2074, 59, 143, 2, 70, "Input",ExpressionUUID->"7b0d6f0d-59a5-4408-8d62-b1819125e533"],
+Cell[2220, 63, 112, 1, 70, "Input",ExpressionUUID->"ffb96233-ed33-47da-9b12-c1c5c3c3e265"],
+Cell[2335, 66, 148, 2, 70, "Input",ExpressionUUID->"8886f445-4d0b-4467-83b6-24e9e7adae8c"],
+Cell[2486, 70, 82, 0, 70, "Section",ExpressionUUID->"6a908a84-59ef-4a8c-8794-58002d5f5632"],
+Cell[2571, 72, 82, 0, 70, "Item",ExpressionUUID->"06539fad-a470-4a66-b79f-615bc0b5b7c7"],
+Cell[2656, 74, 87, 0, 70, "Item",ExpressionUUID->"e4b0c886-7b3c-4457-abf7-5f1583732e82"],
+Cell[2746, 76, 90, 0, 70, "Item",ExpressionUUID->"6dd1fc62-9fc4-4a97-9243-5cb9baee08cb"],
+Cell[2839, 78, 87, 0, 70, "Item",ExpressionUUID->"d2d6672d-7896-4bdd-aa27-d800b067f4e0"],
+Cell[2929, 80, 88, 0, 70, "Section",ExpressionUUID->"f6e1098e-2017-4590-a758-663434cc7e68"],
+Cell[3020, 82, 92, 0, 70, "Item",ExpressionUUID->"79ecd432-ce25-4d31-8cb7-11d2a9262260"],
+Cell[3115, 84, 83, 0, 70, "Section",ExpressionUUID->"75218fac-787e-4bcb-908c-a47fc2339d98"],
+Cell[3201, 86, 95, 0, 70, "Item",ExpressionUUID->"833a245a-5f38-4016-9697-6cdf29c7caaf"]
 }
 ]
 *)

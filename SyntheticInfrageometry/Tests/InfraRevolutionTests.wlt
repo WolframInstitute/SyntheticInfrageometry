@@ -1,32 +1,25 @@
 (* InfraRevolution.wl tests *)
 
 
-(* Auto-flatten on the wrapper head. *)
-
-VerificationTest[
-  InfraRevolution[ { InfraRevolution[ { { 1 }, { 2, 3 } } ], InfraRevolution[ { { 4 } } ] } ],
-  InfraRevolution[ { { 1 }, { 2, 3 }, { 4 } } ],
-  TestID -> "InfraRevolution-auto-flatten"
-]
-
-
-(* PathGraph cylinder, r = 0, Solid: result is the axis itself. *)
+(* PathGraph cylinder, r = 0, Solid (default): result is the axis itself. *)
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 7, axis = { 2, 3, 4, 5, 6 } },
-    FindCylinder[ g, axis, 0, "Form" -> "Solid" ][[ 1, 1 ]] ],
+    FindCylinder[ g, axis, 0 ][[ 1 ]] ],
   { 2, 3, 4, 5, 6 },
-  TestID -> "FindCylinder-PathGraph-r0-Solid-is-axis"
+  TestID -> "FindCylinder-PathGraph-r0-default-Solid-is-axis"
 ]
 
 
-(* PathGraph cylinder, r = 1, Solid: axis plus immediate neighbours. *)
+(* PathGraph cylinder, r = 1, Solid: the +1 axis extension absorbs the
+   immediate-neighbour bubble at each endpoint, so the cylinder reduces
+   to the axis itself on a 1D substrate. *)
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 9, axis = { 3, 4, 5, 6, 7 } },
-    FindCylinder[ g, axis, 1, "Form" -> "Solid" ][[ 1, 1 ]] ],
-  { 2, 3, 4, 5, 6, 7, 8 },
-  TestID -> "FindCylinder-PathGraph-r1-Solid"
+    FindCylinder[ g, axis, 1, "Form" -> "Solid" ][[ 1 ]] ],
+  { 3, 4, 5, 6, 7 },
+  TestID -> "FindCylinder-PathGraph-r1-axis-only-via-extension"
 ]
 
 
@@ -35,8 +28,8 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ], axis = { 1, 2, 3, 4 } },
     With[ {
-        surf = FindRevolution[ g, axis, 1                    ][[ 1, 1 ]],
-        sol  = FindRevolution[ g, axis, 1, "Form" -> "Solid" ][[ 1, 1 ]] },
+        surf = FindRevolution[ g, axis, 1, "Form" -> "Surface" ][[ 1 ]],
+        sol  = FindRevolution[ g, axis, 1, "Form" -> "Solid"   ][[ 1 ]] },
       SubsetQ[ sol, surf ] ] ],
   True,
   TestID -> "FindRevolution-Surface-subset-Solid"
@@ -48,9 +41,9 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ], axis = { 1, 2, 3, 4, 5 }, prof = { 0, 1, 2, 1, 0 } },
     With[ {
-        sol   = FindRevolution[ g, axis, prof, "Form" -> "Solid" ][[ 1, 1 ]],
+        sol   = FindRevolution[ g, axis, prof, "Form" -> "Solid" ][[ 1 ]],
         union = Sort[ Union @@ Table[
-          FindRevolution[ g, axis, Min[ #, k ] & /@ prof, "Form" -> "Surface" ][[ 1, 1 ]],
+          FindRevolution[ g, axis, Min[ #, k ] & /@ prof, "Form" -> "Surface" ][[ 1 ]],
           { k, 0, Max @ prof } ] ] },
       Sort @ sol === union ] ],
   True,
@@ -91,14 +84,14 @@ VerificationTest[
 ]
 
 
-(* Singleton axis degenerates to FindShell. *)
+(* Singleton axis with Surface degenerates to FindShell. *)
 
 VerificationTest[
   With[ { g = PetersenGraph[] },
-    FindRevolution[ g, { 1 }, 2 ][[ 1, 1 ]] ===
+    FindRevolution[ g, { 1 }, 2, "Form" -> "Surface" ][[ 1 ]] ===
     Sort @ Select[ VertexList @ g, GraphDistance[ g, 1, # ] === 2 & ] ],
   True,
-  TestID -> "FindRevolution-singleton-axis-equals-FindShell"
+  TestID -> "FindRevolution-singleton-axis-Surface-equals-FindShell"
 ]
 
 
@@ -106,16 +99,39 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 5 },
-    FindRevolution[ g, { 3 }, 100, "Form" -> "Solid" ][[ 1, 1 ]] === Sort @ VertexList @ g ],
+    FindRevolution[ g, { 3 }, 100, "Form" -> "Solid" ][[ 1 ]] === Sort @ VertexList @ g ],
   True,
   TestID -> "FindRevolution-large-radius-Solid-is-all"
 ]
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 5 },
-    FindRevolution[ g, { 3 }, 100 ][[ 1, 1 ]] ],
+    FindRevolution[ g, { 3 }, 100, "Form" -> "Surface" ][[ 1 ]] ],
   { },
   TestID -> "FindRevolution-large-radius-Surface-is-empty"
+]
+
+
+(* Default "Form" is "Solid" and default Method is "Voronoi" with +1 axis
+   extension; immediate-neighbour bubble at endpoints is absorbed. *)
+
+VerificationTest[
+  With[ { g = PathGraph @ Range @ 9, axis = { 3, 4, 5, 6, 7 } },
+    FindCylinder[ g, axis, 1 ][[ 1 ]] ],
+  { 3, 4, 5, 6, 7 },
+  TestID -> "FindCylinder-default-is-Solid"
+]
+
+
+(* Method -> "PerpendicularBisector": on a path graph every position's
+   bisector slab is just that position itself, so the cylinder degenerates
+   to the axis. *)
+
+VerificationTest[
+  With[ { g = PathGraph @ Range @ 9, axis = { 3, 4, 5, 6, 7 } },
+    FindCylinder[ g, axis, 1, Method -> "PerpendicularBisector" ][[ 1 ]] ],
+  { 3, 4, 5, 6, 7 },
+  TestID -> "FindCylinder-PerpendicularBisector-PathGraph"
 ]
 
 
@@ -123,7 +139,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ], axis = { 1, 2, 3, 4, 5 }, prof = { 0, 1, 2, 1, 0 } },
-    With[ { vs = FindRevolution[ g, axis, prof, "Form" -> "Solid" ][[ 1, 1 ]] },
+    With[ { vs = FindRevolution[ g, axis, prof, "Form" -> "Solid" ][[ 1 ]] },
       RevolutionQ[ g, vs, axis, prof, "Form" -> "Solid" ] ] ],
   True,
   TestID -> "RevolutionQ-round-trip-Solid"
@@ -131,7 +147,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ], axis = { 1, 2, 3, 4, 5 }, prof = { 0, 1, 2, 1, 0 } },
-    With[ { vs = FindRevolution[ g, axis, prof, "Form" -> "Surface" ][[ 1, 1 ]] },
+    With[ { vs = FindRevolution[ g, axis, prof, "Form" -> "Surface" ][[ 1 ]] },
       RevolutionQ[ g, vs, axis, prof, "Form" -> "Surface" ] ] ],
   True,
   TestID -> "RevolutionQ-round-trip-Surface"
@@ -157,7 +173,7 @@ VerificationTest[
   With[ { g = CycleGraph[ 6 ] },
     FindRevolution[ g,
       InfraSegment[ { { 1, 2, 3, 4 }, { 1, 6, 5, 4 } } ],
-      { 0, 1, 0, 0 }, "Form" -> "Solid" ][[ 1, 1 ]] ],
+      { 0, 1, 0, 0 }, "Form" -> "Solid" ][[ 1 ]] ],
   { 1, 2, 3, 4, 5, 6 },
   TestID -> "FindRevolution-multi-axis-thick"
 ]
@@ -167,7 +183,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = CycleGraph[ 6 ] },
-    FindRevolution[ g, { 1, 2, 3, 4 }, { 0, 1, 0, 0 }, "Form" -> "Solid" ][[ 1, 1 ]] ],
+    FindRevolution[ g, { 1, 2, 3, 4 }, { 0, 1, 0, 0 }, "Form" -> "Solid" ][[ 1 ]] ],
   { 1, 2, 3, 4 },
   TestID -> "FindRevolution-single-axis-thinner"
 ]

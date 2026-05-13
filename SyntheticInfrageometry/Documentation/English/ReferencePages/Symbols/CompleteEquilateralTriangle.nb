@@ -10,25 +10,102 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1573,         43]
-NotebookOptionsPosition[      1029,         28]
-NotebookOutlinePosition[      1346,         42]
-CellTagsIndexPosition[      1303,         39]
+NotebookDataLength[      6799,        145]
+NotebookOptionsPosition[      4023,        105]
+NotebookOutlinePosition[      4340,        119]
+CellTagsIndexPosition[      4297,        116]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for CompleteEquilateralTriangle\"", "Input",ExpressionUUID->"69a5d3cc-1811-4eba-9f61-a93c1ca8ae67"],
+Cell["CompleteEquilateralTriangle", "Title",ExpressionUUID->"fdceb050-2476-4ad9-947d-9bf52d8c3625"],
 
-Cell["?CompleteEquilateralTriangle", "Input",ExpressionUUID->"cc31d61b-cdee-4126-b411-c621a9fce656"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b51a9148-053f-4ef9-a484-d067545139c3"],
 
-Cell["Information[CompleteEquilateralTriangle, LongForm -> True]", "Input",ExpressionUUID->"967e9a83-39a4-47d7-b2e8-1633d6960afc"],
+Cell["\<\
+CompleteEquilateralTriangle[g, p1, p2] returns the apex vertices c satisfying \
+d(c, p1) == d(c, p2) == d(p1, p2) (Euclid I.1). Returns a List of unary \
+InfraPoint[{c}] wrappers; n / UpTo[n] / All control multiplicity. Option \
+Method (\"Metric\" (default); \"Spectral\", \"Resistance\" reserved).\
+\>", "Text",ExpressionUUID->"9bccf76f-8f29-47af-a374-c53dad4159e7"],
 
-Cell["Definition[CompleteEquilateralTriangle]", "Input",ExpressionUUID->"7c8afbee-5fe1-4a4c-924d-7f415c719c8b"]
+Cell["Setup", "Section",ExpressionUUID->"02c30546-5bfa-4e3c-b5cd-ba8575601b28"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"8da32def-9ffc-4211-a943-4ada1b059d0b"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"26f30032-6a15-44a9-8bca-07cba6968d27"],
+
+Cell["Examples", "Section",ExpressionUUID->"1b99c6c7-1d56-4008-bf5a-e88a315942cd"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"1dcf6572-d850-48f3-b937-0d53fd29fac1"],
+
+Cell[BoxData[
+ $CellContext`buildCell["No equilateral apex on a short path."]], "Input",Expr\
+essionUUID->"7c6d2185-87dc-49b8-b023-0fcc5e0b7c3b"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"a444b88f-f5d8-40df-87cc-76a7748c70ea"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "CompleteEquilateralTriangle[PathGraph[Range[5]], 1, 3, UpTo[1]]"]], "Input",\
+ExpressionUUID->"cd6e2f61-87a5-47d5-9516-dafe5435d321"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"96f3525b-99c2-4a82-82f1-34a94615b5f8"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Apices on a cycle."]], "Input",ExpressionUUID->"23c177a0-4a94-46f0-9db8-8edc67879cb3"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"8a505fa1-2491-42cb-b3d0-8de27c88b3de"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "CompleteEquilateralTriangle[CycleGraph[6], 1, 3, All]"]], "Input",Expression\
+UUID->"a9dfd3ee-b9d7-4ed7-8a41-e2c72705c3ab"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"9ad01c73-8110-40b7-8d63-5d023089f95e"],
+
+Cell[BoxData[
+ $CellContext`buildCell["On a 4x4 grid the apex is multi-valued."]], "Input",E\
+xpressionUUID->"c33d631c-5e06-4817-911b-8a0bf0856bb5"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"9c4be912-cacd-40f8-9986-b17c405175f6"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "CompleteEquilateralTriangle[GridGraph[{4, 4}], 1, 5, All]"]], "Input",Expres\
+sionUUID->"56cc1f21-7446-441b-9ac7-ca4a6a5c7b77"],
+
+Cell["See Also", "Section",ExpressionUUID->"76e633fd-266e-4c4f-a56f-2a4225eaf17e"],
+
+Cell["InfraPoint", "Item",ExpressionUUID->"fc3a534f-16cf-4117-869f-cfeba0f7baf8"],
+
+Cell["FindMidpoint", "Item",ExpressionUUID->"a9e8930b-171d-44b1-8eb9-abb32ecdd614"],
+
+Cell["FindShell", "Item",ExpressionUUID->"5c7f7de8-2d54-4b11-bf01-fb76a86a4bc7"],
+
+Cell["BetweennessQ", "Item",ExpressionUUID->"0636e3f0-aa77-436f-af24-831e0668eeed"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"b8126019-b309-4930-8158-0d082110350e"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"d792e8f4-bda2-49f3-81ba-b40464b05f44"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"9c0aec3a-8937-4d33-8ebb-76fdb1326fc1"],
+
+Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"d99d4c0c-3535-469c-b04e-7fc28f0e24ef"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +118,35 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 121, 0, 70, "Input",ExpressionUUID->"69a5d3cc-1811-4eba-9f61-a93c1ca8ae67"],
-Cell[678, 22, 100, 0, 70, "Input",ExpressionUUID->"cc31d61b-cdee-4126-b411-c621a9fce656"],
-Cell[781, 24, 130, 0, 70, "Input",ExpressionUUID->"967e9a83-39a4-47d7-b2e8-1633d6960afc"],
-Cell[914, 26, 111, 0, 70, "Input",ExpressionUUID->"7c8afbee-5fe1-4a4c-924d-7f415c719c8b"]
+Cell[554, 20, 99, 0, 70, "Title",ExpressionUUID->"fdceb050-2476-4ad9-947d-9bf52d8c3625"],
+Cell[656, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b51a9148-053f-4ef9-a484-d067545139c3"],
+Cell[749, 24, 377, 5, 70, "Text",ExpressionUUID->"9bccf76f-8f29-47af-a374-c53dad4159e7"],
+Cell[1129, 31, 79, 0, 70, "Section",ExpressionUUID->"02c30546-5bfa-4e3c-b5cd-ba8575601b28"],
+Cell[1211, 33, 91, 0, 70, "CodeText",ExpressionUUID->"8da32def-9ffc-4211-a943-4ada1b059d0b"],
+Cell[1305, 35, 192, 4, 70, "Code",ExpressionUUID->"26f30032-6a15-44a9-8bca-07cba6968d27",
+ InitializationCell->True],
+Cell[1500, 41, 82, 0, 70, "Section",ExpressionUUID->"1b99c6c7-1d56-4008-bf5a-e88a315942cd"],
+Cell[1585, 43, 115, 1, 70, "Input",ExpressionUUID->"1dcf6572-d850-48f3-b937-0d53fd29fac1"],
+Cell[1703, 46, 145, 2, 70, "Input",ExpressionUUID->"7c6d2185-87dc-49b8-b023-0fcc5e0b7c3b"],
+Cell[1851, 50, 112, 1, 70, "Input",ExpressionUUID->"a444b88f-f5d8-40df-87cc-76a7748c70ea"],
+Cell[1966, 53, 174, 3, 70, "Input",ExpressionUUID->"cd6e2f61-87a5-47d5-9516-dafe5435d321"],
+Cell[2143, 58, 115, 1, 70, "Input",ExpressionUUID->"96f3525b-99c2-4a82-82f1-34a94615b5f8"],
+Cell[2261, 61, 125, 1, 70, "Input",ExpressionUUID->"23c177a0-4a94-46f0-9db8-8edc67879cb3"],
+Cell[2389, 64, 112, 1, 70, "Input",ExpressionUUID->"8a505fa1-2491-42cb-b3d0-8de27c88b3de"],
+Cell[2504, 67, 164, 3, 70, "Input",ExpressionUUID->"a9dfd3ee-b9d7-4ed7-8a41-e2c72705c3ab"],
+Cell[2671, 72, 115, 1, 70, "Input",ExpressionUUID->"9ad01c73-8110-40b7-8d63-5d023089f95e"],
+Cell[2789, 75, 148, 2, 70, "Input",ExpressionUUID->"c33d631c-5e06-4817-911b-8a0bf0856bb5"],
+Cell[2940, 79, 112, 1, 70, "Input",ExpressionUUID->"9c4be912-cacd-40f8-9986-b17c405175f6"],
+Cell[3055, 82, 168, 3, 70, "Input",ExpressionUUID->"56cc1f21-7446-441b-9ac7-ca4a6a5c7b77"],
+Cell[3226, 87, 82, 0, 70, "Section",ExpressionUUID->"76e633fd-266e-4c4f-a56f-2a4225eaf17e"],
+Cell[3311, 89, 81, 0, 70, "Item",ExpressionUUID->"fc3a534f-16cf-4117-869f-cfeba0f7baf8"],
+Cell[3395, 91, 83, 0, 70, "Item",ExpressionUUID->"a9e8930b-171d-44b1-8eb9-abb32ecdd614"],
+Cell[3481, 93, 80, 0, 70, "Item",ExpressionUUID->"5c7f7de8-2d54-4b11-bf01-fb76a86a4bc7"],
+Cell[3564, 95, 83, 0, 70, "Item",ExpressionUUID->"0636e3f0-aa77-436f-af24-831e0668eeed"],
+Cell[3650, 97, 88, 0, 70, "Section",ExpressionUUID->"b8126019-b309-4930-8158-0d082110350e"],
+Cell[3741, 99, 93, 0, 70, "Item",ExpressionUUID->"d792e8f4-bda2-49f3-81ba-b40464b05f44"],
+Cell[3837, 101, 83, 0, 70, "Section",ExpressionUUID->"9c0aec3a-8937-4d33-8ebb-76fdb1326fc1"],
+Cell[3923, 103, 96, 0, 70, "Item",ExpressionUUID->"d99d4c0c-3535-469c-b04e-7fc28f0e24ef"]
 }
 ]
 *)

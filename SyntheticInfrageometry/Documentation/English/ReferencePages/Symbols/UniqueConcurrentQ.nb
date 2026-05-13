@@ -10,25 +10,70 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1532,         43]
-NotebookOptionsPosition[       989,         28]
-NotebookOutlinePosition[      1306,         42]
-CellTagsIndexPosition[      1263,         39]
+NotebookDataLength[      4617,        104]
+NotebookOptionsPosition[      2671,         73]
+NotebookOutlinePosition[      2988,         87]
+CellTagsIndexPosition[      2945,         84]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for UniqueConcurrentQ\"", "Input",ExpressionUUID->"15de54ec-433b-497d-bd6b-924db2ea06e9"],
+Cell["UniqueConcurrentQ", "Title",ExpressionUUID->"f66b1f0d-090b-4f34-a9ba-2d59f3126ba0"],
 
-Cell["?UniqueConcurrentQ", "Input",ExpressionUUID->"e8c899a1-1acd-4f5f-9fab-6aa954c4c1aa"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"fe85f9f5-368d-4e4e-aa39-6b6f896c4555"],
 
-Cell["Information[UniqueConcurrentQ, LongForm -> True]", "Input",ExpressionUUID->"821b7751-bbf3-467f-862c-0be2fcf72d8d"],
+Cell["\<\
+UniqueConcurrentQ[g, lines] tests whether the listed lines share exactly one \
+common vertex.\
+\>", "Text",ExpressionUUID->"d3cd391a-2454-439e-9517-47636c57e908"],
 
-Cell["Definition[UniqueConcurrentQ]", "Input",ExpressionUUID->"35180f69-470a-4bc8-9b6c-7ee79ba3e396"]
+Cell["Setup", "Section",ExpressionUUID->"001d13b8-f0ae-4911-abb7-9e14349bae83"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"8be5a7b1-5ba1-40ba-82c2-9f9f80644202"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"de4d36fd-4a87-44e0-bb45-83510a171c11"],
+
+Cell["Examples", "Section",ExpressionUUID->"0111de80-2ff3-49f6-8f86-643e65a6f064"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"255c0906-7995-4ad7-82d1-4707173472c6"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "Unique intersection of two diagonals at the grid centre."]], "Input",Express\
+ionUUID->"7a1a70bb-d3dd-47ed-9d0d-5853528a0096"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"c2951c3f-8c31-4137-91ac-ed02b33c65a3"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "UniqueConcurrentQ[GridGraph[{3, 3}], {{1, 5, 9}, {3, 5, 7}}]"]], "Input",Exp\
+ressionUUID->"7cc58679-9906-44b3-b8cf-edfa10d8922b"],
+
+Cell["See Also", "Section",ExpressionUUID->"9337651d-6a22-44ab-ab6c-150d1f0db746"],
+
+Cell["ConcurrentQ", "Item",ExpressionUUID->"0da10adb-21fe-4922-a8f4-45892b8d8304"],
+
+Cell["FindCommonPoint", "Item",ExpressionUUID->"5fc89e7d-c7da-4219-9b32-3022864c5fa5"],
+
+Cell["UniqueCollinearQ", "Item",ExpressionUUID->"c4200fcf-9b0a-4161-b921-92260f259b5f"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"f3c5e496-01ed-4265-952d-49b5a59acbc5"],
+
+Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"52797d44-246f-4408-8dfb-bc3f4815ea54"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"dd5210fc-99b2-44d0-82f6-873882a28987"],
+
+Cell["ProjectiveGeometryTutorial", "Item",ExpressionUUID->"c6ebe3f5-0434-4076-96b2-6386dda64210"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +86,26 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 111, 0, 70, "Input",ExpressionUUID->"15de54ec-433b-497d-bd6b-924db2ea06e9"],
-Cell[668, 22, 90, 0, 70, "Input",ExpressionUUID->"e8c899a1-1acd-4f5f-9fab-6aa954c4c1aa"],
-Cell[761, 24, 120, 0, 70, "Input",ExpressionUUID->"821b7751-bbf3-467f-862c-0be2fcf72d8d"],
-Cell[884, 26, 101, 0, 70, "Input",ExpressionUUID->"35180f69-470a-4bc8-9b6c-7ee79ba3e396"]
+Cell[554, 20, 89, 0, 70, "Title",ExpressionUUID->"f66b1f0d-090b-4f34-a9ba-2d59f3126ba0"],
+Cell[646, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"fe85f9f5-368d-4e4e-aa39-6b6f896c4555"],
+Cell[739, 24, 172, 3, 70, "Text",ExpressionUUID->"d3cd391a-2454-439e-9517-47636c57e908"],
+Cell[914, 29, 79, 0, 70, "Section",ExpressionUUID->"001d13b8-f0ae-4911-abb7-9e14349bae83"],
+Cell[996, 31, 91, 0, 70, "CodeText",ExpressionUUID->"8be5a7b1-5ba1-40ba-82c2-9f9f80644202"],
+Cell[1090, 33, 192, 4, 70, "Code",ExpressionUUID->"de4d36fd-4a87-44e0-bb45-83510a171c11",
+ InitializationCell->True],
+Cell[1285, 39, 82, 0, 70, "Section",ExpressionUUID->"0111de80-2ff3-49f6-8f86-643e65a6f064"],
+Cell[1370, 41, 115, 1, 70, "Input",ExpressionUUID->"255c0906-7995-4ad7-82d1-4707173472c6"],
+Cell[1488, 44, 167, 3, 70, "Input",ExpressionUUID->"7a1a70bb-d3dd-47ed-9d0d-5853528a0096"],
+Cell[1658, 49, 112, 1, 70, "Input",ExpressionUUID->"c2951c3f-8c31-4137-91ac-ed02b33c65a3"],
+Cell[1773, 52, 171, 3, 70, "Input",ExpressionUUID->"7cc58679-9906-44b3-b8cf-edfa10d8922b"],
+Cell[1947, 57, 82, 0, 70, "Section",ExpressionUUID->"9337651d-6a22-44ab-ab6c-150d1f0db746"],
+Cell[2032, 59, 82, 0, 70, "Item",ExpressionUUID->"0da10adb-21fe-4922-a8f4-45892b8d8304"],
+Cell[2117, 61, 86, 0, 70, "Item",ExpressionUUID->"5fc89e7d-c7da-4219-9b32-3022864c5fa5"],
+Cell[2206, 63, 87, 0, 70, "Item",ExpressionUUID->"c4200fcf-9b0a-4161-b921-92260f259b5f"],
+Cell[2296, 65, 88, 0, 70, "Section",ExpressionUUID->"f3c5e496-01ed-4265-952d-49b5a59acbc5"],
+Cell[2387, 67, 94, 0, 70, "Item",ExpressionUUID->"52797d44-246f-4408-8dfb-bc3f4815ea54"],
+Cell[2484, 69, 83, 0, 70, "Section",ExpressionUUID->"dd5210fc-99b2-44d0-82f6-873882a28987"],
+Cell[2570, 71, 97, 0, 70, "Item",ExpressionUUID->"c6ebe3f5-0434-4076-96b2-6386dda64210"]
 }
 ]
 *)

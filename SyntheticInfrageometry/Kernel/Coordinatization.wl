@@ -410,16 +410,18 @@ resolveSearchMethod[ opts_List ] :=
 
 
 findOrthogonalFrameCore[ g_Graph, c_, axisLength_, count_, opts_List ] /; MemberQ[ VertexList[ g ], c ] :=
-  Module[ { minLength, maxDepth },
+  Module[ { minLength, maxDepth, localG },
     { minLength, maxDepth } = parseAxisLengthSpec[ axisLength ];
-    With[ { dag = GeodesicGraph[ g, c, "AxisLength" -> Replace[ maxDepth, Infinity -> All ] ],
+    (* Localize: every distance the search needs lies in B(c, 2 maxDepth). *)
+    localG = If[ maxDepth === Infinity, g, NeighborhoodGraph[ g, c, 2 maxDepth ] ];
+    With[ { dag = GeodesicGraph[ localG, c, "AxisLength" -> Replace[ maxDepth, Infinity -> All ] ],
             axisCountSpec = "AxisCount" /. opts /. "AxisCount" -> Automatic,
             method = resolveSearchMethod[ opts ],
             sel = "SelectCoordinate" /. opts /. "SelectCoordinate" -> "Centered" },
       With[ { sampleSize = If[ method === "Greedy", All,
                   "BranchSampleSize" /. opts /. "BranchSampleSize" -> All ],
               maxFrames  = If[ method === "Greedy" && IntegerQ @ count, count, Infinity ] },
-        With[ { frames = orthogonalFrameDFS[ g, c, dag, axisCountSpec, minLength, sampleSize, maxFrames, sel ] },
+        With[ { frames = orthogonalFrameDFS[ localG, c, dag, axisCountSpec, minLength, sampleSize, maxFrames, sel ] },
           If[ method === "Exhaustive", SortBy[ frames, frameSortKey ], frames ]
         ]
       ]

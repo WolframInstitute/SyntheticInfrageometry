@@ -1,0 +1,129 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5709,        120]
+NotebookOptionsPosition[      3214,         83]
+NotebookOutlinePosition[      3531,         97]
+CellTagsIndexPosition[      3488,         94]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["$InfraPlaneColor", "Title",ExpressionUUID->"a8d358c6-22bc-4a94-8968-85f2fec350dd"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"005607f9-e705-436d-b916-e7478ed727ee"],
+
+Cell["\<\
+$InfraPlaneColor is the default highlight colour for InfraPlane objects \
+(bisecting hyperplanes).\
+\>", "Text",ExpressionUUID->"953a8180-65c2-4f01-8baa-ec0cbfbc75af"],
+
+Cell["Setup", "Section",ExpressionUUID->"2e530685-3dce-473a-b51a-a8dbea85ad3c"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"bfd53313-e089-4c2d-b135-15d737114b56"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"fc5879fb-dffd-4909-8c80-1db724bd5ec8"],
+
+Cell["Value", "Section",ExpressionUUID->"949773bd-d530-47ab-988c-57d93a2e7848"],
+
+Cell["Read the current colour value.", "CodeText",ExpressionUUID->"f0bdfb88-b1ea-40b0-911b-d95e4c7e7431"],
+
+Cell[BoxData["$InfraPlaneColor"], "Input",ExpressionUUID->"e10b5eb7-37ec-4560-bd65-bd09b7d74e9f"],
+
+Cell["Preview as a graphic.", "CodeText",ExpressionUUID->"6319fb2e-3a26-4f33-abbe-761df8fc92bb"],
+
+Cell[BoxData[
+ GraphicsBox[{$CellContext`$InfraPlaneColor, DiskBox[{0, 0}]},
+  ImageSize->60]], "Input",ExpressionUUID->"ff92709d-2326-4677-b9bc-\
+d068fb8725a2"],
+
+Cell["Used by", "Section",ExpressionUUID->"98458a9a-4624-47f9-812b-ee84eb5cdfcf"],
+
+Cell["\<\
+InfraSceneHighlight pulls this default for the corresponding Infra* head; \
+pass `entry -> color` per entry to override locally.\
+\>", "Text",ExpressionUUID->"7d8321d8-6a1d-46dd-9636-c345b2737372"],
+
+Cell["See Also", "Section",ExpressionUUID->"1bd7e0a3-d631-4e54-8473-d7ce17e93f23"],
+
+Cell["$InfraPointColor", "Item",ExpressionUUID->"7d028bc5-56ab-470c-860e-cc34bf838650"],
+
+Cell["$InfraSegmentColor", "Item",ExpressionUUID->"f0cdc73e-4bfc-4486-afcc-1117fa30f604"],
+
+Cell["$InfraShellColor", "Item",ExpressionUUID->"93e1727f-68bd-4922-af93-4072a7da2f22"],
+
+Cell["$InfraCircleColor", "Item",ExpressionUUID->"a48d7ca8-7c43-455b-85bb-b7d12af55e47"],
+
+Cell["$InfraRayColor", "Item",ExpressionUUID->"bb1a1bf5-84b7-4adc-9eec-202d69e5774f"],
+
+Cell["InfraSceneHighlight", "Item",ExpressionUUID->"50bad98d-338b-4764-846f-e712b027971e"],
+
+Cell["InfraPlane", "Item",ExpressionUUID->"295b5509-2949-4d34-a64f-22a046e19a1c"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"34d3043f-c2de-4890-8001-3657a6dc60fa"],
+
+Cell["VisualizationGuide", "Item",ExpressionUUID->"1a6b8a92-d1cf-4b5a-b857-83a30a20310c"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"a6216ff3-d304-4ef2-b0e0-eac6b99911a4"],
+
+Cell["VisualizationTutorial", "Item",ExpressionUUID->"33d93116-aefc-4f82-a0d5-71103ccfc951"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 88, 0, 70, "Title",ExpressionUUID->"a8d358c6-22bc-4a94-8968-85f2fec350dd"],
+Cell[645, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"005607f9-e705-436d-b916-e7478ed727ee"],
+Cell[738, 24, 177, 3, 70, "Text",ExpressionUUID->"953a8180-65c2-4f01-8baa-ec0cbfbc75af"],
+Cell[918, 29, 79, 0, 70, "Section",ExpressionUUID->"2e530685-3dce-473a-b51a-a8dbea85ad3c"],
+Cell[1000, 31, 91, 0, 70, "CodeText",ExpressionUUID->"bfd53313-e089-4c2d-b135-15d737114b56"],
+Cell[1094, 33, 192, 4, 70, "Code",ExpressionUUID->"fc5879fb-dffd-4909-8c80-1db724bd5ec8",
+ InitializationCell->True],
+Cell[1289, 39, 79, 0, 70, "Section",ExpressionUUID->"949773bd-d530-47ab-988c-57d93a2e7848"],
+Cell[1371, 41, 105, 0, 70, "CodeText",ExpressionUUID->"f0bdfb88-b1ea-40b0-911b-d95e4c7e7431"],
+Cell[1479, 43, 97, 0, 70, "Input",ExpressionUUID->"e10b5eb7-37ec-4560-bd65-bd09b7d74e9f"],
+Cell[1579, 45, 96, 0, 70, "CodeText",ExpressionUUID->"6319fb2e-3a26-4f33-abbe-761df8fc92bb"],
+Cell[1678, 47, 161, 3, 70, "Input",ExpressionUUID->"ff92709d-2326-4677-b9bc-d068fb8725a2"],
+Cell[1842, 52, 81, 0, 70, "Section",ExpressionUUID->"98458a9a-4624-47f9-812b-ee84eb5cdfcf"],
+Cell[1926, 54, 207, 3, 70, "Text",ExpressionUUID->"7d8321d8-6a1d-46dd-9636-c345b2737372"],
+Cell[2136, 59, 82, 0, 70, "Section",ExpressionUUID->"1bd7e0a3-d631-4e54-8473-d7ce17e93f23"],
+Cell[2221, 61, 87, 0, 70, "Item",ExpressionUUID->"7d028bc5-56ab-470c-860e-cc34bf838650"],
+Cell[2311, 63, 89, 0, 70, "Item",ExpressionUUID->"f0cdc73e-4bfc-4486-afcc-1117fa30f604"],
+Cell[2403, 65, 87, 0, 70, "Item",ExpressionUUID->"93e1727f-68bd-4922-af93-4072a7da2f22"],
+Cell[2493, 67, 88, 0, 70, "Item",ExpressionUUID->"a48d7ca8-7c43-455b-85bb-b7d12af55e47"],
+Cell[2584, 69, 85, 0, 70, "Item",ExpressionUUID->"bb1a1bf5-84b7-4adc-9eec-202d69e5774f"],
+Cell[2672, 71, 90, 0, 70, "Item",ExpressionUUID->"50bad98d-338b-4764-846f-e712b027971e"],
+Cell[2765, 73, 81, 0, 70, "Item",ExpressionUUID->"295b5509-2949-4d34-a64f-22a046e19a1c"],
+Cell[2849, 75, 88, 0, 70, "Section",ExpressionUUID->"34d3043f-c2de-4890-8001-3657a6dc60fa"],
+Cell[2940, 77, 89, 0, 70, "Item",ExpressionUUID->"1a6b8a92-d1cf-4b5a-b857-83a30a20310c"],
+Cell[3032, 79, 83, 0, 70, "Section",ExpressionUUID->"a6216ff3-d304-4ef2-b0e0-eac6b99911a4"],
+Cell[3118, 81, 92, 0, 70, "Item",ExpressionUUID->"33d93116-aefc-4f82-a0d5-71103ccfc951"]
+}
+]
+*)
+
+(* End of internal cache information *)

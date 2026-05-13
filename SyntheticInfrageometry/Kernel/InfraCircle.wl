@@ -31,21 +31,25 @@ FindCircle[ graph_Graph, p_, r_,
 
 
 findCircleCore[ graph_Graph, p_, r_, opts : OptionsPattern[ FindCircle ] ] :=
-  Module[ { range, levelSet, radius, levelGraph, allCycles, vertexCycles, separating, spec, methodName },
+  Module[ { range, localG, levelSet, radius, levelGraph, allCycles, vertexCycles, separating, spec, methodName },
     range = Replace[ r, d_?NumericQ :> { d, d } ];
-    levelSet = Select[ VertexList[ graph ],
-      range[[ 1 ]] <= GraphDistance[ graph, p, # ] <= range[[ 2 ]] & ];
+    (* Localize: cycles live in the level surface; +2 keeps boundary edges and the outside layer. *)
+    localG = If[ NumericQ[ range[[ 2 ]] ],
+                 NeighborhoodGraph[ graph, p, Ceiling[ range[[ 2 ]] ] + 2 ], graph ];
+    levelSet = Select[ VertexList[ localG ],
+      range[[ 1 ]] <= GraphDistance[ localG, p, # ] <= range[[ 2 ]] & ];
     radius = If[ NumericQ[ r ], r, Mean[ r ] ];
-    levelGraph = Subgraph[ graph, levelSet ];
+    levelGraph = Subgraph[ localG, levelSet ];
     allCycles = FindCycle[ levelGraph, Infinity, All ];
     separating = If[ allCycles === {}, {},
       vertexCycles = (First /@ #) & /@ allCycles;
-      FindSeparatingCycles[ graph, vertexCycles, p, radius ]
+      FindSeparatingCycles[ localG, vertexCycles, p, radius ]
     ];
     spec = OptionValue[ FindCircle, { opts }, Method ];
     methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
     Switch[ methodName,
       "Metric", separating,
+      (* Embedding uses global GraphEmbedding -> keep the original graph. *)
       "Embedding",
         With[ { embOpts = parseEmbeddingMethod[ spec, "LevelSet" ] },
           If[ embOpts[ "Pool" ] =!= "LevelSet",

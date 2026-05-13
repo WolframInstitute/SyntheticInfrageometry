@@ -418,4 +418,17 @@ VerificationTest[
   TestID -> "FindTarskiCounterexample-InnerPasch-PetersenGraph-fails"
 ]
 
+
+(* FindReflection is local: depends only on B(a, 2 d(a, x)). *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 10, 10 } ], x = 23, a = 25 },
+    Sort @ (#[[ 1, 1 ]] & /@ FindReflection[ g, x, a, All ]) ===
+      Sort @ (#[[ 1, 1 ]] & /@
+        FindReflection[ NeighborhoodGraph[ g, a, 2 GraphDistance[ g, a, x ] ], x, a, All ])
+  ],
+  True,
+  TestID -> "FindReflection-locality"
+]
+
 EndTestSection[]

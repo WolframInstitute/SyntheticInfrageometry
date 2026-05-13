@@ -10,25 +10,96 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1511,         43]
-NotebookOptionsPosition[       969,         28]
-NotebookOutlinePosition[      1286,         42]
-CellTagsIndexPosition[      1243,         39]
+NotebookDataLength[      6442,        138]
+NotebookOptionsPosition[      3758,         99]
+NotebookOutlinePosition[      4075,        113]
+CellTagsIndexPosition[      4032,        110]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for PathSubgraph\"", "Input",ExpressionUUID->"440c56fd-8eb2-4387-b1b2-9feeba899e98"],
+Cell["PathSubgraph", "Title",ExpressionUUID->"2546f7d9-4ae3-4247-91ad-f4d8875f6c45"],
 
-Cell["?PathSubgraph", "Input",ExpressionUUID->"ee3d6e3c-3d38-44c4-858f-e895a0059e10"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"56654340-93b6-49b5-821a-45bd21082b6d"],
 
-Cell["Information[PathSubgraph, LongForm -> True]", "Input",ExpressionUUID->"aaee3d0d-9fa4-4a44-a43a-9e985d606988"],
+Cell["\<\
+PathSubgraph[g, u, v] returns the union of all shortest u-v paths. \
+PathSubgraph[g, u, v, k] (or UpTo[k]) caps path length; PathSubgraph[g, u, v, \
+All] returns the full simple-path subgraph. Option \"Directed\".\
+\>", "Text",ExpressionUUID->"1c8b766c-ab9a-4dd3-a11b-9730d7816477"],
 
-Cell["Definition[PathSubgraph]", "Input",ExpressionUUID->"18f9b8cf-852a-42ee-b338-530d6eb68aee"]
+Cell["Setup", "Section",ExpressionUUID->"f05b54d2-cce3-4fba-af12-4a96b46147a5"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"8f5583c4-02f6-439e-9038-f6826772acad"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"42273229-0ca0-4dc5-acd4-eec1a71400d6"],
+
+Cell["Examples", "Section",ExpressionUUID->"316f0e45-a86a-4f6f-995b-b0fd4fab8006"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"ba112e5b-0335-4009-816c-897b573736f0"],
+
+Cell[BoxData[
+ $CellContext`buildCell["All shortest paths from 1 to 9 in a grid."]], "Input",\
+ExpressionUUID->"292eda0e-9fb5-4f03-bea4-17a1aacb6d86"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"0b361114-72fc-4e7f-aa39-72a44d194863"],
+
+Cell[BoxData[
+ $CellContext`buildCell["PathSubgraph[GridGraph[{3, 3}], 1, 9]"]], "Input",Exp\
+ressionUUID->"8e2c3159-0f0a-4bec-9ad9-4cc8bb5051f6"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"dba4d010-c6af-47c7-b1e5-faf2e94f36eb"],
+
+Cell[BoxData[
+ $CellContext`buildCell["All simple paths."]], "Input",ExpressionUUID->"71a58b11-eec5-4bbd-b76d-1ce34b1f3955"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"a5c9e776-e65b-4379-8df5-40cafee5263f"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "PathSubgraph[GridGraph[{3, 3}], 1, 9, All]"]], "Input",ExpressionUUID->\
+"783f88ce-53e1-4b77-928d-72c8dc9b2fb5"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"e0418f6a-e5c3-4817-b8b1-53ad7490c387"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Length-capped paths."]], "Input",ExpressionUUID->"1c6d3930-1198-491a-a7b0-1d1dc4c34b27"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"33556ee3-67e5-4988-86bb-3888a3be2278"],
+
+Cell[BoxData[
+ $CellContext`buildCell["PathSubgraph[GridGraph[{3, 3}], 1, 9, 5]"]], "Input",\
+ExpressionUUID->"07c89b79-be82-47d8-a6fc-16740a7f8bdf"],
+
+Cell["See Also", "Section",ExpressionUUID->"e3bf6662-4fa5-477c-9b86-0d265b7d5336"],
+
+Cell["GeodesicSubgraph", "Item",ExpressionUUID->"4bd80be3-49ed-4cc0-8d4c-3465700d452e"],
+
+Cell["GeodesicGraph", "Item",ExpressionUUID->"093b51be-406e-49d0-ae67-71a43ea3f521"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"67e50b30-94e9-42e7-81e5-79e4160684a3"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"ceeaac7e-932a-4db6-aff2-0860cbe98c61"],
+
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"9f642601-8f43-4049-a346-09d7a561fac4"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"00cbeb6f-15b6-4ed9-afab-0cd9d8fb25c2"],
+
+Cell["PathSpaceTutorial", "Item",ExpressionUUID->"79ae3cf4-2a2b-4c08-8d5e-1e8150aa3773"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +112,34 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 106, 0, 70, "Input",ExpressionUUID->"440c56fd-8eb2-4387-b1b2-9feeba899e98"],
-Cell[663, 22, 85, 0, 70, "Input",ExpressionUUID->"ee3d6e3c-3d38-44c4-858f-e895a0059e10"],
-Cell[751, 24, 115, 0, 70, "Input",ExpressionUUID->"aaee3d0d-9fa4-4a44-a43a-9e985d606988"],
-Cell[869, 26, 96, 0, 70, "Input",ExpressionUUID->"18f9b8cf-852a-42ee-b338-530d6eb68aee"]
+Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"2546f7d9-4ae3-4247-91ad-f4d8875f6c45"],
+Cell[641, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"56654340-93b6-49b5-821a-45bd21082b6d"],
+Cell[734, 24, 292, 4, 70, "Text",ExpressionUUID->"1c8b766c-ab9a-4dd3-a11b-9730d7816477"],
+Cell[1029, 30, 79, 0, 70, "Section",ExpressionUUID->"f05b54d2-cce3-4fba-af12-4a96b46147a5"],
+Cell[1111, 32, 91, 0, 70, "CodeText",ExpressionUUID->"8f5583c4-02f6-439e-9038-f6826772acad"],
+Cell[1205, 34, 192, 4, 70, "Code",ExpressionUUID->"42273229-0ca0-4dc5-acd4-eec1a71400d6",
+ InitializationCell->True],
+Cell[1400, 40, 82, 0, 70, "Section",ExpressionUUID->"316f0e45-a86a-4f6f-995b-b0fd4fab8006"],
+Cell[1485, 42, 115, 1, 70, "Input",ExpressionUUID->"ba112e5b-0335-4009-816c-897b573736f0"],
+Cell[1603, 45, 150, 2, 70, "Input",ExpressionUUID->"292eda0e-9fb5-4f03-bea4-17a1aacb6d86"],
+Cell[1756, 49, 112, 1, 70, "Input",ExpressionUUID->"0b361114-72fc-4e7f-aa39-72a44d194863"],
+Cell[1871, 52, 146, 2, 70, "Input",ExpressionUUID->"8e2c3159-0f0a-4bec-9ad9-4cc8bb5051f6"],
+Cell[2020, 56, 115, 1, 70, "Input",ExpressionUUID->"dba4d010-c6af-47c7-b1e5-faf2e94f36eb"],
+Cell[2138, 59, 124, 1, 70, "Input",ExpressionUUID->"71a58b11-eec5-4bbd-b76d-1ce34b1f3955"],
+Cell[2265, 62, 112, 1, 70, "Input",ExpressionUUID->"a5c9e776-e65b-4379-8df5-40cafee5263f"],
+Cell[2380, 65, 153, 3, 70, "Input",ExpressionUUID->"783f88ce-53e1-4b77-928d-72c8dc9b2fb5"],
+Cell[2536, 70, 115, 1, 70, "Input",ExpressionUUID->"e0418f6a-e5c3-4817-b8b1-53ad7490c387"],
+Cell[2654, 73, 127, 1, 70, "Input",ExpressionUUID->"1c6d3930-1198-491a-a7b0-1d1dc4c34b27"],
+Cell[2784, 76, 112, 1, 70, "Input",ExpressionUUID->"33556ee3-67e5-4988-86bb-3888a3be2278"],
+Cell[2899, 79, 149, 2, 70, "Input",ExpressionUUID->"07c89b79-be82-47d8-a6fc-16740a7f8bdf"],
+Cell[3051, 83, 82, 0, 70, "Section",ExpressionUUID->"e3bf6662-4fa5-477c-9b86-0d265b7d5336"],
+Cell[3136, 85, 87, 0, 70, "Item",ExpressionUUID->"4bd80be3-49ed-4cc0-8d4c-3465700d452e"],
+Cell[3226, 87, 84, 0, 70, "Item",ExpressionUUID->"093b51be-406e-49d0-ae67-71a43ea3f521"],
+Cell[3313, 89, 85, 0, 70, "Item",ExpressionUUID->"67e50b30-94e9-42e7-81e5-79e4160684a3"],
+Cell[3401, 91, 88, 0, 70, "Section",ExpressionUUID->"ceeaac7e-932a-4db6-aff2-0860cbe98c61"],
+Cell[3492, 93, 85, 0, 70, "Item",ExpressionUUID->"9f642601-8f43-4049-a346-09d7a561fac4"],
+Cell[3580, 95, 83, 0, 70, "Section",ExpressionUUID->"00cbeb6f-15b6-4ed9-afab-0cd9d8fb25c2"],
+Cell[3666, 97, 88, 0, 70, "Item",ExpressionUUID->"79ae3cf4-2a2b-4c08-8d5e-1e8150aa3773"]
 }
 ]
 *)

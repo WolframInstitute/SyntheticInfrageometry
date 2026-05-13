@@ -92,6 +92,7 @@ selectFromName[ name_String  ] := name
    vertices fall through to the singleton case. *)
 
 infraVertexSet[ InfraPoint[ vs_List ] ] := vs
+infraVertexSet[ InfraObject[ vs_List ] ] := vs
 infraVertexSet[ ( InfraSegment | InfraLine | InfraRay | InfraCircle
                 | InfraShell | InfraPlane )[ reps_List ] ] :=
   Union @@ reps
@@ -311,7 +312,7 @@ dispatchConstruction[ graph_Graph, InfraRevolution[ axis_, profile_, opts___Rule
   capBranches[
     applySelectOption[ graph,
       { FindRevolution[ graph, axis, profile,
-          Sequence @@ FilterRules[ { opts }, Options[ FindRevolution ] ] ][[ 1, 1 ]] },
+          Sequence @@ FilterRules[ { opts }, Options[ FindRevolution ] ] ][[ 1 ]] },
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Axis" -> axis, "Profile" -> profile |> ],
     extractBranches[ { opts } ] ]

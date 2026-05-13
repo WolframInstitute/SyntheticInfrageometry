@@ -10,82 +10,108 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5643,        116]
-NotebookOptionsPosition[      3617,         85]
-NotebookOutlinePosition[      3934,         99]
-CellTagsIndexPosition[      3891,         96]
+NotebookDataLength[      7142,        153]
+NotebookOptionsPosition[      4183,        111]
+NotebookOutlinePosition[      4500,        125]
+CellTagsIndexPosition[      4457,        122]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindShell", "Title",ExpressionUUID->"20c5ac1d-b818-4851-afd2-4aee37c2ab15"],
+Cell["FindShell", "Title",ExpressionUUID->"5aef2303-5772-43ed-ae70-65c7639f2c23"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"8854cc85-6214-46e4-a004-d246842127e8"],
 
 Cell["\<\
-FindShell[graph, c, r] returns InfraShell[{levelSet}] for the metric shell of \
-radius r around c -- the level surface { v : d(c, v) = r }. Method -> \
-\"Metric\" (default) returns the level surface as one vertex set; \
-\"Separating\" returns minimal connected subsets of the level surface whose \
-removal disconnects c from the exterior; \"Embedding\" returns single-vertex \
-sets ranked by Euclidean distance to the sphere of radius r under the graph \
-drawing. The cyclic case (separating cycles) is FindCircle.\
-\>", "Text",ExpressionUUID->"38e7d208-e486-40cf-86a1-c1161201fb1d"],
+FindShell[g, c, r] returns one metric shell { v : d(c, v) == r } around c. \
+Returns a List of unary InfraShell[{set}] wrappers; n / UpTo[n] / All control \
+multiplicity. Option Method (\"Metric\" (default) | \"Separating\" | \
+\"Embedding\").\
+\>", "Text",ExpressionUUID->"2b3ce258-fb5b-474d-9c80-314bfa52a44c"],
 
-Cell["Setup", "Section",ExpressionUUID->"cac40bdd-ebd1-4b28-90e6-753e1a2d6ada"],
+Cell["Setup", "Section",ExpressionUUID->"971705c9-3950-4ce0-8701-ab6e534c363a"],
 
-Cell["Load the paclet before running the examples on this page.", "CodeText",ExpressionUUID->"6d13e332-c1c8-4509-abdf-15d24c24bc4c"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"a28c2e23-898b-4ec9-a9b8-95ed244ecb55"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"b71db188-0d61-4e8c-a114-9292763cc98a"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"ea041ccf-f144-4bf3-9e9c-efa2a605bb8d"],
 
-Cell["Usage", "Section",ExpressionUUID->"ebae15b2-5ca0-4408-9d96-208cf4e34867"],
+Cell["Examples", "Section",ExpressionUUID->"f5b94b44-3b9c-4271-b8ce-83009d940886"],
 
-Cell["\<\
-Read the level surface at radius 2 from the center of a 5x5 grid.\
-\>", "CodeText",ExpressionUUID->"bb5ac207-dc66-4818-af17-5539d5ca5169"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"58b7e6c7-26c3-440e-af0e-aa446a475e9c"],
 
-Cell["FindShell[GridGraph[{5, 5}], 13, 2][\"First\"]", "Input",ExpressionUUID->"b8cb12af-408a-4458-8b06-9c1022b85ffd"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "The distance-1 metric shell around the centre of a grid."]], "Input",Express\
+ionUUID->"cad0de9a-1fac-4060-9dbc-dab2b335523a"],
 
-Cell["\<\
-Visualize the metric shell as red points on top of the graph.\
-\>", "CodeText",ExpressionUUID->"98cd001e-a52f-4b7b-a1a8-99fb54a8a4db"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"b386af18-a470-4675-a483-b9e39952c748"],
 
-Cell["\<\
-With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, {FindShell[g, 13, 2] -> \
-Red, InfraPoint[{13}] -> Blue}]]\
-\>", "Input",ExpressionUUID->"04196f74-4d2b-4001-95c4-c51b18ec9677"],
+Cell[BoxData[
+ $CellContext`buildCell["FindShell[GridGraph[{3, 3}], 5, 1]"]], "Input",Expres\
+sionUUID->"f47e6453-3de3-4083-be8b-c84c084b986b"],
 
-Cell["Examples", "Section",ExpressionUUID->"2cafa7c1-cb8d-4f17-8664-766f3d840b56"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"48f84c0b-10ab-4390-9bd2-f35f5941e71d"],
 
-Cell["\<\
-Method -> \"Separating\" returns minimal connected subsets that separate the \
-center from the exterior of the closed ball.\
-\>", "CodeText",ExpressionUUID->"532f796b-30de-45d5-8c2d-e16c7c9abf73"],
+Cell[BoxData[
+ $CellContext`buildCell["Diffuse rendering of the shell."]], "Input",Expressio\
+nUUID->"86c3be0a-d608-4548-9347-572b79252100"],
 
-Cell["\<\
-With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, {FindShell[g, 13, 2, \
-All, Method -> \"Separating\"] -> Red, InfraPoint[{13}] -> Blue}]]\
-\>", "Input",ExpressionUUID->"082e4e37-f59f-4e3f-b2a1-44386b811233"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"ce946ce8-9ab2-42df-9cd6-1b8327d39948"],
 
-Cell["Three concentric shells around vertex 13 on a 5x5 grid.", "CodeText",ExpressionUUID->"b597f8a5-4011-431f-a871-e8b266f3464c"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "With[{g = GridGraph[{3, 3}]}, InfraSceneHighlight[g, {FindShell[g, 5, 1] -> \
+LightBlue}]]"]], "Input",ExpressionUUID->"7f9a399d-e966-4089-bbb7-\
+9a23a94c062a"],
 
-Cell["\<\
-With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, {FindShell[g, 13, 1] -> \
-Red, FindShell[g, 13, 2] -> Orange, FindShell[g, 13, 3] -> Yellow, \
-InfraPoint[{13}] -> Blue}]]\
-\>", "Input",ExpressionUUID->"210d1ddd-66e7-454c-afc2-cc54c36d3f73"],
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"d9ea8007-7a26-4aa1-8644-f4e46b93b967"],
 
-Cell["See also", "Section",ExpressionUUID->"e9174f71-10bd-4ba3-9343-a901ab62496f"],
+Cell[BoxData[
+ $CellContext`buildCell["Separating subset (minimal cut) Method."]], "Input",E\
+xpressionUUID->"da99a4fe-0265-4cea-9861-c239e61cb36b"],
 
-Cell["FindCircle", "Item",ExpressionUUID->"693d0de9-6782-4a2c-b3e8-0966707cb297"],
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"3f233819-e114-4f21-a29a-72b0dda24839"],
 
-Cell["FindShellParameters", "Item",ExpressionUUID->"9706ad04-ce3f-4f1f-93cf-a5c38a28a145"],
+Cell[BoxData[
+ $CellContext`buildCell[
+ "FindShell[GridGraph[{3, 3}], 5, 1, All, Method -> \"Separating\"]"]], \
+"Input",ExpressionUUID->"b34043fc-b3eb-409e-90fa-ff305bd93f85"],
 
-Cell["ShellQ", "Item",ExpressionUUID->"362ddb0c-f3a7-4428-a5f1-5066d5295b7a"],
+Cell["See Also", "Section",ExpressionUUID->"7eb571f9-facd-4835-8334-c97f9a941e2d"],
 
-Cell["InfraSceneHighlight", "Item",ExpressionUUID->"4d198b84-fea6-483b-929e-953d6de4ae9c"]
+Cell["InfraShell", "Item",ExpressionUUID->"81c30d1b-691f-494e-a09c-67ebc1664756"],
+
+Cell["FindShellParameters", "Item",ExpressionUUID->"8de3b3b1-3f2e-42a5-a72d-47a2bd041b54"],
+
+Cell["ShellQ", "Item",ExpressionUUID->"6adc3ca5-38ab-4448-a3d5-58bb6e536261"],
+
+Cell["FindCircle", "Item",ExpressionUUID->"7198c99b-3372-48c6-8476-cc9721a7b497"],
+
+Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"3869090f-6c8e-43ec-8746-d891b31f643c"],
+
+Cell["FindPoint", "Item",ExpressionUUID->"3104a0ca-478e-44ec-8f0f-60c983950406"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"a66c9cdc-234c-4395-bd72-3637ce2d96b2"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"129d88f2-8e04-48df-b38a-608e9c1dc048"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"f25ce2c3-a53a-4444-a7b7-98b248d34301"],
+
+Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"630c8f8a-593f-4128-b999-959dcef44b1b"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"6dc4a242-813d-4352-ac44-d8bf3ee96084"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -98,26 +124,37 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 81, 0, 70, "Title",ExpressionUUID->"20c5ac1d-b818-4851-afd2-4aee37c2ab15"],
-Cell[638, 22, 593, 8, 70, "Text",ExpressionUUID->"38e7d208-e486-40cf-86a1-c1161201fb1d"],
-Cell[1234, 32, 79, 0, 70, "Section",ExpressionUUID->"cac40bdd-ebd1-4b28-90e6-753e1a2d6ada"],
-Cell[1316, 34, 132, 0, 70, "CodeText",ExpressionUUID->"6d13e332-c1c8-4509-abdf-15d24c24bc4c"],
-Cell[1451, 36, 122, 0, 70, "Code",ExpressionUUID->"b71db188-0d61-4e8c-a114-9292763cc98a"],
-Cell[1576, 38, 79, 0, 70, "Section",ExpressionUUID->"ebae15b2-5ca0-4408-9d96-208cf4e34867"],
-Cell[1658, 40, 148, 2, 70, "CodeText",ExpressionUUID->"bb5ac207-dc66-4818-af17-5539d5ca5169"],
-Cell[1809, 44, 118, 0, 70, "Input",ExpressionUUID->"b8cb12af-408a-4458-8b06-9c1022b85ffd"],
-Cell[1930, 46, 144, 2, 70, "CodeText",ExpressionUUID->"98cd001e-a52f-4b7b-a1a8-99fb54a8a4db"],
-Cell[2077, 50, 191, 3, 70, "Input",ExpressionUUID->"04196f74-4d2b-4001-95c4-c51b18ec9677"],
-Cell[2271, 55, 82, 0, 70, "Section",ExpressionUUID->"2cafa7c1-cb8d-4f17-8664-766f3d840b56"],
-Cell[2356, 57, 206, 3, 70, "CodeText",ExpressionUUID->"532f796b-30de-45d5-8c2d-e16c7c9abf73"],
-Cell[2565, 62, 222, 3, 70, "Input",ExpressionUUID->"082e4e37-f59f-4e3f-b2a1-44386b811233"],
-Cell[2790, 67, 130, 0, 70, "CodeText",ExpressionUUID->"b597f8a5-4011-431f-a871-e8b266f3464c"],
-Cell[2923, 69, 255, 4, 70, "Input",ExpressionUUID->"210d1ddd-66e7-454c-afc2-cc54c36d3f73"],
-Cell[3181, 75, 82, 0, 70, "Section",ExpressionUUID->"e9174f71-10bd-4ba3-9343-a901ab62496f"],
-Cell[3266, 77, 81, 0, 70, "Item",ExpressionUUID->"693d0de9-6782-4a2c-b3e8-0966707cb297"],
-Cell[3350, 79, 90, 0, 70, "Item",ExpressionUUID->"9706ad04-ce3f-4f1f-93cf-a5c38a28a145"],
-Cell[3443, 81, 77, 0, 70, "Item",ExpressionUUID->"362ddb0c-f3a7-4428-a5f1-5066d5295b7a"],
-Cell[3523, 83, 90, 0, 70, "Item",ExpressionUUID->"4d198b84-fea6-483b-929e-953d6de4ae9c"]
+Cell[554, 20, 81, 0, 70, "Title",ExpressionUUID->"5aef2303-5772-43ed-ae70-65c7639f2c23"],
+Cell[638, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"8854cc85-6214-46e4-a004-d246842127e8"],
+Cell[731, 24, 322, 5, 70, "Text",ExpressionUUID->"2b3ce258-fb5b-474d-9c80-314bfa52a44c"],
+Cell[1056, 31, 79, 0, 70, "Section",ExpressionUUID->"971705c9-3950-4ce0-8701-ab6e534c363a"],
+Cell[1138, 33, 91, 0, 70, "CodeText",ExpressionUUID->"a28c2e23-898b-4ec9-a9b8-95ed244ecb55"],
+Cell[1232, 35, 192, 4, 70, "Code",ExpressionUUID->"ea041ccf-f144-4bf3-9e9c-efa2a605bb8d",
+ InitializationCell->True],
+Cell[1427, 41, 82, 0, 70, "Section",ExpressionUUID->"f5b94b44-3b9c-4271-b8ce-83009d940886"],
+Cell[1512, 43, 115, 1, 70, "Input",ExpressionUUID->"58b7e6c7-26c3-440e-af0e-aa446a475e9c"],
+Cell[1630, 46, 167, 3, 70, "Input",ExpressionUUID->"cad0de9a-1fac-4060-9dbc-dab2b335523a"],
+Cell[1800, 51, 112, 1, 70, "Input",ExpressionUUID->"b386af18-a470-4675-a483-b9e39952c748"],
+Cell[1915, 54, 143, 2, 70, "Input",ExpressionUUID->"f47e6453-3de3-4083-be8b-c84c084b986b"],
+Cell[2061, 58, 115, 1, 70, "Input",ExpressionUUID->"48f84c0b-10ab-4390-9bd2-f35f5941e71d"],
+Cell[2179, 61, 140, 2, 70, "Input",ExpressionUUID->"86c3be0a-d608-4548-9347-572b79252100"],
+Cell[2322, 65, 112, 1, 70, "Input",ExpressionUUID->"ce946ce8-9ab2-42df-9cd6-1b8327d39948"],
+Cell[2437, 68, 201, 4, 70, "Input",ExpressionUUID->"7f9a399d-e966-4089-bbb7-9a23a94c062a"],
+Cell[2641, 74, 115, 1, 70, "Input",ExpressionUUID->"d9ea8007-7a26-4aa1-8644-f4e46b93b967"],
+Cell[2759, 77, 148, 2, 70, "Input",ExpressionUUID->"da99a4fe-0265-4cea-9861-c239e61cb36b"],
+Cell[2910, 81, 112, 1, 70, "Input",ExpressionUUID->"3f233819-e114-4f21-a29a-72b0dda24839"],
+Cell[3025, 84, 176, 3, 70, "Input",ExpressionUUID->"b34043fc-b3eb-409e-90fa-ff305bd93f85"],
+Cell[3204, 89, 82, 0, 70, "Section",ExpressionUUID->"7eb571f9-facd-4835-8334-c97f9a941e2d"],
+Cell[3289, 91, 81, 0, 70, "Item",ExpressionUUID->"81c30d1b-691f-494e-a09c-67ebc1664756"],
+Cell[3373, 93, 90, 0, 70, "Item",ExpressionUUID->"8de3b3b1-3f2e-42a5-a72d-47a2bd041b54"],
+Cell[3466, 95, 77, 0, 70, "Item",ExpressionUUID->"6adc3ca5-38ab-4448-a3d5-58bb6e536261"],
+Cell[3546, 97, 81, 0, 70, "Item",ExpressionUUID->"7198c99b-3372-48c6-8476-cc9721a7b497"],
+Cell[3630, 99, 94, 0, 70, "Item",ExpressionUUID->"3869090f-6c8e-43ec-8746-d891b31f643c"],
+Cell[3727, 101, 80, 0, 70, "Item",ExpressionUUID->"3104a0ca-478e-44ec-8f0f-60c983950406"],
+Cell[3810, 103, 88, 0, 70, "Section",ExpressionUUID->"a66c9cdc-234c-4395-bd72-3637ce2d96b2"],
+Cell[3901, 105, 93, 0, 70, "Item",ExpressionUUID->"129d88f2-8e04-48df-b38a-608e9c1dc048"],
+Cell[3997, 107, 83, 0, 70, "Section",ExpressionUUID->"f25ce2c3-a53a-4444-a7b7-98b248d34301"],
+Cell[4083, 109, 96, 0, 70, "Item",ExpressionUUID->"630c8f8a-593f-4128-b999-959dcef44b1b"]
 }
 ]
 *)

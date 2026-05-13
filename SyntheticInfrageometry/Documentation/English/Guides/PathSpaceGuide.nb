@@ -10,95 +10,127 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      6236,        139]
-NotebookOptionsPosition[      3958,        105]
-NotebookOutlinePosition[      4275,        119]
-CellTagsIndexPosition[      4232,        116]
+NotebookDataLength[      9337,        182]
+NotebookOptionsPosition[      5469,        130]
+NotebookOutlinePosition[      5786,        144]
+CellTagsIndexPosition[      5743,        141]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["PathSpace Layer", "Title",ExpressionUUID->"dc354bb9-8b31-4541-b217-abedd8e8a18c"],
+Cell["Path Space", "Title",ExpressionUUID->"a35bded2-915b-4c27-abc8-457b38fae069"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"7c0cc5c7-627b-43bd-a60a-1fb38f590064"],
 
 Cell["\<\
-PathSpace selectors are post-filters: enumerate full multiplicity first, then \
-keep central, peripheral, embedding-closest, shortest, or longest \
-representatives.\
-\>", "Text",ExpressionUUID->"25710b2e-8581-4aec-952f-c6cfe0f8eabe"],
+The path-space layer treats the bundle of geodesics (or cycles) between \
+vertices as a finite metric space in its own right \[LongDash] with \
+Hausdorff, Frechet, and mean-Frechet metrics on paths \[LongDash] and exposes \
+FindPoint-shaped selectors over that space.\
+\>", "Text",ExpressionUUID->"a49b041b-4b70-42f4-8a93-b2d3b5458f80"],
 
-Cell["Path selectors", "Section",ExpressionUUID->"b4c09a93-fc3e-4007-9c19-43cb2dbf5899"],
+Cell["Setup", "Section",ExpressionUUID->"8a92ed7f-5661-4df7-9104-393babed461d"],
 
-Cell["SelectPaths (criteria: \"Central\", \"Peripheral\")", "Item",ExpressionUUID->"5244962c-cea6-47f9-98d2-e97d6f6bfd78"],
-
-Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"5605d0d8-702b-4c88-b5aa-9bbe882c9d55"],
-
-Cell["Cycle selectors", "Section",ExpressionUUID->"5e8cc301-7b52-475a-be78-871700ee47c5"],
-
-Cell["SelectCycles (criteria: \"Central\", \"Peripheral\", \"ShortestCircumference\", \"LongestCircumference\")", "Item",ExpressionUUID->"79615348-1e0b-4b0e-8560-33727a37b10d"],
-
-Cell["EmbeddingClosestCycles", "Item",ExpressionUUID->"aefdf5df-b7a7-435f-80ea-9a5b13bea637"],
-
-Cell["Typical pipeline", "Section",ExpressionUUID->"b5a313ab-8821-47ca-b4d7-5a3503dbed04"],
-
-Cell["Enumerate first, then filter.", "CodeText",ExpressionUUID->"f19d932d-7945-4b67-a1bf-bb37a88d6faa"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"92311498-da15-4fb0-8d9e-14fd38dc419f"],
 
 Cell[BoxData[
- RowBox[{"With", "[",
-  RowBox[{
-   RowBox[{"{",
-    RowBox[{"g", "=",
-     RowBox[{"GridGraph", "[",
-      RowBox[{"{",
-       RowBox[{"4", ",", "4"}], "}"}], "]"}]}], "}"}], ",",
-   RowBox[{
-    RowBox[{"EmbeddingClosestPaths", "[",
-     RowBox[{"g", ",",
-      RowBox[{"{",
-       RowBox[{"1", ",", "16"}], "}"}]}], "]"}], "[",
-    RowBox[{
-     RowBox[{"SelectPaths", "[",
-      RowBox[{"g", ",", "\"\<Central\>\""}], "]"}], "[",
-     RowBox[{"FindSegment", "[",
-      RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "]"}], "]"}]}],
-  "]"}]], "Input",ExpressionUUID->"72e1cbb0-f9c3-4419-b142-8b9ebc50f989"],
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"d114656b-7080-42fa-aa73-43e410670b14"],
 
-Cell["Tutorial", "Section",ExpressionUUID->"f87a9767-6390-4b6d-8c92-3c5fce1f8962"],
+Cell["Selectors", "Section",ExpressionUUID->"d805c12f-8c2f-455c-ab58-8d6dd8efd369"],
 
 Cell["\<\
-See PathSpaceTutorial for end-to-end segment and cycle examples.\
-\>", "Item",ExpressionUUID->"2eada757-e214-441a-be4b-2783a564a636"],
+FindPoint-shaped on path-space; calling triple n_Integer | UpTo[n] | All.\
+\>", "Text",ExpressionUUID->"9382fbd2-b667-42cf-ac59-3307b6f8c4d8"],
 
-Cell["References", "Section",ExpressionUUID->"ebb5a041-905d-497a-ab54-5af721770bb2"],
+Cell["SelectPath", "Item",ExpressionUUID->"982ba3dd-3d68-4c98-83e7-c0ea51a84e1e"],
+
+Cell["SelectCycle", "Item",ExpressionUUID->"63d00637-dee7-46d1-b275-f697d3e41c79"],
+
+Cell["Embedding-closest filters", "Section",ExpressionUUID->"99b7ac7d-5057-49af-a5fa-4626c6cd982c"],
+
+Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"bebcebd2-7cd0-47bc-b756-97fee94f3ea9"],
+
+Cell["EmbeddingClosestCycles", "Item",ExpressionUUID->"762d1468-a403-46f3-9a2e-a9099fe8ca53"],
+
+Cell["Geodesic-graph machinery", "Section",ExpressionUUID->"9f31f337-9a68-41fc-b574-66ef4b3ebbb6"],
+
+Cell["GeodesicGraph", "Item",ExpressionUUID->"1e2512af-db89-47fe-b68d-b462c0fa4d45"],
+
+Cell["GeodesicSubgraph", "Item",ExpressionUUID->"828e1d9e-3bf8-4f09-8b25-ff8b44e47973"],
+
+Cell["PathSubgraph", "Item",ExpressionUUID->"dc522690-f930-4907-b984-c130c29f6ad4"],
+
+Cell["Metric-geometry building blocks", "Section",ExpressionUUID->"7f6cca8e-1ef3-4533-8152-34b03ea4d10b"],
+
+Cell["MetricInterval", "Item",ExpressionUUID->"763893c6-36bc-4b50-a5c8-ed08614f6df0"],
+
+Cell["GeodesicMultiplicity", "Item",ExpressionUUID->"ee91536a-6b4c-4583-bee6-c265b33026ad"],
+
+Cell["GeodesicMultiplicityMatrix", "Item",ExpressionUUID->"907dd299-95de-445a-8b2d-ca13077b0464"],
+
+Cell["MedianVertices", "Item",ExpressionUUID->"afae3338-b860-499f-8f8d-9af7471ac2db"],
+
+Cell["Path-space \"From\" values", "Section",ExpressionUUID->"fe297f91-5af3-47d2-9605-e87b27200b5a"],
+
+Cell["All (default) \[LongDash] no anchor", "Item",ExpressionUUID->"554807a4-802e-4206-9960-7d9c68ba91c8"],
 
 Cell["\<\
-Linial, Geodesic Geometry on Graphs, \
-https://www.cs.huji.ac.il/~nati/PAPERS/ge_ge_gr.pdf\
-\>", "Item",ExpressionUUID->"486a26ae-9b42-42a4-a4cc-7dc7527162ca"],
+\"Center\" / \"Periphery\" \[LongDash] central / peripheral elements in \
+path-space\
+\>", "Item",ExpressionUUID->"6b47f11c-9d34-4bab-989b-8d56b05ecbfe"],
+
+Cell["\"MostVisited\" \[LongDash] paths through the most-shared vertex", \
+"Item",ExpressionUUID->"c644ee8e-27fa-417b-8450-7fb8b6092bdf"],
+
+Cell["anchor -> spec \[LongDash] pull toward a vertex / InfraPoint", "Item",ExpressionUUID->"f343e491-091a-4469-971b-05a19f2321c5"],
+
+Cell["InfraSegment[{...}] -> spec \[LongDash] pull toward a known segment", \
+"Item",ExpressionUUID->"6e14ae4f-49f7-4780-979b-43b6b6321172"],
+
+Cell["\<\
+(SelectCycle only) \"ShortestCircumference\" / \"LongestCircumference\"\
+\>", "Item",ExpressionUUID->"86573fd7-0d84-452e-8b02-361b67b259e5"],
+
+Cell["Path-space metrics", "Section",ExpressionUUID->"ae8e3b8c-1fed-4fa9-b1d9-1b980003446d"],
+
+Cell["\"Hausdorff\" (default) \[LongDash] symmetric set distance", "Item",ExpressionUUID->"b7cf2d78-dc8d-4009-8fbe-19cc255d7bae"],
+
+Cell["\"Frechet\" \[LongDash] order-sensitive walk-coupling distance", "Item",ExpressionUUID->"091606a8-360d-40d7-8225-24914e3e0a21"],
+
+Cell["\"MeanFrechet\" \[LongDash] averaged Frechet", "Item",ExpressionUUID->"c03e8841-536e-456e-a029-b2d26abde0f1"],
+
+Cell["Tutorial", "Section",ExpressionUUID->"a545d28d-3f2a-45f7-afdd-e497bb5ffb61"],
+
+Cell["See PathSpaceTutorial for runnable examples.", "Item",ExpressionUUID->"30869aa1-fe19-47fd-933f-cc0ea3bd0a2f"],
+
+Cell["References", "Section",ExpressionUUID->"15ceca68-78f4-450e-a0b2-a2db51183924"],
 
 Cell["\<\
 Mulder, The Interval Function of a Graph, Mathematical Centre Tracts 132, \
 Amsterdam 1980\
-\>", "Item",ExpressionUUID->"967c03b6-47a7-46de-b338-da42904f6055"],
+\>", "Item",ExpressionUUID->"0992eef4-8888-4676-bab5-3a079fb55cc4"],
 
 Cell["\<\
-Alt and Godau, Computing the Frechet Distance Between Two Polygonal Curves, \
-International Journal of Computational Geometry and Applications 5, 75-91, \
-1995\
-\>", "Item",ExpressionUUID->"9ff93b50-8375-4fae-8e2e-05107017dedd"],
+Bandelt and Mulder, Distance-Hereditary Graphs, J. Combin. Theory Ser. B 41, \
+182-208, 1986\
+\>", "Item",ExpressionUUID->"6072648d-a7eb-43cd-9cef-ad5f3a9eb7f8"],
 
 Cell["\<\
-Buchin, Buchin, van Kreveld and Luo, Finding Long and Similar Parts of \
-Trajectories, Computational Geometry 44, 465-476, 2011\
-\>", "Item",ExpressionUUID->"5601dfba-0b8e-47a0-8c26-1c354d7eea4a"],
+Klavzar and Mulder, Median graphs: characterizations, location theory and \
+related structures, JCMCC 30, 103-127, 1999\
+\>", "Item",ExpressionUUID->"8cde7dc9-b875-49be-ad13-ee29748c8719"],
 
 Cell["\<\
-Hausdorff, Grundzuege der Mengenlehre, Veit 1914 (chapter on the Hausdorff \
-metric), https://archive.org/details/grundzgedermen00hausuoft\
-\>", "Item",ExpressionUUID->"81e18395-9991-448f-be7d-a63741382b4d"]
+Bridson and Haefliger, Metric Spaces of Non-Positive Curvature, Springer 1999 \
+(Hausdorff / Frechet metrics on path space)\
+\>", "Item",ExpressionUUID->"61012a6a-b204-405c-8508-10a5986531e9"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"09bd8e93-7f29-4e76-a2aa-f06705fb4c0c"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -111,29 +143,47 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"dc354bb9-8b31-4541-b217-abedd8e8a18c"],
-Cell[644, 22, 243, 4, 70, "Text",ExpressionUUID->"25710b2e-8581-4aec-952f-c6cfe0f8eabe"],
-Cell[890, 28, 88, 0, 70, "Section",ExpressionUUID->"b4c09a93-fc3e-4007-9c19-43cb2dbf5899"],
-Cell[981, 30, 83, 0, 70, "Item",ExpressionUUID->"5244962c-cea6-47f9-98d2-e97d6f6bfd78"],
-Cell[1067, 32, 86, 0, 70, "Item",ExpressionUUID->"9a868631-c0a7-47ad-b6ca-4fae49c15ba2"],
-Cell[1156, 34, 92, 0, 70, "Item",ExpressionUUID->"5605d0d8-702b-4c88-b5aa-9bbe882c9d55"],
-Cell[1251, 36, 89, 0, 70, "Section",ExpressionUUID->"5e8cc301-7b52-475a-be78-871700ee47c5"],
-Cell[1343, 38, 84, 0, 70, "Item",ExpressionUUID->"79615348-1e0b-4b0e-8560-33727a37b10d"],
-Cell[1430, 40, 87, 0, 70, "Item",ExpressionUUID->"b3bcc0fb-fc61-4bc7-8d9b-bea451bebea0"],
-Cell[1520, 42, 93, 0, 70, "Item",ExpressionUUID->"aefdf5df-b7a7-435f-80ea-9a5b13bea637"],
-Cell[1616, 44, 98, 0, 70, "Item",ExpressionUUID->"231dbc05-6c47-4b10-b40d-ddc73ce26d92"],
-Cell[1717, 46, 97, 0, 70, "Item",ExpressionUUID->"81d120eb-1a00-416d-975e-752459beff23"],
-Cell[1817, 48, 90, 0, 70, "Section",ExpressionUUID->"b5a313ab-8821-47ca-b4d7-5a3503dbed04"],
-Cell[1910, 50, 104, 0, 70, "CodeText",ExpressionUUID->"f19d932d-7945-4b67-a1bf-bb37a88d6faa"],
-Cell[2017, 52, 605, 17, 70, "Input",ExpressionUUID->"72e1cbb0-f9c3-4419-b142-8b9ebc50f989"],
-Cell[2625, 71, 82, 0, 70, "Section",ExpressionUUID->"f87a9767-6390-4b6d-8c92-3c5fce1f8962"],
-Cell[2710, 73, 143, 2, 70, "Item",ExpressionUUID->"2eada757-e214-441a-be4b-2783a564a636"],
-Cell[2856, 77, 84, 0, 70, "Section",ExpressionUUID->"ebb5a041-905d-497a-ab54-5af721770bb2"],
-Cell[2943, 79, 169, 3, 70, "Item",ExpressionUUID->"486a26ae-9b42-42a4-a4cc-7dc7527162ca"],
-Cell[3115, 84, 169, 3, 70, "Item",ExpressionUUID->"967c03b6-47a7-46de-b338-da42904f6055"],
-Cell[3287, 89, 238, 4, 70, "Item",ExpressionUUID->"9ff93b50-8375-4fae-8e2e-05107017dedd"],
-Cell[3528, 95, 206, 3, 70, "Item",ExpressionUUID->"5601dfba-0b8e-47a0-8c26-1c354d7eea4a"],
-Cell[3737, 100, 217, 3, 70, "Item",ExpressionUUID->"81e18395-9991-448f-be7d-a63741382b4d"]
+Cell[554, 20, 82, 0, 70, "Title",ExpressionUUID->"a35bded2-915b-4c27-abc8-457b38fae069"],
+Cell[639, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"7c0cc5c7-627b-43bd-a60a-1fb38f590064"],
+Cell[732, 24, 346, 5, 70, "Text",ExpressionUUID->"a49b041b-4b70-42f4-8a93-b2d3b5458f80"],
+Cell[1081, 31, 79, 0, 70, "Section",ExpressionUUID->"8a92ed7f-5661-4df7-9104-393babed461d"],
+Cell[1163, 33, 91, 0, 70, "CodeText",ExpressionUUID->"92311498-da15-4fb0-8d9e-14fd38dc419f"],
+Cell[1257, 35, 192, 4, 70, "Code",ExpressionUUID->"d114656b-7080-42fa-aa73-43e410670b14",
+ InitializationCell->True],
+Cell[1452, 41, 83, 0, 70, "Section",ExpressionUUID->"d805c12f-8c2f-455c-ab58-8d6dd8efd369"],
+Cell[1538, 43, 152, 2, 70, "Text",ExpressionUUID->"9382fbd2-b667-42cf-ac59-3307b6f8c4d8"],
+Cell[1693, 47, 81, 0, 70, "Item",ExpressionUUID->"982ba3dd-3d68-4c98-83e7-c0ea51a84e1e"],
+Cell[1777, 49, 82, 0, 70, "Item",ExpressionUUID->"63d00637-dee7-46d1-b275-f697d3e41c79"],
+Cell[1862, 51, 99, 0, 70, "Section",ExpressionUUID->"99b7ac7d-5057-49af-a5fa-4626c6cd982c"],
+Cell[1964, 53, 92, 0, 70, "Item",ExpressionUUID->"bebcebd2-7cd0-47bc-b756-97fee94f3ea9"],
+Cell[2059, 55, 93, 0, 70, "Item",ExpressionUUID->"762d1468-a403-46f3-9a2e-a9099fe8ca53"],
+Cell[2155, 57, 98, 0, 70, "Section",ExpressionUUID->"9f31f337-9a68-41fc-b574-66ef4b3ebbb6"],
+Cell[2256, 59, 84, 0, 70, "Item",ExpressionUUID->"1e2512af-db89-47fe-b68d-b462c0fa4d45"],
+Cell[2343, 61, 87, 0, 70, "Item",ExpressionUUID->"828e1d9e-3bf8-4f09-8b25-ff8b44e47973"],
+Cell[2433, 63, 83, 0, 70, "Item",ExpressionUUID->"dc522690-f930-4907-b984-c130c29f6ad4"],
+Cell[2519, 65, 105, 0, 70, "Section",ExpressionUUID->"7f6cca8e-1ef3-4533-8152-34b03ea4d10b"],
+Cell[2627, 67, 85, 0, 70, "Item",ExpressionUUID->"763893c6-36bc-4b50-a5c8-ed08614f6df0"],
+Cell[2715, 69, 91, 0, 70, "Item",ExpressionUUID->"ee91536a-6b4c-4583-bee6-c265b33026ad"],
+Cell[2809, 71, 97, 0, 70, "Item",ExpressionUUID->"907dd299-95de-445a-8b2d-ca13077b0464"],
+Cell[2909, 73, 85, 0, 70, "Item",ExpressionUUID->"afae3338-b860-499f-8f8d-9af7471ac2db"],
+Cell[2997, 75, 100, 0, 70, "Section",ExpressionUUID->"fe297f91-5af3-47d2-9605-e87b27200b5a"],
+Cell[3100, 77, 106, 0, 70, "Item",ExpressionUUID->"554807a4-802e-4206-9960-7d9c68ba91c8"],
+Cell[3209, 79, 163, 3, 70, "Item",ExpressionUUID->"6b47f11c-9d34-4bab-989b-8d56b05ecbfe"],
+Cell[3375, 84, 137, 1, 70, "Item",ExpressionUUID->"c644ee8e-27fa-417b-8450-7fb8b6092bdf"],
+Cell[3515, 87, 131, 0, 70, "Item",ExpressionUUID->"f343e491-091a-4469-971b-05a19f2321c5"],
+Cell[3649, 89, 140, 1, 70, "Item",ExpressionUUID->"6e14ae4f-49f7-4780-979b-43b6b6321172"],
+Cell[3792, 92, 150, 2, 70, "Item",ExpressionUUID->"86573fd7-0d84-452e-8b02-361b67b259e5"],
+Cell[3945, 96, 92, 0, 70, "Section",ExpressionUUID->"ae8e3b8c-1fed-4fa9-b1d9-1b980003446d"],
+Cell[4040, 98, 129, 0, 70, "Item",ExpressionUUID->"b7cf2d78-dc8d-4009-8fbe-19cc255d7bae"],
+Cell[4172, 100, 133, 0, 70, "Item",ExpressionUUID->"091606a8-360d-40d7-8225-24914e3e0a21"],
+Cell[4308, 102, 115, 0, 70, "Item",ExpressionUUID->"c03e8841-536e-456e-a029-b2d26abde0f1"],
+Cell[4426, 104, 82, 0, 70, "Section",ExpressionUUID->"a545d28d-3f2a-45f7-afdd-e497bb5ffb61"],
+Cell[4511, 106, 115, 0, 70, "Item",ExpressionUUID->"30869aa1-fe19-47fd-933f-cc0ea3bd0a2f"],
+Cell[4629, 108, 84, 0, 70, "Section",ExpressionUUID->"15ceca68-78f4-450e-a0b2-a2db51183924"],
+Cell[4716, 110, 169, 3, 70, "Item",ExpressionUUID->"0992eef4-8888-4676-bab5-3a079fb55cc4"],
+Cell[4888, 115, 171, 3, 70, "Item",ExpressionUUID->"6072648d-a7eb-43cd-9cef-ad5f3a9eb7f8"],
+Cell[5062, 120, 198, 3, 70, "Item",ExpressionUUID->"8cde7dc9-b875-49be-ad13-ee29748c8719"],
+Cell[5263, 125, 202, 3, 70, "Item",ExpressionUUID->"61012a6a-b204-405c-8508-10a5986531e9"]
 }
 ]
 *)

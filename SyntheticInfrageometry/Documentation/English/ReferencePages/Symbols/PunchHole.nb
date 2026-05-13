@@ -1,0 +1,132 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      5508,        123]
+NotebookOptionsPosition[      3281,         89]
+NotebookOutlinePosition[      3598,        103]
+CellTagsIndexPosition[      3555,        100]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["PunchHole", "Title",ExpressionUUID->"c3028cd3-48f3-49f8-afc7-271e82f64d45"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"62082ab5-f4c1-419c-853e-dfaff86d6193"],
+
+Cell["\<\
+PunchHole[g, r] removes the closed r-ball around a random vertex. \
+PunchHole[g, c -> r] removes the closed r-ball around vertex c. For multiple \
+holes, Fold[PunchHole, g, list].\
+\>", "Text",ExpressionUUID->"9fb6b6f4-ece3-4554-8a10-6bb35e17273a"],
+
+Cell["Setup", "Section",ExpressionUUID->"b3b06ece-edd6-4069-9737-16052fc086fd"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"0d2f9642-c21b-4ee4-99a7-e1d5ac2291bc"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"b09e44db-4ed0-4d5c-b344-8d0a5e85d2ed"],
+
+Cell["Examples", "Section",ExpressionUUID->"fffbbbfd-2743-4198-9b84-b665c747a651"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"baa26d67-6af3-4025-a318-463d71f3eb05"],
+
+Cell[BoxData[
+ $CellContext`buildCell["One random hole of radius 1."]], "Input",ExpressionUU\
+ID->"003a290c-103c-41f0-aa36-dd7d2d889ce7"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"343e35c4-a37b-4a58-bea7-18ed9c9fb7be"],
+
+Cell[BoxData[
+ $CellContext`buildCell["PunchHole[GridGraph[{5, 5}], 1]"]], "Input",Expressio\
+nUUID->"69157a6f-9795-4854-9065-16a7e1aa8086"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"b4ae9605-84d3-4013-bd74-bb7f264721a4"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Targeted hole at vertex 13."]], "Input",ExpressionUUID->"396b114a-e4c5-43a7-8609-8c3b9fba5b12"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"0c0aa81e-527a-4ea1-94e8-9595f5d356bd"],
+
+Cell[BoxData[
+ $CellContext`buildCell["PunchHole[GridGraph[{5, 5}], 13 -> 1]"]], "Input",Exp\
+ressionUUID->"1bdad2e5-1e50-4d91-b969-c3ab74c4d149"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"713d7957-f2ae-4eb9-9542-91f94babf39d"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Two holes in sequence."]], "Input",ExpressionUUID->"422d758e-9781-41b5-a9da-0a741524a924"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"c806915d-c821-4a67-adec-0f84650d4d1a"],
+
+Cell[BoxData[
+ $CellContext`buildCell[
+ "Fold[PunchHole, GridGraph[{5, 5}], {13 -> 1, 7 -> 1}]"]], "Input",Expression\
+UUID->"e76aba18-a6e6-41d2-ac59-b49e5682733d"],
+
+Cell["See Also", "Section",ExpressionUUID->"9bcb45d1-375c-42b7-859d-cd054e1894c5"],
+
+Cell["TorusTessellation", "Item",ExpressionUUID->"0d00e7fa-1108-4008-8bc7-ce975efd78b2"],
+
+Cell["EnumerateGraphs", "Item",ExpressionUUID->"87a9024d-7f47-46db-8508-c4c906b165fb"]
+},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 81, 0, 70, "Title",ExpressionUUID->"c3028cd3-48f3-49f8-afc7-271e82f64d45"],
+Cell[638, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"62082ab5-f4c1-419c-853e-dfaff86d6193"],
+Cell[731, 24, 258, 4, 70, "Text",ExpressionUUID->"9fb6b6f4-ece3-4554-8a10-6bb35e17273a"],
+Cell[992, 30, 79, 0, 70, "Section",ExpressionUUID->"b3b06ece-edd6-4069-9737-16052fc086fd"],
+Cell[1074, 32, 91, 0, 70, "CodeText",ExpressionUUID->"0d2f9642-c21b-4ee4-99a7-e1d5ac2291bc"],
+Cell[1168, 34, 192, 4, 70, "Code",ExpressionUUID->"b09e44db-4ed0-4d5c-b344-8d0a5e85d2ed",
+ InitializationCell->True],
+Cell[1363, 40, 82, 0, 70, "Section",ExpressionUUID->"fffbbbfd-2743-4198-9b84-b665c747a651"],
+Cell[1448, 42, 115, 1, 70, "Input",ExpressionUUID->"baa26d67-6af3-4025-a318-463d71f3eb05"],
+Cell[1566, 45, 137, 2, 70, "Input",ExpressionUUID->"003a290c-103c-41f0-aa36-dd7d2d889ce7"],
+Cell[1706, 49, 112, 1, 70, "Input",ExpressionUUID->"343e35c4-a37b-4a58-bea7-18ed9c9fb7be"],
+Cell[1821, 52, 140, 2, 70, "Input",ExpressionUUID->"69157a6f-9795-4854-9065-16a7e1aa8086"],
+Cell[1964, 56, 115, 1, 70, "Input",ExpressionUUID->"b4ae9605-84d3-4013-bd74-bb7f264721a4"],
+Cell[2082, 59, 134, 1, 70, "Input",ExpressionUUID->"396b114a-e4c5-43a7-8609-8c3b9fba5b12"],
+Cell[2219, 62, 112, 1, 70, "Input",ExpressionUUID->"0c0aa81e-527a-4ea1-94e8-9595f5d356bd"],
+Cell[2334, 65, 146, 2, 70, "Input",ExpressionUUID->"1bdad2e5-1e50-4d91-b969-c3ab74c4d149"],
+Cell[2483, 69, 115, 1, 70, "Input",ExpressionUUID->"713d7957-f2ae-4eb9-9542-91f94babf39d"],
+Cell[2601, 72, 129, 1, 70, "Input",ExpressionUUID->"422d758e-9781-41b5-a9da-0a741524a924"],
+Cell[2733, 75, 112, 1, 70, "Input",ExpressionUUID->"c806915d-c821-4a67-adec-0f84650d4d1a"],
+Cell[2848, 78, 164, 3, 70, "Input",ExpressionUUID->"e76aba18-a6e6-41d2-ac59-b49e5682733d"],
+Cell[3015, 83, 82, 0, 70, "Section",ExpressionUUID->"9bcb45d1-375c-42b7-859d-cd054e1894c5"],
+Cell[3100, 85, 88, 0, 70, "Item",ExpressionUUID->"0d00e7fa-1108-4008-8bc7-ce975efd78b2"],
+Cell[3191, 87, 86, 0, 70, "Item",ExpressionUUID->"87a9024d-7f47-46db-8508-c4c906b165fb"]
+}
+]
+*)
+
+(* End of internal cache information *)

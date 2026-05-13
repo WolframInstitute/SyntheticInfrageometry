@@ -10,258 +10,107 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     17251,        334]
-NotebookOptionsPosition[     11350,        261]
-NotebookOutlinePosition[     11667,        275]
-CellTagsIndexPosition[     11624,        272]
+NotebookDataLength[      8463,        162]
+NotebookOptionsPosition[      4615,        110]
+NotebookOutlinePosition[      4932,        124]
+CellTagsIndexPosition[      4889,        121]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["Visualization", "Title",ExpressionUUID->"dbb8c5f3-3aec-434b-b8a5-ad583550aad3"],
+Cell["Visualization", "Title",ExpressionUUID->"911d6ae1-e5c0-48db-91f5-79f81d7406ee"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"e2a51d0b-8d13-40c6-9cbe-4d4b84dae930"],
 
 Cell["\<\
-The visualization layer organises everything the paclet knows about drawing \
-geometric objects on graphs. It has three pieces: the diffuse-rendering \
-primitive InfraSceneHighlight, the declarative scene language built around \
-InfraScene, and a family of Manipulate-based viewers for interactive \
-exploration. All paths converge on the same head dispatch (Points / Paths / \
-Cycles / Sets) and the same opacity/thickness/point-size envelope, so the \
-visual language is consistent whether you call a viewer, render a Find* \
-result directly, or evaluate a multi-step InfraScene.\
-\>", "Text",ExpressionUUID->"cff84da4-8666-4faf-ad51-2c35995e1a07"],
+Visualisation in SyntheticInfrageometry is organised around a single \
+primitive \[LongDash] InfraSceneHighlight \[LongDash] that renders \
+multi-realisation Infra* objects diffusely on a graph, with intensity scaling \
+by overlap and colour-blending across objects. The InfraScene engine and the \
+per-primitive viewers are thin shells on top.\
+\>", "Text",ExpressionUUID->"fc987dfb-cb7f-4df7-bc3c-5813332f5bfa"],
 
-Cell["Setup", "Section",ExpressionUUID->"95c29583-ad3c-4fc1-8a95-9e2558602f50"],
+Cell["Setup", "Section",ExpressionUUID->"15cdbfbc-7ff4-4e44-8767-8576802d9b32"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"5819a578-1dac-4264-b553-6c0bdaf47c96"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"c15b7b5c-1261-496c-986d-65f6f9558bf0"],
 
-Cell["Needs[\"WolframInstitute`SyntheticInfrageometry`\"]", "Code",ExpressionUUID->"d0c939dc-7891-4a4b-8e32-8a94b5c79b7e"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"9643c407-db62-4b9c-abb8-f26ca0ea12c4"],
 
-Cell["Diffuse-rendering primitive", "Section",ExpressionUUID->"cae3fd7a-9913-419c-8124-481a5615d52d"],
+Cell["Diffuse rendering primitive", "Section",ExpressionUUID->"ac112765-0605-4df5-b5ed-178d814baba2"],
 
-Cell["\<\
-A multi-object is a list of representations of the same geometric object. \
-InfraSceneHighlight takes a list of multi-objects (each optionally with a \
-colour) and emits a HighlightGraph with opacity / thickness / point-size \
-scaled to within-object multiplicity.\
-\>", "Text",ExpressionUUID->"d11aa327-c837-42cc-8841-d0b10d7ba6c6"],
+Cell["InfraSceneHighlight", "Item",ExpressionUUID->"daec6484-ecdf-4a05-997b-531bf920da19"],
 
-Cell["\<\
-InfraSceneHighlight -- the sole rendering primitive; every viewer and every \
-notebook calls into this.\
-\>", "Item",ExpressionUUID->"0dbd6226-dc9d-4ef2-bcd0-ec521a7148ea"],
+Cell["Scene engine", "Section",ExpressionUUID->"889cfacd-5023-4409-8440-b9965f59dbe7"],
 
-Cell["\<\
-Multi-object wrappers (the heads InfraSceneHighlight dispatches on)\
-\>", "Section",ExpressionUUID->"b78ea301-bb40-46db-9d0c-f5107b80d171"],
+Cell["InfraScene", "Item",ExpressionUUID->"7c4e54b0-8d13-4f4b-9e95-a8892852ea74"],
 
-Cell["\<\
-Each Find* function returns a wrapped multi-realisation object. The \
-single-_List-arg form is the rendering signature; the wrappers also serve as \
-scene-language constructors with different arities.\
-\>", "Text",ExpressionUUID->"7adf0b40-3b60-44f3-9ec9-d61aff825c84"],
+Cell["FindInfraScene", "Item",ExpressionUUID->"964e3870-cb9f-48df-b131-ccbea3f566bf"],
 
-Cell["InfraPoint -- vertices, no edges (Points dispatch).", "Item",ExpressionUUID->"de8ee44b-0479-4ff7-8571-082a4bf4203e"],
+Cell["InfraInstance", "Item",ExpressionUUID->"97ead1b0-b5b5-403f-b3be-86ea5c9c131c"],
 
-Cell["\<\
-InfraSegment -- sequential edges via Partition (Paths dispatch).\
-\>", "Item",ExpressionUUID->"f95bf34a-4a12-4032-bfff-62998ece74ec"],
+Cell["InfraGeometricStep", "Item",ExpressionUUID->"ba06c658-3bdb-47dc-a5b6-5b695f5c4e1a"],
 
-Cell["\<\
-InfraLine -- sequential edges, used by FindLine in scene-language form (Paths \
-dispatch).\
-\>", "Item",ExpressionUUID->"fd17b2de-3c86-45f5-81fb-364b05d672b1"],
+Cell["InfraSceneViewer", "Item",ExpressionUUID->"3afe9b53-e44a-41ac-af8a-070a7faddd29"],
 
-Cell["\<\
-InfraShell -- induced subgraph of the level surface (Sets dispatch).\
-\>", "Item",ExpressionUUID->"0acdffc8-3cb4-44b1-ab7f-46fc67fb7ec3"],
+Cell["Scene-language constructors", "Section",ExpressionUUID->"24595e2a-08cd-4123-bcb3-ed12bc78991d"],
 
-Cell["\<\
-InfraPlane -- induced subgraph of the bisecting hyperplane (Sets dispatch).\
-\>", "Item",ExpressionUUID->"b0c343fc-2fbd-4f72-9150-539e13dcaf16"],
+Cell["InfraLine", "Item",ExpressionUUID->"984d6545-ee33-412a-bea0-7e20651a8941"],
 
-Cell["\<\
-InfraCircle -- sequential edges with auto-closure (Cycles dispatch).\
-\>", "Item",ExpressionUUID->"9fc468b2-c014-4914-8acb-7ed619dd7af0"],
+Cell["InfraIntersection", "Item",ExpressionUUID->"e29ff985-7e00-4525-b77f-1c02e9796d4a"],
 
-Cell["\<\
-InfraRay -- sequential edges; rays at a base vertex O (Paths dispatch).\
-\>", "Item",ExpressionUUID->"701b62a7-5feb-4cb3-871a-bd4b6dba7cc6"],
+Cell["InfraDistance", "Item",ExpressionUUID->"aca7067c-a30a-4bf3-871d-fac712ef2363"],
 
-Cell["\<\
-InfraPencil -- multi-CONSTITUENT wrapper (entries are InfraRay objects, one \
-per direction class); flattens through [\"Rays\"] before dispatching to Paths.\
-\>", "Item",ExpressionUUID->"29c67f71-42da-441b-8274-375509ac962e"],
+Cell["Scene assertions", "Section",ExpressionUUID->"776f2320-dd3f-427e-92cc-64528347a17f"],
 
-Cell["\<\
-Wrapper accessors apply uniformly: [\"Realizations\"] (bare list), \
-[\"Length\"], [\"Expand\"], [\"First\"]; wrapper[[i]] returns a wrapped \
-singleton, not the bare realisation.\
-\>", "Text",ExpressionUUID->"1191534a-87cf-4529-bf97-24344bdc89ce"],
+Cell["InfraSegmentQ", "Item",ExpressionUUID->"96b93621-e94e-4513-8514-ab6039d19ac2"],
 
-Cell["Declarative scene engine", "Section",ExpressionUUID->"3b6d53f3-f922-40de-9730-979c8e02bb7b"],
+Cell["InfraLineQ", "Item",ExpressionUUID->"93559f13-b8db-4786-b6ed-1a66541570b5"],
 
-Cell["\<\
-InfraScene lets you describe a geometric configuration symbolically (objects \
-+ hypotheses), compute every binding consistent with the hypotheses on a \
-given graph, and read out the resulting branches.\
-\>", "Text",ExpressionUUID->"7ba5b4fb-f799-4dc3-9c16-b4920a81d063"],
+Cell["InfraShellQ", "Item",ExpressionUUID->"5c2e5cf0-b907-471b-9b10-6f0d904551c6"],
 
-Cell["\<\
-InfraScene -- scene descriptor: objects + hypotheses (constructions and \
-assertions).\
-\>", "Item",ExpressionUUID->"40e4b367-cff9-416f-b0ef-a8cb12b5b969"],
+Cell["InfraCircleQ", "Item",ExpressionUUID->"90e182d4-c339-418d-ac9a-808d475bf73c"],
 
-Cell["\<\
-FindInfraScene -- evaluates every step of the scene on a graph; returns a \
-list of InfraInstance objects, one per branch. Accepts pre-fixed bindings.\
-\>", "Item",ExpressionUUID->"d2f05e36-3e01-40c9-8522-c7c603fc9401"],
+Cell["InfraPlaneQ", "Item",ExpressionUUID->"9ee3617f-ee0c-4da4-b4af-e1e49a3768b7"],
 
-Cell["\<\
-InfraInstance -- wraps a solved binding association; read out via \
-InfraInstance[inst, sym] or InfraInstance[inst, {sym1, sym2, ...}].\
-\>", "Item",ExpressionUUID->"79213570-cfe0-4657-a2c2-dad37c74edeb"],
+Cell["InfraParallelQ", "Item",ExpressionUUID->"c9ce2f11-ea7f-437b-80bf-55b20e4b0542"],
 
-Cell["\<\
-InfraGeometricStep -- groups hypotheses into a manual construction step \
-(overrides the auto-computed dependency level ordering).\
-\>", "Item",ExpressionUUID->"ec7248fd-3ee3-4bf1-a22e-9f4ab978a778"],
+Cell["InfraIntersectQ", "Item",ExpressionUUID->"67ff6007-2b09-4fb0-82f9-c2f18ca65fa8"],
 
-Cell["Scene constructions (multi-arg signatures of the same heads)", "Section",ExpressionUUID->"c5e98344-b884-447c-8191-f560fe973e83"],
+Cell["Per-primitive interactive viewers", "Section",ExpressionUUID->"d02fe881-272a-4bb7-9fbe-a6a1bbc302b6"],
 
-Cell["\<\
-Inside an InfraScene, the wrapper heads carry constructor signatures distinct \
-from the single-_List-arg rendering signature. The two forms never collide.\
-\>", "Text",ExpressionUUID->"2c51a3cb-4f94-4e4f-a7b0-36e2a850fb93"],
+Cell["PointViewer", "Item",ExpressionUUID->"4b72c5e8-c959-4c11-8c24-d23b815a7e30"],
 
-Cell["\<\
-InfraPoint[v] / InfraPoint[origin, dist] / InfraPoint[\"Center\"] / \
-InfraPoint[\"Periphery\"] / InfraPoint[n] -- specify a point.\
-\>", "Item",ExpressionUUID->"2dc35255-d3d5-40f7-aa38-d557d80a2530"],
+Cell["SegmentViewer", "Item",ExpressionUUID->"2659c57a-92b4-49bc-bb62-6411eef42ec7"],
 
-Cell["InfraSegment[p, q] -- a geodesic between p and q.", "Item",ExpressionUUID->"98d8de0a-2de1-48b0-a70e-64c19c07d427"],
+Cell["ShellViewer", "Item",ExpressionUUID->"a288bd22-17ae-4c1a-91cb-b12bfd3e7041"],
 
-Cell["\<\
-InfraLine[p, q] / InfraLine[path] -- a maximal-geodesic line.\
-\>", "Item",ExpressionUUID->"d2794f0c-7503-4001-a1da-179c5dfe8510"],
+Cell["CircleViewer", "Item",ExpressionUUID->"33c407e0-f610-490f-920d-8e69acc6267c"],
 
-Cell["InfraShell[c, r] -- the level surface { v : d(c, v) = r }.", "Item",ExpressionUUID->"64a1ea43-e223-4910-9e54-3fa72f7a7ace"],
+Cell["Default colours", "Section",ExpressionUUID->"b12be3b6-a814-4164-8b1b-4e866ac51c6f"],
 
-Cell["\<\
-InfraPlane[p1, p2] / InfraPlane[p1, p2, {lo, hi}] -- the bisecting hyperplane \
-between p1 and p2 (with optional distance-difference window).\
-\>", "Item",ExpressionUUID->"f8f1b71c-d660-49f0-9c95-04a1da096af6"],
+Cell["$InfraPointColor", "Item",ExpressionUUID->"d8fff40c-1a89-4270-8c4b-58ea9f72a515"],
 
-Cell["\<\
-InfraCircle[c, r] -- a separating cycle in the level-surface subgraph.\
-\>", "Item",ExpressionUUID->"26cfb512-f490-49d9-8f90-ada8955e527c"],
+Cell["$InfraSegmentColor", "Item",ExpressionUUID->"65b671da-6ebe-4ccb-b2ce-d4a77b695f8f"],
 
-Cell["Scene assertions", "Section",ExpressionUUID->"200a7c29-8e2e-400d-a876-d635fddcea13"],
+Cell["$InfraShellColor", "Item",ExpressionUUID->"07d27cd3-dab8-4ead-8b1d-71495c643d80"],
 
-Cell["\<\
-Assertion-flavoured heads test predicates inside a scene's hypothesis list. \
-They resolve to the bare *Q predicates with the current bindings substituted.\
-\
-\>", "Text",ExpressionUUID->"c9a31e62-32ce-4c36-a37d-255825361f1e"],
+Cell["$InfraPlaneColor", "Item",ExpressionUUID->"6e1b2680-5f17-449e-83bb-56bd9d559fb6"],
 
-Cell["InfraSegmentQ -- s is a valid geodesic segment.", "Item",ExpressionUUID->"b9d65b10-b976-4f32-be72-1df1d90efa76"],
+Cell["$InfraCircleColor", "Item",ExpressionUUID->"39113f61-635e-4992-b601-098bf19c4887"],
 
-Cell["InfraLineQ -- s is a maximal geodesic.", "Item",ExpressionUUID->"6fc84fd6-b35f-4f5c-9c87-a4e59965cc3c"],
+Cell["$InfraRayColor", "Item",ExpressionUUID->"297d517d-c4be-4911-bbe4-bb9c2b043f7c"],
 
-Cell["InfraShellQ -- vs is a valid metric shell.", "Item",ExpressionUUID->"03655dc9-ef1a-41c4-83b1-017e876d36a5"],
+Cell["Tutorial", "Section",ExpressionUUID->"1091c861-5dd2-4c0b-bb54-adab9daf3a64"],
 
-Cell["\<\
-InfraPlaneQ -- h is a valid bisecting hyperplane between p1 and p2.\
-\>", "Item",ExpressionUUID->"590af5bd-b9d4-4087-bf3c-d0ca91f7c34b"],
-
-Cell["\<\
-InfraCircleQ -- c is a valid metric circle (separating cycle).\
-\>", "Item",ExpressionUUID->"9c8a4a26-41fa-46a3-80b7-f565d2249e7a"],
-
-Cell["InfraParallelQ -- two lines are parallel.", "Item",ExpressionUUID->"9ed6806c-dee2-4ee0-ba4f-39841a50c1d4"],
-
-Cell["InfraIntersectQ -- two sets intersect.", "Item",ExpressionUUID->"26c3e6f4-b041-4de6-a743-b53b74779c69"],
-
-Cell["\<\
-InfraIntersection / InfraDistance -- structural heads (intersection vertex \
-set, graph distance).\
-\>", "Item",ExpressionUUID->"78f3a8d4-5969-4ac6-8229-5d6cee4c9192"],
-
-Cell["Interactive viewers", "Section",ExpressionUUID->"7e96a096-ad68-49b6-aa3d-4a62787f9d38"],
-
-Cell["\<\
-Manipulate-based shells over the Find* family. Each one is a thin wrapper: it \
-calls the corresponding Find* with All, runs the chosen path-space selector, \
-and feeds the result into InfraSceneHighlight.\
-\>", "Text",ExpressionUUID->"d5fc0bdd-a2b1-4fcc-ac6e-398e875c0d51"],
-
-Cell["PointViewer -- sliders for points, From source, separation.", "Item",ExpressionUUID->"52da018f-fc1d-4133-b1bc-6cdadc9cf5c0"],
-
-Cell["\<\
-SegmentViewer -- two endpoints + path-space selector + count.\
-\>", "Item",ExpressionUUID->"a47ef89d-1e47-4615-85de-c5ffdb4ecfbf"],
-
-Cell["\<\
-ShellViewer -- center + radius + Method (Metric / Separating).\
-\>", "Item",ExpressionUUID->"6f81faee-2374-4b6f-8052-cf566fb90447"],
-
-Cell["CircleViewer -- center + radius + path-space selector.", "Item",ExpressionUUID->"35043494-3b48-467b-9f29-075975c0a097"],
-
-Cell["\<\
-InfraSceneViewer -- step-by-step navigation of an InfraScene with branch / \
-fix-and-advance / reset controls; aggregate vs single-instance modes.\
-\>", "Item",ExpressionUUID->"5c44ad3f-122d-4003-98a5-4766f6919b8c"],
-
-Cell["Diffuse-rendering envelope", "Section",ExpressionUUID->"2c4b5dba-5ad9-43e3-a23e-52d4973e07b8"],
-
-Cell["\<\
-Within one multi-object, vertex / edge intensity scales with how many \
-representations pass through. Across multi-objects, colours blend on shared \
-vertices / edges. Default colour is by head -- InfraPoint, InfraSegment / \
-InfraLine, InfraShell, InfraPlane, InfraCircle, InfraRay, InfraPencil each \
-have a palette entry; unwrapped entries fall through to a cycling palette.\
-\>", "Text",ExpressionUUID->"f23567a4-ab03-4ba9-9124-bea249f69f71"],
-
-Cell["\<\
-Tune via options OpacityRange, ThicknessRange, PointSizeRange on \
-InfraSceneHighlight.\
-\>", "Item",ExpressionUUID->"b9917036-de4e-4dae-92da-e8cf23416a06"],
-
-Cell["\<\
-Wrap as `entry -> color` to override the default palette assignment.\
-\>", "Item",ExpressionUUID->"cb8f8c4f-68b1-45e2-9853-955458957362"],
-
-Cell["Tutorial", "Section",ExpressionUUID->"80f103d4-e3ad-48ec-b7a5-a650cdb2e150"],
-
-Cell["\<\
-See VisualizationTutorial for runnable examples on grids, paths, and small \
-cycles.\
-\>", "Item",ExpressionUUID->"11a81c85-9e2c-4c64-bac1-b6900fab0ade"],
-
-Cell["See also", "Section",ExpressionUUID->"08f2bab7-7b37-472d-a556-7f353af5a151"],
-
-Cell["\<\
-EuclideanGeometryGuide -- the Find* family that produces the multi-objects.\
-\>", "Item",ExpressionUUID->"7d8979d1-dba9-497b-9ef3-8a4c6f1a78ae"],
-
-Cell["\<\
-ProjectiveGeometryGuide -- pencils and rays, rendered through the same \
-diffuse-rendering primitive.\
-\>", "Item",ExpressionUUID->"1c94faea-672e-4589-97bb-6d411cb4b469"],
-
-Cell["TarskiGeometryGuide -- predicates that drive scene assertions.", "Item",ExpressionUUID->"ce7a2d03-c5f0-4bf0-b71d-5aee68a66498"],
-
-Cell["References", "Section",ExpressionUUID->"40bb3003-f444-468d-a737-a11db1fa3e10"],
-
-Cell["\<\
-Wolfram, GeometricScene system reference, \
-https://reference.wolfram.com/language/ref/GeometricScene.html (the closest \
-design analogue for InfraScene).\
-\>", "Item",ExpressionUUID->"602499f6-0868-4fb5-a8f2-77ccc291ba80"]
+Cell["See VisualizationTutorial for runnable examples.", "Item",ExpressionUUID->"76915354-cffd-485e-92b3-c564f182fcab"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -274,68 +123,47 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"dbb8c5f3-3aec-434b-b8a5-ad583550aad3"],
-Cell[642, 22, 660, 9, 70, "Text",ExpressionUUID->"cff84da4-8666-4faf-ad51-2c35995e1a07"],
-Cell[1305, 33, 79, 0, 70, "Section",ExpressionUUID->"95c29583-ad3c-4fc1-8a95-9e2558602f50"],
-Cell[1387, 35, 91, 0, 70, "CodeText",ExpressionUUID->"5819a578-1dac-4264-b553-6c0bdaf47c96"],
-Cell[1481, 37, 122, 0, 70, "Code",ExpressionUUID->"d0c939dc-7891-4a4b-8e32-8a94b5c79b7e"],
-Cell[1606, 39, 101, 0, 70, "Section",ExpressionUUID->"cae3fd7a-9913-419c-8124-481a5615d52d"],
-Cell[1710, 41, 343, 5, 70, "Text",ExpressionUUID->"d11aa327-c837-42cc-8841-d0b10d7ba6c6"],
-Cell[2056, 48, 182, 3, 70, "Item",ExpressionUUID->"0dbd6226-dc9d-4ef2-bcd0-ec521a7148ea"],
-Cell[2241, 53, 149, 2, 70, "Section",ExpressionUUID->"b78ea301-bb40-46db-9d0c-f5107b80d171"],
-Cell[2393, 57, 279, 4, 70, "Text",ExpressionUUID->"7adf0b40-3b60-44f3-9ec9-d61aff825c84"],
-Cell[2675, 63, 122, 0, 70, "Item",ExpressionUUID->"de8ee44b-0479-4ff7-8571-082a4bf4203e"],
-Cell[2800, 65, 143, 2, 70, "Item",ExpressionUUID->"f95bf34a-4a12-4032-bfff-62998ece74ec"],
-Cell[2946, 69, 169, 3, 70, "Item",ExpressionUUID->"fd17b2de-3c86-45f5-81fb-364b05d672b1"],
-Cell[3118, 74, 147, 2, 70, "Item",ExpressionUUID->"0acdffc8-3cb4-44b1-ab7f-46fc67fb7ec3"],
-Cell[3268, 78, 154, 2, 70, "Item",ExpressionUUID->"b0c343fc-2fbd-4f72-9150-539e13dcaf16"],
-Cell[3425, 82, 147, 2, 70, "Item",ExpressionUUID->"9fc468b2-c014-4914-8acb-7ed619dd7af0"],
-Cell[3575, 86, 150, 2, 70, "Item",ExpressionUUID->"701b62a7-5feb-4cb3-871a-bd4b6dba7cc6"],
-Cell[3728, 90, 235, 3, 70, "Item",ExpressionUUID->"29c67f71-42da-441b-8274-375509ac962e"],
-Cell[3966, 95, 258, 4, 70, "Text",ExpressionUUID->"1191534a-87cf-4529-bf97-24344bdc89ce"],
-Cell[4227, 101, 98, 0, 70, "Section",ExpressionUUID->"3b6d53f3-f922-40de-9730-979c8e02bb7b"],
-Cell[4328, 103, 282, 4, 70, "Text",ExpressionUUID->"7ba5b4fb-f799-4dc3-9c16-b4920a81d063"],
-Cell[4613, 109, 165, 3, 70, "Item",ExpressionUUID->"40e4b367-cff9-416f-b0ef-a8cb12b5b969"],
-Cell[4781, 114, 229, 3, 70, "Item",ExpressionUUID->"d2f05e36-3e01-40c9-8522-c7c603fc9401"],
-Cell[5013, 119, 214, 3, 70, "Item",ExpressionUUID->"79213570-cfe0-4657-a2c2-dad37c74edeb"],
-Cell[5230, 124, 209, 3, 70, "Item",ExpressionUUID->"ec7248fd-3ee3-4bf1-a22e-9f4ab978a778"],
-Cell[5442, 129, 134, 0, 70, "Section",ExpressionUUID->"c5e98344-b884-447c-8191-f560fe973e83"],
-Cell[5579, 131, 234, 3, 70, "Text",ExpressionUUID->"2c51a3cb-4f94-4e4f-a7b0-36e2a850fb93"],
-Cell[5816, 136, 210, 3, 70, "Item",ExpressionUUID->"2dc35255-d3d5-40f7-aa38-d557d80a2530"],
-Cell[6029, 141, 120, 0, 70, "Item",ExpressionUUID->"98d8de0a-2de1-48b0-a70e-64c19c07d427"],
-Cell[6152, 143, 140, 2, 70, "Item",ExpressionUUID->"d2794f0c-7503-4001-a1da-179c5dfe8510"],
-Cell[6295, 147, 129, 0, 70, "Item",ExpressionUUID->"64a1ea43-e223-4910-9e54-3fa72f7a7ace"],
-Cell[6427, 149, 220, 3, 70, "Item",ExpressionUUID->"f8f1b71c-d660-49f0-9c95-04a1da096af6"],
-Cell[6650, 154, 149, 2, 70, "Item",ExpressionUUID->"26cfb512-f490-49d9-8f90-ada8955e527c"],
-Cell[6802, 158, 90, 0, 70, "Section",ExpressionUUID->"200a7c29-8e2e-400d-a876-d635fddcea13"],
-Cell[6895, 160, 236, 4, 70, "Text",ExpressionUUID->"c9a31e62-32ce-4c36-a37d-255825361f1e"],
-Cell[7134, 166, 118, 0, 70, "Item",ExpressionUUID->"b9d65b10-b976-4f32-be72-1df1d90efa76"],
-Cell[7255, 168, 109, 0, 70, "Item",ExpressionUUID->"6fc84fd6-b35f-4f5c-9c87-a4e59965cc3c"],
-Cell[7367, 170, 113, 0, 70, "Item",ExpressionUUID->"03655dc9-ef1a-41c4-83b1-017e876d36a5"],
-Cell[7483, 172, 146, 2, 70, "Item",ExpressionUUID->"590af5bd-b9d4-4087-bf3c-d0ca91f7c34b"],
-Cell[7632, 176, 141, 2, 70, "Item",ExpressionUUID->"9c8a4a26-41fa-46a3-80b7-f565d2249e7a"],
-Cell[7776, 180, 112, 0, 70, "Item",ExpressionUUID->"9ed6806c-dee2-4ee0-ba4f-39841a50c1d4"],
-Cell[7891, 182, 109, 0, 70, "Item",ExpressionUUID->"26c3e6f4-b041-4de6-a743-b53b74779c69"],
-Cell[8003, 184, 177, 3, 70, "Item",ExpressionUUID->"78f3a8d4-5969-4ac6-8229-5d6cee4c9192"],
-Cell[8183, 189, 93, 0, 70, "Section",ExpressionUUID->"7e96a096-ad68-49b6-aa3d-4a62787f9d38"],
-Cell[8279, 191, 284, 4, 70, "Text",ExpressionUUID->"d5fc0bdd-a2b1-4fcc-ac6e-398e875c0d51"],
-Cell[8566, 197, 130, 0, 70, "Item",ExpressionUUID->"52da018f-fc1d-4133-b1bc-6cdadc9cf5c0"],
-Cell[8699, 199, 140, 2, 70, "Item",ExpressionUUID->"a47ef89d-1e47-4615-85de-c5ffdb4ecfbf"],
-Cell[8842, 203, 141, 2, 70, "Item",ExpressionUUID->"6f81faee-2374-4b6f-8052-cf566fb90447"],
-Cell[8986, 207, 125, 0, 70, "Item",ExpressionUUID->"35043494-3b48-467b-9f29-075975c0a097"],
-Cell[9114, 209, 225, 3, 70, "Item",ExpressionUUID->"5c44ad3f-122d-4003-98a5-4766f6919b8c"],
-Cell[9342, 214, 100, 0, 70, "Section",ExpressionUUID->"2c4b5dba-5ad9-43e3-a23e-52d4973e07b8"],
-Cell[9445, 216, 456, 6, 70, "Text",ExpressionUUID->"f23567a4-ab03-4ba9-9124-bea249f69f71"],
-Cell[9904, 224, 166, 3, 70, "Item",ExpressionUUID->"b9917036-de4e-4dae-92da-e8cf23416a06"],
-Cell[10073, 229, 147, 2, 70, "Item",ExpressionUUID->"cb8f8c4f-68b1-45e2-9853-955458957362"],
-Cell[10223, 233, 82, 0, 70, "Section",ExpressionUUID->"80f103d4-e3ad-48ec-b7a5-a650cdb2e150"],
-Cell[10308, 235, 163, 3, 70, "Item",ExpressionUUID->"11a81c85-9e2c-4c64-bac1-b6900fab0ade"],
-Cell[10474, 240, 82, 0, 70, "Section",ExpressionUUID->"08f2bab7-7b37-472d-a556-7f353af5a151"],
-Cell[10559, 242, 151, 2, 70, "Item",ExpressionUUID->"7d8979d1-dba9-497b-9ef3-8a4c6f1a78ae"],
-Cell[10713, 246, 177, 3, 70, "Item",ExpressionUUID->"1c94faea-672e-4589-97bb-6d411cb4b469"],
-Cell[10893, 251, 130, 0, 70, "Item",ExpressionUUID->"ce7a2d03-c5f0-4bf0-b71d-5aee68a66498"],
-Cell[11026, 253, 84, 0, 70, "Section",ExpressionUUID->"40bb3003-f444-468d-a737-a11db1fa3e10"],
-Cell[11113, 255, 233, 4, 70, "Item",ExpressionUUID->"602499f6-0868-4fb5-a8f2-77ccc291ba80"]
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"911d6ae1-e5c0-48db-91f5-79f81d7406ee"],
+Cell[642, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"e2a51d0b-8d13-40c6-9cbe-4d4b84dae930"],
+Cell[735, 24, 423, 6, 70, "Text",ExpressionUUID->"fc987dfb-cb7f-4df7-bc3c-5813332f5bfa"],
+Cell[1161, 32, 79, 0, 70, "Section",ExpressionUUID->"15cdbfbc-7ff4-4e44-8767-8576802d9b32"],
+Cell[1243, 34, 91, 0, 70, "CodeText",ExpressionUUID->"c15b7b5c-1261-496c-986d-65f6f9558bf0"],
+Cell[1337, 36, 192, 4, 70, "Code",ExpressionUUID->"9643c407-db62-4b9c-abb8-f26ca0ea12c4",
+ InitializationCell->True],
+Cell[1532, 42, 101, 0, 70, "Section",ExpressionUUID->"ac112765-0605-4df5-b5ed-178d814baba2"],
+Cell[1636, 44, 90, 0, 70, "Item",ExpressionUUID->"daec6484-ecdf-4a05-997b-531bf920da19"],
+Cell[1729, 46, 86, 0, 70, "Section",ExpressionUUID->"889cfacd-5023-4409-8440-b9965f59dbe7"],
+Cell[1818, 48, 81, 0, 70, "Item",ExpressionUUID->"7c4e54b0-8d13-4f4b-9e95-a8892852ea74"],
+Cell[1902, 50, 85, 0, 70, "Item",ExpressionUUID->"964e3870-cb9f-48df-b131-ccbea3f566bf"],
+Cell[1990, 52, 84, 0, 70, "Item",ExpressionUUID->"97ead1b0-b5b5-403f-b3be-86ea5c9c131c"],
+Cell[2077, 54, 89, 0, 70, "Item",ExpressionUUID->"ba06c658-3bdb-47dc-a5b6-5b695f5c4e1a"],
+Cell[2169, 56, 87, 0, 70, "Item",ExpressionUUID->"3afe9b53-e44a-41ac-af8a-070a7faddd29"],
+Cell[2259, 58, 101, 0, 70, "Section",ExpressionUUID->"24595e2a-08cd-4123-bcb3-ed12bc78991d"],
+Cell[2363, 60, 80, 0, 70, "Item",ExpressionUUID->"984d6545-ee33-412a-bea0-7e20651a8941"],
+Cell[2446, 62, 88, 0, 70, "Item",ExpressionUUID->"e29ff985-7e00-4525-b77f-1c02e9796d4a"],
+Cell[2537, 64, 84, 0, 70, "Item",ExpressionUUID->"aca7067c-a30a-4bf3-871d-fac712ef2363"],
+Cell[2624, 66, 90, 0, 70, "Section",ExpressionUUID->"776f2320-dd3f-427e-92cc-64528347a17f"],
+Cell[2717, 68, 84, 0, 70, "Item",ExpressionUUID->"96b93621-e94e-4513-8514-ab6039d19ac2"],
+Cell[2804, 70, 81, 0, 70, "Item",ExpressionUUID->"93559f13-b8db-4786-b6ed-1a66541570b5"],
+Cell[2888, 72, 82, 0, 70, "Item",ExpressionUUID->"5c2e5cf0-b907-471b-9b10-6f0d904551c6"],
+Cell[2973, 74, 83, 0, 70, "Item",ExpressionUUID->"90e182d4-c339-418d-ac9a-808d475bf73c"],
+Cell[3059, 76, 82, 0, 70, "Item",ExpressionUUID->"9ee3617f-ee0c-4da4-b4af-e1e49a3768b7"],
+Cell[3144, 78, 85, 0, 70, "Item",ExpressionUUID->"c9ce2f11-ea7f-437b-80bf-55b20e4b0542"],
+Cell[3232, 80, 86, 0, 70, "Item",ExpressionUUID->"67ff6007-2b09-4fb0-82f9-c2f18ca65fa8"],
+Cell[3321, 82, 107, 0, 70, "Section",ExpressionUUID->"d02fe881-272a-4bb7-9fbe-a6a1bbc302b6"],
+Cell[3431, 84, 82, 0, 70, "Item",ExpressionUUID->"4b72c5e8-c959-4c11-8c24-d23b815a7e30"],
+Cell[3516, 86, 84, 0, 70, "Item",ExpressionUUID->"2659c57a-92b4-49bc-bb62-6411eef42ec7"],
+Cell[3603, 88, 82, 0, 70, "Item",ExpressionUUID->"a288bd22-17ae-4c1a-91cb-b12bfd3e7041"],
+Cell[3688, 90, 83, 0, 70, "Item",ExpressionUUID->"33c407e0-f610-490f-920d-8e69acc6267c"],
+Cell[3774, 92, 89, 0, 70, "Section",ExpressionUUID->"b12be3b6-a814-4164-8b1b-4e866ac51c6f"],
+Cell[3866, 94, 87, 0, 70, "Item",ExpressionUUID->"d8fff40c-1a89-4270-8c4b-58ea9f72a515"],
+Cell[3956, 96, 89, 0, 70, "Item",ExpressionUUID->"65b671da-6ebe-4ccb-b2ce-d4a77b695f8f"],
+Cell[4048, 98, 87, 0, 70, "Item",ExpressionUUID->"07d27cd3-dab8-4ead-8b1d-71495c643d80"],
+Cell[4138, 100, 87, 0, 70, "Item",ExpressionUUID->"6e1b2680-5f17-449e-83bb-56bd9d559fb6"],
+Cell[4228, 102, 88, 0, 70, "Item",ExpressionUUID->"39113f61-635e-4992-b601-098bf19c4887"],
+Cell[4319, 104, 85, 0, 70, "Item",ExpressionUUID->"297d517d-c4be-4911-bbe4-bb9c2b043f7c"],
+Cell[4407, 106, 82, 0, 70, "Section",ExpressionUUID->"1091c861-5dd2-4c0b-bb54-adab9daf3a64"],
+Cell[4492, 108, 119, 0, 70, "Item",ExpressionUUID->"76915354-cffd-485e-92b3-c564f182fcab"]
 }
 ]
 *)

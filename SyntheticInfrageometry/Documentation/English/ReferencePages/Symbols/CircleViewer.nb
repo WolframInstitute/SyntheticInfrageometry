@@ -10,25 +10,69 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      1511,         43]
-NotebookOptionsPosition[       969,         28]
-NotebookOutlinePosition[      1286,         42]
-CellTagsIndexPosition[      1243,         39]
+NotebookDataLength[      4693,        104]
+NotebookOptionsPosition[      2657,         72]
+NotebookOutlinePosition[      2974,         86]
+CellTagsIndexPosition[      2931,         83]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["\"Documentation for CircleViewer\"", "Input",ExpressionUUID->"ea1e39a6-c18e-4d7f-8c86-ffbab92db0a0"],
+Cell["CircleViewer", "Title",ExpressionUUID->"fdf2602e-57aa-4e03-8485-e1dd77c3be1f"],
 
-Cell["?CircleViewer", "Input",ExpressionUUID->"a0a7f4d4-364f-4ee5-a57c-b5e232c256b0"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"e7492e5d-fdd2-4af4-bac2-5b98ae7972fc"],
 
-Cell["Information[CircleViewer, LongForm -> True]", "Input",ExpressionUUID->"34355270-ecee-4833-bda1-a3bfe12ffb13"],
+Cell["\<\
+CircleViewer[g] is an interactive viewer for exploring separating cycles in g.\
+\>", "Text",ExpressionUUID->"03dcd34e-0a74-497b-93c3-2e02c4268eba"],
 
-Cell["Definition[CircleViewer]", "Input",ExpressionUUID->"8085c884-97d2-49f9-ad39-2119d97cabdb"]
+Cell["Setup", "Section",ExpressionUUID->"7c39baf8-8b70-45bc-94dc-a5c8b6ef11c1"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"b4e97f03-73b8-4ac6-a3e1-df047532824f"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"5648bffb-cea0-4ae8-93ab-599610427446"],
+
+Cell["Examples", "Section",ExpressionUUID->"f9e2238b-100a-4c0f-b811-afe4be17eb78"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"ed1d15bf-2979-48af-bded-08725c196ace"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Interactive circle explorer."]], "Input",ExpressionUU\
+ID->"74883557-0f3f-44c2-9bac-63f6cd5d8d8f"],
+
+Cell[BoxData[
+ $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"f22e8dc9-aa68-4c90-b962-2140ab27f11f"],
+
+Cell[BoxData[
+ $CellContext`buildCell["CircleViewer[GridGraph[{4, 4}]]"]], "Input",Expressio\
+nUUID->"e9ec3e12-fed0-4c86-a1a5-af8c31b60df7"],
+
+Cell["See Also", "Section",ExpressionUUID->"be8f98d2-5940-4db4-9daa-bf400f9f1fee"],
+
+Cell["PointViewer", "Item",ExpressionUUID->"ca252a97-4c1a-4c41-80ca-11995433672d"],
+
+Cell["SegmentViewer", "Item",ExpressionUUID->"b2020c17-d7cf-4fb0-a91c-469726502a74"],
+
+Cell["ShellViewer", "Item",ExpressionUUID->"e1219449-1758-459c-88c4-8d8a47250596"],
+
+Cell["FindCircle", "Item",ExpressionUUID->"26560b12-e06c-4cb0-96a3-8d37bca6acff"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"c30ba3d4-132f-4ce3-88ba-10c328a3956b"],
+
+Cell["VisualizationGuide", "Item",ExpressionUUID->"ff190c4a-6c68-493b-806b-89bb7178d040"],
+
+Cell["Tutorials", "Section",ExpressionUUID->"1dbf60bc-7ca3-420a-869e-5420f9578f85"],
+
+Cell["VisualizationTutorial", "Item",ExpressionUUID->"75380db7-3fa9-4eac-b73f-e55766dfd434"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"16683842-6db7-4b74-9be1-eb523a4ffe8d"
+ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
 (* End of Notebook Content *)
 
@@ -41,10 +85,27 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 106, 0, 70, "Input",ExpressionUUID->"ea1e39a6-c18e-4d7f-8c86-ffbab92db0a0"],
-Cell[663, 22, 85, 0, 70, "Input",ExpressionUUID->"a0a7f4d4-364f-4ee5-a57c-b5e232c256b0"],
-Cell[751, 24, 115, 0, 70, "Input",ExpressionUUID->"34355270-ecee-4833-bda1-a3bfe12ffb13"],
-Cell[869, 26, 96, 0, 70, "Input",ExpressionUUID->"8085c884-97d2-49f9-ad39-2119d97cabdb"]
+Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"fdf2602e-57aa-4e03-8485-e1dd77c3be1f"],
+Cell[641, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"e7492e5d-fdd2-4af4-bac2-5b98ae7972fc"],
+Cell[734, 24, 157, 2, 70, "Text",ExpressionUUID->"03dcd34e-0a74-497b-93c3-2e02c4268eba"],
+Cell[894, 28, 79, 0, 70, "Section",ExpressionUUID->"7c39baf8-8b70-45bc-94dc-a5c8b6ef11c1"],
+Cell[976, 30, 91, 0, 70, "CodeText",ExpressionUUID->"b4e97f03-73b8-4ac6-a3e1-df047532824f"],
+Cell[1070, 32, 192, 4, 70, "Code",ExpressionUUID->"5648bffb-cea0-4ae8-93ab-599610427446",
+ InitializationCell->True],
+Cell[1265, 38, 82, 0, 70, "Section",ExpressionUUID->"f9e2238b-100a-4c0f-b811-afe4be17eb78"],
+Cell[1350, 40, 115, 1, 70, "Input",ExpressionUUID->"ed1d15bf-2979-48af-bded-08725c196ace"],
+Cell[1468, 43, 137, 2, 70, "Input",ExpressionUUID->"74883557-0f3f-44c2-9bac-63f6cd5d8d8f"],
+Cell[1608, 47, 112, 1, 70, "Input",ExpressionUUID->"f22e8dc9-aa68-4c90-b962-2140ab27f11f"],
+Cell[1723, 50, 140, 2, 70, "Input",ExpressionUUID->"e9ec3e12-fed0-4c86-a1a5-af8c31b60df7"],
+Cell[1866, 54, 82, 0, 70, "Section",ExpressionUUID->"be8f98d2-5940-4db4-9daa-bf400f9f1fee"],
+Cell[1951, 56, 82, 0, 70, "Item",ExpressionUUID->"ca252a97-4c1a-4c41-80ca-11995433672d"],
+Cell[2036, 58, 84, 0, 70, "Item",ExpressionUUID->"b2020c17-d7cf-4fb0-a91c-469726502a74"],
+Cell[2123, 60, 82, 0, 70, "Item",ExpressionUUID->"e1219449-1758-459c-88c4-8d8a47250596"],
+Cell[2208, 62, 81, 0, 70, "Item",ExpressionUUID->"26560b12-e06c-4cb0-96a3-8d37bca6acff"],
+Cell[2292, 64, 88, 0, 70, "Section",ExpressionUUID->"c30ba3d4-132f-4ce3-88ba-10c328a3956b"],
+Cell[2383, 66, 89, 0, 70, "Item",ExpressionUUID->"ff190c4a-6c68-493b-806b-89bb7178d040"],
+Cell[2475, 68, 83, 0, 70, "Section",ExpressionUUID->"1dbf60bc-7ca3-420a-869e-5420f9578f85"],
+Cell[2561, 70, 92, 0, 70, "Item",ExpressionUUID->"75380db7-3fa9-4eac-b73f-e55766dfd434"]
 }
 ]
 *)
