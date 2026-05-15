@@ -25,7 +25,7 @@ PointViewer[ g_Graph, sym_: None ] :=
   With[ { diam = GraphDiameter[ g ] },
     Manipulate[
       seed;
-      With[ { pts = FindPoint[ g, UpTo[ n ], "From" -> from, "MaxCliques" -> 100,
+      With[ { pts = FindInfraPoint[ g, UpTo[ n ], "From" -> from, "MaxCliques" -> 100,
           "Distance" -> Switch[ separation, "None", None, "Max", "Max", "Range", distRange ] ] },
         If[ sym =!= None, sym = pts ];
         InfraSceneHighlight[ g, { pts -> $InfraPointColor }, ImageSize -> 600 ] ],
@@ -54,7 +54,7 @@ SegmentViewer[ g_Graph ] :=
       With[ {
           segments = If[ p1 === p2 || GraphDistance[ g, p1, p2 ] === Infinity, {},
             Take[
-              applySelectOption[ g, #[[ 1, 1 ]] & /@ FindSegment[ g, p1, p2, All ],
+              applySelectOption[ g, #[[ 1, 1 ]] & /@ FindInfraSegment[ g, p1, p2, All ],
                 sel, False, <| "Endpoints" -> { p1, p2 } |> ],
               UpTo[ n ] ] ] },
         EventHandler[
@@ -92,7 +92,7 @@ ShellViewer[ g_Graph ] :=
       seed;
       With[ {
           shells = If[ r < 1, {},
-            #[[ 1, 1 ]] & /@ Take[ FindShell[ g, p, r, All, Method -> method ], UpTo[ n ] ] ] },
+            #[[ 1, 1 ]] & /@ Take[ FindInfraShell[ g, p, r, All, Properties -> properties ], UpTo[ n ] ] ] },
         EventHandler[
           HighlightGraph[
             InfraSceneHighlight[ g, { InfraShell[ shells ] -> $InfraShellColor } ],
@@ -108,9 +108,11 @@ ShellViewer[ g_Graph ] :=
       { { seed, 0 }, None },
       { { r, Max[ 1, Round[ diam / 3 ] ], "Radius" }, 1, diam, 1, Appearance -> "Labeled" },
       { { n, 12, "Shells" }, 1, 12, 1, Appearance -> "Labeled" },
-      { { method, "Metric", "Method" }, { "Metric", "Separating" }, ControlType -> SetterBar },
+      { { properties, { }, "Properties" },
+        { { } -> "Level set", { "Separating" } -> "Separating", { "Separating", "Connected" } -> "Sep+Conn" },
+        ControlType -> SetterBar },
       Button[ "Resample", p = RandomChoice[ VertexList[ g ] ]; seed++ ],
-      TrackedSymbols :> { p, seed, r, n, method },
+      TrackedSymbols :> { p, seed, r, n, properties },
       SaveDefinitions -> True
     ]
   ]
@@ -127,7 +129,7 @@ CircleViewer[ g_Graph ] :=
       With[ {
           circles = If[ r < 1, {},
             Take[
-              applySelectOption[ g, #[[ 1, 1 ]] & /@ FindCircle[ g, p, r, All ],
+              applySelectOption[ g, #[[ 1, 1 ]] & /@ FindInfraCircle[ g, p, r, All ],
                 sel, True, <| "Center" -> p, "Radius" -> r |> ],
               UpTo[ n ] ] ] },
         EventHandler[

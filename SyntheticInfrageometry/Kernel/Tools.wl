@@ -3,9 +3,9 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageScope[CentralElement]
 PackageScope[PeripheralElement]
 PackageScope[SeparatingSetQ]
-PackageScope[FindSeparatingCycles]
-PackageScope[FindMinimalSeparatingSubgraphs]
-PackageScope[FindPairSeparators]
+PackageScope[findAllMinimalAdmissible]
+PackageScope[findGreedyMinimalAdmissible]
+PackageScope[pairAuxiliaryGraph]
 PackageScope[countLimit]
 PackageScope[takeUpTo]
 PackageScope[allGeodesics]
@@ -182,22 +182,22 @@ pulledPaths[ graph_Graph, p1_, p2_, edgeKappa_, prune_, countLimit_, dagNbrs_ ] 
    Method -> "CurvatureMinimizing" into a uniform Association consumed by
    buildEdgeKappa in InfraSegment.wl. *)
 
-parseCurvatureSpec[ "Forman" ] :=
-  <| "Head" -> "Forman", "Method" -> "Simple" |>
+parseCurvatureSpec[ "FormanRicciCurvature" ] :=
+  <| "Head" -> "FormanRicciCurvature", "Method" -> "Simple" |>
 
-parseCurvatureSpec[ { "Forman", innerOpts___ } ] :=
-  <| "Head" -> "Forman", "Method" -> Method /. { innerOpts } /. Method -> "Simple" |>
+parseCurvatureSpec[ { "FormanRicciCurvature", innerOpts___ } ] :=
+  <| "Head" -> "FormanRicciCurvature", "Method" -> Method /. { innerOpts } /. Method -> "Simple" |>
 
-parseCurvatureSpec[ "Wolfram" ] :=
-  <| "Head" -> "Wolfram", "Dimension" -> Automatic, "Radii" -> Automatic |>
+parseCurvatureSpec[ "WolframRicciCurvature" ] :=
+  <| "Head" -> "WolframRicciCurvature", "Dimension" -> Automatic, "Radii" -> Automatic |>
 
-parseCurvatureSpec[ { "Wolfram", innerOpts___ } ] :=
-  <| "Head" -> "Wolfram",
+parseCurvatureSpec[ { "WolframRicciCurvature", innerOpts___ } ] :=
+  <| "Head" -> "WolframRicciCurvature",
      "Dimension" -> "Dimension" /. { innerOpts } /. "Dimension" -> Automatic,
      "Radii"     -> "Radii"     /. { innerOpts } /. "Radii"     -> Automatic |>
 
-parseCurvatureSpec[ "Ollivier" ] :=
-  <| "Head" -> "Ollivier" |>
+parseCurvatureSpec[ "OllivierRicciCurvature" ] :=
+  <| "Head" -> "OllivierRicciCurvature" |>
 
 
 (* ===================== Separating sets ===================== *)
@@ -216,45 +216,52 @@ SeparatingSetQ[ graph_Graph, vs_List, center_, radius_ ] :=
   ]
 
 
-(* Cycles in the given list that separate center from the exterior of
-   the closed radius-ball.  Used by FindCircle. *)
+(* Top-down peel from `set` toward inclusion-minimal admissible subsets.
+   `admissible` is a user-supplied predicate on a vertex subset T.  Both
+   helpers terminate when no further admissible single-removal exists --
+   inclusion-minimality is automatic at the peel leaves. *)
 
-FindSeparatingCycles[ graph_Graph, cycles_List, center_, radius_ ] :=
-  Select[ cycles, SeparatingSetQ[ graph, #, center, radius ] & ]
+(* DFS, no backtracking: one realisation, deterministic vertex order. *)
 
-
-(* Inclusion-minimal connected subsets of levelSet that separate center from
-   the exterior of the closed radius-ball.  Used by FindShell with
-   Method -> "Separating". *)
-
-FindMinimalSeparatingSubgraphs[ graph_Graph, levelSet_List, center_, radius_ ] :=
-  With[ { levelGraph = Subgraph[ graph, levelSet ] },
-    With[ { separating = Select[ Rest @ Subsets[ levelSet ],
-              subset |-> ConnectedGraphQ[ Subgraph[ levelGraph, subset ] ] &&
-                         SeparatingSetQ[ graph, subset, center, radius ] ] },
-      Select[ separating,
-        s |-> ! AnyTrue[ separating, t |-> Length[ t ] < Length[ s ] && SubsetQ[ s, t ] ] ]
+findGreedyMinimalAdmissible[ graph_Graph, set_List, admissible_ ] :=
+  If[ ! admissible[ set ], { },
+    Module[ { T = set, v },
+      While[ True,
+        v = SelectFirst[ T, w |-> admissible[ DeleteCases[ T, w ] ], Missing[ ] ];
+        If[ MissingQ[ v ], Break[ ] ];
+        T = DeleteCases[ T, v ];
+      ];
+      { T }
     ]
   ]
 
 
-(* Inclusion-minimal subsets of `set` whose removal disconnects p1 from p2.
-   The auxiliary graph contracts each non-`set` component of the complement
-   to a clique on its boundary nodes, preserving p1-p2 separators within
-   `set` while shrinking the search space.  Subsets tested in increasing
-   size, skipping supersets of already-found minimal separators. *)
+(* BFS over the peel-DAG with `Sort @ T` as the canonical dedup key.
+   `applyPruning` caps the removable-vertex frontier per layer. *)
 
-FindPairSeparators[ graph_Graph, set_List, p1_, p2_ ] :=
-  Module[ { found = { },
-            aux = pairAuxiliaryGraph[ graph, set, p1, p2 ] },
-    Do[
-      Do[
-        If[ ! AnyTrue[ found, prev |-> SubsetQ[ T, prev ] ] &&
-            GraphDistance[ VertexDelete[ aux, T ], p1, p2 ] === Infinity,
-          AppendTo[ found, T ] ],
-        { T, Subsets[ set, { k } ] } ],
-      { k, 0, Length[ set ] } ];
-    found
+findAllMinimalAdmissible[ graph_Graph, set_List, admissible_, pruning_ ] :=
+  If[ ! admissible[ set ], { },
+    Module[ { frontier = { Sort @ set },
+              seen = <| Sort @ set -> True |>,
+              minimals = { }, next, removable, key },
+      While[ frontier =!= { },
+        next = { };
+        Do[
+          removable = Select[ T, v |-> admissible[ DeleteCases[ T, v ] ] ];
+          If[ removable === { },
+            AppendTo[ minimals, T ],
+            Do[
+              key = Sort @ DeleteCases[ T, v ];
+              If[ ! KeyExistsQ[ seen, key ],
+                seen[ key ] = True;
+                AppendTo[ next, key ] ],
+              { v, applyPruning[ removable, pruning ] } ]
+          ],
+          { T, frontier } ];
+        frontier = next;
+      ];
+      DeleteDuplicates @ minimals
+    ]
   ]
 
 
@@ -287,19 +294,19 @@ pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
    wrapper or a List of unary wrappers spreads into its bare realisations;
    anything else becomes a singleton. *)
 
-infraSpread[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraPolyline )[ reps_List ] ] := reps
+infraSpread[ ( InfraPoint | InfraSegment | InfraPath | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraPolyline )[ reps_List ] ] := reps
 infraSpread[ list_List ] /; AllTrue[ list,
-    MatchQ[ ( InfraPoint | InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraPolyline )[ { _ } ] ] ] :=
+    MatchQ[ ( InfraPoint | InfraSegment | InfraPath | InfraShell | InfraPlane | InfraCircle | InfraRay | InfraPolyline )[ { _ } ] ] ] :=
   First /@ list
 infraSpread[ other_ ] := { other }
 
 
 (* Collapse a wrapped entry to the union of its realisations, for set-
-   conjunction Find* over a single _List argument (FindCommonLine,
-   FindCommonPoint). *)
+   conjunction Find* over a single _List argument (FindInfraCommonLine,
+   FindInfraCommonPoint). *)
 
 infraUnionSpread[ InfraPoint[ reps_List ] ] := DeleteDuplicates @ reps
-infraUnionSpread[ ( InfraSegment | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] :=
+infraUnionSpread[ ( InfraSegment | InfraPath | InfraShell | InfraPlane | InfraCircle | InfraRay )[ reps_List ] ] :=
   Union @@ reps
 infraUnionSpread[ InfraPolyline[ reps_List ] ] := Union @@ polylineToVertexSeqs[ reps ]
 infraUnionSpread[ other_ ] := { other }

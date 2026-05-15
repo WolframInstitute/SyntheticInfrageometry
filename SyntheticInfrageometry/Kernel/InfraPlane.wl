@@ -12,35 +12,81 @@ InfraPlane[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPlane[ _List ] ] ] :=
   InfraPlane[ Flatten[ reps /. InfraPlane[ xs_List ] :> xs, 1 ] ]
 
 
-(* ===================== FindBisectingHyperplane ===================== *)
+(* ===================== FindInfraBisectingHyperplane ===================== *)
 
-(* A bisecting hyperplane between p1 and p2 is an inclusion-minimal vertex
-   subset of the (windowed) bisector { v : lo <= d(p1, v) - d(p2, v) <= hi }
-   whose removal disconnects p1 from p2 in graph -- the codim-1 graph
-   analog of the perpendicular bisector hyperplane.  The default window
-   {0, 0} is the strict equidistant set; passing {-1, 1} thickens it to
-   recover the parity-stranded middle pair when d(p1, p2) is odd. *)
+(* A bisecting hyperplane between p1 and p2 is a vertex subset of the
+   bisector slab B = { v : lo <= d(p1, v) - d(p2, v) <= hi }.  Two
+   orthogonal axes:
+     Properties -- a list of predicates the result must satisfy.
+        Empty (default) means no filter: return the slab B itself, one
+        realisation, the codim-1 perpendicular-bisector level set.
+        "Separating" requires SeparatesQ[aux, T, p1, p2].
+        "Connected" requires ConnectedGraphQ @ Subgraph[graph, T].
+        Properties compose via AND; the resulting closure gates the peel.
+     Method     -- how to enumerate inclusion-minimal subsets satisfying
+        Properties.  "Exhaustive" (default) is a top-down BFS over the
+        peel-DAG, deduplicated; the nested form {"Exhaustive", "Pruning"
+        -> spec} caps per-layer branching via applyPruning.  "Greedy"
+        is a top-down DFS, no backtracking, one realisation.
+   When Properties is empty, Method is ignored.  On a non-bipartite graph
+   the strict equidistant set may fail to separate, so widen the window
+   or use {-1, 1} to recover the parity-stranded band. *)
 
-FindBisectingHyperplane[ graph_Graph, p1_, p2_ ] :=
-  FindBisectingHyperplane[ graph, p1, p2, { 0, 0 }, 1 ]
+FindInfraBisectingHyperplane::badmethod   = "Method `1` is not supported by FindInfraBisectingHyperplane.";
+FindInfraBisectingHyperplane::badproperty = "Property `1` is not supported by FindInfraBisectingHyperplane.";
 
-FindBisectingHyperplane[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) ] :=
-  FindBisectingHyperplane[ graph, p1, p2, { 0, 0 }, count ]
+Options[ FindInfraBisectingHyperplane ] = {
+  Properties -> { },
+  Method     -> "Exhaustive"
+};
 
-FindBisectingHyperplane[ graph_Graph, p1_, p2_,
-    window : { _Integer, _Integer } ] :=
-  FindBisectingHyperplane[ graph, p1, p2, window, 1 ]
+FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  FindInfraBisectingHyperplane[ graph, p1, p2, { 0, 0 }, count, opts ]
 
-FindBisectingHyperplane[ graph_Graph, p1_, p2_,
-    window : { _Integer, _Integer }, count : ( _Integer | UpTo[ _Integer ] | All ) ] :=
+FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
+    window : { _Integer, _Integer },
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraPlane, count,
-    findBisectingHyperplaneCore[ graph, ##, window ] &, p1, p2 ]
+    findBisectingHyperplaneCore[ graph, ##, window, opts ] &, p1, p2 ]
 
 
-findBisectingHyperplaneCore[ graph_Graph, p1_, p2_, { lo_Integer, hi_Integer } ] :=
-  With[ { bisector = Pick[ VertexList[ graph ],
+findBisectingHyperplaneCore[ graph_Graph, p1_, p2_,
+    { lo_Integer, hi_Integer }, opts : OptionsPattern[ FindInfraBisectingHyperplane ] ] :=
+  Module[ { properties, methodSpec, methodHead, pruning, bisector, aux, admissible },
+    properties = OptionValue[ FindInfraBisectingHyperplane, { opts }, Properties ];
+    methodSpec = OptionValue[ FindInfraBisectingHyperplane, { opts }, Method ];
+    methodHead = methodName @ methodSpec;
+    pruning    = Replace[ methodSpec, { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ), _ :> Infinity } ];
+    bisector   = Complement[
+      Pick[ VertexList[ graph ],
         MapThread[ { x, y } |-> lo <= x - y <= hi,
-          { GraphDistance[ graph, p1 ], GraphDistance[ graph, p2 ] } ] ] },
-    FindPairSeparators[ graph, Complement[ bisector, { p1, p2 } ], p1, p2 ]
+          { GraphDistance[ graph, p1 ], GraphDistance[ graph, p2 ] } ] ],
+      { p1, p2 } ];
+    If[ properties === { },
+      { bisector },
+      Catch[
+        aux = pairAuxiliaryGraph[ graph, bisector, p1, p2 ];
+        admissible = admissibleBisectingHyperplane[ graph, aux, p1, p2, properties ];
+        Switch[ methodHead,
+          "Exhaustive", findAllMinimalAdmissible[ graph, bisector, admissible, pruning ],
+          "Greedy",     findGreedyMinimalAdmissible[ graph, bisector, admissible ],
+          _,            Message[ FindInfraBisectingHyperplane::badmethod, methodSpec ]; $Failed
+        ]
+      ]
+    ]
   ]
+
+admissibleBisectingHyperplane[ graph_Graph, aux_Graph, p1_, p2_, properties_List ] :=
+  With[ { tests = propertyPredicate[ graph, aux, p1, p2, # ] & /@ properties },
+    T |-> AllTrue[ tests, # @ T & ]
+  ]
+
+propertyPredicate[ _, aux_Graph, p1_, p2_, "Separating" ] :=
+  T |-> SeparatesQ[ aux, T, p1, p2 ]
+
+propertyPredicate[ graph_Graph, _, _, _, "Connected" ] :=
+  T |-> T =!= { } && ConnectedGraphQ @ Subgraph[ graph, T ]
+
+propertyPredicate[ _, _, _, _, other_ ] :=
+  ( Message[ FindInfraBisectingHyperplane::badproperty, other ]; Throw[ $Failed ] )

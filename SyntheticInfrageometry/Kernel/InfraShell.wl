@@ -12,64 +12,88 @@ InfraShell[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraShell[ _List ] ] ] :=
   InfraShell[ Flatten[ reps /. InfraShell[ xs_List ] :> xs, 1 ] ]
 
 
-(* ===================== FindShell ===================== *)
+(* ===================== FindInfraShell ===================== *)
 
-(* A shell of radius r around c is a vertex set carved out of the level
-   surface { v : d(c, v) = r }.  Three recipes: "Metric" returns the
-   level surface itself; "Separating" returns connected separating
-   subsets minimal under inclusion; "Embedding" ranks vertices by
-   proximity to the Euclidean sphere of radius r. *)
+(* A shell of radius r around c is a vertex subset of the level surface
+   { v : rmin <= d(c, v) <= rmax }.  Two orthogonal axes:
+     Properties -- filters every realisation must satisfy.  Empty
+       (default) means no filter: return the level surface itself, one
+       realisation.  "Separating" requires SeparatingSetQ; "Connected"
+       requires ConnectedGraphQ on the induced subgraph.  Properties
+       compose via AND.
+     Method     -- how to enumerate inclusion-minimal subsets satisfying
+       Properties.  "Exhaustive" (default) is top-down BFS over the
+       peel-DAG, deduplicated; the nested form {"Exhaustive", "Pruning"
+       -> spec} caps per-layer branching via applyPruning.  "Greedy" is
+       top-down DFS, no backtracking, one realisation.
+   When Properties is empty, Method is ignored. *)
 
-FindShell::badmethod = "Method `1` is not supported by FindShell.";
+FindInfraShell::badmethod   = "Method `1` is not supported by FindInfraShell.";
+FindInfraShell::badproperty = "Property `1` is not supported by FindInfraShell.";
 
-Options[ FindShell ] = { Method -> "Metric" };
+Options[ FindInfraShell ] = {
+  Properties -> { },
+  Method     -> "Exhaustive"
+};
 
-FindShell[ graph_Graph, p_, r_,
+FindInfraShell[ graph_Graph, p_, r_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraShell, count,
     findShellCore[ graph, ##, opts ] &, p, r ]
 
 
-findShellCore[ graph_Graph, p_, r_, opts : OptionsPattern[ FindShell ] ] :=
-  Module[ { spec, methodName, range, localG, levelSet, radius },
-    spec = OptionValue[ FindShell, { opts }, Method ];
-    methodName = Replace[ spec, { m_String :> m, { m_String, ___ } :> m, _ :> spec } ];
+findShellCore[ graph_Graph, p_, r_, opts : OptionsPattern[ FindInfraShell ] ] :=
+  Module[ { properties, methodSpec, methodHead, pruning, range, localG, levelSet, radius, admissible },
+    properties = OptionValue[ FindInfraShell, { opts }, Properties ];
+    methodSpec = OptionValue[ FindInfraShell, { opts }, Method ];
+    methodHead = methodName @ methodSpec;
+    pruning    = Replace[ methodSpec,
+                  { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
+                    _ :> Infinity } ];
     range = Replace[ r, d_?NumericQ :> { d, d } ];
-    (* Localize: level surface + one outside layer for the SeparatingSetQ test. *)
     localG = If[ NumericQ[ range[[ 2 ]] ],
                  NeighborhoodGraph[ graph, p, Ceiling[ range[[ 2 ]] ] + 1 ], graph ];
     levelSet = Select[ VertexList[ localG ],
       range[[ 1 ]] <= GraphDistance[ localG, p, # ] <= range[[ 2 ]] & ];
     radius = If[ NumericQ[ r ], r, Mean[ r ] ];
-    Switch[ methodName,
-      "Metric",     { levelSet },
-      "Separating", FindMinimalSeparatingSubgraphs[ localG, levelSet, p, radius ],
-      (* Embedding uses global GraphEmbedding -> keep the original graph. *)
-      "Embedding",  embeddingRankShellVertices[ graph, p, radius, levelSet, parseEmbeddingMethod[ spec, "LevelSet" ] ],
-      _,            Message[ FindShell::badmethod, spec ]; $Failed
+    If[ properties === { },
+      { levelSet },
+      Catch[
+        admissible = admissibleShell[ localG, p, radius, properties ];
+        Switch[ methodHead,
+          "Exhaustive", findAllMinimalAdmissible[ localG, levelSet, admissible, pruning ],
+          "Greedy",     findGreedyMinimalAdmissible[ localG, levelSet, admissible ],
+          _,            Message[ FindInfraShell::badmethod, methodSpec ]; $Failed
+        ]
+      ]
     ]
   ]
 
 
-embeddingRankShellVertices[ graph_Graph, p_, radius_, levelSet_, embOpts_Association ] :=
-  Module[ { coords, vertexIndex, centerPt, pool },
-    coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ];
-    vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
-    centerPt = coords[[ vertexIndex[ p ] ]];
-    pool = If[ embOpts[ "Pool" ] === "AllVertices", VertexList[ graph ], levelSet ];
-    List /@ SortBy[ pool,
-      v |-> Abs[ EuclideanDistance[ coords[[ vertexIndex[ v ] ]], centerPt ] - radius ] ]
+admissibleShell[ localG_Graph, center_, radius_, properties_List ] :=
+  With[ { tests = propertyPredicateShell[ localG, center, radius, # ] & /@ properties },
+    t |-> AllTrue[ tests, # @ t & ]
   ]
 
 
-(* ===================== FindShellParameters ===================== *)
+propertyPredicateShell[ localG_Graph, center_, radius_, "Separating" ] :=
+  t |-> SeparatingSetQ[ localG, t, center, radius ]
+
+propertyPredicateShell[ localG_Graph, _, _, "Connected" ] :=
+  t |-> t =!= { } && ConnectedGraphQ @ Subgraph[ localG, t ]
+
+propertyPredicateShell[ _, _, _, other_ ] :=
+  ( Message[ FindInfraShell::badproperty, other ]; Throw[ $Failed ] )
+
+
+(* ===================== FindInfraShellParameters ===================== *)
 
 (* For a vertex set vs, return the {center, radius} pairs for which vs
    is a metric shell: in some component of g \ vs, a center c is
    equidistant from every vertex of vs, dominates that component, and
    is strictly closer to the inside than to the outside. *)
 
-FindShellParameters[ graph_Graph, vs_List ] :=
+FindInfraShellParameters[ graph_Graph, vs_List ] :=
   Module[ { rem, comps },
     rem = VertexDelete[ graph, vs ];
     comps = ConnectedComponents[ rem ];
@@ -95,10 +119,10 @@ FindShellParameters[ graph_Graph, vs_List ] :=
   ]
 
 
-(* ===================== ShellQ ===================== *)
+(* ===================== InfraShellQ ===================== *)
 
-ShellQ[ graph_Graph, vs_List ] :=
-  Length[ FindShellParameters[ graph, vs ] ] > 0
+InfraShellQ[ graph_Graph, vs_List ] :=
+  Length[ FindInfraShellParameters[ graph, vs ] ] > 0
 
 
 (* ===================== SeparatesQ ===================== *)
