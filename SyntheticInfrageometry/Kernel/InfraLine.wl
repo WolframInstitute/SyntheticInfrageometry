@@ -10,27 +10,34 @@ PackageScope[canonicalLine]
 PackageScope[allCanonicalLines]
 
 
-(* FindLine returns InfraSegment (a maximal geodesic is a longest-form segment);
-   this file owns the line-shaped Find / construction / predicate operations. *)
+(* FindInfraLine returns InfraLine (a maximal geodesic is a line; the wrapper head
+   distinguishes line-shaped Find output from segment-shaped Find output).
+   This file owns the line-shaped Find / construction / predicate operations. *)
 
 
-(* ===================== FindLine ===================== *)
+(* ===================== InfraLine wrapper ===================== *)
+
+InfraLine[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraLine[ _List ] ] ] :=
+  InfraLine[ Flatten[ reps /. InfraLine[ xs_List ] :> xs, 1 ] ]
+
+
+(* ===================== FindInfraLine ===================== *)
 
 (* A line through p1, p2: a maximal geodesic extension (a, ..., p1, ..., p2, ..., b)
    every contiguous sub-sequence of which is a geodesic, inextensible at both ends. *)
 
-Options[ FindLine ] = { "Maximality" -> "Extension", Method -> "ShortestPath", "Pruning" -> Infinity };
+Options[ FindInfraLine ] = { "Maximality" -> "Extension", Method -> "ShortestPath", "Pruning" -> Infinity };
 
-FindLine[ graph_Graph, p1_, p2_,
+FindInfraLine[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraSegment, count,
+  infraSpreadAndCartesian[ InfraLine, count,
     findLineCore[ graph, ##, opts ] &, p1, p2 ]
 
 
-findLineCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindLine ] ] /;
+findLineCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindInfraLine ] ] /;
     MemberQ[ VertexList[ graph ], p1 ] :=
-  With[ { spec = OptionValue[ FindLine, { opts }, Method ] /. Automatic -> "ShortestPath",
-          pruning = OptionValue[ FindLine, { opts }, "Pruning" ] },
+  With[ { spec = OptionValue[ FindInfraLine, { opts }, Method ] /. Automatic -> "ShortestPath",
+          pruning = OptionValue[ FindInfraLine, { opts }, "Pruning" ] },
     With[ { method = methodName[ spec ] },
       With[ { middles = Switch[ method,
                 "ShortestPath" | "Greedy" | "Embedding", allGeodesics[ graph, p1, p2 ],
@@ -45,7 +52,7 @@ findLineCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindLine ] ] /;
                     _,
                       findLineExtensions[ graph, #, pruning ] & /@ middles
                   ], 1 ] },
-                If[ OptionValue[ FindLine, { opts }, "Maximality" ] === "Diameter",
+                If[ OptionValue[ FindInfraLine, { opts }, "Maximality" ] === "Diameter",
                   Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
                   ext ] ] },
           Switch[ method,
@@ -78,7 +85,7 @@ embeddingRankLines[ graph_Graph, lines_List, p1_, p2_, embOpts_Association ] :=
    that achieve a valid joint geodesic (degenerate triangle inequality
    d(s, e) == d(s, p1) + d + d(p2, e)) we keep those with maximum total
    extension length b_s + a_e.  The "With" form takes prefix and suffix
-   path-enumeration closures (ExtendSegment swaps in extended-out /
+   path-enumeration closures (ExtendInfraSegment swaps in extended-out /
    curvature-pulled enumerators for the non-ShortestPath methods). *)
 
 findLineExtensions[ graph_Graph, segment_List, pruning_ : Infinity ] :=
@@ -152,22 +159,22 @@ greedyWalk[ graph_Graph, h_, a_, db_, admissible_ ] :=
   ]
 
 
-(* ===================== FindParallel ===================== *)
+(* ===================== FindInfraParallel ===================== *)
 
-(* FindParallel[g, line, p]: maximal sub-segment of a maximal geodesic
+(* FindInfraParallel[g, line, p]: maximal sub-segment of a maximal geodesic
    through p whose vertices all lie at distance r = d(p, line) from line. *)
 
-Options[ FindParallel ] = { Method -> "ShortestPath", "Pruning" -> Infinity };
+Options[ FindInfraParallel ] = { Method -> "ShortestPath", "Pruning" -> Infinity };
 
-FindParallel[ graph_Graph, line_, p_,
+FindInfraParallel[ graph_Graph, line_, p_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraSegment, count,
+  infraSpreadAndCartesian[ InfraLine, count,
     findParallelCore[ graph, ##, opts ] &, line, p ]
 
 
-findParallelCore[ graph_Graph, line_List, p_, opts : OptionsPattern[ FindParallel ] ] :=
-  With[ { spec = OptionValue[ FindParallel, { opts }, Method ] /. Automatic -> "ShortestPath",
-          pruning = OptionValue[ FindParallel, { opts }, "Pruning" ] },
+findParallelCore[ graph_Graph, line_List, p_, opts : OptionsPattern[ FindInfraParallel ] ] :=
+  With[ { spec = OptionValue[ FindInfraParallel, { opts }, Method ] /. Automatic -> "ShortestPath",
+          pruning = OptionValue[ FindInfraParallel, { opts }, "Pruning" ] },
     Switch[ methodName @ spec,
       "ShortestPath", findParallelExtensions[ graph, line, p, pruning ],
       "Greedy",       findParallelExtensionsGreedy[ graph, line, p ],
@@ -233,22 +240,22 @@ embeddingRankParallels[ graph_Graph, parallels_List, line_List, p_, embOpts_Asso
   ]
 
 
-(* ===================== FindPerpendicular ===================== *)
+(* ===================== FindInfraPerpendicular ===================== *)
 
 (* Foot of the perpendicular from p to L (Euclid I.12, isosceles base midpoint):
    for each pair {a, b} of L-vertices equidistant from p, the midpoint of the
    line-arc from a to b along L is a candidate foot. *)
 
-Options[ FindPerpendicular ] = { Method -> "Metric" };
+Options[ FindInfraPerpendicular ] = { Method -> "Metric" };
 
-FindPerpendicular[ graph_Graph, line_, point_,
+FindInfraPerpendicular[ graph_Graph, line_, point_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraPoint, count,
     findPerpendicularCore[ graph, ##, opts ] &, line, point ]
 
 
-findPerpendicularCore[ graph_Graph, line_List, point_, opts : OptionsPattern[ FindPerpendicular ] ] :=
-  With[ { spec = OptionValue[ FindPerpendicular, { opts }, Method ] },
+findPerpendicularCore[ graph_Graph, line_List, point_, opts : OptionsPattern[ FindInfraPerpendicular ] ] :=
+  With[ { spec = OptionValue[ FindInfraPerpendicular, { opts }, Method ] },
     Switch[ methodName @ spec,
       "Metric",
         With[ { distances = GraphDistance[ graph, point, # ] & /@ line },
@@ -286,7 +293,7 @@ embeddingRankPerpendicularFeet[ graph_Graph, line_List, point_, embOpts_Associat
   ]
 
 
-(* ===================== FindCommonLine ===================== *)
+(* ===================== FindInfraCommonLine ===================== *)
 
 (* Canonical maximal geodesics through every vertex in verts. *)
 
@@ -294,53 +301,53 @@ findCommonLineCore[ graph_Graph, verts_List ] :=
   With[ { uverts = DeleteDuplicates @ Catenate[ infraUnionSpread /@ verts ] },
     If[ Length[ uverts ] < 2, { },
       DeleteDuplicates @ Select[
-        canonicalLine[ #[[ 1, 1 ]] ] & /@ FindLine[ graph, First @ uverts, uverts[[ 2 ]], All ],
+        canonicalLine[ #[[ 1, 1 ]] ] & /@ FindInfraLine[ graph, First @ uverts, uverts[[ 2 ]], All ],
         line |-> SubsetQ[ line, uverts ] ]
     ]
   ]
 
-FindCommonLine[ graph_Graph, verts_List,
+FindInfraCommonLine[ graph_Graph, verts_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
   With[ { capped = infraCap[ findCommonLineCore[ graph, verts ], count ] },
-    If[ capped === $Failed, $Failed, InfraSegment[ { # } ] & /@ capped ]
+    If[ capped === $Failed, $Failed, InfraLine[ { # } ] & /@ capped ]
   ]
 
 
-(* ===================== SegmentLineAngle ===================== *)
+(* ===================== InfraSegmentLineAngle ===================== *)
 
 (* Length-valued angle surrogate: d(p2, L) when p1 in L, Infinity otherwise. *)
 
-Options[ SegmentLineAngle ] = { Method -> "Metric" };
+Options[ InfraSegmentLineAngle ] = { Method -> "Metric" };
 
-SegmentLineAngle[ graph_Graph, p1_, p2_, line_List, opts : OptionsPattern[] ] :=
+InfraSegmentLineAngle[ graph_Graph, p1_, p2_, line_List, opts : OptionsPattern[] ] :=
   If[ ! MemberQ[ line, p1 ], Infinity,
     Min[ GraphDistance[ graph, p2, # ] & /@ line ] ]
 
-SegmentLineAngle[ graph_Graph, segment_List, line_List, opts : OptionsPattern[] ] /; Length[ segment ] >= 2 :=
-  SegmentLineAngle[ graph, First[ segment ], Last[ segment ], line, opts ]
+InfraSegmentLineAngle[ graph_Graph, segment_List, line_List, opts : OptionsPattern[] ] /; Length[ segment ] >= 2 :=
+  InfraSegmentLineAngle[ graph, First[ segment ], Last[ segment ], line, opts ]
 
 
-(* ===================== LineQ ===================== *)
+(* ===================== InfraLineQ ===================== *)
 
 (* A segment is a line iff no extension preserves the geodesic property. *)
 
-LineQ[ graph_Graph, segment_List ] :=
-  SegmentQ[ graph, segment ] &&
+InfraLineQ[ graph_Graph, segment_List ] :=
+  InfraSegmentQ[ graph, segment ] &&
   Length[ First @ findLineExtensions[ graph, segment ] ] == Length[ segment ]
 
 
-(* ===================== ParallelQ ===================== *)
+(* ===================== InfraParallelQ ===================== *)
 
 (* Definition-alpha parallelism: l1 and l2 are disjoint and the distance from
    each vertex of l1 to l2 is constant up to threshold. *)
 
-ParallelQ[ distanceMatrix_List, l1_List, l2_List, threshold_ : 0 ] :=
+InfraParallelQ[ distanceMatrix_List, l1_List, l2_List, threshold_ : 0 ] :=
   If[ IntersectingQ[ l1, l2 ], False,
     With[ { lineDistances = Min[ distanceMatrix[[ #, l2 ]] ] & /@ l1 },
       Max[ lineDistances ] - Min[ lineDistances ] <= threshold ]
   ]
 
-ParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
+InfraParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
   If[ IntersectingQ[ l1, l2 ], False,
     With[ { lineDistances = Table[ Min[ GraphDistance[ graph, v, # ] & /@ l2 ], { v, l1 } ] },
       Max[ lineDistances ] - Min[ lineDistances ] <= threshold ]
@@ -354,7 +361,7 @@ ParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
 
 PencilDirections[ graph_Graph, origin_ ] :=
   DeleteDuplicates @ Map[ canonicalLine, Flatten[
-    Map[ #[[ 1, 1 ]] &, FindLine[ graph, origin, #, All ] ] & /@
+    Map[ #[[ 1, 1 ]] &, FindInfraLine[ graph, origin, #, All ] ] & /@
       DeleteCases[ VertexList[ graph ], origin ],
     1 ] ]
 
@@ -373,7 +380,7 @@ canonicalLine[ line_List ] := First @ Sort @ { line, Reverse[ line ] }
 
 allCanonicalLines[ graph_Graph ] :=
   DeleteDuplicates @ Flatten[
-    canonicalLine[ #[[ 1, 1 ]] ] & /@ FindLine[ graph, #[[ 1 ]], #[[ 2 ]], All ] & /@
+    canonicalLine[ #[[ 1, 1 ]] ] & /@ FindInfraLine[ graph, #[[ 1 ]], #[[ 2 ]], All ] & /@
       Subsets[ VertexList[ graph ], { 2 } ],
     1
   ]

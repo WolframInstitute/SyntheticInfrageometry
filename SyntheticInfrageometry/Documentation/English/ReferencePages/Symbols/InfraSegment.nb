@@ -26,7 +26,7 @@ Cell["\<\
 InfraSegment is the wrapper head for path realisations of the segment / line \
 / parallel / common-line primitives. InfraSegment[{path}] is the unary form; \
 InfraSegment[{path1, \[Ellipsis], pathk}] is the multi-realisation form. \
-FindSegment, FindLine, ExtendSegment, FindParallel, and FindCommonLine all \
+FindInfraSegment, FindInfraLine, ExtendInfraSegment, FindInfraParallel, and FindInfraCommonLine all \
 emit a List of unary InfraSegment[{path}] wrappers. Wrapping that List with \
 InfraSegment @ \[Ellipsis] collapses it to the multi form via auto-flatten; \
 InfraSceneHighlight consumes the multi form with sequential-edge semantics.\
@@ -113,20 +113,20 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"3bb42140-c983-4a9e-8c83-270bb3bea4de"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindSegment[GridGraph[{3, 3}], 1, 9, All]"]], "Input",\
+ $CellContext`buildCell["FindInfraSegment[GridGraph[{3, 3}], 1, 9, All]"]], "Input",\
 ExpressionUUID->"b2496b2b-fbfe-42be-8df3-dd65fa117a88"],
 
 Cell["See Also", "Section",ExpressionUUID->"6123813b-6702-4efc-866c-a7478a542cc7"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"ccd241d6-c503-447d-96d4-9f34229b73e6"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"ccd241d6-c503-447d-96d4-9f34229b73e6"],
 
-Cell["FindLine", "Item",ExpressionUUID->"05b51877-22e8-4c73-b81d-54d980bd9b0a"],
+Cell["FindInfraLine", "Item",ExpressionUUID->"05b51877-22e8-4c73-b81d-54d980bd9b0a"],
 
-Cell["ExtendSegment", "Item",ExpressionUUID->"32ade2d5-c7c3-4121-a1a9-8881f9eea1d1"],
+Cell["ExtendInfraSegment", "Item",ExpressionUUID->"32ade2d5-c7c3-4121-a1a9-8881f9eea1d1"],
 
-Cell["FindParallel", "Item",ExpressionUUID->"c8b233b8-906a-4822-a582-fb037e8cfa0e"],
+Cell["FindInfraParallel", "Item",ExpressionUUID->"c8b233b8-906a-4822-a582-fb037e8cfa0e"],
 
-Cell["FindCommonLine", "Item",ExpressionUUID->"023933f1-ff64-4a47-a9f9-78073359f88f"],
+Cell["FindInfraCommonLine", "Item",ExpressionUUID->"023933f1-ff64-4a47-a9f9-78073359f88f"],
 
 Cell["InfraPoint", "Item",ExpressionUUID->"1804adba-45d1-4f49-889e-1668b711748f"],
 

@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["CompleteEquilateralTriangle", "Title",ExpressionUUID->"fdceb050-2476-4ad9-947d-9bf52d8c3625"],
+Cell["CompleteInfraEquilateralTriangle", "Title",ExpressionUUID->"fdceb050-2476-4ad9-947d-9bf52d8c3625"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b51a9148-053f-4ef9-a484-d067545139c3"],
 
 Cell["\<\
-CompleteEquilateralTriangle[g, p1, p2] returns the apex vertices c satisfying \
+CompleteInfraEquilateralTriangle[g, p1, p2] returns the apex vertices c satisfying \
 d(c, p1) == d(c, p2) == d(p1, p2) (Euclid I.1). Returns a List of unary \
 InfraPoint[{c}] wrappers; n / UpTo[n] / All control multiplicity. Option \
 Method (\"Metric\" (default); \"Spectral\", \"Resistance\" reserved).\
@@ -53,7 +53,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "CompleteEquilateralTriangle[PathGraph[Range[5]], 1, 3, UpTo[1]]"]], "Input",\
+ "CompleteInfraEquilateralTriangle[PathGraph[Range[5]], 1, 3, UpTo[1]]"]], "Input",\
 ExpressionUUID->"cd6e2f61-87a5-47d5-9516-dafe5435d321"],
 
 Cell[BoxData[
@@ -67,7 +67,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "CompleteEquilateralTriangle[CycleGraph[6], 1, 3, All]"]], "Input",Expression\
+ "CompleteInfraEquilateralTriangle[CycleGraph[6], 1, 3, All]"]], "Input",Expression\
 UUID->"a9dfd3ee-b9d7-4ed7-8a41-e2c72705c3ab"],
 
 Cell[BoxData[
@@ -82,16 +82,16 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "CompleteEquilateralTriangle[GridGraph[{4, 4}], 1, 5, All]"]], "Input",Expres\
+ "CompleteInfraEquilateralTriangle[GridGraph[{4, 4}], 1, 5, All]"]], "Input",Expres\
 sionUUID->"56cc1f21-7446-441b-9ac7-ca4a6a5c7b77"],
 
 Cell["See Also", "Section",ExpressionUUID->"76e633fd-266e-4c4f-a56f-2a4225eaf17e"],
 
 Cell["InfraPoint", "Item",ExpressionUUID->"fc3a534f-16cf-4117-869f-cfeba0f7baf8"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"a9e8930b-171d-44b1-8eb9-abb32ecdd614"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"a9e8930b-171d-44b1-8eb9-abb32ecdd614"],
 
-Cell["FindShell", "Item",ExpressionUUID->"5c7f7de8-2d54-4b11-bf01-fb76a86a4bc7"],
+Cell["FindInfraShell", "Item",ExpressionUUID->"5c7f7de8-2d54-4b11-bf01-fb76a86a4bc7"],
 
 Cell["BetweennessQ", "Item",ExpressionUUID->"0636e3f0-aa77-436f-af24-831e0668eeed"],
 

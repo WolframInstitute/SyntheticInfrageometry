@@ -78,7 +78,7 @@ Cell["PencilCardinality", "Item",ExpressionUUID->"35009d29-8535-446b-b445-aec5e5
 
 Cell["UniquePencilQ", "Item",ExpressionUUID->"acb5516a-7908-4d42-90d6-a93c1b15d4a6"],
 
-Cell["FindRay", "Item",ExpressionUUID->"cbbc033e-f2bd-477d-a468-0927dd24ef1c"],
+Cell["FindInfraRay", "Item",ExpressionUUID->"cbbc033e-f2bd-477d-a468-0927dd24ef1c"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"e8933aec-095b-41a6-a2df-7756455a4d47"],
 

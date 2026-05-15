@@ -18,14 +18,14 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["LineQ", "Title",ExpressionUUID->"c96f687d-a580-4b16-a96e-3ec4026b59d4"],
+Cell["InfraLineQ", "Title",ExpressionUUID->"c96f687d-a580-4b16-a96e-3ec4026b59d4"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"3e0e3967-744b-4bb8-b98b-abbb58d8f8fa"],
 
 Cell["\<\
-LineQ[g, segment] tests whether segment is a maximal geodesic: a geodesic \
+InfraLineQ[g, segment] tests whether segment is a maximal geodesic: a geodesic \
 vertex sequence that cannot be extended at either endpoint while remaining a \
-geodesic. LineQ is the predicate companion of FindLine and ExtendSegment.\
+geodesic. InfraLineQ is the predicate companion of FindInfraLine and ExtendInfraSegment.\
 \>", "Text",ExpressionUUID->"1b5d7864-f6a2-41ef-88ef-16c7c3765625"],
 
 Cell["Setup", "Section",ExpressionUUID->"606477cb-8410-4ed4-b4d3-e74c94c9e466"],
@@ -52,7 +52,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"765d8a83-e9c4-4531-b346-3f8f43cfbd03"],
 
 Cell[BoxData[
- $CellContext`buildCell["LineQ[PathGraph[Range[6]], Range[6]]"]], "Input",Expr\
+ $CellContext`buildCell["InfraLineQ[PathGraph[Range[6]], Range[6]]"]], "Input",Expr\
 essionUUID->"2e0cc106-c4ad-4b0b-8472-8f106ab28463"],
 
 Cell[BoxData[
@@ -67,7 +67,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"b432e257-5b24-4656-94bd-c92db9325975"],
 
 Cell[BoxData[
- $CellContext`buildCell["LineQ[PathGraph[Range[6]], {2, 3, 4}]"]], "Input",Exp\
+ $CellContext`buildCell["InfraLineQ[PathGraph[Range[6]], {2, 3, 4}]"]], "Input",Exp\
 ressionUUID->"570626d7-1c26-44b0-ae62-84bb8e9f46b2"],
 
 Cell[BoxData[
@@ -82,7 +82,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"dcd9da12-6b34-4b25-a6d4-25dafcdd563e"],
 
 Cell[BoxData[
- $CellContext`buildCell["LineQ[GridGraph[{3, 3}], {1, 5, 9}]"]], "Input",Expre\
+ $CellContext`buildCell["InfraLineQ[GridGraph[{3, 3}], {1, 5, 9}]"]], "Input",Expre\
 ssionUUID->"2548c39b-2068-449a-8f3f-0f14edc7950a"],
 
 Cell[BoxData[
@@ -90,7 +90,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "Every realisation returned by FindLine satisfies LineQ."]], "Input",Expressi\
+ "Every realisation returned by FindInfraLine satisfies InfraLineQ."]], "Input",Expressi\
 onUUID->"c8cb2581-40cf-4195-8316-0f64f8e94fd5"],
 
 Cell[BoxData[
@@ -98,19 +98,19 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "With[{g = GridGraph[{3, 3}]}, AllTrue[FindLine[g, 1, 9, All], LineQ[g, \
+ "With[{g = GridGraph[{3, 3}]}, AllTrue[FindInfraLine[g, 1, 9, All], InfraLineQ[g, \
 First[#][\"Realizations\"]] &]]"]], "Input",ExpressionUUID->"64832c54-6ca3-\
 4473-8ebd-4e5c4cd31c9e"],
 
 Cell["See Also", "Section",ExpressionUUID->"89beb123-9abe-414b-875b-ead42b1f3946"],
 
-Cell["FindLine", "Item",ExpressionUUID->"54434d30-dddd-4e3d-b49b-1635a16d2a0d"],
+Cell["FindInfraLine", "Item",ExpressionUUID->"54434d30-dddd-4e3d-b49b-1635a16d2a0d"],
 
-Cell["ExtendSegment", "Item",ExpressionUUID->"c31b2eaa-d467-4e04-95f3-bda0206cdf79"],
+Cell["ExtendInfraSegment", "Item",ExpressionUUID->"c31b2eaa-d467-4e04-95f3-bda0206cdf79"],
 
-Cell["SegmentQ", "Item",ExpressionUUID->"ffdaa5c1-8d9f-4075-8a74-f7c6453d214d"],
+Cell["InfraSegmentQ", "Item",ExpressionUUID->"ffdaa5c1-8d9f-4075-8a74-f7c6453d214d"],
 
-Cell["ParallelQ", "Item",ExpressionUUID->"c2f6163e-6296-4408-8d94-bba0192b3b20"],
+Cell["InfraParallelQ", "Item",ExpressionUUID->"c2f6163e-6296-4408-8d94-bba0192b3b20"],
 
 Cell["InfraSegment", "Item",ExpressionUUID->"d2bfad90-1597-4ffd-acc0-e5b6719ac7c7"],
 

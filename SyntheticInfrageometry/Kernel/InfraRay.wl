@@ -12,7 +12,7 @@ InfraRay[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraRay[ _List ] ] ] :=
   InfraRay[ Flatten[ reps /. InfraRay[ xs_List ] :> xs, 1 ] ]
 
 
-(* ===================== FindRay ===================== *)
+(* ===================== FindInfraRay ===================== *)
 
 (* A ray from origin in v's direction is a pointed half of a maximal
    geodesic line through origin containing v: the vertex sequence
@@ -32,9 +32,9 @@ findRayCore[ graph_Graph, origin_, v_ ] :=
           True,                   Reverse[ line[[ 1 ;; oIdx ]] ]
         ]
       ],
-    #[[ 1, 1 ]] & /@ FindLine[ graph, origin, v, All ]
+    #[[ 1, 1 ]] & /@ FindInfraLine[ graph, origin, v, All ]
   ]
 
-FindRay[ graph_Graph, origin_, v_,
+FindInfraRay[ graph_Graph, origin_, v_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
   infraSpreadAndCartesian[ InfraRay, count, findRayCore[ graph, ##] &, origin, v ]

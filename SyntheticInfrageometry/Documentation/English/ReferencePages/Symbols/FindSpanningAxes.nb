@@ -18,17 +18,17 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindSpanningAxes", "Title",ExpressionUUID->"4779bb55-30e9-4480-b331-fbe3ab550cbc"],
+Cell["FindInfraSpanningAxes", "Title",ExpressionUUID->"4779bb55-30e9-4480-b331-fbe3ab550cbc"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"a524e579-6a04-458d-86d6-fe05b9cb10ff"],
 
 Cell["\<\
-FindSpanningAxes[g, n] returns n mutually well-separated longest geodesics \
+FindInfraSpanningAxes[g, n] returns n mutually well-separated longest geodesics \
 across g (greedy, no fixed centre) or $Failed; UpTo[n] returns up to n; All \
 returns every axis above the separation threshold. Options: \"AxisDistance\" \
 (\"MinEndpoint\" | \"Hausdorff\" | \"Separation\"), \"MinLength\", \
 \"MinSeparation\", \"AxisThickness\", \"RandomPick\". For axes through a \
-fixed centre use FindOrthogonalFrame.\
+fixed centre use FindInfraOrthogonalFrame.\
 \>", "Text",ExpressionUUID->"c3512613-2abb-41bb-8e61-2223fe4d1f58"],
 
 Cell["Setup", "Section",ExpressionUUID->"0fc7b7ac-68f4-421d-a25a-04402a1aff94"],
@@ -54,7 +54,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"21ad2ee1-bbe3-427e-91f0-27eda107112b"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindSpanningAxes[GridGraph[{4, 4}], 3]"]], "Input",Ex\
+ $CellContext`buildCell["FindInfraSpanningAxes[GridGraph[{4, 4}], 3]"]], "Input",Ex\
 pressionUUID->"024b0362-1b5a-4bfe-a9ff-fc9510bd41f9"],
 
 Cell[BoxData[
@@ -67,16 +67,16 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"feaab7b3-4dc8-412e-9998-63873dd370f0"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindSpanningAxes[GridGraph[{4, 4}], All]"]], "Input",\
+ $CellContext`buildCell["FindInfraSpanningAxes[GridGraph[{4, 4}], All]"]], "Input",\
 ExpressionUUID->"a9dd87ba-4e97-4c21-894d-99f6622139f3"],
 
 Cell["See Also", "Section",ExpressionUUID->"fa6d21f7-c2eb-4e39-8d08-db970746794b"],
 
-Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"e894e8f2-adf0-434c-a35c-50985a22d647"],
+Cell["FindInfraOrthogonalFrame", "Item",ExpressionUUID->"e894e8f2-adf0-434c-a35c-50985a22d647"],
 
 Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"2bac51dc-828c-4edf-a591-b4ebb5781880"],
 
-Cell["FindRadarBasis", "Item",ExpressionUUID->"17eb1ecd-689b-4675-bd08-986838fa383e"],
+Cell["FindInfraRadarBasis", "Item",ExpressionUUID->"17eb1ecd-689b-4675-bd08-986838fa383e"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"94837068-4789-4eba-a48d-4e7c3b9695ff"],
 

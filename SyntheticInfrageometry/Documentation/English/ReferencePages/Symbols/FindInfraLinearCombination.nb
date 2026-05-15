@@ -79,7 +79,7 @@ Cell["InfraScalarProduct", "Item",ExpressionUUID->"6c7d261d-add4-41d8-8cf4-8d910
 
 Cell["InfraPoint", "Item",ExpressionUUID->"f07ebd5e-323d-4c23-b1ea-48cfd524869e"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"237ed11f-f104-477d-ad89-18fdd2329380"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"237ed11f-f104-477d-ad89-18fdd2329380"],
 
 Cell["ResistanceCoordinates", "Item",ExpressionUUID->"6811d617-71c9-432a-9075-3b654df276cd"],
 

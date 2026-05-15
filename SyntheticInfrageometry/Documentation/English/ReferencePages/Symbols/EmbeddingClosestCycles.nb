@@ -18,14 +18,14 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["EmbeddingClosestCycles", "Title",ExpressionUUID->"c24d2fc4-3e45-41f1-8e90-c8be953a874d"],
+Cell["EmbeddingClosest", "Title",ExpressionUUID->"c24d2fc4-3e45-41f1-8e90-c8be953a874d"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"f000bdb1-2927-43cb-b24c-e0c86210285e"],
 
 Cell["\<\
-EmbeddingClosestCycles[g, cycles, {center, radius}] keeps the cycles whose \
+EmbeddingClosest[g, cycles, {center, radius}] keeps the cycles whose \
 drawing under GraphEmbedding is Hausdorff-closest to the Euclidean circle of \
-given centre and radius. Operator form EmbeddingClosestCycles[g, {center, \
+given centre and radius. Operator form EmbeddingClosest[g, {center, \
 radius}][cycles].\
 \>", "Text",ExpressionUUID->"506a4a14-6594-4f81-a824-ddbb96f1b427"],
 
@@ -53,17 +53,17 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "EmbeddingClosestCycles[GridGraph[{5, 5}], FindCircle[GridGraph[{5, 5}], 13, \
+ "EmbeddingClosest[GridGraph[{5, 5}], FindInfraCircle[GridGraph[{5, 5}], 13, \
 2, All], {13, 2}]"]], "Input",ExpressionUUID->"6b72676b-c3ba-48ef-9672-\
 cda2f0686b6c"],
 
 Cell["See Also", "Section",ExpressionUUID->"fb847994-d2da-4292-8dbf-33f5a00917ab"],
 
-Cell["SelectCycle", "Item",ExpressionUUID->"d0db549f-09b6-4208-b369-8ad72ad118f5"],
+Cell["SelectInfraCycle", "Item",ExpressionUUID->"d0db549f-09b6-4208-b369-8ad72ad118f5"],
 
-Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"52076270-09a7-4c44-b257-a42827239469"],
+Cell["EmbeddingClosest", "Item",ExpressionUUID->"52076270-09a7-4c44-b257-a42827239469"],
 
-Cell["FindCircle", "Item",ExpressionUUID->"1a8c5799-7b6a-40c2-8ae2-11eb6d293687"],
+Cell["FindInfraCircle", "Item",ExpressionUUID->"1a8c5799-7b6a-40c2-8ae2-11eb6d293687"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"7e287eb9-c27b-4546-84b7-65b561fd02ef"],
 

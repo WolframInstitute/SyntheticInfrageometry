@@ -132,7 +132,7 @@ Cell["Tarski-recipe variants of standard constructions", "Section",ExpressionUUI
 Cell["Synthetic midpoint (from B and E).", "CodeText",ExpressionUUID->"5eccc645-c719-4c45-ad8b-799bae43b135"],
 
 Cell[BoxData[
- RowBox[{"FindMidpoint", "[", 
+ RowBox[{"FindInfraMidpoint", "[", 
   RowBox[{
    RowBox[{"CycleGraph", "[", "8", "]"}], ",", "1", ",", "5", ",", "All", ",", 
    RowBox[{"Method", "\[Rule]", "\"\<Tarski\>\""}]}], "]"}]], "Input",Expressi\
@@ -141,7 +141,7 @@ onUUID->"d1be7a5e-6862-46e5-9fa5-fcaac056d2a2"],
 Cell["Tarski A4 segment-extension finder.", "CodeText",ExpressionUUID->"742dace2-8d68-4ab2-ada2-81d0ee9d7d83"],
 
 Cell[BoxData[
- RowBox[{"ExtendSegment", "[", 
+ RowBox[{"ExtendInfraSegment", "[", 
   RowBox[{
    RowBox[{"PathGraph", "[", 
     RowBox[{"Range", "[", "10", "]"}], "]"}], ",", "1", ",", "2", ",", "3", ",",
@@ -151,7 +151,7 @@ ace5-775d7ee18300"],
 Cell["Reflection through a centre vertex.", "CodeText",ExpressionUUID->"3f63c02f-feb2-4f0f-8fb5-0aebe802f9c9"],
 
 Cell[BoxData[
- RowBox[{"FindReflection", "[", 
+ RowBox[{"FindInfraReflection", "[", 
   RowBox[{"g1", ",", "1", ",", "3", ",", "All"}], "]"}]], "Input",ExpressionUU\
 ID->"d4cd0f4a-00ce-4a9b-b122-e5811bad85b6"],
 

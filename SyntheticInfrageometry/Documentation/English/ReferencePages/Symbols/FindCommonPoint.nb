@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindCommonPoint", "Title",ExpressionUUID->"1027f481-48b8-4a0d-b5d1-e8efc0eb91db"],
+Cell["FindInfraCommonPoint", "Title",ExpressionUUID->"1027f481-48b8-4a0d-b5d1-e8efc0eb91db"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"3ffa642b-8332-40d1-b3c8-a2fcd0977a49"],
 
 Cell["\<\
-FindCommonPoint[g, lines] returns the vertices lying on every line in the \
+FindInfraCommonPoint[g, lines] returns the vertices lying on every line in the \
 given list. Returns a List of unary InfraPoint[{v}] wrappers or $Failed; n / \
 UpTo[n] / All control multiplicity. Entries may be bare vertex sequences or \
 InfraSegment / InfraRay wrappers.\
@@ -53,7 +53,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindCommonPoint[GridGraph[{3, 3}], {{1, 5, 9}, {3, 5, 7}}, All]"]], "Input",\
+ "FindInfraCommonPoint[GridGraph[{3, 3}], {{1, 5, 9}, {3, 5, 7}}, All]"]], "Input",\
 ExpressionUUID->"a93945b1-e294-4705-9f49-3418023b80df"],
 
 Cell[BoxData[
@@ -67,14 +67,14 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindCommonPoint[GridGraph[{3, 3}], {{1, 2, 3}, {7, 8, 9}}, UpTo[1]]"]], \
+ "FindInfraCommonPoint[GridGraph[{3, 3}], {{1, 2, 3}, {7, 8, 9}}, UpTo[1]]"]], \
 "Input",ExpressionUUID->"68217ff2-a13a-47c6-9b91-53c98bc7be3d"],
 
 Cell["See Also", "Section",ExpressionUUID->"1baecbb8-e2b0-4835-9b4a-9fb2e484c684"],
 
 Cell["InfraPoint", "Item",ExpressionUUID->"f6c8175e-6997-4e83-be47-f2addcb42a44"],
 
-Cell["FindCommonLine", "Item",ExpressionUUID->"ca574a32-039e-40f8-83ec-11e60ba1355c"],
+Cell["FindInfraCommonLine", "Item",ExpressionUUID->"ca574a32-039e-40f8-83ec-11e60ba1355c"],
 
 Cell["ConcurrentQ", "Item",ExpressionUUID->"8d2babeb-02b2-4d74-b582-869a0f7020cc"],
 

@@ -71,7 +71,7 @@ Cell["PencilCardinality", "Item",ExpressionUUID->"d97ddd6c-c4cb-42e1-9c67-37384e
 
 Cell["PencilDirections", "Item",ExpressionUUID->"ecb08b21-1d0d-4282-8d2e-670e79107c2b"],
 
-Cell["FindLine", "Item",ExpressionUUID->"d7a29e69-d313-49db-b439-a632c79b1e88"],
+Cell["FindInfraLine", "Item",ExpressionUUID->"d7a29e69-d313-49db-b439-a632c79b1e88"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"098ee6c6-8b0a-4d8c-b1e0-e73119e23114"],
 

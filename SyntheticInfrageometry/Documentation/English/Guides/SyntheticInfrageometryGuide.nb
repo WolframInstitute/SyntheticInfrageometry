@@ -81,21 +81,21 @@ Cell["Core primitives", "Section",ExpressionUUID->"feffdc5d-3965-49a9-b9da-b3d5e
 
 Cell["InfraSceneHighlight", "Item",ExpressionUUID->"61fba487-f2d3-4391-af2b-064a5bd08b2a"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"629b22c5-5a68-41bc-a280-eb1a4582e4fa"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"629b22c5-5a68-41bc-a280-eb1a4582e4fa"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"ac7bb975-2b1d-4f56-bbdd-e612609b8073"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"ac7bb975-2b1d-4f56-bbdd-e612609b8073"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"b3196151-9ba5-4750-b415-04ea7beacf97"],
+Cell["FindInfraBisectingHyperplane", "Item",ExpressionUUID->"b3196151-9ba5-4750-b415-04ea7beacf97"],
 
-Cell["SelectPath", "Item",ExpressionUUID->"8953f9cc-33a3-46cf-82c3-f67c709f1cba"],
+Cell["SelectInfraPath", "Item",ExpressionUUID->"8953f9cc-33a3-46cf-82c3-f67c709f1cba"],
 
-Cell["SelectCycle", "Item",ExpressionUUID->"1f315e64-e898-487b-b338-d5350235b598"],
+Cell["SelectInfraCycle", "Item",ExpressionUUID->"1f315e64-e898-487b-b338-d5350235b598"],
 
 Cell["TarskiAxiomQ", "Item",ExpressionUUID->"a5478260-f8b7-41ef-8dfe-eecec3f5df80"],
 
 Cell["PencilDirections", "Item",ExpressionUUID->"718d52c9-e1c2-4615-917b-a4b128d38e23"],
 
-Cell["FindCommonLine", "Item",ExpressionUUID->"71ad86e8-d2a4-481b-ad61-b222aa8cb4a0"],
+Cell["FindInfraCommonLine", "Item",ExpressionUUID->"71ad86e8-d2a4-481b-ad61-b222aa8cb4a0"],
 
 Cell["ProjectivePlaneGraphQ", "Item",ExpressionUUID->"69624191-dd5f-40c1-930a-ef05eff663f8"],
 

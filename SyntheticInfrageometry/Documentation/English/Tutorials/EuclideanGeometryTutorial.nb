@@ -74,7 +74,7 @@ Cell["Segments", "Section",ExpressionUUID->"d437e034-d754-4f32-a3f4-78d23309ee4d
 Cell["Every geodesic between opposite corners of the grid.", "CodeText",ExpressionUUID->"61c49767-01e7-4d00-b975-7f91c8a90b75"],
 
 Cell[BoxData[
- RowBox[{"FindSegment", "[", 
+ RowBox[{"FindInfraSegment", "[", 
   RowBox[{"g2", ",", "1", ",", "16", ",", "All"}], "]"}]], "Input",ExpressionU\
 UID->"7e7b8402-24b6-443d-a068-b6b06c9594b2"],
 
@@ -84,7 +84,7 @@ Cell[BoxData[
  RowBox[{"InfraSceneHighlight", "[", 
   RowBox[{"g2", ",", 
    RowBox[{"{", 
-    RowBox[{"FindSegment", "[", 
+    RowBox[{"FindInfraSegment", "[", 
      RowBox[{"g2", ",", "1", ",", "16", ",", "All"}], "]"}], "}"}]}], 
   "]"}]], "Input",ExpressionUUID->"192b8245-362d-4127-96e9-04d70fd8eb6b"],
 
@@ -92,7 +92,7 @@ Cell["Cardinality of the multi-realisation.", "CodeText",ExpressionUUID->"f758f4
 
 Cell[BoxData[
  RowBox[{"Length", "[", 
-  RowBox[{"FindSegment", "[", 
+  RowBox[{"FindInfraSegment", "[", 
    RowBox[{"g2", ",", "1", ",", "16", ",", "All"}], "]"}], "]"}]], "Input",Exp\
 ressionUUID->"4784eadf-2f33-46bb-8c90-580465f69fdb"],
 
@@ -101,7 +101,7 @@ Cell["Lines", "Section",ExpressionUUID->"05ef5e1a-e008-4e1c-860d-12c0ae12ceae"],
 Cell["Maximal geodesic extensions through two interior vertices.", "CodeText",ExpressionUUID->"bb44bd07-b75b-4408-ab50-00e2f3c3ee4b"],
 
 Cell[BoxData[
- RowBox[{"FindLine", "[", 
+ RowBox[{"FindInfraLine", "[", 
   RowBox[{"g2", ",", "6", ",", "11", ",", "All"}], "]"}]], "Input",ExpressionU\
 UID->"1e1a55e1-efae-4be8-90c2-0cc71997fb3e"],
 
@@ -112,7 +112,7 @@ Cell[BoxData[
   RowBox[{"g2", ",", 
    RowBox[{"{", 
     RowBox[{
-     RowBox[{"FindLine", "[", 
+     RowBox[{"FindInfraLine", "[", 
       RowBox[{"g2", ",", "6", ",", "11", ",", "All"}], "]"}], "\[Rule]", 
      "Blue"}], "}"}]}], "]"}]], "Input",ExpressionUUID->"4638e0ee-bbde-4bf2-\
 912c-1ad445d5784f"],
@@ -122,14 +122,14 @@ Cell["Shells and circles", "Section",ExpressionUUID->"b315fe6f-5da9-49a2-b3c9-c3
 Cell["The distance-2 metric shell around the centre of the grid.", "CodeText",ExpressionUUID->"372dbc2d-b366-40d0-9b61-2567679f3056"],
 
 Cell[BoxData[
- RowBox[{"FindShell", "[", 
+ RowBox[{"FindInfraShell", "[", 
   RowBox[{"g2", ",", "6", ",", "2"}], "]"}]], "Input",ExpressionUUID->\
 "181b543c-7c6a-4370-bae1-dceccf5f7a97"],
 
 Cell["Separating cycles in the level surface.", "CodeText",ExpressionUUID->"3ee22856-b635-41b7-9281-a48a1b6b6d2e"],
 
 Cell[BoxData[
- RowBox[{"FindCircle", "[", 
+ RowBox[{"FindInfraCircle", "[", 
   RowBox[{"g2", ",", "6", ",", "2", ",", "All"}], "]"}]], "Input",ExpressionUU\
 ID->"bcf5c7b0-fb91-424c-9b35-d838dbf3ea26"],
 
@@ -141,10 +141,10 @@ Cell[BoxData[
    RowBox[{"{", 
     RowBox[{
      RowBox[{
-      RowBox[{"FindShell", "[", 
+      RowBox[{"FindInfraShell", "[", 
        RowBox[{"g2", ",", "6", ",", "2"}], "]"}], "\[Rule]", "LightBlue"}], ",", 
      RowBox[{
-      RowBox[{"FindCircle", "[", 
+      RowBox[{"FindInfraCircle", "[", 
        RowBox[{"g2", ",", "6", ",", "2", ",", "All"}], "]"}], "\[Rule]", 
       "Green"}]}], "}"}]}], "]"}]], "Input",ExpressionUUID->"5bbbc0df-cb3f-\
 4c67-95dd-2923ea26cbff"],
@@ -154,14 +154,14 @@ Cell["Midpoints and perpendiculars", "Section",ExpressionUUID->"68931cd8-bafb-4d
 Cell["Midpoints on the path graph.", "CodeText",ExpressionUUID->"1eb4312f-f19e-426e-8e28-97733e08cc4c"],
 
 Cell[BoxData[
- RowBox[{"FindMidpoint", "[", 
+ RowBox[{"FindInfraMidpoint", "[", 
   RowBox[{"g1", ",", "1", ",", "7", ",", "All"}], "]"}]], "Input",ExpressionUU\
 ID->"513a6447-2bfe-46aa-aefe-f16dd25155e8"],
 
 Cell["Feet of perpendicular from an off-line vertex on the grid.", "CodeText",ExpressionUUID->"e08c75c8-91d0-4bbe-8584-43560fb88849"],
 
 Cell[BoxData[
- RowBox[{"FindPerpendicular", "[", 
+ RowBox[{"FindInfraPerpendicular", "[", 
   RowBox[{"g2", ",", 
    RowBox[{"{", 
     RowBox[{"1", ",", "5", ",", "9", ",", "13"}], "}"}], ",", "11", ",", 
@@ -173,7 +173,7 @@ Cell["Parallels", "Section",ExpressionUUID->"1ea2eed2-4a68-4326-8abd-be6411af308
 Cell["Lines through a point parallel to a given line in a grid.", "CodeText",ExpressionUUID->"eda06eb4-3b7d-41f8-b85f-13bd70cef047"],
 
 Cell[BoxData[
- RowBox[{"FindParallel", "[", 
+ RowBox[{"FindInfraParallel", "[", 
   RowBox[{"g2", ",", 
    RowBox[{"{", 
     RowBox[{"1", ",", "5", ",", "9", ",", "13"}], "}"}], ",", "2", ",", 
@@ -185,7 +185,7 @@ Cell["Bisecting hyperplane", "Section",ExpressionUUID->"ca5b37f7-fefd-45cf-b3ae-
 Cell["On an odd-length path there is one bisecting separator.", "CodeText",ExpressionUUID->"8f3e6e4f-35b8-4ba3-ac32-6917889ea0e9"],
 
 Cell[BoxData[
- RowBox[{"FindBisectingHyperplane", "[", 
+ RowBox[{"FindInfraBisectingHyperplane", "[", 
   RowBox[{"g1", ",", "1", ",", "7", ",", "All"}], "]"}]], "Input",ExpressionUU\
 ID->"e9057f0d-3d84-4fcb-8376-70ce1c39754d"],
 
@@ -195,7 +195,7 @@ two adjacent cuts.\
 \>", "CodeText",ExpressionUUID->"89f018dd-6975-4a8e-b6cb-767270760401"],
 
 Cell[BoxData[
- RowBox[{"FindBisectingHyperplane", "[", 
+ RowBox[{"FindInfraBisectingHyperplane", "[", 
   RowBox[{
    RowBox[{"PathGraph", "[", 
     RowBox[{"Range", "[", "6", "]"}], "]"}], ",", "1", ",", "6", ",", 
@@ -209,7 +209,7 @@ Cell["Predicates", "Section",ExpressionUUID->"90a8e998-3a97-4282-9959-6e4ecaddc6
 Cell["A geodesic-DAG path is a segment.", "CodeText",ExpressionUUID->"7934c6b6-7179-4e72-ae2b-0be8b99bcc37"],
 
 Cell[BoxData[
- RowBox[{"SegmentQ", "[", 
+ RowBox[{"InfraSegmentQ", "[", 
   RowBox[{"g2", ",", 
    RowBox[{"{", 
     RowBox[{"1", ",", "2", ",", "3", ",", "4"}], "}"}]}], "]"}]], "Input",Expr\
@@ -218,7 +218,7 @@ essionUUID->"5c227c25-3471-4e9e-80ad-c54fa2e9997f"],
 Cell["A maximal geodesic is recognised as a line.", "CodeText",ExpressionUUID->"c25929ae-fcfe-4112-8a91-d6d2c10c0f52"],
 
 Cell[BoxData[
- RowBox[{"LineQ", "[", 
+ RowBox[{"InfraLineQ", "[", 
   RowBox[{"g2", ",", 
    RowBox[{"{", 
     RowBox[{"1", ",", "5", ",", "9", ",", "13"}], "}"}]}], "]"}]], "Input",Exp\
@@ -227,7 +227,7 @@ ressionUUID->"62558fb6-8a46-42ea-b3db-aabe19501c7e"],
 Cell["Parallels detected by constant pairwise distance.", "CodeText",ExpressionUUID->"a6136c8d-37b2-4fc0-b5eb-dd1685ad37c9"],
 
 Cell[BoxData[
- RowBox[{"ParallelQ", "[", 
+ RowBox[{"InfraParallelQ", "[", 
   RowBox[{"g2", ",", 
    RowBox[{"{", 
     RowBox[{"1", ",", "5", ",", "9", ",", "13"}], "}"}], ",", 

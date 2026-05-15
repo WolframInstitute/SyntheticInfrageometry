@@ -18,13 +18,13 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["ParallelQ", "Title",ExpressionUUID->"81bf2e7d-0056-4ebd-bdd1-479148a4958b"],
+Cell["InfraParallelQ", "Title",ExpressionUUID->"81bf2e7d-0056-4ebd-bdd1-479148a4958b"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"65ea9cdc-3ab5-4b81-b20b-5b95e6305274"],
 
 Cell["\<\
-ParallelQ[g, l1, l2] tests whether two lines are parallel: every vertex on l2 \
-is at constant distance from l1. ParallelQ[g, l1, l2, threshold] allows \
+InfraParallelQ[g, l1, l2] tests whether two lines are parallel: every vertex on l2 \
+is at constant distance from l1. InfraParallelQ[g, l1, l2, threshold] allows \
 distance variation up to threshold.\
 \>", "Text",ExpressionUUID->"6314cb5f-97bd-4cf3-8d68-6082b854d360"],
 
@@ -52,7 +52,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "ParallelQ[GridGraph[{4, 4}], {1, 5, 9, 13}, {2, 6, 10, 14}]"]], "Input",Expr\
+ "InfraParallelQ[GridGraph[{4, 4}], {1, 5, 9, 13}, {2, 6, 10, 14}]"]], "Input",Expr\
 essionUUID->"f9c181b5-fa1e-4399-8e43-c15a9bbed73f"],
 
 Cell[BoxData[
@@ -66,16 +66,16 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "ParallelQ[GridGraph[{4, 4}], {1, 5, 9, 13}, {2, 7, 12}]"]], "Input",Expressi\
+ "InfraParallelQ[GridGraph[{4, 4}], {1, 5, 9, 13}, {2, 7, 12}]"]], "Input",Expressi\
 onUUID->"c2e71220-256c-4025-88fc-a1616bf5e491"],
 
 Cell["See Also", "Section",ExpressionUUID->"b7d63a8e-4a02-42ce-bf0f-bee780c871ff"],
 
-Cell["FindParallel", "Item",ExpressionUUID->"b78f9497-a126-41e9-aee0-1904d434b3ad"],
+Cell["FindInfraParallel", "Item",ExpressionUUID->"b78f9497-a126-41e9-aee0-1904d434b3ad"],
 
-Cell["LineQ", "Item",ExpressionUUID->"0904926b-dcd8-4207-8e22-0af73951b12c"],
+Cell["InfraLineQ", "Item",ExpressionUUID->"0904926b-dcd8-4207-8e22-0af73951b12c"],
 
-Cell["FindPerpendicular", "Item",ExpressionUUID->"90178545-747c-434e-9926-7292b02353d3"],
+Cell["FindInfraPerpendicular", "Item",ExpressionUUID->"90178545-747c-434e-9926-7292b02353d3"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"be3dda0f-cb1f-42f1-b38d-953a152a204c"],
 

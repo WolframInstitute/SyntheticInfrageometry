@@ -115,7 +115,7 @@ InfraAngle[ graph_Graph, { q1_, p_, q2_ }, OptionsPattern[] ] :=
 (* Scalar multiplication: realise lambda * u from origin o on the graph.
    "Metric"   - strict integer match: collinear with o, u via distance additivity
                 at distance |lambda| r.
-   "Line"     - realisations of FindLine, snap by index to lambda (uIdx - oIdx).
+   "Line"     - realisations of FindInfraLine, snap by index to lambda (uIdx - oIdx).
    "Midpoint" - dyadic bisection via strict equidistant midpoints; lambda in [0, 1].
    Automatic  - integer lambda -> Metric;  dyadic in [0,1] -> Midpoint;  else -> Line. *)
 
@@ -153,7 +153,7 @@ findInfraScale[ graph_Graph, o_, u_, 1, "Line" ] := { u }
 findInfraScale[ graph_Graph, o_, u_, lambda_, "Line" ] :=
   With[ { r = GraphDistance[ graph, o, u ] },
     If[ r === Infinity, { },
-      With[ { lines = #[[ 1, 1 ]] & /@ FindLine[ graph, o, u, All ] },
+      With[ { lines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, o, u, All ] },
         DeleteDuplicates @ Flatten @ ( ( line |->
           With[ { oIdx = First @ FirstPosition[ line, o, { 0 } ],
                   uIdx = First @ FirstPosition[ line, u, { 0 } ] },
@@ -208,12 +208,12 @@ findInfraSum[ graph_Graph, o_, u_, v_, "Metric" ] :=
   ]
 
 findInfraSum[ graph_Graph, o_, u_, v_, "Parallel" ] :=
-  With[ { linesOV = #[[ 1, 1 ]] & /@ FindLine[ graph, o, v, All ],
-          linesOU = #[[ 1, 1 ]] & /@ FindLine[ graph, o, u, All ] },
+  With[ { linesOV = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, o, v, All ],
+          linesOU = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, o, u, All ] },
     With[ { parallelsAtU = Flatten[
-              ( #[[ 1, 1 ]] & /@ FindParallel[ graph, #, u, All ] ) & /@ linesOV, 1 ],
+              ( #[[ 1, 1 ]] & /@ FindInfraParallel[ graph, #, u, All ] ) & /@ linesOV, 1 ],
             parallelsAtV = Flatten[
-              ( #[[ 1, 1 ]] & /@ FindParallel[ graph, #, v, All ] ) & /@ linesOU, 1 ] },
+              ( #[[ 1, 1 ]] & /@ FindInfraParallel[ graph, #, v, All ] ) & /@ linesOU, 1 ] },
       DeleteDuplicates @ DeleteCases[
         Flatten @ Outer[ Intersection, parallelsAtU, parallelsAtV, 1 ],
         o | u | v ]

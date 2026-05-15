@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindShellParameters", "Title",ExpressionUUID->"51cb213e-34ce-47b7-934d-f82a8d3a1c92"],
+Cell["FindInfraShellParameters", "Title",ExpressionUUID->"51cb213e-34ce-47b7-934d-f82a8d3a1c92"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"05af6a88-8cec-4711-87a8-a109784616c3"],
 
 Cell["\<\
-FindShellParameters[g, vertexSet] returns the list of {center, radius} pairs \
+FindInfraShellParameters[g, vertexSet] returns the list of {center, radius} pairs \
 consistent with vertexSet being a metric shell.\
 \>", "Text",ExpressionUUID->"ed171987-1044-4d77-b66b-f66b05a50c39"],
 
@@ -51,7 +51,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindShellParameters[GridGraph[{3, 3}], {2, 4, 6, 8}]"]], "Input",ExpressionU\
+ "FindInfraShellParameters[GridGraph[{3, 3}], {2, 4, 6, 8}]"]], "Input",ExpressionU\
 UID->"76461015-2a58-4244-8e24-6ffbaebeacee"],
 
 Cell[BoxData[
@@ -65,14 +65,14 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindShellParameters[GridGraph[{3, 3}], {1, 9}]"]], "Input",ExpressionUUID->\
+ "FindInfraShellParameters[GridGraph[{3, 3}], {1, 9}]"]], "Input",ExpressionUUID->\
 "858138a9-9c31-44ec-91f1-8e0b4f583588"],
 
 Cell["See Also", "Section",ExpressionUUID->"799caac0-8b78-4976-b54f-6d61d49cdeb4"],
 
-Cell["FindShell", "Item",ExpressionUUID->"b50062a8-9ff2-4afc-8f4c-3a3fa266028f"],
+Cell["FindInfraShell", "Item",ExpressionUUID->"b50062a8-9ff2-4afc-8f4c-3a3fa266028f"],
 
-Cell["ShellQ", "Item",ExpressionUUID->"2da48375-bf23-4c45-b57f-adea4e8d9d6e"],
+Cell["InfraShellQ", "Item",ExpressionUUID->"2da48375-bf23-4c45-b57f-adea4e8d9d6e"],
 
 Cell["InfraShell", "Item",ExpressionUUID->"ebb10cce-4356-4443-b91f-15c6d1e46278"],
 

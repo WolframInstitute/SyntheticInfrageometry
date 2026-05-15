@@ -47,55 +47,55 @@ Existence postulates following the strict / soft / exhaustive triple \
 n_Integer | UpTo[n] | All.\
 \>", "Text",ExpressionUUID->"43d7b454-434f-412c-bb77-58fe1d95977c"],
 
-Cell["FindPoint", "Item",ExpressionUUID->"05970af8-d65b-45bf-94a3-a9cb22aa12b3"],
+Cell["FindInfraPoint", "Item",ExpressionUUID->"05970af8-d65b-45bf-94a3-a9cb22aa12b3"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"e133bc59-8d91-4fa3-8659-9831846b56d1"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"e133bc59-8d91-4fa3-8659-9831846b56d1"],
 
-Cell["FindLine", "Item",ExpressionUUID->"5b8c4bbd-6f7a-4b27-b162-81d85c8d366a"],
+Cell["FindInfraLine", "Item",ExpressionUUID->"5b8c4bbd-6f7a-4b27-b162-81d85c8d366a"],
 
-Cell["FindRay", "Item",ExpressionUUID->"e669dd28-f96f-4078-9a38-1b5dfd6c99c3"],
+Cell["FindInfraRay", "Item",ExpressionUUID->"e669dd28-f96f-4078-9a38-1b5dfd6c99c3"],
 
-Cell["ExtendSegment", "Item",ExpressionUUID->"aa9406ee-8e6d-4033-8f93-fb089e23cb9c"],
+Cell["ExtendInfraSegment", "Item",ExpressionUUID->"aa9406ee-8e6d-4033-8f93-fb089e23cb9c"],
 
-Cell["FindShell", "Item",ExpressionUUID->"0a5e2b6a-a069-4433-b5ef-8e1d0a216ebe"],
+Cell["FindInfraShell", "Item",ExpressionUUID->"0a5e2b6a-a069-4433-b5ef-8e1d0a216ebe"],
 
-Cell["FindCircle", "Item",ExpressionUUID->"50282100-de77-4b3a-a10d-c04814363759"],
+Cell["FindInfraCircle", "Item",ExpressionUUID->"50282100-de77-4b3a-a10d-c04814363759"],
 
-Cell["FindParallel", "Item",ExpressionUUID->"8d4f8edd-e1ce-44fd-ab27-5160716699bf"],
+Cell["FindInfraParallel", "Item",ExpressionUUID->"8d4f8edd-e1ce-44fd-ab27-5160716699bf"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"df0962e2-f808-48e5-a7a4-30c26612de96"],
+Cell["FindInfraBisectingHyperplane", "Item",ExpressionUUID->"df0962e2-f808-48e5-a7a4-30c26612de96"],
 
 Cell["Constructions", "Section",ExpressionUUID->"aa3ac70a-e8c1-4a9d-802a-c8c77339a834"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"3b4b23a8-fa07-4172-85ef-e2420ed18d16"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"3b4b23a8-fa07-4172-85ef-e2420ed18d16"],
 
-Cell["FindPerpendicular", "Item",ExpressionUUID->"6f32df2f-ef08-4e9f-93f6-e26a13d9546a"],
+Cell["FindInfraPerpendicular", "Item",ExpressionUUID->"6f32df2f-ef08-4e9f-93f6-e26a13d9546a"],
 
-Cell["FindReflection", "Item",ExpressionUUID->"0ffdd290-d6fd-423d-b73f-64b874ee0eb8"],
+Cell["FindInfraReflection", "Item",ExpressionUUID->"0ffdd290-d6fd-423d-b73f-64b874ee0eb8"],
 
-Cell["CompleteEquilateralTriangle", "Item",ExpressionUUID->"6f8182d5-a4dc-4e2e-ae77-36ae9fb9ca5a"],
+Cell["CompleteInfraEquilateralTriangle", "Item",ExpressionUUID->"6f8182d5-a4dc-4e2e-ae77-36ae9fb9ca5a"],
 
 Cell["InfraAngle", "Item",ExpressionUUID->"f700ba16-8474-4c88-b0eb-7b9fc3781330"],
 
-Cell["SegmentLineAngle", "Item",ExpressionUUID->"bc8ab91e-6ea2-434b-9ccb-9b12078be3b1"],
+Cell["InfraSegmentLineAngle", "Item",ExpressionUUID->"bc8ab91e-6ea2-434b-9ccb-9b12078be3b1"],
 
 Cell["Predicates", "Section",ExpressionUUID->"58f338bf-77f4-401c-bafa-a753a9ec67a0"],
 
-Cell["SegmentQ", "Item",ExpressionUUID->"75d4be00-dfc4-4191-8e54-5ef39a0f9864"],
+Cell["InfraSegmentQ", "Item",ExpressionUUID->"75d4be00-dfc4-4191-8e54-5ef39a0f9864"],
 
-Cell["UniqueSegmentQ", "Item",ExpressionUUID->"aac6c812-16e7-4d8f-a373-a13fc10e1698"],
+Cell["UniqueInfraSegmentQ", "Item",ExpressionUUID->"aac6c812-16e7-4d8f-a373-a13fc10e1698"],
 
-Cell["LineQ", "Item",ExpressionUUID->"a2a5cb63-def4-4e8d-80a4-42b9b7199fed"],
+Cell["InfraLineQ", "Item",ExpressionUUID->"a2a5cb63-def4-4e8d-80a4-42b9b7199fed"],
 
-Cell["ParallelQ", "Item",ExpressionUUID->"3405d9c6-a364-410b-8ef8-fbce9353de19"],
+Cell["InfraParallelQ", "Item",ExpressionUUID->"3405d9c6-a364-410b-8ef8-fbce9353de19"],
 
-Cell["ShellQ", "Item",ExpressionUUID->"3ff0af08-3e4a-4b5a-a554-13b7ba2da778"],
+Cell["InfraShellQ", "Item",ExpressionUUID->"3ff0af08-3e4a-4b5a-a554-13b7ba2da778"],
 
-Cell["FindShellParameters", "Item",ExpressionUUID->"cd7da929-8eec-417a-9dc8-52909499a8dc"],
+Cell["FindInfraShellParameters", "Item",ExpressionUUID->"cd7da929-8eec-417a-9dc8-52909499a8dc"],
 
 Cell["SeparatesQ", "Item",ExpressionUUID->"9c002fe0-9beb-4416-bbde-69106dc930ff"],
 
-Cell["CircleQ", "Item",ExpressionUUID->"a8f3374e-886f-4d20-b6a1-090169db8137"],
+Cell["InfraCircleQ", "Item",ExpressionUUID->"a8f3374e-886f-4d20-b6a1-090169db8137"],
 
 Cell["Wrapper heads", "Section",ExpressionUUID->"73e270df-0c78-4e4a-8aff-028d946e21b0"],
 
@@ -116,7 +116,7 @@ Cell["InfraCircle", "Item",ExpressionUUID->"a802ee83-64cf-41d6-9e84-72ddadc2d445
 
 Cell["InfraPlane", "Item",ExpressionUUID->"a898ddc9-c536-4885-b158-6cf9f524c818"],
 
-Cell["Method axis on FindSegment / FindLine / ExtendSegment", "Section",ExpressionUUID->"377ec41f-2e2b-437e-a8b4-e12eeff9e986"],
+Cell["Method axis on FindInfraSegment / FindInfraLine / ExtendInfraSegment", "Section",ExpressionUUID->"377ec41f-2e2b-437e-a8b4-e12eeff9e986"],
 
 Cell["\<\
 All three share the same allow-list and pass sub-options through the Method \
@@ -148,13 +148,13 @@ Euclidean segment p1-p2 under the graph drawing. Sub-options \"Coordinates\", \
 Cell["Pool values", "Section",ExpressionUUID->"d16fb6fb-0bad-4580-83b2-bb6cdd391fd8"],
 
 Cell["\<\
-Path-shaped consumers (FindSegment / FindLine / ExtendSegment / FindMidpoint \
-/ FindPerpendicular): \"ShortestPaths\" (default) restrict to the geodesic \
+Path-shaped consumers (FindInfraSegment / FindInfraLine / ExtendInfraSegment / FindInfraMidpoint \
+/ FindInfraPerpendicular): \"ShortestPaths\" (default) restrict to the geodesic \
 DAG, \"AllPaths\" use the full adjacency.\
 \>", "Item",ExpressionUUID->"8b0a91b7-4957-44de-b3a4-b8e8f06931c3"],
 
 Cell["\<\
-Shell-shaped consumers (FindShell / FindCircle / FindParallel): \"LevelSet\" \
+Shell-shaped consumers (FindInfraShell / FindInfraCircle / FindInfraParallel): \"LevelSet\" \
 (default) restrict to the metric level surface, \"AllVertices\" use the full \
 vertex set.\
 \>", "Item",ExpressionUUID->"d18bf8f9-438f-4609-8a73-ccd80667a783"],
@@ -166,14 +166,14 @@ Pipe Find* output through the path-space selectors to keep the central / \
 peripheral / embedding-closest representatives.\
 \>", "Text",ExpressionUUID->"ab846486-8340-47c3-830f-1cd907491272"],
 
-Cell["SelectPath (criteria \"Central\", \"Peripheral\", \"MostVisited\")", \
+Cell["SelectInfraPath (criteria \"Central\", \"Peripheral\", \"MostVisited\")", \
 "Item",ExpressionUUID->"e3e5359b-378e-4348-8081-cc1792b7994e"],
 
-Cell["SelectCycle", "Item",ExpressionUUID->"9c950b34-d44e-45a2-a520-9b07ad98124a"],
+Cell["SelectInfraCycle", "Item",ExpressionUUID->"9c950b34-d44e-45a2-a520-9b07ad98124a"],
 
-Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"22701f97-7cec-49fc-88af-323e8c1ddcac"],
+Cell["EmbeddingClosest", "Item",ExpressionUUID->"22701f97-7cec-49fc-88af-323e8c1ddcac"],
 
-Cell["EmbeddingClosestCycles", "Item",ExpressionUUID->"2c565cda-dcfd-4fb5-a82f-8dbbf66c8aa7"],
+Cell["EmbeddingClosest", "Item",ExpressionUUID->"2c565cda-dcfd-4fb5-a82f-8dbbf66c8aa7"],
 
 Cell["Tutorial", "Section",ExpressionUUID->"76b960bc-f289-4a15-8302-f3e65ddf33de"],
 

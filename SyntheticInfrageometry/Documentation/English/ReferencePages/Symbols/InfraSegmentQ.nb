@@ -54,7 +54,7 @@ ionUUID->"4f34faa5-632d-495b-8717-ad6a932906b6"],
 
 Cell["See Also", "Section",ExpressionUUID->"cf86837b-375d-4272-8a74-5e6374fab4ca"],
 
-Cell["SegmentQ", "Item",ExpressionUUID->"a58b2c4d-5d09-425f-9d2d-c84c32a155ad"],
+Cell["InfraSegmentQ", "Item",ExpressionUUID->"a58b2c4d-5d09-425f-9d2d-c84c32a155ad"],
 
 Cell["InfraSegment", "Item",ExpressionUUID->"eba2cdc1-8be5-4ff9-a877-5de30623d94a"],
 

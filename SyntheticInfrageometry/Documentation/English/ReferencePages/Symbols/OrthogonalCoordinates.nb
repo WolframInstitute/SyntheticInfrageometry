@@ -77,13 +77,13 @@ Cell[BoxData[
 
 Cell["See Also", "Section",ExpressionUUID->"3764f7d1-a009-4fa8-b0a8-875734f76966"],
 
-Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"f9870344-3381-4ca1-8858-8ea050827a3d"],
+Cell["FindInfraOrthogonalFrame", "Item",ExpressionUUID->"f9870344-3381-4ca1-8858-8ea050827a3d"],
 
 Cell["RadarCoordinates", "Item",ExpressionUUID->"f17abc24-d09d-4c29-8ab5-86549c09b4be"],
 
 Cell["ResistanceCoordinates", "Item",ExpressionUUID->"855d8707-6b74-4d25-bab4-33512c19030f"],
 
-Cell["FindSpanningAxes", "Item",ExpressionUUID->"4bad0d70-dcae-4940-a13f-acc88d5f72c4"],
+Cell["FindInfraSpanningAxes", "Item",ExpressionUUID->"4bad0d70-dcae-4940-a13f-acc88d5f72c4"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"cb1ee12e-90df-43eb-9f78-a270109ce9ad"],
 

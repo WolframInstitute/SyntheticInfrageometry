@@ -18,13 +18,13 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindMidpoint", "Title",ExpressionUUID->"6782be88-e460-4ae0-a84b-d29d9f76c3fb"],
+Cell["FindInfraMidpoint", "Title",ExpressionUUID->"6782be88-e460-4ae0-a84b-d29d9f76c3fb"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"76d2013a-351f-40e1-8364-75762e805450"],
 
 Cell["\<\
-FindMidpoint[g, p1, p2] returns a midpoint between p1 and p2 across all \
-geodesics. Two-argument form FindMidpoint[g, segment] returns the midpoint of \
+FindInfraMidpoint[g, p1, p2] returns a midpoint between p1 and p2 across all \
+geodesics. Two-argument form FindInfraMidpoint[g, segment] returns the midpoint of \
 a specific segment. Returns a List of unary InfraPoint[{v}] wrappers; n / \
 UpTo[n] / All control multiplicity. Option Method (\"Metric\" (default) | \
 \"Tarski\" (synthetic from B and E) | \"Embedding\").\
@@ -53,7 +53,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"267219a1-3a71-4f38-b066-c53fb7ec6fc2"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindMidpoint[PathGraph[Range[7]], 1, 7]"]], "Input",E\
+ $CellContext`buildCell["FindInfraMidpoint[PathGraph[Range[7]], 1, 7]"]], "Input",E\
 xpressionUUID->"a9846ddd-554a-440f-aa0c-b6e8980a6a3f"],
 
 Cell[BoxData[
@@ -69,7 +69,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindMidpoint[GridGraph[{3, 3}], 1, 9, All]"]], "Input",ExpressionUUID->\
+ "FindInfraMidpoint[GridGraph[{3, 3}], 1, 9, All]"]], "Input",ExpressionUUID->\
 "26d5823a-c6fd-4cd8-a68a-6070ae031f5c"],
 
 Cell[BoxData[
@@ -84,7 +84,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindMidpoint[GridGraph[{3, 3}], {1, 2, 5, 8, 9}]"]], "Input",ExpressionUUID->\
+ "FindInfraMidpoint[GridGraph[{3, 3}], {1, 2, 5, 8, 9}]"]], "Input",ExpressionUUID->\
 "bbd074e3-94ad-46d3-be47-1f323969fce8"],
 
 Cell[BoxData[
@@ -99,16 +99,16 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindMidpoint[CycleGraph[8], 1, 5, All, Method -> \"Tarski\"]"]], "Input",Exp\
+ "FindInfraMidpoint[CycleGraph[8], 1, 5, All, Method -> \"Tarski\"]"]], "Input",Exp\
 ressionUUID->"805165b7-69ab-4909-8784-4f7aea752fb4"],
 
 Cell["See Also", "Section",ExpressionUUID->"9b4738ab-ceea-4e6a-a842-7d20be7cdc99"],
 
 Cell["InfraPoint", "Item",ExpressionUUID->"73501744-2ab2-49b2-8c7e-ba8263016b60"],
 
-Cell["FindReflection", "Item",ExpressionUUID->"6c6501ad-7eb5-4a61-b6c0-70ac79d641c5"],
+Cell["FindInfraReflection", "Item",ExpressionUUID->"6c6501ad-7eb5-4a61-b6c0-70ac79d641c5"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"e42d3017-7b5e-40ae-815d-39d80cad7aa2"],
+Cell["FindInfraBisectingHyperplane", "Item",ExpressionUUID->"e42d3017-7b5e-40ae-815d-39d80cad7aa2"],
 
 Cell["BetweennessQ", "Item",ExpressionUUID->"b0420189-9554-469f-af25-d89f9eddce3c"],
 

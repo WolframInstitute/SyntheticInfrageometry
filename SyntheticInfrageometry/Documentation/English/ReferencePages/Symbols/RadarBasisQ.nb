@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["RadarBasisQ", "Title",ExpressionUUID->"ad86445a-d5ab-4502-bdc1-4e63f5f9ea41"],
+Cell["InfraRadarBasisQ", "Title",ExpressionUUID->"ad86445a-d5ab-4502-bdc1-4e63f5f9ea41"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"03f04d7f-9c17-430b-ba69-70665b204cd2"],
 
 Cell["\<\
-RadarBasisQ[g, basis] tests whether basis is a radar basis (resolving set): \
+InfraRadarBasisQ[g, basis] tests whether basis is a radar basis (resolving set): \
 every vertex has a unique distance vector to the basis.\
 \>", "Text",ExpressionUUID->"fc64741b-d9e8-4fcc-bef7-f6f83747c7a9"],
 
@@ -50,7 +50,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"8117cf7a-0a36-4f8d-ba27-845408e10f20"],
 
 Cell[BoxData[
- $CellContext`buildCell["RadarBasisQ[PathGraph[Range[5]], {1, 2}]"]], "Input",\
+ $CellContext`buildCell["InfraRadarBasisQ[PathGraph[Range[5]], {1, 2}]"]], "Input",\
 ExpressionUUID->"5d1b2e28-f35c-43f6-813d-08bb6e73fdb3"],
 
 Cell[BoxData[
@@ -64,12 +64,12 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"6537f5af-b406-4b63-a19a-22fa0f28f13c"],
 
 Cell[BoxData[
- $CellContext`buildCell["RadarBasisQ[CycleGraph[6], {1}]"]], "Input",Expressio\
+ $CellContext`buildCell["InfraRadarBasisQ[CycleGraph[6], {1}]"]], "Input",Expressio\
 nUUID->"8a8f0195-9443-4b1f-a2aa-ea4dfd55b93d"],
 
 Cell["See Also", "Section",ExpressionUUID->"e1ab1283-71ce-4c61-9bea-40f3511c440f"],
 
-Cell["FindRadarBasis", "Item",ExpressionUUID->"ebead95e-6996-4cc6-a9c7-1711d91a896c"],
+Cell["FindInfraRadarBasis", "Item",ExpressionUUID->"ebead95e-6996-4cc6-a9c7-1711d91a896c"],
 
 Cell["RadarCoordinates", "Item",ExpressionUUID->"abb77756-75a1-45ac-91f4-434708b6d033"],
 

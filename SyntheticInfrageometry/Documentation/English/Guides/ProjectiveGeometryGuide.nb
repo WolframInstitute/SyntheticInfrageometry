@@ -80,11 +80,11 @@ non-degeneracy", "Item",ExpressionUUID->"1bd335b3-02ed-4939-9a8e-\
 
 Cell["Find-shaped primitives", "Section",ExpressionUUID->"15366d5b-a460-49f7-80e0-caca86943983"],
 
-Cell["FindRay", "Item",ExpressionUUID->"f33b7e98-dc1e-4099-9cd0-d829e442c0c1"],
+Cell["FindInfraRay", "Item",ExpressionUUID->"f33b7e98-dc1e-4099-9cd0-d829e442c0c1"],
 
-Cell["FindCommonLine", "Item",ExpressionUUID->"189c54fa-cea9-4e62-b765-8a1e0ab9157f"],
+Cell["FindInfraCommonLine", "Item",ExpressionUUID->"189c54fa-cea9-4e62-b765-8a1e0ab9157f"],
 
-Cell["FindCommonPoint", "Item",ExpressionUUID->"358ef36a-89bc-4927-bb3b-12a74459a130"],
+Cell["FindInfraCommonPoint", "Item",ExpressionUUID->"358ef36a-89bc-4927-bb3b-12a74459a130"],
 
 Cell["Tutorial", "Section",ExpressionUUID->"f75f3b6c-18c1-4a8c-af3e-239e17af3e75"],
 

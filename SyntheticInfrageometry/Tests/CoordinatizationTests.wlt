@@ -9,15 +9,15 @@ Needs["WolframInstitute`Infrageometry`"]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    RadarBasisQ[g, First @ FindRadarBasis[g]]
+    InfraRadarBasisQ[g, First @ FindInfraRadarBasis[g]]
   ],
   True,
-  TestID -> "FindRadarBasis-path-returns-basis"
+  TestID -> "FindInfraRadarBasis-path-returns-basis"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    Length[First @ FindRadarBasis[g]] == 1
+    Length[First @ FindInfraRadarBasis[g]] == 1
   ],
   True,
   TestID -> "RadarBasis-path-size-one"
@@ -25,10 +25,10 @@ VerificationTest[
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    RadarBasisQ[g, First @ FindRadarBasis[g]]
+    InfraRadarBasisQ[g, First @ FindInfraRadarBasis[g]]
   ],
   True,
-  TestID -> "FindRadarBasis-cycle-returns-basis"
+  TestID -> "FindInfraRadarBasis-cycle-returns-basis"
 ]
 
 VerificationTest[
@@ -282,7 +282,7 @@ VerificationTest[
    integer. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{axes = FindOrthogonalFrame[g, 6, All]},
+    With[{axes = FindInfraOrthogonalFrame[g, 6, All]},
       AllTrue[
         Catenate[OrthogonalCoordinates[g, 6, axes, #] & /@ VertexList[g]],
         IntegerQ
@@ -293,71 +293,71 @@ VerificationTest[
   TestID -> "OrthogonalCoordinates-Centered-integer-coords"
 ]
 
-(* ===== FindOrthogonalFrame ===== *)
+(* ===== FindInfraOrthogonalFrame ===== *)
 
 (* On PathGraph[5] at interior vertex 3 the line {1, 2, 3, 4, 5} is the
    unique frame: every axis is a full metric line through 3. *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    Length @ FindOrthogonalFrame[g, 3, All]
+    Length @ FindInfraOrthogonalFrame[g, 3, All]
   ],
   1,
-  TestID -> "FindOrthogonalFrame-path-single-line"
+  TestID -> "FindInfraOrthogonalFrame-path-single-line"
 ]
 
 (* Endpoint of a path: no antipodal pair exists, so there is no full
-   metric line through vertex 1.  FindOrthogonalFrame returns $Failed. *)
+   metric line through vertex 1.  FindInfraOrthogonalFrame returns $Failed. *)
 
 VerificationTest[
-  FindOrthogonalFrame[PathGraph[Range[5]], 1, All],
+  FindInfraOrthogonalFrame[PathGraph[Range[5]], 1, All],
   $Failed,
-  TestID -> "FindOrthogonalFrame-path-endpoint-no-line"
+  TestID -> "FindInfraOrthogonalFrame-path-endpoint-no-line"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{axes = FindOrthogonalFrame[g, 3, All]},
+    With[{axes = FindInfraOrthogonalFrame[g, 3, All]},
       AllTrue[axes, MemberQ[#[[ 1, 1 ]], 3] &]
     ]
   ],
   True,
-  TestID -> "FindOrthogonalFrame-axes-pass-through-center"
+  TestID -> "FindInfraOrthogonalFrame-axes-pass-through-center"
 ]
 
 VerificationTest[
-  FindOrthogonalFrame[PathGraph[Range[5]], 3, All, 100],
+  FindInfraOrthogonalFrame[PathGraph[Range[5]], 3, All, 100],
   $Failed,
-  TestID -> "FindOrthogonalFrame-strict-fail-too-many"
+  TestID -> "FindInfraOrthogonalFrame-strict-fail-too-many"
 ]
 
 (* "AxisCount" -> k prescribes the per-frame axis count.  On the 3x3 grid
    centred at 5 there is at least one 2-axis frame (the row + column). *)
 
 VerificationTest[
-  With[{frame = FindOrthogonalFrame[GridGraph[{3, 3}], 5, All, "AxisCount" -> 2]},
+  With[{frame = FindInfraOrthogonalFrame[GridGraph[{3, 3}], 5, All, "AxisCount" -> 2]},
     Length[frame] === 2
   ],
   True,
-  TestID -> "FindOrthogonalFrame-AxisCount-exact-2"
+  TestID -> "FindInfraOrthogonalFrame-AxisCount-exact-2"
 ]
 
 (* "AxisCount" -> k impossible: no 5-axis frame exists on the 3x3 grid. *)
 
 VerificationTest[
-  FindOrthogonalFrame[GridGraph[{3, 3}], 5, All, "AxisCount" -> 5],
+  FindInfraOrthogonalFrame[GridGraph[{3, 3}], 5, All, "AxisCount" -> 5],
   $Failed,
-  TestID -> "FindOrthogonalFrame-AxisCount-exact-impossible"
+  TestID -> "FindInfraOrthogonalFrame-AxisCount-exact-impossible"
 ]
 
 (* "AxisCount" -> UpTo[k] is a soft cap. *)
 
 VerificationTest[
-  With[{frame = FindOrthogonalFrame[GridGraph[{3, 3}], 5, All, "AxisCount" -> UpTo[2]]},
+  With[{frame = FindInfraOrthogonalFrame[GridGraph[{3, 3}], 5, All, "AxisCount" -> UpTo[2]]},
     Length[frame] <= 2 && Length[frame] >= 1
   ],
   True,
-  TestID -> "FindOrthogonalFrame-AxisCount-UpTo"
+  TestID -> "FindInfraOrthogonalFrame-AxisCount-UpTo"
 ]
 
 (* GeodesicGraph primitive *)
@@ -387,44 +387,44 @@ VerificationTest[
   TestID -> "GeodesicGraph-AxisLength-truncation"
 ]
 
-(* ===== FindSpanningAxes (no-center form) ===== *)
+(* ===== FindInfraSpanningAxes (no-center form) ===== *)
 
 VerificationTest[
-  Length @ FindSpanningAxes[PathGraph[Range[5]], All] >= 1,
+  Length @ FindInfraSpanningAxes[PathGraph[Range[5]], All] >= 1,
   True,
-  TestID -> "FindSpanningAxes-path-some-axes"
+  TestID -> "FindInfraSpanningAxes-path-some-axes"
 ]
 
 VerificationTest[
-  Length @ FindSpanningAxes[GridGraph[{4, 4}], UpTo[5]] <= 5,
+  Length @ FindInfraSpanningAxes[GridGraph[{4, 4}], UpTo[5]] <= 5,
   True,
-  TestID -> "FindSpanningAxes-grid-UpTo-bound"
+  TestID -> "FindInfraSpanningAxes-grid-UpTo-bound"
 ]
 
 VerificationTest[
-  FindSpanningAxes[PathGraph[Range[5]], 99],
+  FindInfraSpanningAxes[PathGraph[Range[5]], 99],
   $Failed,
-  TestID -> "FindSpanningAxes-strict-fail-too-many"
+  TestID -> "FindInfraSpanningAxes-strict-fail-too-many"
 ]
 
 (* ===== Z-valued OrthogonalCoordinates from a center ===== *)
 
-(* PathGraph[5] at 3 with the default frame from FindOrthogonalFrame:
+(* PathGraph[5] at 3 with the default frame from FindInfraOrthogonalFrame:
    coords are signed displacements, the centre maps to {0, ..., 0}. *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{axes = FindOrthogonalFrame[g, 3, All]},
+    With[{axes = FindInfraOrthogonalFrame[g, 3, All]},
       OrthogonalCoordinates[g, 3, axes, 3]
     ]
   ],
-  ConstantArray[0, Length @ FindOrthogonalFrame[PathGraph[Range[5]], 3, All]],
+  ConstantArray[0, Length @ FindInfraOrthogonalFrame[PathGraph[Range[5]], 3, All]],
   TestID -> "OrthogonalCoordinates-center-maps-to-origin"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{axes = FindOrthogonalFrame[g, 3, All]},
+    With[{axes = FindInfraOrthogonalFrame[g, 3, All]},
       AssociationQ @ OrthogonalCoordinates[g, 3, axes]
         && Length[OrthogonalCoordinates[g, 3, axes]] === 5
     ]
@@ -435,11 +435,11 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}], c = 6},
-    With[{axes = FindOrthogonalFrame[g, c, All]},
+    With[{axes = FindInfraOrthogonalFrame[g, c, All]},
       OrthogonalCoordinates[g, c, axes, c]
     ]
   ],
-  ConstantArray[0, Length @ FindOrthogonalFrame[GridGraph[{4, 4}], 6, All]],
+  ConstantArray[0, Length @ FindInfraOrthogonalFrame[GridGraph[{4, 4}], 6, All]],
   TestID -> "OrthogonalCoordinates-grid-center-self-zero"
 ]
 
@@ -467,7 +467,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{axes = FindOrthogonalFrame[g, 3, All]},
+    With[{axes = FindInfraOrthogonalFrame[g, 3, All]},
       OrthogonalCoordinates[g, InfraPoint[{3}], axes, 3] ==
         OrthogonalCoordinates[g, 3, axes, 3]
     ]
@@ -479,11 +479,11 @@ VerificationTest[
 VerificationTest[
   Module[{g = PathGraph[Range[5]],
           canonicalize = Sort[First @ Sort[{#, Reverse @ #}] & /@ (#[[ 1, 1 ]] & /@ #)] &},
-    canonicalize @ FindOrthogonalFrame[g, InfraPoint[{3}], All] ===
-      canonicalize @ FindOrthogonalFrame[g, 3, All]
+    canonicalize @ FindInfraOrthogonalFrame[g, InfraPoint[{3}], All] ===
+      canonicalize @ FindInfraOrthogonalFrame[g, 3, All]
   ],
   True,
-  TestID -> "FindOrthogonalFrame-InfraPoint-singleton-equals-vertex"
+  TestID -> "FindInfraOrthogonalFrame-InfraPoint-singleton-equals-vertex"
 ]
 
 (* On PathGraph[5] with InfraPoint[{2, 4}]: any frame's axes pass through
@@ -491,22 +491,22 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{axes = FindOrthogonalFrame[g, InfraPoint[{2, 4}], All]},
+    With[{axes = FindInfraOrthogonalFrame[g, InfraPoint[{2, 4}], All]},
       AllTrue[axes, MemberQ[#[[ 1, 1 ]], 2] || MemberQ[#[[ 1, 1 ]], 4] &]
     ]
   ],
   True,
-  TestID -> "FindOrthogonalFrame-InfraPoint-axes-contain-some-anchor"
+  TestID -> "FindInfraOrthogonalFrame-InfraPoint-axes-contain-some-anchor"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{axes = FindOrthogonalFrame[g, InfraPoint[{6, 11}], All]},
+    With[{axes = FindInfraOrthogonalFrame[g, InfraPoint[{6, 11}], All]},
       AllTrue[axes, MemberQ[#[[ 1, 1 ]], 6] || MemberQ[#[[ 1, 1 ]], 11] &]
     ]
   ],
   True,
-  TestID -> "FindOrthogonalFrame-InfraPoint-grid-anchor-on-each-axis"
+  TestID -> "FindInfraOrthogonalFrame-InfraPoint-grid-anchor-on-each-axis"
 ]
 
 (* ===== Frame search semantics ===== *)
@@ -515,9 +515,9 @@ VerificationTest[
    perpendicular axes (with Method -> Automatic = "Exhaustive"). *)
 
 VerificationTest[
-  Length @ FindOrthogonalFrame[GridGraph[{3, 3}], 5, All] >= 2,
+  Length @ FindInfraOrthogonalFrame[GridGraph[{3, 3}], 5, All] >= 2,
   True,
-  TestID -> "FindOrthogonalFrame-3x3grid-centre-multi-axis"
+  TestID -> "FindInfraOrthogonalFrame-3x3grid-centre-multi-axis"
 ]
 
 (* Well-conditioned coords: every vertex on axis i has coordinate j == 0
@@ -525,7 +525,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], c = 5},
-    With[{axes = FindOrthogonalFrame[g, c, All]},
+    With[{axes = FindInfraOrthogonalFrame[g, c, All]},
       AllTrue[Range @ Length @ axes,
         i |-> AllTrue[First @ First @ axes[[i]],
           v |-> With[{coords = OrthogonalCoordinates[g, c, axes, v]},
@@ -536,18 +536,18 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindOrthogonalFrame-well-conditioned-coords"
+  TestID -> "FindInfraOrthogonalFrame-well-conditioned-coords"
 ]
 
 (* On PathGraph[7] at interior 4: every axis is a metric line with 4
    interior; the longest is the whole path 1..7. *)
 
 VerificationTest[
-  With[{frame = FindOrthogonalFrame[PathGraph[Range[7]], 4, All]},
+  With[{frame = FindInfraOrthogonalFrame[PathGraph[Range[7]], 4, All]},
     Length[frame] === 1 && Length[First @ First @ frame[[1]]] === 7
   ],
   True,
-  TestID -> "FindOrthogonalFrame-path-line-longest"
+  TestID -> "FindInfraOrthogonalFrame-path-line-longest"
 ]
 
 (* On a 3x3 grid at corner 1 the L-bent line through 1 ({3, 2, 1, 4, 7})
@@ -555,37 +555,37 @@ VerificationTest[
    strictly antipodal at 1 (d_g(3, 7) = 4 = depth(3) + depth(7)). *)
 
 VerificationTest[
-  Sort[First @ Sort[{#, Reverse @ #}] & /@ (#[[ 1, 1 ]] & /@ FindOrthogonalFrame[GridGraph[{3, 3}], 1, All])],
+  Sort[First @ Sort[{#, Reverse @ #}] & /@ (#[[ 1, 1 ]] & /@ FindInfraOrthogonalFrame[GridGraph[{3, 3}], 1, All])],
   Sort[First @ Sort[{#, Reverse @ #}] & /@ {{3, 2, 1, 4, 7}}],
-  TestID -> "FindOrthogonalFrame-3x3grid-corner-L-bent-line"
+  TestID -> "FindInfraOrthogonalFrame-3x3grid-corner-L-bent-line"
 ]
 
 (* BranchSampleSize is Exhaustive-only; under Greedy it is forced to All
    so the result is fully deterministic. *)
 
 VerificationTest[
-  FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, Method -> "Greedy"] ===
-    FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, Method -> "Greedy", "BranchSampleSize" -> 1],
+  FindInfraOrthogonalFrame[GridGraph[{4, 4}], 6, All, Method -> "Greedy"] ===
+    FindInfraOrthogonalFrame[GridGraph[{4, 4}], 6, All, Method -> "Greedy", "BranchSampleSize" -> 1],
   True,
-  TestID -> "FindOrthogonalFrame-Greedy-ignores-BranchSampleSize"
+  TestID -> "FindInfraOrthogonalFrame-Greedy-ignores-BranchSampleSize"
 ]
 
 (* Determinism: same inputs always produce same output (no RandomPick). *)
 
 VerificationTest[
-  Module[{frame1 = FindOrthogonalFrame[GridGraph[{4, 4}], 6, All],
-          frame2 = FindOrthogonalFrame[GridGraph[{4, 4}], 6, All]},
+  Module[{frame1 = FindInfraOrthogonalFrame[GridGraph[{4, 4}], 6, All],
+          frame2 = FindInfraOrthogonalFrame[GridGraph[{4, 4}], 6, All]},
     frame1 === frame2
   ],
   True,
-  TestID -> "FindOrthogonalFrame-deterministic"
+  TestID -> "FindInfraOrthogonalFrame-deterministic"
 ]
 
-(* Centre maps to the origin under any FindOrthogonalFrame frame. *)
+(* Centre maps to the origin under any FindInfraOrthogonalFrame frame. *)
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{axes = FindOrthogonalFrame[g, 5, All]},
+    With[{axes = FindInfraOrthogonalFrame[g, 5, All]},
       OrthogonalCoordinates[g, 5, axes, 5] === ConstantArray[0, Length @ axes]
     ]
   ],
@@ -598,10 +598,10 @@ VerificationTest[
    passing "Centered" explicitly. *)
 
 VerificationTest[
-  FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, All] ===
-    FindOrthogonalFrame[GridGraph[{4, 4}], 6, All, All, "SelectCoordinate" -> "Centered"],
+  FindInfraOrthogonalFrame[GridGraph[{4, 4}], 6, All, All] ===
+    FindInfraOrthogonalFrame[GridGraph[{4, 4}], 6, All, All, "SelectCoordinate" -> "Centered"],
   True,
-  TestID -> "FindOrthogonalFrame-SelectCoordinate-default-is-Centered"
+  TestID -> "FindInfraOrthogonalFrame-SelectCoordinate-default-is-Centered"
 ]
 
 
@@ -611,7 +611,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], c = 5},
-    With[{axes = FindOrthogonalFrame[g, c, All]},
+    With[{axes = FindInfraOrthogonalFrame[g, c, All]},
       AllTrue[Range @ Length @ axes,
         i |-> AllTrue[First @ First @ axes[[i]],
           v |-> With[{coords = OrthogonalCoordinates[g, c, axes, v,
@@ -623,7 +623,7 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindOrthogonalFrame-Centered-unifies-perpendicularity-and-coords"
+  TestID -> "FindInfraOrthogonalFrame-Centered-unifies-perpendicularity-and-coords"
 ]
 
 
@@ -634,11 +634,11 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    FindOrthogonalFrame[g, 6, All, "SelectCoordinate" -> All] ===
-      FindOrthogonalFrame[g, 6, All, "SelectCoordinate" -> All]
+    FindInfraOrthogonalFrame[g, 6, All, "SelectCoordinate" -> All] ===
+      FindInfraOrthogonalFrame[g, 6, All, "SelectCoordinate" -> All]
   ],
   True,
-  TestID -> "FindOrthogonalFrame-SelectCoordinate-All-deterministic"
+  TestID -> "FindInfraOrthogonalFrame-SelectCoordinate-All-deterministic"
 ]
 
 
@@ -648,12 +648,12 @@ VerificationTest[
   AllTrue[
     {Min, Max, Median, Mean, All},
     sel |-> MatchQ[
-      FindOrthogonalFrame[GridGraph[{3, 3}], 5, All, "SelectCoordinate" -> sel],
+      FindInfraOrthogonalFrame[GridGraph[{3, 3}], 5, All, "SelectCoordinate" -> sel],
       {__WolframInstitute`SyntheticInfrageometry`InfraSegment}
     ]
   ],
   True,
-  TestID -> "FindOrthogonalFrame-SelectCoordinate-accepts-Min-Max-Median-Mean-All"
+  TestID -> "FindInfraOrthogonalFrame-SelectCoordinate-accepts-Min-Max-Median-Mean-All"
 ]
 
 
@@ -795,11 +795,11 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 10, 10 } ], c = 45 },
-    FindOrthogonalFrame[ g, c, 2, All ] ===
-      FindOrthogonalFrame[ NeighborhoodGraph[ g, c, 4 ], c, 2, All ]
+    FindInfraOrthogonalFrame[ g, c, 2, All ] ===
+      FindInfraOrthogonalFrame[ NeighborhoodGraph[ g, c, 4 ], c, 2, All ]
   ],
   True,
-  TestID -> "FindOrthogonalFrame-locality"
+  TestID -> "FindInfraOrthogonalFrame-locality"
 ]
 
 

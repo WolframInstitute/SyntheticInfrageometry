@@ -17,18 +17,18 @@ InfraPolyline[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPolyline[ _List ] ] ] 
   InfraPolyline[ Flatten[ reps /. InfraPolyline[ xs_List ] :> xs, 1 ] ]
 
 
-(* ===================== FindPolylineSubdivision ===================== *)
+(* ===================== FindInfraPolylineSubdivision ===================== *)
 
 (* Greedy chunking of a walk into the fewest geodesic InfraSegments whose
    knots are walk-vertices, with each leg a shortest path (in graph) of
    length <= MaxLength. *)
 
-Options[ FindPolylineSubdivision ] = { "MaxLength" -> Infinity };
+Options[ FindInfraPolylineSubdivision ] = { "MaxLength" -> Infinity };
 
-FindPolylineSubdivision[ _Graph, path_List, OptionsPattern[] ] /; Length[ path ] < 2 :=
+FindInfraPolylineSubdivision[ _Graph, path_List, OptionsPattern[] ] /; Length[ path ] < 2 :=
   InfraPolyline[ { { } } ]
 
-FindPolylineSubdivision[ graph_Graph, path_List, OptionsPattern[] ] :=
+FindInfraPolylineSubdivision[ graph_Graph, path_List, OptionsPattern[] ] :=
   Module[ { maxLength = OptionValue[ "MaxLength" ], n = Length[ path ],
             knots = { 1 }, last = 1, d },
     Do[
@@ -71,18 +71,18 @@ polylineToKnots[ segs : { _InfraSegment .. } ] :=
   Prepend[ Last[ #[[ 1, 1 ]] ] & /@ segs, First @ segs[[ 1, 1, 1 ]] ]
 
 
-(* ===================== PolylineQ ===================== *)
+(* ===================== InfraPolylineQ ===================== *)
 
 (* A polyline is consistent iff every leg is a geodesic in graph and
    consecutive legs share their endpoint. *)
 
-PolylineQ[ graph_Graph, InfraPolyline[ reps_List ] ] :=
-  AllTrue[ reps, PolylineQ[ graph, # ] & ]
+InfraPolylineQ[ graph_Graph, InfraPolyline[ reps_List ] ] :=
+  AllTrue[ reps, InfraPolylineQ[ graph, # ] & ]
 
-PolylineQ[ _Graph, { } ] := True
-PolylineQ[ graph_Graph, poly : { _InfraSegment .. } ] :=
-  AllTrue[ poly, SegmentQ[ graph, #[[ 1, 1 ]] ] & ] &&
+InfraPolylineQ[ _Graph, { } ] := True
+InfraPolylineQ[ graph_Graph, poly : { _InfraSegment .. } ] :=
+  AllTrue[ poly, InfraSegmentQ[ graph, #[[ 1, 1 ]] ] & ] &&
   AllTrue[ Partition[ poly, 2, 1 ],
     pair |-> Last[ pair[[ 1, 1, 1 ]] ] === First[ pair[[ 2, 1, 1 ]] ] ]
 
-PolylineQ[ _Graph, _ ] := False
+InfraPolylineQ[ _Graph, _ ] := False

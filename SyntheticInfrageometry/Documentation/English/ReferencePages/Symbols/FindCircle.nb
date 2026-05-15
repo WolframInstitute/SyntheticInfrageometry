@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindCircle", "Title",ExpressionUUID->"e134d1b8-6f69-4d57-a989-0140f44a724d"],
+Cell["FindInfraCircle", "Title",ExpressionUUID->"e134d1b8-6f69-4d57-a989-0140f44a724d"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"f40a7aa0-e461-4811-914d-ad6a2b8f25ba"],
 
 Cell["\<\
-FindCircle[g, c, r] returns one separating cycle in the level-surface \
+FindInfraCircle[g, c, r] returns one separating cycle in the level-surface \
 subgraph at radius r around c, as an open vertex sequence. Returns a List of \
 unary InfraCircle[{cycle}] wrappers; n / UpTo[n] / All control multiplicity. \
 Option Method (\"Combinatorial\" (default) | \"Embedding\").\
@@ -53,7 +53,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"d289f5e8-0ebd-4fa9-891c-4fb052120421"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindCircle[GridGraph[{3, 3}], 5, 1, All]"]], "Input",\
+ $CellContext`buildCell["FindInfraCircle[GridGraph[{3, 3}], 5, 1, All]"]], "Input",\
 ExpressionUUID->"1d3454ae-6dee-4dc1-b2f4-04cf9b256d85"],
 
 Cell[BoxData[
@@ -67,7 +67,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"3e6b4c22-5ec4-42a5-affa-ffc0b0b6fe77"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindCircle[GridGraph[{5, 5}], 13, 2, All]"]], "Input",\
+ $CellContext`buildCell["FindInfraCircle[GridGraph[{5, 5}], 13, 2, All]"]], "Input",\
 ExpressionUUID->"693a401d-5c7b-436b-b072-c554290d5f49"],
 
 Cell[BoxData[
@@ -81,7 +81,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, {FindCircle[g, 13, 2, \
+ "With[{g = GridGraph[{5, 5}]}, InfraSceneHighlight[g, {FindInfraCircle[g, 13, 2, \
 All] -> Green}]]"]], "Input",ExpressionUUID->"cb6114cc-7b07-4ef0-b956-\
 1c839c817e9f"],
 
@@ -89,11 +89,11 @@ Cell["See Also", "Section",ExpressionUUID->"8b350849-a029-44e4-afe0-62f3ce3bc489
 
 Cell["InfraCircle", "Item",ExpressionUUID->"3c050c28-c108-4aaa-b601-177122177105"],
 
-Cell["CircleQ", "Item",ExpressionUUID->"c53c1cc0-0f0b-43af-bb55-8c25a9139ba8"],
+Cell["InfraCircleQ", "Item",ExpressionUUID->"c53c1cc0-0f0b-43af-bb55-8c25a9139ba8"],
 
-Cell["FindShell", "Item",ExpressionUUID->"c9fb3a31-d228-4c52-b23c-f22f34316f66"],
+Cell["FindInfraShell", "Item",ExpressionUUID->"c9fb3a31-d228-4c52-b23c-f22f34316f66"],
 
-Cell["SelectCycle", "Item",ExpressionUUID->"3a5af9da-cc8b-4e40-aea0-1c55d6d0869d"],
+Cell["SelectInfraCycle", "Item",ExpressionUUID->"3a5af9da-cc8b-4e40-aea0-1c55d6d0869d"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"3fe446d8-07ab-4e0e-999a-9157ce17fed4"],
 

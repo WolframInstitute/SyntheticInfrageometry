@@ -72,7 +72,7 @@ Cell["WhiteheadW3Q", "Item",ExpressionUUID->"04a71b58-7332-4be2-9333-49af42709b4
 
 Cell["ProjectivePlaneGraphQ", "Item",ExpressionUUID->"40e695c6-19c6-46f6-bfd0-176e48460774"],
 
-Cell["FindLine", "Item",ExpressionUUID->"37a47d2c-51e9-46f7-ac72-49e1e191c1d2"],
+Cell["FindInfraLine", "Item",ExpressionUUID->"37a47d2c-51e9-46f7-ac72-49e1e191c1d2"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"67744f50-33fc-4929-adc8-1a30b10754ff"],
 

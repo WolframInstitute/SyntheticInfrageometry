@@ -1,14 +1,14 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 
-(* ===================== FindRadarBasis ===================== *)
+(* ===================== FindInfraRadarBasis ===================== *)
 
 (* A radar basis (resolving set) is a vertex set B such that the distance
    vector v |-> (d(v, b))_{b in B} is injective.  Enumerated by ascending
    size; m restricts the candidate sizes (All, integer max, {min, max},
    {exact}). *)
 
-FindRadarBasis[ g_, n_ : 1, m_ : All ] :=
+FindInfraRadarBasis[ g_, n_ : 1, m_ : All ] :=
   Module[ { v = VertexList[ g ], dm = GraphDistanceMatrix[ g ], vc = VertexCount[ g ], found = { }, mask, last },
     Map[ v[[ # ]] &,
       Catch[ Scan[
@@ -41,14 +41,14 @@ FindRadarBasis[ g_, n_ : 1, m_ : All ] :=
   ]
 
 
-(* ===================== RadarBasisQ ===================== *)
+(* ===================== InfraRadarBasisQ ===================== *)
 
 (* b resolves g iff the pointwise distance map v |-> (d(v, b1), ..., d(v, bk))
    is injective over V(g). *)
 
-Options[ RadarBasisQ ] = { "InfraPointAggregation" -> Min }
+Options[ InfraRadarBasisQ ] = { "InfraPointAggregation" -> Min }
 
-RadarBasisQ[ g_Graph, b_List, opts : OptionsPattern[] ] :=
+InfraRadarBasisQ[ g_Graph, b_List, opts : OptionsPattern[] ] :=
   With[ { agg = OptionValue[ "InfraPointAggregation" ] },
     DuplicateFreeQ[ Table[ infraAnchorDistance[ g, v, #, agg ] & /@ b, { v, VertexList[ g ] } ] ]
   ]
@@ -107,7 +107,7 @@ OrthogonalCoordinates[ g_Graph, c_, axes_List, opts : OptionsPattern[] ] :=
   Association[ # -> OrthogonalCoordinates[ g, c, axes, #, opts ] & /@ VertexList[ g ] ]
 
 
-(* ===================== FindOrthogonalFrame ===================== *)
+(* ===================== FindInfraOrthogonalFrame ===================== *)
 
 (* Returns a list of axes mutually perpendicular at the centre c, each wrapped
    as InfraSegment[{path}] (one realisation: the maximal metric line through c
@@ -125,7 +125,7 @@ OrthogonalCoordinates[ g_Graph, c_, axes_List, opts : OptionsPattern[] ] :=
    All (every depth >= 1).  Method -> Automatic = "Exhaustive" ranked by
    frameSortKey; "Greedy" keeps DFS order. *)
 
-Options[ FindOrthogonalFrame ] = {
+Options[ FindInfraOrthogonalFrame ] = {
   Method             -> Automatic,
   "AxisCount"        -> Automatic,
   "BranchSampleSize" -> All,
@@ -134,18 +134,18 @@ Options[ FindOrthogonalFrame ] = {
 
 axisLengthPattern = All | _Integer | _UpTo | { _, _ };
 
-FindOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
   With[ { result = findOrthogonalFrameCore[ g, c, axisLength, 1, { opts } ] },
     If[ result =!= { }, wrapFrame @ First @ result, $Failed ]
   ]
 
-FindOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
   wrapFrame /@ findOrthogonalFrameCore[ g, c, axisLength, All, { opts } ]
 
-FindOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
   wrapFrame /@ Take[ findOrthogonalFrameCore[ g, c, axisLength, n, { opts } ], UpTo[ n ] ]
 
-FindOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
   With[ { result = findOrthogonalFrameCore[ g, c, axisLength, n, { opts } ] },
     If[ Length[ result ] >= n, wrapFrame /@ Take[ result, n ], $Failed ]
   ]
@@ -153,32 +153,32 @@ FindOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, n_Integer, opt
 (* InfraPoint centre: singleton degenerates to the single-vertex centre;
    multi-vertex InfraPoint runs the search per source and merges. *)
 
-FindOrthogonalFrame[ g_Graph, InfraPoint[ { v_ } ], rest___ ] :=
-  FindOrthogonalFrame[ g, v, rest ]
+FindInfraOrthogonalFrame[ g_Graph, InfraPoint[ { v_ } ], rest___ ] :=
+  FindInfraOrthogonalFrame[ g, v, rest ]
 
-FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   With[ { result = findOrthogonalFrameCore[ g, ip, axisLength, 1, { opts } ] },
     If[ result =!= { }, wrapFrame @ First @ result, $Failed ]
   ]
 
-FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   wrapFrame /@ findOrthogonalFrameCore[ g, ip, axisLength, All, { opts } ]
 
-FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   wrapFrame /@ Take[ findOrthogonalFrameCore[ g, ip, axisLength, n, { opts } ], UpTo[ n ] ]
 
-FindOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   With[ { result = findOrthogonalFrameCore[ g, ip, axisLength, n, { opts } ] },
     If[ Length[ result ] >= n, wrapFrame /@ Take[ result, n ], $Failed ]
   ]
 
 
-(* ===================== FindSpanningAxes ===================== *)
+(* ===================== FindInfraSpanningAxes ===================== *)
 
 (* No-center form: greedy mutually-separated longest geodesics across the
    whole graph.  Reuses orthogonalGreedy with Hausdorff-separation options. *)
 
-Options[ FindSpanningAxes ] = {
+Options[ FindInfraSpanningAxes ] = {
   "AxisDistance"  -> "MinEndpoint",
   "MinLength"     -> Automatic,
   "MinSeparation" -> Automatic,
@@ -186,18 +186,18 @@ Options[ FindSpanningAxes ] = {
   "RandomPick"    -> False
 };
 
-FindSpanningAxes[ g_Graph, All, opts : OptionsPattern[] ] :=
+FindInfraSpanningAxes[ g_Graph, All, opts : OptionsPattern[] ] :=
   With[ { distMatrix = GraphDistanceMatrix[ g ] },
     With[ { minLength = Replace[ OptionValue[ "MinLength" ], Automatic -> Max[ distMatrix ] ] },
       orthogonalGreedy[ g, findLongestPaths[ g, All, Max[ distMatrix ] - minLength ], { opts } ]
     ]
   ]
 
-FindSpanningAxes[ g_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  Take[ FindSpanningAxes[ g, All, opts ], UpTo[ n ] ]
+FindInfraSpanningAxes[ g_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+  Take[ FindInfraSpanningAxes[ g, All, opts ], UpTo[ n ] ]
 
-FindSpanningAxes[ g_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
-  With[ { result = FindSpanningAxes[ g, UpTo[ n ], opts ] },
+FindInfraSpanningAxes[ g_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
+  With[ { result = FindInfraSpanningAxes[ g, UpTo[ n ], opts ] },
     If[ Length[ result ] >= n, Take[ result, n ], $Failed ]
   ]
 

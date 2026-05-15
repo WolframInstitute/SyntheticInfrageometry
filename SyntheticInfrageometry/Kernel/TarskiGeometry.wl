@@ -86,11 +86,11 @@ TarskiCongruenceIdentityQ[ graph_Graph ] :=
 
 
 (* A4 (Segment Construction): forall a, b, c, d.  exists x. B(a, b, x) and bx == cd.
-   Generally False on finite graphs; the 5-vertex ExtendSegment form is the Find variant. *)
+   Generally False on finite graphs; the 5-vertex ExtendInfraSegment form is the Find variant. *)
 
 TarskiSegmentConstructionQ[ graph_Graph ] :=
   AllTrue[ Tuples[ VertexList[ graph ], 4 ],
-    tuple |-> Length @ ExtendSegment[ graph,
+    tuple |-> Length @ ExtendInfraSegment[ graph,
       tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ] > 0 ]
 
 
@@ -247,7 +247,7 @@ tarskiBetweennessIdentityCounter[ graph_Graph ] :=
 
 tarskiSegmentConstructionCounter[ graph_Graph ] :=
   Select[ Tuples[ VertexList[ graph ], 4 ],
-    tuple |-> Length @ ExtendSegment[ graph,
+    tuple |-> Length @ ExtendInfraSegment[ graph,
       tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ] === 0 ]
 
 

@@ -59,7 +59,7 @@ Cell["See Also", "Section",ExpressionUUID->"9337651d-6a22-44ab-ab6c-150d1f0db746
 
 Cell["ConcurrentQ", "Item",ExpressionUUID->"0da10adb-21fe-4922-a8f4-45892b8d8304"],
 
-Cell["FindCommonPoint", "Item",ExpressionUUID->"5fc89e7d-c7da-4219-9b32-3022864c5fa5"],
+Cell["FindInfraCommonPoint", "Item",ExpressionUUID->"5fc89e7d-c7da-4219-9b32-3022864c5fa5"],
 
 Cell["UniqueCollinearQ", "Item",ExpressionUUID->"c4200fcf-9b0a-4161-b921-92260f259b5f"],
 

@@ -25,7 +25,7 @@ Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"2b17feef-a465-4d6f-b6fe-96ed
 Cell["\<\
 InfraCircle is the wrapper head for separating-cycle realisations. \
 InfraCircle[{cycle}] is the unary form; InfraCircle[{cycle1, \[Ellipsis], \
-cyclek}] is the multi-realisation form. FindCircle emits a List of unary \
+cyclek}] is the multi-realisation form. FindInfraCircle emits a List of unary \
 InfraCircle[{cycle}] wrappers. The multi form is consumed by \
 InfraSceneHighlight with sequential edges plus auto-closure.\
 \>", "Text",ExpressionUUID->"34aefa2c-93dc-402f-8ffa-d6be8e11d039"],
@@ -52,7 +52,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"711c1611-3870-4e4b-aae4-582f082e7e87"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindCircle[GridGraph[{3, 3}], 5, 1, All]"]], "Input",\
+ $CellContext`buildCell["FindInfraCircle[GridGraph[{3, 3}], 5, 1, All]"]], "Input",\
 ExpressionUUID->"52e54fbf-af24-4044-896a-4572f0c6dcbc"],
 
 Cell[BoxData[
@@ -86,9 +86,9 @@ Cell[BoxData[
 
 Cell["See Also", "Section",ExpressionUUID->"eb347a09-4d77-4b09-aba7-b8e40bde91c8"],
 
-Cell["FindCircle", "Item",ExpressionUUID->"f9968380-fa9c-4cfa-b464-7a68d71f6f1d"],
+Cell["FindInfraCircle", "Item",ExpressionUUID->"f9968380-fa9c-4cfa-b464-7a68d71f6f1d"],
 
-Cell["CircleQ", "Item",ExpressionUUID->"72a968a5-b9cf-4b01-a3a9-7167760fb025"],
+Cell["InfraCircleQ", "Item",ExpressionUUID->"72a968a5-b9cf-4b01-a3a9-7167760fb025"],
 
 Cell["InfraShell", "Item",ExpressionUUID->"2b485075-5ab2-4263-854c-d6ad2d305ae6"],
 

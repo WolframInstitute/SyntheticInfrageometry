@@ -18,13 +18,13 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["ShellQ", "Title",ExpressionUUID->"5499e045-2148-48ec-926c-55cf2645929a"],
+Cell["InfraShellQ", "Title",ExpressionUUID->"5499e045-2148-48ec-926c-55cf2645929a"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"af648102-a194-4d01-8e44-c7038cabfb37"],
 
 Cell["\<\
-ShellQ[g, vertexSet] tests whether vertexSet is a metric shell (equidistant \
-level surface separating its interior from exterior). Use FindShellParameters \
+InfraShellQ[g, vertexSet] tests whether vertexSet is a metric shell (equidistant \
+level surface separating its interior from exterior). Use FindInfraShellParameters \
 to recover {center, radius}.\
 \>", "Text",ExpressionUUID->"4ac74d21-ffe8-48fa-b029-2ffe8804e3fa"],
 
@@ -51,7 +51,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"5cc62c2d-7a95-41d0-bd76-f0f56ca6315d"],
 
 Cell[BoxData[
- $CellContext`buildCell["ShellQ[GridGraph[{3, 3}], {2, 4, 6, 8}]"]], "Input",E\
+ $CellContext`buildCell["InfraShellQ[GridGraph[{3, 3}], {2, 4, 6, 8}]"]], "Input",E\
 xpressionUUID->"00a509b0-7fc0-4f3d-9d79-8efeec692dca"],
 
 Cell[BoxData[
@@ -64,14 +64,14 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"552ab7b8-fdeb-4171-ba75-9d5c7c191cd6"],
 
 Cell[BoxData[
- $CellContext`buildCell["ShellQ[GridGraph[{3, 3}], {1, 3}]"]], "Input",Express\
+ $CellContext`buildCell["InfraShellQ[GridGraph[{3, 3}], {1, 3}]"]], "Input",Express\
 ionUUID->"2119727b-5af0-4423-b8fc-40d78e014022"],
 
 Cell["See Also", "Section",ExpressionUUID->"b2fa4007-4383-44bb-9a79-454a08c8f25f"],
 
-Cell["FindShell", "Item",ExpressionUUID->"06e95e40-0332-4675-8fbb-90df85050cc6"],
+Cell["FindInfraShell", "Item",ExpressionUUID->"06e95e40-0332-4675-8fbb-90df85050cc6"],
 
-Cell["FindShellParameters", "Item",ExpressionUUID->"ca562656-9093-46d8-a236-6731b6a26d75"],
+Cell["FindInfraShellParameters", "Item",ExpressionUUID->"ca562656-9093-46d8-a236-6731b6a26d75"],
 
 Cell["SeparatesQ", "Item",ExpressionUUID->"178c188a-01fb-4fc7-9c3a-8a62e5503718"],
 

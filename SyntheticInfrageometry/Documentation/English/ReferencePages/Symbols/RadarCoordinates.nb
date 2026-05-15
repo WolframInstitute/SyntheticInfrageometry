@@ -91,9 +91,9 @@ Cell[BoxData[
 
 Cell["See Also", "Section",ExpressionUUID->"dfca6189-81ba-441f-a97f-8b8c42942fcd"],
 
-Cell["FindRadarBasis", "Item",ExpressionUUID->"9a1dd12e-f7a6-42e8-9408-2e20d39f12b6"],
+Cell["FindInfraRadarBasis", "Item",ExpressionUUID->"9a1dd12e-f7a6-42e8-9408-2e20d39f12b6"],
 
-Cell["RadarBasisQ", "Item",ExpressionUUID->"6559e209-d012-4c94-9ad6-9a8684f1d74d"],
+Cell["InfraRadarBasisQ", "Item",ExpressionUUID->"6559e209-d012-4c94-9ad6-9a8684f1d74d"],
 
 Cell["ResistanceCoordinates", "Item",ExpressionUUID->"7550cb5d-532b-425d-8e66-a80479b38d98"],
 

@@ -35,16 +35,17 @@ topologicalLevels[ dag_Graph ] :=
 resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
   ( expr /. Normal[ bindings ] ) /.
     { InfraDistance[ x_, y_ ]      :> GraphDistance[ graph, x, y ],
-      InfraSegmentQ[ s_ ]          :> SegmentQ[ graph, s ],
-      InfraShellQ[ vs_ ]           :> ShellQ[ graph, vs ],
+      InfraPathQ[ w_ ]             :> InfraPathQ[ graph, w ],
+      InfraSegmentQ[ s_ ]          :> InfraSegmentQ[ graph, s ],
+      InfraShellQ[ vs_ ]           :> InfraShellQ[ graph, vs ],
       InfraPlaneQ[ h_, p1_, p2_ ]  :> SeparatesQ[ graph, h, p1, p2 ] &&
                                        AllTrue[ h, GraphDistance[ graph, p1, # ] ==
                                                     GraphDistance[ graph, p2, # ] & ],
-      InfraCircleQ[ c_ ]           :> CircleQ[ graph, c ],
-      InfraLineQ[ s_ ]             :> LineQ[ graph, s ],
-      InfraParallelQ[ l1_, l2_ ]   :> ParallelQ[ graph, l1, l2 ],
+      InfraCircleQ[ c_ ]           :> InfraCircleQ[ graph, c ],
+      InfraLineQ[ s_ ]             :> InfraLineQ[ graph, s ],
+      InfraParallelQ[ l1_, l2_ ]   :> InfraParallelQ[ graph, l1, l2 ],
       InfraIntersectQ[ s1_, s2_ ]  :> IntersectingQ[ s1, s2 ],
-      InfraRevolutionQ[ vs_, axis_, profile_ ] :> RevolutionQ[ graph, vs, axis, profile ] }
+      InfraRevolutionQ[ vs_, axis_, profile_ ] :> InfraRevolutionQ[ graph, vs, axis, profile ] }
 
 extractBranches[ opts_List ] :=
   Lookup[ Association @ opts, "Branches", All ]
@@ -62,21 +63,21 @@ capBranches[ paths_List, UpTo[ n_Integer ] ] := Take[ paths, UpTo[ n ] ]
 capBranches[ other_, _ ]                    := other
 
 (* The "Select" hypothesis option accepts None, a criterion string, or a list
-   thereof.  "EmbeddingClosest" routes to EmbeddingClosestPaths/Cycles using
-   ctx ("Endpoints" for paths, "Center"+"Radius" for cycles); the legacy
-   criterion strings translate into the new SelectPath / SelectCycle "From"
+   thereof.  "EmbeddingClosest" routes to EmbeddingClosest using ctx
+   ("Endpoints" for paths, "Center"+"Radius" for cycles); the legacy
+   criterion strings translate into the new SelectInfraPath / SelectInfraCycle "From"
    pool spec with All count to preserve set-shaped semantics. *)
 applySelectOption[ _Graph, paths_, None, _, _ ] := paths
 applySelectOption[ graph_Graph, paths_, list_List, cyclic_, ctx_ ] :=
   Fold[ applySelectOption[ graph, #1, #2, cyclic, ctx ] &, paths, list ]
 applySelectOption[ graph_Graph, paths_, "EmbeddingClosest", True,  ctx_ ] :=
-  EmbeddingClosestCycles[ graph, paths, { ctx[ "Center" ], ctx[ "Radius" ] } ]
+  EmbeddingClosest[ graph, paths, { ctx[ "Center" ], ctx[ "Radius" ] } ]
 applySelectOption[ graph_Graph, paths_, "EmbeddingClosest", False, ctx_ ] :=
-  EmbeddingClosestPaths[ graph, paths, ctx[ "Endpoints" ] ]
+  EmbeddingClosest[ graph, paths, ctx[ "Endpoints" ] ]
 applySelectOption[ graph_Graph, paths_, name_String, True,  _ ] :=
-  SelectCycle[ graph, paths, All, "From" -> selectFromName[ name ] ]
+  SelectInfraCycle[ graph, paths, All, "From" -> selectFromName[ name ] ]
 applySelectOption[ graph_Graph, paths_, name_String, False, _ ] :=
-  SelectPath[ graph, paths, All, "From" -> selectFromName[ name ] ]
+  SelectInfraPath[ graph, paths, All, "From" -> selectFromName[ name ] ]
 
 selectFromName[ "Central"    ] := "Center"
 selectFromName[ "Peripheral" ] := "Periphery"
@@ -93,12 +94,12 @@ selectFromName[ name_String  ] := name
 
 infraVertexSet[ InfraPoint[ vs_List ] ] := vs
 infraVertexSet[ InfraObject[ vs_List ] ] := vs
-infraVertexSet[ ( InfraSegment | InfraLine | InfraRay | InfraCircle
+infraVertexSet[ ( InfraSegment | InfraPath | InfraLine | InfraRay | InfraCircle
                 | InfraShell | InfraPlane )[ reps_List ] ] :=
   Union @@ reps
 infraVertexSet[ list_List ] /;
     list =!= { } && AllTrue[ list,
-      MatchQ[ ( InfraPoint | InfraSegment | InfraLine | InfraRay |
+      MatchQ[ ( InfraPoint | InfraSegment | InfraPath | InfraLine | InfraRay |
                 InfraCircle | InfraShell | InfraPlane )[ { _ } ] ] ] :=
   infraVertexSet[ Head[ First @ list ] @ ( #[[ 1, 1 ]] & /@ list ) ]
 infraVertexSet[ v_ ] := { v }
@@ -224,14 +225,14 @@ dispatchConstruction[ graph_Graph, InfraPoint[ pool_String ] ] :=
   ]
 
 dispatchConstruction[ graph_Graph, InfraPoint[ origin_, dist_ ] ] /; ! MatchQ[ dist, _Rule ] :=
-  Union @ Flatten @ Map[
+  DeleteDuplicates @ Flatten[ Map[
     o |-> Select[ VertexList @ graph, v |-> GraphDistance[ graph, o, v ] == dist ],
     If[ StringQ @ origin,
       Switch[ origin,
         "Center",    GraphCenter[ graph ],
         "Periphery", GraphPeriphery[ graph ],
         _,           VertexList @ graph ],
-      If[ MemberQ[ VertexList @ graph, origin ], { origin }, origin ] ] ]
+      If[ MemberQ[ VertexList @ graph, origin ], { origin }, origin ] ] ], 1 ]
 
 dispatchConstruction[ graph_Graph, InfraPoint[ n_Integer, opts___Rule ] ] :=
   Module[ { dist, distMatrix, finiteMax, dMin, dMax, auxGraph, cliques },
@@ -254,7 +255,7 @@ dispatchConstruction[ graph_Graph, InfraPoint[ n_Integer, opts___Rule ] ] :=
 dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindSegment[ graph, p1, p2, All ],
+      #[[ 1, 1 ]] & /@ FindInfraSegment[ graph, p1, p2, All ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]
@@ -271,8 +272,8 @@ dispatchConstruction[ graph_Graph, InfraLine[ p1_, p2_, opts___Rule ] ] /;
   MemberQ[ VertexList @ graph, p1 ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindLine[ graph, p1, p2, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindLine ] ] ],
+      #[[ 1, 1 ]] & /@ FindInfraLine[ graph, p1, p2, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraLine ] ] ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]
@@ -280,8 +281,8 @@ dispatchConstruction[ graph_Graph, InfraLine[ p1_, p2_, opts___Rule ] ] /;
 dispatchConstruction[ graph_Graph, InfraShell[ center_, r_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindShell[ graph, center, r, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindShell ] ] ],
+      #[[ 1, 1 ]] & /@ FindInfraShell[ graph, center, r, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraShell ] ] ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Center" -> center,
                 "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
@@ -290,7 +291,7 @@ dispatchConstruction[ graph_Graph, InfraShell[ center_, r_, opts___Rule ] ] :=
 dispatchConstruction[ graph_Graph, InfraCircle[ center_, r_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindCircle[ graph, center, r, All ],
+      #[[ 1, 1 ]] & /@ FindInfraCircle[ graph, center, r, All ],
       "Select" /. { opts } /. "Select" -> None,
       True, <| "Center" -> center,
                "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
@@ -303,7 +304,7 @@ dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_,
     window : { _Integer, _Integer }, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindBisectingHyperplane[ graph, p1, p2, window, All ],
+      #[[ 1, 1 ]] & /@ FindInfraBisectingHyperplane[ graph, p1, p2, window, All, Properties -> { "Separating" } ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]
@@ -311,8 +312,8 @@ dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_,
 dispatchConstruction[ graph_Graph, InfraRevolution[ axis_, profile_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      { FindRevolution[ graph, axis, profile,
-          Sequence @@ FilterRules[ { opts }, Options[ FindRevolution ] ] ][[ 1 ]] },
+      { FindInfraRevolution[ graph, axis, profile,
+          Sequence @@ FilterRules[ { opts }, Options[ FindInfraRevolution ] ] ][[ 1 ]] },
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Axis" -> axis, "Profile" -> profile |> ],
     extractBranches[ { opts } ] ]

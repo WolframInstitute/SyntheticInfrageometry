@@ -74,9 +74,9 @@ Cell["See Also", "Section",ExpressionUUID->"335d997a-41ad-404a-b80f-7b31f8c0aae3
 
 Cell["GeodesicMultiplicityMatrix", "Item",ExpressionUUID->"fee667f4-9e2d-4964-a3bb-42fd5d155b2e"],
 
-Cell["UniqueSegmentQ", "Item",ExpressionUUID->"4516d50d-4780-4c79-8206-59d0fdb1a594"],
+Cell["UniqueInfraSegmentQ", "Item",ExpressionUUID->"4516d50d-4780-4c79-8206-59d0fdb1a594"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"1e4b9a12-e70a-4e81-8b5f-bf4066607306"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"1e4b9a12-e70a-4e81-8b5f-bf4066607306"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"4750a74d-05b1-4917-bbf1-4efa6297d2e2"],
 

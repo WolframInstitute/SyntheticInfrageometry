@@ -13,14 +13,14 @@ InfraSegment[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraSegment[ _List ] ] ] :=
   InfraSegment[ Flatten[ reps /. InfraSegment[ xs_List ] :> xs, 1 ] ]
 
 
-(* ===================== FindSegment ===================== *)
+(* ===================== FindInfraSegment ===================== *)
 
 (* A segment between p1 and p2: a geodesic vertex sequence
    (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2) and consecutive vi adjacent. *)
 
-Options[ FindSegment ] = { Method -> "ShortestPath" };
+Options[ FindInfraSegment ] = { Method -> "ShortestPath" };
 
-FindSegment[ graph_Graph, p1_, p2_,
+FindInfraSegment[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraSegment, count,
     findSegmentCore[ graph, ##, count, opts ] &, p1, p2 ]
@@ -29,8 +29,8 @@ FindSegment[ graph_Graph, p1_, p2_,
 findSegmentCore[ _Graph, p1_, p1_, ___ ] := { }
 
 findSegmentCore[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindSegment ] ] :=
-  With[ { spec = OptionValue[ FindSegment, { opts }, Method ] },
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindInfraSegment ] ] :=
+  With[ { spec = OptionValue[ FindInfraSegment, { opts }, Method ] },
     With[ { subOpts = Replace[ spec, { { _String, rest___ } :> { rest }, _ :> { } } ] },
       Switch[ methodName @ spec,
         "ShortestPath",
@@ -50,7 +50,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
           With[ { prune = "Pruning" /. subOpts /. "Pruning" -> Infinity,
                   pool  = "Pool"    /. subOpts /. "Pool"    -> "ShortestPaths",
                   curvatureSpec = parseCurvatureSpec[
-                    "Curvature" /. subOpts /. "Curvature" -> "Forman" ] },
+                    "Curvature" /. subOpts /. "Curvature" -> "FormanRicciCurvature" ] },
             pulledPaths[ graph, p1, p2,
               buildEdgeKappa[ graph, curvatureSpec ],
               prune, countLimit[ count ],
@@ -66,9 +66,9 @@ findSegmentCore[ graph_Graph, p1_, p2_,
 
 (* Per-edge / per-vertex curvature lookups.  Shared by buildEdgeKappa (the
    pulledPaths frontier sweep) and by pathCurvatureScores in PathSpace.wl
-   (the SelectPath "MinCurvature" pool selector). *)
+   (the SelectInfraPath "MinCurvature" pool selector). *)
 
-formanEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Forman", "Method" -> formanMethod_ } ] ] :=
+formanEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "FormanRicciCurvature", "Method" -> formanMethod_ } ] ] :=
   With[ { fEdges = WolframInstitute`Infrageometry`FormanRicciCurvature[
         graph, "MaxCellDimension" -> If[ formanMethod === "Triangles", 2, 1 ] ] },
     With[ { fSym = Join[ fEdges,
@@ -79,12 +79,12 @@ formanEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Forman", "Method" ->
     ]
   ]
 
-wolframVertexKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Wolfram", "Dimension" -> dim_, "Radii" -> radii_ } ] ] :=
+wolframVertexKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "WolframRicciCurvature", "Dimension" -> dim_, "Radii" -> radii_ } ] ] :=
   If[ radii === Automatic,
     WolframInstitute`Infrageometry`WolframRicciCurvature[ graph, "Dimension" -> dim ],
     WolframInstitute`Infrageometry`WolframRicciCurvature[ graph, radii, "Dimension" -> dim ] ]
 
-ollivierEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Ollivier" } ] ] :=
+ollivierEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "OllivierRicciCurvature" } ] ] :=
   With[ { oEdges = WolframInstitute`Infrageometry`OllivierRicciCurvature[ graph ] },
     With[ { oSym = Join[ oEdges,
             AssociationThread[
@@ -100,13 +100,13 @@ ollivierEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "Ollivier" } ] ] :=
    heads the asymmetric mapping {v, w} |-> kappa(w) is used (legal for a
    greedy frontier sweep that picks one neighbour at a time). *)
 
-buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "Forman" ] ] :=
+buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "FormanRicciCurvature" ] ] :=
   formanEdgeKappa[ graph, spec ]
 
-buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "Wolfram" ] ] :=
+buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "WolframRicciCurvature" ] ] :=
   With[ { kappa = wolframVertexKappa[ graph, spec ] }, { v, w } |-> kappa[ w ] ]
 
-buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "Ollivier" ] ] :=
+buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "OllivierRicciCurvature" ] ] :=
   ollivierEdgeKappa[ graph, spec ]
 
 
@@ -127,20 +127,20 @@ embeddingFindSegmentPaths[ graph_Graph, p1_, p2_, embOpts_Association ] :=
   ]
 
 
-(* ===================== ExtendSegment ===================== *)
+(* ===================== ExtendInfraSegment ===================== *)
 
-(* ExtendSegment[g, segment] extends a vertex sequence to a maximal geodesic line.
-   ExtendSegment[g, a, b, c, d, n] is the Tarski A4 synthetic-extension axiom:
+(* ExtendInfraSegment[g, segment] extends a vertex sequence to a maximal geodesic line.
+   ExtendInfraSegment[g, a, b, c, d, n] is the Tarski A4 synthetic-extension axiom:
    x with B(a, b, x) and d(b, x) == d(c, d). *)
 
-Options[ ExtendSegment ] = { Method -> "ShortestPath", "Length" -> Automatic, "Pruning" -> Infinity };
+Options[ ExtendInfraSegment ] = { Method -> "ShortestPath", "Length" -> Automatic, "Pruning" -> Infinity };
 
-ExtendSegment[ graph_Graph, segment_,
+ExtendInfraSegment[ graph_Graph, segment_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraSegment, count,
+  infraSpreadAndCartesian[ InfraLine, count,
     extendSegmentCore[ graph, ##, opts ] &, segment ]
 
-ExtendSegment[ graph_Graph, a_, b_, c_, d_,
+ExtendInfraSegment[ graph_Graph, a_, b_, c_, d_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, OptionsPattern[] ] :=
   With[ { target = GraphDistance[ graph, c, d ] },
     With[ { vs = If[ target === Infinity, { },
@@ -153,13 +153,13 @@ ExtendSegment[ graph_Graph, a_, b_, c_, d_,
   ]
 
 
-extendSegmentCore[ graph_Graph, segment_List, opts : OptionsPattern[ ExtendSegment ] ] /;
+extendSegmentCore[ graph_Graph, segment_List, opts : OptionsPattern[ ExtendInfraSegment ] ] /;
     Length[ segment ] < 2 := { segment }
 
-extendSegmentCore[ graph_Graph, segment_List, opts : OptionsPattern[ ExtendSegment ] ] :=
-  With[ { spec = OptionValue[ ExtendSegment, { opts }, Method ] /. Automatic -> "ShortestPath",
-          lengthCap = OptionValue[ ExtendSegment, { opts }, "Length" ],
-          pruning = OptionValue[ ExtendSegment, { opts }, "Pruning" ] },
+extendSegmentCore[ graph_Graph, segment_List, opts : OptionsPattern[ ExtendInfraSegment ] ] :=
+  With[ { spec = OptionValue[ ExtendInfraSegment, { opts }, Method ] /. Automatic -> "ShortestPath",
+          lengthCap = OptionValue[ ExtendInfraSegment, { opts }, "Length" ],
+          pruning = OptionValue[ ExtendInfraSegment, { opts }, "Pruning" ] },
     With[ { subOpts = Replace[ spec, { { _String, rest___ } :> { rest }, _ :> { } } ] },
       With[ { rawExtensions = Switch[ methodName @ spec,
           "ShortestPath",
@@ -176,7 +176,7 @@ extendSegmentCore[ graph_Graph, segment_List, opts : OptionsPattern[ ExtendSegme
           "CurvatureMinimizing",
             With[ { prune = "Pruning" /. subOpts /. "Pruning" -> Infinity,
                     curvatureSpec = parseCurvatureSpec[
-                      "Curvature" /. subOpts /. "Curvature" -> "Forman" ] },
+                      "Curvature" /. subOpts /. "Curvature" -> "FormanRicciCurvature" ] },
               With[ { edgeKappa = buildEdgeKappa[ graph, curvatureSpec ] },
                 findLineExtensionsWith[ graph, segment,
                   { s, p, db } |-> pulledPaths[ graph, s, p, edgeKappa, prune, Infinity, Automatic ],
@@ -245,25 +245,37 @@ embeddingExtendSegment[ graph_Graph, segment_List, embOpts_Association ] :=
   ]
 
 
-(* ===================== SegmentQ ===================== *)
+(* ===================== InfraPathQ ===================== *)
+
+(* A vertex sequence (v0, ..., vk) is a path iff consecutive vertices are
+   adjacent and no vertex repeats.  InfraPathQ \supset InfraSegmentQ \supset InfraLineQ. *)
+
+InfraPathQ[ graph_Graph, path_List ] /; Length[ path ] >= 2 :=
+  DuplicateFreeQ[ path ] &&
+  AllTrue[ Partition[ path, 2, 1 ], EdgeQ[ graph, UndirectedEdge @@ # ] & ]
+
+InfraPathQ[ _Graph, path_List ] /; Length[ path ] < 2 := False
+
+
+(* ===================== InfraSegmentQ ===================== *)
 
 (* A vertex sequence (v0, ..., vk) is a geodesic from v0 to vk iff consecutive
    vertices are adjacent and the total edge count equals d(v0, vk). *)
 
-SegmentQ[ graph_Graph, segment_List ] /; Length[ segment ] >= 2 :=
+InfraSegmentQ[ graph_Graph, segment_List ] /; Length[ segment ] >= 2 :=
   GraphDistance[ graph, First[ segment ], Last[ segment ] ] == Length[ segment ] - 1 &&
   AllTrue[ Partition[ segment, 2, 1 ], EdgeQ[ graph, UndirectedEdge @@ # ] & ]
 
-SegmentQ[ _Graph, segment_List ] /; Length[ segment ] < 2 := False
+InfraSegmentQ[ _Graph, segment_List ] /; Length[ segment ] < 2 := False
 
 
-(* ===================== UniqueSegmentQ ===================== *)
+(* ===================== UniqueInfraSegmentQ ===================== *)
 
-(* UniqueSegmentQ[g, u, v]: GeodesicMultiplicity[g, u, v] == 1.
-   UniqueSegmentQ[g]: every vertex pair admits a unique geodesic (geodetic graph). *)
+(* UniqueInfraSegmentQ[g, u, v]: GeodesicMultiplicity[g, u, v] == 1.
+   UniqueInfraSegmentQ[g]: every vertex pair admits a unique geodesic (geodetic graph). *)
 
-UniqueSegmentQ[ graph_Graph, u_, v_ ] := GeodesicMultiplicity[ graph, u, v ] == 1
+UniqueInfraSegmentQ[ graph_Graph, u_, v_ ] := GeodesicMultiplicity[ graph, u, v ] == 1
 
-UniqueSegmentQ[ graph_Graph ] :=
+UniqueInfraSegmentQ[ graph_Graph ] :=
   AllTrue[ Subsets[ VertexList[ graph ], { 2 } ],
-    pair |-> UniqueSegmentQ[ graph, pair[[ 1 ]], pair[[ 2 ]] ] ]
+    pair |-> UniqueInfraSegmentQ[ graph, pair[[ 1 ]], pair[[ 2 ]] ] ]

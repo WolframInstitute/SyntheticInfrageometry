@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindCommonLine", "Title",ExpressionUUID->"fb5d8d28-2c90-4733-9b8f-a18c637a0935"],
+Cell["FindInfraCommonLine", "Title",ExpressionUUID->"fb5d8d28-2c90-4733-9b8f-a18c637a0935"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"cf001745-1942-458a-96ca-9c7b6a235fbd"],
 
 Cell["\<\
-FindCommonLine[g, vertices] returns the canonical lines containing every \
+FindInfraCommonLine[g, vertices] returns the canonical lines containing every \
 listed vertex. Returns a List of unary InfraSegment[{line}] wrappers or \
 $Failed; n / UpTo[n] / All control multiplicity. Entries may be bare vertices \
 or InfraPoint / InfraSegment / InfraRay wrappers.\
@@ -54,7 +54,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindCommonLine[PathGraph[Range[6]], {1, 3, 5}, All]"]], "Input",ExpressionUU\
+ "FindInfraCommonLine[PathGraph[Range[6]], {1, 3, 5}, All]"]], "Input",ExpressionUU\
 ID->"276d1285-dade-47ee-9cd9-ae5c960f6d2b"],
 
 Cell[BoxData[
@@ -70,20 +70,20 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindCommonLine[GridGraph[{3, 3}], {1, 2, 4}, UpTo[1]]"]], "Input",Expression\
+ "FindInfraCommonLine[GridGraph[{3, 3}], {1, 2, 4}, UpTo[1]]"]], "Input",Expression\
 UUID->"b8b54aca-7135-43f0-8997-f89f6fe54a41"],
 
 Cell["See Also", "Section",ExpressionUUID->"b0ca3427-1bb3-4dcb-9612-dabbfa0688fd"],
 
 Cell["InfraSegment", "Item",ExpressionUUID->"4c21aebd-4458-49f0-93eb-351b4f2b15c9"],
 
-Cell["FindLine", "Item",ExpressionUUID->"c6bc900c-f079-4671-8ccf-34c689438801"],
+Cell["FindInfraLine", "Item",ExpressionUUID->"c6bc900c-f079-4671-8ccf-34c689438801"],
 
 Cell["CollinearQ", "Item",ExpressionUUID->"935971e2-ba5e-4d1b-b924-c2892251f909"],
 
 Cell["UniqueCollinearQ", "Item",ExpressionUUID->"852272e2-b41d-48fc-adcf-d87aa46aae94"],
 
-Cell["FindCommonPoint", "Item",ExpressionUUID->"a6948bf3-857d-4959-b249-1373b469621d"],
+Cell["FindInfraCommonPoint", "Item",ExpressionUUID->"a6948bf3-857d-4959-b249-1373b469621d"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"f39666d8-b814-4568-b557-52254d7ceebb"],
 

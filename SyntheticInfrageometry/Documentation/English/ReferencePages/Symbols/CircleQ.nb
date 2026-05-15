@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["CircleQ", "Title",ExpressionUUID->"788cca7a-71f4-4657-b88d-8b7665945671"],
+Cell["InfraCircleQ", "Title",ExpressionUUID->"788cca7a-71f4-4657-b88d-8b7665945671"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"72d8462f-2e61-4413-b9b0-debcd5ac7fd4"],
 
 Cell["\<\
-CircleQ[g, cycle] tests whether the vertex sequence cycle is a metric circle: \
+InfraCircleQ[g, cycle] tests whether the vertex sequence cycle is a metric circle: \
 a cyclic edge chain whose vertex set is a metric shell. Accepts both open and \
 closed input.\
 \>", "Text",ExpressionUUID->"8b39e59b-7466-412d-9314-cac33f37b33f"],
@@ -51,7 +51,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"67a8a730-af94-4fc5-9f02-26fe4652949d"],
 
 Cell[BoxData[
- $CellContext`buildCell["CircleQ[GridGraph[{3, 3}], {2, 4, 8, 6}]"]], "Input",\
+ $CellContext`buildCell["InfraCircleQ[GridGraph[{3, 3}], {2, 4, 8, 6}]"]], "Input",\
 ExpressionUUID->"1b30d777-ed14-4fb1-9914-7136101c8444"],
 
 Cell[BoxData[
@@ -66,16 +66,16 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"d26d0c2b-464e-48f6-a71b-b2a2ed467d91"],
 
 Cell[BoxData[
- $CellContext`buildCell["CircleQ[GridGraph[{3, 3}], {1, 2, 3}]"]], "Input",Exp\
+ $CellContext`buildCell["InfraCircleQ[GridGraph[{3, 3}], {1, 2, 3}]"]], "Input",Exp\
 ressionUUID->"725cef7c-93be-4366-bdd6-3bfc90fb18ee"],
 
 Cell["See Also", "Section",ExpressionUUID->"6aa9b1cc-781a-48f6-ad47-763997df5fea"],
 
-Cell["FindCircle", "Item",ExpressionUUID->"86de9051-d156-4930-b755-1e0bd56d8bf5"],
+Cell["FindInfraCircle", "Item",ExpressionUUID->"86de9051-d156-4930-b755-1e0bd56d8bf5"],
 
 Cell["InfraCircle", "Item",ExpressionUUID->"8548b251-b676-4a43-aaa2-e3c5954e6e09"],
 
-Cell["ShellQ", "Item",ExpressionUUID->"3b8d6101-04ee-4146-a7cf-b19a1b6af481"],
+Cell["InfraShellQ", "Item",ExpressionUUID->"3b8d6101-04ee-4146-a7cf-b19a1b6af481"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"1bb27a5b-6e31-4195-9bac-31f40407fded"],
 

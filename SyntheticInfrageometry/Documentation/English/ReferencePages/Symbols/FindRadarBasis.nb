@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindRadarBasis", "Title",ExpressionUUID->"496527cf-b17a-4398-a89e-f08fe9b4b26d"],
+Cell["FindInfraRadarBasis", "Title",ExpressionUUID->"496527cf-b17a-4398-a89e-f08fe9b4b26d"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"29b96a1a-4331-4a53-85e7-e9a35cc0784b"],
 
 Cell["\<\
-FindRadarBasis[g, n, m] returns up to n radar bases (resolving sets); m \
+FindInfraRadarBasis[g, n, m] returns up to n radar bases (resolving sets); m \
 specifies basis sizes (All, an integer, {min, max}, or {exact}).\
 \>", "Text",ExpressionUUID->"259a5151-3f2a-4595-83a3-a82480c87f8e"],
 
@@ -51,7 +51,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindRadarBasis[PathGraph[Range[5]], All, All]"]], "Input",ExpressionUUID->\
+ "FindInfraRadarBasis[PathGraph[Range[5]], All, All]"]], "Input",ExpressionUUID->\
 "fd91445c-bee4-4dbf-9f5d-97d0e482f625"],
 
 Cell[BoxData[
@@ -65,18 +65,18 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"ffb96233-ed33-47da-9b12-c1c5c3c3e265"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindRadarBasis[GridGraph[{3, 3}], 3, 2]"]], "Input",E\
+ $CellContext`buildCell["FindInfraRadarBasis[GridGraph[{3, 3}], 3, 2]"]], "Input",E\
 xpressionUUID->"8886f445-4d0b-4467-83b6-24e9e7adae8c"],
 
 Cell["See Also", "Section",ExpressionUUID->"6a908a84-59ef-4a8c-8794-58002d5f5632"],
 
-Cell["RadarBasisQ", "Item",ExpressionUUID->"06539fad-a470-4a66-b79f-615bc0b5b7c7"],
+Cell["InfraRadarBasisQ", "Item",ExpressionUUID->"06539fad-a470-4a66-b79f-615bc0b5b7c7"],
 
 Cell["RadarCoordinates", "Item",ExpressionUUID->"e4b0c886-7b3c-4457-abf7-5f1583732e82"],
 
-Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"6dd1fc62-9fc4-4a97-9243-5cb9baee08cb"],
+Cell["FindInfraOrthogonalFrame", "Item",ExpressionUUID->"6dd1fc62-9fc4-4a97-9243-5cb9baee08cb"],
 
-Cell["FindSpanningAxes", "Item",ExpressionUUID->"d2d6672d-7896-4bdd-aa27-d800b067f4e0"],
+Cell["FindInfraSpanningAxes", "Item",ExpressionUUID->"d2d6672d-7896-4bdd-aa27-d800b067f4e0"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"f6e1098e-2017-4590-a758-663434cc7e68"],
 

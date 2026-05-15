@@ -74,7 +74,7 @@ Cell["UniqueCollinearQ", "Item",ExpressionUUID->"a2335da9-3861-42f5-80d4-6936504
 
 Cell["ConcurrentQ", "Item",ExpressionUUID->"229e4cb0-bf73-479b-844a-dff0b22ce12e"],
 
-Cell["FindCommonLine", "Item",ExpressionUUID->"008e6578-afa2-425d-a4ce-9b0054429de4"],
+Cell["FindInfraCommonLine", "Item",ExpressionUUID->"008e6578-afa2-425d-a4ce-9b0054429de4"],
 
 Cell["SameDirectionQ", "Item",ExpressionUUID->"e2cef5ba-4f05-42ba-ae14-ecedf2e99b40"],
 

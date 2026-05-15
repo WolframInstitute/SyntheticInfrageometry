@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindBisectingHyperplane", "Title",ExpressionUUID->"632fb520-c324-4fe5-a130-e700653647d8"],
+Cell["FindInfraBisectingHyperplane", "Title",ExpressionUUID->"632fb520-c324-4fe5-a130-e700653647d8"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"cea21dbe-08fa-4c40-88ba-699f6e6a181c"],
 
 Cell["\<\
-FindBisectingHyperplane[g, p1, p2] returns the inclusion-minimal vertex \
+FindInfraBisectingHyperplane[g, p1, p2] returns the inclusion-minimal vertex \
 subsets of the bisector { v : d(p1, v) == d(p2, v) } whose removal \
 disconnects p1 from p2. Returns a List of unary InfraPlane[{set}] wrappers; n \
 / UpTo[n] / All control multiplicity. A positional {lo, hi} widens the \
@@ -54,7 +54,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindBisectingHyperplane[PathGraph[Range[7]], 1, 7, All]"]], "Input",Expressi\
+ "FindInfraBisectingHyperplane[PathGraph[Range[7]], 1, 7, All]"]], "Input",Expressi\
 onUUID->"72563fdb-159c-4a9f-a8fd-606318ba1320"],
 
 Cell[BoxData[
@@ -70,7 +70,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, All]"]], "Input",\
+ "FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, All]"]], "Input",\
 ExpressionUUID->"293e9a20-5da9-461d-898f-f213fbadc1ff"],
 
 Cell[BoxData[
@@ -84,7 +84,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All]"]], "Input",Expression\
+ "FindInfraBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All]"]], "Input",Expression\
 UUID->"f1d6fc9c-e744-4406-83b0-691f8ee1d76b"],
 
 Cell["See Also", "Section",ExpressionUUID->"21364cca-d05c-42d3-927a-bd55341ffd2a"],
@@ -93,11 +93,11 @@ Cell["InfraPlane", "Item",ExpressionUUID->"2a861877-f3a0-4746-bcdb-fef2a39b56cd"
 
 Cell["InfraPlaneQ", "Item",ExpressionUUID->"8613af82-3312-4466-bdb7-613aa59f4133"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"b44a9fe7-fbfd-4a6f-8d52-e58cfed91e59"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"b44a9fe7-fbfd-4a6f-8d52-e58cfed91e59"],
 
-Cell["FindPerpendicular", "Item",ExpressionUUID->"89808117-5d99-4d27-b49a-4a293d44b64c"],
+Cell["FindInfraPerpendicular", "Item",ExpressionUUID->"89808117-5d99-4d27-b49a-4a293d44b64c"],
 
-Cell["FindShell", "Item",ExpressionUUID->"fa5ad27d-eaa4-4564-a6ea-4620878ebf5c"],
+Cell["FindInfraShell", "Item",ExpressionUUID->"fa5ad27d-eaa4-4564-a6ea-4620878ebf5c"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"1e4a0f8f-0b49-4f02-9805-91568c414767"],
 

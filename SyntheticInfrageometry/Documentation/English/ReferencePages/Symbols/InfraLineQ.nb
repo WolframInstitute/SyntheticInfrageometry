@@ -53,7 +53,7 @@ Cell[BoxData[
 
 Cell["See Also", "Section",ExpressionUUID->"2675082c-6305-402a-9b2d-ddcf00249f2a"],
 
-Cell["LineQ", "Item",ExpressionUUID->"875e990d-0165-4ba5-bdf5-faf0f78f1cfe"],
+Cell["InfraLineQ", "Item",ExpressionUUID->"875e990d-0165-4ba5-bdf5-faf0f78f1cfe"],
 
 Cell["InfraLine", "Item",ExpressionUUID->"494fb348-f35d-45d3-a734-e43992745931"],
 

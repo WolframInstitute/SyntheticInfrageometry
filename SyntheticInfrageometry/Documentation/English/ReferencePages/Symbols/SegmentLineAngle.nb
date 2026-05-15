@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["SegmentLineAngle", "Title",ExpressionUUID->"0a79478c-a6c4-4554-87e2-acaa1264ee2b"],
+Cell["InfraSegmentLineAngle", "Title",ExpressionUUID->"0a79478c-a6c4-4554-87e2-acaa1264ee2b"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"203d9059-8f79-4190-b7c4-10a128a32aa7"],
 
 Cell["\<\
-SegmentLineAngle[g, p1, p2, line] (or SegmentLineAngle[g, segment, line]) \
+InfraSegmentLineAngle[g, p1, p2, line] (or InfraSegmentLineAngle[g, segment, line]) \
 measures the distance from one endpoint of a segment to a line, given that \
 the other endpoint lies on the line. The name is historical \[LongDash] the \
 value is a length, not a normalised angle. Option Method (\"Metric\" \
@@ -55,16 +55,16 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "SegmentLineAngle[GridGraph[{3, 3}], 1, 2, {2, 5, 8}]"]], "Input",ExpressionU\
+ "InfraSegmentLineAngle[GridGraph[{3, 3}], 1, 2, {2, 5, 8}]"]], "Input",ExpressionU\
 UID->"42bf7b4e-e6f3-4f0d-9f6c-78f37efea1fb"],
 
 Cell["See Also", "Section",ExpressionUUID->"63c4a917-14c9-4643-bea9-8d33ce07ddc3"],
 
 Cell["InfraAngle", "Item",ExpressionUUID->"c2dfd913-9c80-4e90-b6d9-66e78e302d25"],
 
-Cell["FindPerpendicular", "Item",ExpressionUUID->"22a06db0-6a9a-414a-97ae-ee4f9c67d040"],
+Cell["FindInfraPerpendicular", "Item",ExpressionUUID->"22a06db0-6a9a-414a-97ae-ee4f9c67d040"],
 
-Cell["FindParallel", "Item",ExpressionUUID->"855916f4-434e-4e21-8293-c84777ddd7f7"],
+Cell["FindInfraParallel", "Item",ExpressionUUID->"855916f4-434e-4e21-8293-c84777ddd7f7"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"79b0681a-1780-4122-b9cf-53a9f8440be1"],
 

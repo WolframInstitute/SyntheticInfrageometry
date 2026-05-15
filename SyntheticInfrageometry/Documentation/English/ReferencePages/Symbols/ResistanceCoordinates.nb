@@ -96,7 +96,7 @@ Cell["RadarCoordinates", "Item",ExpressionUUID->"f2d518a9-469c-4104-9dbe-54e2677
 
 Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"170f3b95-97d4-4718-b219-ebb508726a9d"],
 
-Cell["FindRadarBasis", "Item",ExpressionUUID->"70c75e6e-9275-41ca-b746-945426ca8fa9"],
+Cell["FindInfraRadarBasis", "Item",ExpressionUUID->"70c75e6e-9275-41ca-b746-945426ca8fa9"],
 
 Cell["InfraScalarProduct", "Item",ExpressionUUID->"6de3b3e5-e940-43f1-82ef-116616fbb6d2"],
 

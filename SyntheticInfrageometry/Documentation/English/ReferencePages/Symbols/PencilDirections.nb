@@ -76,7 +76,7 @@ Cell["SameDirectionQ", "Item",ExpressionUUID->"7b07f301-6712-439b-bd89-448f55c72
 
 Cell["UniquePencilQ", "Item",ExpressionUUID->"2675f9ce-0027-4363-8a68-03cccd3c7c61"],
 
-Cell["FindRay", "Item",ExpressionUUID->"5a303841-6451-4177-a8fc-cc2dca6de577"],
+Cell["FindInfraRay", "Item",ExpressionUUID->"5a303841-6451-4177-a8fc-cc2dca6de577"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"ac8f541d-4c8c-4c92-aace-156aae6b6bce"],
 

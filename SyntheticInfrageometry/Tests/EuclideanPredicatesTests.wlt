@@ -1,147 +1,185 @@
 BeginTestSection["EuclideanPredicates"]
 
-(* ===== SegmentQ ===== *)
+(* ===== InfraPathQ ===== *)
 
 VerificationTest[
-  SegmentQ[PathGraph[Range[5]], {1, 2, 3}],
+  InfraPathQ[PathGraph[Range[5]], {1, 2, 3, 4, 5}],
   True,
-  TestID -> "SegmentQ-valid-geodesic"
+  TestID -> "InfraPathQ-simple-path"
 ]
 
 VerificationTest[
-  SegmentQ[PathGraph[Range[5]], {1, 3, 5}],
+  InfraPathQ[PathGraph[Range[5]], {1, 3}],
   False,
-  TestID -> "SegmentQ-non-adjacent-vertices"
+  TestID -> "InfraPathQ-non-edge"
 ]
 
 VerificationTest[
-  SegmentQ[GridGraph[{3, 3}], {1, 4, 7}],
+  InfraPathQ[CycleGraph[5], {1, 2, 3, 4, 5, 1}],
+  False,
+  TestID -> "InfraPathQ-vertex-repeat"
+]
+
+VerificationTest[
+  InfraPathQ[GridGraph[{3, 3}], {1, 2, 5, 4}],
   True,
-  TestID -> "SegmentQ-GridGraph-geodesic"
+  TestID -> "InfraPathQ-non-geodesic-simple"
 ]
 
 VerificationTest[
-  SegmentQ[GridGraph[{3, 3}], {1, 4, 5, 2, 3}],
+  InfraSegmentQ[GridGraph[{3, 3}], {1, 2, 5, 4}],
   False,
-  TestID -> "SegmentQ-not-shortest-path"
+  TestID -> "InfraPathQ-non-geodesic-InfraSegmentQ-false"
 ]
 
 VerificationTest[
-  SegmentQ[PathGraph[Range[5]], {3}],
+  InfraPathQ[PathGraph[Range[5]], {3}],
   False,
-  TestID -> "SegmentQ-single-vertex"
+  TestID -> "InfraPathQ-single-vertex"
 ]
 
-(* ===== LineQ ===== *)
+(* ===== InfraSegmentQ ===== *)
 
 VerificationTest[
-  LineQ[PathGraph[Range[5]], {1, 2, 3, 4, 5}],
+  InfraSegmentQ[PathGraph[Range[5]], {1, 2, 3}],
   True,
-  TestID -> "LineQ-maximal-geodesic"
+  TestID -> "InfraSegmentQ-valid-geodesic"
 ]
 
 VerificationTest[
-  LineQ[PathGraph[Range[5]], {2, 3, 4}],
+  InfraSegmentQ[PathGraph[Range[5]], {1, 3, 5}],
   False,
-  TestID -> "LineQ-extendable-segment"
+  TestID -> "InfraSegmentQ-non-adjacent-vertices"
 ]
 
-(* ===== ShellQ ===== *)
+VerificationTest[
+  InfraSegmentQ[GridGraph[{3, 3}], {1, 4, 7}],
+  True,
+  TestID -> "InfraSegmentQ-GridGraph-geodesic"
+]
+
+VerificationTest[
+  InfraSegmentQ[GridGraph[{3, 3}], {1, 4, 5, 2, 3}],
+  False,
+  TestID -> "InfraSegmentQ-not-shortest-path"
+]
+
+VerificationTest[
+  InfraSegmentQ[PathGraph[Range[5]], {3}],
+  False,
+  TestID -> "InfraSegmentQ-single-vertex"
+]
+
+(* ===== InfraLineQ ===== *)
+
+VerificationTest[
+  InfraLineQ[PathGraph[Range[5]], {1, 2, 3, 4, 5}],
+  True,
+  TestID -> "InfraLineQ-maximal-geodesic"
+]
+
+VerificationTest[
+  InfraLineQ[PathGraph[Range[5]], {2, 3, 4}],
+  False,
+  TestID -> "InfraLineQ-extendable-segment"
+]
+
+(* ===== InfraShellQ ===== *)
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    ShellQ[g, {2, 5, 10, 9, 8, 7}]
+    InfraShellQ[g, {2, 5, 10, 9, 8, 7}]
   ],
   True,
-  TestID -> "ShellQ-valid-shell"
+  TestID -> "InfraShellQ-valid-shell"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    ShellQ[g, {1, 4}]
+    InfraShellQ[g, {1, 4}]
   ],
   False,
-  TestID -> "ShellQ-non-symmetric-pair-not-shell"
+  TestID -> "InfraShellQ-non-symmetric-pair-not-shell"
 ]
 
-(* ===== FindShellParameters ===== *)
+(* ===== FindInfraShellParameters ===== *)
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    Length[FindShellParameters[g, {2, 5, 10, 9, 8, 7}]] >= 1
+    Length[FindInfraShellParameters[g, {2, 5, 10, 9, 8, 7}]] >= 1
   ],
   True,
-  TestID -> "FindShellParameters-finds-center"
+  TestID -> "FindInfraShellParameters-finds-center"
 ]
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    With[{params = FindShellParameters[g, {2, 5, 10, 9, 8, 7}]},
+    With[{params = FindInfraShellParameters[g, {2, 5, 10, 9, 8, 7}]},
       AllTrue[params, MatchQ[{_, _Integer}]]
     ]
   ],
   True,
-  TestID -> "FindShellParameters-returns-pairs"
+  TestID -> "FindInfraShellParameters-returns-pairs"
 ]
 
-(* ===== CircleQ ===== *)
+(* ===== InfraCircleQ ===== *)
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    CircleQ[g, {2, 5, 10, 9, 8, 7}]
+    InfraCircleQ[g, {2, 5, 10, 9, 8, 7}]
   ],
   True,
-  TestID -> "CircleQ-valid-cycle"
+  TestID -> "InfraCircleQ-valid-cycle"
 ]
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    CircleQ[g, {2, 5, 10, 9, 8, 7, 2}]
+    InfraCircleQ[g, {2, 5, 10, 9, 8, 7, 2}]
   ],
   True,
-  TestID -> "CircleQ-accepts-closed-input"
+  TestID -> "InfraCircleQ-accepts-closed-input"
 ]
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    CircleQ[g, {1, 2, 3}]
+    InfraCircleQ[g, {1, 2, 3}]
   ],
   False,
-  TestID -> "CircleQ-no-wrap-around-edge"
+  TestID -> "InfraCircleQ-no-wrap-around-edge"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    CircleQ[g, {1, 2}]
+    InfraCircleQ[g, {1, 2}]
   ],
   False,
-  TestID -> "CircleQ-too-short"
+  TestID -> "InfraCircleQ-too-short"
 ]
 
-(* ===== ParallelQ ===== *)
+(* ===== InfraParallelQ ===== *)
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    ParallelQ[g, {1, 2, 3, 4}, {13, 14, 15, 16}]
+    InfraParallelQ[g, {1, 2, 3, 4}, {13, 14, 15, 16}]
   ],
   True,
-  TestID -> "ParallelQ-GridGraph-parallel-rows"
+  TestID -> "InfraParallelQ-GridGraph-parallel-rows"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    ParallelQ[g, {1, 2, 3, 4}, {1, 5, 9, 13}]
+    InfraParallelQ[g, {1, 2, 3, 4}, {1, 5, 9, 13}]
   ],
   False,
-  TestID -> "ParallelQ-GridGraph-intersecting"
+  TestID -> "InfraParallelQ-GridGraph-intersecting"
 ]
 
 VerificationTest[
   With[{d = GraphDistanceMatrix[GridGraph[{4, 4}]]},
-    ParallelQ[d, {1, 2, 3, 4}, {13, 14, 15, 16}]
+    InfraParallelQ[d, {1, 2, 3, 4}, {13, 14, 15, 16}]
   ],
   True,
-  TestID -> "ParallelQ-matrix-form"
+  TestID -> "InfraParallelQ-matrix-form"
 ]
 
 (* ===== SeparatesQ ===== *)
@@ -166,42 +204,42 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    AllTrue[(#[[ 1, 1 ]] & /@ FindBisectingHyperplane[g, 1, 5, All]), h |-> SeparatesQ[g, h, 1, 5]]
+    AllTrue[(#[[ 1, 1 ]] & /@ FindInfraBisectingHyperplane[g, 1, 5, All]), h |-> SeparatesQ[g, h, 1, 5]]
   ],
   True,
   TestID -> "SeparatesQ-bisecting-hyperplane-path"
 ]
 
-(* ===== UniqueSegmentQ ===== *)
+(* ===== UniqueInfraSegmentQ ===== *)
 
 VerificationTest[
-  UniqueSegmentQ[PathGraph[Range[5]], 1, 5],
+  UniqueInfraSegmentQ[PathGraph[Range[5]], 1, 5],
   True,
-  TestID -> "UniqueSegmentQ-PathGraph-pair-true"
+  TestID -> "UniqueInfraSegmentQ-PathGraph-pair-true"
 ]
 
 VerificationTest[
-  UniqueSegmentQ[CycleGraph[4], 1, 3],
+  UniqueInfraSegmentQ[CycleGraph[4], 1, 3],
   False,
-  TestID -> "UniqueSegmentQ-CycleGraph4-antipodes-false"
+  TestID -> "UniqueInfraSegmentQ-CycleGraph4-antipodes-false"
 ]
 
 VerificationTest[
-  UniqueSegmentQ[PathGraph[Range[5]]],
+  UniqueInfraSegmentQ[PathGraph[Range[5]]],
   True,
-  TestID -> "UniqueSegmentQ-PathGraph-whole-true"
+  TestID -> "UniqueInfraSegmentQ-PathGraph-whole-true"
 ]
 
 VerificationTest[
-  UniqueSegmentQ[CycleGraph[4]],
+  UniqueInfraSegmentQ[CycleGraph[4]],
   False,
-  TestID -> "UniqueSegmentQ-CycleGraph4-whole-false"
+  TestID -> "UniqueInfraSegmentQ-CycleGraph4-whole-false"
 ]
 
 VerificationTest[
-  UniqueSegmentQ[CompleteGraph[5]],
+  UniqueInfraSegmentQ[CompleteGraph[5]],
   True,
-  TestID -> "UniqueSegmentQ-CompleteGraph-whole-true"
+  TestID -> "UniqueInfraSegmentQ-CompleteGraph-whole-true"
 ]
 
 EndTestSection[]

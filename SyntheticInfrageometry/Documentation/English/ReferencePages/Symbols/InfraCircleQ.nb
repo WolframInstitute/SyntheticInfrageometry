@@ -54,7 +54,7 @@ nUUID->"c8fe64be-59a4-41f9-8c83-bef43735057c"],
 
 Cell["See Also", "Section",ExpressionUUID->"656ca609-2b4a-4467-96b4-da9386f7fc44"],
 
-Cell["CircleQ", "Item",ExpressionUUID->"717db23d-489e-47cb-8566-bb5ee1ce9213"],
+Cell["InfraCircleQ", "Item",ExpressionUUID->"717db23d-489e-47cb-8566-bb5ee1ce9213"],
 
 Cell["InfraCircle", "Item",ExpressionUUID->"f7d4ea9e-c58f-417f-a872-ad116b3d4e2f"],
 

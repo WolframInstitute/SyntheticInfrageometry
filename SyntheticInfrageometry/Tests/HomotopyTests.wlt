@@ -37,7 +37,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Length @ First @ FindHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}],
+  Length @ First @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}],
   1,
   TestID -> "Triangle-chain-singleton-wrapper"
 ]
@@ -117,18 +117,18 @@ VerificationTest[
 
 VerificationTest[
   Module[{grid23 = GridGraph[{2, 3}], paths},
-    paths = FindSegment[grid23, 1, 6, All];
-    Length @ FindHomotopy[grid23,
+    paths = FindInfraSegment[grid23, 1, 6, All];
+    Length @ FindInfraHomotopy[grid23,
       InfraSegment @ paths, InfraSegment @ paths, All,
       "NullHomotopicCycles" -> {3, 4}]
   ],
   9,
-  TestID -> "FindHomotopy-cartesian-3x3-pairs"
+  TestID -> "FindInfraHomotopy-cartesian-3x3-pairs"
 ]
 
 VerificationTest[
   Module[{grid23 = GridGraph[{2, 3}], paths},
-    paths = FindSegment[grid23, 1, 6, All];
+    paths = FindInfraSegment[grid23, 1, 6, All];
     HomotopicQ[grid23,
       InfraSegment @ paths, InfraSegment @ paths,
       "NullHomotopicCycles" -> {3, 4}]
@@ -141,19 +141,19 @@ VerificationTest[
 
 VerificationTest[
   MatchQ[
-    FindHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}],
+    FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}],
     { InfraHomotopy[{ _List }] }
   ],
   True,
   TestID -> "Find-returns-list-of-unary-wrappers"
 ]
 
-(* ===== FindNullHomotopy on a triangle ===== *)
+(* ===== FindInfraNullHomotopy on a triangle ===== *)
 
 VerificationTest[
-  Length @ FindNullHomotopy[CompleteGraph[3], {1, 2, 3, 1}, "NullHomotopicCycles" -> {3}],
+  Length @ FindInfraNullHomotopy[CompleteGraph[3], {1, 2, 3, 1}, "NullHomotopicCycles" -> {3}],
   1,
-  TestID -> "FindNullHomotopy-triangle-loop"
+  TestID -> "FindInfraNullHomotopy-triangle-loop"
 ]
 
 (* ===== NullHomotopicCycles option parsing ===== *)
@@ -165,16 +165,93 @@ VerificationTest[
 ]
 
 VerificationTest[
-  (* Default = 3 = Range[2, 3] = backtracks + triangles *)
+  (* Default = {1, 2, 3} = consecutive-duplicate + 2-cycles + triangles *)
   HomotopicQ[CompleteGraph[3], {1, 2}, {1, 3, 2}],
   True,
-  TestID -> "NullHomotopicCycles-default-is-3"
+  TestID -> "NullHomotopicCycles-default-is-{1,2,3}"
 ]
 
 VerificationTest[
   HomotopicQ[CompleteGraph[3], {1, 2}, {1, 3, 2}, "NullHomotopicCycles" -> {{1, 2, 3}}],
   True,
   TestID -> "NullHomotopicCycles-explicit-cycle-list"
+]
+
+(* ===== Consecutive-duplicate (length-1) reduction ===== *)
+
+VerificationTest[
+  ReducePath[PathGraph[Range[5]], {1, 2, 2, 3}],
+  {1, 2, 3},
+  TestID -> "ReducePath-consecutive-duplicate-default"
+]
+
+VerificationTest[
+  HomotopicQ[PathGraph[Range[5]], {1, 2, 3}, {1, 2, 2, 3}],
+  True,
+  TestID -> "ConsecutiveDuplicate-homotopic-default"
+]
+
+VerificationTest[
+  (* Without 1 in the option, consecutive duplicates do not reduce *)
+  HomotopicQ[PathGraph[Range[5]], {1, 2, 3}, {1, 2, 2, 3}, "NullHomotopicCycles" -> {2, 3}],
+  False,
+  TestID -> "ConsecutiveDuplicate-blocked-without-1"
+]
+
+(* ===== FindInfraMinimalForms ===== *)
+
+VerificationTest[
+  FindInfraMinimalForms[CompleteGraph[3], {1, 2, 3}],
+  {{1, 3}},
+  TestID -> "FindInfraMinimalForms-K3-triangle-to-edge"
+]
+
+VerificationTest[
+  FindInfraMinimalForms[PathGraph[Range[5]], {1, 2, 3, 2, 3}],
+  {{1, 2, 3}},
+  TestID -> "FindInfraMinimalForms-spur-reduction"
+]
+
+VerificationTest[
+  Sort @ FindInfraMinimalForms[CycleGraph[4], {1, 2, 3}, All, "NullHomotopicCycles" -> {4}],
+  Sort @ {{1, 2, 3}, {1, 4, 3}},
+  TestID -> "FindInfraMinimalForms-C4-two-minimal-forms-with-4-cycle"
+]
+
+(* ===== FindInfraReduction ===== *)
+
+VerificationTest[
+  FindInfraReduction[CompleteGraph[3], {1, 2, 3}],
+  {{{1, 2, 3}, {1, 3}}},
+  TestID -> "FindInfraReduction-K3-triangle-chain"
+]
+
+VerificationTest[
+  With[{chain = First @ FindInfraReduction[PathGraph[Range[5]], {1, 2, 3, 2, 3}]},
+    {First[chain], Last[chain]}],
+  {{1, 2, 3, 2, 3}, {1, 2, 3}},
+  TestID -> "FindInfraReduction-spur-endpoints"
+]
+
+(* ===== FindInfraHomotopy Method dispatch ===== *)
+
+VerificationTest[
+  Length @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, 1, Method -> "ViaMinimalForm"],
+  1,
+  TestID -> "FindInfraHomotopy-ViaMinimalForm-triangle"
+]
+
+VerificationTest[
+  Length @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, 1, Method -> "MinimumMoves"],
+  1,
+  TestID -> "FindInfraHomotopy-MinimumMoves-triangle"
+]
+
+VerificationTest[
+  (* Disjoint minimal-form sets on a 4-cycle with no cycles null-homotopic *)
+  FindInfraHomotopy[CycleGraph[4], {1, 2, 3}, {1, 4, 3}, 1, "NullHomotopicCycles" -> {}],
+  $Failed,
+  TestID -> "FindInfraHomotopy-disjoint-minimal-forms-fails"
 ]
 
 (* ===== Move classification ===== *)
@@ -199,9 +276,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-  HomotopyMoveTypes[First @ FindHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}]],
+  HomotopyMoveTypes[First @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}]],
   {"Contract"},
-  TestID -> "HomotopyMoveTypes-from-FindHomotopy"
+  TestID -> "HomotopyMoveTypes-from-FindInfraHomotopy"
 ]
 
 (* ===================== HomotopicLoopsQ ===================== *)

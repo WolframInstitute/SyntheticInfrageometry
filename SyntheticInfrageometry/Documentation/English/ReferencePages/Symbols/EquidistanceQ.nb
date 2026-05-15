@@ -76,7 +76,7 @@ Cell["TarskiStructure", "Item",ExpressionUUID->"49e1b01b-d3e4-4a74-a0cd-af6629c3
 
 Cell["TarskiEquidistanceClasses", "Item",ExpressionUUID->"ab1a1527-db94-4916-99af-05d2f0a0c01d"],
 
-Cell["FindReflection", "Item",ExpressionUUID->"0d5c181b-f9d2-45ad-8e2b-b220564e9666"],
+Cell["FindInfraReflection", "Item",ExpressionUUID->"0d5c181b-f9d2-45ad-8e2b-b220564e9666"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"8fdd8caa-81ef-4a41-aa01-04098cad4cde"],
 

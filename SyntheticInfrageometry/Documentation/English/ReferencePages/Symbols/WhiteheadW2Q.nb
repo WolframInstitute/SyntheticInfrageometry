@@ -71,7 +71,7 @@ Cell["WhiteheadW1Q", "Item",ExpressionUUID->"c60b3b97-e384-412e-89fa-ddd84ac99ff
 
 Cell["WhiteheadW3Q", "Item",ExpressionUUID->"0b8ab65d-e2bd-4634-9b1f-9dbec75219ad"],
 
-Cell["UniqueSegmentQ", "Item",ExpressionUUID->"92db701c-642c-4029-9ab9-056b64c2f2f5"],
+Cell["UniqueInfraSegmentQ", "Item",ExpressionUUID->"92db701c-642c-4029-9ab9-056b64c2f2f5"],
 
 Cell["UniqueCollinearQ", "Item",ExpressionUUID->"3900166f-924e-4d56-a19c-c47e8adf97e6"],
 

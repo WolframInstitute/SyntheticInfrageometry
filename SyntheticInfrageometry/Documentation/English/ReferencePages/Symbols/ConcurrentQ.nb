@@ -75,7 +75,7 @@ Cell["UniqueConcurrentQ", "Item",ExpressionUUID->"e8d8bd3f-a5d6-44f0-9f49-edee11
 
 Cell["CollinearQ", "Item",ExpressionUUID->"230619a4-a8db-4951-af24-8dc0a4b6da60"],
 
-Cell["FindCommonPoint", "Item",ExpressionUUID->"9eba9162-2b5a-4c34-aef7-4bf98fc70649"],
+Cell["FindInfraCommonPoint", "Item",ExpressionUUID->"9eba9162-2b5a-4c34-aef7-4bf98fc70649"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"c4011dc8-afca-45ff-9ecc-075235589bbd"],
 

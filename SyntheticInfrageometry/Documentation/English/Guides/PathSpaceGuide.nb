@@ -26,7 +26,7 @@ Cell["\<\
 The path-space layer treats the bundle of geodesics (or cycles) between \
 vertices as a finite metric space in its own right \[LongDash] with \
 Hausdorff, Frechet, and mean-Frechet metrics on paths \[LongDash] and exposes \
-FindPoint-shaped selectors over that space.\
+FindInfraPoint-shaped selectors over that space.\
 \>", "Text",ExpressionUUID->"a49b041b-4b70-42f4-8a93-b2d3b5458f80"],
 
 Cell["Setup", "Section",ExpressionUUID->"8a92ed7f-5661-4df7-9104-393babed461d"],
@@ -42,18 +42,18 @@ Cell[BoxData[
 Cell["Selectors", "Section",ExpressionUUID->"d805c12f-8c2f-455c-ab58-8d6dd8efd369"],
 
 Cell["\<\
-FindPoint-shaped on path-space; calling triple n_Integer | UpTo[n] | All.\
+FindInfraPoint-shaped on path-space; calling triple n_Integer | UpTo[n] | All.\
 \>", "Text",ExpressionUUID->"9382fbd2-b667-42cf-ac59-3307b6f8c4d8"],
 
-Cell["SelectPath", "Item",ExpressionUUID->"982ba3dd-3d68-4c98-83e7-c0ea51a84e1e"],
+Cell["SelectInfraPath", "Item",ExpressionUUID->"982ba3dd-3d68-4c98-83e7-c0ea51a84e1e"],
 
-Cell["SelectCycle", "Item",ExpressionUUID->"63d00637-dee7-46d1-b275-f697d3e41c79"],
+Cell["SelectInfraCycle", "Item",ExpressionUUID->"63d00637-dee7-46d1-b275-f697d3e41c79"],
 
 Cell["Embedding-closest filters", "Section",ExpressionUUID->"99b7ac7d-5057-49af-a5fa-4626c6cd982c"],
 
-Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"bebcebd2-7cd0-47bc-b756-97fee94f3ea9"],
+Cell["EmbeddingClosest", "Item",ExpressionUUID->"bebcebd2-7cd0-47bc-b756-97fee94f3ea9"],
 
-Cell["EmbeddingClosestCycles", "Item",ExpressionUUID->"762d1468-a403-46f3-9a2e-a9099fe8ca53"],
+Cell["EmbeddingClosest", "Item",ExpressionUUID->"762d1468-a403-46f3-9a2e-a9099fe8ca53"],
 
 Cell["Geodesic-graph machinery", "Section",ExpressionUUID->"9f31f337-9a68-41fc-b574-66ef4b3ebbb6"],
 
@@ -91,7 +91,7 @@ Cell["InfraSegment[{...}] -> spec \[LongDash] pull toward a known segment", \
 "Item",ExpressionUUID->"6e14ae4f-49f7-4780-979b-43b6b6321172"],
 
 Cell["\<\
-(SelectCycle only) \"ShortestCircumference\" / \"LongestCircumference\"\
+(SelectInfraCycle only) \"ShortestCircumference\" / \"LongestCircumference\"\
 \>", "Item",ExpressionUUID->"86573fd7-0d84-452e-8b02-361b67b259e5"],
 
 Cell["Path-space metrics", "Section",ExpressionUUID->"ae8e3b8c-1fed-4fa9-b1d9-1b980003446d"],

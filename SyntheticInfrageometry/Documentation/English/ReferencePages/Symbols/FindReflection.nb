@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindReflection", "Title",ExpressionUUID->"902aa1f3-42a9-4e14-b91a-cda360c56585"],
+Cell["FindInfraReflection", "Title",ExpressionUUID->"902aa1f3-42a9-4e14-b91a-cda360c56585"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"d0f517a2-ea9f-4c00-b898-1ffa89b2a514"],
 
 Cell["\<\
-FindReflection[g, x, a] reflects x through a: returns vertices x' satisfying \
+FindInfraReflection[g, x, a] reflects x through a: returns vertices x' satisfying \
 B(x, a, x') and d(a, x) == d(a, x'). Returns a List of unary InfraPoint[{x'}] \
 wrappers; n / UpTo[n] / All control multiplicity.\
 \>", "Text",ExpressionUUID->"1e978ae5-df90-42c3-b27c-b40866fa10b2"],
@@ -52,7 +52,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"968b3a02-b78c-4d7b-8401-04472d16d91c"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindReflection[PathGraph[Range[7]], 1, 4]"]], "Input",\
+ $CellContext`buildCell["FindInfraReflection[PathGraph[Range[7]], 1, 4]"]], "Input",\
 ExpressionUUID->"85ccc0f3-bb59-46ab-884c-33cfdca01b81"],
 
 Cell[BoxData[
@@ -68,7 +68,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindReflection[GridGraph[{3, 3}], 1, 5, All]"]], "Input",ExpressionUUID->\
+ "FindInfraReflection[GridGraph[{3, 3}], 1, 5, All]"]], "Input",ExpressionUUID->\
 "3c0260d8-3ba4-4e5f-858a-7a219cb65e51"],
 
 Cell[BoxData[
@@ -83,14 +83,14 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"146d5b14-44e3-4720-8e23-91c16ae66609"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindReflection[CycleGraph[8], 1, 5, All]"]], "Input",\
+ $CellContext`buildCell["FindInfraReflection[CycleGraph[8], 1, 5, All]"]], "Input",\
 ExpressionUUID->"07b70c6b-18ca-470a-8511-10702254b8cd"],
 
 Cell["See Also", "Section",ExpressionUUID->"569c5118-0991-49b5-87f2-1d9dfa84c32c"],
 
 Cell["InfraPoint", "Item",ExpressionUUID->"c2addbd4-f913-4795-8dec-46a7acfa1221"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"86be0a41-563b-4268-a9c5-e19f9868022b"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"86be0a41-563b-4268-a9c5-e19f9868022b"],
 
 Cell["BetweennessQ", "Item",ExpressionUUID->"3c9919ce-a17c-42ec-bd11-5baffb3742f7"],
 

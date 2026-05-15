@@ -56,7 +56,7 @@ Cell["See Also", "Section",ExpressionUUID->"bbbfcaa8-8996-40cc-8d24-5a1f928855b7
 
 Cell["TarskiAxiomQ", "Item",ExpressionUUID->"7bbe8a21-e41b-4c6b-86b0-f86a78eb25d9"],
 
-Cell["ParallelQ", "Item",ExpressionUUID->"8c119fce-4819-4de5-af5f-7ec6f1f99f7f"],
+Cell["InfraParallelQ", "Item",ExpressionUUID->"8c119fce-4819-4de5-af5f-7ec6f1f99f7f"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"131839cf-944c-4b2b-8091-44822c6dd693"],
 

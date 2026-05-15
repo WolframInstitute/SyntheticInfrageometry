@@ -4,63 +4,69 @@ Needs["WolframInstitute`Infrageometry`"]
 
 (* InfraPoint.wl *)
 PackageExport[InfraPoint]
-PackageExport[FindPoint]
-PackageExport[FindMidpoint]
-PackageExport[FindReflection]
-PackageExport[CompleteEquilateralTriangle]
-PackageExport[FindCommonPoint]
+PackageExport[FindInfraPoint]
+PackageExport[FindInfraMidpoint]
+PackageExport[FindInfraReflection]
+PackageExport[CompleteInfraEquilateralTriangle]
+PackageExport[FindInfraCommonPoint]
+PackageExport[SelectInfraPoint]
 
 (* InfraSegment.wl *)
 PackageExport[InfraSegment]
-PackageExport[FindSegment]
-PackageExport[ExtendSegment]
-PackageExport[SegmentQ]
-PackageExport[UniqueSegmentQ]
+PackageExport[FindInfraSegment]
+PackageExport[ExtendInfraSegment]
+PackageExport[InfraPathQ]
+PackageExport[InfraSegmentQ]
+PackageExport[UniqueInfraSegmentQ]
+
+(* InfraPath.wl *)
+PackageExport[InfraPath]
+PackageExport[FindInfraPath]
 
 (* InfraLine.wl *)
-PackageExport[FindLine]
-PackageExport[FindParallel]
-PackageExport[FindPerpendicular]
-PackageExport[FindCommonLine]
-PackageExport[SegmentLineAngle]
-PackageExport[LineQ]
-PackageExport[ParallelQ]
+PackageExport[FindInfraLine]
+PackageExport[FindInfraParallel]
+PackageExport[FindInfraPerpendicular]
+PackageExport[FindInfraCommonLine]
+PackageExport[InfraSegmentLineAngle]
+PackageExport[InfraLineQ]
+PackageExport[InfraParallelQ]
 PackageExport[PencilDirections]
 PackageExport[PencilCardinality]
 PackageExport[LineCount]
 
 (* InfraShell.wl *)
 PackageExport[InfraShell]
-PackageExport[FindShell]
-PackageExport[FindShellParameters]
-PackageExport[ShellQ]
+PackageExport[FindInfraShell]
+PackageExport[FindInfraShellParameters]
+PackageExport[InfraShellQ]
 PackageExport[SeparatesQ]
 
 (* InfraCircle.wl *)
 PackageExport[InfraCircle]
-PackageExport[FindCircle]
-PackageExport[CircleQ]
+PackageExport[FindInfraCircle]
+PackageExport[InfraCircleQ]
 
 (* InfraPlane.wl *)
 PackageExport[InfraPlane]
-PackageExport[FindBisectingHyperplane]
+PackageExport[FindInfraBisectingHyperplane]
 
 (* InfraRay.wl *)
 PackageExport[InfraRay]
-PackageExport[FindRay]
+PackageExport[FindInfraRay]
 
 (* InfraPolyline.wl *)
 PackageExport[InfraPolyline]
-PackageExport[FindPolylineSubdivision]
-PackageExport[PolylineQ]
+PackageExport[FindInfraPolylineSubdivision]
+PackageExport[InfraPolylineQ]
 
 (* InfraRevolution.wl *)
 PackageExport[InfraObject]
 PackageExport[InfraRevolution]
-PackageExport[FindRevolution]
-PackageExport[FindCylinder]
-PackageExport[FindCone]
-PackageExport[RevolutionQ]
+PackageExport[FindInfraRevolution]
+PackageExport[FindInfraCylinder]
+PackageExport[FindInfraCone]
+PackageExport[InfraRevolutionQ]
 
 (* EuclideanSpace.wl *)
 PackageExport[InfraScalarProduct]
@@ -80,18 +86,19 @@ PackageExport[CATInequalityQ]
 PackageExport[InfraCurvature]
 
 (* PathSpace.wl *)
-PackageExport[SelectPath]
-PackageExport[SelectCycle]
-PackageExport[EmbeddingClosestPaths]
-PackageExport[EmbeddingClosestCycles]
+PackageExport[SelectInfraPath]
+PackageExport[SelectInfraCycle]
+PackageExport[EmbeddingClosest]
 PackageExport[GeodesicGraph]
 PackageExport[GeodesicSubgraph]
 PackageExport[PathSubgraph]
 
 (* Homotopy.wl *)
 PackageExport[InfraHomotopy]
-PackageExport[FindHomotopy]
-PackageExport[FindNullHomotopy]
+PackageExport[FindInfraHomotopy]
+PackageExport[FindInfraNullHomotopy]
+PackageExport[FindInfraMinimalForms]
+PackageExport[FindInfraReduction]
 PackageExport[HomotopicQ]
 PackageExport[NullHomotopicQ]
 PackageExport[ReducePath]
@@ -108,12 +115,12 @@ PackageExport[FindGeodesicConvexHull]
 PackageExport[GeodesicallyConvexQ]
 
 (* Coordinatization.wl *)
-PackageExport[FindRadarBasis]
-PackageExport[RadarBasisQ]
+PackageExport[FindInfraRadarBasis]
+PackageExport[InfraRadarBasisQ]
 PackageExport[RadarCoordinates]
 PackageExport[OrthogonalCoordinates]
-PackageExport[FindOrthogonalFrame]
-PackageExport[FindSpanningAxes]
+PackageExport[FindInfraOrthogonalFrame]
+PackageExport[FindInfraSpanningAxes]
 PackageExport[ResistanceCoordinates]
 
 (* TarskiGeometry.wl *)
@@ -163,14 +170,8 @@ PackageExport[InfraGeometricStep]
 PackageExport[InfraLine]
 PackageExport[InfraIntersection]
 PackageExport[InfraDistance]
-PackageExport[InfraSegmentQ]
-PackageExport[InfraShellQ]
 PackageExport[InfraPlaneQ]
-PackageExport[InfraCircleQ]
-PackageExport[InfraLineQ]
-PackageExport[InfraParallelQ]
 PackageExport[InfraIntersectQ]
-PackageExport[InfraRevolutionQ]
 
 (* InfraSceneVisualization.wl *)
 PackageExport[InfraSceneHighlight]
@@ -180,6 +181,8 @@ PackageExport[$InfraShellColor]
 PackageExport[$InfraPlaneColor]
 PackageExport[$InfraCircleColor]
 PackageExport[$InfraRayColor]
+PackageExport[$InfraPathColor]
+PackageExport[$InfraLineColor]
 PackageExport[$InfraObjectColor]
 
 (* InfraSceneInteractive.wl *)

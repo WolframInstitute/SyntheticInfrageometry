@@ -74,7 +74,7 @@ Cell["See Also", "Section",ExpressionUUID->"b92db4d5-3095-450f-a0ed-077cd3b76c30
 
 Cell["CollinearQ", "Item",ExpressionUUID->"bcabb34f-5ccc-4469-85dc-4560327f4c06"],
 
-Cell["FindCommonLine", "Item",ExpressionUUID->"71125362-27e7-4864-b384-1034ed035024"],
+Cell["FindInfraCommonLine", "Item",ExpressionUUID->"71125362-27e7-4864-b384-1034ed035024"],
 
 Cell["UniqueConcurrentQ", "Item",ExpressionUUID->"b40fadc8-2c84-49df-9f2e-0c7dfb04e740"],
 

@@ -18,15 +18,15 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindLine", "Title",ExpressionUUID->"4f8b2970-94c7-41a1-8955-c404d4ea8c65"],
+Cell["FindInfraLine", "Title",ExpressionUUID->"4f8b2970-94c7-41a1-8955-c404d4ea8c65"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"0c30b0be-f108-49be-978e-769d5e2bd84e"],
 
 Cell["\<\
-FindLine[g, p1, p2] returns the maximal geodesic extensions through p1 and p2 \
+FindInfraLine[g, p1, p2] returns the maximal geodesic extensions through p1 and p2 \
 as a List of unary InfraSegment[{line}] wrappers. n / UpTo[n] / All control \
 multiplicity. Options: \"Maximality\" (\"Extension\" (default) | \
-\"Diameter\"), Method (shared with FindSegment).\
+\"Diameter\"), Method (shared with FindInfraSegment).\
 \>", "Text",ExpressionUUID->"8f211a47-eeb0-4fec-b3dd-6100cde0341d"],
 
 Cell["Setup", "Section",ExpressionUUID->"6095dc8f-991f-48f3-9bc6-c5b8c348390e"],
@@ -53,7 +53,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"72c40845-6995-4b04-8b2e-31ff420f5057"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindLine[GridGraph[{3, 3}], 1, 5]"]], "Input",Express\
+ $CellContext`buildCell["FindInfraLine[GridGraph[{3, 3}], 1, 5]"]], "Input",Express\
 ionUUID->"83e4c5a3-087e-4642-9fad-eea4e6bd1076"],
 
 Cell[BoxData[
@@ -66,7 +66,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"b5e486e0-72c3-4e47-a0cc-dd3606d23dcd"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindLine[GridGraph[{3, 3}], 1, 5, All]"]], "Input",Ex\
+ $CellContext`buildCell["FindInfraLine[GridGraph[{3, 3}], 1, 5, All]"]], "Input",Ex\
 pressionUUID->"d89007c9-1231-436a-b91f-78e8f82758ad"],
 
 Cell[BoxData[
@@ -81,7 +81,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindLine[g, 6, 11, \
+ "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindInfraLine[g, 6, 11, \
 All] -> Blue}]]"]], "Input",ExpressionUUID->"a712bb61-929f-4b84-ac85-\
 54583353c5ea"],
 
@@ -89,15 +89,15 @@ Cell["See Also", "Section",ExpressionUUID->"8e2699d1-ed86-4b16-b3ae-5436b08e2d4b
 
 Cell["InfraSegment", "Item",ExpressionUUID->"d599e78c-9d9f-4876-9045-d75643a01d2f"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"6d71587e-dfe3-4ad3-82a7-0dc5c4b4d1da"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"6d71587e-dfe3-4ad3-82a7-0dc5c4b4d1da"],
 
-Cell["ExtendSegment", "Item",ExpressionUUID->"24dcf25e-fb40-4773-a5e9-31c1ca1bc5bb"],
+Cell["ExtendInfraSegment", "Item",ExpressionUUID->"24dcf25e-fb40-4773-a5e9-31c1ca1bc5bb"],
 
-Cell["LineQ", "Item",ExpressionUUID->"f7f9a5ac-dc10-4e23-9946-967ff317b43c"],
+Cell["InfraLineQ", "Item",ExpressionUUID->"f7f9a5ac-dc10-4e23-9946-967ff317b43c"],
 
-Cell["FindParallel", "Item",ExpressionUUID->"cb285699-085f-465e-88b8-fac161903087"],
+Cell["FindInfraParallel", "Item",ExpressionUUID->"cb285699-085f-465e-88b8-fac161903087"],
 
-Cell["FindRay", "Item",ExpressionUUID->"4dfe6fdb-9012-48bc-b654-4f2f28a8fe09"],
+Cell["FindInfraRay", "Item",ExpressionUUID->"4dfe6fdb-9012-48bc-b654-4f2f28a8fe09"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"8ec5cca4-cc88-4be0-8c1f-20417dcdd272"],
 

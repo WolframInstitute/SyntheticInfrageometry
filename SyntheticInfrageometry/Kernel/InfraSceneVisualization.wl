@@ -2,6 +2,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageExport[$InfraPointColor]
 PackageExport[$InfraSegmentColor]
+PackageExport[$InfraLineColor]
 PackageExport[$InfraShellColor]
 PackageExport[$InfraPlaneColor]
 PackageExport[$InfraCircleColor]
@@ -15,10 +16,12 @@ PackageScope[$InfraPointSizeRange]
 
 $InfraPointColor   = RGBColor[ 0.78, 0.30, 0.55 ];
 $InfraSegmentColor = RGBColor[ 0.92, 0.45, 0.30 ];
+$InfraLineColor    = RGBColor[ 0.78, 0.35, 0.22 ];
 $InfraShellColor   = RGBColor[ 0.30, 0.70, 0.50 ];
 $InfraPlaneColor   = RGBColor[ 0.55, 0.45, 0.80 ];
 $InfraCircleColor  = RGBColor[ 0.20, 0.55, 0.65 ];
 $InfraRayColor     = RGBColor[ 0.95, 0.65, 0.45 ];
+$InfraPathColor    = RGBColor[ 0.85, 0.62, 0.32 ];
 $InfraObjectColor  = RGBColor[ 0.55, 0.70, 0.85 ];
 
 $InfraOpacityRange   = { 0.40, 1.0 };
@@ -77,6 +80,8 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           { item, Switch[ Head @ item,
               InfraPoint,    $InfraPointColor,
               InfraSegment,  $InfraSegmentColor,
+              InfraLine,     $InfraLineColor,
+              InfraPath,     $InfraPathColor,
               InfraShell,    $InfraShellColor,
               InfraPlane,    $InfraPlaneColor,
               InfraCircle,   $InfraCircleColor,
@@ -88,6 +93,8 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
         {
           { InfraPoint   [ b_List ], c_ } :> { b, c, "Points" },
           { InfraSegment [ b_List ], c_ } :> { b, c, "Paths"  },
+          { InfraLine    [ b_List ], c_ } :> { b, c, "Paths"  },
+          { InfraPath    [ b_List ], c_ } :> { b, c, "Paths"  },
           { InfraShell   [ b_List ], c_ } :> { b, c, "Sets"   },
           { InfraPlane   [ b_List ], c_ } :> { b, c, "Sets"   },
           { InfraCircle  [ b_List ], c_ } :> { b, c, "Cycles" },

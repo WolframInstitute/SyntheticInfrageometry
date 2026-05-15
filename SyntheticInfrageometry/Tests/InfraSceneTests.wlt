@@ -116,13 +116,13 @@ VerificationTest[
     g = PathGraph[Range[5]]
   },
     AllTrue[FindInfraScene[scene, g],
-      inst |-> SegmentQ[g, inst[[1]][s]]]
+      inst |-> InfraSegmentQ[g, inst[[1]][s]]]
   ],
   True,
   TestID -> "FindInfraScene-InfraSegmentQ-assertion"
 ]
 
-(* ===== InfraShell with FindShell ===== *)
+(* ===== InfraShell with FindInfraShell ===== *)
 
 VerificationTest[
   With[{
@@ -138,10 +138,10 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindInfraScene-InfraShell-FindShell"
+  TestID -> "FindInfraScene-InfraShell-FindInfraShell"
 ]
 
-(* ===== InfraPlane with FindBisectingHyperplane ===== *)
+(* ===== InfraPlane with FindInfraBisectingHyperplane ===== *)
 
 VerificationTest[
   With[{
@@ -158,10 +158,10 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindInfraScene-InfraPlane-FindBisectingHyperplane"
+  TestID -> "FindInfraScene-InfraPlane-FindInfraBisectingHyperplane"
 ]
 
-(* InfraPlane[p1, p2, {lo, hi}] threads the window through to FindBisectingHyperplane.
+(* InfraPlane[p1, p2, {lo, hi}] threads the window through to FindInfraBisectingHyperplane.
    On PathGraph[6], 1 to 6 has odd distance; the strict {0, 0} bisector is empty
    so the no-window form yields no instances, while {-1, 1} recovers {3} and {4}. *)
 VerificationTest[
@@ -179,7 +179,7 @@ VerificationTest[
   TestID -> "FindInfraScene-InfraPlane-window"
 ]
 
-(* ===== InfraCircle with FindCircle ===== *)
+(* ===== InfraCircle with FindInfraCircle ===== *)
 
 VerificationTest[
   With[{
@@ -195,7 +195,7 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindInfraScene-InfraCircle-FindCircle"
+  TestID -> "FindInfraScene-InfraCircle-FindInfraCircle"
 ]
 
 (* ===== InfraGeometricStep ===== *)
@@ -451,14 +451,14 @@ VerificationTest[
   TestID -> "InfraDistance-InfraShell-bare"
 ]
 
-(* FindPoint returns InfraPoint[{v}]; InfraDistance accepts it directly,
-   so callers no longer need First @ (#[[ 1, 1 ]] & /@ FindPoint[g, 1]). *)
+(* FindInfraPoint returns InfraPoint[{v}]; InfraDistance accepts it directly,
+   so callers no longer need First @ (#[[ 1, 1 ]] & /@ FindInfraPoint[g, 1]). *)
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], fp = FindPoint[GridGraph[{3, 3}], 1]},
+  With[{g = GridGraph[{3, 3}], fp = FindInfraPoint[GridGraph[{3, 3}], 1]},
     InfraDistance[g, fp, 9] === GraphDistance[g, First @ (#[[ 1, 1 ]] & /@ fp), 9]
   ],
   True,
-  TestID -> "InfraDistance-FindPoint-no-extraction"
+  TestID -> "InfraDistance-FindInfraPoint-no-extraction"
 ]
 
 

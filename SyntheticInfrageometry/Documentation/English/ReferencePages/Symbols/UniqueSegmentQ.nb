@@ -18,13 +18,13 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["UniqueSegmentQ", "Title",ExpressionUUID->"c5604a56-93af-49fd-b258-dfcab04844a9"],
+Cell["UniqueInfraSegmentQ", "Title",ExpressionUUID->"c5604a56-93af-49fd-b258-dfcab04844a9"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"2d4ba6be-9b3c-4be5-ad91-6e842d46195b"],
 
 Cell["\<\
-UniqueSegmentQ[g, u, v] tests whether the geodesic from u to v is unique. \
-UniqueSegmentQ[g] tests the geodetic property: every vertex pair has a unique \
+UniqueInfraSegmentQ[g, u, v] tests whether the geodesic from u to v is unique. \
+UniqueInfraSegmentQ[g] tests the geodetic property: every vertex pair has a unique \
 geodesic.\
 \>", "Text",ExpressionUUID->"06a0a044-f32f-41d4-b36f-23812b7264cf"],
 
@@ -52,7 +52,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "UniqueSegmentQ[CompleteGraph[{1, 2, 2}], 1, 5]"]], "Input",ExpressionUUID->\
+ "UniqueInfraSegmentQ[CompleteGraph[{1, 2, 2}], 1, 5]"]], "Input",ExpressionUUID->\
 "e31754cd-ed1a-4d68-a881-afb9f2fc2169"],
 
 Cell[BoxData[
@@ -67,7 +67,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"93ccce1d-63ec-48dd-926e-7410043cff5b"],
 
 Cell[BoxData[
- $CellContext`buildCell["UniqueSegmentQ[GridGraph[{3, 3}], 1, 9]"]], "Input",E\
+ $CellContext`buildCell["UniqueInfraSegmentQ[GridGraph[{3, 3}], 1, 9]"]], "Input",E\
 xpressionUUID->"7a819034-558f-40e6-a91e-8bdaab19b47e"],
 
 Cell[BoxData[
@@ -82,7 +82,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"e6f83873-c6db-419f-82cb-f983e7bd6872"],
 
 Cell[BoxData[
- $CellContext`buildCell["UniqueSegmentQ[PathGraph[Range[6]]]"]], "Input",Expre\
+ $CellContext`buildCell["UniqueInfraSegmentQ[PathGraph[Range[6]]]"]], "Input",Expre\
 ssionUUID->"8cbff7be-4b5a-4b35-b11b-d34f24419cfc"],
 
 Cell[BoxData[
@@ -95,14 +95,14 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"e2662b06-7b57-491d-a117-e5a3292f8fa0"],
 
 Cell[BoxData[
- $CellContext`buildCell["UniqueSegmentQ[GridGraph[{3, 3}]]"]], "Input",Express\
+ $CellContext`buildCell["UniqueInfraSegmentQ[GridGraph[{3, 3}]]"]], "Input",Express\
 ionUUID->"e18ec955-7641-4f69-81c8-c6a3816ffc3e"],
 
 Cell["See Also", "Section",ExpressionUUID->"6d66f230-d012-45ac-bfcf-20861684aeed"],
 
-Cell["SegmentQ", "Item",ExpressionUUID->"3d99e0fb-5a96-4b09-bc32-96dd5fdce191"],
+Cell["InfraSegmentQ", "Item",ExpressionUUID->"3d99e0fb-5a96-4b09-bc32-96dd5fdce191"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"14e05adc-09b3-4f85-b9f8-b49fbd26fd1f"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"14e05adc-09b3-4f85-b9f8-b49fbd26fd1f"],
 
 Cell["GeodesicMultiplicity", "Item",ExpressionUUID->"2003f77d-670c-4bb4-8faf-cd2c27b4bf4d"],
 

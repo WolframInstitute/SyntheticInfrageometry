@@ -69,7 +69,7 @@ Cell["See Also", "Section",ExpressionUUID->"d6a56a32-cb70-4880-a292-a6dc1339cb62
 
 Cell["InfraSegment", "Item",ExpressionUUID->"a967a0f9-accd-45e3-b7f9-90d9bef9bd40"],
 
-Cell["FindLine", "Item",ExpressionUUID->"851ad6d2-0c0a-4a2c-80e5-43acfd0a8329"],
+Cell["FindInfraLine", "Item",ExpressionUUID->"851ad6d2-0c0a-4a2c-80e5-43acfd0a8329"],
 
 Cell["InfraRay", "Item",ExpressionUUID->"3c5abc8f-0c74-4fff-89ec-f1a5a2dcbec1"],
 

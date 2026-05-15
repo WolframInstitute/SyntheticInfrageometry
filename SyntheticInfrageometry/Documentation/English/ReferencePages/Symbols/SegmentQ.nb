@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["SegmentQ", "Title",ExpressionUUID->"66125c94-e3dd-4885-b975-a3d4279f963a"],
+Cell["InfraSegmentQ", "Title",ExpressionUUID->"66125c94-e3dd-4885-b975-a3d4279f963a"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"9fb7f44a-f2b1-4c1a-9e1e-d6ac71fc3620"],
 
 Cell["\<\
-SegmentQ[g, segment] tests whether the vertex sequence segment is a geodesic \
+InfraSegmentQ[g, segment] tests whether the vertex sequence segment is a geodesic \
 path on g.\
 \>", "Text",ExpressionUUID->"7e7fdbde-cceb-4c4a-89fa-4a9a397fae40"],
 
@@ -50,7 +50,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"731a0235-ecbd-45fe-847e-e282d09fb3d3"],
 
 Cell[BoxData[
- $CellContext`buildCell["SegmentQ[PathGraph[Range[6]], {1, 2}]"]], "Input",Exp\
+ $CellContext`buildCell["InfraSegmentQ[PathGraph[Range[6]], {1, 2}]"]], "Input",Exp\
 ressionUUID->"f873fc3b-0eca-4d32-8b83-1c0d16622e71"],
 
 Cell[BoxData[
@@ -64,7 +64,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"1e8668b5-4d04-431c-b46f-55483f015c98"],
 
 Cell[BoxData[
- $CellContext`buildCell["SegmentQ[PathGraph[Range[6]], {1, 3}]"]], "Input",Exp\
+ $CellContext`buildCell["InfraSegmentQ[PathGraph[Range[6]], {1, 3}]"]], "Input",Exp\
 ressionUUID->"ee311cd6-26e0-4d98-9865-dbf866220139"],
 
 Cell[BoxData[
@@ -78,7 +78,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "SegmentQ[GridGraph[{3, 3}], {1, 2, 3, 6, 9}]"]], "Input",ExpressionUUID->\
+ "InfraSegmentQ[GridGraph[{3, 3}], {1, 2, 3, 6, 9}]"]], "Input",ExpressionUUID->\
 "e0b1e40a-bde9-4f18-acd4-513702a29963"],
 
 Cell[BoxData[
@@ -92,18 +92,18 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"1e4615a1-d150-4db3-9012-39829bb3e84a"],
 
 Cell[BoxData[
- $CellContext`buildCell["SegmentQ[GridGraph[{3, 3}], {1, 2, 1, 4}]"]], "Input",\
+ $CellContext`buildCell["InfraSegmentQ[GridGraph[{3, 3}], {1, 2, 1, 4}]"]], "Input",\
 ExpressionUUID->"63f4eef1-7297-4782-a0ce-594976b68931"],
 
 Cell["See Also", "Section",ExpressionUUID->"2c5c3d95-6b07-4a47-b5aa-349c43bd0959"],
 
 Cell["InfraSegment", "Item",ExpressionUUID->"e1884e43-6ebd-46fd-a0e9-6b5ceb1e8461"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"9872983a-76ca-4cd5-abeb-2734d435f1a2"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"9872983a-76ca-4cd5-abeb-2734d435f1a2"],
 
-Cell["LineQ", "Item",ExpressionUUID->"a71801d8-5218-4ae1-8eb1-c44fd37a4a10"],
+Cell["InfraLineQ", "Item",ExpressionUUID->"a71801d8-5218-4ae1-8eb1-c44fd37a4a10"],
 
-Cell["UniqueSegmentQ", "Item",ExpressionUUID->"b6c6e8bf-8b42-4b85-9fb5-d4f6803a74b6"],
+Cell["UniqueInfraSegmentQ", "Item",ExpressionUUID->"b6c6e8bf-8b42-4b85-9fb5-d4f6803a74b6"],
 
 Cell["MetricInterval", "Item",ExpressionUUID->"0e6c288f-20c1-4a7e-bbab-a9387fa167b8"],
 

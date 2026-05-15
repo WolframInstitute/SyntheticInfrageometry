@@ -75,7 +75,7 @@ Cell["Every geodesic between opposite corners of g.", "CodeText",ExpressionUUID-
 Cell[BoxData[
  RowBox[{
   RowBox[{"paths", "=", 
-   RowBox[{"FindSegment", "[", 
+   RowBox[{"FindInfraSegment", "[", 
     RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}]}], ";"}]], "Input",E\
 xpressionUUID->"d22e3248-72a4-448e-88b3-784416a38b35"],
 
@@ -97,7 +97,7 @@ Cell["Central and peripheral selectors", "Section",ExpressionUUID->"8094951a-400
 Cell["One central geodesic.", "CodeText",ExpressionUUID->"57e6284b-8452-46bf-923a-5395652aeeff"],
 
 Cell[BoxData[
- RowBox[{"SelectPath", "[", 
+ RowBox[{"SelectInfraPath", "[", 
   RowBox[{"g", ",", "paths", ",", "1", ",", 
    RowBox[{"\"\<From\>\"", "\[Rule]", "\"\<Center\>\""}]}], "]"}]], "Input",Ex\
 pressionUUID->"73308a48-bdcd-451f-a696-f230b79929e3"],
@@ -105,7 +105,7 @@ pressionUUID->"73308a48-bdcd-451f-a696-f230b79929e3"],
 Cell["Two peripheral ones.", "CodeText",ExpressionUUID->"fec6954a-b393-4026-a502-988171a761f7"],
 
 Cell[BoxData[
- RowBox[{"SelectPath", "[", 
+ RowBox[{"SelectInfraPath", "[", 
   RowBox[{"g", ",", "paths", ",", "2", ",", 
    RowBox[{"\"\<From\>\"", "\[Rule]", "\"\<Periphery\>\""}]}], "]"}]], "Input",\
 ExpressionUUID->"863bf2f6-dcf4-48bb-b93a-2bde159de49e"],
@@ -119,7 +119,7 @@ Cell[BoxData[
     RowBox[{
      RowBox[{"paths", "\[Rule]", "LightGray"}], ",", 
      RowBox[{
-      RowBox[{"SelectPath", "[", 
+      RowBox[{"SelectInfraPath", "[", 
        RowBox[{"g", ",", "paths", ",", "1", ",", 
         RowBox[{"\"\<From\>\"", "\[Rule]", "\"\<Center\>\""}]}], "]"}], "\[Rule]",
        "Blue"}]}], "}"}]}], "]"}]], "Input",ExpressionUUID->"d0d616c9-413f-\
@@ -133,7 +133,7 @@ Euclidean segment 1-16.\
 \>", "CodeText",ExpressionUUID->"e02274c4-0bbb-441b-a52e-5fca6424a0a8"],
 
 Cell[BoxData[
- RowBox[{"EmbeddingClosestPaths", "[", 
+ RowBox[{"EmbeddingClosest", "[", 
   RowBox[{"g", ",", "paths", ",", 
    RowBox[{"{", 
     RowBox[{"1", ",", "16"}], "}"}]}], "]"}]], "Input",ExpressionUUID->\
@@ -146,7 +146,7 @@ Frechet distance is order-sensitive (different from Hausdorff).\
 \>", "CodeText",ExpressionUUID->"721d79dd-6230-40c0-846a-e65360f1662e"],
 
 Cell[BoxData[
- RowBox[{"SelectPath", "[", 
+ RowBox[{"SelectInfraPath", "[", 
   RowBox[{"g", ",", "paths", ",", "1", ",", 
    RowBox[{"\"\<From\>\"", "\[Rule]", "\"\<Center\>\""}], ",", 
    RowBox[{"\"\<Metric\>\"", "\[Rule]", "\"\<Frechet\>\""}]}], "]"}]], "Input",\
@@ -159,14 +159,14 @@ Cell["All separating cycles at radius 2 around the centre of g2.", "CodeText",Ex
 Cell[BoxData[
  RowBox[{
   RowBox[{"cycles", "=", 
-   RowBox[{"FindCircle", "[", 
+   RowBox[{"FindInfraCircle", "[", 
     RowBox[{"g2", ",", "13", ",", "2", ",", "All"}], "]"}]}], ";"}]], "Input",\
 ExpressionUUID->"d0d9a876-e401-4204-af70-b0b5565ca548"],
 
 Cell["One shortest-circumference cycle.", "CodeText",ExpressionUUID->"59c56ef5-20b3-45be-8b58-8463698b6ab1"],
 
 Cell[BoxData[
- RowBox[{"SelectCycle", "[", 
+ RowBox[{"SelectInfraCycle", "[", 
   RowBox[{"g2", ",", "cycles", ",", "1", ",", 
    RowBox[{"\"\<From\>\"", "\[Rule]", "\"\<ShortestCircumference\>\""}]}], 
   "]"}]], "Input",ExpressionUUID->"5846e192-84ba-4807-be31-6fd7dff3d88f"],

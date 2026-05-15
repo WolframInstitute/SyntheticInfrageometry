@@ -18,17 +18,17 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindSegment", "Title",ExpressionUUID->"d4a0dd4d-67b1-47b1-a7ab-16f568f962c5"],
+Cell["FindInfraSegment", "Title",ExpressionUUID->"d4a0dd4d-67b1-47b1-a7ab-16f568f962c5"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"9fb1fdc3-30de-4867-8ed1-33b02c1aaa87"],
 
 Cell["\<\
-FindSegment enumerates geodesic segments (and, with non-default Method, \
+FindInfraSegment enumerates geodesic segments (and, with non-default Method, \
 near-geodesic paths) between two vertices, returning a List of unary \
 InfraSegment[{path}] wrappers. It follows the strict / soft / exhaustive \
 triple n_Integer | UpTo[n] | All. Method (\"Shortest\" (default), \
 \"ShortestPathExtension\", \"CurvatureMinimizing\", \"Embedding\") is shared \
-with FindLine and ExtendSegment, with sub-options threaded through the method \
+with FindInfraLine and ExtendInfraSegment, with sub-options threaded through the method \
 spec.\
 \>", "Text",ExpressionUUID->"059d57dd-1826-41cd-ab44-a1938b326453"],
 
@@ -55,7 +55,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"97f59be1-3b60-4f39-9a76-4a9b956fd888"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindSegment[PathGraph[Range[6]], 1, 6]"]], "Input",Ex\
+ $CellContext`buildCell["FindInfraSegment[PathGraph[Range[6]], 1, 6]"]], "Input",Ex\
 pressionUUID->"907cb1f3-db5b-4b0a-8219-4658e6a06eff"],
 
 Cell[BoxData[
@@ -69,7 +69,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"e6e26464-dbac-4621-8f74-670b48cedbc9"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindSegment[GridGraph[{3, 3}], 1, 9, All]"]], "Input",\
+ $CellContext`buildCell["FindInfraSegment[GridGraph[{3, 3}], 1, 9, All]"]], "Input",\
 ExpressionUUID->"f97b21bc-e3f7-499e-8ae6-9df27726b3e9"],
 
 Cell[BoxData[
@@ -85,7 +85,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindSegment[GridGraph[{3, 3}], 1, 9, UpTo[3]]"]], "Input",ExpressionUUID->\
+ "FindInfraSegment[GridGraph[{3, 3}], 1, 9, UpTo[3]]"]], "Input",ExpressionUUID->\
 "5e730865-590c-440d-a399-168531f5a869"],
 
 Cell[BoxData[
@@ -101,7 +101,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindSegment[GridGraph[{3, 3}], InfraPoint[{1, 2}], InfraPoint[{8, 9}], \
+ "FindInfraSegment[GridGraph[{3, 3}], InfraPoint[{1, 2}], InfraPoint[{8, 9}], \
 All]"]], "Input",ExpressionUUID->"e9da078c-ff72-485e-a92c-f520eeac72bb"],
 
 Cell[BoxData[
@@ -117,7 +117,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindSegment[GridGraph[{3, 3}], 1, 9, All, Method -> \"ShortestPathExtension\
+ "FindInfraSegment[GridGraph[{3, 3}], 1, 9, All, Method -> \"ShortestPathExtension\
 \"]"]], "Input",ExpressionUUID->"44f2e5f8-5352-4a33-bd6d-3b5e5ccf5582"],
 
 Cell[BoxData[
@@ -132,7 +132,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindSegment[GridGraph[{3, 3}], 1, 9, All, Method -> \"Embedding\"]"]], \
+ "FindInfraSegment[GridGraph[{3, 3}], 1, 9, All, Method -> \"Embedding\"]"]], \
 "Input",ExpressionUUID->"09dd1a2d-d8a3-47a6-9b04-d77728d17c83"],
 
 Cell[BoxData[
@@ -147,26 +147,26 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindSegment[g, 1, 16, \
+ "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindInfraSegment[g, 1, 16, \
 All]}]]"]], "Input",ExpressionUUID->"a119317f-ee8e-4aaa-bf3d-6d00b16cba11"],
 
 Cell["See Also", "Section",ExpressionUUID->"b55e4e5f-ca00-48d8-b19b-cc7aedaca3ff"],
 
 Cell["InfraSegment", "Item",ExpressionUUID->"b3f08f00-81af-4204-b5ef-dab2627fc5eb"],
 
-Cell["FindLine", "Item",ExpressionUUID->"49ed701c-ca74-4d25-a2cd-7ee032f24310"],
+Cell["FindInfraLine", "Item",ExpressionUUID->"49ed701c-ca74-4d25-a2cd-7ee032f24310"],
 
-Cell["ExtendSegment", "Item",ExpressionUUID->"54434ddd-6d66-405f-a310-97706cb81893"],
+Cell["ExtendInfraSegment", "Item",ExpressionUUID->"54434ddd-6d66-405f-a310-97706cb81893"],
 
-Cell["SegmentQ", "Item",ExpressionUUID->"d857c8db-ccee-43b4-8262-fbb24b368b4f"],
+Cell["InfraSegmentQ", "Item",ExpressionUUID->"d857c8db-ccee-43b4-8262-fbb24b368b4f"],
 
-Cell["UniqueSegmentQ", "Item",ExpressionUUID->"9a168107-2360-474e-8776-5203c79a666d"],
+Cell["UniqueInfraSegmentQ", "Item",ExpressionUUID->"9a168107-2360-474e-8776-5203c79a666d"],
 
 Cell["MetricInterval", "Item",ExpressionUUID->"4006cdbd-678e-4d28-9c04-cf41657d9e50"],
 
 Cell["GeodesicSubgraph", "Item",ExpressionUUID->"b6fbfb61-2336-4c2a-85cc-b8a9ab159a6c"],
 
-Cell["SelectPath", "Item",ExpressionUUID->"350af298-9375-4943-90fd-7b44476b3c6a"],
+Cell["SelectInfraPath", "Item",ExpressionUUID->"350af298-9375-4943-90fd-7b44476b3c6a"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"4894cfb5-5897-4961-8227-1e3bdfcb42ca"],
 

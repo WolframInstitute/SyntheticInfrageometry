@@ -67,7 +67,7 @@ Cell[BoxData[
  RowBox[{"InfraSceneHighlight", "[", 
   RowBox[{"g", ",", 
    RowBox[{"{", 
-    RowBox[{"FindSegment", "[", 
+    RowBox[{"FindInfraSegment", "[", 
      RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "}"}]}], 
   "]"}]], "Input",ExpressionUUID->"a174a4bd-5740-44bb-b7b6-2bce28e694ee"],
 
@@ -78,7 +78,7 @@ Cell[BoxData[
   RowBox[{"g", ",", 
    RowBox[{"{", 
     RowBox[{
-     RowBox[{"FindSegment", "[", 
+     RowBox[{"FindInfraSegment", "[", 
       RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "\[Rule]", 
      "Purple"}], "}"}]}], "]"}]], "Input",ExpressionUUID->"94beab80-40b0-432b-\
 af43-5e61676b0007"],
@@ -93,14 +93,14 @@ Cell[BoxData[
    RowBox[{"{", 
     RowBox[{
      RowBox[{
-      RowBox[{"FindSegment", "[", 
+      RowBox[{"FindInfraSegment", "[", 
        RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "\[Rule]", 
       "Blue"}], ",", 
      RowBox[{
-      RowBox[{"FindShell", "[", 
+      RowBox[{"FindInfraShell", "[", 
        RowBox[{"g", ",", "6", ",", "2"}], "]"}], "\[Rule]", "LightBlue"}], ",", 
      RowBox[{
-      RowBox[{"FindCircle", "[", 
+      RowBox[{"FindInfraCircle", "[", 
        RowBox[{"g", ",", "6", ",", "2", ",", "All"}], "]"}], "\[Rule]", 
       "Green"}]}], "}"}]}], "]"}]], "Input",ExpressionUUID->"6ea34c35-ad7c-\
 4c2d-bfc7-790e359d2107"],
@@ -113,7 +113,7 @@ Cell[BoxData[
  RowBox[{"InfraSceneHighlight", "[", 
   RowBox[{"g", ",", 
    RowBox[{"{", 
-    RowBox[{"FindSegment", "[", 
+    RowBox[{"FindInfraSegment", "[", 
      RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "}"}], ",", 
    RowBox[{"\"\<OpacityRange\>\"", "\[Rule]", 
     RowBox[{"{", 
@@ -126,7 +126,7 @@ Cell[BoxData[
  RowBox[{"InfraSceneHighlight", "[", 
   RowBox[{"g", ",", 
    RowBox[{"{", 
-    RowBox[{"FindSegment", "[", 
+    RowBox[{"FindInfraSegment", "[", 
      RowBox[{"g", ",", "1", ",", "16", ",", "All"}], "]"}], "}"}], ",", 
    RowBox[{"\"\<ThicknessRange\>\"", "\[Rule]", 
     RowBox[{"{", 

@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindPoint", "Title",ExpressionUUID->"e6c9510e-8cbf-4879-97f1-dcb09da6bc27"],
+Cell["FindInfraPoint", "Title",ExpressionUUID->"e6c9510e-8cbf-4879-97f1-dcb09da6bc27"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"2f8230cc-c320-4f40-a896-b97796f15582"],
 
 Cell["\<\
-FindPoint enumerates vertices, optionally filtered by a source / pool / \
+FindInfraPoint enumerates vertices, optionally filtered by a source / pool / \
 distance constraint. Returns a List of unary InfraPoint[{v}] wrappers. \
 Follows the strict / soft / exhaustive triple n_Integer | UpTo[n] | All. \
 Options: \"From\" (All (default), \"Center\", \"Periphery\", origin -> dist), \
@@ -53,7 +53,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"8f8e07e4-5912-4cec-8a5a-61e2010ede72"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindPoint[CycleGraph[6], 2]"]], "Input",ExpressionUUID->"ae34c551-32b7-41ac-a684-82eba985737f"],
+ $CellContext`buildCell["FindInfraPoint[CycleGraph[6], 2]"]], "Input",ExpressionUUID->"ae34c551-32b7-41ac-a684-82eba985737f"],
 
 Cell[BoxData[
  $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"848fc3d9-4696-4840-bca0-d1cfdae650af"],
@@ -65,7 +65,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"39b5052c-7554-4989-90c2-2698fe5c5449"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindPoint[CycleGraph[6], All]"]], "Input",ExpressionU\
+ $CellContext`buildCell["FindInfraPoint[CycleGraph[6], All]"]], "Input",ExpressionU\
 UID->"320053fb-1af2-4b31-aef6-eff668b67654"],
 
 Cell[BoxData[
@@ -79,7 +79,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindPoint[GridGraph[{3, 3}], All, \"From\" -> \"Center\"]"]], "Input",Expres\
+ "FindInfraPoint[GridGraph[{3, 3}], All, \"From\" -> \"Center\"]"]], "Input",Expres\
 sionUUID->"73d4e0ce-98a4-4f72-b674-f71d8439674a"],
 
 Cell[BoxData[
@@ -95,7 +95,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindPoint[GridGraph[{3, 3}], All, \"From\" -> 1, \"Distance\" -> 2]"]], \
+ "FindInfraPoint[GridGraph[{3, 3}], All, \"From\" -> 1, \"Distance\" -> 2]"]], \
 "Input",ExpressionUUID->"8823f3e7-d69f-4bfe-b28b-1224c3a48e12"],
 
 Cell[BoxData[
@@ -111,7 +111,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindPoint[GridGraph[{3, 3}], All, \"From\" -> 1, \"Distance\" -> {2, \
+ "FindInfraPoint[GridGraph[{3, 3}], All, \"From\" -> 1, \"Distance\" -> {2, \
 3}]"]], "Input",ExpressionUUID->"001ef0fe-8eab-4137-a8fe-43c57870404a"],
 
 Cell[BoxData[
@@ -127,16 +127,16 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindPoint[GridGraph[{3, 3}], All, \"From\" -> InfraPoint[{1, 2}] -> 1]"]], \
+ "FindInfraPoint[GridGraph[{3, 3}], All, \"From\" -> InfraPoint[{1, 2}] -> 1]"]], \
 "Input",ExpressionUUID->"9b608166-375e-42b1-ba83-118975d8a895"],
 
 Cell["See Also", "Section",ExpressionUUID->"be24943a-654c-4d1a-a9fa-97aa47d5c1fd"],
 
 Cell["InfraPoint", "Item",ExpressionUUID->"ff54c923-1ccb-4d22-9c1d-d8610794abfb"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"f7baf00a-0f31-4526-9ae1-414798351c42"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"f7baf00a-0f31-4526-9ae1-414798351c42"],
 
-Cell["FindShell", "Item",ExpressionUUID->"4b719891-361d-4973-bb61-92ab6a862d9b"],
+Cell["FindInfraShell", "Item",ExpressionUUID->"4b719891-361d-4973-bb61-92ab6a862d9b"],
 
 Cell["MedianVertices", "Item",ExpressionUUID->"18349c6a-092e-467e-a219-e7b8d3918301"],
 

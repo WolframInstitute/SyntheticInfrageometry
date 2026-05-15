@@ -18,20 +18,20 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["SelectPath", "Title",ExpressionUUID->"2d5ef769-7bdb-4500-9cdf-901a2bcbb10d"],
+Cell["SelectInfraPath", "Title",ExpressionUUID->"2d5ef769-7bdb-4500-9cdf-901a2bcbb10d"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"8976d495-e466-4553-aa70-d8e412b4f49f"],
 
 Cell["\<\
-SelectPath[g, paths] returns one path drawn from the bundle treated as a \
-finite metric space in path-space. SelectPath[g, paths, n] returns exactly n \
+SelectInfraPath[g, paths] returns one path drawn from the bundle treated as a \
+finite metric space in path-space. SelectInfraPath[g, paths, n] returns exactly n \
 or $Failed; UpTo[n] returns up to n; All returns the whole pool. Options \
-mirror FindPoint: \"From\" (All (default), \"Center\", \"Periphery\", \
+mirror FindInfraPoint: \"From\" (All (default), \"Center\", \"Periphery\", \
 \"MostVisited\", anchor -> spec, InfraSegment[{\[Ellipsis]}] -> spec), \
 \"Distance\" (None (default), \"Max\", d, {dMin, dMax}), \"Metric\" \
 (\"Hausdorff\" (default), \"Frechet\", \"MeanFrechet\"), \"MaxCliques\". \
 Accepts InfraSegment and InfraRay wrappers; preserves the wrapper. Operator \
-form SelectPath[g, n, opts][paths].\
+form SelectInfraPath[g, n, opts][paths].\
 \>", "Text",ExpressionUUID->"83a64842-fdc4-4d98-aed5-3d76b1b05eee"],
 
 Cell["Setup", "Section",ExpressionUUID->"2291647a-1494-4e5c-920a-abed35ec1f7f"],
@@ -58,7 +58,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "SelectPath[GridGraph[{3, 3}], FindSegment[GridGraph[{3, 3}], 1, 9, \
+ "SelectInfraPath[GridGraph[{3, 3}], FindInfraSegment[GridGraph[{3, 3}], 1, 9, \
 All]]"]], "Input",ExpressionUUID->"aa63fb8b-ffe8-4fbf-9880-9b7908619160"],
 
 Cell[BoxData[
@@ -72,7 +72,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "SelectPath[GridGraph[{3, 3}], FindSegment[GridGraph[{3, 3}], 1, 9, All], 2, \
+ "SelectInfraPath[GridGraph[{3, 3}], FindInfraSegment[GridGraph[{3, 3}], 1, 9, All], 2, \
 \"From\" -> \"Center\"]"]], "Input",ExpressionUUID->"8a39108e-fcd4-4aeb-b6f4-\
 c519fa7aa82f"],
 
@@ -87,17 +87,17 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "SelectPath[GridGraph[{3, 3}], FindSegment[GridGraph[{3, 3}], 1, 9, All], 1, \
+ "SelectInfraPath[GridGraph[{3, 3}], FindInfraSegment[GridGraph[{3, 3}], 1, 9, All], 1, \
 \"From\" -> \"Periphery\"]"]], "Input",ExpressionUUID->"7338062a-b2c4-4006-\
 8708-768dc477b4c7"],
 
 Cell["See Also", "Section",ExpressionUUID->"394d18cf-2f54-4458-a81b-e7ba8b85640d"],
 
-Cell["SelectCycle", "Item",ExpressionUUID->"26d97881-6c6d-46df-a884-0b4b69b046d0"],
+Cell["SelectInfraCycle", "Item",ExpressionUUID->"26d97881-6c6d-46df-a884-0b4b69b046d0"],
 
-Cell["EmbeddingClosestPaths", "Item",ExpressionUUID->"2fefa146-7be9-4be2-bfb0-96c1effef7ea"],
+Cell["EmbeddingClosest", "Item",ExpressionUUID->"2fefa146-7be9-4be2-bfb0-96c1effef7ea"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"5a13e28b-35a8-4384-8dbd-b3289fd6a63c"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"5a13e28b-35a8-4384-8dbd-b3289fd6a63c"],
 
 Cell["InfraSegment", "Item",ExpressionUUID->"cb184a5f-db7a-4594-bd0e-94596c5ec497"],
 

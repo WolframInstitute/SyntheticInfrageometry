@@ -43,9 +43,9 @@ Cell["Radar coordinates", "Section",ExpressionUUID->"c2fa33e2-4c7a-4b08-8cf9-89f
 
 Cell["Distance vectors to a chosen resolving set (a radar basis).", "Text",ExpressionUUID->"74243e70-17eb-4090-acc5-966c95d2574c"],
 
-Cell["FindRadarBasis", "Item",ExpressionUUID->"c4e7a3ff-a9c1-43e9-ad6f-81a220e44985"],
+Cell["FindInfraRadarBasis", "Item",ExpressionUUID->"c4e7a3ff-a9c1-43e9-ad6f-81a220e44985"],
 
-Cell["RadarBasisQ", "Item",ExpressionUUID->"9f332064-4b44-4f6a-bf74-c926b96d69f3"],
+Cell["InfraRadarBasisQ", "Item",ExpressionUUID->"9f332064-4b44-4f6a-bf74-c926b96d69f3"],
 
 Cell["RadarCoordinates", "Item",ExpressionUUID->"f7e2274a-1f7d-4ccd-81ce-b1694cb94ac1"],
 
@@ -53,11 +53,11 @@ Cell["Orthogonal coordinates", "Section",ExpressionUUID->"d2cb5478-ca05-4b72-9bc
 
 Cell["Z-valued displacements along axes through a centre vertex.", "Text",ExpressionUUID->"c0e65153-12d5-460e-9de5-879f920408d7"],
 
-Cell["FindOrthogonalFrame", "Item",ExpressionUUID->"daf88845-119f-4c17-883e-f2c915400b54"],
+Cell["FindInfraOrthogonalFrame", "Item",ExpressionUUID->"daf88845-119f-4c17-883e-f2c915400b54"],
 
 Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"f8a49081-8172-4558-9afa-5d1566afce1a"],
 
-Cell["FindSpanningAxes", "Item",ExpressionUUID->"2b462b02-407b-42ca-ae4a-6dfccc8c3a3a"],
+Cell["FindInfraSpanningAxes", "Item",ExpressionUUID->"2b462b02-407b-42ca-ae4a-6dfccc8c3a3a"],
 
 Cell["Resistance coordinates", "Section",ExpressionUUID->"83c2cef5-71af-47e0-a96c-6b772469ed48"],
 

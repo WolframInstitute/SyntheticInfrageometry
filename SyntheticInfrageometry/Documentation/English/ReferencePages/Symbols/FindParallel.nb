@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindParallel", "Title",ExpressionUUID->"0d7544e4-a379-4cd4-9995-820377a03cab"],
+Cell["FindInfraParallel", "Title",ExpressionUUID->"0d7544e4-a379-4cd4-9995-820377a03cab"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"77311dc3-6884-4907-a2e4-7c69917035f8"],
 
 Cell["\<\
-FindParallel[g, line, p] returns the maximal geodesics through p whose \
+FindInfraParallel[g, line, p] returns the maximal geodesics through p whose \
 distance to line is constant (graph-intrinsic parallels). Returns a List of \
 unary InfraSegment[{line}] wrappers or $Failed; n / UpTo[n] / All control \
 multiplicity. Option Method (\"Metric\" (default) | \"Embedding\").\
@@ -54,7 +54,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindParallel[GridGraph[{4, 4}], {1, 5, 9, 13}, 2]"]], "Input",ExpressionUUID\
+ "FindInfraParallel[GridGraph[{4, 4}], {1, 5, 9, 13}, 2]"]], "Input",ExpressionUUID\
 ->"1bebe350-7fe0-40a0-906e-40ae2841a516"],
 
 Cell[BoxData[
@@ -68,18 +68,18 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindParallel[GridGraph[{4, 4}], {1, 5, 9, 13}, 2, All]"]], "Input",Expressio\
+ "FindInfraParallel[GridGraph[{4, 4}], {1, 5, 9, 13}, 2, All]"]], "Input",Expressio\
 nUUID->"5b9dd86b-6609-401a-a6a5-6723e921e862"],
 
 Cell["See Also", "Section",ExpressionUUID->"b02c3c97-60be-4fd2-a81c-3912201c719f"],
 
 Cell["InfraSegment", "Item",ExpressionUUID->"e091d993-ee4e-472e-a240-4a8f8a94580e"],
 
-Cell["FindLine", "Item",ExpressionUUID->"1df19fc4-3667-4781-aa37-e39648fdf248"],
+Cell["FindInfraLine", "Item",ExpressionUUID->"1df19fc4-3667-4781-aa37-e39648fdf248"],
 
-Cell["ParallelQ", "Item",ExpressionUUID->"3f4c3063-f270-4a92-9519-8d8ca116eb43"],
+Cell["InfraParallelQ", "Item",ExpressionUUID->"3f4c3063-f270-4a92-9519-8d8ca116eb43"],
 
-Cell["FindPerpendicular", "Item",ExpressionUUID->"d6707a3a-8de8-46f6-b1a2-d1157d31f586"],
+Cell["FindInfraPerpendicular", "Item",ExpressionUUID->"d6707a3a-8de8-46f6-b1a2-d1157d31f586"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"fa706915-e03e-4492-882b-c45de1be3323"],
 

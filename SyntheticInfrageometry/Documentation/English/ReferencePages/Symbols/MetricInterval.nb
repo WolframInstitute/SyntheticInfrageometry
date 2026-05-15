@@ -71,7 +71,7 @@ ExpressionUUID->"cd46addd-7183-47b7-b14d-3144756aab7d"],
 
 Cell["See Also", "Section",ExpressionUUID->"38d672fd-bbe7-4abf-b011-bfeb6132732c"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"cf07762a-392a-4d64-bbc5-221329b37603"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"cf07762a-392a-4d64-bbc5-221329b37603"],
 
 Cell["GeodesicSubgraph", "Item",ExpressionUUID->"7974ad6c-b62e-4293-9e53-e6a16ea6af4a"],
 

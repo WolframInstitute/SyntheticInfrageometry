@@ -69,11 +69,11 @@ ExpressionUUID->"5d3c3892-0980-47d2-b60b-670166ff720a"],
 
 Cell["See Also", "Section",ExpressionUUID->"9215937c-20bb-4991-9a7b-322a53800a93"],
 
-Cell["FindShell", "Item",ExpressionUUID->"5a57dfd9-8507-461e-a880-b74236ba967a"],
+Cell["FindInfraShell", "Item",ExpressionUUID->"5a57dfd9-8507-461e-a880-b74236ba967a"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"d624937d-40d1-4a80-8ed9-a9866e4782ba"],
+Cell["FindInfraBisectingHyperplane", "Item",ExpressionUUID->"d624937d-40d1-4a80-8ed9-a9866e4782ba"],
 
-Cell["ShellQ", "Item",ExpressionUUID->"c47af792-dddc-434a-9e16-8813da6d8b69"],
+Cell["InfraShellQ", "Item",ExpressionUUID->"c47af792-dddc-434a-9e16-8813da6d8b69"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"bf8394b4-f2a0-4a62-9cb4-4091a094ac28"],
 

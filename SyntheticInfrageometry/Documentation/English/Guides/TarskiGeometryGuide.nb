@@ -103,11 +103,11 @@ Tarski synthetic versions of standard Euclidean constructions are folded into \
 Method -> \"Tarski\".\
 \>", "Text",ExpressionUUID->"d95008e1-7b57-44fb-b823-a6a9fe50afd5"],
 
-Cell["FindMidpoint with Method -> \"Tarski\"", "Item",ExpressionUUID->"1cfa8729-a146-44fd-9999-fd2d0051c360"],
+Cell["FindInfraMidpoint with Method -> \"Tarski\"", "Item",ExpressionUUID->"1cfa8729-a146-44fd-9999-fd2d0051c360"],
 
-Cell["The 5-vertex ExtendSegment form (A4 in finder shape)", "Item",ExpressionUUID->"34bcf39d-a323-4361-bd8e-c4174e94610d"],
+Cell["The 5-vertex ExtendInfraSegment form (A4 in finder shape)", "Item",ExpressionUUID->"34bcf39d-a323-4361-bd8e-c4174e94610d"],
 
-Cell["FindReflection (synthetic from B and =)", "Item",ExpressionUUID->"1f476adc-591e-4de4-9477-4e96c936d6bf"],
+Cell["FindInfraReflection (synthetic from B and =)", "Item",ExpressionUUID->"1f476adc-591e-4de4-9477-4e96c936d6bf"],
 
 Cell["Tutorial", "Section",ExpressionUUID->"0ab9991e-e464-45a7-9c80-a47e1f856ac9"],
 

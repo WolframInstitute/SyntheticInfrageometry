@@ -2,68 +2,179 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageScope[findHomotopyCore]
 PackageScope[resolveFaces]
+PackageScope[fundamentalCycles]
 PackageScope[faceMoves]
 PackageScope[applyMove]
-PackageScope[homotopyBFS]
+PackageScope[walkSpaceBFS]
 PackageScope[loopRotations]
 
 
 (* ===================== InfraHomotopy wrapper ===================== *)
 
-(* Each realisation is the chain {p_0, p_1, ..., p_k} of intermediate walks
-   produced by k elementary face moves from p_0 to p_k. *)
+(* Each realisation is the chain {p_0, ..., p_k} of intermediate walks produced
+   by k elementary moves from p_0 to p_k. *)
 
 InfraHomotopy[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraHomotopy[ _List ] ] ] :=
   InfraHomotopy[ Flatten[ reps /. InfraHomotopy[ xs_List ] :> xs, 1 ] ]
 
 
-(* ===================== FindHomotopy ===================== *)
+(* ===================== FindInfraHomotopy ===================== *)
 
-(* A homotopy from p1 to p2: a finite sequence of elementary moves, each
-   replacing a contiguous sub-walk by an arc-equivalent walk from a cycle
-   declared null-homotopic.  Returns InfraHomotopy wrappers holding the
-   intermediate walks {p_0, ..., p_k}.  The degenerate length-2 case
-   ({a, b} = closed walk a -> b -> a) is backtrack reduction. *)
+(* A homotopy from p1 to p2: a finite chain of elementary moves, each
+   rewriting one arc of a null-homotopic cycle as the complementary arc.
+   Method "MinimumMoves" (default) does shortest-path BFS in walk-space and
+   returns one minimum-move chain.  Method "ViaMinimalForm" reduces both
+   endpoints to a common minimal form and returns one chain per common
+   minimum (potentially several per pair). *)
 
-Options[ FindHomotopy ] = { "NullHomotopicCycles" -> 3 };
+Options[ FindInfraHomotopy ] = {
+  Method                -> "MinimumMoves",
+  "NullHomotopicCycles" -> { 1, 2, 3 },
+  "MaxLength"           -> Automatic,
+  "MaxMoves"            -> Infinity
+};
 
-FindHomotopy[ graph_Graph, p1_, p2_,
+FindInfraHomotopy[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ ] ] :=
   infraSpreadAndCartesian[ InfraHomotopy, count,
     findHomotopyCore[ graph, ##, opts ] &, p1, p2 ]
 
 
-findHomotopyCore[ graph_Graph, p1_List, p2_List, opts : OptionsPattern[ FindHomotopy ] ] :=
-  With[ { faces = resolveFaces[ graph, OptionValue[ FindHomotopy, { opts }, "NullHomotopicCycles" ] ] },
-    homotopyBFS[ graph, p1, p2, faces,
-      Max[ Length /@ { p1, p2 } ] + Max[ If[ faces === { }, { 0 }, Length /@ faces ] ] + 2,
-      Infinity ]
+findHomotopyCore[ graph_Graph, p1_List, p2_List, opts : OptionsPattern[ FindInfraHomotopy ] ] :=
+  Module[ {
+    method = OptionValue[ FindInfraHomotopy, { opts }, Method ],
+    rules  = resolveFaces[ graph, OptionValue[ FindInfraHomotopy, { opts }, "NullHomotopicCycles" ] ],
+    maxMoves = OptionValue[ FindInfraHomotopy, { opts }, "MaxMoves" ],
+    maxLen
+  },
+    maxLen = Replace[ OptionValue[ FindInfraHomotopy, { opts }, "MaxLength" ],
+      Automatic :> autoMaxLength[ { p1, p2 }, rules ] ];
+    Switch[ method,
+      "ViaMinimalForm", findHomotopyViaMinimalForm[ graph, p1, p2, rules, maxLen, maxMoves ],
+      "MinimumMoves",   findHomotopyMinimumMoves[ graph, p1, p2, rules, maxLen, maxMoves ]
+    ]
   ]
+
+
+findHomotopyViaMinimalForm[ graph_Graph, p1_List, p2_List, rules_Association, maxLen_, maxMoves_ ] :=
+  Module[ { parent1, parent2, m1, m2, common },
+    If[ First[ p1 ] =!= First[ p2 ] || Last[ p1 ] =!= Last[ p2 ], Return[ { } ] ];
+    If[ p1 === p2, Return[ { { p1 } } ] ];
+    { parent1 } = walkSpaceBFS[ graph, p1, rules, maxLen, maxMoves, ( False & ) ][[ { 1 } ]];
+    { parent2 } = walkSpaceBFS[ graph, p2, rules, maxLen, maxMoves, ( False & ) ][[ { 1 } ]];
+    m1 = minimalReached[ parent1 ];
+    m2 = minimalReached[ parent2 ];
+    common = Intersection[ m1, m2 ];
+    Map[
+      m |-> Join[ reconstructChain[ parent1, m ], Reverse @ Most @ reconstructChain[ parent2, m ] ],
+      common
+    ]
+  ]
+
+
+findHomotopyMinimumMoves[ graph_Graph, p1_List, p2_List, rules_Association, maxLen_, maxMoves_ ] :=
+  Module[ { parent, found },
+    If[ First[ p1 ] =!= First[ p2 ] || Last[ p1 ] =!= Last[ p2 ], Return[ { } ] ];
+    If[ p1 === p2, Return[ { { p1 } } ] ];
+    { parent, found } = walkSpaceBFS[ graph, p1, rules, maxLen, maxMoves,
+      ( #1 === p2 & ) ][[ { 1, 2 } ]];
+    If[ found === $NotFound, { }, { reconstructChain[ parent, p2 ] } ]
+  ]
+
+
+(* ===================== FindInfraMinimalForms ===================== *)
+
+(* All length-shortest walks in the homotopy class of path.  Bidirectional
+   BFS bounded by "MaxLength" (Automatic = Length[p] + 2 * maxCycleLength). *)
+
+Options[ FindInfraMinimalForms ] = {
+  "NullHomotopicCycles" -> { 1, 2, 3 },
+  "MaxLength"           -> Automatic,
+  "MaxMoves"            -> Infinity
+};
+
+FindInfraMinimalForms[ graph_Graph, path_List,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ ] ] :=
+  Module[ {
+    rules    = resolveFaces[ graph, OptionValue[ FindInfraMinimalForms, { opts }, "NullHomotopicCycles" ] ],
+    maxMoves = OptionValue[ FindInfraMinimalForms, { opts }, "MaxMoves" ],
+    maxLen, parent
+  },
+    maxLen = Replace[ OptionValue[ FindInfraMinimalForms, { opts }, "MaxLength" ],
+      Automatic :> autoMaxLength[ { path }, rules ] ];
+    { parent } = walkSpaceBFS[ graph, path, rules, maxLen, maxMoves,
+      ( False & ) ][[ { 1 } ]];
+    takeUpTo[ minimalReached[ parent ], countLimit[ count ] ]
+  ]
+
+
+(* ===================== FindInfraReduction ===================== *)
+
+(* Chain(s) reducing path to a minimal form.  Each chain is a list of walks
+   {p, p', ..., m} ending at m in Min(p).  May go up before coming down. *)
+
+Options[ FindInfraReduction ] = Options[ FindInfraMinimalForms ];
+
+FindInfraReduction[ graph_Graph, path_List,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ ] ] :=
+  Module[ {
+    rules    = resolveFaces[ graph, OptionValue[ FindInfraReduction, { opts }, "NullHomotopicCycles" ] ],
+    maxMoves = OptionValue[ FindInfraReduction, { opts }, "MaxMoves" ],
+    maxLen, parent
+  },
+    maxLen = Replace[ OptionValue[ FindInfraReduction, { opts }, "MaxLength" ],
+      Automatic :> autoMaxLength[ { path }, rules ] ];
+    { parent } = walkSpaceBFS[ graph, path, rules, maxLen, maxMoves,
+      ( False & ) ][[ { 1 } ]];
+    takeUpTo[ reconstructChain[ parent, # ] & /@ minimalReached[ parent ], countLimit[ count ] ]
+  ]
+
+
+(* ===================== ReducePath ===================== *)
+
+(* One minimal form of path.  Convenience wrapper around FindInfraMinimalForms. *)
+
+Options[ ReducePath ] = Options[ FindInfraMinimalForms ];
+
+ReducePath[ graph_Graph, path_List, opts : OptionsPattern[ ] ] :=
+  First @ FindInfraMinimalForms[ graph, path, 1, opts ]
 
 
 (* ===================== HomotopicQ ===================== *)
 
-(* True iff a face-move chain takes p1 to p2.  Multi-realisations spread via
-   Cartesian product: every (p1_i, p2_j) pair must be homotopic. *)
+(* p1 ~ p2 iff their minimal-form sets intersect.  Implemented via short-circuit
+   BFS from p1 with stopWhen = (q === p2) for performance -- equivalent yes/no
+   answer without exhausting both minimal-form sets. *)
 
-Options[ HomotopicQ ] = Options[ FindHomotopy ];
+Options[ HomotopicQ ] = Options[ FindInfraHomotopy ];
 
 HomotopicQ[ graph_Graph, p1_List, p2_List, opts : OptionsPattern[ ] ] :=
-  findHomotopyCore[ graph, p1, p2, opts ] =!= { }
+  Module[ {
+    rules    = resolveFaces[ graph, OptionValue[ HomotopicQ, { opts }, "NullHomotopicCycles" ] ],
+    maxMoves = OptionValue[ HomotopicQ, { opts }, "MaxMoves" ],
+    maxLen, found
+  },
+    If[ First[ p1 ] =!= First[ p2 ] || Last[ p1 ] =!= Last[ p2 ], Return[ False ] ];
+    If[ p1 === p2, Return[ True ] ];
+    maxLen = Replace[ OptionValue[ HomotopicQ, { opts }, "MaxLength" ],
+      Automatic :> autoMaxLength[ { p1, p2 }, rules ] ];
+    { found } = walkSpaceBFS[ graph, p1, rules, maxLen, maxMoves,
+      ( #1 === p2 & ) ][[ { 2 } ]];
+    found =!= $NotFound
+  ]
 
 HomotopicQ[ graph_Graph, p1_, p2_, opts : OptionsPattern[ ] ] :=
   AllTrue[ Tuples[ infraSpread /@ { p1, p2 } ],
     pair |-> HomotopicQ[ graph, pair[[ 1 ]], pair[[ 2 ]], opts ] ]
 
 
-(* ===================== NullHomotopicQ / FindNullHomotopy ===================== *)
+(* ===================== NullHomotopicQ / FindInfraNullHomotopy ===================== *)
 
-(* A closed walk c = (v_0, ..., v_k, v_0) is null-homotopic iff it admits a
-   face-move chain to the constant walk (v_0).  Open input (v_0, ..., v_k)
-   with v_0 =!= v_k is auto-closed by appending v_0. *)
+(* A closed walk c is null-homotopic iff it admits a chain to the constant walk
+   (First[c]).  Open input is auto-closed by appending First[c]. *)
 
-Options[ NullHomotopicQ ]   = Options[ FindHomotopy ];
-Options[ FindNullHomotopy ] = Options[ FindHomotopy ];
+Options[ NullHomotopicQ ]   = Options[ FindInfraHomotopy ];
+Options[ FindInfraNullHomotopy ] = Options[ FindInfraHomotopy ];
 
 NullHomotopicQ[ graph_Graph, cycle_List, opts : OptionsPattern[ ] ] :=
   With[ { closed = closeWalk[ cycle ] },
@@ -74,15 +185,15 @@ NullHomotopicQ[ graph_Graph, InfraCircle[ reps_List ], opts : OptionsPattern[ ] 
   AllTrue[ reps, NullHomotopicQ[ graph, #, opts ] & ]
 
 
-FindNullHomotopy[ graph_Graph, cycle_List,
+FindInfraNullHomotopy[ graph_Graph, cycle_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ ] ] :=
   With[ { closed = closeWalk[ cycle ] },
-    FindHomotopy[ graph, closed, { First[ closed ] }, count, opts ]
+    FindInfraHomotopy[ graph, closed, { First[ closed ] }, count, opts ]
   ]
 
-FindNullHomotopy[ graph_Graph, InfraCircle[ reps_List ],
+FindInfraNullHomotopy[ graph_Graph, InfraCircle[ reps_List ],
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ ] ] :=
-  With[ { result = FindNullHomotopy[ graph, #, count, opts ] & /@ reps },
+  With[ { result = FindInfraNullHomotopy[ graph, #, count, opts ] & /@ reps },
     If[ MemberQ[ result, $Failed ], $Failed,
       With[ { capped = infraCap[
             DeleteDuplicates @ Flatten[ result /. InfraHomotopy[ rs_List ] :> rs, 1 ],
@@ -95,17 +206,11 @@ FindNullHomotopy[ graph_Graph, InfraCircle[ reps_List ],
 
 (* ===================== HomotopicLoopsQ ===================== *)
 
-(* Free loop homotopy: loop1 and loop2 are equivalent under the relation
-   generated by path-homotopy moves AND cyclic rotation of the loop.  By
-   user's framework: "a free homotopy of loops is a homotopy of paths
-   going through loops & rotations of the loops."  Equivalently: there
-   exist rotations r1 of loop1 and r2 of loop2 that start at the same
-   vertex AND are path-homotopic (with both endpoints fixed at that
-   common base).  Two loops with disjoint vertex sets return False --
-   strictly through-loops homotopy can't bridge them without an
-   external connecting path. *)
+(* Free loop homotopy: equivalence generated by path-homotopy moves and cyclic
+   rotation of the loop.  Two loops with disjoint vertex sets return False
+   (the strict through-loops definition can't bridge them). *)
 
-Options[ HomotopicLoopsQ ] = Options[ FindHomotopy ];
+Options[ HomotopicLoopsQ ] = Options[ FindInfraHomotopy ];
 
 HomotopicLoopsQ[ graph_Graph, loop1_List, loop2_List, opts : OptionsPattern[ ] ] :=
   AnyTrue[
@@ -122,39 +227,10 @@ HomotopicLoopsQ[ graph_Graph, loop1_, InfraCircle[ reps_List ], opts : OptionsPa
   AllTrue[ reps, HomotopicLoopsQ[ graph, loop1, #, opts ] & ]
 
 
-(* ===================== ReducePath ===================== *)
-
-(* Apply length-non-increasing face moves to a fixed point.  Default
-   "Faces" -> {2} is pure backtrack reduction (spurs a-b-a collapsed);
-   larger face alphabets allow triangle / k-cycle shortcuts that strictly
-   shorten the walk.  Returns one canonical short representative. *)
-
-Options[ ReducePath ] = { "NullHomotopicCycles" -> { 2 } };
-
-ReducePath[ graph_Graph, path_List, opts : OptionsPattern[ ] ] :=
-  Module[ { current = path, next, shortened = True,
-            moves = Select[
-              Join @@ ( faceMoves /@ resolveFaces[ graph, OptionValue[ "NullHomotopicCycles" ] ] ),
-              Length[ #[[ 1 ]] ] > Length[ #[[ 2 ]] ] & ] },
-    While[ shortened,
-      shortened = False;
-      next = SelectFirst[
-        Catenate[ applyMove[ current, # ] & /@ moves ],
-        Length[ # ] < Length[ current ] &,
-        $Failed ];
-      If[ next =!= $Failed, current = next; shortened = True ]
-    ];
-    current
-  ]
-
-
 (* ===================== Move classification ===================== *)
 
-(* Every elementary move replaces one arc of a null-homotopic cycle with the
-   complementary arc, so it changes the walk length by |newArc| - |oldArc|.
-   Compare walk lengths to classify the move as Contract (shorter), Extend
-   (longer), or Lateral (equal -- only possible on even-length cycles with
-   arcs split in the middle, e.g. the 2-2 diagonal swap of a 4-cycle). *)
+(* Elementary move replaces one arc by another of the same cycle, so it
+   changes walk length by |newArc| - |oldArc|: Contract / Extend / Lateral. *)
 
 HomotopyMoveType[ walk1_List, walk2_List ] :=
   Which[
@@ -177,9 +253,7 @@ closeWalk[ cycle_List ] :=
   If[ First[ cycle ] === Last[ cycle ], cycle, Append[ cycle, First[ cycle ] ] ]
 
 
-(* All cyclic rotations of a closed walk (v_0, ..., v_{m-1}, v_0), returned
-   as closed walks (with the duplicate closing vertex re-appended after
-   each rotation).  A length-<= 1 walk has only itself as rotation. *)
+(* All cyclic rotations of a closed walk, returned as closed walks. *)
 
 loopRotations[ c_List ] /; Length[ c ] <= 1 := { c }
 
@@ -191,30 +265,58 @@ loopRotations[ c_List ] :=
   ]
 
 
-(* resolveFaces[g, spec] -> List of vertex sequences, each a cycle in g
-   declared null-homotopic.  Length-2 cycles {a, b} encode the degenerate
-   digon a -> b -> a (backtrack); length-k cycles (k >= 3) come from
-   FindCycle[g, {k}, All]; integer n is shorthand for Range[2, n]. *)
+(* resolveFaces[g, spec] -> <|"Dup", "Spur", "Cycles"|>.  Length-1 and length-2
+   set the corresponding flags (handled by position-local generation); length
+   k >= 3 are enumerated via FindCycle[g, {k}, All].  The fundamental basis
+   FindFundamentalCycles is generally not equivalent: partial bases give
+   non-trivial pi_1 quotients, so we keep the "all cycles of length k" reading. *)
 
-resolveFaces[ graph_Graph, n_Integer ] /; n >= 2 := resolveFaces[ graph, Range[ 2, n ] ]
+resolveFaces[ graph_Graph, n_Integer ] /; n >= 1 := resolveFaces[ graph, Range[ 1, n ] ]
 
-resolveFaces[ graph_Graph, lengths_List ] /; AllTrue[ lengths, IntegerQ[ # ] && # >= 2 & ] :=
-  Join @@ ( facesOfLength[ graph, # ] & /@ lengths )
+resolveFaces[ graph_Graph, lengths_List ] /; AllTrue[ lengths, IntegerQ[ # ] && # >= 1 & ] :=
+  <|
+    "Dup"    -> MemberQ[ lengths, 1 ],
+    "Spur"   -> MemberQ[ lengths, 2 ],
+    "Cycles" -> Catenate[ cyclesOfLength[ graph, # ] & /@ Select[ lengths, # >= 3 & ] ]
+  |>
 
-resolveFaces[ graph_Graph, cycles : { __List } ] := cycles
+resolveFaces[ graph_Graph, cycles : { __List } ] :=
+  <|
+    "Dup"    -> AnyTrue[ cycles, Length[ # ] == 1 & ],
+    "Spur"   -> AnyTrue[ cycles, Length[ # ] == 2 & ],
+    "Cycles" -> Select[ cycles, Length[ # ] >= 3 & ]
+  |>
 
-resolveFaces[ _Graph, { } ] := { }
+resolveFaces[ _Graph, { } ] := <| "Dup" -> False, "Spur" -> False, "Cycles" -> { } |>
 
 
-facesOfLength[ graph_Graph, 2 ] := { #[[ 1 ]], #[[ 2 ]] } & /@ EdgeList[ graph ]
+(* Vertex sequences of all cycles of length k in graph (length k >= 3). *)
 
-facesOfLength[ graph_Graph, k_Integer ] /; k >= 3 := First /@ # & /@ FindCycle[ graph, { k }, All ]
+cyclesOfLength[ graph_Graph, k_Integer ] := First /@ # & /@ FindCycle[ graph, { k }, All ]
+
+
+(* Vertex sequences of the fundamental cycle basis: cyclomatic-number cycles
+   spanning the cycle space. Available for users who pass this explicitly via
+   "NullHomotopicCycles" -> fundamentalCycles[g]. *)
+
+fundamentalCycles[ graph_Graph ] := First /@ # & /@ FindFundamentalCycles[ graph ]
+
+
+(* Conservative default walk-length cap: max input length plus twice the
+   longest declared cycle, generous enough to admit "go up then down" chains. *)
+
+autoMaxLength[ walks_List, rules_Association ] :=
+  Max[ Length /@ walks ] + 2 * maxCycleLengthOf[ rules ]
+
+maxCycleLengthOf[ rules_Association ] :=
+  With[ { cs = rules[ "Cycles" ] },
+    Max[ 3, If[ cs === { }, 0, Max[ Length /@ cs ] ] ]
+  ]
 
 
 (* faceMoves[face]: ordered (oldArc, newArc) pairs.  For closed walk
    (f_1, ..., f_k), each cut (s, L) yields oldArc = L edges from slot s+1,
-   newArc = the complementary k-L edges (reversed to share endpoints).  Both
-   orientations included so the rewrite is direction-symmetric. *)
+   newArc = the complementary k-L edges (reversed). *)
 
 faceMoves[ face_List ] /; Length[ face ] < 2 := { }
 
@@ -238,8 +340,8 @@ faceMoves[ face_List ] :=
   ]
 
 
-(* Slide oldArc through path as a contiguous sub-walk; every match yields
-   one rewritten path with oldArc replaced by newArc. *)
+(* Slide oldArc through path as a contiguous sub-walk; each match yields one
+   rewritten path with oldArc replaced by newArc. *)
 
 applyMove[ path_List, { oldArc_List, newArc_List } ] :=
   With[ { arcLen = Length[ oldArc ], pathLen = Length[ path ] },
@@ -255,24 +357,65 @@ applyMove[ path_List, { oldArc_List, newArc_List } ] :=
   ]
 
 
-pathNeighbors[ path_List, moves_List ] :=
-  DeleteDuplicates @ Flatten[ applyMove[ path, # ] & /@ moves, 1 ]
+(* Length-1 cycle moves: a-a-a ... <-> a ...  Position-local; no graph
+   neighbours needed (the walk format itself supplies the duplication). *)
+
+consecutiveDupMoves[ path_List ] :=
+  With[ { n = Length[ path ] },
+    Join[
+      Table[ Insert[ path, path[[ i ]], i + 1 ], { i, n } ],
+      Cases[ Range[ n - 1 ],
+        i_ /; path[[ i ]] === path[[ i + 1 ]] :> Drop[ path, { i + 1 } ] ]
+    ]
+  ]
 
 
-(* Breadth-first search over walks with the elementary face moves as the
-   transition relation.  parent maps each visited walk to its predecessor;
-   the chain p_0 -> ... -> p_k is reconstructed by walking parent backwards.
-   Wolfram's BreadthFirstScan works over graph vertices, not arbitrary
-   path-spaces -- hence the hand-rolled While loop. *)
+(* Length-2 cycle moves: ... a b a ... <-> ... a ...  Position-local using
+   precomputed AdjacencyList values for the insertion direction. *)
 
-homotopyBFS[ graph_Graph, p1_List, p2_List, faces_List, maxLen_, maxMoves_ ] :=
-  Module[ { moves, parent, frontier, nextFrontier, found = False, layer = 0 },
-    If[ First[ p1 ] =!= First[ p2 ] || Last[ p1 ] =!= Last[ p2 ], Return[ { } ] ];
-    If[ p1 === p2, Return[ { { p1 } } ] ];
-    moves = If[ faces === { }, { }, Join @@ ( faceMoves /@ faces ) ];
-    parent = <| p1 -> None |>;
-    frontier = { p1 };
-    While[ ! found && frontier =!= { } && layer < maxMoves,
+spurMovesAt[ path_List, vN_Association ] :=
+  With[ { n = Length[ path ] },
+    Join[
+      Flatten[ Table[
+        With[ { a = path[[ i ]] },
+          ( Join[ path[[ ;; i ]], { #, a }, path[[ i + 1 ;; ]] ] & ) /@
+            DeleteCases[ vN[ a ], a ] ],
+        { i, n } ], 1 ],
+      Cases[ Range[ n - 2 ],
+        i_ /; path[[ i ]] === path[[ i + 2 ]] :> Drop[ path, { i + 1, i + 2 } ] ]
+    ]
+  ]
+
+
+(* All elementary neighbours of path: 1-cycle (if Dup), 2-cycle (if Spur),
+   and the k >= 3 cycle moves from rules["Cycles"].  Deduplicated. *)
+
+elementaryMoves[ path_List, vN_Association, rules_Association, cycleMoves_List ] :=
+  DeleteDuplicates @ Join[
+    If[ rules[ "Dup" ],  consecutiveDupMoves[ path ], { } ],
+    If[ rules[ "Spur" ], spurMovesAt[ path, vN ],     { } ],
+    Catenate[ applyMove[ path, # ] & /@ cycleMoves ]
+  ]
+
+
+(* Bidirectional BFS in walk-space from start.  At each new walk q', call
+   stopWhen[q', parent]; first True halts and returns {parent, q', layer}.
+   Otherwise exhausts the bounded walk-space.  Walks longer than maxLen are
+   skipped; BFS stops after maxMoves layers. *)
+
+walkSpaceBFS[ graph_Graph, start_List, rules_Association, maxLen_, maxMoves_, stopWhen_ ] :=
+  Module[ {
+    vN = AssociationMap[ AdjacencyList[ graph, # ] &, VertexList[ graph ] ],
+    cycleMoves,
+    parent = <| start -> None |>,
+    frontier = { start },
+    nextFrontier,
+    found = $NotFound,
+    layer = 0
+  },
+    cycleMoves = If[ rules[ "Cycles" ] === { }, { },
+      Join @@ ( faceMoves /@ rules[ "Cycles" ] ) ];
+    While[ found === $NotFound && frontier =!= { } && layer < maxMoves,
       nextFrontier = { };
       Scan[
         p |->
@@ -280,19 +423,31 @@ homotopyBFS[ graph_Graph, p1_List, p2_List, faces_List, maxLen_, maxMoves_ ] :=
             q |->
               If[ ! KeyExistsQ[ parent, q ] && Length[ q ] <= maxLen,
                 AssociateTo[ parent, q -> p ];
-                If[ q === p2, found = True ];
-                AppendTo[ nextFrontier, q ]
+                AppendTo[ nextFrontier, q ];
+                If[ found === $NotFound && stopWhen[ q, parent ], found = q ]
               ],
-            pathNeighbors[ p, moves ]
+            elementaryMoves[ p, vN, rules, cycleMoves ]
           ],
         frontier
       ];
       frontier = nextFrontier;
       layer++
     ];
-    If[ found, { reconstructChain[ parent, p2 ] }, { } ]
+    { parent, found, layer }
   ]
 
+
+(* Length-shortest walks among the visited keys of a BFS parent association. *)
+
+minimalReached[ parent_Association ] :=
+  With[ { walks = Keys[ parent ] },
+    With[ { minLen = Min[ Length /@ walks ] },
+      Select[ walks, Length[ # ] == minLen & ]
+    ]
+  ]
+
+
+(* Walk parent backwards from target to the start (parent[start] = None). *)
 
 reconstructChain[ parent_Association, target_List ] :=
   Module[ { chain = { target }, current = target },

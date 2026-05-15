@@ -1,7 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 
-(* ===================== FindRevolution ===================== *)
+(* ===================== FindInfraRevolution ===================== *)
 
 (* Multi-axis rotational object.  Each axis path is extended by a SET of
    valid one-step continuations on each side -- vertices adjacent to the
@@ -11,9 +11,9 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
      "Voronoi" -- closest extended position must be in the original range.
      "PerpendicularBisector" -- d(u, v_{i-1}) == d(u, v_{i+1}) at original i. *)
 
-Options[ FindRevolution ] = { "Form" -> "Solid", Method -> "Voronoi" };
+Options[ FindInfraRevolution ] = { "Form" -> "Solid", Method -> "Voronoi" };
 
-FindRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
+FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
   With[ { axisPaths = parseAxes @ axis,
           cmp = If[ OptionValue[ "Form" ] === "Surface", Equal, LessEqual ],
           method = OptionValue[ Method ] },
@@ -35,7 +35,7 @@ FindRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
   ]
 
 
-parseAxes[ InfraSegment[ paths_List ] ] := paths
+parseAxes[ ( InfraSegment | InfraLine | InfraPath )[ paths_List ] ] := paths
 parseAxes[ paths : { _List, ___List } ] := paths
 parseAxes[ path_List ]                  := { path }
 
@@ -89,28 +89,28 @@ bisectorPasses[ dists_, i_, totalPos_ ] :=
     True,           dists[[ i - 1 ]] === dists[[ i + 1 ]] ]
 
 
-(* ===================== FindCylinder ===================== *)
+(* ===================== FindInfraCylinder ===================== *)
 
-Options[ FindCylinder ] = Options[ FindRevolution ];
+Options[ FindInfraCylinder ] = Options[ FindInfraRevolution ];
 
-FindCylinder[ graph_Graph, axis_, radius_, opts : OptionsPattern[ ] ] :=
-  FindRevolution[ graph, axis, radius, opts ]
+FindInfraCylinder[ graph_Graph, axis_, radius_, opts : OptionsPattern[ ] ] :=
+  FindInfraRevolution[ graph, axis, radius, opts ]
 
 
-(* ===================== FindCone ===================== *)
+(* ===================== FindInfraCone ===================== *)
 
-Options[ FindCone ] = Join[ Options[ FindRevolution ], { "Apex" -> First } ];
+Options[ FindInfraCone ] = Join[ Options[ FindInfraRevolution ], { "Apex" -> First } ];
 
-FindCone[ graph_Graph, axis_, slope_, opts : OptionsPattern[ ] ] :=
+FindInfraCone[ graph_Graph, axis_, slope_, opts : OptionsPattern[ ] ] :=
   With[ { n = Length @ First @ parseAxes @ axis,
           apex = OptionValue[ "Apex" ] },
-    FindRevolution[ graph, axis,
+    FindInfraRevolution[ graph, axis,
       slope * If[ apex === Last, Range[ n - 1, 0, -1 ], Range[ 0, n - 1 ] ],
-      FilterRules[ { opts }, Options[ FindRevolution ] ] ]
+      FilterRules[ { opts }, Options[ FindInfraRevolution ] ] ]
   ]
 
 
-(* ===================== RevolutionQ ===================== *)
+(* ===================== InfraRevolutionQ ===================== *)
 
-RevolutionQ[ graph_Graph, vs_List, axis_, profile_, opts : OptionsPattern[ FindRevolution ] ] :=
-  Sort @ vs === FindRevolution[ graph, axis, profile, opts ][[ 1 ]]
+InfraRevolutionQ[ graph_Graph, vs_List, axis_, profile_, opts : OptionsPattern[ FindInfraRevolution ] ] :=
+  Sort @ vs === FindInfraRevolution[ graph, axis, profile, opts ][[ 1 ]]

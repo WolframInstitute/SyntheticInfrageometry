@@ -61,7 +61,7 @@ Cell["ShellViewer", "Item",ExpressionUUID->"8f39ecea-ee6e-4d0a-95f7-cfeb03388c7d
 
 Cell["CircleViewer", "Item",ExpressionUUID->"3643b0e1-25dd-49d0-83da-f73602820358"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"fb42b4ab-a431-4c31-8502-fca45da8ce85"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"fb42b4ab-a431-4c31-8502-fca45da8ce85"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"d64c8663-ab83-4b1f-8bcc-074159b70a2b"],
 

@@ -54,7 +54,7 @@ UID->"ab9b9bf2-fc45-430f-8572-a000755aecf1"],
 
 Cell["See Also", "Section",ExpressionUUID->"4602a7d4-5783-44d8-9a39-85c66804c2a6"],
 
-Cell["ShellQ", "Item",ExpressionUUID->"e720d825-9bc7-40d6-96a3-f9f5a3265a4f"],
+Cell["InfraShellQ", "Item",ExpressionUUID->"e720d825-9bc7-40d6-96a3-f9f5a3265a4f"],
 
 Cell["InfraShell", "Item",ExpressionUUID->"a9945bc2-24bb-4810-aa4a-3a9b819832ac"],
 

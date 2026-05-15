@@ -128,7 +128,7 @@ Cell["Find common point / common line", "Section",ExpressionUUID->"b4398a25-8bef
 Cell["Common point of two crossing diagonals.", "CodeText",ExpressionUUID->"e55b8ad8-7501-41e8-b003-33d4d477a9f1"],
 
 Cell[BoxData[
- RowBox[{"FindCommonPoint", "[", 
+ RowBox[{"FindInfraCommonPoint", "[", 
   RowBox[{"g", ",", 
    RowBox[{"{", 
     RowBox[{
@@ -141,7 +141,7 @@ Cell[BoxData[
 Cell["Common line of three collinear path vertices.", "CodeText",ExpressionUUID->"240f80a5-0a50-4ba3-b58f-a3567216a689"],
 
 Cell[BoxData[
- RowBox[{"FindCommonLine", "[", 
+ RowBox[{"FindInfraCommonLine", "[", 
   RowBox[{
    RowBox[{"PathGraph", "[", 
     RowBox[{"Range", "[", "6", "]"}], "]"}], ",", 
@@ -196,7 +196,7 @@ Cell["Rays", "Section",ExpressionUUID->"b0ddfe30-8061-4e52-afc3-4ad86bd74670"],
 Cell["All rays from the grid centre in vertex 6's direction.", "CodeText",ExpressionUUID->"cec490d0-015f-489d-b90b-86656da142fd"],
 
 Cell[BoxData[
- RowBox[{"FindRay", "[", 
+ RowBox[{"FindInfraRay", "[", 
   RowBox[{"g", ",", "5", ",", "6", ",", "All"}], "]"}]], "Input",ExpressionUUI\
 D->"b84f2dd5-a65a-4a9b-9047-430137817d0a"],
 

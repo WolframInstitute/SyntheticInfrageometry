@@ -53,7 +53,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"28f846ff-d4a4-4757-8337-b156d2c7bf69"],
 
 Cell[BoxData[
- $CellContext`buildCell["EnumerateGraphs[4, UniqueSegmentQ, 3]"]], "Input",Exp\
+ $CellContext`buildCell["EnumerateGraphs[4, UniqueInfraSegmentQ, 3]"]], "Input",Exp\
 ressionUUID->"a341b909-3859-4651-b068-a99b4eb711ca"],
 
 Cell[BoxData[
@@ -73,7 +73,7 @@ ExpressionUUID->"3822e1dd-cc5b-4a83-aef3-b1135ebbcb3f"],
 
 Cell["See Also", "Section",ExpressionUUID->"95ad7b27-a7ec-4d30-993c-00ca8db43320"],
 
-Cell["UniqueSegmentQ", "Item",ExpressionUUID->"c46dff3f-d65c-4fcd-a2c6-fe78e73f051d"],
+Cell["UniqueInfraSegmentQ", "Item",ExpressionUUID->"c46dff3f-d65c-4fcd-a2c6-fe78e73f051d"],
 
 Cell["ProjectivePlaneGraphQ", "Item",ExpressionUUID->"08556e42-c242-4a42-b4aa-6b9401a8e54b"],
 

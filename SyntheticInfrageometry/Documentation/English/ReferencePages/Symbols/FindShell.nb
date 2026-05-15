@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindShell", "Title",ExpressionUUID->"5aef2303-5772-43ed-ae70-65c7639f2c23"],
+Cell["FindInfraShell", "Title",ExpressionUUID->"5aef2303-5772-43ed-ae70-65c7639f2c23"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"8854cc85-6214-46e4-a004-d246842127e8"],
 
 Cell["\<\
-FindShell[g, c, r] returns one metric shell { v : d(c, v) == r } around c. \
+FindInfraShell[g, c, r] returns one metric shell { v : d(c, v) == r } around c. \
 Returns a List of unary InfraShell[{set}] wrappers; n / UpTo[n] / All control \
 multiplicity. Option Method (\"Metric\" (default) | \"Separating\" | \
 \"Embedding\").\
@@ -53,7 +53,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"b386af18-a470-4675-a483-b9e39952c748"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindShell[GridGraph[{3, 3}], 5, 1]"]], "Input",Expres\
+ $CellContext`buildCell["FindInfraShell[GridGraph[{3, 3}], 5, 1]"]], "Input",Expres\
 sionUUID->"f47e6453-3de3-4083-be8b-c84c084b986b"],
 
 Cell[BoxData[
@@ -68,7 +68,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "With[{g = GridGraph[{3, 3}]}, InfraSceneHighlight[g, {FindShell[g, 5, 1] -> \
+ "With[{g = GridGraph[{3, 3}]}, InfraSceneHighlight[g, {FindInfraShell[g, 5, 1] -> \
 LightBlue}]]"]], "Input",ExpressionUUID->"7f9a399d-e966-4089-bbb7-\
 9a23a94c062a"],
 
@@ -84,22 +84,22 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindShell[GridGraph[{3, 3}], 5, 1, All, Method -> \"Separating\"]"]], \
+ "FindInfraShell[GridGraph[{3, 3}], 5, 1, All, Method -> \"Separating\"]"]], \
 "Input",ExpressionUUID->"b34043fc-b3eb-409e-90fa-ff305bd93f85"],
 
 Cell["See Also", "Section",ExpressionUUID->"7eb571f9-facd-4835-8334-c97f9a941e2d"],
 
 Cell["InfraShell", "Item",ExpressionUUID->"81c30d1b-691f-494e-a09c-67ebc1664756"],
 
-Cell["FindShellParameters", "Item",ExpressionUUID->"8de3b3b1-3f2e-42a5-a72d-47a2bd041b54"],
+Cell["FindInfraShellParameters", "Item",ExpressionUUID->"8de3b3b1-3f2e-42a5-a72d-47a2bd041b54"],
 
-Cell["ShellQ", "Item",ExpressionUUID->"6adc3ca5-38ab-4448-a3d5-58bb6e536261"],
+Cell["InfraShellQ", "Item",ExpressionUUID->"6adc3ca5-38ab-4448-a3d5-58bb6e536261"],
 
-Cell["FindCircle", "Item",ExpressionUUID->"7198c99b-3372-48c6-8476-cc9721a7b497"],
+Cell["FindInfraCircle", "Item",ExpressionUUID->"7198c99b-3372-48c6-8476-cc9721a7b497"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"3869090f-6c8e-43ec-8746-d891b31f643c"],
+Cell["FindInfraBisectingHyperplane", "Item",ExpressionUUID->"3869090f-6c8e-43ec-8746-d891b31f643c"],
 
-Cell["FindPoint", "Item",ExpressionUUID->"3104a0ca-478e-44ec-8f0f-60c983950406"],
+Cell["FindInfraPoint", "Item",ExpressionUUID->"3104a0ca-478e-44ec-8f0f-60c983950406"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"a66c9cdc-234c-4395-bd72-3637ce2d96b2"],
 

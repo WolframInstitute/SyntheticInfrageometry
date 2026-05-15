@@ -7,7 +7,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
    at O - some maximal geodesic through O contains both. *)
 
 SameDirectionQ[ graph_Graph, O_, v_, w_ ] :=
-  v === w || AnyTrue[ FindLine[ graph, O, v, All ], MemberQ[ #[[ 1, 1 ]], w ] & ]
+  v === w || AnyTrue[ FindInfraLine[ graph, O, v, All ], MemberQ[ #[[ 1, 1 ]], w ] & ]
 
 
 (* CollinearQ: there exists a single canonical line containing every
@@ -15,7 +15,7 @@ SameDirectionQ[ graph_Graph, O_, v_, w_ ] :=
 
 CollinearQ[ graph_Graph, verts_List ] :=
   Length[ DeleteDuplicates @ verts ] <= 1 ||
-    Length @ FindCommonLine[ graph, verts, UpTo[ 1 ] ] > 0
+    Length @ FindInfraCommonLine[ graph, verts, UpTo[ 1 ] ] > 0
 
 
 (* ConcurrentQ: a set of lines shares a common vertex - the dual of
@@ -23,7 +23,7 @@ CollinearQ[ graph_Graph, verts_List ] :=
 
 ConcurrentQ[ graph_Graph, lines_List ] :=
   Length[ lines ] <= 1 ||
-    Length @ FindCommonPoint[ graph, lines, UpTo[ 1 ] ] > 0
+    Length @ FindInfraCommonPoint[ graph, lines, UpTo[ 1 ] ] > 0
 
 
 (* UniquePencilQ[g, O]: every direction at O is single-valued - exactly
@@ -31,21 +31,21 @@ ConcurrentQ[ graph_Graph, lines_List ] :=
 
 UniquePencilQ[ graph_Graph, O_ ] :=
   AllTrue[ DeleteCases[ VertexList[ graph ], O ],
-    Length @ FindLine[ graph, O, #, All ] == 1 & ]
+    Length @ FindInfraLine[ graph, O, #, All ] == 1 & ]
 
 
 (* UniqueCollinearQ: exactly one canonical line contains every listed
    vertex; the unique-witness companion of CollinearQ. *)
 
 UniqueCollinearQ[ graph_Graph, verts_List ] :=
-  Length @ FindCommonLine[ graph, verts, All ] == 1
+  Length @ FindInfraCommonLine[ graph, verts, All ] == 1
 
 
 (* UniqueConcurrentQ: the listed lines share exactly one common vertex;
    the unique-witness companion of ConcurrentQ. *)
 
 UniqueConcurrentQ[ graph_Graph, lines_List ] :=
-  Length @ FindCommonPoint[ graph, lines, All ] == 1
+  Length @ FindInfraCommonPoint[ graph, lines, All ] == 1
 
 
 (* ===================== Whitehead axioms ===================== *)
@@ -68,12 +68,12 @@ WhiteheadW3Q[ graph_Graph ] :=
     AllTrue[ Tuples[ verts, 4 ],
       abcd |-> If[ Length @ DeleteDuplicates @ abcd < 4, True,
         With[ { A = abcd[[ 1 ]], B = abcd[[ 2 ]], C = abcd[[ 3 ]], D = abcd[[ 4 ]] },
-          With[ { abLines = #[[ 1, 1 ]] & /@ FindLine[ graph, A, B, All ],
-                  cdLines = #[[ 1, 1 ]] & /@ FindLine[ graph, C, D, All ] },
+          With[ { abLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, A, B, All ],
+                  cdLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, C, D, All ] },
             If[ ! AnyTrue[ Tuples[ { abLines, cdLines } ], IntersectingQ @@ # & ],
               True,
-              With[ { acLines = #[[ 1, 1 ]] & /@ FindLine[ graph, A, C, All ],
-                      bdLines = #[[ 1, 1 ]] & /@ FindLine[ graph, B, D, All ] },
+              With[ { acLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, A, C, All ],
+                      bdLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, B, D, All ] },
                 AnyTrue[ Tuples[ { acLines, bdLines } ], IntersectingQ @@ # & ]
               ]
             ]

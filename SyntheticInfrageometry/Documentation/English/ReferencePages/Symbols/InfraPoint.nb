@@ -26,8 +26,8 @@ Cell["\<\
 InfraPoint is the wrapper head for vertex realisations of the point \
 primitive. InfraPoint[v] is the unary form; InfraPoint[{v1, \[Ellipsis], vk}] \
 is the multi-realisation form. Every Find* finder that returns points \
-(FindPoint, FindMidpoint, FindReflection, CompleteEquilateralTriangle, \
-FindCommonPoint, FindPerpendicular, and the 5-vertex ExtendSegment form) \
+(FindInfraPoint, FindInfraMidpoint, FindInfraReflection, CompleteInfraEquilateralTriangle, \
+FindInfraCommonPoint, FindInfraPerpendicular, and the 5-vertex ExtendInfraSegment form) \
 emits a List of unary InfraPoint[{v}] wrappers. Wrapping that List with \
 InfraPoint @ \[Ellipsis] collapses it to the multi form via auto-flatten.\
 \>", "Text",ExpressionUUID->"c29ba5ce-5a47-4aaf-abb9-7db6b025745d"],
@@ -136,7 +136,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"144a3b4f-9092-4ce4-9d53-7163b865ec59"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindPoint[CycleGraph[6], 2]"]], "Input",ExpressionUUID->"ca549a01-1cac-4dd5-82a0-7e88cf8b044a"],
+ $CellContext`buildCell["FindInfraPoint[CycleGraph[6], 2]"]], "Input",ExpressionUUID->"ca549a01-1cac-4dd5-82a0-7e88cf8b044a"],
 
 Cell[BoxData[
  $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"311c0529-e518-494b-b7f7-320f99860ba9"],
@@ -154,13 +154,13 @@ Cell[BoxData[
 
 Cell["See Also", "Section",ExpressionUUID->"99cf0ffa-f965-4322-90b1-0ff8ba58d483"],
 
-Cell["FindPoint", "Item",ExpressionUUID->"a0ce3611-8c72-4b3a-ba76-edfecc98426f"],
+Cell["FindInfraPoint", "Item",ExpressionUUID->"a0ce3611-8c72-4b3a-ba76-edfecc98426f"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"0010a487-5f48-48f8-a5b4-001c0a9b8e69"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"0010a487-5f48-48f8-a5b4-001c0a9b8e69"],
 
-Cell["FindReflection", "Item",ExpressionUUID->"6b3b10e4-60d0-4e9f-bf37-c800274103c6"],
+Cell["FindInfraReflection", "Item",ExpressionUUID->"6b3b10e4-60d0-4e9f-bf37-c800274103c6"],
 
-Cell["FindCommonPoint", "Item",ExpressionUUID->"4692fd38-dd92-4f7d-a0e7-d3707045a19d"],
+Cell["FindInfraCommonPoint", "Item",ExpressionUUID->"4692fd38-dd92-4f7d-a0e7-d3707045a19d"],
 
 Cell["InfraSegment", "Item",ExpressionUUID->"d84c22d2-5f9c-452a-8165-827b12ebe60e"],
 

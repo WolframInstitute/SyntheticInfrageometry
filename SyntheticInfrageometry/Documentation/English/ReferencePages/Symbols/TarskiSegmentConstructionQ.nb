@@ -61,7 +61,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "Use the 5-vertex ExtendSegment finder to look for witnesses."]], "Input",Exp\
+ "Use the 5-vertex ExtendInfraSegment finder to look for witnesses."]], "Input",Exp\
 ressionUUID->"410f8928-b3b1-4881-a06b-678cb49542fd"],
 
 Cell[BoxData[
@@ -69,14 +69,14 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "ExtendSegment[PathGraph[Range[10]], 1, 2, 3, 4, All]"]], "Input",ExpressionU\
+ "ExtendInfraSegment[PathGraph[Range[10]], 1, 2, 3, 4, All]"]], "Input",ExpressionU\
 UID->"c349497c-624d-4e63-b31f-5a0ed65adf73"],
 
 Cell["See Also", "Section",ExpressionUUID->"055d650e-b756-438f-a6bc-60b82f22f7cc"],
 
 Cell["TarskiAxiomQ", "Item",ExpressionUUID->"96758f63-d5ab-4c15-928b-16c60a564ee8"],
 
-Cell["ExtendSegment", "Item",ExpressionUUID->"c1997610-3d8a-42ac-a30b-0f1628c025b8"],
+Cell["ExtendInfraSegment", "Item",ExpressionUUID->"c1997610-3d8a-42ac-a30b-0f1628c025b8"],
 
 Cell["BetweennessQ", "Item",ExpressionUUID->"18b03969-2343-4d52-aaf5-1c82de81f1cb"],
 

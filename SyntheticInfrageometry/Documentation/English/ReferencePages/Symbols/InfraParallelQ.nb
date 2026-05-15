@@ -55,9 +55,9 @@ Cell[BoxData[
 
 Cell["See Also", "Section",ExpressionUUID->"166d3a07-1490-4ddf-976d-8547c34888cc"],
 
-Cell["ParallelQ", "Item",ExpressionUUID->"65a3c94b-3d88-4512-9d11-90a4c17359a2"],
+Cell["InfraParallelQ", "Item",ExpressionUUID->"65a3c94b-3d88-4512-9d11-90a4c17359a2"],
 
-Cell["FindParallel", "Item",ExpressionUUID->"39ab73eb-a9a0-4511-ba6d-746676c87fef"],
+Cell["FindInfraParallel", "Item",ExpressionUUID->"39ab73eb-a9a0-4511-ba6d-746676c87fef"],
 
 Cell["InfraScene", "Item",ExpressionUUID->"8c70780f-d395-4c75-ae87-83b23125ccfa"],
 

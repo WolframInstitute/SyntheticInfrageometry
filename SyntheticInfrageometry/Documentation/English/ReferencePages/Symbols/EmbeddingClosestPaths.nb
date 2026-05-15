@@ -18,14 +18,14 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["EmbeddingClosestPaths", "Title",ExpressionUUID->"dbc8d871-6790-4541-a270-65adf09a7856"],
+Cell["EmbeddingClosest", "Title",ExpressionUUID->"dbc8d871-6790-4541-a270-65adf09a7856"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"1f75ae19-73f6-48e9-9ebc-1bdf1c52c6f0"],
 
 Cell["\<\
-EmbeddingClosestPaths[g, paths, {p1, p2}] keeps the paths whose drawing under \
+EmbeddingClosest[g, paths, {p1, p2}] keeps the paths whose drawing under \
 GraphEmbedding is Hausdorff-closest to the straight Euclidean segment p1-p2. \
-Operator form EmbeddingClosestPaths[g, {p1, p2}][paths].\
+Operator form EmbeddingClosest[g, {p1, p2}][paths].\
 \>", "Text",ExpressionUUID->"cb885878-cbdf-4bb6-a882-bb056f5da33a"],
 
 Cell["Setup", "Section",ExpressionUUID->"6fa0855e-7f0d-489a-81df-9ff5bebc005e"],
@@ -52,7 +52,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "EmbeddingClosestPaths[GridGraph[{4, 4}], FindSegment[GridGraph[{4, 4}], 1, \
+ "EmbeddingClosest[GridGraph[{4, 4}], FindInfraSegment[GridGraph[{4, 4}], 1, \
 16, All], {1, 16}]"]], "Input",ExpressionUUID->"d485e44d-412e-43d4-8190-\
 8cdf87d5b67a"],
 
@@ -60,7 +60,7 @@ Cell[BoxData[
  $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"54971a02-0d3f-471e-9c18-da2d7f32d45a"],
 
 Cell[BoxData[
- $CellContext`buildCell["Operator form composed with FindSegment."]], "Input",\
+ $CellContext`buildCell["Operator form composed with FindInfraSegment."]], "Input",\
 ExpressionUUID->"40b75ca2-5c71-481c-9a75-78314c817f42"],
 
 Cell[BoxData[
@@ -68,17 +68,17 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "With[{g = GridGraph[{4, 4}]}, EmbeddingClosestPaths[g, {1, 16}] @ \
-FindSegment[g, 1, 16, All]]"]], "Input",ExpressionUUID->"41b6317f-dec9-40f3-\
+ "With[{g = GridGraph[{4, 4}]}, EmbeddingClosest[g, {1, 16}] @ \
+FindInfraSegment[g, 1, 16, All]]"]], "Input",ExpressionUUID->"41b6317f-dec9-40f3-\
 86b7-edf9d25c26f3"],
 
 Cell["See Also", "Section",ExpressionUUID->"0538f063-b17a-47e2-ad7d-cbc80ec2682d"],
 
-Cell["SelectPath", "Item",ExpressionUUID->"90de9d3e-a675-4260-a176-66bb51fa2468"],
+Cell["SelectInfraPath", "Item",ExpressionUUID->"90de9d3e-a675-4260-a176-66bb51fa2468"],
 
-Cell["EmbeddingClosestCycles", "Item",ExpressionUUID->"fb9c49ed-51b7-499a-ac21-55cb3e7b6f8c"],
+Cell["EmbeddingClosest", "Item",ExpressionUUID->"fb9c49ed-51b7-499a-ac21-55cb3e7b6f8c"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"36f52638-0334-4d12-9f1a-03f31a914a94"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"36f52638-0334-4d12-9f1a-03f31a914a94"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"4e1c28c6-4781-4249-8297-2a391476a70c"],
 

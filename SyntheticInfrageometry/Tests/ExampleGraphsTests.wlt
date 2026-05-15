@@ -98,10 +98,10 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = TorusTessellation[ "Rectangular", { 4, 4 } ] },
-    MatchQ[ FindSegment[ g, First @ VertexList @ g, Last @ VertexList @ g, All ], { InfraSegment[ { _ } ] .. } ]
+    MatchQ[ FindInfraSegment[ g, First @ VertexList @ g, Last @ VertexList @ g, All ], { InfraSegment[ { _ } ] .. } ]
   ],
   True,
-  TestID -> "TorusTessellation-Rectangular-feeds-FindSegment"
+  TestID -> "TorusTessellation-Rectangular-feeds-FindInfraSegment"
 ]
 
 EndTestSection[]

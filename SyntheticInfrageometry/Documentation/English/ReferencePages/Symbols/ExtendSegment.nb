@@ -18,15 +18,15 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["ExtendSegment", "Title",ExpressionUUID->"2cee83bc-bce9-4f4b-bf5a-5354d07c79b4"],
+Cell["ExtendInfraSegment", "Title",ExpressionUUID->"2cee83bc-bce9-4f4b-bf5a-5354d07c79b4"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"83db8df3-dd48-46ca-af66-b3cf59a3149b"],
 
 Cell["\<\
-ExtendSegment[g, segment] extends segment to a maximal line whose middle part \
+ExtendInfraSegment[g, segment] extends segment to a maximal line whose middle part \
 is segment, returned as a List of unary InfraSegment[{line}] wrappers. \
 Accepts a bare vertex sequence or an InfraSegment wrapper. Method (shared \
-with FindSegment) controls extension strategy. ExtendSegment[g, a, b, c, d, \
+with FindInfraSegment) controls extension strategy. ExtendInfraSegment[g, a, b, c, d, \
 n] is the Tarski synthetic-extension form (axiom A4 in finder shape): returns \
 unary InfraPoint[{x}] wrappers for x with B(a, b, x) and d(b, x) == d(c, d).\
 \>", "Text",ExpressionUUID->"e3896497-232e-43fa-8216-dc6d75ae1bda"],
@@ -55,7 +55,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"aa2af454-bf4f-466e-be30-b392ce189dd5"],
 
 Cell[BoxData[
- $CellContext`buildCell["ExtendSegment[GridGraph[{4, 4}], {6, 11}]"]], "Input",\
+ $CellContext`buildCell["ExtendInfraSegment[GridGraph[{4, 4}], {6, 11}]"]], "Input",\
 ExpressionUUID->"c00250b2-8781-48a4-bf41-72a1a5b40162"],
 
 Cell[BoxData[
@@ -69,7 +69,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "ExtendSegment[GridGraph[{4, 4}], {6, 11}, All]"]], "Input",ExpressionUUID->\
+ "ExtendInfraSegment[GridGraph[{4, 4}], {6, 11}, All]"]], "Input",ExpressionUUID->\
 "f0429b64-4cb4-4272-9ef1-68c5e92b6aa6"],
 
 Cell[BoxData[
@@ -85,16 +85,16 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "ExtendSegment[PathGraph[Range[10]], 1, 2, 3, 4, All]"]], "Input",ExpressionU\
+ "ExtendInfraSegment[PathGraph[Range[10]], 1, 2, 3, 4, All]"]], "Input",ExpressionU\
 UID->"3a0eeebf-ddd0-4df1-b0d2-d26bb9655ac9"],
 
 Cell["See Also", "Section",ExpressionUUID->"3771e541-1745-46f6-a35e-31cda7761e85"],
 
 Cell["InfraSegment", "Item",ExpressionUUID->"adcf04b3-f4d3-4edd-a345-41cbe95c37a0"],
 
-Cell["FindLine", "Item",ExpressionUUID->"a69fad78-0380-4cd4-b31d-10fe9b29a2e4"],
+Cell["FindInfraLine", "Item",ExpressionUUID->"a69fad78-0380-4cd4-b31d-10fe9b29a2e4"],
 
-Cell["FindSegment", "Item",ExpressionUUID->"f9e0d6f9-926a-45ee-99c7-9c9fdc7f8aa5"],
+Cell["FindInfraSegment", "Item",ExpressionUUID->"f9e0d6f9-926a-45ee-99c7-9c9fdc7f8aa5"],
 
 Cell["BetweennessQ", "Item",ExpressionUUID->"4bc94f99-1b1e-404e-befa-cefdae0fdb8f"],
 

@@ -92,7 +92,7 @@ Cell["TarskiBetweennessTensor", "Item",ExpressionUUID->"59aaf26b-9f86-45f8-b400-
 
 Cell["MetricInterval", "Item",ExpressionUUID->"6bde545a-3336-441c-9e51-5115a0cadb59"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"96aba2a0-e2a3-40db-bf76-2da97e1f1b39"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"96aba2a0-e2a3-40db-bf76-2da97e1f1b39"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"fe5c5bf8-e302-49c1-84d9-776a86587c4b"],
 

@@ -26,7 +26,7 @@ Cell["\<\
 InfraRay is the wrapper head for pointed half-line realisations. \
 InfraRay[{ray}] is the unary form; InfraRay[{ray1, \[Ellipsis], rayk}] is the \
 multi-realisation form. Each ray is a vertex sequence {O, \[Ellipsis], w} \
-with w an inextensible endpoint. FindRay emits a List of unary \
+with w an inextensible endpoint. FindInfraRay emits a List of unary \
 InfraRay[{ray}] wrappers; the multi form is consumed by InfraSceneHighlight \
 with sequential-edge semantics.\
 \>", "Text",ExpressionUUID->"1bd8fa68-ac66-4cbe-b485-8e9990f6591a"],
@@ -68,16 +68,16 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"0965796a-32c0-405f-95b6-f644f15a1b57"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindRay[GridGraph[{3, 3}], 5, 6, All]"]], "Input",Exp\
+ $CellContext`buildCell["FindInfraRay[GridGraph[{3, 3}], 5, 6, All]"]], "Input",Exp\
 ressionUUID->"0907656c-a080-467e-beb8-62e573ad3d3c"],
 
 Cell["See Also", "Section",ExpressionUUID->"64e82df1-0927-4191-a954-3b453e444f10"],
 
-Cell["FindRay", "Item",ExpressionUUID->"9ed53da5-e14c-4d98-afca-d043d9c72c07"],
+Cell["FindInfraRay", "Item",ExpressionUUID->"9ed53da5-e14c-4d98-afca-d043d9c72c07"],
 
 Cell["InfraSegment", "Item",ExpressionUUID->"b492e2d0-e5eb-41b5-a8c8-2594d89a4ca4"],
 
-Cell["FindLine", "Item",ExpressionUUID->"11d7a07e-efd8-4d1c-bf27-c976cce8d813"],
+Cell["FindInfraLine", "Item",ExpressionUUID->"11d7a07e-efd8-4d1c-bf27-c976cce8d813"],
 
 Cell["InfraPoint", "Item",ExpressionUUID->"00ba3aeb-ff24-464f-9b46-f7bca2cc6030"],
 

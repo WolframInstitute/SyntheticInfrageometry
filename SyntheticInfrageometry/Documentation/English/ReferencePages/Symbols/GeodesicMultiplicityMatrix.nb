@@ -72,7 +72,7 @@ Cell["See Also", "Section",ExpressionUUID->"2cce8def-ba48-4bc4-b104-1b5f777fdee1
 
 Cell["GeodesicMultiplicity", "Item",ExpressionUUID->"29a9e4af-10ee-4bd3-aeb6-d925bbcaecb7"],
 
-Cell["UniqueSegmentQ", "Item",ExpressionUUID->"4a769022-efe9-44d5-b503-18994eb15b83"],
+Cell["UniqueInfraSegmentQ", "Item",ExpressionUUID->"4a769022-efe9-44d5-b503-18994eb15b83"],
 
 Cell["MetricInterval", "Item",ExpressionUUID->"a7d26d58-cce0-4d72-ac0b-f80dc9c63ef6"],
 

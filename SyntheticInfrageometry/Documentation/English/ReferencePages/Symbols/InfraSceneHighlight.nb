@@ -56,7 +56,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindSegment[g, 1, 16, \
+ "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindInfraSegment[g, 1, 16, \
 All]}]]"]], "Input",ExpressionUUID->"57c27875-abb1-44b8-ab27-15137d721029"],
 
 Cell[BoxData[
@@ -72,8 +72,8 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindSegment[g, 1, 16, \
-All] -> Blue, FindShell[g, 6, 2] -> LightBlue, FindCircle[g, 6, 2, All] -> \
+ "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindInfraSegment[g, 1, 16, \
+All] -> Blue, FindInfraShell[g, 6, 2] -> LightBlue, FindInfraCircle[g, 6, 2, All] -> \
 Green}]]"]], "Input",ExpressionUUID->"7e8bcb08-a81c-4839-a413-2a63b9ded6c2"],
 
 Cell[BoxData[
@@ -87,7 +87,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindSegment[g, 1, 16, \
+ "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindInfraSegment[g, 1, 16, \
 All]}, \"OpacityRange\" -> {0.2, 0.9}]]"]], "Input",ExpressionUUID->"79050300-\
 cd30-457b-b37c-2f22ddbf8e2b"],
 

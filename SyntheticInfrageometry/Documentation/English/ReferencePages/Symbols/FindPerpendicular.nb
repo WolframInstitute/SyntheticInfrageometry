@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindPerpendicular", "Title",ExpressionUUID->"cfec27e4-f329-4f77-8d30-7182594b9adb"],
+Cell["FindInfraPerpendicular", "Title",ExpressionUUID->"cfec27e4-f329-4f77-8d30-7182594b9adb"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"1ec1db89-622c-4b99-b4d8-ad52d8ae7ef3"],
 
 Cell["\<\
-FindPerpendicular[g, line, point] returns the feet of perpendiculars from \
+FindInfraPerpendicular[g, line, point] returns the feet of perpendiculars from \
 point to line (Euclid I.12: isosceles base midpoint construction). Returns a \
 List of unary InfraPoint[{foot}] wrappers; n / UpTo[n] / All control \
 multiplicity. Option Method (\"Metric\" (default) | \"Embedding\").\
@@ -54,7 +54,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindPerpendicular[GridGraph[{3, 3}], {2, 5, 8}, 1, All]"]], "Input",Expressi\
+ "FindInfraPerpendicular[GridGraph[{3, 3}], {2, 5, 8}, 1, All]"]], "Input",Expressi\
 onUUID->"5f961a91-cf84-468b-8857-5337b549a50a"],
 
 Cell[BoxData[
@@ -69,20 +69,20 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindPerpendicular[GridGraph[{4, 4}], {1, 5, 9, 13}, 11, All]"]], "Input",Exp\
+ "FindInfraPerpendicular[GridGraph[{4, 4}], {1, 5, 9, 13}, 11, All]"]], "Input",Exp\
 ressionUUID->"75f99221-2bdc-473a-a08a-4b88395df106"],
 
 Cell["See Also", "Section",ExpressionUUID->"1150f3f1-545b-42c9-a9b1-083d910d2788"],
 
 Cell["InfraPoint", "Item",ExpressionUUID->"6770e033-485a-4db5-ab7d-682589503493"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"ed401edd-e5ce-46a4-83d2-f91e3c266f4c"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"ed401edd-e5ce-46a4-83d2-f91e3c266f4c"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"f49ae9c7-bce5-4c13-bb45-ad9a4f970799"],
+Cell["FindInfraBisectingHyperplane", "Item",ExpressionUUID->"f49ae9c7-bce5-4c13-bb45-ad9a4f970799"],
 
 Cell["InfraAngle", "Item",ExpressionUUID->"a268b817-0fa0-4c83-a30b-44c2af1552a8"],
 
-Cell["SegmentLineAngle", "Item",ExpressionUUID->"2a233b2a-740e-4f58-9a06-04cbd702981d"],
+Cell["InfraSegmentLineAngle", "Item",ExpressionUUID->"2a233b2a-740e-4f58-9a06-04cbd702981d"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"61ca05a1-458c-4d3e-b491-a2f60f9fb895"],
 

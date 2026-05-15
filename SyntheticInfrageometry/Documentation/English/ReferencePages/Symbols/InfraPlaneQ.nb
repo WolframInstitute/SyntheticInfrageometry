@@ -53,7 +53,7 @@ Cell[BoxData[
 
 Cell["See Also", "Section",ExpressionUUID->"3eabca8f-4dbc-4503-9765-c2ddee699d75"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"9dea9c8f-a924-4c6a-9303-3efd6d29ebab"],
+Cell["FindInfraBisectingHyperplane", "Item",ExpressionUUID->"9dea9c8f-a924-4c6a-9303-3efd6d29ebab"],
 
 Cell["InfraPlane", "Item",ExpressionUUID->"3b319523-83c3-4567-abf4-4cf37be49960"],
 

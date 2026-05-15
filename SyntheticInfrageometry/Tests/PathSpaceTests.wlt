@@ -3,242 +3,242 @@ BeginTestSection["PathSpace"]
 (* ===== Sublist invariants under default n = All ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    SubsetQ[ paths, SelectPath[ g, paths, All, "From" -> "Center" ] ]
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    SubsetQ[ paths, SelectInfraPath[ g, paths, All, "From" -> "Center" ] ]
   ],
   True,
-  TestID -> "SelectPath-Center-pool-is-sublist"
+  TestID -> "SelectInfraPath-Center-pool-is-sublist"
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    SubsetQ[ paths, SelectPath[ g, paths, All, "From" -> "Periphery" ] ]
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    SubsetQ[ paths, SelectInfraPath[ g, paths, All, "From" -> "Periphery" ] ]
   ],
   True,
-  TestID -> "SelectPath-Periphery-pool-is-sublist"
+  TestID -> "SelectInfraPath-Periphery-pool-is-sublist"
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    SubsetQ[ paths, EmbeddingClosestPaths[ g, paths, { 1, 9 } ] ]
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    SubsetQ[ paths, EmbeddingClosest[ g, paths, { 1, 9 } ] ]
   ],
   True,
-  TestID -> "EmbeddingClosestPaths-returns-sublist"
+  TestID -> "EmbeddingClosest-returns-sublist"
 ]
 
 (* ===== Count contract: strict n, UpTo, All ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    Length @ SelectPath[ g, paths, 1, "From" -> "Center" ]
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    Length @ SelectInfraPath[ g, paths, 1, "From" -> "Center" ]
   ],
   1,
-  TestID -> "SelectPath-strict-n-1"
+  TestID -> "SelectInfraPath-strict-n-1"
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    Length @ SelectPath[ g, paths, UpTo[ 3 ], "From" -> "Center" ] <= 3
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    Length @ SelectInfraPath[ g, paths, UpTo[ 3 ], "From" -> "Center" ] <= 3
   ],
   True,
-  TestID -> "SelectPath-UpTo-soft"
+  TestID -> "SelectInfraPath-UpTo-soft"
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    SelectPath[ g, paths, 99 ]
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    SelectInfraPath[ g, paths, 99 ]
   ],
   $Failed,
-  TestID -> "SelectPath-strict-overcount-fails"
+  TestID -> "SelectInfraPath-strict-overcount-fails"
 ]
 
 VerificationTest[
-  SelectPath[ GridGraph[ { 3, 3 } ], { }, 1 ],
+  SelectInfraPath[ GridGraph[ { 3, 3 } ], { }, 1 ],
   $Failed,
-  TestID -> "SelectPath-empty-strict-fails"
+  TestID -> "SelectInfraPath-empty-strict-fails"
 ]
 
 VerificationTest[
-  SelectPath[ GridGraph[ { 3, 3 } ], { }, All ],
+  SelectInfraPath[ GridGraph[ { 3, 3 } ], { }, All ],
   { },
-  TestID -> "SelectPath-empty-All-empty"
+  TestID -> "SelectInfraPath-empty-All-empty"
 ]
 
-(* ===== Default count = 1, matches FindPoint ===== *)
+(* ===== Default count = 1, matches FindInfraPoint ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    Length @ SelectPath[ g, paths ]
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    Length @ SelectInfraPath[ g, paths ]
   ],
   1,
-  TestID -> "SelectPath-default-n-is-1"
+  TestID -> "SelectInfraPath-default-n-is-1"
 ]
 
 (* ===== Operator form ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = #[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
-    SubsetQ[ paths, SelectPath[ g, All, "From" -> "Center" ][ paths ] ]
+  With[ { g = GridGraph[ { 3, 3 } ], paths = #[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    SubsetQ[ paths, SelectInfraPath[ g, All, "From" -> "Center" ][ paths ] ]
   ],
   True,
-  TestID -> "SelectPath-operator-form-runs"
+  TestID -> "SelectInfraPath-operator-form-runs"
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    SelectPath[ g, paths, All, "From" -> "Center", "Metric" -> "Hausdorff" ] ===
-      ( SelectPath[ g, All, "From" -> "Center", "Metric" -> "Hausdorff" ][ paths ] )
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    SelectInfraPath[ g, paths, All, "From" -> "Center", "Metric" -> "Hausdorff" ] ===
+      ( SelectInfraPath[ g, All, "From" -> "Center", "Metric" -> "Hausdorff" ][ paths ] )
   ],
   True,
-  TestID -> "SelectPath-operator-form-options-agree"
+  TestID -> "SelectInfraPath-operator-form-options-agree"
 ]
 
 (* ===== Wrapper passthrough ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], list = FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
-    MatchQ[ SelectPath[ g, list, All, "From" -> "Center" ], { InfraSegment[ { _ } ] .. } ]
+  With[ { g = GridGraph[ { 3, 3 } ], list = FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    MatchQ[ SelectInfraPath[ g, list, All, "From" -> "Center" ], { InfraSegment[ { _ } ] .. } ]
   ],
   True,
-  TestID -> "SelectPath-preserves-unary-InfraSegment-list"
+  TestID -> "SelectInfraPath-preserves-unary-InfraSegment-list"
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ], list = FindCircle[ GridGraph[ { 4, 4 } ], 6, { 1, 2 }, All ] },
-    MatchQ[ SelectCycle[ g, list, All, "From" -> "Center" ], { InfraCircle[ { _ } ] .. } ]
+  With[ { g = GridGraph[ { 4, 4 } ], list = FindInfraCircle[ GridGraph[ { 4, 4 } ], 6, { 1, 2 }, All ] },
+    MatchQ[ SelectInfraCycle[ g, list, All, "From" -> "Center" ], { InfraCircle[ { _ } ] .. } ]
   ],
   True,
-  TestID -> "SelectCycle-preserves-unary-InfraCircle-list"
+  TestID -> "SelectInfraCycle-preserves-unary-InfraCircle-list"
 ]
 
 (* ===== Length-1 / empty input ===== *)
 
 VerificationTest[
-  SelectPath[ GridGraph[ { 3, 3 } ], { { 1, 2, 3 } }, All, "From" -> "Center" ],
+  SelectInfraPath[ GridGraph[ { 3, 3 } ], { { 1, 2, 3 } }, All, "From" -> "Center" ],
   { { 1, 2, 3 } },
-  TestID -> "SelectPath-Center-singleton-identity"
+  TestID -> "SelectInfraPath-Center-singleton-identity"
 ]
 
 VerificationTest[
-  SelectPath[ GridGraph[ { 3, 3 } ], { { 1, 2, 3 } }, All, "From" -> "Periphery", "Metric" -> "Hausdorff" ],
+  SelectInfraPath[ GridGraph[ { 3, 3 } ], { { 1, 2, 3 } }, All, "From" -> "Periphery", "Metric" -> "Hausdorff" ],
   { { 1, 2, 3 } },
-  TestID -> "SelectPath-Periphery-singleton-identity"
+  TestID -> "SelectInfraPath-Periphery-singleton-identity"
 ]
 
 VerificationTest[
-  EmbeddingClosestPaths[ GridGraph[ { 3, 3 } ], { { 1, 2, 3 } }, { 1, 3 } ],
+  EmbeddingClosest[ GridGraph[ { 3, 3 } ], { { 1, 2, 3 } }, { 1, 3 } ],
   { { 1, 2, 3 } },
-  TestID -> "EmbeddingClosestPaths-singleton-identity"
+  TestID -> "EmbeddingClosest-singleton-identity"
 ]
 
-(* ===== SelectCycle length-based pool selectors ===== *)
+(* ===== SelectInfraCycle length-based pool selectors ===== *)
 
 VerificationTest[
-  SelectCycle[ GridGraph[ { 3, 3 } ], { { 1, 2, 3, 4, 5 }, { 1, 2, 3 }, { 1, 2, 3, 4 } }, All,
+  SelectInfraCycle[ GridGraph[ { 3, 3 } ], { { 1, 2, 3, 4, 5 }, { 1, 2, 3 }, { 1, 2, 3, 4 } }, All,
     "From" -> "ShortestCircumference" ],
   { { 1, 2, 3 } },
-  TestID -> "SelectCycle-ShortestCircumference-picks-min"
+  TestID -> "SelectInfraCycle-ShortestCircumference-picks-min"
 ]
 
 VerificationTest[
-  SelectCycle[ GridGraph[ { 3, 3 } ], { { 1, 2, 3, 4, 5 }, { 1, 2, 3 }, { 1, 2, 3, 4 } }, All,
+  SelectInfraCycle[ GridGraph[ { 3, 3 } ], { { 1, 2, 3, 4, 5 }, { 1, 2, 3 }, { 1, 2, 3, 4 } }, All,
     "From" -> "LongestCircumference" ],
   { { 1, 2, 3, 4, 5 } },
-  TestID -> "SelectCycle-LongestCircumference-picks-max"
+  TestID -> "SelectInfraCycle-LongestCircumference-picks-max"
 ]
 
 VerificationTest[
-  SelectCycle[ GridGraph[ { 3, 3 } ], { { 1, 2, 3 }, { 4, 5, 6 }, { 1, 2, 3, 4 } }, All,
+  SelectInfraCycle[ GridGraph[ { 3, 3 } ], { { 1, 2, 3 }, { 4, 5, 6 }, { 1, 2, 3, 4 } }, All,
     "From" -> "ShortestCircumference" ],
   { { 1, 2, 3 }, { 4, 5, 6 } },
-  TestID -> "SelectCycle-ShortestCircumference-keeps-ties"
+  TestID -> "SelectInfraCycle-ShortestCircumference-keeps-ties"
 ]
 
 (* ===== Metric option carries through ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
     Length[ paths ] > 1 &&
       AllTrue[ { "Hausdorff", "Frechet", "MeanFrechet" },
-        m |-> SubsetQ[ paths, SelectPath[ g, paths, All, "From" -> "Center", "Metric" -> m ] ] ]
+        m |-> SubsetQ[ paths, SelectInfraPath[ g, paths, All, "From" -> "Center", "Metric" -> m ] ] ]
   ],
   True,
-  TestID -> "SelectPath-Center-all-metrics-return-sublists"
+  TestID -> "SelectInfraPath-Center-all-metrics-return-sublists"
 ]
 
 (* ===== MostVisited pool ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    SubsetQ[ paths, SelectPath[ g, paths, All, "From" -> "MostVisited" ] ]
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    SubsetQ[ paths, SelectInfraPath[ g, paths, All, "From" -> "MostVisited" ] ]
   ],
   True,
-  TestID -> "SelectPath-MostVisited-returns-sublist"
+  TestID -> "SelectInfraPath-MostVisited-returns-sublist"
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    Length @ SelectPath[ g, paths, All, "From" -> "MostVisited" ] >= 1
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    Length @ SelectInfraPath[ g, paths, All, "From" -> "MostVisited" ] >= 1
   ],
   True,
-  TestID -> "SelectPath-MostVisited-non-empty"
+  TestID -> "SelectInfraPath-MostVisited-non-empty"
 ]
 
 VerificationTest[
-  With[ { g = PathGraph[ Range @ 5 ], wrapped = FindSegment[ PathGraph[ Range @ 5 ], 1, 5, All ] },
-    SelectPath[ g, wrapped, All, "From" -> "MostVisited" ] === wrapped
+  With[ { g = PathGraph[ Range @ 5 ], wrapped = FindInfraSegment[ PathGraph[ Range @ 5 ], 1, 5, All ] },
+    SelectInfraPath[ g, wrapped, All, "From" -> "MostVisited" ] === wrapped
   ],
   True,
-  TestID -> "SelectPath-MostVisited-unique-segment-passthrough"
+  TestID -> "SelectInfraPath-MostVisited-unique-segment-passthrough"
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ], cycles = (#[[ 1, 1 ]] & /@ FindCircle[ GridGraph[ { 4, 4 } ], 6, { 1, 2 }, All ]) },
-    SubsetQ[ cycles, SelectCycle[ g, cycles, All, "From" -> "MostVisited" ] ]
+  With[ { g = GridGraph[ { 4, 4 } ], cycles = (#[[ 1, 1 ]] & /@ FindInfraCircle[ GridGraph[ { 4, 4 } ], 6, { 1, 2 }, All ]) },
+    SubsetQ[ cycles, SelectInfraCycle[ g, cycles, All, "From" -> "MostVisited" ] ]
   ],
   True,
-  TestID -> "SelectCycle-MostVisited-returns-sublist"
+  TestID -> "SelectInfraCycle-MostVisited-returns-sublist"
 ]
 
 (* ===== Distance constraint: Max k-clique in path-space ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ]) },
-    Length @ SelectPath[ g, paths, 2, "Distance" -> "Max" ]
+  With[ { g = GridGraph[ { 4, 4 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ]) },
+    Length @ SelectInfraPath[ g, paths, 2, "Distance" -> "Max" ]
   ],
   2,
-  TestID -> "SelectPath-Distance-Max-strict-2"
+  TestID -> "SelectInfraPath-Distance-Max-strict-2"
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ]) },
-    SubsetQ[ paths, SelectPath[ g, paths, UpTo[ 3 ], "Distance" -> "Max" ] ]
+  With[ { g = GridGraph[ { 4, 4 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ]) },
+    SubsetQ[ paths, SelectInfraPath[ g, paths, UpTo[ 3 ], "Distance" -> "Max" ] ]
   ],
   True,
-  TestID -> "SelectPath-Distance-Max-UpTo-3-sublist"
+  TestID -> "SelectInfraPath-Distance-Max-UpTo-3-sublist"
 ]
 
 (* ===== "From" anchor -> spec ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ], paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ]) },
+  With[ { g = GridGraph[ { 4, 4 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ]) },
     With[ { ref = First @ paths,
-            others = SelectPath[ g, paths, All, "From" -> ( First @ paths -> "Max" ) ] },
+            others = SelectInfraPath[ g, paths, All, "From" -> ( First @ paths -> "Max" ) ] },
       SubsetQ[ paths, others ]
     ]
   ],
   True,
-  TestID -> "SelectPath-From-anchor-Max-returns-sublist"
+  TestID -> "SelectInfraPath-From-anchor-Max-returns-sublist"
 ]
 
 (* ===== Empty pool returns empty ===== *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    Head @ SelectPath[ g, InfraSegment[ { } ], All ]
+    Head @ SelectInfraPath[ g, InfraSegment[ { } ], All ]
   ],
   InfraSegment,
-  TestID -> "SelectPath-empty-wrapper-All-passthrough"
+  TestID -> "SelectInfraPath-empty-wrapper-All-passthrough"
 ]
 
 (* ===== GeodesicSubgraph ===== *)
@@ -323,103 +323,187 @@ VerificationTest[
   TestID -> "PathSubgraph-integer-equals-UpTo"
 ]
 
-(* ===== SelectPath -- MinCurvature / MaxCurvature pool selectors ===== *)
+(* ===== SelectInfraPath -- MinCurvature / MaxCurvature pool selectors ===== *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    MemberQ[ paths, First @ SelectPath[ g, paths, 1, "From" -> "MinCurvature" ] ]
+          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    MemberQ[ paths, First @ SelectInfraPath[ g, paths, 1, "From" -> "MinCurvature" ] ]
   ],
   True,
-  TestID -> "SelectPath-MinCurvature-returns-member-of-bundle"
+  TestID -> "SelectInfraPath-MinCurvature-returns-member-of-bundle"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          segment = InfraSegment @ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
-    Head @ SelectPath[ g, segment, 1, "From" -> "MinCurvature" ]
+          segment = InfraSegment @ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    Head @ SelectInfraPath[ g, segment, 1, "From" -> "MinCurvature" ]
   ],
   InfraSegment,
-  TestID -> "SelectPath-MinCurvature-wrapper-preserved"
+  TestID -> "SelectInfraPath-MinCurvature-wrapper-preserved"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    Sort @ SelectPath[ g, paths, All, "From" -> "MinCurvature" ] ===
-      Sort @ SelectPath[ g, paths, All, "From" -> { "MinCurvature", "Forman" } ] ===
-      Sort @ SelectPath[ g, paths, All, "From" -> { "MinCurvature", "Forman", "Mean" } ]
+          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    Sort @ SelectInfraPath[ g, paths, All, "From" -> "MinCurvature" ] ===
+      Sort @ SelectInfraPath[ g, paths, All, "From" -> { "MinCurvature", "FormanRicciCurvature" } ] ===
+      Sort @ SelectInfraPath[ g, paths, All, "From" -> { "MinCurvature", "FormanRicciCurvature", "Mean" } ]
   ],
   True,
-  TestID -> "SelectPath-MinCurvature-bare-equals-full-spec"
+  TestID -> "SelectInfraPath-MinCurvature-bare-equals-full-spec"
 ]
 
 VerificationTest[
   Module[ { g = GridGraph[ { 3, 3 } ], paths, kappaRaw, kappaSym, score, scores, picked },
-    paths = #[[ 1, 1 ]] & /@ FindSegment[ g, 1, 9, All ];
+    paths = #[[ 1, 1 ]] & /@ FindInfraSegment[ g, 1, 9, All ];
     kappaRaw = WolframInstitute`Infrageometry`FormanRicciCurvature[ g, "MaxCellDimension" -> 1 ];
     kappaSym = Join[ kappaRaw,
       AssociationThread[ Reverse /@ Keys[ kappaRaw ], Values[ kappaRaw ] ] ];
     score[ path_ ] := Mean[ kappaSym /@ ( UndirectedEdge @@@ Partition[ path, 2, 1 ] ) ];
     scores = score /@ paths;
-    picked = First @ SelectPath[ g, paths, 1, "From" -> "MinCurvature" ];
+    picked = First @ SelectInfraPath[ g, paths, 1, "From" -> "MinCurvature" ];
     score[ picked ] == Min[ scores ]
   ],
   True,
-  TestID -> "SelectPath-MinCurvature-score-equals-min"
+  TestID -> "SelectInfraPath-MinCurvature-score-equals-min"
 ]
 
 VerificationTest[
   Module[ { g = GridGraph[ { 3, 3 } ], paths, kappaRaw, kappaSym, score, scores, picked },
-    paths = #[[ 1, 1 ]] & /@ FindSegment[ g, 1, 9, All ];
+    paths = #[[ 1, 1 ]] & /@ FindInfraSegment[ g, 1, 9, All ];
     kappaRaw = WolframInstitute`Infrageometry`FormanRicciCurvature[ g, "MaxCellDimension" -> 1 ];
     kappaSym = Join[ kappaRaw,
       AssociationThread[ Reverse /@ Keys[ kappaRaw ], Values[ kappaRaw ] ] ];
     score[ path_ ] := Mean[ kappaSym /@ ( UndirectedEdge @@@ Partition[ path, 2, 1 ] ) ];
     scores = score /@ paths;
-    picked = First @ SelectPath[ g, paths, 1, "From" -> { "MaxCurvature", "Forman" } ];
+    picked = First @ SelectInfraPath[ g, paths, 1, "From" -> { "MaxCurvature", "FormanRicciCurvature" } ];
     score[ picked ] == Max[ scores ]
   ],
   True,
-  TestID -> "SelectPath-MaxCurvature-score-equals-max"
+  TestID -> "SelectInfraPath-MaxCurvature-score-equals-max"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    Length @ SelectPath[ g, paths, UpTo[ 3 ], "From" -> "MinCurvature" ] <= 3
+          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    Length @ SelectInfraPath[ g, paths, UpTo[ 3 ], "From" -> "MinCurvature" ] <= 3
   ],
   True,
-  TestID -> "SelectPath-MinCurvature-UpTo-soft"
+  TestID -> "SelectInfraPath-MinCurvature-UpTo-soft"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    SubsetQ[ paths, SelectPath[ g, paths, All, "From" -> "MinCurvature" ] ]
+          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    SubsetQ[ paths, SelectInfraPath[ g, paths, All, "From" -> "MinCurvature" ] ]
   ],
   True,
-  TestID -> "SelectPath-MinCurvature-All-returns-subset"
+  TestID -> "SelectInfraPath-MinCurvature-All-returns-subset"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          segment = InfraSegment @ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
-    Head @ ( SelectPath[ g, 1, "From" -> "MinCurvature" ] @ segment )
+          segment = InfraSegment @ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
+    Head @ ( SelectInfraPath[ g, 1, "From" -> "MinCurvature" ] @ segment )
   ],
   InfraSegment,
-  TestID -> "SelectPath-MinCurvature-operator-form-preserves-wrapper"
+  TestID -> "SelectInfraPath-MinCurvature-operator-form-preserves-wrapper"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (#[[ 1, 1 ]] & /@ FindSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    Sort @ SelectPath[ g, paths, All, "From" -> { "MinCurvature", "Forman", "Total" } ] ===
-    Sort @ SelectPath[ g, paths, All, "From" -> { "MinCurvature", "Forman", "Mean"  } ]
+          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    Sort @ SelectInfraPath[ g, paths, All, "From" -> { "MinCurvature", "FormanRicciCurvature", "Total" } ] ===
+    Sort @ SelectInfraPath[ g, paths, All, "From" -> { "MinCurvature", "FormanRicciCurvature", "Mean"  } ]
   ],
   True,
-  TestID -> "SelectPath-MinCurvature-Total-equals-Mean-on-equal-length-bundle"
+  TestID -> "SelectInfraPath-MinCurvature-Total-equals-Mean-on-equal-length-bundle"
 ]
 
+
+EndTestSection[]
+
+
+BeginTestSection["SelectInfraPoint"]
+
+VerificationTest[
+  SubsetQ[ Range[ 5 ], #[[1, 1]]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Center" ] ],
+  True,
+  TestID -> "SelectInfraPoint-Center-pool-is-sublist"
+]
+
+VerificationTest[
+  #[[1, 1]]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Center" ],
+  { 3 },
+  TestID -> "SelectInfraPoint-Center-on-PathGraph-picks-middle"
+]
+
+VerificationTest[
+  Sort[ #[[1, 1]]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Periphery" ] ],
+  { 1, 5 },
+  TestID -> "SelectInfraPoint-Periphery-on-PathGraph-picks-endpoints"
+]
+
+VerificationTest[
+  Length @ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], 1, "From" -> "Center" ],
+  1,
+  TestID -> "SelectInfraPoint-strict-n-1"
+]
+
+VerificationTest[
+  Length @ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], UpTo[ 3 ] ] <= 3,
+  True,
+  TestID -> "SelectInfraPoint-UpTo-soft"
+]
+
+VerificationTest[
+  SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], 99 ],
+  $Failed,
+  TestID -> "SelectInfraPoint-strict-overcount-fails"
+]
+
+VerificationTest[
+  SelectInfraPoint[ PathGraph[ Range[ 5 ] ], { }, 1 ],
+  $Failed,
+  TestID -> "SelectInfraPoint-empty-strict-fails"
+]
+
+VerificationTest[
+  SelectInfraPoint[ PathGraph[ Range[ 5 ] ], { }, All ],
+  { },
+  TestID -> "SelectInfraPoint-empty-All-empty"
+]
+
+VerificationTest[
+  Length @ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ] ],
+  1,
+  TestID -> "SelectInfraPoint-default-n-is-1"
+]
+
+VerificationTest[
+  Head @ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], InfraPoint[ Range[ 5 ] ], All ],
+  InfraPoint,
+  TestID -> "SelectInfraPoint-preserves-InfraPoint-wrapper"
+]
+
+VerificationTest[
+  Sort[ #[[1, 1]]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], All, "From" -> "Periphery" ][ Range[ 5 ] ] ],
+  { 1, 5 },
+  TestID -> "SelectInfraPoint-operator-form"
+]
+
+VerificationTest[
+  Length @ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], 2, "Distance" -> "Max" ],
+  2,
+  TestID -> "SelectInfraPoint-Distance-Max-strict-2"
+]
+
+VerificationTest[
+  SubsetQ[ Range[ 5 ],
+    #[[1, 1]]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> ( 3 -> 2 ) ] ],
+  True,
+  TestID -> "SelectInfraPoint-anchor-distance-pool-is-sublist"
+]
 
 EndTestSection[]

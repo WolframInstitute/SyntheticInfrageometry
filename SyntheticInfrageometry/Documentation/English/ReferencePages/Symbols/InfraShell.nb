@@ -25,7 +25,7 @@ Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"ef667ca6-c9d5-421d-94cb-7cb2
 Cell["\<\
 InfraShell is the wrapper head for metric-shell vertex sets. \
 InfraShell[{set}] is the unary form; InfraShell[{set1, \[Ellipsis], setk}] is \
-the multi-realisation form. FindShell emits a List of unary InfraShell[{set}] \
+the multi-realisation form. FindInfraShell emits a List of unary InfraShell[{set}] \
 wrappers. Wrapping that List with InfraShell @ \[Ellipsis] collapses it to \
 the multi form via auto-flatten; InfraSceneHighlight consumes the multi form \
 with induced-subgraph semantics.\
@@ -68,7 +68,7 @@ Cell[BoxData[
  $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"22fd8766-badb-4891-b29a-6a686c75bba5"],
 
 Cell[BoxData[
- $CellContext`buildCell["FindShell[GridGraph[{3, 3}], 5, 1]"]], "Input",Expres\
+ $CellContext`buildCell["FindInfraShell[GridGraph[{3, 3}], 5, 1]"]], "Input",Expres\
 sionUUID->"17192db6-ff49-4525-ba6d-b893f978ae58"],
 
 Cell[BoxData[
@@ -87,11 +87,11 @@ Cell[BoxData[
 
 Cell["See Also", "Section",ExpressionUUID->"b1857b53-6364-4359-b6ba-cf47059eb865"],
 
-Cell["FindShell", "Item",ExpressionUUID->"f9265292-70c9-44cf-8ca2-0e48e6cc4eb2"],
+Cell["FindInfraShell", "Item",ExpressionUUID->"f9265292-70c9-44cf-8ca2-0e48e6cc4eb2"],
 
-Cell["FindShellParameters", "Item",ExpressionUUID->"b519d2e9-7d7f-4226-a75e-5fcef8e2e602"],
+Cell["FindInfraShellParameters", "Item",ExpressionUUID->"b519d2e9-7d7f-4226-a75e-5fcef8e2e602"],
 
-Cell["ShellQ", "Item",ExpressionUUID->"d0c9a63b-e5cd-442e-a948-0f5b87e64e47"],
+Cell["InfraShellQ", "Item",ExpressionUUID->"d0c9a63b-e5cd-442e-a948-0f5b87e64e47"],
 
 Cell["SeparatesQ", "Item",ExpressionUUID->"2737b992-d226-4a90-af87-8fb4af466356"],
 

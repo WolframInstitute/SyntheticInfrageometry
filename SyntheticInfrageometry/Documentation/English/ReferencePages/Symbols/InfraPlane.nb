@@ -25,7 +25,7 @@ Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"72d388bc-e308-4b57-9323-6e48
 Cell["\<\
 InfraPlane is the wrapper head for bisecting-hyperplane vertex sets. \
 InfraPlane[{set}] is the unary form; InfraPlane[{set1, \[Ellipsis], setk}] is \
-the multi-realisation form. FindBisectingHyperplane emits a List of unary \
+the multi-realisation form. FindInfraBisectingHyperplane emits a List of unary \
 InfraPlane[{set}] wrappers. Scene-language constructors InfraPlane[p1, p2] \
 and InfraPlane[p1, p2, {lo, hi}] are used inside InfraScene.\
 \>", "Text",ExpressionUUID->"47c3723f-485e-46df-8dac-a7dc3e5ef62b"],
@@ -53,7 +53,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All]"]], "Input",Expression\
+ "FindInfraBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All]"]], "Input",Expression\
 UUID->"60d40cc5-b34c-4978-96a9-65d31ff447ca"],
 
 Cell[BoxData[
@@ -86,13 +86,13 @@ Cell[BoxData[
 
 Cell["See Also", "Section",ExpressionUUID->"a7dfcb1f-f5f3-4b1c-8a15-48b87682913b"],
 
-Cell["FindBisectingHyperplane", "Item",ExpressionUUID->"483fdfde-4ff7-4e8a-9690-4e8a6e6a54e3"],
+Cell["FindInfraBisectingHyperplane", "Item",ExpressionUUID->"483fdfde-4ff7-4e8a-9690-4e8a6e6a54e3"],
 
 Cell["InfraPlaneQ", "Item",ExpressionUUID->"b002dca3-ae50-4fcf-bd86-d03094741635"],
 
-Cell["FindShell", "Item",ExpressionUUID->"a7045c3f-c96e-4335-ab78-4fce18e663e4"],
+Cell["FindInfraShell", "Item",ExpressionUUID->"a7045c3f-c96e-4335-ab78-4fce18e663e4"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"d5ccfcd4-060c-41c3-bfda-97407790d34e"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"d5ccfcd4-060c-41c3-bfda-97407790d34e"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"2d6e9a94-e0d8-46f9-8b5f-10bf593ec43b"],
 

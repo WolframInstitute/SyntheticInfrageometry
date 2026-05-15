@@ -100,7 +100,7 @@ Cell["InfraCurvature", "Item",ExpressionUUID->"1e9e7cef-0637-46c6-b2ec-bf231a02c
 
 Cell["InfraScalarProduct", "Item",ExpressionUUID->"dbc8df3f-f8e4-410a-b3b7-6b26c9bbdaf7"],
 
-Cell["SegmentLineAngle", "Item",ExpressionUUID->"ebeba9b6-644e-4313-970b-764f7e7b79bd"],
+Cell["InfraSegmentLineAngle", "Item",ExpressionUUID->"ebeba9b6-644e-4313-970b-764f7e7b79bd"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"5f89e378-e313-449b-8270-ef5bf782f7c4"],
 

@@ -49,7 +49,7 @@ Cell["Angles", "Section",ExpressionUUID->"ae43a261-13d5-4604-8c93-25cde993b2c8"]
 
 Cell["InfraAngle", "Item",ExpressionUUID->"07bcffad-9922-471c-99f1-138858ab2485"],
 
-Cell["SegmentLineAngle", "Item",ExpressionUUID->"04508e8f-6a9e-4483-accb-53219899ccfc"],
+Cell["InfraSegmentLineAngle", "Item",ExpressionUUID->"04508e8f-6a9e-4483-accb-53219899ccfc"],
 
 Cell["Comparison triangles and Alexandrov curvature", "Section",ExpressionUUID->"7c2e4c63-d6d1-44cb-a164-a3893555996d"],
 

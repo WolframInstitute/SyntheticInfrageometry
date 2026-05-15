@@ -18,20 +18,20 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindOrthogonalFrame", "Title",ExpressionUUID->"81a65855-ca22-4fd7-b499-cffec09aae80"],
+Cell["FindInfraOrthogonalFrame", "Title",ExpressionUUID->"81a65855-ca22-4fd7-b499-cffec09aae80"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"f7f20e0e-e2c0-4238-bcaa-cec7497c0569"],
 
 Cell["\<\
-FindOrthogonalFrame[g, c, axisLength] returns one orthogonal frame at centre \
+FindInfraOrthogonalFrame[g, c, axisLength] returns one orthogonal frame at centre \
 c with each axis half-depth constrained by axisLength (All | n_Integer | \
 UpTo[n] | {min, max}): a list of InfraSegment axes (full metric lines through \
-c, c strictly interior), mutually perpendicular at c. FindOrthogonalFrame[g, \
+c, c strictly interior), mutually perpendicular at c. FindInfraOrthogonalFrame[g, \
 c, axisLength, n] / UpTo[n] / All controls the number of distinct frames. \
 Centre is a vertex or InfraPoint[{c1, \[Ellipsis], ck}]. Options: Method \
 (Automatic = \"Exhaustive\", or \"Greedy\"), \"AxisCount\" (Automatic | k | \
 UpTo[k] | All), \"BranchSampleSize\", \"SelectCoordinate\". For the no-centre \
-form use FindSpanningAxes.\
+form use FindInfraSpanningAxes.\
 \>", "Text",ExpressionUUID->"100f96a3-16d2-4cae-8d28-9ee86dce9b09"],
 
 Cell["Setup", "Section",ExpressionUUID->"3b76685b-0b0d-4bbc-b909-2d12c7639d6d"],
@@ -59,7 +59,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindOrthogonalFrame[GridGraph[{3, 3}], 5, All]"]], "Input",ExpressionUUID->\
+ "FindInfraOrthogonalFrame[GridGraph[{3, 3}], 5, All]"]], "Input",ExpressionUUID->\
 "297b8a37-1afb-4659-bb27-464631411e00"],
 
 Cell[BoxData[
@@ -73,7 +73,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindOrthogonalFrame[GridGraph[{3, 3}], 5, All, All]"]], "Input",ExpressionUU\
+ "FindInfraOrthogonalFrame[GridGraph[{3, 3}], 5, All, All]"]], "Input",ExpressionUU\
 ID->"3d9ae6ab-5eef-456c-aa7a-7c10972dc785"],
 
 Cell[BoxData[
@@ -87,18 +87,18 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindOrthogonalFrame[GridGraph[{5, 5}], 13, All, Method -> \"Greedy\"]"]], \
+ "FindInfraOrthogonalFrame[GridGraph[{5, 5}], 13, All, Method -> \"Greedy\"]"]], \
 "Input",ExpressionUUID->"48d68728-277c-4744-a8bc-93fe579ffc47"],
 
 Cell["See Also", "Section",ExpressionUUID->"42312d3e-3bed-4e2a-919d-c2b6dabb3f4a"],
 
-Cell["FindSpanningAxes", "Item",ExpressionUUID->"1d53165f-e722-47d9-9066-8cb3a0aa4930"],
+Cell["FindInfraSpanningAxes", "Item",ExpressionUUID->"1d53165f-e722-47d9-9066-8cb3a0aa4930"],
 
 Cell["OrthogonalCoordinates", "Item",ExpressionUUID->"cbb1e73a-b983-4bf3-9f0f-3e47cb156c31"],
 
-Cell["FindRadarBasis", "Item",ExpressionUUID->"3235e06f-b367-4d11-b911-8eb73af6165c"],
+Cell["FindInfraRadarBasis", "Item",ExpressionUUID->"3235e06f-b367-4d11-b911-8eb73af6165c"],
 
-Cell["FindPerpendicular", "Item",ExpressionUUID->"e070e645-d4ae-4f4e-9546-763ec8051d44"],
+Cell["FindInfraPerpendicular", "Item",ExpressionUUID->"e070e645-d4ae-4f4e-9546-763ec8051d44"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"837f5b39-5cc9-4f49-ad1f-14f463f6dea9"],
 

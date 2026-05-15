@@ -1,244 +1,344 @@
 BeginTestSection["EuclideanConstructions"]
 
-(* ===== FindMidpoint ===== *)
+(* ===== FindInfraMidpoint ===== *)
 
 VerificationTest[
-  InfraPoint @ FindMidpoint[PathGraph[Range[5]], {1, 2, 3, 4, 5}],
+  InfraPoint @ FindInfraMidpoint[PathGraph[Range[5]], {1, 2, 3, 4, 5}],
   InfraPoint[{3}],
-  TestID -> "FindMidpoint-segment-odd-length"
+  TestID -> "FindInfraMidpoint-segment-odd-length"
 ]
 
 VerificationTest[
-  InfraPoint @ FindMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}],
+  InfraPoint @ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}],
   InfraPoint[{2}],
-  TestID -> "FindMidpoint-segment-even-length-lower-central"
+  TestID -> "FindInfraMidpoint-segment-even-length-lower-central"
 ]
 
 VerificationTest[
-  InfraPoint @ FindMidpoint[PathGraph[Range[5]], 1, 5],
+  InfraPoint @ FindInfraMidpoint[PathGraph[Range[5]], 1, 5],
   InfraPoint[{3}],
-  TestID -> "FindMidpoint-endpoints-strict-1"
+  TestID -> "FindInfraMidpoint-endpoints-strict-1"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], d = GraphDistance[GridGraph[{3, 3}], 1, 9]},
-    Sort @ (#[[ 1, 1 ]] & /@ FindMidpoint[g, 1, 9, All]) ===
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraMidpoint[g, 1, 9, All]) ===
       Sort @ DeleteDuplicates[
         #[[ Ceiling[ Length[#] / 2 ] ]] & /@ FindPath[g, 1, 9, {d}, All]
       ]
   ],
   True,
-  TestID -> "FindMidpoint-all-matches-geodesic-midpoints"
+  TestID -> "FindInfraMidpoint-all-matches-geodesic-midpoints"
 ]
 
 VerificationTest[
-  Length @ FindMidpoint[GridGraph[{3, 3}], 1, 9, UpTo[2]] <= 2,
+  Length @ FindInfraMidpoint[GridGraph[{3, 3}], 1, 9, UpTo[2]] <= 2,
   True,
-  TestID -> "FindMidpoint-upto-soft"
+  TestID -> "FindInfraMidpoint-upto-soft"
 ]
 
 VerificationTest[
-  FindMidpoint[PathGraph[Range[5]], 1, 5, 100],
+  FindInfraMidpoint[PathGraph[Range[5]], 1, 5, 100],
   $Failed,
-  TestID -> "FindMidpoint-strict-fails-when-too-few"
+  TestID -> "FindInfraMidpoint-strict-fails-when-too-few"
 ]
 
-(* ===== FindPerpendicular ===== *)
+(* ===== FindInfraPerpendicular ===== *)
 
 VerificationTest[
-  InfraPoint @ FindPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All],
+  InfraPoint @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All],
   InfraPoint[{2}],
-  TestID -> "FindPerpendicular-CycleGraph5"
+  TestID -> "FindInfraPerpendicular-CycleGraph5"
 ]
 
 VerificationTest[
-  With[{feet = (#[[ 1, 1 ]] & /@ FindPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All])},
+  With[{feet = (#[[ 1, 1 ]] & /@ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All])},
     AllTrue[feet, MemberQ[{1, 2, 3, 4}, #] &]
   ],
   True,
-  TestID -> "FindPerpendicular-feet-on-line"
+  TestID -> "FindInfraPerpendicular-feet-on-line"
 ]
 
 VerificationTest[
-  InfraPoint @ FindPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, 1],
+  InfraPoint @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, 1],
   InfraPoint[{2}],
-  TestID -> "FindPerpendicular-strict-1"
+  TestID -> "FindInfraPerpendicular-strict-1"
 ]
 
-(* ===== FindBisectingHyperplane ===== *)
+(* ===== FindInfraBisectingHyperplane ===== *)
 
-(* The bisector of 1 and 5 in PathGraph[5] is just {3}; removing it
-   disconnects 1 from 5 and is the only minimal hyperplane. *)
+(* Properties -> {} (default): the bisector slab itself as a single
+   realisation. PathGraph[5], 1 to 5: slab = {3}. *)
 VerificationTest[
-  InfraPlane @ FindBisectingHyperplane[PathGraph[Range[5]], 1, 5],
+  InfraPlane @ FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5],
   InfraPlane[{{3}}],
-  TestID -> "FindBisectingHyperplane-path-center"
+  TestID -> "FindInfraBisectingHyperplane-LevelSet-path-center"
 ]
 
 VerificationTest[
-  FindBisectingHyperplane[PathGraph[Range[5]], 1, 5, All],
-  FindBisectingHyperplane[PathGraph[Range[5]], InfraPoint[{1}], InfraPoint[{5}], All],
-  TestID -> "FindBisectingHyperplane-list-form-equiv"
+  FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, All],
+  FindInfraBisectingHyperplane[PathGraph[Range[5]], InfraPoint[{1}], InfraPoint[{5}], All],
+  TestID -> "FindInfraBisectingHyperplane-list-form-equiv"
 ]
 
-(* On the 3x3 grid, the antidiagonal {3, 5, 7} is the bisector of 1 and 9;
-   removing the entire antidiagonal is the only inclusion-minimal way to
-   disconnect them. *)
+(* GridGraph[3,3]: slab is the antidiagonal {3, 5, 7}. *)
 VerificationTest[
-  InfraPlane @ FindBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All],
+  InfraPlane @ FindInfraBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All],
   InfraPlane[{{3, 5, 7}}],
-  TestID -> "FindBisectingHyperplane-grid-antidiagonal"
+  TestID -> "FindInfraBisectingHyperplane-LevelSet-grid-antidiagonal"
 ]
 
-(* PathGraph[6], 1 to 6 (odd distance): the strict bisector is empty,
-   so no hyperplane exists in the {0, 0} window. *)
+(* PathGraph[6], 1 to 6 (odd distance): strict slab is empty. *)
 VerificationTest[
-  InfraPlane @ FindBisectingHyperplane[PathGraph[Range[6]], 1, 6, All],
-  InfraPlane[{}],
-  TestID -> "FindBisectingHyperplane-odd-distance-empty"
+  InfraPlane @ FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, All],
+  InfraPlane[{{}}],
+  TestID -> "FindInfraBisectingHyperplane-LevelSet-odd-distance-empty"
 ]
 
-(* Widening to {-1, 1} thickens the bisector to {3, 4}; on a path each of
-   3 and 4 individually disconnects 1 from 6, giving two minimal
-   hyperplanes within the thickened bisector. *)
+(* Widening to {-1, 1} thickens the slab to {3, 4}. *)
 VerificationTest[
-  Sort @ (#[[ 1, 1 ]] & /@ FindBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, All]),
+  InfraPlane @ FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, All],
+  InfraPlane[{{3, 4}}],
+  TestID -> "FindInfraBisectingHyperplane-LevelSet-thickened-path"
+]
+
+(* Properties -> {"Separating"}: on PathGraph[6] each of {3}, {4} is a
+   minimal separator within the thickened slab. *)
+VerificationTest[
+  Sort @ (#[[ 1, 1 ]] & /@ FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, All, Properties -> {"Separating"}]),
   {{3}, {4}},
-  TestID -> "FindBisectingHyperplane-thickened-path"
+  TestID -> "FindInfraBisectingHyperplane-Separating-thickened-path"
 ]
 
-(* CycleGraph[6], 1 to 4 (odd distance): the thickened {-1, 1} bisector
-   is {2, 3, 5, 6}; cutting either arc requires one vertex from {2, 3}
-   and one from {5, 6}, giving four minimal hyperplanes. *)
+(* CycleGraph[6], 1 to 4 (odd distance), thickened to {-1, 1}: cutting either
+   arc requires one vertex from {2, 3} and one from {5, 6}; four minimal
+   separators. *)
 VerificationTest[
-  Sort @ ( Sort /@ (#[[ 1, 1 ]] & /@ FindBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, All]) ),
+  Sort @ ( Sort /@ (#[[ 1, 1 ]] & /@ FindInfraBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, All, Properties -> {"Separating"}]) ),
   {{2, 5}, {2, 6}, {3, 5}, {3, 6}},
-  TestID -> "FindBisectingHyperplane-cycle-thickened"
+  TestID -> "FindInfraBisectingHyperplane-Separating-cycle-thickened"
 ]
 
 VerificationTest[
-  Length @ FindBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, UpTo[2]],
+  Length @ FindInfraBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, UpTo[2], Properties -> {"Separating"}],
   2,
-  TestID -> "FindBisectingHyperplane-upto-soft"
+  TestID -> "FindInfraBisectingHyperplane-Separating-upto-soft"
 ]
 
+(* Default level-set mode yields exactly one realisation; asking for more fails. *)
 VerificationTest[
-  FindBisectingHyperplane[PathGraph[Range[5]], 1, 5, 5],
+  FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, 5],
   $Failed,
-  TestID -> "FindBisectingHyperplane-strict-fails-when-too-few"
+  TestID -> "FindInfraBisectingHyperplane-LevelSet-fails-when-too-few"
 ]
 
-(* FindBisectingHyperplane returns InfraPlane (not InfraShell) so the two
-   set-shaped wrappers stay distinct. *)
 VerificationTest[
-  MatchQ[ FindBisectingHyperplane[PathGraph[Range[5]], 1, 5], { InfraPlane[ { _ } ] .. } ],
+  MatchQ[ FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5], { InfraPlane[ { _ } ] .. } ],
   True,
-  TestID -> "FindBisectingHyperplane-wraps-as-InfraPlane"
+  TestID -> "FindInfraBisectingHyperplane-wraps-as-InfraPlane"
 ]
 
-(* ===== CompleteEquilateralTriangle ===== *)
+(* Method -> "Greedy": DFS peel returns one realisation. *)
+VerificationTest[
+  With[{result = FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, Properties -> {"Separating"}, Method -> "Greedy"]},
+    Length[result] == 1 && MemberQ[{{3}, {4}}, First @ result[[1, 1]]]],
+  True,
+  TestID -> "FindInfraBisectingHyperplane-Greedy-returns-one-minimal"
+]
 
 VerificationTest[
-  Sort @ (#[[ 1, 1 ]] & /@ CompleteEquilateralTriangle[CycleGraph[6], 1, 3, All]),
+  FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, 2, Properties -> {"Separating"}, Method -> "Greedy"],
+  $Failed,
+  TestID -> "FindInfraBisectingHyperplane-Greedy-count-gt-1-fails"
+]
+
+(* Greedy on a slab that itself does not separate: empty, $Failed under count = 1. *)
+VerificationTest[
+  FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, Properties -> {"Separating"}, Method -> "Greedy"],
+  $Failed,
+  TestID -> "FindInfraBisectingHyperplane-Greedy-empty-when-slab-does-not-separate"
+]
+
+(* GridGraph[{3, 3}]'s antidiagonal {3, 5, 7} is disconnected. *)
+VerificationTest[
+  ConnectedGraphQ @ Subgraph[GridGraph[{3, 3}], {3, 5, 7}],
+  False,
+  TestID -> "FindInfraBisectingHyperplane-grid-antidiagonal-disconnected-sanity"
+]
+
+(* Properties -> {"Separating", "Connected"} rejects the disconnected antidiagonal. *)
+VerificationTest[
+  FindInfraBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All, Properties -> {"Separating", "Connected"}],
+  {},
+  TestID -> "FindInfraBisectingHyperplane-Connected-rejects-disconnected"
+]
+
+(* 4-cycle + chord: only minimal separator is the connected {1, 3}. *)
+VerificationTest[
+  With[{g = Graph[{1, 2, 3, 4}, {1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 1 <-> 3}]},
+    Sort @ ( #[[1, 1]] & /@ FindInfraBisectingHyperplane[g, 2, 4, All, Properties -> {"Separating", "Connected"}] )],
+  {{1, 3}},
+  TestID -> "FindInfraBisectingHyperplane-Connected-accepts-chord"
+]
+
+VerificationTest[
+  With[{g = Graph[{1, 2, 3, 4}, {1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 1 <-> 3}]},
+    Sort @ First @ FindInfraBisectingHyperplane[g, 2, 4, Properties -> {"Separating", "Connected"}, Method -> "Greedy"][[1, 1]]],
+  {1, 3},
+  TestID -> "FindInfraBisectingHyperplane-Greedy-Connected"
+]
+
+(* Properties -> {"Connected"} alone: corner case -- inclusion-minimal connected
+   subsets are single vertices. The greedy peel can drop everything from the slab
+   one vertex at a time until one remains. *)
+VerificationTest[
+  With[{g = PathGraph[Range[5]],
+        result = FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, {-1, 1}, Properties -> {"Connected"}, Method -> "Greedy"]},
+    Length[result] == 1 && Length[First @ result[[1, 1]]] == 1],
+  True,
+  TestID -> "FindInfraBisectingHyperplane-Connected-alone-singleton"
+]
+
+(* Method -> {"Exhaustive", "Pruning" -> 1} nests the pruning sub-option;
+   result fits in [1, 4] (4 = unpruned count). *)
+VerificationTest[
+  With[{n = BlockRandom[SeedRandom[7];
+    Length @ FindInfraBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, All,
+      Properties -> {"Separating"}, Method -> {"Exhaustive", "Pruning" -> 1}]]},
+    1 <= n <= 4],
+  True,
+  TestID -> "FindInfraBisectingHyperplane-Pruning-bounded"
+]
+
+(* Sanity: every Separating realisation actually separates p1 from p2. *)
+VerificationTest[
+  With[{g = CycleGraph[6]},
+    AllTrue[
+      #[[1, 1]] & /@ FindInfraBisectingHyperplane[g, 1, 4, {-1, 1}, All, Properties -> {"Separating"}],
+      sep |-> SeparatesQ[g, sep, 1, 4]]],
+  True,
+  TestID -> "FindInfraBisectingHyperplane-Separating-results-actually-separate"
+]
+
+(* badmethod message guard. *)
+VerificationTest[
+  FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, Properties -> {"Separating"}, Method -> "Bogus"],
+  $Failed,
+  {FindInfraBisectingHyperplane::badmethod},
+  TestID -> "FindInfraBisectingHyperplane-badmethod"
+]
+
+(* badproperty message guard. *)
+VerificationTest[
+  FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, Properties -> {"Bogus"}],
+  $Failed,
+  {FindInfraBisectingHyperplane::badproperty},
+  TestID -> "FindInfraBisectingHyperplane-badproperty"
+]
+
+(* ===== CompleteInfraEquilateralTriangle ===== *)
+
+VerificationTest[
+  Sort @ (#[[ 1, 1 ]] & /@ CompleteInfraEquilateralTriangle[CycleGraph[6], 1, 3, All]),
   {5},
-  TestID -> "CompleteEquilateralTriangle-cycle6"
+  TestID -> "CompleteInfraEquilateralTriangle-cycle6"
 ]
 
 VerificationTest[
-  InfraPoint @ CompleteEquilateralTriangle[PathGraph[Range[5]], 1, 5, All],
+  InfraPoint @ CompleteInfraEquilateralTriangle[PathGraph[Range[5]], 1, 5, All],
   InfraPoint[{}],
-  TestID -> "CompleteEquilateralTriangle-path-no-apex"
+  TestID -> "CompleteInfraEquilateralTriangle-path-no-apex"
 ]
 
 VerificationTest[
-  InfraPoint @ CompleteEquilateralTriangle[CompleteGraph[4], 1, 2, 1],
+  InfraPoint @ CompleteInfraEquilateralTriangle[CompleteGraph[4], 1, 2, 1],
   InfraPoint[{3}],
-  TestID -> "CompleteEquilateralTriangle-K4-strict-1"
+  TestID -> "CompleteInfraEquilateralTriangle-K4-strict-1"
 ]
 
-(* ===== SegmentLineAngle ===== *)
+(* ===== InfraSegmentLineAngle ===== *)
 
 VerificationTest[
-  SegmentLineAngle[PathGraph[Range[5]], 1, 3, {1, 2, 3, 4, 5}],
+  InfraSegmentLineAngle[PathGraph[Range[5]], 1, 3, {1, 2, 3, 4, 5}],
   0,
-  TestID -> "SegmentLineAngle-segment-on-line"
+  TestID -> "InfraSegmentLineAngle-segment-on-line"
 ]
 
 VerificationTest[
-  SegmentLineAngle[GridGraph[{3, 3}], 1, 9, {1, 2, 3}],
+  InfraSegmentLineAngle[GridGraph[{3, 3}], 1, 9, {1, 2, 3}],
   2,
-  TestID -> "SegmentLineAngle-grid-far-endpoint"
+  TestID -> "InfraSegmentLineAngle-grid-far-endpoint"
 ]
 
 VerificationTest[
-  SegmentLineAngle[GridGraph[{3, 3}], 5, 9, {1, 2, 3}],
+  InfraSegmentLineAngle[GridGraph[{3, 3}], 5, 9, {1, 2, 3}],
   Infinity,
-  TestID -> "SegmentLineAngle-near-endpoint-not-on-line"
+  TestID -> "InfraSegmentLineAngle-near-endpoint-not-on-line"
 ]
 
 VerificationTest[
-  SegmentLineAngle[PathGraph[Range[5]], {1, 2, 3}, {1, 2, 3, 4, 5}],
+  InfraSegmentLineAngle[PathGraph[Range[5]], {1, 2, 3}, {1, 2, 3, 4, 5}],
   0,
-  TestID -> "SegmentLineAngle-segment-form"
+  TestID -> "InfraSegmentLineAngle-segment-form"
 ]
 
-(* ===== FindParallel: Method scaffolding ===== *)
+(* ===== FindInfraParallel: Method scaffolding ===== *)
 
 VerificationTest[
-  InfraSegment @ FindParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All, Method -> "ShortestPath"],
-  InfraSegment[{{5, 6, 7, 8}}],
-  TestID -> "FindParallel-explicit-shortestpath"
+  InfraLine @ FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All, Method -> "ShortestPath"],
+  InfraLine[{{5, 6, 7, 8}}],
+  TestID -> "FindInfraParallel-explicit-shortestpath"
 ]
 
-(* ===== FindMidpoint Method -> "Embedding" ===== *)
+(* ===== FindInfraMidpoint Method -> "Embedding" ===== *)
 
 VerificationTest[
-  MemberQ[ (#[[ 1, 1 ]] & /@ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> "Metric" ]),
-           First @ First @ First @ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, 1, Method -> "Embedding" ] ],
+  MemberQ[ (#[[ 1, 1 ]] & /@ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> "Metric" ]),
+           First @ First @ First @ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, 1, Method -> "Embedding" ] ],
   True,
-  TestID -> "FindMidpoint-Embedding-Geodesic-in-metric-set"
+  TestID -> "FindInfraMidpoint-Embedding-Geodesic-in-metric-set"
 ]
 
 VerificationTest[
-  Length @ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> { "Embedding", "Pool" -> "ShortestPaths" } ],
+  Length @ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> { "Embedding", "Pool" -> "ShortestPaths" } ],
   Length @ Select[ VertexList[ GridGraph[ { 5, 5 } ] ],
     GraphDistance[ GridGraph[ { 5, 5 } ], 1, # ] + GraphDistance[ GridGraph[ { 5, 5 } ], #, 25 ] ==
       GraphDistance[ GridGraph[ { 5, 5 } ], 1, 25 ] & ],
-  TestID -> "FindMidpoint-Embedding-Geodesic-pool-equals-metric-interval"
+  TestID -> "FindInfraMidpoint-Embedding-Geodesic-pool-equals-metric-interval"
 ]
 
 VerificationTest[
-  Length @ FindMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> { "Embedding", "Pool" -> "AllPaths" } ],
+  Length @ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, All, Method -> { "Embedding", "Pool" -> "AllPaths" } ],
   25,
-  TestID -> "FindMidpoint-Embedding-AllPaths-pool-equals-all-vertices"
+  TestID -> "FindInfraMidpoint-Embedding-AllPaths-pool-equals-all-vertices"
 ]
 
 
-(* ===== FindPerpendicular Method -> "Embedding" ===== *)
+(* ===== FindInfraPerpendicular Method -> "Embedding" ===== *)
 
 VerificationTest[
-  Sort @ (#[[ 1, 1 ]] & /@ FindPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ]),
+  Sort @ (#[[ 1, 1 ]] & /@ FindInfraPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ]),
   { 1, 2, 3, 4, 5 },
-  TestID -> "FindPerpendicular-Embedding-pool-equals-line"
+  TestID -> "FindInfraPerpendicular-Embedding-pool-equals-line"
 ]
 
 VerificationTest[
-  First @ First @ First @ FindPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ],
+  First @ First @ First @ FindInfraPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ],
   3,
-  TestID -> "FindPerpendicular-Embedding-closest-foot-is-projection"
+  TestID -> "FindInfraPerpendicular-Embedding-closest-foot-is-projection"
 ]
 
 
-(* FindMidpoint "Tarski" recipe is local: depends only on B(p1, d(p1, p2)). *)
+(* FindInfraMidpoint "Tarski" recipe is local: depends only on B(p1, d(p1, p2)). *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 10, 10 } ], p1 = 23, p2 = 67 },
-    Sort @ (#[[ 1, 1 ]] & /@ FindMidpoint[ g, p1, p2, All, Method -> "Tarski" ]) ===
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraMidpoint[ g, p1, p2, All, Method -> "Tarski" ]) ===
       Sort @ (#[[ 1, 1 ]] & /@
-        FindMidpoint[ NeighborhoodGraph[ g, p1, GraphDistance[ g, p1, p2 ] ], p1, p2, All, Method -> "Tarski" ])
+        FindInfraMidpoint[ NeighborhoodGraph[ g, p1, GraphDistance[ g, p1, p2 ] ], p1, p2, All, Method -> "Tarski" ])
   ],
   True,
-  TestID -> "FindMidpoint-Tarski-locality"
+  TestID -> "FindInfraMidpoint-Tarski-locality"
 ]
 
 EndTestSection[]

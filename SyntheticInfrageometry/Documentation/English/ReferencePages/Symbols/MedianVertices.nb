@@ -73,7 +73,7 @@ Cell["See Also", "Section",ExpressionUUID->"1c231187-9ebd-45c0-a21c-d5211af2c40a
 
 Cell["MetricInterval", "Item",ExpressionUUID->"17153873-8d81-43af-9526-68608c5c65d0"],
 
-Cell["FindMidpoint", "Item",ExpressionUUID->"4678c293-df2b-4a03-8551-d5be124a6e25"],
+Cell["FindInfraMidpoint", "Item",ExpressionUUID->"4678c293-df2b-4a03-8551-d5be124a6e25"],
 
 Cell["TarskiFiveSegmentsQ", "Item",ExpressionUUID->"31f7594b-dec1-476e-856e-3c8d7ecf080b"],
 
