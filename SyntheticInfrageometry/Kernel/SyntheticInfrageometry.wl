@@ -10,6 +10,7 @@ PackageExport[FindInfraReflection]
 PackageExport[CompleteInfraEquilateralTriangle]
 PackageExport[FindInfraCommonPoint]
 PackageExport[SelectInfraPoint]
+PackageExport[InfraReachableQ]
 
 (* InfraSegment.wl *)
 PackageExport[InfraSegment]
@@ -22,6 +23,8 @@ PackageExport[UniqueInfraSegmentQ]
 (* InfraPath.wl *)
 PackageExport[InfraPath]
 PackageExport[FindInfraPath]
+PackageExport[ExtendInfraPath]
+PackageExport[ConcatenateInfraPath]
 
 (* InfraLine.wl *)
 PackageExport[FindInfraLine]
@@ -42,10 +45,26 @@ PackageExport[FindInfraShellParameters]
 PackageExport[InfraShellQ]
 PackageExport[SeparatesQ]
 
+(* InfraEllipticShell.wl *)
+PackageExport[InfraEllipticShell]
+PackageExport[FindInfraEllipticShell]
+PackageExport[InfraEllipticShellQ]
+
+(* InfraBall.wl *)
+PackageExport[InfraBall]
+PackageExport[FindInfraBall]
+PackageExport[InfraBallQ]
+
 (* InfraCircle.wl *)
 PackageExport[InfraCircle]
 PackageExport[FindInfraCircle]
+PackageExport[FindInfraCycle]
 PackageExport[InfraCircleQ]
+
+(* InfraEllipse.wl *)
+PackageExport[InfraEllipse]
+PackageExport[FindInfraEllipse]
+PackageExport[InfraEllipseQ]
 
 (* InfraPlane.wl *)
 PackageExport[InfraPlane]
@@ -92,6 +111,7 @@ PackageExport[EmbeddingClosest]
 PackageExport[GeodesicGraph]
 PackageExport[GeodesicSubgraph]
 PackageExport[PathSubgraph]
+PackageExport[InfraPathLength]
 
 (* Homotopy.wl *)
 PackageExport[InfraHomotopy]
@@ -106,13 +126,18 @@ PackageExport[HomotopyMoveType]
 PackageExport[HomotopyMoveTypes]
 PackageExport[HomotopicLoopsQ]
 
-(* MetricGeometry.wl *)
+(* MetricAlgebra.wl *)
 PackageExport[MetricInterval]
 PackageExport[GeodesicMultiplicity]
 PackageExport[GeodesicMultiplicityMatrix]
 PackageExport[MedianVertices]
 PackageExport[FindGeodesicConvexHull]
 PackageExport[GeodesicallyConvexQ]
+
+(* InfraTopology.wl *)
+PackageExport[BallTopologyGraph]
+PackageExport[BallClosure]
+PackageExport[BallContinuousMapQ]
 
 (* Coordinatization.wl *)
 PackageExport[FindInfraRadarBasis]

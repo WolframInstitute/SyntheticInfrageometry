@@ -43,3 +43,37 @@ VerificationTest[
   3,
   TestID -> "InfraPoint-Length-of-inner"
 ]
+
+
+(* ===================== FindInfraCycle ===================== *)
+
+VerificationTest[
+  Head @ First @ FindInfraCycle[ CycleGraph[ 4 ], 1 ],
+  InfraCircle,
+  TestID -> "FindInfraCycle-returns-InfraCircle"
+]
+
+VerificationTest[
+  Length @ FindInfraCycle[ CycleGraph[ 4 ], All ],
+  1,
+  TestID -> "FindInfraCycle-CycleGraph4-one-cycle"
+]
+
+VerificationTest[
+  FindInfraCycle[ TreeGraph[ { 1 -> 2, 2 -> 3 } ], 1 ],
+  $Failed,
+  TestID -> "FindInfraCycle-tree-no-cycles"
+]
+
+VerificationTest[
+  Length @ First @ First @ First @ FindInfraCycle[ GridGraph[ { 3, 3 } ], { 4 }, 1 ],
+  4,
+  TestID -> "FindInfraCycle-length4-on-grid"
+]
+
+VerificationTest[
+  NullHomotopicQ[ GridGraph[ { 3, 3 } ],
+    First @ First @ FindInfraCycle[ GridGraph[ { 3, 3 } ], 1 ] ],
+  True,
+  TestID -> "FindInfraCycle-shortest-is-nullhomotopic-on-grid"
+]

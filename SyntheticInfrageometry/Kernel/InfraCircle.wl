@@ -1,6 +1,11 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageScope[findCircleCore]
+PackageScope[cycleToVertexSequence]
+PackageScope[findCyclesWithPruning]
+PackageScope[admissibleCircleSet]
+PackageScope[extractAdmissibleCycle]
+PackageScope[greedyFirstAdmissibleCycle]
 
 
 (* ===================== InfraCircle wrapper ===================== *)
@@ -131,6 +136,33 @@ greedyFirstAdmissibleCycle[ levelGraph_Graph, vertsTest_ ] :=
       k++
     ];
     If[ MissingQ @ found, { }, { found } ]
+  ]
+
+
+(* ===================== FindInfraCycle ===================== *)
+
+(* Simple cycles on graph (topological, not metric circles), returned as
+   InfraCircle wrappers for direct use with NullHomotopicQ /
+   FindInfraNullHomotopy.  Sorted by length ascending. *)
+
+FindInfraCycle[ graph_Graph, n : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+  FindInfraCycle[ graph, { 1, VertexCount[ graph ] }, n ]
+
+FindInfraCycle[ graph_Graph, { k_Integer },
+    n : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+  infraCap[
+    InfraCircle[ { # } ] & /@ (cycleToVertexSequence /@ FindCycle[ graph, { k }, All ]),
+    n
+  ]
+
+FindInfraCycle[ graph_Graph, { kMin_Integer, kMax_ },
+    n : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+  With[ { maxK = Min[ kMax, VertexCount[ graph ] ] },
+    infraCap[
+      InfraCircle[ { # } ] & /@ SortBy[ Length ] @
+        Flatten[ cycleToVertexSequence /@ FindCycle[ graph, { # }, All ] & /@ Range[ kMin, maxK ], 1 ],
+      n
+    ]
   ]
 
 

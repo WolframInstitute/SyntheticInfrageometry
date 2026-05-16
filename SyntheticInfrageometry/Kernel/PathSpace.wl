@@ -277,6 +277,24 @@ PathSubgraph[ g_Graph, u_, v_, lengthSpec : ( _Integer | UpTo[ _Integer ] | All 
   ]
 
 
+(* ===================== InfraPathLength ===================== *)
+(* Edge count of a path/cycle wrapper. Returns a scalar for one realisation,
+   a List for multi. InfraCircle: circumference = Length (not Length-1) since
+   the last vertex connects back to the first. InfraPolyline: sum of leg edge counts. *)
+
+InfraPathLength[ InfraPolyline[ reps_List ] ] :=
+  With[ { lengths = Total[ (Length[ First @ # ] - 1) & /@ # ] & /@ reps },
+    If[ Length[ lengths ] == 1, First @ lengths, lengths ] ]
+
+InfraPathLength[ InfraCircle[ reps_List ] ] :=
+  With[ { lengths = Length /@ reps },
+    If[ Length[ lengths ] == 1, First @ lengths, lengths ] ]
+
+InfraPathLength[ _[ reps_List ] ] :=
+  With[ { lengths = (Length[#] - 1) & /@ reps },
+    If[ Length[ lengths ] == 1, First @ lengths, lengths ] ]
+
+
 (* ===================== Helpers: path-space metrics ===================== *)
 
 (* HausdorffDistance: symmetric "max one-sided gap" between two vertex sets. *)

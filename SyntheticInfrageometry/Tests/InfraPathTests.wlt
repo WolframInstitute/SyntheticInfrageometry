@@ -83,4 +83,101 @@ VerificationTest[
   TestID -> "FindInfraPath-multi-source-spread"
 ]
 
+(* ===================== ExtendInfraPath ===================== *)
+
+VerificationTest[
+  ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
+    "Side" -> "Forward", "Length" -> 1,
+    Method -> "ShortestPath" ],
+  { InfraPath[ { { 3, 4, 5 } } ] },
+  TestID -> "ExtendInfraPath-PathGraph-forward"
+]
+
+VerificationTest[
+  ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
+    "Side" -> "Backward", "Length" -> 2,
+    Method -> "ShortestPath" ],
+  { InfraPath[ { { 1, 2, 3, 4 } } ] },
+  TestID -> "ExtendInfraPath-PathGraph-backward"
+]
+
+VerificationTest[
+  Sort[ First @ #[[ 1 ]] & /@
+    ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3 }, All,
+      Method -> "ShortestPath" ] ],
+  Sort[ { { 1, 2, 3, 4, 5 }, { 5, 4, 3, 2, 1 } } ],
+  TestID -> "ExtendInfraPath-PathGraph-both-automatic"
+]
+
+VerificationTest[
+  Sort[ First @ #[[ 1 ]] & /@
+    ExtendInfraPath[ CycleGraph[ 6 ], { 1 }, All,
+      "Side" -> "Forward", "Length" -> 2,
+      Method -> { "LongestPath", "Aggregation" -> "Sum" } ] ],
+  Sort[ { { 1, 2, 3 }, { 1, 6, 5 } } ],
+  TestID -> "ExtendInfraPath-CycleGraph-LongestPath-sum"
+]
+
+VerificationTest[
+  AllTrue[
+    ExtendInfraPath[ GridGraph[ { 3, 3 } ], { 1 }, All,
+      "Side" -> "Forward", "Length" -> 3 ],
+    p |-> InfraPathQ[ GridGraph[ { 3, 3 } ], First @ p[[ 1 ]] ] ],
+  True,
+  TestID -> "ExtendInfraPath-all-extensions-pass-InfraPathQ"
+]
+
+VerificationTest[
+  AllTrue[
+    ExtendInfraPath[ GridGraph[ { 3, 3 } ], { 1 }, All,
+      "Side" -> "Both", "Length" -> 2 ],
+    MatchQ[ InfraPath[ { _List } ] ] ],
+  True,
+  TestID -> "ExtendInfraPath-output-shape"
+]
+
+VerificationTest[
+  Length @ First @ First @
+    ExtendInfraPath[ PathGraph[ Range[ 7 ] ], { 4, 5 }, 1,
+      "Side" -> "Forward", "Length" -> 2,
+      Method -> "ShortestPath" ][[ 1 ]],
+  4,
+  TestID -> "ExtendInfraPath-Length-truncation"
+]
+
+(* Multi-realisation input: each realisation is extended *)
+VerificationTest[
+  Sort[ First @ #[[ 1 ]] & /@
+    ExtendInfraPath[ PathGraph[ Range[ 7 ] ],
+      InfraPath[ { { 3 }, { 5 } } ], All,
+      "Side" -> "Forward", "Length" -> 1,
+      Method -> "ShortestPath" ] ],
+  Sort[ { { 3, 2 }, { 3, 4 }, { 5, 4 }, { 5, 6 } } ],
+  TestID -> "ExtendInfraPath-multi-realisation"
+]
+
+(* Dead-end freeze: forward extension of the right endpoint freezes *)
+VerificationTest[
+  ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 4, 5 }, 1,
+    "Side" -> "Forward", "Length" -> 5,
+    Method -> "ShortestPath" ],
+  { InfraPath[ { { 4, 5 } } ] },
+  TestID -> "ExtendInfraPath-dead-end-freeze"
+]
+
+VerificationTest[
+  ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 1,
+    Method -> "ShortestPath" ],
+  { InfraPath[ { { 1, 2, 3, 4, 5 } } ] },
+  TestID -> "ExtendInfraPath-Both-extends-segment-to-line"
+]
+
+(* count > available: $Failed *)
+VerificationTest[
+  ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3 }, 99,
+    Method -> "ShortestPath" ],
+  $Failed,
+  TestID -> "ExtendInfraPath-strict-shortfall-Failed"
+]
+
 EndTestSection[]

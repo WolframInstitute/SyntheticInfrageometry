@@ -4,6 +4,7 @@ PackageExport[$InfraPointColor]
 PackageExport[$InfraSegmentColor]
 PackageExport[$InfraLineColor]
 PackageExport[$InfraShellColor]
+PackageExport[$InfraBallColor]
 PackageExport[$InfraPlaneColor]
 PackageExport[$InfraCircleColor]
 PackageExport[$InfraRayColor]
@@ -14,10 +15,11 @@ PackageScope[$InfraThicknessRange]
 PackageScope[$InfraPointSizeRange]
 
 
-$InfraPointColor   = RGBColor[ 0.78, 0.30, 0.55 ];
+$InfraPointColor   = RGBColor[ 0.95, 0.08, 0.08 ];
 $InfraSegmentColor = RGBColor[ 0.92, 0.45, 0.30 ];
 $InfraLineColor    = RGBColor[ 0.78, 0.35, 0.22 ];
 $InfraShellColor   = RGBColor[ 0.30, 0.70, 0.50 ];
+$InfraBallColor    = RGBColor[ 0.55, 0.80, 0.65 ];
 $InfraPlaneColor   = RGBColor[ 0.55, 0.45, 0.80 ];
 $InfraCircleColor  = RGBColor[ 0.20, 0.55, 0.65 ];
 $InfraRayColor     = RGBColor[ 0.95, 0.65, 0.45 ];
@@ -83,6 +85,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
               InfraLine,     $InfraLineColor,
               InfraPath,     $InfraPathColor,
               InfraShell,    $InfraShellColor,
+              InfraBall,     $InfraBallColor,
               InfraPlane,    $InfraPlaneColor,
               InfraCircle,   $InfraCircleColor,
               InfraRay,      $InfraRayColor,
@@ -96,6 +99,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           { InfraLine    [ b_List ], c_ } :> { b, c, "Paths"  },
           { InfraPath    [ b_List ], c_ } :> { b, c, "Paths"  },
           { InfraShell   [ b_List ], c_ } :> { b, c, "Sets"   },
+          { InfraBall    [ b_List ], c_ } :> { b, c, "Sets"   },
           { InfraPlane   [ b_List ], c_ } :> { b, c, "Sets"   },
           { InfraCircle  [ b_List ], c_ } :> { b, c, "Cycles" },
           { InfraRay     [ b_List ], c_ } :> { b, c, "Paths"  },

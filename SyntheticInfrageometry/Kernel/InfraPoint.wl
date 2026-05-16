@@ -327,3 +327,16 @@ pointPoolPositions[ _, vertices_List, list_List, _ ] :=
   Flatten @ Position[ vertices, Alternatives @@ list, { 1 }, Heads -> False ]
 
 pointPoolPositions[ _, vertices_List, _, _ ] := Range @ Length @ vertices
+
+
+(* ===================== InfraReachableQ ===================== *)
+(* p1, p2 share a connected component: exists v in p1, w in p2 with v ~ w.
+   Single multi-source BFS via VertexComponent -- visits only the components
+   touched by p1's realisations, no full-graph component partition built. *)
+
+InfraReachableQ[ graph_Graph, p1_, p2_ ] :=
+  IntersectingQ[ VertexComponent[ graph, infraPointVertices @ p1 ], infraPointVertices @ p2 ]
+
+infraPointVertices[ InfraPoint[ vs_List ] ] := vs
+infraPointVertices[ list_List ]              := list
+infraPointVertices[ v_ ]                     := { v }

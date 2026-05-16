@@ -95,12 +95,12 @@ selectFromName[ name_String  ] := name
 infraVertexSet[ InfraPoint[ vs_List ] ] := vs
 infraVertexSet[ InfraObject[ vs_List ] ] := vs
 infraVertexSet[ ( InfraSegment | InfraPath | InfraLine | InfraRay | InfraCircle
-                | InfraShell | InfraPlane )[ reps_List ] ] :=
+                | InfraShell | InfraPlane | InfraBall )[ reps_List ] ] :=
   Union @@ reps
 infraVertexSet[ list_List ] /;
     list =!= { } && AllTrue[ list,
       MatchQ[ ( InfraPoint | InfraSegment | InfraPath | InfraLine | InfraRay |
-                InfraCircle | InfraShell | InfraPlane )[ { _ } ] ] ] :=
+                InfraCircle | InfraShell | InfraPlane | InfraBall )[ { _ } ] ] ] :=
   infraVertexSet[ Head[ First @ list ] @ ( #[[ 1, 1 ]] & /@ list ) ]
 infraVertexSet[ v_ ] := { v }
 
@@ -287,6 +287,11 @@ dispatchConstruction[ graph_Graph, InfraShell[ center_, r_, opts___Rule ] ] :=
       False, <| "Center" -> center,
                 "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
     extractBranches[ { opts } ] ]
+
+dispatchConstruction[ graph_Graph, InfraBall[ center_, r_ ] ] :=
+  applySelectOption[ graph,
+    #[[ 1, 1 ]] & /@ FindInfraBall[ graph, center, r ],
+    None, False, <| "Center" -> center, "Radius" -> r |> ]
 
 dispatchConstruction[ graph_Graph, InfraCircle[ center_, r_, opts___Rule ] ] :=
   capBranches[

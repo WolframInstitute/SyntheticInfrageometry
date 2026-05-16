@@ -13,6 +13,7 @@ FindInfraReflection::usage = "FindInfraReflection[graph, x, a] returns a List of
 CompleteInfraEquilateralTriangle::usage = "CompleteInfraEquilateralTriangle[graph, p1, p2] returns a List of unary InfraPoint[{c}] apex vertices equidistant from p1 and p2 at distance d(p1, p2) (Euclid I.1). With n / UpTo[n] / All controls multiplicity. Option: Method (\"Metric\" (default)).";
 FindInfraCommonPoint::usage = "FindInfraCommonPoint[graph, lines] returns a List of unary InfraPoint[{v}] wrappers for the vertices on every listed line, or $Failed. With n / UpTo[n] / All controls multiplicity. Entries may be bare vertex sequences or InfraSegment / InfraRay wrappers.";
 SelectInfraPoint::usage = "SelectInfraPoint[graph, vertices] returns one vertex drawn from the bundle treated as a finite metric space under graph distance. SelectInfraPoint[graph, vertices, n] returns exactly n unary InfraPoint[{v}] wrappers or $Failed; UpTo[n] returns up to n; All returns the whole filtered pool. Options mirror FindInfraPoint: \"From\" (All (default), \"Center\", \"Periphery\", anchor -> spec, InfraPoint[{...}] -> spec, vertex, list), \"Distance\" (None (default), \"Max\", d, {dMin, dMax}), \"MaxCliques\". Accepts InfraPoint[{...}]; preserves the wrapper. Operator form SelectInfraPoint[graph, n, opts][vertices].";
+InfraReachableQ::usage = "InfraReachableQ[graph, p1, p2] tests whether some realisation of p1 lies in the same connected component as some realisation of p2. Accepts InfraPoint[{...}], a bare vertex, or a list of vertices.";
 
 (* ===================== InfraSegment ===================== *)
 
@@ -22,6 +23,8 @@ ExtendInfraSegment::usage = "ExtendInfraSegment[graph, segment] extends segment 
 InfraPathQ::usage = "InfraPathQ[graph, walk] tests whether walk is a simple path in graph (consecutive adjacency and no repeated vertices). Hierarchy: InfraPathQ \[Superset] InfraSegmentQ \[Superset] InfraLineQ.";
 InfraPath::usage = "InfraPath[{walk}] is the unary form (one simple path); InfraPath[{walk1, ..., walkk}] is the multi-realisation form. FindInfraPath finders return a List of unary InfraPath[{walk}] wrappers; wrap that list with InfraPath @ ... to collapse to multi via auto-flatten. Rendered like InfraSegment (sequential-edge semantics).";
 FindInfraPath::usage = "FindInfraPath[graph, p1, p2] returns {InfraPath[{walk}]} for one simple path between p1 and p2. FindInfraPath[graph, p1, p2, kspec] restricts the length: kspec is k (length <= k), {k} (length == k), {kmin, kmax} (range), or Infinity (any length, default). FindInfraPath[graph, p1, p2, kspec, n] / UpTo[n] / All controls multiplicity. Endpoints accept InfraPoint[{...}] for multi-anchor spread. Delegates enumeration to the Wolfram built-in FindPath.";
+ExtendInfraPath::usage = "ExtendInfraPath[graph, path] extends a walk by a per-step geometric rule and returns a List of unary InfraPath[{walk}] wrappers. ExtendInfraPath[graph, path, n] / UpTo[n] / All controls multiplicity; the multi-realisation InfraPath wrapper spreads. Options: Method (\"CurvatureMinimizing\" (default; sub-option \"Curvature\"), \"ShortestPath\" (sub-option \"Window\"), \"LongestPath\" (sub-options \"Window\", \"Aggregation\" -> \"Lex\" | \"Sum\")), \"Length\" (Automatic (default; extend until inextensible) or integer steps per requested side), \"Side\" (\"Both\" (default), \"Forward\", \"Backward\"), \"Pruning\".";
+ConcatenateInfraPath::usage = "ConcatenateInfraPath[path1, path2] returns a List of unary InfraPath[{walk}] wrappers for every compatible pair (walk1 from path1, walk2 from path2) with Last[walk1] === First[walk2], concatenated as Join[walk1, Rest[walk2]]. ConcatenateInfraPath[path1, path2, n] / UpTo[n] / All controls multiplicity (default All). Both arguments accept multi-realisation InfraPath[{...}] wrappers or lists of unary wrappers.";
 InfraSegmentQ::usage = "InfraSegmentQ[graph, segment] tests whether segment is a geodesic path.";
 UniqueInfraSegmentQ::usage = "UniqueInfraSegmentQ[graph, u, v] tests whether the geodesic from u to v is unique. UniqueInfraSegmentQ[graph] tests the geodetic property (every pair has a unique geodesic).";
 
@@ -47,11 +50,30 @@ FindInfraShellParameters::usage = "FindInfraShellParameters[graph, vertexSet] re
 InfraShellQ::usage = "InfraShellQ[graph, vertexSet] tests whether vertexSet is a metric shell (equidistant level surface separating its interior from exterior). Use FindInfraShellParameters to recover {center, radius}.";
 SeparatesQ::usage = "SeparatesQ[graph, vertexSet, u, v] tests whether deleting vertexSet disconnects u from v.";
 
+(* ===================== InfraBall ===================== *)
+
+InfraBall::usage = "InfraBall[{ball}] is the unary form (one closed metric ball vertex set); InfraBall[{ball1, ..., ballk}] is the multi-realisation form. Scene-language constructor InfraBall[center, radius] is used inside InfraScene. The multi form is consumed by InfraSceneHighlight (induced-subgraph semantics).";
+FindInfraBall::usage = "FindInfraBall[graph, c, r] returns InfraBall[{B_r(c)}] for the closed metric ball B_r(c) = { v : d(c, v) <= r }. Accepts InfraPoint[{{c}}] as the center for multi-anchor spread.";
+InfraBallQ::usage = "InfraBallQ[graph, vertexSet] tests whether vertexSet is a closed metric ball, i.e. equals { v : d(c, v) <= r } for some center c in vertexSet and some radius r.";
+
 (* ===================== InfraCircle ===================== *)
 
 InfraCircle::usage = "InfraCircle[{cycle}] is the unary form; InfraCircle[{cycle1, ..., cyclek}] is the multi-realisation form. Find* returns a List of unary wrappers; wrap with InfraCircle @ ... to collapse to multi via auto-flatten. Scene-language constructor InfraCircle[center, radius] is used inside InfraScene. The multi form is consumed by InfraSceneHighlight (sequential edges with auto-closure).";
 FindInfraCircle::usage = "FindInfraCircle[graph, c, r] returns {InfraCircle[{cycle}]} for the shortest simple cycle in the level-surface subgraph at radius r around c, as an open vertex sequence. FindInfraCircle[graph, c, r, n] returns a List of n unary InfraCircle[{cycle}] wrappers or $Failed (cycles sorted by length ascending); UpTo[n] returns up to n; All returns all. Options: Properties (currently \"Separating\" only; empty default permits any cycle in the level surface), Method (\"Exhaustive\" (default; FindCycle + filter + length sort, accepts nested {\"Exhaustive\", \"Pruning\" -> spec}) | \"Peel\" (BFS peel-DAG on the level-set vertices, accepts \"Pruning\") | \"Greedy\" (first admissible cycle by length, one realisation)).";
+FindInfraCycle::usage = "FindInfraCycle[graph, n] returns n shortest simple cycles in graph as unary InfraCircle[{cycle}] wrappers (open vertex sequences, sorted by length ascending); UpTo[n] returns up to n; All returns all. FindInfraCycle[graph, {k}, n] restricts to cycles of exactly length k; FindInfraCycle[graph, {kMin, kMax}, n] to cycles in the length range. Returns $Failed when fewer than n cycles exist. Results feed directly into NullHomotopicQ and FindInfraNullHomotopy.";
 InfraCircleQ::usage = "InfraCircleQ[graph, cycle] tests whether the vertex sequence cycle is a metric circle (cyclic edge chain whose vertex set is a metric shell). Accepts both open and closed input.";
+
+(* ===================== InfraEllipticShell ===================== *)
+
+InfraEllipticShell::usage = "InfraEllipticShell[{set}] is the unary form (one elliptic-shell vertex set); InfraEllipticShell[{set1, ..., setk}] is the multi-realisation form. Find* returns a List of unary wrappers; wrap with InfraEllipticShell @ ... to collapse to multi via auto-flatten.";
+FindInfraEllipticShell::usage = "FindInfraEllipticShell[graph, {p1, p2}, c] returns {InfraEllipticShell[{levelSet}]} for the elliptic shell { v : d(p1,v) + d(p2,v) == c }; c may be {cMin, cMax} for a tolerance band. FindInfraEllipticShell[graph, {p1, p2}, c, n] returns a List of n unary InfraEllipticShell[{set}] wrappers or $Failed; UpTo[n] returns up to n; All returns all. Options: Properties (list of \"Separating\" / \"Connected\"; empty default returns the level set itself), Method (\"Exhaustive\" (default; BFS over the peel-DAG, accepts nested {\"Exhaustive\", \"Pruning\" -> spec}) | \"Greedy\" (DFS, one realisation); ignored when Properties is empty).";
+InfraEllipticShellQ::usage = "InfraEllipticShellQ[graph, vertexSet] tests whether vertexSet is an elliptic shell, i.e. equals { v : d(p1,v) + d(p2,v) == c } for some p1, p2, c.";
+
+(* ===================== InfraEllipse ===================== *)
+
+InfraEllipse::usage = "InfraEllipse[{cycle}] is the unary form; InfraEllipse[{cycle1, ..., cyclek}] is the multi-realisation form. Find* returns a List of unary wrappers; wrap with InfraEllipse @ ... to collapse to multi via auto-flatten.";
+FindInfraEllipse::usage = "FindInfraEllipse[graph, {p1, p2}, c] returns {InfraEllipse[{cycle}]} for the shortest simple cycle in the level-surface subgraph { v : d(p1,v) + d(p2,v) == c }, as an open vertex sequence. FindInfraEllipse[graph, {p1, p2}, c, n] returns a List of n unary InfraEllipse[{cycle}] wrappers or $Failed (cycles sorted by length ascending); UpTo[n] returns up to n; All returns all. Options: Properties (currently \"Separating\" only; empty default permits any cycle in the level surface), Method (\"Exhaustive\" (default; FindCycle + filter + length sort, accepts nested {\"Exhaustive\", \"Pruning\" -> spec}) | \"Peel\" (BFS peel-DAG on the level-set vertices) | \"Greedy\" (first admissible cycle by length, one realisation)).";
+InfraEllipseQ::usage = "InfraEllipseQ[graph, cycle] tests whether the vertex sequence cycle is a metric ellipse (cyclic edge chain whose vertex set is an elliptic shell). Accepts both open and closed input.";
 
 (* ===================== InfraPlane ===================== *)
 
@@ -106,6 +128,7 @@ EmbeddingClosest::usage = "EmbeddingClosest[graph, bundle, {p1, p2}] keeps the b
 GeodesicGraph::usage = "GeodesicGraph[graph, c] returns the BFS DAG rooted at c: a directed graph with edge u -> v whenever d(c, v) = d(c, u) + 1 and u-v is an edge of graph. Sinks are peripheral vertices reachable from c; directed paths c -> sink are exactly the maximal geodesics from c. Accepts InfraPoint[{c1, ..., ck}] for multi-source BFS. Option: \"AxisLength\" (truncate at depth k; default All).";
 GeodesicSubgraph::usage = "GeodesicSubgraph[graph, pairs] returns the union of geodesics between the listed vertex pairs. Options: \"PathThickness\" (Hausdorff threshold for keeping multiple geodesics per pair), \"Directed\".";
 PathSubgraph::usage = "PathSubgraph[graph, u, v] returns the union of all shortest u-v paths. PathSubgraph[graph, u, v, k] (or UpTo[k]) caps path length; PathSubgraph[graph, u, v, All] returns the full simple-path subgraph. Option: \"Directed\".";
+InfraPathLength::usage = "InfraPathLength[w] returns the edge count of a path-type wrapper w (InfraSegment, InfraPath, InfraLine, InfraRay). For InfraCircle, returns the circumference (vertex count of the open cycle). For InfraPolyline, returns the sum of leg edge counts. Multi-realisation wrappers return a List of lengths.";
 
 (* ===================== Homotopy ===================== *)
 
@@ -121,7 +144,7 @@ HomotopyMoveType::usage = "HomotopyMoveType[walk1, walk2] classifies the element
 HomotopyMoveTypes::usage = "HomotopyMoveTypes[chain] applies HomotopyMoveType to each consecutive pair in chain. HomotopyMoveTypes[InfraHomotopy[{chain}]] returns the labels for the unary wrapper; HomotopyMoveTypes[InfraHomotopy[reps]] returns one label list per realisation.";
 HomotopicLoopsQ::usage = "HomotopicLoopsQ[graph, loop1, loop2] tests free loop homotopy: loop1 and loop2 are equivalent under path-homotopy moves and cyclic rotation of the loop (the user-framework definition: homotopy of paths going through loops and rotations). Two loops with disjoint vertex sets return False -- the through-loops definition can't bridge them without an external connecting path. Open input is auto-closed; accepts InfraCircle[{...}] on either side as a Cartesian-AllTrue conjunction. Inherits FindInfraHomotopy options.";
 
-(* ===================== MetricGeometry ===================== *)
+(* ===================== MetricAlgebra ===================== *)
 
 MetricInterval::usage = "MetricInterval[graph, u, v] returns the vertex set { w : d(u, w) + d(w, v) == d(u, v) } -- the union of all geodesics from u to v.";
 GeodesicMultiplicity::usage = "GeodesicMultiplicity[graph, u, v] returns the number of distinct geodesics from u to v, computed as (A^d)[u, v] where d = GraphDistance[graph, u, v].";
@@ -129,6 +152,12 @@ GeodesicMultiplicityMatrix::usage = "GeodesicMultiplicityMatrix[graph] returns {
 MedianVertices::usage = "MedianVertices[graph, vs] returns the vertices minimising the sum of distances to vs. A graph is a median graph iff every triple has a unique median.";
 FindGeodesicConvexHull::usage = "FindGeodesicConvexHull[graph, S] returns the smallest superset of S closed under MetricInterval, as a sorted vertex list. Graph-intrinsic shadow of tropical convexity (see Wiki/Concepts/TropicalConvexity).";
 GeodesicallyConvexQ::usage = "GeodesicallyConvexQ[graph, S] tests geodesic convexity of S. Option Method (\"Strong\" (default): every geodesic between any pair of S lies in S; \"Weak\": some geodesic between each pair lies in S).";
+
+(* ===================== InfraTopology ===================== *)
+
+BallTopologyGraph::usage = "BallTopologyGraph[graph, r] returns the directed graph of the specialization preorder of the Alexandrov topology on V(graph) whose closed-set subbasis is the family of closed r-balls (edge q -> p iff N_r(p) is contained in N_r(q)). Option \"Reduced\" (True (default): Hasse-style transitive reduction, self-loops dropped; False: full preorder digraph with reflexive self-loops).";
+BallClosure::usage = "BallClosure[graph, r, p] returns the closure of vertex p in the Alexandrov topology with closed-set subbasis the closed r-balls, as a vertex List.";
+BallContinuousMapQ::usage = "BallContinuousMapQ[g, r, h, s, map] tests whether map: V(g) -> V(h) is continuous for the r-ball topology on g and the s-ball topology on h, i.e. monotone for the specialization preorder. map: Association, list of Rule, or callable.";
 
 (* ===================== Coordinatization ===================== *)
 
@@ -209,6 +238,7 @@ InfraRevolutionQ::usage = "InfraRevolutionQ[vs, axis, profile] asserts that vs i
 $InfraPointColor::usage   = "Default highlight color for InfraPoint objects.";
 $InfraSegmentColor::usage = "Default highlight color for InfraSegment objects.";
 $InfraShellColor::usage   = "Default highlight color for InfraShell objects.";
+$InfraBallColor::usage    = "Default highlight color for InfraBall objects.";
 $InfraPlaneColor::usage   = "Default highlight color for InfraPlane objects.";
 $InfraCircleColor::usage  = "Default highlight color for InfraCircle objects.";
 $InfraRayColor::usage     = "Default highlight color for InfraRay objects.";
