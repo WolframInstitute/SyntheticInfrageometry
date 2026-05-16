@@ -1,4 +1,4 @@
-BeginTestSection["MetricGeometry"]
+BeginTestSection["MetricAlgebra"]
 
 (* ===== MetricInterval ===== *)
 

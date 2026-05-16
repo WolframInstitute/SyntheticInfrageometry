@@ -205,4 +205,163 @@ VerificationTest[
   TestID -> "BallContinuousMapQ-edge-iter-agrees-with-closure-inclusion"
 ]
 
+(* ===== Dual BallTopologyGraph ===== *)
+
+VerificationTest[
+  Sort @ EdgeList @ BallTopologyGraph[ PathGraph @ Range[5], 1, "Dual" -> True ],
+  Sort @ EdgeList @ ReverseGraph @ BallTopologyGraph[ PathGraph @ Range[5], 1 ],
+  TestID -> "BallTopologyGraph-Dual-equals-reverse"
+]
+
+VerificationTest[
+  EdgeList @ BallTopologyGraph[ PathGraph @ Range[5], 0, "Dual" -> True ],
+  {},
+  TestID -> "BallTopologyGraph-Dual-discrete-empty"
+]
+
+VerificationTest[
+  EdgeQ[ BallTopologyGraph[ PathGraph @ Range[5], 1, "Dual" -> True ], DirectedEdge[1, 2] ],
+  True,
+  TestID -> "BallTopologyGraph-Dual-PathGraph-edge-1to2"
+]
+
+VerificationTest[
+  EdgeQ[ BallTopologyGraph[ PathGraph @ Range[5], 1, "Dual" -> True ], DirectedEdge[2, 1] ],
+  False,
+  TestID -> "BallTopologyGraph-Dual-PathGraph-no-edge-2to1"
+]
+
+(* Reachability in dual preorder matches dual closure. *)
+VerificationTest[
+  And @@ (Sort @ VertexInComponent[ BallTopologyGraph[ StarGraph[5], 1, "Dual" -> True ], # ] ===
+          Sort @ BallClosure[ StarGraph[5], 1, #, "Dual" -> True ] & /@ Range[5]),
+  True,
+  TestID -> "BallTopologyGraph-Dual-reachability-matches-DualClosure"
+]
+
+(* ===== Dual BallClosure ===== *)
+
+(* Hub's dual closure = all vertices (every ball fits inside V). *)
+VerificationTest[
+  Sort @ BallClosure[ StarGraph[5], 1, 1, "Dual" -> True ],
+  {1, 2, 3, 4, 5},
+  TestID -> "BallClosure-Dual-StarGraph-hub-all-vertices"
+]
+
+(* Leaf's dual closure = just itself. *)
+VerificationTest[
+  BallClosure[ StarGraph[5], 1, 2, "Dual" -> True ],
+  {2},
+  TestID -> "BallClosure-Dual-StarGraph-leaf-singleton"
+]
+
+(* PathGraph: dual closure of interior vertex includes vertices whose B_1 fits inside its B_1. *)
+VerificationTest[
+  Sort @ BallClosure[ PathGraph @ Range[5], 1, 2, "Dual" -> True ],
+  {1, 2},
+  TestID -> "BallClosure-Dual-PathGraph-vertex2"
+]
+
+(* InfraPoint wrapper forwards "Dual" option. *)
+VerificationTest[
+  Sort @ BallClosure[ StarGraph[5], 1, InfraPoint[{{1}}], "Dual" -> True ],
+  Sort @ BallClosure[ StarGraph[5], 1, 1, "Dual" -> True ],
+  TestID -> "BallClosure-Dual-InfraPoint-forwarded"
+]
+
+(* ===== Dual BallContinuousMapQ: dual-to-dual == primal-to-primal ===== *)
+
+VerificationTest[
+  BallContinuousMapQ[ PathGraph @ Range[5], 1, PathGraph @ Range[5], 1,
+    AssociationThread[ Range[5], Range[5] ], "Dual" -> True ] ===
+  BallContinuousMapQ[ PathGraph @ Range[5], 1, PathGraph @ Range[5], 1,
+    AssociationThread[ Range[5], Range[5] ] ],
+  True,
+  TestID -> "BallContinuousMapQ-Dual-identity-same-as-primal"
+]
+
+VerificationTest[
+  BallContinuousMapQ[ PathGraph @ Range[5], 1, PathGraph @ Range[5], 1,
+    <| 1 -> 5, 2 -> 3, 3 -> 3, 4 -> 3, 5 -> 1 |>, "Dual" -> True ] ===
+  BallContinuousMapQ[ PathGraph @ Range[5], 1, PathGraph @ Range[5], 1,
+    <| 1 -> 5, 2 -> 3, 3 -> 3, 4 -> 3, 5 -> 1 |> ],
+  True,
+  TestID -> "BallContinuousMapQ-Dual-discontinuous-same-as-primal"
+]
+
+(* ===== InfraTopologicalSpace wrapper ===== *)
+
+VerificationTest[
+  InfraTopologicalSpace[ PathGraph @ Range[5], 1 ][ "Graph" ],
+  PathGraph @ Range[5],
+  TestID -> "InfraTopologicalSpace-Graph-accessor"
+]
+
+VerificationTest[
+  IsomorphicGraphQ[
+    InfraTopologicalSpace[ PathGraph @ Range[5], 1 ][ "Topology" ],
+    BallTopologyGraph[ PathGraph @ Range[5], 1, "Reduced" -> False ]
+  ],
+  True,
+  TestID -> "InfraTopologicalSpace-Topology-accessor"
+]
+
+(* "Dual" option threads through to BallTopologyGraph. *)
+VerificationTest[
+  IsomorphicGraphQ[
+    InfraTopologicalSpace[ StarGraph[5], 1, "Dual" -> True ][ "Topology" ],
+    BallTopologyGraph[ StarGraph[5], 1, "Reduced" -> False, "Dual" -> True ]
+  ],
+  True,
+  TestID -> "InfraTopologicalSpace-Dual-option-threads"
+]
+
+(* Wrapper-based BallContinuousMapQ agrees with original signature. *)
+VerificationTest[
+  With[ { g = PathGraph @ Range[5], h = StarGraph[5],
+          f = <| 1 -> 1, 2 -> 2, 3 -> 1, 4 -> 3, 5 -> 1 |> },
+    BallContinuousMapQ[ g, 1, h, 1, f ] ===
+    BallContinuousMapQ[
+      InfraTopologicalSpace[ g, 1 ],
+      InfraTopologicalSpace[ h, 1 ],
+      f ]
+  ],
+  True,
+  TestID -> "BallContinuousMapQ-wrapper-agrees-with-original"
+]
+
+VerificationTest[
+  BallContinuousMapQ[
+    InfraTopologicalSpace[ CycleGraph[6], 1 ],
+    InfraTopologicalSpace[ CycleGraph[6], 1 ],
+    AssociationThread[ Range[6], Range[6] ]
+  ],
+  True,
+  TestID -> "BallContinuousMapQ-wrapper-identity-continuous"
+]
+
+(* Wrapper dispatch handles {__Rule} maps and callable maps too. *)
+VerificationTest[
+  With[ { ts = InfraTopologicalSpace[ StarGraph[5], 1 ] },
+    {
+      BallContinuousMapQ[ ts, ts, <| 1 -> 1, 2 -> 2, 3 -> 3, 4 -> 4, 5 -> 5 |> ],
+      BallContinuousMapQ[ ts, ts, { 1 -> 1, 2 -> 2, 3 -> 3, 4 -> 4, 5 -> 5 } ],
+      BallContinuousMapQ[ ts, ts, Identity ]
+    }
+  ],
+  { True, True, True },
+  TestID -> "BallContinuousMapQ-wrapper-map-forms-agree"
+]
+
+(* The known discontinuous counterexample is also caught via the wrapper. *)
+VerificationTest[
+  BallContinuousMapQ[
+    InfraTopologicalSpace[ PathGraph @ Range[5], 1 ],
+    InfraTopologicalSpace[ PathGraph @ Range[5], 1 ],
+    <| 1 -> 5, 2 -> 3, 3 -> 3, 4 -> 3, 5 -> 1 |>
+  ],
+  False,
+  TestID -> "BallContinuousMapQ-wrapper-broken-monotone"
+]
+
 EndTestSection[]

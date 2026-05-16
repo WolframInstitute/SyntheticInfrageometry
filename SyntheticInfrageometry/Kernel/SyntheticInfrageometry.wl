@@ -135,6 +135,7 @@ PackageExport[FindGeodesicConvexHull]
 PackageExport[GeodesicallyConvexQ]
 
 (* InfraTopology.wl *)
+PackageExport[InfraTopologicalSpace]
 PackageExport[BallTopologyGraph]
 PackageExport[BallClosure]
 PackageExport[BallContinuousMapQ]
