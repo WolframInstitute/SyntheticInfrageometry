@@ -67,9 +67,14 @@ InfraTopologicalGraph[ graph_Graph, r_, opts___ ] :=
 InfraSet[ vs_List ] /; MemberQ[ vs, _InfraSet ] :=
   InfraSet[ Union @@ Replace[ vs, s_InfraSet :> s[ "Vertices" ], {1} ] ]
 
-(* Convert any Infra* wrapper to InfraSet by flattening realisations one level.
-   Works for vertex-set wrappers (InfraBall, InfraShell: rs = {{vs}})
-   and vertex wrappers (InfraPoint: rs = {v1,v2,...}) uniformly. *)
+(* InfraPoint is special: each realisation IS a vertex (possibly a list vertex
+   label like {i,j}), so rs is already the vertex list -- no flattening needed. *)
+InfraSet[ InfraPoint[ vs_List ] ] :=
+  InfraSet[ Sort @ DeleteDuplicates @ vs ]
+
+(* All other Infra* container wrappers have realisations that are vertex-lists
+   (InfraBall, InfraShell, InfraSegment, ...): rs = {{vs_1}, {vs_2}, ...}.
+   Flatten one level to union all vertex-sets into a flat list. *)
 InfraSet[ wrapper_Symbol[ rs_List ] ] /;
     wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
   InfraSet[ Sort @ DeleteDuplicates @ Flatten[ rs, 1 ] ]
@@ -87,7 +92,7 @@ InfraSetClosure[ ts_InfraTopologicalSpace, InfraSet[ vs_List ] ] :=
 
 InfraSetClosure[ ts_InfraTopologicalSpace, wrapper_Symbol[ rs_List ] ] /;
     wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
-  InfraSetClosure[ ts, InfraSet[ Union @@ rs ] ]
+  InfraSetClosure[ ts, InfraSet[ wrapper[ rs ] ] ]
 
 
 (* ===================== InfraSetInterior ===================== *)
@@ -103,7 +108,7 @@ InfraSetInterior[ ts_InfraTopologicalSpace, InfraSet[ vs_List ] ] :=
 
 InfraSetInterior[ ts_InfraTopologicalSpace, wrapper_Symbol[ rs_List ] ] /;
     wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
-  InfraSetInterior[ ts, InfraSet[ Union @@ rs ] ]
+  InfraSetInterior[ ts, InfraSet[ wrapper[ rs ] ] ]
 
 
 (* ===================== InfraSetBoundary ===================== *)
@@ -118,7 +123,21 @@ InfraSetBoundary[ ts_InfraTopologicalSpace, s_InfraSet ] :=
 
 InfraSetBoundary[ ts_InfraTopologicalSpace, wrapper_Symbol[ rs_List ] ] /;
     wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
-  InfraSetBoundary[ ts, InfraSet[ Union @@ rs ] ]
+  InfraSetBoundary[ ts, InfraSet[ wrapper[ rs ] ] ]
+
+
+(* ===================== InfraSetNeighborhood ===================== *)
+
+(* Unique minimal open neighborhood of S in ts: the principal upset of S in the
+   specialization preorder = union of VertexOutComponent over vertices of S.
+   Unique because Alexandrov topologies are closed under arbitrary intersections. *)
+
+InfraSetNeighborhood[ ts_InfraTopologicalSpace, InfraSet[ vs_List ] ] :=
+  InfraSet[ Union @@ Map[ v |-> VertexOutComponent[ ts[ "Topology" ], {v} ], vs ] ]
+
+InfraSetNeighborhood[ ts_InfraTopologicalSpace, wrapper_Symbol[ rs_List ] ] /;
+    wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
+  InfraSetNeighborhood[ ts, InfraSet[ wrapper[ rs ] ] ]
 
 
 (* ===================== ContinuousMapQ ===================== *)

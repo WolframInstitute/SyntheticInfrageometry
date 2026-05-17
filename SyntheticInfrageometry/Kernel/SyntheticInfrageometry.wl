@@ -142,6 +142,7 @@ PackageExport[InfraSet]
 PackageExport[InfraSetClosure]
 PackageExport[InfraSetInterior]
 PackageExport[InfraSetBoundary]
+PackageExport[InfraSetNeighborhood]
 PackageExport[ContinuousMapQ]
 
 (* Coordinatization.wl *)

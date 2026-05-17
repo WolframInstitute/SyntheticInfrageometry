@@ -21,21 +21,25 @@ InfraEllipse[ reps_List ][ "First" ]        := First @ reps
 (* An ellipse for foci {p1, p2} at sum c is a simple cycle in the induced
    subgraph on { v : cMin <= d(p1,v) + d(p2,v) <= cMax }.  Two orthogonal
    axes matching FindInfraCircle:
-     Properties -- empty (default) means any simple cycle in the level
-       surface; "Separating" requires the cycle to disconnect the near
-       region from the far region.  "Connected" raises ::badproperty
-       (cycles are always connected).
-     Method     -- "Exhaustive" (default; FindCycle + filter + length sort,
-       accepts nested {"Exhaustive", "Pruning" -> spec}) | "Peel" (BFS
-       peel-DAG, cycle extraction from each leaf) | "Greedy" (first
-       admissible cycle by ascending length, one realisation). *)
+     Properties -- default {"Separating"} requires the cycle to
+       disconnect the near region {v : sum < cMin} from the far region
+       {v : sum > cMax} -- the topological condition that makes a level
+       cycle a genuine ellipse.  Empty {} returns any simple cycle in
+       the level surface (no separation).  "Connected" raises
+       ::badproperty (cycles are always connected).
+     Method     -- "Peel" (default; BFS peel-DAG on the level-set
+       vertices, cycle extraction from each minimal admissible leaf;
+       robust on sparse level sets where Exhaustive often finds no
+       cycle at all) | "Exhaustive" (FindCycle + filter + length sort,
+       accepts nested {"Exhaustive", "Pruning" -> spec}) | "Greedy"
+       (first admissible cycle by ascending length, one realisation). *)
 
 FindInfraEllipse::badmethod   = "Method `1` is not supported by FindInfraEllipse.";
 FindInfraEllipse::badproperty = "Property `1` is not supported by FindInfraEllipse.";
 
 Options[ FindInfraEllipse ] = {
-  Properties -> { },
-  Method     -> "Exhaustive"
+  Properties -> { "Separating" },
+  Method     -> "Peel"
 };
 
 FindInfraEllipse[ graph_Graph, foci : { _, _ }, c_,

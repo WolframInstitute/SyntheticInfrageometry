@@ -23,11 +23,13 @@ InfraCircle[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraCircle[ _List ] ] ] :=
    subgraph at distance ~r from c.  Returns open vertex sequences
    { v0, v1, ..., vk } (the wrap-around edge is implicit).  Two
    orthogonal axes:
-     Properties -- filters every realisation must satisfy.  Empty
-       (default) means any simple cycle in the level surface.
-       "Separating" requires the cycle's vertex set to disconnect c
-       from { v : d(c, v) > r }.  "Connected" is not a meaningful
-       property for cycles (always connected) and raises ::badproperty.
+     Properties -- filters every realisation must satisfy.  Default
+       {"Separating"} requires the cycle's vertex set to disconnect c
+       from { v : d(c, v) > r } -- the topological condition that makes
+       a cycle in the level surface a genuine circle.  Empty {} returns
+       any simple cycle in the level surface (no separation).
+       "Connected" is not a meaningful property for cycles (always
+       connected) and raises ::badproperty.
      Method     -- algorithmic strategy.  "Exhaustive" (default) does
        direct cycle enumeration via FindCycle + filter + length sort
        (so count = 1 returns the shortest admissible cycle).  The
@@ -41,7 +43,7 @@ FindInfraCircle::badmethod   = "Method `1` is not supported by FindInfraCircle."
 FindInfraCircle::badproperty = "Property `1` is not supported by FindInfraCircle.";
 
 Options[ FindInfraCircle ] = {
-  Properties -> { },
+  Properties -> { "Separating" },
   Method     -> "Exhaustive"
 };
 
