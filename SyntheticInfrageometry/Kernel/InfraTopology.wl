@@ -3,94 +3,107 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== InfraTopologicalSpace wrapper ===================== *)
 
-(* InfraTopologicalSpace[g, top] bundles a graph with its specialization
-   preorder digraph.  `top` is the FULL preorder (with reflexive self-loops),
-   i.e. BallTopologyGraph[g, r, "Reduced" -> False]: required so that the
-   continuity check below is an O(1) hash lookup against the transitive
-   closure.  Cache once per (graph, radius) and reuse in sweep loops. *)
+(* Auto-reduce: fires only when the input topology is not already the Hasse
+   diagram (i.e. has edges that TransitiveReductionGraph would remove). *)
+InfraTopologicalSpace[ graph_Graph, topo_Graph ] :=
+  With[ { hasse = TransitiveReductionGraph @ topo },
+    InfraTopologicalSpace[ graph, hasse ] /; EdgeCount[ hasse ] < EdgeCount[ topo ]
+  ]
 
-Options[ InfraTopologicalSpace ] = { "Dual" -> False };
+InfraTopologicalSpace[ graph_Graph, "Topology" -> {"Ball", r_} ] :=
+  InfraTopologicalSpace[ graph, InfraBallTopology[ graph, r ] ]
 
-InfraTopologicalSpace[ graph_Graph, r_?NumericQ, OptionsPattern[] ] :=
-  InfraTopologicalSpace[ graph,
-    BallTopologyGraph[ graph, r, "Reduced" -> False,
-      "Dual" -> TrueQ @ OptionValue[ "Dual" ] ] ]
+InfraTopologicalSpace[ graph_Graph, _Graph ][ "Graph" ]    := graph
+InfraTopologicalSpace[ _Graph, hasse_Graph ][ "Topology" ] := hasse
 
-InfraTopologicalSpace[ graph_Graph, _Graph ][ "Graph" ]      := graph
-InfraTopologicalSpace[ _Graph, top_Graph   ][ "Topology" ]   := top
+(* Display: underlying graph (gray) overlaid with Hasse arrows ($InfraTopologyColor). *)
+InfraTopologicalSpace /: MakeBoxes[
+    InfraTopologicalSpace[ graph_Graph, hasse_Graph ], form_ ] :=
+  With[ { coords = Thread[ VertexList[ graph ] -> GraphEmbedding[ graph ] ] },
+    ToBoxes[ Show[
+      Graph[ graph,
+        VertexCoordinates -> coords,
+        EdgeStyle -> Directive[ GrayLevel[ 0.70 ], Thickness[ 0.006 ] ] ],
+      Graph[ VertexList[ graph ], EdgeList[ hasse ],
+        DirectedEdges -> True,
+        VertexCoordinates -> coords,
+        VertexStyle -> Transparent,
+        VertexLabels -> None,
+        EdgeStyle -> Directive[ $InfraTopologyColor, Thickness[ 0.005 ], Arrowheads[ Medium ] ] ]
+    ], form ]
+  ]
 
 
-(* ===================== Ball topology (Alexandrov specialization) ===================== *)
+(* ===================== InfraBallTopology ===================== *)
 
-(* BallTopologyGraph[g, r]: directed graph of the specialization preorder of
-   the Alexandrov topology on V(g) whose closed-set subbasis is the family of
-   closed r-balls.  Edge q -> p iff q in cl({p}) iff N_r(p) subset N_r(q).
-   "Reduced" -> True (default) returns the Hasse-style transitive reduction
-   (self-loops implicit and dropped); "Reduced" -> False returns the full
-   preorder digraph including the reflexive self-loops. *)
+(* InfraBallTopology[g, r]: Hasse diagram of the specialization preorder of
+   the Alexandrov topology on V(g) with closed-set subbasis the closed r-balls.
+   Edge q -> p iff B_r(p) subset B_r(q), with transitive edges removed. *)
 
-Options[ BallTopologyGraph ] = { "Reduced" -> True, "Dual" -> False };
+Options[ InfraBallTopology ] = { "Dual" -> False };
 
-BallTopologyGraph[ graph_Graph, r_, OptionsPattern[] ] :=
+InfraBallTopology[ graph_Graph, r_, OptionsPattern[] ] :=
   With[ { ind = UnitStep[ r - GraphDistanceMatrix[ graph ] ] },
-    With[ { preorder = AdjacencyGraph[
+    With[ { hasse = TransitiveReductionGraph @ AdjacencyGraph[
               VertexList[ graph ],
               Outer[ Boole[ AllTrue[ #1 - #2, NonNegative ] ] &, ind, ind, 1 ],
-              DirectedEdges -> True
-            ] },
-      With[ { reduced = If[ TrueQ @ OptionValue[ "Reduced" ],
-                TransitiveReductionGraph @ preorder, preorder ] },
-        If[ TrueQ @ OptionValue[ "Dual" ], ReverseGraph @ reduced, reduced ]
-      ]
+              DirectedEdges -> True ] },
+      If[ TrueQ @ OptionValue[ "Dual" ], ReverseGraph @ hasse, hasse ]
     ]
   ]
 
 
-(* BallClosure[g, r, p]: cl(p) = { q : N_r(p) subset N_r(q) } in the
-   Alexandrov topology with closed-set subbasis the closed r-balls.
-   "Dual" -> True: dual closure cl_dual(p) = { q : N_r(q) subset N_r(p) }. *)
+(* ===================== InfraTopologicalGraph ===================== *)
 
-BallClosure[ graph_Graph, r_, InfraPoint[ { { v_ } } ], opts : OptionsPattern[] ] :=
-  BallClosure[ graph, r, v, opts ]
+(* Convenience shell: produces an InfraTopologicalSpace displayed with MakeBoxes. *)
+InfraTopologicalGraph[ graph_Graph, r_, opts___ ] :=
+  InfraTopologicalSpace[ graph, InfraBallTopology[ graph, r, opts ] ]
 
-Options[ BallClosure ] = { "Dual" -> False };
 
-BallClosure[ graph_Graph, r_, p_, OptionsPattern[] ] :=
-  With[ { V = VertexList[ graph ], ind = UnitStep[ r - GraphDistanceMatrix[ graph ] ] },
-    With[ { row = ind[[ First @ FirstPosition[ V, p ] ]] },
-      If[ TrueQ @ OptionValue[ "Dual" ],
-        Pick[ V, AllTrue[ row - #, NonNegative ] & /@ ind ],
-        Pick[ V, AllTrue[ # - row, NonNegative ] & /@ ind ]
-      ]
-    ]
+(* ===================== InfraPointClosure ===================== *)
+
+(* InfraPointClosure[ts, p]: cl(p) wrapped as InfraPoint[{closure_vertices}].
+   Multi-InfraPoint input: union of closures of all vertices across all realizations. *)
+
+InfraPointClosure[ ts_InfraTopologicalSpace, InfraPoint[ realizations_List ] ] :=
+  InfraPoint[{ Union @@ Map[
+    VertexInComponent[ ts[ "Topology" ], # ]&,
+    Union @@ realizations
+  ]}]
+
+InfraPointClosure[ ts_InfraTopologicalSpace, p_ ] :=
+  InfraPoint[{ VertexInComponent[ ts[ "Topology" ], p ] }]
+
+
+(* ===================== InfraInterior ===================== *)
+
+(* InfraInterior[ts, s]: int(S) = V \ cl(V\S), wrapped as InfraPoint[{interior_vertices}].
+   Multi-InfraPoint input: computes interior of the union of all realizations. *)
+
+InfraInterior[ ts_InfraTopologicalSpace, InfraPoint[ realizations_List ] ] :=
+  With[ { vertices = VertexList[ ts[ "Graph" ] ],
+          topo     = ts[ "Topology" ],
+          verts    = Union @@ realizations },
+    InfraPoint[{ Complement[ vertices,
+      Union @@ Map[ VertexInComponent[ topo, # ]&, Complement[ vertices, verts ] ]
+    ]}]
   ]
 
+InfraInterior[ ts_InfraTopologicalSpace, p_ ] :=
+  InfraInterior[ ts, InfraPoint[ {{p}} ] ]
 
-(* BallContinuousMapQ[g, r, h, s, map]: vertex map f: V(g) -> V(h) is
-   continuous for the r-ball topology on g and the s-ball topology on h iff
-   it is monotone for the specialization preorder, q <=_g p ==> f(q) <=_h f(p).
-   Hasse edges of the source suffice (transitivity propagates through target);
-   use the full preorder for the target so EdgeQ is an O(1) hash lookup.
-   "Dual" -> True applies the dual topology on both sides; dual-to-dual
-   continuity is equivalent to primal-to-primal by relabeling.
+
+(* ===================== ContinuousMapQ ===================== *)
+
+(* ContinuousMapQ[f, s1, s2]: vertex map f: V(g1) -> V(g2) is continuous iff it
+   is monotone for the specialization preorder - every Hasse edge q -> p in s1
+   maps to a pair f(q), f(p) connected in the transitive closure of s2's Hasse.
    map: Association, list of Rule, or callable. *)
 
-Options[ BallContinuousMapQ ] = { "Dual" -> False };
-
-BallContinuousMapQ[ g_Graph, r_, h_Graph, s_, map_, OptionsPattern[] ] :=
-  With[ { dual = TrueQ @ OptionValue[ "Dual" ] },
-    BallContinuousMapQ[
-      InfraTopologicalSpace[ g, r, "Dual" -> dual ],
-      InfraTopologicalSpace[ h, s, "Dual" -> dual ],
-      map ]
-  ]
-
-BallContinuousMapQ[
-    InfraTopologicalSpace[ _, src_Graph ],
-    InfraTopologicalSpace[ _, tgt_Graph ],
-    map_ ] :=
-  With[ { f = If[ MatchQ[ map, { __Rule } ], Association @ map, map ] },
-    AllTrue[ EdgeList[ src ],
-      e |-> e[[ 1 ]] === e[[ 2 ]] || EdgeQ[ tgt, f @ e[[ 1 ]] -> f @ e[[ 2 ]] ]
+ContinuousMapQ[ f_, s1_InfraTopologicalSpace, s2_InfraTopologicalSpace ] :=
+  With[ { tgtClosure = TransitiveClosureGraph[ s2[ "Topology" ] ],
+          map = If[ MatchQ[ f, { __Rule } ], Association @ f, f ] },
+    AllTrue[ EdgeList[ s1[ "Topology" ] ],
+      e |-> EdgeQ[ tgtClosure, map @ e[[ 1 ]] -> map @ e[[ 2 ]] ]
     ]
   ]

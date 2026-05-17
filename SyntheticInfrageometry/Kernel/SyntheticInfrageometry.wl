@@ -136,9 +136,11 @@ PackageExport[GeodesicallyConvexQ]
 
 (* InfraTopology.wl *)
 PackageExport[InfraTopologicalSpace]
-PackageExport[BallTopologyGraph]
-PackageExport[BallClosure]
-PackageExport[BallContinuousMapQ]
+PackageExport[InfraBallTopology]
+PackageExport[InfraTopologicalGraph]
+PackageExport[InfraPointClosure]
+PackageExport[InfraInterior]
+PackageExport[ContinuousMapQ]
 
 (* Coordinatization.wl *)
 PackageExport[FindInfraRadarBasis]

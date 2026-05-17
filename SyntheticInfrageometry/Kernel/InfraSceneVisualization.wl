@@ -9,6 +9,7 @@ PackageExport[$InfraPlaneColor]
 PackageExport[$InfraCircleColor]
 PackageExport[$InfraRayColor]
 PackageExport[$InfraObjectColor]
+PackageExport[$InfraTopologyColor]
 PackageScope[$InfraSceneHighlightPalette]
 PackageScope[$InfraOpacityRange]
 PackageScope[$InfraThicknessRange]
@@ -24,7 +25,8 @@ $InfraPlaneColor   = RGBColor[ 0.55, 0.45, 0.80 ];
 $InfraCircleColor  = RGBColor[ 0.20, 0.55, 0.65 ];
 $InfraRayColor     = RGBColor[ 0.95, 0.65, 0.45 ];
 $InfraPathColor    = RGBColor[ 0.85, 0.62, 0.32 ];
-$InfraObjectColor  = RGBColor[ 0.55, 0.70, 0.85 ];
+$InfraObjectColor   = RGBColor[ 0.55, 0.70, 0.85 ];
+$InfraTopologyColor = RGBColor[ 0.85, 0.55, 0.75 ];
 
 $InfraOpacityRange   = { 0.40, 1.0 };
 $InfraThicknessRange = { 1.0, 5.0 };
@@ -74,7 +76,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
   Module[ { triples, knotTriples, oRange, tRange, pRange, vEntries, eEntries, objects },
 
     objects = DeleteCases[ multiObjects,
-      _[ $Failed ] | ( _[ $Failed ] -> _ ) | ( _ -> _[ $Failed ] ) ];
+      _[ $Failed ] | ( _[ $Failed ] -> _ ) | ( _ -> _[ $Failed ] ) | { } ];
 
     triples = MapIndexed[
       { item, idx } |-> Replace[
