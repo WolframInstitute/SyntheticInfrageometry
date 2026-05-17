@@ -168,9 +168,10 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph ] :=
 
 InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
   With[ {
-      nSteps = Length @ scene[ "Steps" ],
-      labels = scene[ "Labels" ],
-      wrap   = AssociationMap[
+      nSteps  = Length @ scene[ "Steps" ],
+      labels  = scene[ "Labels" ],
+      objects = scene[ "Objects" ],
+      wrap    = AssociationMap[
         Switch[ Head @ Lookup[ scene[ "Constructions" ], #, InfraPoint ],
           InfraSegment | InfraLine, InfraSegment,
           InfraShell,               InfraShell,
@@ -181,6 +182,7 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
     DynamicModule[ {
         step      = 1,
         branch    = 1,
+        mode      = "Branch",
         instances = FindInfraScene[ scene, graph, 1, init ] },
       Column[ {
         Row[ {
@@ -200,21 +202,32 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
             branch = 1 ]
         } ],
         Row[ {
-          Button[ "\[LeftPointer]",
-            branch = Max[ branch - 1, 1 ] ],
-          Spacer[ 8 ],
-          Dynamic @ Row[ { "branch ", Min[ branch, Max[ Length @ instances, 1 ] ],
-            "/", Length @ instances } ],
-          Spacer[ 8 ],
-          Button[ "\[RightPointer]",
-            branch = Min[ branch + 1, Max[ Length @ instances, 1 ] ] ]
+          SetterBar[ Dynamic @ mode, { "Branch", "Diffuse" } ],
+          Spacer[ 16 ],
+          Dynamic @ If[ mode === "Diffuse",
+            Row[ { Length @ instances, " branches diffused" } ],
+            Row[ {
+              Button[ "\[LeftPointer]",
+                branch = Max[ branch - 1, 1 ] ],
+              Spacer[ 8 ],
+              "branch ", Min[ branch, Max[ Length @ instances, 1 ] ],
+              "/", Length @ instances,
+              Spacer[ 8 ],
+              Button[ "\[RightPointer]",
+                branch = Min[ branch + 1, Max[ Length @ instances, 1 ] ] ]
+            } ] ]
         } ],
         Dynamic @ If[ instances === {},
           InfraSceneHighlight[ graph, {}, ImageSize -> 600 ],
           InfraSceneHighlight[ graph,
-            KeyValueMap[
-              wrap[ #1 ][ { #2 } ] &,
-              instances[[ Min[ branch, Length @ instances ], 1 ]] ],
+            If[ mode === "Diffuse",
+              With[ { boundKeys = Keys @ First[ instances ][[ 1 ]] },
+                ( obj |-> wrap[ obj ][
+                    DeleteDuplicates[ #[[ 1 ]][ obj ] & /@ instances ] ] ) /@
+                Select[ objects, MemberQ[ boundKeys, # ] & ] ],
+              KeyValueMap[
+                wrap[ #1 ][ { #2 } ] &,
+                instances[[ Min[ branch, Length @ instances ], 1 ]] ] ],
             ImageSize -> 600 ] ]
       }, Alignment -> Left ]
     ]
