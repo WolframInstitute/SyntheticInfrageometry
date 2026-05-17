@@ -75,7 +75,13 @@ Options[ InfraSceneHighlight ] = Join[
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
   Module[ { triples, knotTriples, oRange, tRange, pRange, vEntries, eEntries, objects },
 
-    objects = DeleteCases[ multiObjects,
+    (* Normalise each item: merge {InfraX[{r1}],...} into InfraX[{r1,...}];
+       then strip $Failed / empty entries. *)
+    objects = DeleteCases[
+      Replace[ #,
+        list_List /; Length[ list ] > 0 && SameQ @@ (Head /@ list) &&
+            MatchQ[ First @ list, _[ _List ] ] :>
+          Head[ First @ list ][ Join @@ list[[ All, 1 ]] ] ] & /@ multiObjects,
       _[ $Failed ] | ( _[ $Failed ] -> _ ) | ( _ -> _[ $Failed ] ) | { } ];
 
     triples = MapIndexed[
@@ -86,13 +92,15 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
               InfraSegment,  $InfraSegmentColor,
               InfraLine,     $InfraLineColor,
               InfraPath,     $InfraPathColor,
-              InfraShell,    $InfraShellColor,
-              InfraBall,     $InfraBallColor,
-              InfraPlane,    $InfraPlaneColor,
-              InfraCircle,   $InfraCircleColor,
-              InfraRay,      $InfraRayColor,
-              InfraObject,   $InfraObjectColor,
-              InfraPolyline, $InfraSegmentColor,
+              InfraShell,         $InfraShellColor,
+              InfraBall,          $InfraBallColor,
+              InfraEllipticShell, $InfraShellColor,
+              InfraPlane,         $InfraPlaneColor,
+              InfraCircle,        $InfraCircleColor,
+              InfraEllipse,       $InfraCircleColor,
+              InfraRay,           $InfraRayColor,
+              InfraObject,        $InfraObjectColor,
+              InfraPolyline,      $InfraSegmentColor,
               _,             $InfraSceneHighlightPalette[[
                                1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ] } ],
         {
@@ -100,21 +108,23 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           { InfraSegment [ b_List ], c_ } :> { b, c, "Paths"  },
           { InfraLine    [ b_List ], c_ } :> { b, c, "Paths"  },
           { InfraPath    [ b_List ], c_ } :> { b, c, "Paths"  },
-          { InfraShell   [ b_List ], c_ } :> { b, c, "Sets"   },
-          { InfraBall    [ b_List ], c_ } :> { b, c, "Sets"   },
-          { InfraPlane   [ b_List ], c_ } :> { b, c, "Sets"   },
-          { InfraCircle  [ b_List ], c_ } :> { b, c, "Cycles" },
+          { InfraShell        [ b_List ], c_ } :> { b, c, "Sets"   },
+          { InfraBall         [ b_List ], c_ } :> { b, c, "Sets"   },
+          { InfraEllipticShell[ b_List ], c_ } :> { b, c, "Sets"   },
+          { InfraPlane        [ b_List ], c_ } :> { b, c, "Sets"   },
+          { InfraCircle       [ b_List ], c_ } :> { b, c, "Cycles" },
+          { InfraEllipse      [ b_List ], c_ } :> { b, c, "Cycles" },
           { InfraRay     [ b_List ], c_ } :> { b, c, "Paths"  },
           { InfraObject  [ b_List ], c_ } :> { { b }, c, "Sets"  },
           { InfraPolyline[ b_List ], c_ } :> { polylineToVertexSeqs[ b ], c, "Paths" },
           { b_, c_ }                      :> { b, c, Automatic }
         } ],
-      multiObjects ];
+      objects ];
 
     (* Each InfraPolyline item additionally emits a knot triple (the leg
        endpoints rendered as points in $InfraPointColor).  Drawn on top of
        the path so the subdivision is visible.  *)
-    knotTriples = Cases[ multiObjects,
+    knotTriples = Cases[ objects,
       ( InfraPolyline[ b_List ] | ( InfraPolyline[ b_List ] -> _ ) ) :>
         { polylineToKnotVertices[ b ], $InfraPointColor, "PointSet" } ];
 

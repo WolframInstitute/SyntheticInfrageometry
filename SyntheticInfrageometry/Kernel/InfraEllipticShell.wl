@@ -40,7 +40,8 @@ Options[ FindInfraEllipticShell ] = {
 FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraEllipticShell, count,
-    findEllipticShellCore[ graph, ##, opts ] &, foci, c ]
+    findEllipticShellCore[ graph, ##, opts ] &,
+    Replace[ foci, InfraPoint[ { v_ } ] :> v, { 1 } ], c ]
 
 
 findEllipticShellCore[ graph_Graph, { p1_, p2_ }, c_,

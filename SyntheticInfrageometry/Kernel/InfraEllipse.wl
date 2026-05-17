@@ -41,7 +41,8 @@ Options[ FindInfraEllipse ] = {
 FindInfraEllipse[ graph_Graph, foci : { _, _ }, c_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraEllipse, count,
-    findEllipseCore[ graph, ##, opts ] &, foci, c ]
+    findEllipseCore[ graph, ##, opts ] &,
+    Replace[ foci, InfraPoint[ { v_ } ] :> v, { 1 } ], c ]
 
 
 findEllipseCore[ graph_Graph, { p1_, p2_ }, c_,
