@@ -33,8 +33,9 @@ FindInfraEllipticShell::badmethod   = "Method `1` is not supported by FindInfraE
 FindInfraEllipticShell::badproperty = "Property `1` is not supported by FindInfraEllipticShell.";
 
 Options[ FindInfraEllipticShell ] = {
-  Properties -> { },
-  Method     -> "Exhaustive"
+  Properties  -> { },
+  Method      -> "Exhaustive",
+  "Tolerance" -> 0
 };
 
 FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
@@ -46,7 +47,7 @@ FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
 
 findEllipticShellCore[ graph_Graph, { p1_, p2_ }, c_,
     opts : OptionsPattern[ FindInfraEllipticShell ] ] :=
-  Module[ { properties, methodSpec, methodHead, pruning, range, verts, idx, dm, row1, row2,
+  Module[ { properties, methodSpec, methodHead, pruning, tol, range, verts, idx, dm, row1, row2,
             levelSet, admissible },
     properties = OptionValue[ FindInfraEllipticShell, { opts }, Properties ];
     methodSpec = OptionValue[ FindInfraEllipticShell, { opts }, Method ];
@@ -54,7 +55,8 @@ findEllipticShellCore[ graph_Graph, { p1_, p2_ }, c_,
     pruning    = Replace[ methodSpec,
                   { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
                     _ :> Infinity } ];
-    range = Replace[ c, d_?NumericQ :> { d, d } ];
+    tol   = OptionValue[ FindInfraEllipticShell, { opts }, "Tolerance" ];
+    range = Replace[ c, d_?NumericQ :> { d, d } ] + { -tol, tol };
     verts = VertexList[ graph ];
     idx   = AssociationThread[ verts, Range @ Length @ verts ];
     dm    = GraphDistanceMatrix[ graph ];
