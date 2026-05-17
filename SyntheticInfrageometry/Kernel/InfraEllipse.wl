@@ -34,9 +34,8 @@ FindInfraEllipse::badmethod   = "Method `1` is not supported by FindInfraEllipse
 FindInfraEllipse::badproperty = "Property `1` is not supported by FindInfraEllipse.";
 
 Options[ FindInfraEllipse ] = {
-  Properties  -> { },
-  Method      -> "Exhaustive",
-  "Tolerance" -> 0
+  Properties -> { },
+  Method     -> "Exhaustive"
 };
 
 FindInfraEllipse[ graph_Graph, foci : { _, _ }, c_,
@@ -48,7 +47,7 @@ FindInfraEllipse[ graph_Graph, foci : { _, _ }, c_,
 
 findEllipseCore[ graph_Graph, { p1_, p2_ }, c_,
     opts : OptionsPattern[ FindInfraEllipse ] ] :=
-  Module[ { properties, methodSpec, methodHead, pruning, tol, range, verts, idx, dm, row1, row2,
+  Module[ { properties, methodSpec, methodHead, pruning, range, verts, idx, dm, row1, row2,
             levelSet, levelGraph },
     properties = OptionValue[ FindInfraEllipse, { opts }, Properties ];
     methodSpec = OptionValue[ FindInfraEllipse, { opts }, Method ];
@@ -56,8 +55,7 @@ findEllipseCore[ graph_Graph, { p1_, p2_ }, c_,
     pruning    = Replace[ methodSpec,
                   { { _String, subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
                     _ :> Infinity } ];
-    tol        = OptionValue[ FindInfraEllipse, { opts }, "Tolerance" ];
-    range      = Replace[ c, d_?NumericQ :> { d, d } ] + { -tol, tol };
+    range      = Replace[ c, d_?NumericQ :> { d, d } ];
     verts      = VertexList[ graph ];
     idx        = AssociationThread[ verts, Range @ Length @ verts ];
     dm         = GraphDistanceMatrix[ graph ];
