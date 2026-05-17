@@ -53,7 +53,7 @@ SeparatesQ::usage = "SeparatesQ[graph, vertexSet, u, v] tests whether deleting v
 (* ===================== InfraBall ===================== *)
 
 InfraBall::usage = "InfraBall[{ball}] is the unary form (one closed metric ball vertex set); InfraBall[{ball1, ..., ballk}] is the multi-realisation form. Scene-language constructor InfraBall[center, radius] is used inside InfraScene. The multi form is consumed by InfraSceneHighlight (induced-subgraph semantics).";
-FindInfraBall::usage = "FindInfraBall[graph, c, r] returns InfraBall[{B_r(c)}] for the closed metric ball B_r(c) = { v : d(c, v) <= r }. Accepts InfraPoint[{{c}}] as the center for multi-anchor spread.";
+FindInfraBall::usage = "FindInfraBall[graph, c, r] returns InfraBall[{B_r(c)}] for the closed metric ball B_r(c) = { v : d(c, v) <= r }. A multi-anchor center (InfraPoint wrapper or a list of unary InfraPoint wrappers) spreads into one realisation per center.";
 InfraBallQ::usage = "InfraBallQ[graph, vertexSet] tests whether vertexSet is a closed metric ball, i.e. equals { v : d(c, v) <= r } for some center c in vertexSet and some radius r.";
 
 (* ===================== InfraCircle ===================== *)
@@ -158,8 +158,10 @@ GeodesicallyConvexQ::usage = "GeodesicallyConvexQ[graph, S] tests geodesic conve
 InfraTopologicalSpace::usage = "InfraTopologicalSpace[graph, topo] wraps a graph with the Hasse diagram of a specialization preorder (auto-reduces topo via TransitiveReductionGraph). Convenience form: InfraTopologicalSpace[graph, \"Topology\" -> {\"Ball\", r}]. Displays as the graph with topology arrows overlaid. Accessors: [\"Graph\"], [\"Topology\"].";
 InfraBallTopology::usage = "InfraBallTopology[graph, r] returns the Hasse diagram of the r-ball specialization preorder on V(graph): edge q -> p iff B_r(p) is contained in B_r(q), with transitive edges removed. Option \"Dual\" (False (default): primal; True: ReverseGraph of primal Hasse).";
 InfraTopologicalGraph::usage = "InfraTopologicalGraph[graph, r] returns InfraTopologicalSpace[graph, InfraBallTopology[graph, r]], which displays as the graph with r-ball Hasse arrows overlaid.";
-InfraPointClosure::usage = "InfraPointClosure[ts, p] returns InfraPoint[{cl(p)}] where cl(p) = VertexInComponent[ts[\"Topology\"], p]. For InfraPoint input, returns InfraPoint of the union of closures of all vertices across all realizations.";
-InfraInterior::usage = "InfraInterior[ts, s] returns InfraPoint[{int(S)}], the topological interior of the vertex set S in InfraTopologicalSpace ts, via int(S) = V \\ cl(V\\S) computed on the Hasse diagram. For InfraPoint input, takes the union of all realizations as S.";
+InfraSet::usage = "InfraSet[vs] wraps a vertex list vs as a topological set. Accessors: [\"Vertices\"] (the vertex list), [\"Length\"] (cardinality).";
+InfraSetClosure::usage = "InfraSetClosure[ts, s] returns InfraSet[cl(S)] for InfraSet s in InfraTopologicalSpace ts: cl(S) = union of VertexInComponent[ts[\"Topology\"], {v}] over all v in S. Also accepts any Infra* wrapper (InfraBall, InfraShell, InfraPoint, ...) by taking the union of its realisations as S.";
+InfraSetInterior::usage = "InfraSetInterior[ts, s] returns InfraSet[int(S)] for InfraSet s in InfraTopologicalSpace ts, via int(S) = V \\ cl(V\\S). Also accepts any Infra* wrapper (InfraBall, InfraShell, InfraPoint, ...) by taking the union of its realisations as S.";
+InfraSetBoundary::usage = "InfraSetBoundary[ts, s] returns InfraSet[bd(S)] = InfraSet[cl(S) \\ int(S)] for InfraSet s in InfraTopologicalSpace ts. Also accepts any Infra* wrapper (InfraBall, InfraShell, InfraPoint, ...) by taking the union of its realisations as S.";
 ContinuousMapQ::usage = "ContinuousMapQ[f, s1, s2] tests whether the vertex map f is continuous from InfraTopologicalSpace s1 to s2: each Hasse edge q -> p in s1[\"Topology\"] must map to a pair f(q) -> f(p) reachable in the transitive closure of s2[\"Topology\"]. map: Association, list of Rule, or callable.";
 
 (* ===================== Coordinatization ===================== *)

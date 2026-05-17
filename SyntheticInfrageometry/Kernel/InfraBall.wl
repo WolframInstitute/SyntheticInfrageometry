@@ -13,13 +13,11 @@ InfraBall[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraBall[ _List ] ] ] :=
 (* ===================== FindInfraBall ===================== *)
 
 (* The closed metric ball B_r(c) = { v : d(c, v) <= r }, returned as
-   InfraBall[{ball}].  InfraPoint[{{c1}, ..., {ck}}] spreads over centers. *)
-
-FindInfraBall[ graph_Graph, InfraPoint[ vs_List ], r_ ] :=
-  InfraBall[ ( anchor |-> Select[ VertexList[ graph ], GraphDistance[ graph, First @ anchor, # ] <= r & ] ) /@ vs ]
+   InfraBall[{ball}].  A multi-anchor center (InfraPoint wrapper or a list
+   of unary InfraPoint wrappers) spreads into one realisation per center. *)
 
 FindInfraBall[ graph_Graph, c_, r_ ] :=
-  InfraBall[ { Select[ VertexList[ graph ], GraphDistance[ graph, c, # ] <= r & ] } ]
+  InfraBall[ ( center |-> Select[ VertexList[ graph ], GraphDistance[ graph, center, # ] <= r & ] ) /@ infraSpread[ c ] ]
 
 
 (* ===================== InfraBallQ ===================== *)

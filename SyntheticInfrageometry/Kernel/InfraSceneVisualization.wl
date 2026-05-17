@@ -101,6 +101,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
               InfraRay,           $InfraRayColor,
               InfraObject,        $InfraObjectColor,
               InfraPolyline,      $InfraSegmentColor,
+              InfraSet,           $InfraShellColor,
               _,             $InfraSceneHighlightPalette[[
                                1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ] } ],
         {
@@ -117,6 +118,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           { InfraRay     [ b_List ], c_ } :> { b, c, "Paths"  },
           { InfraObject  [ b_List ], c_ } :> { { b }, c, "Sets"  },
           { InfraPolyline[ b_List ], c_ } :> { polylineToVertexSeqs[ b ], c, "Paths" },
+          { InfraSet      [ b_List ], c_ } :> { { b }, c, "Sets" },
           { b_, c_ }                      :> { b, c, Automatic }
         } ],
       objects ];

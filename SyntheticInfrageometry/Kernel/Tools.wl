@@ -297,7 +297,7 @@ pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
 infraSpread[ ( InfraPoint | InfraSegment | InfraPath | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay | InfraPolyline )[ reps_List ] ] := reps
 infraSpread[ list_List ] /; AllTrue[ list,
     MatchQ[ ( InfraPoint | InfraSegment | InfraPath | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay | InfraPolyline )[ { _ } ] ] ] :=
-  First /@ list
+  #[[ 1, 1 ]] & /@ list
 infraSpread[ other_ ] := { other }
 
 

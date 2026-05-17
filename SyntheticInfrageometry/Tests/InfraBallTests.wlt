@@ -46,9 +46,23 @@ VerificationTest[
 
 (* InfraBall accepts InfraPoint multi-anchor (spread over each center) *)
 VerificationTest[
-  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], InfraPoint[{{1}, {5}}], 1],
+  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], InfraPoint[{1, 5}], 1],
   {{1, 2}, {4, 5}},
   TestID -> "FindInfraBall-multi-anchor"
+]
+
+(* InfraBall accepts a list of unary InfraPoint wrappers as the FindInfraPoint output form *)
+VerificationTest[
+  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], {InfraPoint[{1}], InfraPoint[{5}]}, 1],
+  {{1, 2}, {4, 5}},
+  TestID -> "FindInfraBall-multi-anchor-list-of-unary"
+]
+
+(* InfraBall accepts a bare unary InfraPoint wrapper *)
+VerificationTest[
+  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], InfraPoint[{3}], 1],
+  {{2, 3, 4}},
+  TestID -> "FindInfraBall-bare-unary-InfraPoint"
 ]
 
 (* ===== InfraBall wrapper auto-flatten ===== *)

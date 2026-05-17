@@ -138,8 +138,10 @@ PackageExport[GeodesicallyConvexQ]
 PackageExport[InfraTopologicalSpace]
 PackageExport[InfraBallTopology]
 PackageExport[InfraTopologicalGraph]
-PackageExport[InfraPointClosure]
-PackageExport[InfraInterior]
+PackageExport[InfraSet]
+PackageExport[InfraSetClosure]
+PackageExport[InfraSetInterior]
+PackageExport[InfraSetBoundary]
 PackageExport[ContinuousMapQ]
 
 (* Coordinatization.wl *)

@@ -60,37 +60,65 @@ InfraTopologicalGraph[ graph_Graph, r_, opts___ ] :=
   InfraTopologicalSpace[ graph, InfraBallTopology[ graph, r, opts ] ]
 
 
-(* ===================== InfraPointClosure ===================== *)
+(* ===================== InfraSet ===================== *)
 
-(* InfraPointClosure[ts, p]: cl(p) wrapped as InfraPoint[{closure_vertices}].
-   Multi-InfraPoint input: union of closures of all vertices across all realizations. *)
+(* Wrapper for an arbitrary vertex subset of the underlying graph. *)
 
-InfraPointClosure[ ts_InfraTopologicalSpace, InfraPoint[ realizations_List ] ] :=
-  InfraPoint[{ Union @@ Map[
-    VertexInComponent[ ts[ "Topology" ], # ]&,
-    Union @@ realizations
-  ]}]
+InfraSet[ vs_List ] /; MemberQ[ vs, _InfraSet ] :=
+  InfraSet[ Union @@ Replace[ vs, s_InfraSet :> s[ "Vertices" ], {1} ] ]
 
-InfraPointClosure[ ts_InfraTopologicalSpace, p_ ] :=
-  InfraPoint[{ VertexInComponent[ ts[ "Topology" ], p ] }]
+(* Convert any Infra* wrapper to InfraSet by flattening realisations one level.
+   Works for vertex-set wrappers (InfraBall, InfraShell: rs = {{vs}})
+   and vertex wrappers (InfraPoint: rs = {v1,v2,...}) uniformly. *)
+InfraSet[ wrapper_Symbol[ rs_List ] ] /;
+    wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
+  InfraSet[ Sort @ DeleteDuplicates @ Flatten[ rs, 1 ] ]
+
+InfraSet[ vs_List ][ "Vertices" ] := vs
+InfraSet[ vs_List ][ "Length" ]   := Length[ vs ]
 
 
-(* ===================== InfraInterior ===================== *)
+(* ===================== InfraSetClosure ===================== *)
 
-(* InfraInterior[ts, s]: int(S) = V \ cl(V\S), wrapped as InfraPoint[{interior_vertices}].
-   Multi-InfraPoint input: computes interior of the union of all realizations. *)
+(* cl(S): union of VertexInComponent over all s in S. *)
 
-InfraInterior[ ts_InfraTopologicalSpace, InfraPoint[ realizations_List ] ] :=
-  With[ { vertices = VertexList[ ts[ "Graph" ] ],
-          topo     = ts[ "Topology" ],
-          verts    = Union @@ realizations },
-    InfraPoint[{ Complement[ vertices,
-      Union @@ Map[ VertexInComponent[ topo, # ]&, Complement[ vertices, verts ] ]
-    ]}]
+InfraSetClosure[ ts_InfraTopologicalSpace, InfraSet[ vs_List ] ] :=
+  InfraSet[ Union @@ Map[ v |-> VertexInComponent[ ts[ "Topology" ], {v} ], vs ] ]
+
+InfraSetClosure[ ts_InfraTopologicalSpace, wrapper_Symbol[ rs_List ] ] /;
+    wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
+  InfraSetClosure[ ts, InfraSet[ Union @@ rs ] ]
+
+
+(* ===================== InfraSetInterior ===================== *)
+
+(* int(S) = V \ cl(V\S). *)
+
+InfraSetInterior[ ts_InfraTopologicalSpace, InfraSet[ vs_List ] ] :=
+  With[ { vertices = VertexList[ ts[ "Graph" ] ], topo = ts[ "Topology" ] },
+    InfraSet[ Complement[ vertices,
+      Union @@ Map[ v |-> VertexInComponent[ topo, {v} ], Complement[ vertices, vs ] ]
+    ]]
   ]
 
-InfraInterior[ ts_InfraTopologicalSpace, p_ ] :=
-  InfraInterior[ ts, InfraPoint[ {{p}} ] ]
+InfraSetInterior[ ts_InfraTopologicalSpace, wrapper_Symbol[ rs_List ] ] /;
+    wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
+  InfraSetInterior[ ts, InfraSet[ Union @@ rs ] ]
+
+
+(* ===================== InfraSetBoundary ===================== *)
+
+(* bd(S) = cl(S) \ int(S). *)
+
+InfraSetBoundary[ ts_InfraTopologicalSpace, s_InfraSet ] :=
+  InfraSet[ Complement[
+    InfraSetClosure[ ts, s ][ "Vertices" ],
+    InfraSetInterior[ ts, s ][ "Vertices" ]
+  ]]
+
+InfraSetBoundary[ ts_InfraTopologicalSpace, wrapper_Symbol[ rs_List ] ] /;
+    wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
+  InfraSetBoundary[ ts, InfraSet[ Union @@ rs ] ]
 
 
 (* ===================== ContinuousMapQ ===================== *)

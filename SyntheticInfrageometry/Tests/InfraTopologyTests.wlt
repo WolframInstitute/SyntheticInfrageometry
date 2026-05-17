@@ -82,77 +82,204 @@ VerificationTest[
   TestID -> "InfraTopologicalSpace-auto-reduces-to-Hasse"
 ]
 
-(* ===== InfraPointClosure ===== *)
+(* ===== InfraSet ===== *)
+
+VerificationTest[
+  InfraSet[ {1, 3, 5} ][ "Vertices" ],
+  {1, 3, 5},
+  TestID -> "InfraSet-Vertices-accessor"
+]
+
+VerificationTest[
+  InfraSet[ {1, 3, 5} ][ "Length" ],
+  3,
+  TestID -> "InfraSet-Length-accessor"
+]
+
+VerificationTest[
+  Head @ InfraSet[ {1, 2} ],
+  InfraSet,
+  TestID -> "InfraSet-Head"
+]
+
+(* ===== InfraSetClosure ===== *)
 
 (* PathGraph r=1: cl(1)={1,2}, cl(2)={2}, cl(3)={3}, cl(4)={4}, cl(5)={4,5} *)
 VerificationTest[
   With[ { ts = InfraTopologicalSpace[ PathGraph @ Range[5], "Topology" -> {"Ball", 1} ] },
-    Sort @ InfraPointClosure[ ts, # ][[ 1, 1 ]] & /@ Range[5]
+    InfraSetClosure[ ts, InfraSet[{#}] ][ "Vertices" ] & /@ Range[5]
   ],
   {{1, 2}, {2}, {3}, {4}, {4, 5}},
-  TestID -> "InfraPointClosure-PathGraph-r1-all-vertices"
+  TestID -> "InfraSetClosure-PathGraph-r1-singletons"
 ]
 
-(* Output is InfraPoint-wrapped. *)
 VerificationTest[
-  Head @ InfraPointClosure[
-    InfraTopologicalSpace[ PathGraph @ Range[5], "Topology" -> {"Ball", 1} ], 1 ],
-  InfraPoint,
-  TestID -> "InfraPointClosure-returns-InfraPoint"
+  Head @ InfraSetClosure[
+    InfraTopologicalSpace[ PathGraph @ Range[5], "Topology" -> {"Ball", 1} ],
+    InfraSet[ {1} ]
+  ],
+  InfraSet,
+  TestID -> "InfraSetClosure-returns-InfraSet"
 ]
 
-(* Hub of StarGraph: cl = {hub}. *)
+(* Hub of StarGraph[5]: cl({hub}) = {hub}. *)
 VerificationTest[
   With[ { ts = InfraTopologicalSpace[ StarGraph[5], "Topology" -> {"Ball", 1} ] },
-    Sort @ InfraPointClosure[ ts, 1 ][[ 1, 1 ]]
+    InfraSetClosure[ ts, InfraSet[ {1} ] ][ "Vertices" ]
   ],
   {1},
-  TestID -> "InfraPointClosure-StarGraph-hub"
+  TestID -> "InfraSetClosure-StarGraph-hub"
 ]
 
-(* Leaf: cl = {hub, leaf}. *)
+(* Leaf: cl({leaf}) = {hub, leaf}. *)
 VerificationTest[
   With[ { ts = InfraTopologicalSpace[ StarGraph[5], "Topology" -> {"Ball", 1} ] },
-    Sort @ InfraPointClosure[ ts, 2 ][[ 1, 1 ]]
+    Sort @ InfraSetClosure[ ts, InfraSet[ {2} ] ][ "Vertices" ]
   ],
   {1, 2},
-  TestID -> "InfraPointClosure-StarGraph-leaf"
+  TestID -> "InfraSetClosure-StarGraph-leaf"
 ]
 
-(* InfraPoint input gives same result as bare vertex. *)
+(* Set {1,5}: cl = cl(1) union cl(5) = {1,2} union {4,5} = {1,2,4,5}. *)
 VerificationTest[
   With[ { ts = InfraTopologicalSpace[ PathGraph @ Range[5], "Topology" -> {"Ball", 1} ] },
-    InfraPointClosure[ ts, InfraPoint[{{1}}] ] === InfraPointClosure[ ts, 1 ]
-  ],
-  True,
-  TestID -> "InfraPointClosure-accepts-InfraPoint"
-]
-
-(* Multi-InfraPoint: union of closures of both realizations. *)
-VerificationTest[
-  With[ { ts = InfraTopologicalSpace[ PathGraph @ Range[5], "Topology" -> {"Ball", 1} ] },
-    (* cl(1)={1,2}, cl(5)={4,5} -> union = {1,2,4,5} *)
-    Sort @ InfraPointClosure[ ts, InfraPoint[{{1}, {5}}] ][[ 1, 1 ]]
+    InfraSetClosure[ ts, InfraSet[ {1, 5} ] ][ "Vertices" ]
   ],
   {1, 2, 4, 5},
-  TestID -> "InfraPointClosure-multi-InfraPoint-union"
+  TestID -> "InfraSetClosure-PathGraph-two-endpoints"
 ]
 
-(* Dual closure of hub = all vertices; leaf = just itself. *)
+(* Dual: cl of hub = all vertices; leaf stays singleton. *)
 VerificationTest[
   With[ { ts = InfraTopologicalSpace[ StarGraph[5], InfraBallTopology[ StarGraph[5], 1, "Dual" -> True ] ] },
-    Sort @ InfraPointClosure[ ts, 1 ][[ 1, 1 ]]
+    Sort @ InfraSetClosure[ ts, InfraSet[ {1} ] ][ "Vertices" ]
   ],
   {1, 2, 3, 4, 5},
-  TestID -> "InfraPointClosure-Dual-StarGraph-hub"
+  TestID -> "InfraSetClosure-Dual-StarGraph-hub"
 ]
 
 VerificationTest[
   With[ { ts = InfraTopologicalSpace[ StarGraph[5], InfraBallTopology[ StarGraph[5], 1, "Dual" -> True ] ] },
-    InfraPointClosure[ ts, 2 ][[ 1, 1 ]]
+    InfraSetClosure[ ts, InfraSet[ {2} ] ][ "Vertices" ]
   ],
   {2},
-  TestID -> "InfraPointClosure-Dual-StarGraph-leaf"
+  TestID -> "InfraSetClosure-Dual-StarGraph-leaf"
+]
+
+(* ===== InfraSetInterior ===== *)
+
+(* PathGraph[7] r=1: int({2,3,4,5,6}) = {3,4,5}; endpoints 2,6 are boundary. *)
+VerificationTest[
+  With[ { ts = InfraTopologicalSpace[ PathGraph @ Range[7], "Topology" -> {"Ball", 1} ] },
+    InfraSetInterior[ ts, InfraSet[ {2, 3, 4, 5, 6} ] ][ "Vertices" ]
+  ],
+  {3, 4, 5},
+  TestID -> "InfraSetInterior-PathGraph-r1-middle-strip"
+]
+
+VerificationTest[
+  Head @ InfraSetInterior[
+    InfraTopologicalSpace[ PathGraph @ Range[5], "Topology" -> {"Ball", 1} ],
+    InfraSet[ {1, 2, 3} ]
+  ],
+  InfraSet,
+  TestID -> "InfraSetInterior-returns-InfraSet"
+]
+
+(* An open set: int = itself. {1,2,3} is open in PathGraph[7] r=1 since
+   V\{1,2,3}={4,5,6,7} is closed (no exterior closure leaks in). *)
+VerificationTest[
+  With[ { ts = InfraTopologicalSpace[ PathGraph @ Range[7], "Topology" -> {"Ball", 1} ] },
+    InfraSetInterior[ ts, InfraSet[ {1, 2, 3} ] ][ "Vertices" ]
+  ],
+  {1, 2, 3},
+  TestID -> "InfraSetInterior-open-set-is-its-own-interior"
+]
+
+(* int(empty) = empty. *)
+VerificationTest[
+  With[ { ts = InfraTopologicalSpace[ PathGraph @ Range[5], "Topology" -> {"Ball", 1} ] },
+    InfraSetInterior[ ts, InfraSet[ {} ] ][ "Vertices" ]
+  ],
+  {},
+  TestID -> "InfraSetInterior-empty-set"
+]
+
+(* int(V) = V. *)
+VerificationTest[
+  With[ { g = PathGraph @ Range[5],
+          ts = InfraTopologicalSpace[ PathGraph @ Range[5], "Topology" -> {"Ball", 1} ] },
+    InfraSetInterior[ ts, InfraSet[ VertexList @ g ] ][ "Vertices" ]
+  ],
+  Range[5],
+  TestID -> "InfraSetInterior-whole-graph"
+]
+
+(* ===== InfraSetBoundary ===== *)
+
+(* PathGraph[7] r=1: bd({2,3,4,5,6}) = {2,6}. *)
+VerificationTest[
+  With[ { ts = InfraTopologicalSpace[ PathGraph @ Range[7], "Topology" -> {"Ball", 1} ] },
+    InfraSetBoundary[ ts, InfraSet[ {2, 3, 4, 5, 6} ] ][ "Vertices" ]
+  ],
+  {2, 6},
+  TestID -> "InfraSetBoundary-PathGraph-r1-middle-strip"
+]
+
+VerificationTest[
+  Head @ InfraSetBoundary[
+    InfraTopologicalSpace[ PathGraph @ Range[5], "Topology" -> {"Ball", 1} ],
+    InfraSet[ {1, 2} ]
+  ],
+  InfraSet,
+  TestID -> "InfraSetBoundary-returns-InfraSet"
+]
+
+(* Boundary of an open set is empty. *)
+VerificationTest[
+  With[ { ts = InfraTopologicalSpace[ PathGraph @ Range[7], "Topology" -> {"Ball", 1} ] },
+    InfraSetBoundary[ ts, InfraSet[ {1, 2, 3} ] ][ "Vertices" ]
+  ],
+  {},
+  TestID -> "InfraSetBoundary-open-set-empty-boundary"
+]
+
+(* bd(S) subset cl(S) for any S. *)
+VerificationTest[
+  With[ { ts = InfraTopologicalSpace[ PathGraph @ Range[7], "Topology" -> {"Ball", 1} ] },
+    With[ { s = InfraSet[ {2, 3, 5} ] },
+      SubsetQ[
+        InfraSetClosure[ ts, s ][ "Vertices" ],
+        InfraSetBoundary[ ts, s ][ "Vertices" ]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "InfraSetBoundary-subset-of-closure"
+]
+
+(* ===== Infra* wrapper dispatch ===== *)
+
+(* InfraBall accepted directly: interior of B_2(center) on PathGraph[7]. *)
+VerificationTest[
+  With[ { g = PathGraph @ Range[7],
+          ts = InfraTopologicalSpace[ PathGraph @ Range[7], "Topology" -> {"Ball", 1} ] },
+    InfraSetInterior[ ts, FindInfraBall[ g, 4, 2 ] ][ "Vertices" ]
+  ],
+  InfraSetInterior[
+    InfraTopologicalSpace[ PathGraph @ Range[7], "Topology" -> {"Ball", 1} ],
+    InfraSet[ {2, 3, 4, 5, 6} ]
+  ][ "Vertices" ],
+  TestID -> "InfraSetInterior-accepts-InfraBall"
+]
+
+VerificationTest[
+  Head @ InfraSetBoundary[
+    InfraTopologicalSpace[ PathGraph @ Range[7], "Topology" -> {"Ball", 1} ],
+    FindInfraBall[ PathGraph @ Range[7], 4, 2 ]
+  ],
+  InfraSet,
+  TestID -> "InfraSetBoundary-accepts-InfraBall-returns-InfraSet"
 ]
 
 (* ===== ContinuousMapQ ===== *)
@@ -235,8 +362,8 @@ VerificationTest[
     ContinuousMapQ[ f, tsg, tsh ] ===
     AllTrue[ VertexList @ g,
       v |-> SubsetQ[
-        InfraPointClosure[ tsh, f[v] ][[ 1, 1 ]],
-        f /@ InfraPointClosure[ tsg, v ][[ 1, 1 ]]
+        InfraSetClosure[ tsh, InfraSet[{ f[v] }] ][ "Vertices" ],
+        f /@ InfraSetClosure[ tsg, InfraSet[{v}] ][ "Vertices" ]
       ]
     ]
   ],
