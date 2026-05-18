@@ -72,6 +72,9 @@ Options[ InfraSceneHighlight ] = Join[
   Options[ HighlightGraph ]
 ];
 
+InfraSceneHighlight[ graph_Graph, obj : Except[_List], opts : OptionsPattern[] ] :=
+  InfraSceneHighlight[ graph, { obj }, opts ]
+
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
   Module[ { triples, knotTriples, oRange, tRange, pRange, vEntries, eEntries, objects },
 

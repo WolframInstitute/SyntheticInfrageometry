@@ -285,9 +285,9 @@ VerificationTest[
 (* ===== FindInfraParallel: Method scaffolding ===== *)
 
 VerificationTest[
-  InfraLine @ FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All, Method -> "ShortestPath"],
+  InfraLine @ FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All, Method -> "Exhaustive"],
   InfraLine[{{5, 6, 7, 8}}],
-  TestID -> "FindInfraParallel-explicit-shortestpath"
+  TestID -> "FindInfraParallel-explicit-exhaustive"
 ]
 
 (* ===== FindInfraMidpoint Method -> "Embedding" ===== *)
@@ -314,19 +314,9 @@ VerificationTest[
 ]
 
 
-(* ===== FindInfraPerpendicular Method -> "Embedding" ===== *)
-
-VerificationTest[
-  Sort @ (#[[ 1, 1 ]] & /@ FindInfraPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ]),
-  { 1, 2, 3, 4, 5 },
-  TestID -> "FindInfraPerpendicular-Embedding-pool-equals-line"
-]
-
-VerificationTest[
-  First @ First @ First @ FindInfraPerpendicular[ GridGraph[ { 5, 5 } ], { 1, 2, 3, 4, 5 }, 13, All, Method -> "Embedding" ],
-  3,
-  TestID -> "FindInfraPerpendicular-Embedding-closest-foot-is-projection"
-]
+(* FindInfraPerpendicular "Embedding" Method has been removed (see plan
+   okey-we-need-to-majestic-puppy: path-family Embedding dropped).  Users
+   wanting embedding-ranked feet compose with EmbeddingClosest. *)
 
 
 (* FindInfraMidpoint "Tarski" recipe is local: depends only on B(p1, d(p1, p2)). *)
