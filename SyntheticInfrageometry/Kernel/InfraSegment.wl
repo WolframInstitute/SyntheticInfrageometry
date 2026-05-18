@@ -1,7 +1,10 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageScope[findSegmentCore]
-PackageScope[geodesicDAGBaseFn]
+PackageScope[extendSegmentCore]
+PackageScope[formanEdgeKappa]
+PackageScope[wolframVertexKappa]
+PackageScope[ollivierEdgeKappa]
 
 
 (* ===================== InfraSegment wrapper ===================== *)
@@ -13,17 +16,9 @@ InfraSegment[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraSegment[ _List ] ] ] :=
 (* ===================== FindInfraSegment ===================== *)
 
 (* A segment between p1 and p2: a geodesic vertex sequence
-   (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2) and consecutive vi adjacent.
-   Geodesic-ness is implicit -- Properties filters narrow the geodesic bundle
-   further (e.g. {"EdgeMin", f} keeps geodesics MinimalBy f at each step). *)
+   (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2) and consecutive vi adjacent. *)
 
-FindInfraSegment::badproperty = "Property `1` is not supported by FindInfraSegment.";
-FindInfraSegment::badmethod   = "Method `1` is not supported by FindInfraSegment.";
-
-Options[ FindInfraSegment ] = {
-  Properties -> { },
-  Method     -> "Exhaustive"
-};
+Options[ FindInfraSegment ] = { Method -> "ShortestPath" };
 
 FindInfraSegment[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
@@ -35,59 +30,118 @@ findSegmentCore[ _Graph, p1_, p1_, ___ ] := { }
 
 findSegmentCore[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindInfraSegment ] ] :=
-  Catch @ With[ {
-      properties = OptionValue[ FindInfraSegment, { opts }, Properties ],
-      methodSpec = OptionValue[ FindInfraSegment, { opts }, Method ] /. Automatic -> "Exhaustive" },
-    With[ { methodHead = methodName @ methodSpec,
-            pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
-            fastPathQ  = properties === { } },
-      Switch[ methodHead,
-        "Exhaustive",
-          If[ fastPathQ,
-            If[ count === 1,
-              With[ { path = FindShortestPath[ graph, p1, p2 ] },
-                If[ path === { }, { }, { path } ] ],
-              With[ { d = GraphDistance[ graph, p1, p2 ] },
-                If[ d === Infinity, { },
-                  FindPath[ graph, p1, p2, { d }, count /. UpTo[ k_ ] :> k ] ] ]
-            ],
-            frontierSweep[ graph, p1, p2,
-              makeCandidateFn[ graph, geodesicDAGBaseFn[ graph, p1, p2 ],
-                properties, FindInfraSegment::badproperty ],
-              pruning, countLimit @ count ]
-          ],
-        "Greedy",
-          If[ fastPathQ,
+  With[ { spec = OptionValue[ FindInfraSegment, { opts }, Method ] },
+    With[ { subOpts = Replace[ spec, { { _String, rest___ } :> { rest }, _ :> { } } ] },
+      Switch[ methodName @ spec,
+        "ShortestPath",
+          If[ count === 1,
             With[ { path = FindShortestPath[ graph, p1, p2 ] },
               If[ path === { }, { }, { path } ] ],
-            greedyFrontierSweep[ graph, p1, p2,
-              makeCandidateFn[ graph, geodesicDAGBaseFn[ graph, p1, p2 ],
-                properties, FindInfraSegment::badproperty ] ]
+            With[ { d = GraphDistance[ graph, p1, p2 ] },
+              If[ d === Infinity, { },
+                FindPath[ graph, p1, p2, { d }, count /. UpTo[ k_ ] :> k ] ] ]
           ],
-        _,
-          Message[ FindInfraSegment::badmethod, methodSpec ]; $Failed
+        "ShortestPathExtension",
+          extendedOutPaths[ graph, p1, p2,
+            "Pruning"            /. subOpts /. "Pruning"            -> Infinity,
+            "ShortestPathWindow" /. subOpts /. "ShortestPathWindow" -> 2,
+            countLimit[ count ] ],
+        "CurvatureMinimizing",
+          With[ { prune = "Pruning" /. subOpts /. "Pruning" -> Infinity,
+                  pool  = "Pool"    /. subOpts /. "Pool"    -> "ShortestPaths",
+                  curvatureSpec = parseCurvatureSpec[
+                    "Curvature" /. subOpts /. "Curvature" -> "FormanRicciCurvature" ] },
+            pulledPaths[ graph, p1, p2,
+              buildEdgeKappa[ graph, curvatureSpec ],
+              prune, countLimit[ count ],
+              If[ pool === "ShortestPaths", geodesicDAGNeighbors[ graph, p1, p2 ], Automatic ] ]
+          ],
+        "Embedding",
+          takeUpTo[ embeddingFindSegmentPaths[ graph, p1, p2, parseEmbeddingMethod[ spec ] ],
+            countLimit[ count ] ]
       ]
     ]
   ]
 
 
-(* Geodesic-DAG base candidate function: at vertex `Last @ path`, return its
-   forward DAG neighbours under the precomputed geodesicDAGNeighbors map. *)
+(* Per-edge / per-vertex curvature lookups.  Shared by buildEdgeKappa (the
+   pulledPaths frontier sweep) and by pathCurvatureScores in PathSpace.wl
+   (the SelectInfraPath "MinCurvature" pool selector). *)
 
-geodesicDAGBaseFn[ graph_Graph, p1_, p2_ ] :=
-  With[ { dagNbrs = geodesicDAGNeighbors[ graph, p1, p2 ] },
-    Function[ { g, path }, Lookup[ dagNbrs, Key @ Last @ path, { } ] ]
+formanEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "FormanRicciCurvature", "Method" -> formanMethod_ } ] ] :=
+  With[ { fEdges = WolframInstitute`Infrageometry`FormanRicciCurvature[
+        graph, "MaxCellDimension" -> If[ formanMethod === "Triangles", 2, 1 ] ] },
+    With[ { fSym = Join[ fEdges,
+            AssociationThread[
+              UndirectedEdge[ #[[ 2 ]], #[[ 1 ]] ] & /@ Keys[ fEdges ],
+              Values[ fEdges ] ] ] },
+      { v, w } |-> fSym[ UndirectedEdge[ v, w ] ]
+    ]
+  ]
+
+wolframVertexKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "WolframRicciCurvature", "Dimension" -> dim_, "Radii" -> radii_ } ] ] :=
+  If[ radii === Automatic,
+    WolframInstitute`Infrageometry`WolframRicciCurvature[ graph, "Dimension" -> dim ],
+    WolframInstitute`Infrageometry`WolframRicciCurvature[ graph, radii, "Dimension" -> dim ] ]
+
+ollivierEdgeKappa[ graph_Graph, KeyValuePattern[ { "Head" -> "OllivierRicciCurvature" } ] ] :=
+  With[ { oEdges = WolframInstitute`Infrageometry`OllivierRicciCurvature[ graph ] },
+    With[ { oSym = Join[ oEdges,
+            AssociationThread[
+              UndirectedEdge[ #[[ 2 ]], #[[ 1 ]] ] & /@ Keys[ oEdges ],
+              Values[ oEdges ] ] ] },
+      { v, w } |-> oSym[ UndirectedEdge[ v, w ] ]
+    ]
   ]
 
 
-(* ===================== ExtendInfraSegment (Tarski A4) ===================== *)
+(* buildEdgeKappa[g, spec]: (v, w) |-> kappa(v, w) closure that the
+   CurvatureMinimizing frontier sweep MinimalBy's on.  For vertex-curvature
+   heads the asymmetric mapping {v, w} |-> kappa(w) is used (legal for a
+   greedy frontier sweep that picks one neighbour at a time). *)
 
-(* Tarski axiom A4: find x with B(a, b, x) and d(b, x) == d(c, d).  The only
-   surviving signature -- the 2-arg form (extend segment to maximal line) is
-   subsumed by FindInfraLine[g, seg] and ExtendInfraPath[g, seg, All, ...]. *)
+buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "FormanRicciCurvature" ] ] :=
+  formanEdgeKappa[ graph, spec ]
+
+buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "WolframRicciCurvature" ] ] :=
+  With[ { kappa = wolframVertexKappa[ graph, spec ] }, { v, w } |-> kappa[ w ] ]
+
+buildEdgeKappa[ graph_Graph, spec : KeyValuePattern[ "Head" -> "OllivierRicciCurvature" ] ] :=
+  ollivierEdgeKappa[ graph, spec ]
+
+
+embeddingFindSegmentPaths[ graph_Graph, p1_, p2_, embOpts_Association ] :=
+  With[ { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
+          vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ],
+          prune = embOpts[ "Pruning" ] },
+    With[ { extendFn = If[ embOpts[ "Pool" ] === "ShortestPaths",
+              With[ { dagNbrs = geodesicDAGNeighbors[ graph, p1, p2 ] },
+                path |-> Lookup[ dagNbrs, Key @ Last @ path, { } ] ],
+              path |-> Complement[ AdjacencyList[ graph, Last @ path ], path ] ] },
+      With[ { paths = generateEmbeddingPaths[ extendFn, { p1 }, Last[ # ] === p2 &, prune ],
+              ep    = Lookup[ vertexIndex, { p1, p2 } ] },
+        SortBy[ paths,
+          path |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, path ], ep ] ]
+      ]
+    ]
+  ]
+
+
+(* ===================== ExtendInfraSegment ===================== *)
+
+(* ExtendInfraSegment[g, segment] extends a vertex sequence to a maximal geodesic line.
+   ExtendInfraSegment[g, a, b, c, d, n] is the Tarski A4 synthetic-extension axiom:
+   x with B(a, b, x) and d(b, x) == d(c, d). *)
+
+Options[ ExtendInfraSegment ] = { Method -> "ShortestPath", "Length" -> Automatic, "Pruning" -> Infinity };
+
+ExtendInfraSegment[ graph_Graph, segment_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  infraSpreadAndCartesian[ InfraLine, count,
+    extendSegmentCore[ graph, ##, opts ] &, segment ]
 
 ExtendInfraSegment[ graph_Graph, a_, b_, c_, d_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, OptionsPattern[] ] :=
   With[ { target = GraphDistance[ graph, c, d ] },
     With[ { vs = If[ target === Infinity, { },
         Select[ VertexList[ graph ],
@@ -99,16 +153,96 @@ ExtendInfraSegment[ graph_Graph, a_, b_, c_, d_,
   ]
 
 
-(* ===================== Scene-DSL constructor ===================== *)
+extendSegmentCore[ graph_Graph, segment_List, opts : OptionsPattern[ ExtendInfraSegment ] ] /;
+    Length[ segment ] < 2 := { segment }
 
-dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
-  capBranches[
-    applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindInfraSegment[ graph, p1, p2, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindInfraSegment ] ] ],
-      "Select" /. { opts } /. "Select" -> None,
-      False, <| "Endpoints" -> { p1, p2 } |> ],
-    extractBranches[ { opts } ] ]
+extendSegmentCore[ graph_Graph, segment_List, opts : OptionsPattern[ ExtendInfraSegment ] ] :=
+  With[ { spec = OptionValue[ ExtendInfraSegment, { opts }, Method ] /. Automatic -> "ShortestPath",
+          lengthCap = OptionValue[ ExtendInfraSegment, { opts }, "Length" ],
+          pruning = OptionValue[ ExtendInfraSegment, { opts }, "Pruning" ] },
+    With[ { subOpts = Replace[ spec, { { _String, rest___ } :> { rest }, _ :> { } } ] },
+      With[ { rawExtensions = Switch[ methodName @ spec,
+          "ShortestPath",
+            findLineExtensions[ graph, segment, pruning ],
+          "Greedy",
+            findLineExtensionsGreedy[ graph, segment ],
+          "ShortestPathExtension",
+            With[ { prune  = "Pruning"            /. subOpts /. "Pruning"            -> Infinity,
+                    window = "ShortestPathWindow" /. subOpts /. "ShortestPathWindow" -> 2 },
+              findLineExtensionsWith[ graph, segment,
+                { s, p, db } |-> extendedOutPaths[ graph, s, p, prune, window, Infinity ],
+                { p, e, da } |-> extendedOutPaths[ graph, p, e, prune, window, Infinity ] ]
+            ],
+          "CurvatureMinimizing",
+            With[ { prune = "Pruning" /. subOpts /. "Pruning" -> Infinity,
+                    curvatureSpec = parseCurvatureSpec[
+                      "Curvature" /. subOpts /. "Curvature" -> "FormanRicciCurvature" ] },
+              With[ { edgeKappa = buildEdgeKappa[ graph, curvatureSpec ] },
+                findLineExtensionsWith[ graph, segment,
+                  { s, p, db } |-> pulledPaths[ graph, s, p, edgeKappa, prune, Infinity, Automatic ],
+                  { p, e, da } |-> pulledPaths[ graph, p, e, edgeKappa, prune, Infinity, Automatic ] ]
+              ]
+            ],
+          "Embedding",
+            embeddingExtendSegment[ graph, segment, parseEmbeddingMethod[ spec ] ]
+      ] },
+        If[ IntegerQ @ lengthCap,
+          truncateAroundOriginal[ #, segment, lengthCap ] & /@ rawExtensions,
+          rawExtensions ]
+      ]
+    ]
+  ]
+
+
+truncateAroundOriginal[ ext_List, segment_List, n_Integer ] :=
+  With[ { offset = First @ First @ SequencePosition[ ext, segment ] },
+    Take[ ext, { Max[ 1, offset - n ],
+                 Min[ Length @ ext, offset + Length @ segment - 1 + n ] } ] ]
+
+
+embeddingExtendSegment[ graph_Graph, segment_List, embOpts_Association ] :=
+  Module[ { walkOut, walkIn },
+    With[ { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
+            vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
+      With[ { segCoords = coords[[ Lookup[ vertexIndex, segment ] ]] },
+        With[ { centroid = Mean[ segCoords ],
+                diff = Last[ segCoords ] - First[ segCoords ] },
+          With[ { direction = Which[
+                  Length[ segCoords ] >= 3 && Norm[ diff ] > 0,
+                    With[ { svd = SingularValueDecomposition[ ( # - centroid ) & /@ segCoords ] },
+                      Normalize @ svd[[ 3, All, 1 ]] * Sign[ diff . svd[[ 3, All, 1 ]] ] ],
+                  Norm[ diff ] > 0, Normalize[ diff ],
+                  True, ConstantArray[ 0., Length @ First @ segCoords ]
+                ] },
+            If[ Norm[ direction ] == 0, { segment },
+              With[ { basePoint = First[ segCoords ] },
+                With[ { signedProj = v |-> ( coords[[ vertexIndex[ v ] ]] - basePoint ) . direction,
+                        perpDist   = v |-> With[ { c = coords[[ vertexIndex[ v ] ]] - basePoint },
+                                            Norm[ c - ( c . direction ) direction ] ] },
+                  walkOut[ current_, visited_ ] :=
+                    With[ { adj = Complement[ AdjacencyList[ graph, current ], visited ],
+                            currentP = signedProj[ current ] },
+                      With[ { cands = Select[ adj, signedProj[ # ] > currentP & ] },
+                        If[ cands === { }, { },
+                          With[ { best = First @ MinimalBy[ MaximalBy[ cands, signedProj ], perpDist ] },
+                            Prepend[ walkOut[ best, Append[ visited, best ] ], best ] ] ] ] ];
+                  walkIn[ current_, visited_ ] :=
+                    With[ { adj = Complement[ AdjacencyList[ graph, current ], visited ],
+                            currentP = signedProj[ current ] },
+                      With[ { cands = Select[ adj, signedProj[ # ] < currentP & ] },
+                        If[ cands === { }, { },
+                          With[ { best = First @ MinimalBy[ MinimalBy[ cands, signedProj ], perpDist ] },
+                            Prepend[ walkIn[ best, Append[ visited, best ] ], best ] ] ] ] ];
+                  { Join[ Reverse @ walkIn[ First @ segment, segment ], segment,
+                          walkOut[ Last @ segment, segment ] ] }
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
 
 
 (* ===================== InfraPathQ ===================== *)

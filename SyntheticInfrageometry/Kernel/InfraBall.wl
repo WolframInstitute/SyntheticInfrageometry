@@ -32,11 +32,3 @@ InfraBallQ[ graph_Graph, vs_List ] :=
       Sort @ Select[ VertexList[ graph ], GraphDistance[ graph, c, # ] <= r & ] === Sort @ vs
     ]
   ]
-
-
-(* ===================== Scene-DSL constructor ===================== *)
-
-dispatchConstruction[ graph_Graph, InfraBall[ center_, r_ ] ] :=
-  applySelectOption[ graph,
-    #[[ 1, 1 ]] & /@ FindInfraBall[ graph, center, r ],
-    None, False, <| "Center" -> center, "Radius" -> r |> ]

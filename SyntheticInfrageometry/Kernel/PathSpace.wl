@@ -17,14 +17,14 @@ PackageScope[parseEmbeddingMethod]
 (* Chainable post-filters on the bundle of paths treated as a finite metric
    space.  Calling triple n_Integer | UpTo[n] | All (default n = 1); options
    "From" (pool selector: All, "Center", "Periphery", "MostVisited", anchor
-   -> spec, multi-anchor InfraSegment[{...}] -> spec; "ShortestCircumference"
-   / "LongestCircumference" on SelectInfraCycle; {"Min", scoreFn} / {"Max", scoreFn}
-   with user-supplied path-aggregated scoreFn[path] returning a comparable value),
-   "Distance" (mutual-distance constraint: None, "Max", numeric, range), "Metric"
-   ("Hausdorff" default, "Frechet", "MeanFrechet"), "MaxCliques".  Wrappers
-   preserved: SelectInfraPath accepts InfraSegment[paths] / InfraRay[paths];
-   SelectInfraCycle accepts InfraCircle[cycles].
-   Operator form: SelectInfraPath[g, n, opts][paths]. *)
+   -> spec, multi-anchor InfraSegment[{...}] -> spec; "Shortest/LongestCircumference"
+   on SelectInfraCycle; "MinCurvature" / "MaxCurvature" with optional nested
+   {curvSpec, aggregator} where curvSpec is "FormanRicciCurvature" | "WolframRicciCurvature" | "OllivierRicciCurvature"
+   and aggregator is "Mean" | "Total" | "Max"), "Distance" (mutual-distance
+   constraint: None, "Max", numeric, range), "Metric" ("Hausdorff" default,
+   "Frechet", "MeanFrechet"), "MaxCliques".  Wrappers preserved: SelectInfraPath
+   accepts InfraSegment[paths] / InfraRay[paths]; SelectInfraCycle accepts
+   InfraCircle[cycles].  Operator form: SelectInfraPath[g, n, opts][paths]. *)
 
 Options[ SelectInfraPath ] = {
   "From"       -> All,
@@ -484,18 +484,59 @@ poolPositions[ _Graph, paths_List, "LongestCircumference", _, _, _ ] :=
 poolPositions[ graph_Graph, paths_List, ( anchor_ -> spec_ ), _, baseDist_, cyclic_ ] :=
   anchorDistancePool[ graph, paths, anchor, spec, baseDist, cyclic ]
 
-(* Generic min / max selector: user-supplied scoreFn[path] returning a
-   comparable value; pool keeps positions where scoreFn is extremal. *)
+poolPositions[ graph_Graph, paths_List, fromSpec : ( "MinCurvature" | { "MinCurvature", ___ } ), _, _, _ ] :=
+  With[ { parsed = parseCurvatureFromSpec[ fromSpec ] },
+    With[ { scores = pathCurvatureScores[ graph, paths, parsed[[ 1 ]], parsed[[ 2 ]] ] },
+      Flatten @ Position[ scores, Min @ scores, { 1 }, Heads -> False ] ] ]
 
-poolPositions[ _Graph, paths_List, { "Min", scoreFn_ }, _, _, _ ] :=
-  With[ { scores = scoreFn /@ paths },
-    Flatten @ Position[ scores, Min @ scores, { 1 }, Heads -> False ] ]
-
-poolPositions[ _Graph, paths_List, { "Max", scoreFn_ }, _, _, _ ] :=
-  With[ { scores = scoreFn /@ paths },
-    Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ] ]
+poolPositions[ graph_Graph, paths_List, fromSpec : ( "MaxCurvature" | { "MaxCurvature", ___ } ), _, _, _ ] :=
+  With[ { parsed = parseCurvatureFromSpec[ fromSpec ] },
+    With[ { scores = pathCurvatureScores[ graph, paths, parsed[[ 1 ]], parsed[[ 2 ]] ] },
+      Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ] ] ]
 
 poolPositions[ _, paths_List, _, _, _, _ ] := Range @ Length @ paths
+
+
+(* parseCurvatureFromSpec normalises the "From" -> "MinCurvature" /
+   "MaxCurvature" forms into { curvatureSpec, aggregator } where curvatureSpec
+   is parseCurvatureSpec output and aggregator is a function.  Defaults:
+   Forman curvature, Mean aggregation. *)
+
+parseCurvatureFromSpec[ "MinCurvature" | "MaxCurvature" ] :=
+  { parseCurvatureSpec[ "FormanRicciCurvature" ], Mean }
+
+parseCurvatureFromSpec[ { _, curv_ } ] :=
+  { parseCurvatureSpec[ curv ], Mean }
+
+parseCurvatureFromSpec[ { _, curv_, agg_ } ] :=
+  { parseCurvatureSpec[ curv ], aggregatorFn[ agg ] }
+
+
+aggregatorFn[ "Mean"  | Mean  ] := Mean
+aggregatorFn[ "Total" | "Sum" | Total ] := Total
+aggregatorFn[ "Max"   | Max   ] := Max
+aggregatorFn[ f_ ] := f
+
+
+(* pathCurvatureScores[g, paths, curvatureSpec, aggregator]: scalar score per
+   path.  Edge curvatures (Forman, Ollivier) aggregate over path edges;
+   vertex curvatures (Wolfram) aggregate over path vertices.  Empty edge list
+   degenerates to 0 (length-1 path under an edge curvature). *)
+
+pathCurvatureScores[ graph_Graph, paths_List, curvatureSpec_, aggregator_ ] :=
+  Switch[ curvatureSpec[ "Head" ],
+    "FormanRicciCurvature",
+      With[ { kappa = formanEdgeKappa[ graph, curvatureSpec ] },
+        ( If[ Length[ # ] < 2, 0,
+            aggregator[ kappa @@@ Partition[ #, 2, 1 ] ] ] ) & /@ paths ],
+    "WolframRicciCurvature",
+      With[ { kappa = wolframVertexKappa[ graph, curvatureSpec ] },
+        aggregator[ kappa /@ # ] & /@ paths ],
+    "OllivierRicciCurvature",
+      With[ { kappa = ollivierEdgeKappa[ graph, curvatureSpec ] },
+        ( If[ Length[ # ] < 2, 0,
+            aggregator[ kappa @@@ Partition[ #, 2, 1 ] ] ] ) & /@ paths ]
+  ]
 
 
 (* Positions of paths whose total vertex + edge visit count across the
@@ -565,10 +606,7 @@ cycleEdges[ cycle_List ] :=
 (* ===================== Helpers: embedding methods ===================== *)
 
 (* parseEmbeddingMethod[spec, poolDefault] extracts the suboptions of
-   Method -> "Embedding" on FindInfraMidpoint (the only remaining consumer
-   after the path-finding consolidation that dropped "Embedding" from
-   FindInfraSegment / FindInfraLine / FindInfraParallel).  Returns
-   <| "Coordinates", "Pool", "Pruning" |>. *)
+   Method -> "Embedding" into <| "Coordinates", "Pool", "Pruning" |>. *)
 
 parseEmbeddingMethod[ spec_, poolDefault_String : "ShortestPaths" ] :=
   Replace[ spec, {
@@ -593,7 +631,9 @@ resolveEmbeddingCoords[ _, coords_List ] := coords
 
 (* generateEmbeddingPaths: depth-first recursion extending each partial path
    via extendFn[path]; complete candidates (goalQ[path] True) are collected.
-   The branching extension list is filtered by applyPruning. *)
+   The branching extension list is filtered by applyPruning, so the same
+   Pruning spec used by Method -> "ShortestPathExtension" controls the
+   search. *)
 
 generateEmbeddingPaths[ extendFn_, startPath_List, goalQ_, prune_ ] :=
   Module[ { results = { }, recurse },

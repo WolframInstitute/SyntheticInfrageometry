@@ -88,7 +88,7 @@ VerificationTest[
 VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
     "Side" -> "Forward", "Length" -> 1,
-    Properties -> {"Simple", "ShortestPath"} ],
+    Method -> "ShortestPath" ],
   { InfraPath[ { { 3, 4, 5 } } ] },
   TestID -> "ExtendInfraPath-PathGraph-forward"
 ]
@@ -96,7 +96,7 @@ VerificationTest[
 VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
     "Side" -> "Backward", "Length" -> 2,
-    Properties -> {"Simple", "ShortestPath"} ],
+    Method -> "ShortestPath" ],
   { InfraPath[ { { 1, 2, 3, 4 } } ] },
   TestID -> "ExtendInfraPath-PathGraph-backward"
 ]
@@ -104,7 +104,7 @@ VerificationTest[
 VerificationTest[
   Sort[ First @ #[[ 1 ]] & /@
     ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3 }, All,
-      Properties -> {"Simple", "ShortestPath"} ] ],
+      Method -> "ShortestPath" ] ],
   Sort[ { { 1, 2, 3, 4, 5 }, { 5, 4, 3, 2, 1 } } ],
   TestID -> "ExtendInfraPath-PathGraph-both-automatic"
 ]
@@ -113,7 +113,7 @@ VerificationTest[
   Sort[ First @ #[[ 1 ]] & /@
     ExtendInfraPath[ CycleGraph[ 6 ], { 1 }, All,
       "Side" -> "Forward", "Length" -> 2,
-      Properties -> {"Simple", {"LongestPath", "Aggregation" -> "Sum"}} ] ],
+      Method -> { "LongestPath", "Aggregation" -> "Sum" } ] ],
   Sort[ { { 1, 2, 3 }, { 1, 6, 5 } } ],
   TestID -> "ExtendInfraPath-CycleGraph-LongestPath-sum"
 ]
@@ -121,7 +121,7 @@ VerificationTest[
 VerificationTest[
   AllTrue[
     ExtendInfraPath[ GridGraph[ { 3, 3 } ], { 1 }, All,
-      "Side" -> "Forward", "Length" -> 3, Properties -> { "Simple" } ],
+      "Side" -> "Forward", "Length" -> 3 ],
     p |-> InfraPathQ[ GridGraph[ { 3, 3 } ], First @ p[[ 1 ]] ] ],
   True,
   TestID -> "ExtendInfraPath-all-extensions-pass-InfraPathQ"
@@ -140,7 +140,7 @@ VerificationTest[
   Length @ First @ First @
     ExtendInfraPath[ PathGraph[ Range[ 7 ] ], { 4, 5 }, 1,
       "Side" -> "Forward", "Length" -> 2,
-      Properties -> {"Simple", "ShortestPath"} ][[ 1 ]],
+      Method -> "ShortestPath" ][[ 1 ]],
   4,
   TestID -> "ExtendInfraPath-Length-truncation"
 ]
@@ -151,7 +151,7 @@ VerificationTest[
     ExtendInfraPath[ PathGraph[ Range[ 7 ] ],
       InfraPath[ { { 3 }, { 5 } } ], All,
       "Side" -> "Forward", "Length" -> 1,
-      Properties -> {"Simple", "ShortestPath"} ] ],
+      Method -> "ShortestPath" ] ],
   Sort[ { { 3, 2 }, { 3, 4 }, { 5, 4 }, { 5, 6 } } ],
   TestID -> "ExtendInfraPath-multi-realisation"
 ]
@@ -160,14 +160,14 @@ VerificationTest[
 VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 4, 5 }, 1,
     "Side" -> "Forward", "Length" -> 5,
-    Properties -> {"Simple", "ShortestPath"} ],
+    Method -> "ShortestPath" ],
   { InfraPath[ { { 4, 5 } } ] },
   TestID -> "ExtendInfraPath-dead-end-freeze"
 ]
 
 VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 1,
-    Properties -> {"Simple", "ShortestPath"} ],
+    Method -> "ShortestPath" ],
   { InfraPath[ { { 1, 2, 3, 4, 5 } } ] },
   TestID -> "ExtendInfraPath-Both-extends-segment-to-line"
 ]
@@ -175,52 +175,9 @@ VerificationTest[
 (* count > available: $Failed *)
 VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3 }, 99,
-    Properties -> {"Simple", "ShortestPath"} ],
+    Method -> "ShortestPath" ],
   $Failed,
   TestID -> "ExtendInfraPath-strict-shortfall-Failed"
-]
-
-
-(* ===================== InfraPath scene-DSL constructor ===================== *)
-
-(* Bare-vertex chain on P5: 1-2-3 is a valid walk. *)
-VerificationTest[
-  With[{
-    scene = InfraScene[ { path }, { path == InfraPath[ 1, 2, 3 ] } ],
-    g = PathGraph[ Range[ 5 ] ]
-  },
-    With[{ instances = FindInfraScene[ scene, g ] },
-      Length[ instances ] == 1 && instances[[ 1 ]][[ 1 ]][ path ] === { 1, 2, 3 }
-    ]
-  ],
-  True,
-  TestID -> "InfraPath-scene-DSL-bare-chain"
-]
-
-(* No edge between 1 and 3 on P5 => empty result. *)
-VerificationTest[
-  With[{
-    scene = InfraScene[ { path }, { path == InfraPath[ 1, 3 ] } ],
-    g = PathGraph[ Range[ 5 ] ]
-  },
-    FindInfraScene[ scene, g ]
-  ],
-  { },
-  TestID -> "InfraPath-scene-DSL-no-edge-empty"
-]
-
-(* Non-simple chain 1-2-1 on P3 is kept (no DuplicateFreeQ filter). *)
-VerificationTest[
-  With[{
-    scene = InfraScene[ { path }, { path == InfraPath[ 1, 2, 1 ] } ],
-    g = PathGraph[ Range[ 3 ] ]
-  },
-    With[{ instances = FindInfraScene[ scene, g ] },
-      Length[ instances ] == 1 && instances[[ 1 ]][[ 1 ]][ path ] === { 1, 2, 1 }
-    ]
-  ],
-  True,
-  TestID -> "InfraPath-scene-DSL-non-simple-kept"
 ]
 
 EndTestSection[]

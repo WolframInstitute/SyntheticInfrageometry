@@ -86,48 +86,6 @@ propertyPredicateShell[ _, _, _, other_ ] :=
   ( Message[ FindInfraShell::badproperty, other ]; Throw[ $Failed ] )
 
 
-(* ===================== FindInfraOsculatingShell ===================== *)
-
-(* Osculating shells at the k-vertex window centered on path[[i]]:
-   for every vertex c equidistant from all k window-vertices (common
-   distance r), the level set { v : d(c, v) == r }, one unary
-   InfraShell[{set}] per such center, sorted by ascending radius
-   (with center as a tie-break).  Forwards Properties / Method to
-   FindInfraShell.  path is a vertex list or any InfraPath wrapper
-   (multi-realisation paths are spread and unioned). *)
-
-Options[ FindInfraOsculatingShell ] = Options[ FindInfraShell ];
-
-FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ ] ] :=
-  Module[ { walks, vlist, vidx, dm, pairs, sets, capped },
-    walks = infraSpread @ If[ ListQ @ path, InfraPath[ { path } ], path ];
-    vlist = VertexList @ graph;
-    vidx  = AssociationThread[ vlist -> Range @ Length @ vlist ];
-    dm    = GraphDistanceMatrix @ graph;
-    pairs = SortBy[
-      DeleteDuplicates @ Flatten[
-        Map[
-          walk |-> With[ {
-              lo = Clip[ i - Floor[ ( k - 1 ) / 2 ], { 1, Length @ walk } ],
-              hi = Clip[ i + Ceiling[ ( k - 1 ) / 2 ], { 1, Length @ walk } ] },
-            With[ { cols = Lookup[ vidx, walk[[ lo ;; hi ]] ] },
-              MapThread[
-                If[ SameQ @@ #2, { #1, First @ #2 }, Nothing ] &,
-                { vlist, dm[[ All, cols ]] } ]
-            ]
-          ],
-          walks ],
-        1 ],
-      { Last, First } ];
-    sets = Flatten[
-      ( ( #[[ 1, 1 ]] & ) /@ FindInfraShell[ graph, #[[ 1 ]], #[[ 2 ]], All, opts ] & ) /@ pairs,
-      1 ];
-    capped = infraCap[ sets, count ];
-    If[ capped === $Failed, $Failed, InfraShell[ { # } ] & /@ capped ]
-  ]
-
-
 (* ===================== FindInfraShellParameters ===================== *)
 
 (* For a vertex set vs, return the {center, radius} pairs for which vs
@@ -176,16 +134,3 @@ SeparatesQ[ graph_Graph, vs_List, u_, v_ ] :=
   If[ MemberQ[ vs, u ] || MemberQ[ vs, v ], False,
     GraphDistance[ VertexDelete[ graph, vs ], u, v ] === Infinity
   ]
-
-
-(* ===================== Scene-DSL constructor ===================== *)
-
-dispatchConstruction[ graph_Graph, InfraShell[ center_, r_, opts___Rule ] ] :=
-  capBranches[
-    applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindInfraShell[ graph, center, r, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindInfraShell ] ] ],
-      "Select" /. { opts } /. "Select" -> None,
-      False, <| "Center" -> center,
-                "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
-    extractBranches[ { opts } ] ]

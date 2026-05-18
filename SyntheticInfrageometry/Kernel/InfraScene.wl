@@ -205,11 +205,123 @@ InfraInstance[ bindings_Association, syms_List ] :=
 
 (* ===================== Construction Dispatch ===================== *)
 
-(* dispatchConstruction[graph, Head[args]] maps an InfraHead expression with
-   bindings already substituted into its concrete graph realization (vertex,
-   vertex set, vertex sequence, list thereof).  Per-primitive scene-DSL rules
-   live in their respective Infra*.wl files; helpers capBranches /
-   applySelectOption / extractBranches are PackageScope here. *)
+(* Each clause maps an InfraHead expression with bindings already substituted
+   into its concrete graph realization (vertex, vertex set, vertex sequence,
+   list thereof). For multi-valued constructions (segments, lines, spheres),
+   the full enumeration is computed first, then the path-space selector named
+   by "Select" is applied, and finally the result is capped to "Branches". *)
+
+dispatchConstruction[ graph_Graph, InfraPoint[] ] :=
+  VertexList @ graph
+
+dispatchConstruction[ graph_Graph, InfraPoint[ v_ ] ] /; MemberQ[ VertexList @ graph, v ] :=
+  { v }
+
+dispatchConstruction[ graph_Graph, InfraPoint[ pool_String ] ] :=
+  Switch[ pool,
+    "Center",    GraphCenter[ graph ],
+    "Periphery", GraphPeriphery[ graph ],
+    _,           VertexList @ graph
+  ]
+
+dispatchConstruction[ graph_Graph, InfraPoint[ origin_, dist_ ] ] /; ! MatchQ[ dist, _Rule ] :=
+  DeleteDuplicates @ Flatten[ Map[
+    o |-> Select[ VertexList @ graph, v |-> GraphDistance[ graph, o, v ] == dist ],
+    If[ StringQ @ origin,
+      Switch[ origin,
+        "Center",    GraphCenter[ graph ],
+        "Periphery", GraphPeriphery[ graph ],
+        _,           VertexList @ graph ],
+      If[ MemberQ[ VertexList @ graph, origin ], { origin }, origin ] ] ], 1 ]
+
+dispatchConstruction[ graph_Graph, InfraPoint[ n_Integer, opts___Rule ] ] :=
+  Module[ { dist, distMatrix, finiteMax, dMin, dMax, auxGraph, cliques },
+    dist          = "Distance" /. { opts } /. "Distance" -> "Max";
+    distMatrix    = GraphDistanceMatrix @ graph;
+    finiteMax     = Max @ Select[ Flatten @ distMatrix, # < Infinity & ];
+    { dMin, dMax } = Switch[ dist,
+      "Max", { finiteMax, finiteMax },
+      _List, dist /. Infinity -> finiteMax,
+      _,     { dist, finiteMax } ];
+    auxGraph = Graph[ VertexList @ graph,
+      UndirectedEdge @@@ Select[ Subsets[ VertexList @ graph, { 2 } ],
+        pair |-> With[ { d = GraphDistance[ graph, pair[[ 1 ]], pair[[ 2 ]] ] },
+          dMin <= d <= dMax ] ] ];
+    cliques = Select[ FindClique[ auxGraph, { n, VertexCount @ auxGraph }, All ],
+      Length @ # >= n & ];
+    If[ cliques === {}, {}, RandomSample[ #, n ] & /@ cliques ]
+  ]
+
+dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      #[[ 1, 1 ]] & /@ FindInfraSegment[ graph, p1, p2, All ],
+      "Select" /. { opts } /. "Select" -> None,
+      False, <| "Endpoints" -> { p1, p2 } |> ],
+    extractBranches[ { opts } ] ]
+
+dispatchConstruction[ graph_Graph, InfraLine[ path_List, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      findLineExtensions[ graph, path ],
+      "Select" /. { opts } /. "Select" -> None,
+      False, <| "Endpoints" -> { First @ path, Last @ path } |> ],
+    extractBranches[ { opts } ] ]
+
+dispatchConstruction[ graph_Graph, InfraLine[ p1_, p2_, opts___Rule ] ] /;
+  MemberQ[ VertexList @ graph, p1 ] :=
+  capBranches[
+    applySelectOption[ graph,
+      #[[ 1, 1 ]] & /@ FindInfraLine[ graph, p1, p2, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraLine ] ] ],
+      "Select" /. { opts } /. "Select" -> None,
+      False, <| "Endpoints" -> { p1, p2 } |> ],
+    extractBranches[ { opts } ] ]
+
+dispatchConstruction[ graph_Graph, InfraShell[ center_, r_, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      #[[ 1, 1 ]] & /@ FindInfraShell[ graph, center, r, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraShell ] ] ],
+      "Select" /. { opts } /. "Select" -> None,
+      False, <| "Center" -> center,
+                "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
+    extractBranches[ { opts } ] ]
+
+dispatchConstruction[ graph_Graph, InfraBall[ center_, r_ ] ] :=
+  applySelectOption[ graph,
+    #[[ 1, 1 ]] & /@ FindInfraBall[ graph, center, r ],
+    None, False, <| "Center" -> center, "Radius" -> r |> ]
+
+dispatchConstruction[ graph_Graph, InfraCircle[ center_, r_, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      #[[ 1, 1 ]] & /@ FindInfraCircle[ graph, center, r, All ],
+      "Select" /. { opts } /. "Select" -> None,
+      True, <| "Center" -> center,
+               "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
+    extractBranches[ { opts } ] ]
+
+dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_, opts___Rule ] ] :=
+  dispatchConstruction[ graph, InfraPlane[ p1, p2, { 0, 0 }, opts ] ]
+
+dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_,
+    window : { _Integer, _Integer }, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      #[[ 1, 1 ]] & /@ FindInfraBisectingHyperplane[ graph, p1, p2, window, All, Properties -> { "Separating" } ],
+      "Select" /. { opts } /. "Select" -> None,
+      False, <| "Endpoints" -> { p1, p2 } |> ],
+    extractBranches[ { opts } ] ]
+
+dispatchConstruction[ graph_Graph, InfraRevolution[ axis_, profile_, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      { FindInfraRevolution[ graph, axis, profile,
+          Sequence @@ FilterRules[ { opts }, Options[ FindInfraRevolution ] ] ][[ 1 ]] },
+      "Select" /. { opts } /. "Select" -> None,
+      False, <| "Axis" -> axis, "Profile" -> profile |> ],
+    extractBranches[ { opts } ] ]
 
 
 (* ===================== Evaluation Engine ===================== *)

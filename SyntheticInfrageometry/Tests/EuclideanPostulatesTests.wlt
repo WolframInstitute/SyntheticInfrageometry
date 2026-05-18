@@ -242,197 +242,321 @@ VerificationTest[
   TestID -> "FindInfraSegment-upto-soft-cap"
 ]
 
-(* ===== FindInfraSegment Properties (geodesic family) ===== *)
-
-(* Geodesic-ness is implicit; "ShortestPath" Property is rejected. *)
+(* ===== FindInfraSegment Method -> "ShortestPathExtension" ===== *)
 
 VerificationTest[
-  FindInfraSegment[GridGraph[{3, 3}], 1, 9, 1, Properties -> {"ShortestPath"}],
-  $Failed,
-  {FindInfraSegment::badproperty},
-  TestID -> "FindInfraSegment-ShortestPath-Property-rejected"
-]
-
-VerificationTest[
-  FindInfraSegment[GridGraph[{3, 3}], 1, 9, 1, Properties -> {"Bogus"}],
-  $Failed,
-  {FindInfraSegment::badproperty},
-  TestID -> "FindInfraSegment-badproperty-message"
-]
-
-VerificationTest[
-  FindInfraSegment[GridGraph[{3, 3}], 1, 9, 1, Method -> "Unknown"],
-  $Failed,
-  {FindInfraSegment::badmethod},
-  TestID -> "FindInfraSegment-badmethod-message"
-]
-
-(* {"EdgeMin", f}: among geodesics, keep those MinimalBy f[v, w] at each step.
-   degSum is a synthetic edge function (sum of vertex degrees on the edge). *)
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    With[{paths = #[[1, 1]] & /@ FindInfraSegment[g, 1, 9, All, Properties -> {{"EdgeMin", degSum}}]},
-      Length[paths] >= 1 &&
-        AllTrue[paths, Length[#] - 1 == GraphDistance[g, 1, 9] &]
-    ]
+  InfraSegment @ With[{g = PathGraph[Range[5]]},
+    FindInfraSegment[g, 1, 5, All, Method -> "ShortestPathExtension"]
   ],
-  True,
-  TestID -> "FindInfraSegment-EdgeMin-stays-geodesic"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    SubsetQ[
-      Sort @ (#[[1, 1]] & /@ FindInfraSegment[g, 1, 9, All]),
-      Sort @ (#[[1, 1]] & /@ FindInfraSegment[g, 1, 9, All, Properties -> {{"EdgeMin", degSum}}])
-    ]
-  ],
-  True,
-  TestID -> "FindInfraSegment-EdgeMin-is-subset-of-geodesics"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{4, 4}], degSum = {a, b} |-> VertexDegree[GridGraph[{4, 4}], a] + VertexDegree[GridGraph[{4, 4}], b]},
-    BlockRandom[
-      Length @ FindInfraSegment[g, 1, 16, All,
-        Properties -> {{"EdgeMin", degSum}},
-        Method -> {"Exhaustive", "Pruning" -> 1}] <= 1,
-      RandomSeeding -> 42
-    ]
-  ],
-  True,
-  TestID -> "FindInfraSegment-EdgeMin-pruning-beam-1"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    Length @ FindInfraSegment[g, 1, 9, UpTo[2], Properties -> {{"EdgeMin", degSum}}]
-  ],
-  _Integer?(# <= 2 &),
-  SameTest -> MatchQ,
-  TestID -> "FindInfraSegment-EdgeMin-UpTo-truncates"
-]
-
-(* {"LongestPath", "Window" -> k}: among geodesics, MaximalBy distance-tuple
-   to the last k vertices.  Result is a subset of the full geodesic bundle. *)
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}]},
-    SubsetQ[
-      Sort @ (#[[1, 1]] & /@ FindInfraSegment[g, 1, 9, All]),
-      Sort @ (#[[1, 1]] & /@ FindInfraSegment[g, 1, 9, All, Properties -> {{"LongestPath", "Window" -> 2}}])
-    ]
-  ],
-  True,
-  TestID -> "FindInfraSegment-LongestPath-Window2-subset-of-geodesics"
-]
-
-(* "Greedy" Method on default Properties = {} falls back to FindShortestPath. *)
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}]},
-    Length @ FindInfraSegment[g, 1, 9, 1, Method -> "Greedy"]
-  ],
-  1,
-  TestID -> "FindInfraSegment-Greedy-default-properties"
-]
-
-
-(* ===== FindInfraPath Properties (path family) ===== *)
-
-VerificationTest[
-  FindInfraPath[GridGraph[{3, 3}], 1, 9, Infinity, 1, Properties -> {"Bogus"}],
-  $Failed,
-  {FindInfraPath::badproperty},
-  TestID -> "FindInfraPath-badproperty-message"
-]
-
-VerificationTest[
-  FindInfraPath[GridGraph[{3, 3}], 1, 9, Infinity, 1, Method -> "Greedy"],
-  $Failed,
-  {FindInfraPath::badmethod},
-  TestID -> "FindInfraPath-badmethod-Greedy-rejected"
-]
-
-(* "Simple" Property: opt-in simplicity. *)
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}]},
-    With[{walks = #[[1, 1]] & /@ FindInfraPath[g, 1, 9, {4}, All, Properties -> {"Simple"}]},
-      Length[walks] >= 1 && AllTrue[walks, DuplicateFreeQ]
-    ]
-  ],
-  True,
-  TestID -> "FindInfraPath-Simple-no-repeats"
-]
-
-(* {"ShortestPath", "Window" -> k}: K-local geodesic walks.  Window = Infinity
-   forces global geodesic from path[[1]]. *)
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}]},
-    Sort @ (#[[1, 1]] & /@ FindInfraPath[g, 1, 9, Infinity, All,
-        Properties -> {"Simple", {"ShortestPath", "Window" -> Infinity}}]) ===
-      Sort @ (#[[1, 1]] & /@ FindInfraSegment[g, 1, 9, All])
-  ],
-  True,
-  TestID -> "FindInfraPath-ShortestPath-WindowInf-equals-geodesics"
+  InfraSegment[{{1, 2, 3, 4, 5}}],
+  TestID -> "FindInfraSegment-ShortestPathExtension-unique-path"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ (#[[1, 1]] & /@ FindInfraPath[g, 1, 4, Infinity, All,
-        Properties -> {"Simple", {"ShortestPath", "Window" -> 2}}])
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 4, All, Method -> "ShortestPathExtension"])
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
-  TestID -> "FindInfraPath-ShortestPath-Window2-cycle-geodesics"
+  TestID -> "FindInfraSegment-ShortestPathExtension-cycle-symmetric"
 ]
 
-(* {"LongestPath", "Window" -> k}: pull-apart walks. *)
-
 VerificationTest[
-  With[{g = CycleGraph[6]},
-    Sort @ (#[[1, 1]] & /@ FindInfraPath[g, 1, 4, Infinity, All,
-        Properties -> {"Simple", {"LongestPath", "Window" -> 2}}])
+  With[{g = GridGraph[{3, 3}]},
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 1}]) ===
+      Sort @ FindPath[g, 1, 9, Infinity, All]
   ],
-  Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
-  TestID -> "FindInfraPath-LongestPath-Window2-cycle-symmetric"
+  True,
+  TestID -> "FindInfraSegment-ShortestPathExtension-K1-equals-FindPath"
 ]
 
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
-    Sort @ (#[[1, 1]] & /@ FindInfraPath[g, 1, 3, Infinity, All,
-        Properties -> {"Simple", {"LongestPath", "Window" -> 2}}])
+    With[{
+      k1   = Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 1}]),
+      k2   = Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 2}]),
+      kAll = Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> All}])
+    },
+      Length[k1] == 4 &&
+      MemberQ[k1, {1, 2, 4, 3}] && MemberQ[k1, {1, 4, 2, 3}] &&
+      k2 === Sort[{{1, 2, 3}, {1, 4, 3}}] &&
+      kAll === k2
+    ]
   ],
-  Sort[{{1, 2, 3}, {1, 4, 3}}],
-  TestID -> "FindInfraPath-LongestPath-Window2-strict-between"
+  True,
+  TestID -> "FindInfraSegment-ShortestPathExtension-K2-strict-between"
+]
+
+VerificationTest[
+  With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
+    With[{
+      k1   = Length @ FindInfraSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 1}],
+      k2   = Length @ FindInfraSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 2}],
+      kAll = Length @ FindInfraSegment[g, 1, 3, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> All}]
+    },
+      k1 >= k2 >= kAll
+    ]
+  ],
+  True,
+  TestID -> "FindInfraSegment-ShortestPathExtension-K-monotone"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> "ShortestPathExtension"]) ===
+      Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> {"ShortestPathExtension", "ShortestPathWindow" -> 2}])
+  ],
+  True,
+  TestID -> "FindInfraSegment-ShortestPathExtension-ShortestPathWindow-default-is-2"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     BlockRandom[
-      Length @ FindInfraPath[g, 1, 16, Infinity, All,
-        Properties -> {"Simple", {"LongestPath", "Window" -> 2}},
-        Method -> {"Exhaustive", "Pruning" -> 1}] == 1,
+      Length @ FindInfraSegment[g, 1, 16, All,
+        Method -> {"ShortestPathExtension", "Pruning" -> 1}] == 1,
       RandomSeeding -> 42
     ]
   ],
   True,
-  TestID -> "FindInfraPath-LongestPath-pruning-beam-1"
+  TestID -> "FindInfraSegment-ShortestPathExtension-pruning-beam-1"
 ]
 
-(* {"EdgeMin", f} composed with "Simple" gives valid simple walks. *)
+VerificationTest[
+  InfraSegment @ FindInfraSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "ShortestPathExtension"],
+  InfraSegment[{}],
+  TestID -> "FindInfraSegment-ShortestPathExtension-same-point-empty"
+]
+
+
+(* ===== FindInfraSegment Method -> "CurvatureMinimizing" ===== *)
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    With[{walks = #[[1, 1]] & /@ FindInfraPath[g, 1, 9, {4}, All,
-            Properties -> {"Simple", {"EdgeMin", degSum}}]},
-      AllTrue[walks, DuplicateFreeQ]
+  InfraSegment @ With[{g = PathGraph[Range[5]]},
+    FindInfraSegment[g, 1, 5, All, Method -> "CurvatureMinimizing"]
+  ],
+  InfraSegment[{{1, 2, 3, 4, 5}}],
+  TestID -> "FindInfraSegment-CurvatureMinimizing-tree-unique-path"
+]
+
+VerificationTest[
+  With[{g = CycleGraph[6]},
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 4, All, Method -> "CurvatureMinimizing"])
+  ],
+  Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
+  TestID -> "FindInfraSegment-CurvatureMinimizing-cycle-symmetric"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[
+      (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]),
+      walk |-> First[walk] === 1 && Last[walk] === 9 &&
+        DuplicateFreeQ[walk] &&
+        AllTrue[Partition[walk, 2, 1], EdgeQ[g, UndirectedEdge @@ #] &]
     ]
   ],
   True,
-  TestID -> "FindInfraPath-Simple-EdgeMin-valid-walks"
+  TestID -> "FindInfraSegment-CurvatureMinimizing-grid-walks-valid"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Length @ FindInfraSegment[g, 1, 9, All, Method -> {"CurvatureMinimizing", "Pool" -> "AllPaths"}]
+  ],
+  6,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-AllPaths-grid-bundle-size"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[
+      (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]),
+      walk |-> Length[walk] - 1 >= GraphDistance[g, 1, 9]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-grid-walks-no-shorter-than-geodesic"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]) ===
+      Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> {"CurvatureMinimizing", "Curvature" -> {"FormanRicciCurvature", Method -> "Simple"}}])
+  ],
+  True,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-Forman-Method-default-is-Simple"
+]
+
+VerificationTest[
+  With[{g = Graph[{1 <-> 2, 1 <-> 3, 1 <-> 4, 2 <-> 3, 2 <-> 4}]},
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 3, All, Method -> {"CurvatureMinimizing", "Curvature" -> {"FormanRicciCurvature", Method -> "Simple"}, "Pool" -> "AllPaths"}]) =!=
+      Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 3, All, Method -> {"CurvatureMinimizing", "Curvature" -> {"FormanRicciCurvature", Method -> "Triangles"}, "Pool" -> "AllPaths"}])
+  ],
+  True,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-AllPaths-Forman-Method-Triangles-differs-on-triangulated"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Length @ FindInfraSegment[g, 1, 9, UpTo[2], Method -> "CurvatureMinimizing"]
+  ],
+  2,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-UpTo-truncates"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Length @ FindInfraSegment[g, 1, 9, 3, Method -> "CurvatureMinimizing"]
+  ],
+  3,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-Count-exact"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    SelectInfraPath[g, All, "From" -> "Center"] @ FindInfraSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]
+  ],
+  { InfraSegment[ { _ } ] .. },
+  SameTest -> MatchQ,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-chains-with-SelectInfraPath"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    BlockRandom[
+      Length @ FindInfraSegment[g, 1, 16, All, Method -> {"CurvatureMinimizing", "Pruning" -> 1}] <= 1,
+      RandomSeeding -> 42
+    ]
+  ],
+  True,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-pruning-beam-1"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{6, 6}]},
+    Length @ FindInfraSegment[g, 1, 36, 1, Method -> "CurvatureMinimizing"]
+  ],
+  1,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-count-1-terminates-early"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{6, 6}]},
+    Length @ FindInfraSegment[g, 1, 36, 1, Method -> "ShortestPathExtension"]
+  ],
+  1,
+  TestID -> "FindInfraSegment-ShortestPathExtension-count-1-terminates-early"
+]
+
+VerificationTest[
+  InfraSegment @ FindInfraSegment[PathGraph[Range[5]], 1, 1, UpTo[1], Method -> "CurvatureMinimizing"],
+  InfraSegment[{}],
+  TestID -> "FindInfraSegment-CurvatureMinimizing-same-point-empty"
+]
+
+
+(* ===== FindInfraSegment Method -> "CurvatureMinimizing": Pool -> "ShortestPaths" (default) ===== *)
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[
+      (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]),
+      walk |-> Length[walk] - 1 === GraphDistance[g, 1, 9]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-Constraint-default-walks-are-geodesic"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    SubsetQ[
+      Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> "ShortestPath"]),
+      Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"])
+    ]
+  ],
+  True,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-Constraint-default-subset-of-geodesics"
+]
+
+VerificationTest[
+  InfraSegment @ With[{g = Graph[{1 <-> 2, 1 <-> 3, 1 <-> 4, 2 <-> 3, 2 <-> 4}]},
+    FindInfraSegment[g, 1, 3, All, Method -> "CurvatureMinimizing"]
+  ],
+  InfraSegment[{{1, 3}}],
+  TestID -> "FindInfraSegment-CurvatureMinimizing-Constraint-default-target-adjacent"
+]
+
+(* ===== FindInfraSegment Method -> "CurvatureMinimizing": CurvatureMethod -> "WolframRicciCurvature" ===== *)
+
+VerificationTest[
+  InfraSegment @ With[{g = PathGraph[Range[5]]},
+    FindInfraSegment[g, 1, 5, All, Method -> {"CurvatureMinimizing", "Curvature" -> "WolframRicciCurvature"}]
+  ],
+  InfraSegment[{{1, 2, 3, 4, 5}}],
+  TestID -> "FindInfraSegment-CurvatureMinimizing-Wolfram-tree-unique-path"
+]
+
+VerificationTest[
+  With[{g = CycleGraph[6]},
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 4, All, Method -> {"CurvatureMinimizing", "Curvature" -> "WolframRicciCurvature"}])
+  ],
+  Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
+  TestID -> "FindInfraSegment-CurvatureMinimizing-Wolfram-cycle-symmetric"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[
+      (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> {"CurvatureMinimizing", "Curvature" -> "WolframRicciCurvature"}]),
+      walk |-> First[walk] === 1 && Last[walk] === 9 &&
+        DuplicateFreeQ[walk] &&
+        AllTrue[Partition[walk, 2, 1], EdgeQ[g, UndirectedEdge @@ #] &]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-Wolfram-grid-walks-valid"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[
+      (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> {"CurvatureMinimizing", "Curvature" -> "WolframRicciCurvature"}]),
+      walk |-> Length[walk] - 1 === GraphDistance[g, 1, 9]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-Wolfram-Constraint-default-walks-are-geodesic"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Length @ FindInfraSegment[g, 1, 9, All,
+      Method -> {"CurvatureMinimizing", "Curvature" -> "WolframRicciCurvature", "Dimension" -> 2}]
+  ],
+  _Integer?Positive,
+  SameTest -> MatchQ,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-Wolfram-Dimension-fixed-runs"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Length @ FindInfraSegment[g, 1, 9, All,
+      Method -> {"CurvatureMinimizing", "Curvature" -> "WolframRicciCurvature",
+                 "Dimension" -> 2, "Radii" -> {1, 2}}]
+  ],
+  _Integer?Positive,
+  SameTest -> MatchQ,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-Wolfram-Radii-explicit-runs"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> "CurvatureMinimizing"]) ===
+      Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, All, Method -> {"CurvatureMinimizing", "Curvature" -> "FormanRicciCurvature"}])
+  ],
+  True,
+  TestID -> "FindInfraSegment-CurvatureMinimizing-CurvatureMethod-default-is-Forman"
 ]
 
 (* ===== FindInfraLine ===== *)
@@ -608,99 +732,6 @@ VerificationTest[
   $Failed,
   {FindInfraShell::badproperty},
   TestID -> "FindInfraShell-badproperty-message"
-]
-
-(* ===== FindInfraOsculatingShell ===== *)
-
-(* On K5 with window {1, 2, 3} every other vertex is at distance 1 from
-   each window-vertex, so vertices 4 and 5 are both osculating centers
-   with radius 1; expect two unary shells. *)
-
-VerificationTest[
-  With[{result = FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3, All]},
-    Length[result] === 2 &&
-    AllTrue[result, MatchQ[#, InfraShell[{_List}]] &] &&
-    Sort[Sort /@ (#[[ 1, 1 ]] & /@ result)] === Sort[{Sort[{1, 2, 3, 5}], Sort[{1, 2, 3, 4}]}]
-  ],
-  True,
-  TestID -> "FindInfraOsculatingShell-K5-two-osculating-centers"
-]
-
-(* Default count = 1 picks the smallest-radius shell.  Both centers
-   here have r = 1; tie-break by center index picks center 4. *)
-
-VerificationTest[
-  Sort @ First @ First @ First @ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3],
-  Sort[{1, 2, 3, 5}],
-  TestID -> "FindInfraOsculatingShell-K5-default-smallest-radius"
-]
-
-(* PathGraph: window {3, 4, 5} has no integer vertex equidistant from
-   all three.  count = All -> {}; count = 1 -> $Failed. *)
-
-VerificationTest[
-  FindInfraOsculatingShell[PathGraph[Range[7]], Range[7], 4, 3, All],
-  {},
-  TestID -> "FindInfraOsculatingShell-PathGraph-no-centers-All"
-]
-
-VerificationTest[
-  FindInfraOsculatingShell[PathGraph[Range[7]], Range[7], 4, 3],
-  $Failed,
-  TestID -> "FindInfraOsculatingShell-PathGraph-no-centers-default-fails"
-]
-
-(* InfraPath[{walk}] equivalent to bare list. *)
-
-VerificationTest[
-  FindInfraOsculatingShell[CompleteGraph[5], InfraPath[{{1, 2, 3}}], 2, 3, All],
-  FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3, All],
-  TestID -> "FindInfraOsculatingShell-InfraPath-equiv-bare-list"
-]
-
-(* Multi-realisation InfraPath: centers union across walks. *)
-
-VerificationTest[
-  Length @ FindInfraOsculatingShell[CompleteGraph[5],
-    InfraPath[{{1, 2, 3}, {1, 4, 5}}], 2, 3, All],
-  4,
-  TestID -> "FindInfraOsculatingShell-multi-realisation-union"
-]
-
-(* UpTo[n] caps below the available count. *)
-
-VerificationTest[
-  Length @ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3, UpTo[1]],
-  1,
-  TestID -> "FindInfraOsculatingShell-UpTo-caps"
-]
-
-(* Strict count > available returns $Failed. *)
-
-VerificationTest[
-  FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3, 3],
-  $Failed,
-  TestID -> "FindInfraOsculatingShell-count-exceeds-fails"
-]
-
-(* k = 1: trivial window {path[[i]]}; every vertex is an osculating
-   center at its own distance to path[[i]], so we get one shell per
-   vertex. *)
-
-VerificationTest[
-  Length @ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 1, All],
-  VertexCount[CompleteGraph[5]],
-  TestID -> "FindInfraOsculatingShell-k1-every-vertex"
-]
-
-(* Shells sorted by ascending radius: in K5 with k=1 the r=0 shell
-   {path[[i]]} comes first (size 1), followed by the four r=1 shells
-   (size 4 each). *)
-
-VerificationTest[
-  Length[#[[ 1, 1 ]]] & /@ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 1, All],
-  {1, 4, 4, 4, 4},
-  TestID -> "FindInfraOsculatingShell-sorted-by-radius"
 ]
 
 (* ===== FindInfraCircle ===== *)
@@ -885,6 +916,59 @@ VerificationTest[
 ]
 
 
+(* ===== FindInfraSegment Method -> "Embedding" ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[ g, 1, 16, All, Method -> "Embedding" ]) ===
+      Sort @ (#[[ 1, 1 ]] & /@ FindInfraSegment[ g, 1, 16, All, Method -> "ShortestPath" ])
+  ],
+  True,
+  TestID -> "FindInfraSegment-Embedding-Geodesic-All-equals-Shortest-set"
+]
+
+VerificationTest[
+  With[ { paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16, All, Method -> "Embedding" ]) },
+    Length[ paths ] >= 1 && AllTrue[ paths, First[ # ] === 1 && Last[ # ] === 16 & ]
+  ],
+  True,
+  TestID -> "FindInfraSegment-Embedding-paths-have-correct-endpoints"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ], coords = GraphEmbedding[ GridGraph[ { 4, 4 } ] ] },
+    FindInfraSegment[ g, 1, 16, 1, Method -> { "Embedding", "Coordinates" -> coords } ] ===
+      FindInfraSegment[ g, 1, 16, 1, Method -> "Embedding" ]
+  ],
+  True,
+  TestID -> "FindInfraSegment-Embedding-explicit-coords-matches-Automatic"
+]
+
+VerificationTest[
+  Length @ FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16, 1, Method -> { "Embedding", "Pruning" -> 1 } ],
+  1,
+  TestID -> "FindInfraSegment-Embedding-Pruning-beam-one"
+]
+
+VerificationTest[
+  InfraSegment @ FindInfraSegment[ PathGraph[ Range[ 5 ] ], 1, 5, 1, Method -> { "Embedding", "Pool" -> "AllPaths" } ],
+  InfraSegment[ { { 1, 2, 3, 4, 5 } } ],
+  TestID -> "FindInfraSegment-Embedding-AllPaths-PathGraph-unique-path"
+]
+
+
+(* ===== FindInfraLine Method -> "Embedding" ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraLine[ g, 1, 16, All, Method -> "Embedding" ]) ===
+      Sort @ (#[[ 1, 1 ]] & /@ FindInfraLine[ g, 1, 16, All ])
+  ],
+  True,
+  TestID -> "FindInfraLine-Embedding-set-equals-default"
+]
+
+
 (* ===== EmbeddingClosest dispatch for InfraShell ===== *)
 
 (* Sets ranked by directed Hausdorff distance to the Euclidean sphere of
@@ -923,6 +1007,18 @@ VerificationTest[
 ]
 
 
+(* ===== FindInfraParallel Method -> "Embedding" ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraParallel[ g, { 1, 2, 3, 4 }, 5, All, Method -> "Embedding" ]) ===
+      Sort @ (#[[ 1, 1 ]] & /@ FindInfraParallel[ g, { 1, 2, 3, 4 }, 5, All ])
+  ],
+  True,
+  TestID -> "FindInfraParallel-Embedding-set-equals-default"
+]
+
+
 (* ===== FindInfraPoint All ===== *)
 
 VerificationTest[
@@ -951,63 +1047,103 @@ VerificationTest[
   ],
   True,
   TestID -> "FindInfraLine-Shortest-equals-Automatic"
+]
 
-(* ===== FindInfraLine[g, segment] overload (replaces 2-arg ExtendInfraSegment) ===== *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { lines = FindInfraLine[ g, 1, 16, All, Method -> "ShortestPathExtension" ] },
+      MatchQ[ lines, { InfraLine[ { _ } ] .. } ] &&
+        Length @ lines >= Length @ FindInfraLine[ g, 1, 16, All, Method -> "ShortestPath" ]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraLine-ShortestPathExtension-superset-of-Shortest"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { lines = FindInfraLine[ g, 1, 16, All, Method -> "CurvatureMinimizing" ] },
+      MatchQ[ lines, { InfraLine[ { _ } ] .. } ] && Length @ lines >= 1
+    ]
+  ],
+  True,
+  TestID -> "FindInfraLine-CurvatureMinimizing-non-empty"
+]
+
+
+(* ===== ExtendInfraSegment ===== *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { seg = First @ First @ First @ FindInfraSegment[ g, 1, 6, All ] },
-      With[ { lines = (#[[ 1, 1 ]] & /@ FindInfraLine[ g, seg, All ]) },
+      With[ { lines = (#[[ 1, 1 ]] & /@ ExtendInfraSegment[ g, seg, All ]) },
         ListQ[ lines ] && AllTrue[ lines,
           lst |-> Length[ lst ] >= Length[ seg ] && MemberQ[ Partition[ lst, Length @ seg, 1 ], seg ] ]
       ]
     ]
   ],
   True,
-  TestID -> "FindInfraLine-segment-contains-segment"
+  TestID -> "ExtendInfraSegment-Shortest-contains-segment"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { seg = First @ First @ First @ FindInfraSegment[ g, 1, 6, All ] },
-      Sort @ (#[[ 1, 1 ]] & /@ FindInfraLine[ g, seg, All ]) ===
+      Sort @ (#[[ 1, 1 ]] & /@ ExtendInfraSegment[ g, seg, All, Method -> "ShortestPath" ]) ===
         Sort @ Select[ (#[[ 1, 1 ]] & /@ FindInfraLine[ g, 1, 6, All ]),
           lst |-> Length[ lst ] >= Length[ seg ] && MemberQ[ Partition[ lst, Length @ seg, 1 ], seg ] ]
     ]
   ],
   True,
-  TestID -> "FindInfraLine-segment-matches-endpoint-filtered"
+  TestID -> "ExtendInfraSegment-Shortest-matches-FindInfraLine-filtered"
 ]
 
 VerificationTest[
-  With[ { g = PathGraph[ Range[ 5 ] ] },
-    InfraLine @ FindInfraLine[ g, { 2, 3 }, 1 ] === InfraLine[ { { 1, 2, 3, 4, 5 } } ]
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = First @ First @ First @ FindInfraSegment[ g, 1, 6, All ] },
+      MatchQ[ ExtendInfraSegment[ g, seg, All, Method -> "ShortestPathExtension" ], { __InfraLine } ]
+    ]
   ],
   True,
-  TestID -> "FindInfraLine-segment-PathGraph-recovers-full-path"
+  TestID -> "ExtendInfraSegment-ShortestPathExtension-returns-list"
 ]
 
 VerificationTest[
-  FindInfraLine[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 99 ],
-  $Failed,
-  TestID -> "FindInfraLine-segment-strict-undersupply-Failed"
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = First @ First @ First @ FindInfraSegment[ g, 1, 6, All ] },
+      MatchQ[ ExtendInfraSegment[ g, seg, All, Method -> "CurvatureMinimizing" ], { __InfraLine } ]
+    ]
+  ],
+  True,
+  TestID -> "ExtendInfraSegment-CurvatureMinimizing-returns-list"
 ]
 
-
-(* ===== Tarski A4 (5-arg ExtendInfraSegment, the only surviving form) ===== *)
-
-(* Tested in TarskiGeometryTests via the synthetic-extension axiom dashboard;
-   here we just sanity-check the calling-triple shape. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = First @ First @ First @ FindInfraSegment[ g, 1, 6, All ] },
+      With[ { lines = ExtendInfraSegment[ g, seg, 1, Method -> "Embedding" ] },
+        Length @ lines == 1 &&
+          MemberQ[ Partition[ First @ First @ First @ lines, Length @ seg, 1 ], seg ]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "ExtendInfraSegment-Embedding-contains-segment"
+]
 
 VerificationTest[
   With[ { g = PathGraph[ Range[ 5 ] ] },
-    InfraPoint @ ExtendInfraSegment[ g, 1, 2, 1, 2, All ]
+    InfraLine @ ExtendInfraSegment[ g, { 2, 3 }, 1, Method -> "ShortestPath" ] === InfraLine[ { { 1, 2, 3, 4, 5 } } ]
   ],
-  InfraPoint[ { { 3 } } ],
-  TestID -> "ExtendInfraSegment-A4-PathGraph"
+  True,
+  TestID -> "ExtendInfraSegment-PathGraph-recovers-full-path"
 ]
 
-
+VerificationTest[
+  ExtendInfraSegment[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 99, Method -> "ShortestPath" ],
+  $Failed,
+  TestID -> "ExtendInfraSegment-strict-undersupply-Failed"
+]
 
 
 (* FindInfraShell / FindInfraCircle: a bounded radius makes the answer depend only on

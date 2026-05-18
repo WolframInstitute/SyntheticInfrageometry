@@ -1,5 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+Needs["WolframInstitute`Infrageometry`"]
+
 (* InfraPoint.wl *)
 PackageExport[InfraPoint]
 PackageExport[FindInfraPoint]
@@ -39,7 +41,6 @@ PackageExport[LineCount]
 (* InfraShell.wl *)
 PackageExport[InfraShell]
 PackageExport[FindInfraShell]
-PackageExport[FindInfraOsculatingShell]
 PackageExport[FindInfraShellParameters]
 PackageExport[InfraShellQ]
 PackageExport[SeparatesQ]

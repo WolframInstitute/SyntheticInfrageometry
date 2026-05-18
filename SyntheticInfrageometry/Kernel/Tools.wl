@@ -9,17 +9,15 @@ PackageScope[pairAuxiliaryGraph]
 PackageScope[countLimit]
 PackageScope[takeUpTo]
 PackageScope[allGeodesics]
-PackageScope[frontierSweep]
-PackageScope[greedyFrontierSweep]
-PackageScope[makeCandidateFn]
-PackageScope[propertyFilter]
+PackageScope[extendedOutPaths]
+PackageScope[pulledPaths]
 PackageScope[applyPruning]
+PackageScope[parseCurvatureSpec]
 PackageScope[infraSpread]
 PackageScope[infraCap]
 PackageScope[infraSpreadAndCartesian]
 PackageScope[infraUnionSpread]
 PackageScope[methodName]
-PackageScope[propertiesSubOpts]
 
 
 (* Path-space distances and selectors (HausdorffDistance, FrechetDistance,
@@ -96,6 +94,46 @@ allGeodesics[ graph_Graph, u_, v_ ] :=
   ]
 
 
+(* ===================== Extended out-paths ===================== *)
+
+(* Simple paths from p1 to p2 certified by a recency-lex distance rule with
+   lookback K: at each step v_i -> w, the candidate w must lie in
+   MaximalBy[unvisited neighbours, w |-> (d(v_{i-1},w), d(v_{i-2},w), ...,
+   d(v_{i-K+1},w))].  K = 1 yields every simple path; K = 2 forbids triangle
+   shortcuts; K = All compares against every predecessor and on most graphs
+   collapses to geodesics. *)
+
+extendedOutPaths[ graph_Graph, p1_, p2_, prune_, lookback_, countLimit_ ] :=
+  Module[ { vidx, dmat, frontier, completed = { }, extended },
+    If[ p1 === p2, Return[ { } ] ];
+    If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
+    If[ GraphDistance[ graph, p1, p2 ] === Infinity, Return[ { } ] ];
+    vidx = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ];
+    dmat = GraphDistanceMatrix[ graph ];
+    frontier = { { p1 } };
+    While[ frontier =!= { } && Length[ completed ] < countLimit,
+      extended = Flatten[
+        ( path |-> With[
+            { v = Last[ path ],
+              historyIdx = With[ { rev = vidx /@ Reverse @ Most[ path ] },
+                If[ lookback === All || lookback === Infinity, rev,
+                  Take[ rev, UpTo[ lookback - 1 ] ] ] ] },
+            With[ { candidates = Select[ AdjacencyList[ graph, v ], ! MemberQ[ path, # ] & ] },
+              ( Append[ path, # ] & ) /@ Which[
+                candidates === { }, { },
+                historyIdx === { }, candidates,
+                True, MaximalBy[ candidates, w |-> dmat[[ historyIdx, vidx[ w ] ]] ]
+              ]
+            ]
+          ] ) /@ frontier,
+        1 ];
+      completed = Join[ completed, Select[ extended, Last[ # ] === p2 & ] ];
+      frontier  = applyPruning[ Select[ extended, Last[ # ] =!= p2 & ], prune ]
+    ];
+    Take[ completed, UpTo[ countLimit ] ]
+  ]
+
+
 (* Trim a list of partial paths by either a beam width (integer cap, random
    sampling if exceeded) or a Bernoulli keep probability (with a one-element
    floor so the bundle never dies by chance). *)
@@ -109,138 +147,57 @@ applyPruning[ paths_List, p_?NumericQ /; 0 < p < 1 ]     :=
     If[ kept === { }, RandomSample[ paths, 1 ], kept ] ]
 
 
-(* ===================== Frontier sweep ===================== *)
+(* ===================== Curvature-pulled paths ===================== *)
 
-(* BFS frontier from p1 to p2 with candidateFn[g, path] returning the
-   admissible next-vertex set at each step.  applyPruning caps the live
-   frontier per layer.  Returns up to `count` complete paths. *)
+(* Paths from p1 to p2 obtained by a frontier sweep restricted at each step
+   to MinimalBy[candidates, w |-> edgeKappa[v, w]].  Ties are kept (branches);
+   dagNbrs = Automatic means full neighbourhood, otherwise the geodesic-DAG
+   neighbour map restricts the candidate set to forward DAG edges. *)
 
-frontierSweep[ graph_Graph, p1_, p2_, candidateFn_, prune_, count_ ] :=
+pulledPaths[ graph_Graph, p1_, p2_, edgeKappa_, prune_, countLimit_, dagNbrs_ ] :=
   Module[ { frontier, completed = { }, extended },
     If[ p1 === p2, Return[ { } ] ];
     If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
     If[ GraphDistance[ graph, p1, p2 ] === Infinity, Return[ { } ] ];
     frontier = { { p1 } };
-    While[ frontier =!= { } && Length[ completed ] < count,
+    While[ frontier =!= { } && Length[ completed ] < countLimit,
       extended = Flatten[
-        ( path |-> ( Append[ path, # ] & ) /@ candidateFn[ graph, path ] ) /@ frontier,
+        ( path |-> With[
+            { v = Last[ path ],
+              candidates = If[ dagNbrs === Automatic,
+                Select[ AdjacencyList[ graph, Last[ path ] ], ! MemberQ[ path, # ] & ],
+                Lookup[ dagNbrs, Key[ Last[ path ] ], { } ] ] },
+            ( Append[ path, # ] & ) /@ If[ candidates === { }, { },
+              MinimalBy[ candidates, w |-> edgeKappa[ v, w ] ] ]
+          ] ) /@ frontier,
         1 ];
       completed = Join[ completed, Select[ extended, Last[ # ] === p2 & ] ];
       frontier  = applyPruning[ Select[ extended, Last[ # ] =!= p2 & ], prune ]
     ];
-    Take[ completed, UpTo[ count ] ]
+    Take[ completed, UpTo[ countLimit ] ]
   ]
 
 
-(* DFS one realisation: pick the first admissible candidate at each step. *)
+(* parseCurvatureSpec normalises the "Curvature" sub-option of
+   Method -> "CurvatureMinimizing" into a uniform Association consumed by
+   buildEdgeKappa in InfraSegment.wl. *)
 
-greedyFrontierSweep[ graph_Graph, p1_, p2_, candidateFn_ ] :=
-  If[ p1 === p2 || ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ] ||
-      GraphDistance[ graph, p1, p2 ] === Infinity, { },
-    Module[ { path = { p1 }, cands },
-      While[ Last[ path ] =!= p2,
-        cands = candidateFn[ graph, path ];
-        If[ cands === { }, Return[ { } ] ];
-        AppendTo[ path, First @ cands ]
-      ];
-      { path }
-    ]
-  ]
+parseCurvatureSpec[ "FormanRicciCurvature" ] :=
+  <| "Head" -> "FormanRicciCurvature", "Method" -> "Simple" |>
 
+parseCurvatureSpec[ { "FormanRicciCurvature", innerOpts___ } ] :=
+  <| "Head" -> "FormanRicciCurvature", "Method" -> Method /. { innerOpts } /. Method -> "Simple" |>
 
-(* ===================== Property-filter machinery ===================== *)
+parseCurvatureSpec[ "WolframRicciCurvature" ] :=
+  <| "Head" -> "WolframRicciCurvature", "Dimension" -> Automatic, "Radii" -> Automatic |>
 
-(* Sub-options of a property entry: "Foo" -> { }, {"Foo", opts___} -> {opts}. *)
+parseCurvatureSpec[ { "WolframRicciCurvature", innerOpts___ } ] :=
+  <| "Head" -> "WolframRicciCurvature",
+     "Dimension" -> "Dimension" /. { innerOpts } /. "Dimension" -> Automatic,
+     "Radii"     -> "Radii"     /. { innerOpts } /. "Radii"     -> Automatic |>
 
-propertiesSubOpts[ s_String ]              := { }
-propertiesSubOpts[ { _String, opts___ } ]  := { opts }
-
-
-(* makeCandidateFn[g, baseFn, properties, badPropMsg]: closure
-     (g, path) -> admissible-next-vertex set
-   by Fold-ing per-property filters over the base candidate set baseFn[g, path].
-   Each filter shrinks the candidate set in turn (AND-conjunction). *)
-
-makeCandidateFn[ graph_Graph, baseFn_, properties_List, badPropMsg_ ] :=
-  With[ { filters = propertyFilter[ graph, #, badPropMsg ] & /@ properties },
-    Function[ { g, path },
-      Fold[ #2[ g, path, #1 ] &, baseFn[ g, path ], filters ]
-    ]
-  ]
-
-
-(* propertyFilter[g, propertySpec, badPropMsg]: dispatch on property name,
-   return a closure (g, path, candidates) -> candidates'.  Unknown property
-   raises badPropMsg and Throw[$Failed]; caller wraps in Catch. *)
-
-propertyFilter[ _Graph, "Simple", _ ]                          := simpleFilter
-propertyFilter[ _Graph, { "Simple" }, _ ]                      := simpleFilter
-
-propertyFilter[ graph_Graph, "ShortestPath", _ ]               := shortestPathFilter[ graph, Infinity ]
-propertyFilter[ graph_Graph, { "ShortestPath", subs___ }, _ ]  :=
-  shortestPathFilter[ graph, "Window" /. { subs } /. "Window" -> Infinity ]
-
-propertyFilter[ graph_Graph, "LongestPath", _ ]                := longestPathFilter[ graph, 2, "Lex" ]
-propertyFilter[ graph_Graph, { "LongestPath", subs___ }, _ ]   :=
-  longestPathFilter[ graph,
-    "Window"      /. { subs } /. "Window"      -> 2,
-    "Aggregation" /. { subs } /. "Aggregation" -> "Lex" ]
-
-propertyFilter[ _Graph, { "EdgeMin", f_ }, _ ]                 := edgeMinFilter[ f ]
-propertyFilter[ _Graph, { "EdgeMax", f_ }, _ ]                 := edgeMaxFilter[ f ]
-
-propertyFilter[ _Graph, other_, badPropMsg_ ] :=
-  ( Message[ badPropMsg, other ]; Throw[ $Failed ] )
-
-
-(* "Simple": disallow revisits. *)
-simpleFilter[ _Graph, path_, candidates_ ] :=
-  Select[ candidates, ! MemberQ[ path, # ] & ]
-
-
-(* "ShortestPath", "Window" -> k: strict d(path[[-k]], w) == k. *)
-shortestPathFilter[ _Graph, window_ ] :=
-  Function[ { g, path, candidates },
-    With[ { k = If[ window === All || window === Infinity, Length[ path ],
-                    Min[ window, Length[ path ] ] ] },
-      Select[ candidates, GraphDistance[ g, path[[ -k ]], # ] == k & ]
-    ]
-  ]
-
-
-(* "LongestPath", "Window" -> k, "Aggregation" -> Lex | Sum:
-   MaximalBy distance-tuple to the last k vertices. *)
-longestPathFilter[ graph_Graph, window_, aggregation_ ] :=
-  With[ { vidx = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ],
-          dmat = GraphDistanceMatrix[ graph ] },
-    Function[ { g, path, candidates },
-      With[ { historyIdx = With[ { rev = vidx /@ Reverse @ Most[ path ] },
-                If[ window === All || window === Infinity, rev,
-                    Take[ rev, UpTo[ window - 1 ] ] ] ] },
-        Which[
-          candidates === { } || historyIdx === { },  candidates,
-          aggregation === "Sum",                     MaximalBy[ candidates, w |-> Total @ dmat[[ historyIdx, vidx[ w ] ]] ],
-          True,                                      MaximalBy[ candidates, w |-> dmat[[ historyIdx, vidx[ w ] ]] ]
-        ]
-      ]
-    ]
-  ]
-
-
-(* "EdgeMin", f: MinimalBy f[v, w] over candidates (v = Last @ path). *)
-edgeMinFilter[ f_ ] :=
-  Function[ { g, path, candidates },
-    If[ candidates === { }, candidates,
-      MinimalBy[ candidates, w |-> f[ Last @ path, w ] ] ]
-  ]
-
-
-(* "EdgeMax", f: MaximalBy f[v, w] over candidates. *)
-edgeMaxFilter[ f_ ] :=
-  Function[ { g, path, candidates },
-    If[ candidates === { }, candidates,
-      MaximalBy[ candidates, w |-> f[ Last @ path, w ] ] ]
-  ]
+parseCurvatureSpec[ "OllivierRicciCurvature" ] :=
+  <| "Head" -> "OllivierRicciCurvature" |>
 
 
 (* ===================== Separating sets ===================== *)

@@ -90,18 +90,3 @@ propertyPredicate[ graph_Graph, _, _, _, "Connected" ] :=
 
 propertyPredicate[ _, _, _, _, other_ ] :=
   ( Message[ FindInfraBisectingHyperplane::badproperty, other ]; Throw[ $Failed ] )
-
-
-(* ===================== Scene-DSL constructor ===================== *)
-
-dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_, opts___Rule ] ] :=
-  dispatchConstruction[ graph, InfraPlane[ p1, p2, { 0, 0 }, opts ] ]
-
-dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_,
-    window : { _Integer, _Integer }, opts___Rule ] ] :=
-  capBranches[
-    applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindInfraBisectingHyperplane[ graph, p1, p2, window, All, Properties -> { "Separating" } ],
-      "Select" /. { opts } /. "Select" -> None,
-      False, <| "Endpoints" -> { p1, p2 } |> ],
-    extractBranches[ { opts } ] ]

@@ -24,81 +24,58 @@ InfraLine[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraLine[ _List ] ] ] :=
 (* ===================== FindInfraLine ===================== *)
 
 (* A line through p1, p2: a maximal geodesic extension (a, ..., p1, ..., p2, ..., b)
-   every contiguous sub-sequence of which is a geodesic, inextensible at both ends.
-   FindInfraLine[g, seg]: maximal geodesic lines containing seg as a sub-sequence
-   (subsumes the deleted 2-arg ExtendInfraSegment). *)
+   every contiguous sub-sequence of which is a geodesic, inextensible at both ends. *)
 
-FindInfraLine::badmethod   = "Method `1` is not supported by FindInfraLine.";
-FindInfraLine::badproperty = "Property `1` is not supported by FindInfraLine (FindInfraLine accepts only Properties -> {}).";
-
-Options[ FindInfraLine ] = {
-  Properties   -> { },
-  Method       -> "Exhaustive",
-  "Maximality" -> "Extension"
-};
+Options[ FindInfraLine ] = { "Maximality" -> "Extension", Method -> "ShortestPath", "Pruning" -> Infinity };
 
 FindInfraLine[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
-    ! ListQ[ p1 ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraLine, count,
     findLineCore[ graph, ##, opts ] &, p1, p2 ]
-
-(* Overload: extend a given segment to a maximal line.  count / opts shape
-   matches the two-endpoint form; the segment list is taken as the line's
-   middle and extended jointly via findLineExtensionsWith. *)
-
-FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] | All ) : 1,
-    opts : OptionsPattern[] ] /; Length[ segment ] >= 2 :=
-  With[ { capped = infraCap[
-      findLineCoreFromSegment[ graph, segment, opts ], count ] },
-    If[ capped === $Failed, $Failed, InfraLine[ { # } ] & /@ capped ]
-  ]
 
 
 findLineCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindInfraLine ] ] /;
     MemberQ[ VertexList[ graph ], p1 ] :=
-  Catch @ With[ {
-      properties = OptionValue[ FindInfraLine, { opts }, Properties ],
-      methodSpec = OptionValue[ FindInfraLine, { opts }, Method ] /. Automatic -> "Exhaustive",
-      maximality = OptionValue[ FindInfraLine, { opts }, "Maximality" ] },
-    If[ properties =!= { },
-      Message[ FindInfraLine::badproperty, properties ]; Throw[ $Failed ] ];
-    With[ { methodHead = methodName @ methodSpec,
-            pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-      With[ { middles = allGeodesics[ graph, p1, p2 ] },
-        With[ { ext = Union @ Flatten[
-              Switch[ methodHead,
-                "Exhaustive",  findLineExtensions[ graph, #, pruning ] & /@ middles,
-                "Greedy",      findLineExtensionsGreedy[ graph, # ]     & /@ middles,
-                _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
-              ], 1 ] },
-          If[ maximality === "Diameter",
-            Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
-            ext ]
+  With[ { spec = OptionValue[ FindInfraLine, { opts }, Method ] /. Automatic -> "ShortestPath",
+          pruning = OptionValue[ FindInfraLine, { opts }, "Pruning" ] },
+    With[ { method = methodName[ spec ] },
+      With[ { middles = Switch[ method,
+                "ShortestPath" | "Greedy" | "Embedding", allGeodesics[ graph, p1, p2 ],
+                "ShortestPathExtension" | "CurvatureMinimizing",
+                  With[ { paths = findSegmentCore[ graph, p1, p2, All, Method -> spec ] },
+                    If[ ListQ[ paths ], paths, { } ] ]
+              ] },
+        With[ { allExtensions = With[ { ext = Union @ Flatten[
+                  Switch[ method,
+                    "Greedy",
+                      findLineExtensionsGreedy[ graph, # ] & /@ middles,
+                    _,
+                      findLineExtensions[ graph, #, pruning ] & /@ middles
+                  ], 1 ] },
+                If[ OptionValue[ FindInfraLine, { opts }, "Maximality" ] === "Diameter",
+                  Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
+                  ext ] ] },
+          Switch[ method,
+            "ShortestPath" | "ShortestPathExtension" | "CurvatureMinimizing" | "Greedy", allExtensions,
+            "Embedding",
+              With[ { embOpts = parseEmbeddingMethod[ spec ] },
+                If[ embOpts[ "Pool" ] === "ShortestPaths",
+                  embeddingRankLines[ graph, allExtensions, p1, p2, embOpts ],
+                  allExtensions ]
+              ]
+          ]
         ]
       ]
     ]
   ]
 
 
-findLineCoreFromSegment[ graph_Graph, segment_List, opts : OptionsPattern[ FindInfraLine ] ] :=
-  Catch @ With[ {
-      properties = OptionValue[ FindInfraLine, { opts }, Properties ],
-      methodSpec = OptionValue[ FindInfraLine, { opts }, Method ] /. Automatic -> "Exhaustive",
-      maximality = OptionValue[ FindInfraLine, { opts }, "Maximality" ] },
-    If[ properties =!= { },
-      Message[ FindInfraLine::badproperty, properties ]; Throw[ $Failed ] ];
-    With[ { methodHead = methodName @ methodSpec,
-            pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-      With[ { ext = Switch[ methodHead,
-            "Exhaustive",  findLineExtensions[ graph, segment, pruning ],
-            "Greedy",      findLineExtensionsGreedy[ graph, segment ],
-            _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
-          ] },
-        If[ maximality === "Diameter",
-          Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
-          ext ]
-      ]
+embeddingRankLines[ graph_Graph, lines_List, p1_, p2_, embOpts_Association ] :=
+  With[ { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
+          vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
+    With[ { ep = Lookup[ vertexIndex, { p1, p2 } ] },
+      SortBy[ lines,
+        line |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, line ], ep ] ]
     ]
   ]
 
@@ -107,18 +84,23 @@ findLineCoreFromSegment[ graph_Graph, segment_List, opts : OptionsPattern[ FindI
    extended independently to its maximal admissible length; among pairs
    that achieve a valid joint geodesic (degenerate triangle inequality
    d(s, e) == d(s, p1) + d + d(p2, e)) we keep those with maximum total
-   extension length b_s + a_e.  findLineExtensionsWith takes an optional
-   admissibility predicate (used by FindInfraParallel to restrict to the
-   level set). *)
+   extension length b_s + a_e.  The "With" form takes prefix and suffix
+   path-enumeration closures (ExtendInfraSegment swaps in extended-out /
+   curvature-pulled enumerators for the non-ShortestPath methods). *)
 
 findLineExtensions[ graph_Graph, segment_List, pruning_ : Infinity ] :=
-  findLineExtensionsWith[ graph, segment, pruning, True & ]
+  findLineExtensionsWith[ graph, segment,
+    { s, p, db } |-> applyPruning[ FindPath[ graph, s, p, { db }, All ], pruning ],
+    { p, e, da } |-> applyPruning[ FindPath[ graph, p, e, { da }, All ], pruning ] ]
 
 
-findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_ ] /; Length[ segment ] < 2 :=
+findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_ ] :=
+  findLineExtensionsWith[ graph, segment, prefixFn, suffixFn, True & ]
+
+findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_, admissible_ ] /; Length[ segment ] < 2 :=
   { segment }
 
-findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_ ] :=
+findLineExtensionsWith[ graph_Graph, segment_List, prefixFn_, suffixFn_, admissible_ ] :=
   With[ { p1 = First[ segment ], p2 = Last[ segment ],
           d  = GraphDistance[ graph, First[ segment ], Last[ segment ] ] },
     With[ { extendBefore = Select[ VertexList[ graph ],
@@ -135,13 +117,9 @@ findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_ ] :=
               With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
                 With[ { db = GraphDistance[ graph, s, p1 ], da = GraphDistance[ graph, p2, e ] },
                   With[ { bp = If[ db == 0, { {} },
-                                  Most /@ Select[
-                                    applyPruning[ FindPath[ graph, s, p1, { db }, All ], pruning ],
-                                    AllTrue[ #, admissible ] & ] ],
+                                  Most /@ Select[ prefixFn[ s, p1, db ], AllTrue[ #, admissible ] & ] ],
                           ap = If[ da == 0, { {} },
-                                  Rest /@ Select[
-                                    applyPruning[ FindPath[ graph, p2, e, { da }, All ], pruning ],
-                                    AllTrue[ #, admissible ] & ] ] },
+                                  Rest /@ Select[ suffixFn[ p2, e, da ], AllTrue[ #, admissible ] & ] ] },
                     Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ] ] ]
               ] & /@ maxPairs,
               1 ]
@@ -154,7 +132,7 @@ findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_ ] :=
 
 (* Greedy maximal geodesic extension: walk vertex-by-vertex outward from each
    endpoint, accepting the first neighbor that extends the geodesic by one
-   step.  Returns exactly one chain -- maximally inextensible but not
+   step.  Returns exactly one chain — maximally inextensible but not
    necessarily of maximum total length. *)
 
 findLineExtensionsGreedy[ graph_Graph, segment_List ] :=
@@ -186,13 +164,7 @@ greedyWalk[ graph_Graph, h_, a_, db_, admissible_ ] :=
 (* FindInfraParallel[g, line, p]: maximal sub-segment of a maximal geodesic
    through p whose vertices all lie at distance r = d(p, line) from line. *)
 
-FindInfraParallel::badmethod   = "Method `1` is not supported by FindInfraParallel.";
-FindInfraParallel::badproperty = "Property `1` is not supported by FindInfraParallel (FindInfraParallel accepts only Properties -> {}).";
-
-Options[ FindInfraParallel ] = {
-  Properties -> { },
-  Method     -> "Exhaustive"
-};
+Options[ FindInfraParallel ] = { Method -> "ShortestPath", "Pruning" -> Infinity };
 
 FindInfraParallel[ graph_Graph, line_, p_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
@@ -201,18 +173,14 @@ FindInfraParallel[ graph_Graph, line_, p_,
 
 
 findParallelCore[ graph_Graph, line_List, p_, opts : OptionsPattern[ FindInfraParallel ] ] :=
-  Catch @ With[ {
-      properties = OptionValue[ FindInfraParallel, { opts }, Properties ],
-      methodSpec = OptionValue[ FindInfraParallel, { opts }, Method ] /. Automatic -> "Exhaustive" },
-    If[ properties =!= { },
-      Message[ FindInfraParallel::badproperty, properties ]; Throw[ $Failed ] ];
-    With[ { methodHead = methodName @ methodSpec,
-            pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-      Switch[ methodHead,
-        "Exhaustive", findParallelExtensions[ graph, line, p, pruning ],
-        "Greedy",     findParallelExtensionsGreedy[ graph, line, p ],
-        _,            Message[ FindInfraParallel::badmethod, methodSpec ]; Throw[ $Failed ]
-      ]
+  With[ { spec = OptionValue[ FindInfraParallel, { opts }, Method ] /. Automatic -> "ShortestPath",
+          pruning = OptionValue[ FindInfraParallel, { opts }, "Pruning" ] },
+    Switch[ methodName @ spec,
+      "ShortestPath", findParallelExtensions[ graph, line, p, pruning ],
+      "Greedy",       findParallelExtensionsGreedy[ graph, line, p ],
+      "Embedding",
+        embeddingRankParallels[ graph, findParallelExtensions[ graph, line, p, pruning ], line, p,
+          parseEmbeddingMethod[ spec, "LevelSet" ] ]
     ]
   ]
 
@@ -229,7 +197,10 @@ findParallelExtensions[ graph_Graph, line_List, p_, pruning_ : Infinity ] :=
         With[ { admissible = c |-> lineDist[ c ] == r },
           With[ { seeds = Select[ AdjacencyList[ graph, p ], admissible ] },
             With[ { chains = Flatten[
-                    findLineExtensionsWith[ graph, { p, # }, pruning, admissible ] & /@ seeds,
+                    findLineExtensionsWith[ graph, { p, # },
+                      { s, q, db } |-> applyPruning[ FindPath[ graph, s, q, { db }, All ], pruning ],
+                      { q, e, da } |-> applyPruning[ FindPath[ graph, q, e, { da }, All ], pruning ],
+                      admissible ] & /@ seeds,
                     1 ] },
               DeleteDuplicates @ Map[ canonicalLine, Select[ chains, Length[ # ] >= 2 & ] ]
             ]
@@ -255,13 +226,25 @@ findParallelExtensionsGreedy[ graph_Graph, line_List, p_ ] :=
   ]
 
 
+embeddingRankParallels[ graph_Graph, parallels_List, line_List, p_, embOpts_Association ] :=
+  With[ { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
+          vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
+    With[ { lineDir = coords[[ vertexIndex[ Last[ line ] ] ]] - coords[[ vertexIndex[ First[ line ] ] ]],
+            pCoord  = coords[[ vertexIndex[ p ] ]],
+            n = Length[ coords ] },
+      With[ { augmented = Join[ coords, { pCoord - lineDir / 2, pCoord + lineDir / 2 } ] },
+        SortBy[ parallels,
+          par |-> EmbeddingHausdorffDistance[ augmented, Lookup[ vertexIndex, par ], { n + 1, n + 2 } ] ]
+      ]
+    ]
+  ]
+
+
 (* ===================== FindInfraPerpendicular ===================== *)
 
 (* Foot of the perpendicular from p to L (Euclid I.12, isosceles base midpoint):
    for each pair {a, b} of L-vertices equidistant from p, the midpoint of the
    line-arc from a to b along L is a candidate foot. *)
-
-FindInfraPerpendicular::badmethod = "Method `1` is not supported by FindInfraPerpendicular.";
 
 Options[ FindInfraPerpendicular ] = { Method -> "Metric" };
 
@@ -286,8 +269,26 @@ findPerpendicularCore[ graph_Graph, line_List, point_, opts : OptionsPattern[ Fi
             ) /@ Values @ GroupBy[ Range @ Length @ line, distances[[ # ]] & ]
           ]
         ],
-      _,
-        Message[ FindInfraPerpendicular::badmethod, spec ]; $Failed
+      "Embedding",
+        embeddingRankPerpendicularFeet[ graph, line, point, parseEmbeddingMethod @ spec ]
+    ]
+  ]
+
+
+embeddingRankPerpendicularFeet[ graph_Graph, line_List, point_, embOpts_Association ] :=
+  With[ { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
+          vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
+    With[ { lineStart = coords[[ vertexIndex[ First[ line ] ] ]],
+            lineEnd   = coords[[ vertexIndex[ Last[ line ] ] ]],
+            pointCoord = coords[[ vertexIndex[ point ] ]] },
+      With[ { dir = lineEnd - lineStart },
+        With[ { dirNorm = dir . dir },
+          With[ { foot = If[ dirNorm == 0, lineStart,
+                  lineStart + ( ( pointCoord - lineStart ) . dir / dirNorm ) * dir ] },
+            SortBy[ line, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], foot ] ]
+          ]
+        ]
+      ]
     ]
   ]
 
@@ -383,24 +384,3 @@ allCanonicalLines[ graph_Graph ] :=
       Subsets[ VertexList[ graph ], { 2 } ],
     1
   ]
-
-
-(* ===================== Scene-DSL constructor ===================== *)
-
-dispatchConstruction[ graph_Graph, InfraLine[ path_List, opts___Rule ] ] :=
-  capBranches[
-    applySelectOption[ graph,
-      findLineExtensions[ graph, path ],
-      "Select" /. { opts } /. "Select" -> None,
-      False, <| "Endpoints" -> { First @ path, Last @ path } |> ],
-    extractBranches[ { opts } ] ]
-
-dispatchConstruction[ graph_Graph, InfraLine[ p1_, p2_, opts___Rule ] ] /;
-  MemberQ[ VertexList @ graph, p1 ] :=
-  capBranches[
-    applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindInfraLine[ graph, p1, p2, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindInfraLine ] ] ],
-      "Select" /. { opts } /. "Select" -> None,
-      False, <| "Endpoints" -> { p1, p2 } |> ],
-    extractBranches[ { opts } ] ]
