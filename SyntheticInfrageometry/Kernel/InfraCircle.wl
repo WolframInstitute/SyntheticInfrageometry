@@ -188,3 +188,15 @@ InfraCircleQ[ graph_Graph, cycle_List ] /; Length[ cycle ] >= 3 :=
   ]
 
 InfraCircleQ[ _Graph, cycle_List ] /; Length[ cycle ] < 3 := False
+
+
+(* ===================== Scene-DSL constructor ===================== *)
+
+dispatchConstruction[ graph_Graph, InfraCircle[ center_, r_, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      #[[ 1, 1 ]] & /@ FindInfraCircle[ graph, center, r, All ],
+      "Select" /. { opts } /. "Select" -> None,
+      True, <| "Center" -> center,
+               "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],
+    extractBranches[ { opts } ] ]

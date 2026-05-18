@@ -323,102 +323,103 @@ VerificationTest[
   TestID -> "PathSubgraph-integer-equals-UpTo"
 ]
 
-(* ===== SelectInfraPath -- MinCurvature / MaxCurvature pool selectors ===== *)
+(* ===== SelectInfraPath -- {"Min", scoreFn} / {"Max", scoreFn} selectors ===== *)
+
+(* scoreFn is a user-supplied path-aggregated function; pool keeps positions
+   where scoreFn is extremal.  degSumScore[path] is a synthetic test scorer
+   (sum of edge-degree-sums along the walk). *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    MemberQ[ paths, First @ SelectInfraPath[ g, paths, 1, "From" -> "MinCurvature" ] ]
+          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]),
+          degSumScore = path |-> Total[
+            ( VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 1 ]] ] +
+              VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 2 ]] ] & ) /@
+              Partition[ path, 2, 1 ] ] },
+    MemberQ[ paths, First @ SelectInfraPath[ g, paths, 1, "From" -> { "Min", degSumScore } ] ]
   ],
   True,
-  TestID -> "SelectInfraPath-MinCurvature-returns-member-of-bundle"
+  TestID -> "SelectInfraPath-Min-returns-member-of-bundle"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          segment = InfraSegment @ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
-    Head @ SelectInfraPath[ g, segment, 1, "From" -> "MinCurvature" ]
+          segment = InfraSegment @ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ],
+          degSumScore = path |-> Total[
+            ( VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 1 ]] ] +
+              VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 2 ]] ] & ) /@
+              Partition[ path, 2, 1 ] ] },
+    Head @ SelectInfraPath[ g, segment, 1, "From" -> { "Min", degSumScore } ]
   ],
   InfraSegment,
-  TestID -> "SelectInfraPath-MinCurvature-wrapper-preserved"
+  TestID -> "SelectInfraPath-Min-wrapper-preserved"
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    Sort @ SelectInfraPath[ g, paths, All, "From" -> "MinCurvature" ] ===
-      Sort @ SelectInfraPath[ g, paths, All, "From" -> { "MinCurvature", "FormanRicciCurvature" } ] ===
-      Sort @ SelectInfraPath[ g, paths, All, "From" -> { "MinCurvature", "FormanRicciCurvature", "Mean" } ]
-  ],
-  True,
-  TestID -> "SelectInfraPath-MinCurvature-bare-equals-full-spec"
-]
-
-VerificationTest[
-  Module[ { g = GridGraph[ { 3, 3 } ], paths, kappaRaw, kappaSym, score, scores, picked },
+  Module[ { g = GridGraph[ { 3, 3 } ], paths, scoreFn, scores, picked },
     paths = #[[ 1, 1 ]] & /@ FindInfraSegment[ g, 1, 9, All ];
-    kappaRaw = WolframInstitute`Infrageometry`FormanRicciCurvature[ g, "MaxCellDimension" -> 1 ];
-    kappaSym = Join[ kappaRaw,
-      AssociationThread[ Reverse /@ Keys[ kappaRaw ], Values[ kappaRaw ] ] ];
-    score[ path_ ] := Mean[ kappaSym /@ ( UndirectedEdge @@@ Partition[ path, 2, 1 ] ) ];
-    scores = score /@ paths;
-    picked = First @ SelectInfraPath[ g, paths, 1, "From" -> "MinCurvature" ];
-    score[ picked ] == Min[ scores ]
+    scoreFn = path |-> Total[
+      ( VertexDegree[ g, #[[ 1 ]] ] + VertexDegree[ g, #[[ 2 ]] ] & ) /@
+        Partition[ path, 2, 1 ] ];
+    scores = scoreFn /@ paths;
+    picked = First @ SelectInfraPath[ g, paths, 1, "From" -> { "Min", scoreFn } ];
+    scoreFn[ picked ] == Min[ scores ]
   ],
   True,
-  TestID -> "SelectInfraPath-MinCurvature-score-equals-min"
+  TestID -> "SelectInfraPath-Min-score-equals-min"
 ]
 
 VerificationTest[
-  Module[ { g = GridGraph[ { 3, 3 } ], paths, kappaRaw, kappaSym, score, scores, picked },
+  Module[ { g = GridGraph[ { 3, 3 } ], paths, scoreFn, scores, picked },
     paths = #[[ 1, 1 ]] & /@ FindInfraSegment[ g, 1, 9, All ];
-    kappaRaw = WolframInstitute`Infrageometry`FormanRicciCurvature[ g, "MaxCellDimension" -> 1 ];
-    kappaSym = Join[ kappaRaw,
-      AssociationThread[ Reverse /@ Keys[ kappaRaw ], Values[ kappaRaw ] ] ];
-    score[ path_ ] := Mean[ kappaSym /@ ( UndirectedEdge @@@ Partition[ path, 2, 1 ] ) ];
-    scores = score /@ paths;
-    picked = First @ SelectInfraPath[ g, paths, 1, "From" -> { "MaxCurvature", "FormanRicciCurvature" } ];
-    score[ picked ] == Max[ scores ]
+    scoreFn = path |-> Total[
+      ( VertexDegree[ g, #[[ 1 ]] ] + VertexDegree[ g, #[[ 2 ]] ] & ) /@
+        Partition[ path, 2, 1 ] ];
+    scores = scoreFn /@ paths;
+    picked = First @ SelectInfraPath[ g, paths, 1, "From" -> { "Max", scoreFn } ];
+    scoreFn[ picked ] == Max[ scores ]
   ],
   True,
-  TestID -> "SelectInfraPath-MaxCurvature-score-equals-max"
+  TestID -> "SelectInfraPath-Max-score-equals-max"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    Length @ SelectInfraPath[ g, paths, UpTo[ 3 ], "From" -> "MinCurvature" ] <= 3
+          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]),
+          degSumScore = path |-> Total[
+            ( VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 1 ]] ] +
+              VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 2 ]] ] & ) /@
+              Partition[ path, 2, 1 ] ] },
+    Length @ SelectInfraPath[ g, paths, UpTo[ 3 ], "From" -> { "Min", degSumScore } ] <= 3
   ],
   True,
-  TestID -> "SelectInfraPath-MinCurvature-UpTo-soft"
+  TestID -> "SelectInfraPath-Min-UpTo-soft"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    SubsetQ[ paths, SelectInfraPath[ g, paths, All, "From" -> "MinCurvature" ] ]
+          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]),
+          degSumScore = path |-> Total[
+            ( VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 1 ]] ] +
+              VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 2 ]] ] & ) /@
+              Partition[ path, 2, 1 ] ] },
+    SubsetQ[ paths, SelectInfraPath[ g, paths, All, "From" -> { "Min", degSumScore } ] ]
   ],
   True,
-  TestID -> "SelectInfraPath-MinCurvature-All-returns-subset"
+  TestID -> "SelectInfraPath-Min-All-returns-subset"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          segment = InfraSegment @ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ] },
-    Head @ ( SelectInfraPath[ g, 1, "From" -> "MinCurvature" ] @ segment )
+          segment = InfraSegment @ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ],
+          degSumScore = path |-> Total[
+            ( VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 1 ]] ] +
+              VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 2 ]] ] & ) /@
+              Partition[ path, 2, 1 ] ] },
+    Head @ ( SelectInfraPath[ g, 1, "From" -> { "Min", degSumScore } ] @ segment )
   ],
   InfraSegment,
-  TestID -> "SelectInfraPath-MinCurvature-operator-form-preserves-wrapper"
-]
-
-VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
-    Sort @ SelectInfraPath[ g, paths, All, "From" -> { "MinCurvature", "FormanRicciCurvature", "Total" } ] ===
-    Sort @ SelectInfraPath[ g, paths, All, "From" -> { "MinCurvature", "FormanRicciCurvature", "Mean"  } ]
-  ],
-  True,
-  TestID -> "SelectInfraPath-MinCurvature-Total-equals-Mean-on-equal-length-bundle"
+  TestID -> "SelectInfraPath-Min-operator-form-preserves-wrapper"
 ]
 
 
@@ -426,7 +427,6 @@ EndTestSection[]
 
 
 BeginTestSection["SelectInfraPoint"]
-
 VerificationTest[
   SubsetQ[ Range[ 5 ], #[[1, 1]]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Center" ] ],
   True,

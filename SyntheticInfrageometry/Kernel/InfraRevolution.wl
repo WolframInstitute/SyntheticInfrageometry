@@ -114,3 +114,15 @@ FindInfraCone[ graph_Graph, axis_, slope_, opts : OptionsPattern[ ] ] :=
 
 InfraRevolutionQ[ graph_Graph, vs_List, axis_, profile_, opts : OptionsPattern[ FindInfraRevolution ] ] :=
   Sort @ vs === FindInfraRevolution[ graph, axis, profile, opts ][[ 1 ]]
+
+
+(* ===================== Scene-DSL constructor ===================== *)
+
+dispatchConstruction[ graph_Graph, InfraRevolution[ axis_, profile_, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      { FindInfraRevolution[ graph, axis, profile,
+          Sequence @@ FilterRules[ { opts }, Options[ FindInfraRevolution ] ] ][[ 1 ]] },
+      "Select" /. { opts } /. "Select" -> None,
+      False, <| "Axis" -> axis, "Profile" -> profile |> ],
+    extractBranches[ { opts } ] ]
