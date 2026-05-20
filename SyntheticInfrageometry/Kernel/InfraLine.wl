@@ -20,6 +20,9 @@ PackageScope[allCanonicalLines]
 InfraLine[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraLine[ _List ] ] ] :=
   InfraLine[ Flatten[ reps /. InfraLine[ xs_List ] :> xs, 1 ] ]
 
+(* "Length" = list of edge counts, one per realisation: |line| - 1. *)
+InfraLine[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
+
 
 (* ===================== FindInfraLine ===================== *)
 
@@ -310,20 +313,6 @@ FindInfraCommonLine[ graph_Graph, verts_List,
   With[ { capped = infraCap[ findCommonLineCore[ graph, verts ], count ] },
     If[ capped === $Failed, $Failed, InfraLine[ { # } ] & /@ capped ]
   ]
-
-
-(* ===================== InfraSegmentLineAngle ===================== *)
-
-(* Length-valued angle surrogate: d(p2, L) when p1 in L, Infinity otherwise. *)
-
-Options[ InfraSegmentLineAngle ] = { Method -> "Metric" };
-
-InfraSegmentLineAngle[ graph_Graph, p1_, p2_, line_List, opts : OptionsPattern[] ] :=
-  If[ ! MemberQ[ line, p1 ], Infinity,
-    Min[ GraphDistance[ graph, p2, # ] & /@ line ] ]
-
-InfraSegmentLineAngle[ graph_Graph, segment_List, line_List, opts : OptionsPattern[] ] /; Length[ segment ] >= 2 :=
-  InfraSegmentLineAngle[ graph, First[ segment ], Last[ segment ], line, opts ]
 
 
 (* ===================== InfraLineQ ===================== *)

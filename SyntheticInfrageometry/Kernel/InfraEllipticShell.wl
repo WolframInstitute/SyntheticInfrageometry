@@ -14,7 +14,8 @@ InfraEllipticShell[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraEllipticShell[ _L
   InfraEllipticShell[ Flatten[ reps /. InfraEllipticShell[ xs_List ] :> xs, 1 ] ]
 
 InfraEllipticShell[ reps_List ][ "Realizations" ] := reps
-InfraEllipticShell[ reps_List ][ "Length" ]       := Length @ reps
+(* "Volume" = vertex count per realisation. *)
+InfraEllipticShell[ reps_List ][ "Volume" ]       := Length /@ reps
 InfraEllipticShell[ reps_List ][ "First" ]        := First @ reps
 
 

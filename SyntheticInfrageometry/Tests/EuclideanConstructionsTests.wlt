@@ -43,6 +43,42 @@ VerificationTest[
   TestID -> "FindInfraMidpoint-strict-fails-when-too-few"
 ]
 
+(* ===== FindInfraMidpoint on InfraSegment wrappers ===== *)
+
+VerificationTest[
+  InfraPoint @ FindInfraMidpoint[PathGraph[Range[5]], InfraSegment[{{1, 2, 3, 4, 5}}]],
+  InfraPoint[{3}],
+  TestID -> "FindInfraMidpoint-InfraSegment-single-walk"
+]
+
+VerificationTest[
+  Sort @ ( #[[ 1, 1 ]] & /@ FindInfraMidpoint[ PathGraph[ Range[ 7 ] ],
+    InfraSegment[ { { 1, 2, 3, 4, 5, 6, 7 }, { 1, 2, 3, 4, 5 } } ], All ] ),
+  { 3, 4 },
+  TestID -> "FindInfraMidpoint-InfraSegment-multi-walk-different-middles"
+]
+
+VerificationTest[
+  InfraPoint @ FindInfraMidpoint[ PathGraph[ Range[ 5 ] ],
+    InfraSegment[ { { 1, 2, 3, 4, 5 }, { 5, 4, 3, 2, 1 } } ], All ],
+  InfraPoint[{ 3 }],
+  TestID -> "FindInfraMidpoint-InfraSegment-dedup"
+]
+
+VerificationTest[
+  FindInfraMidpoint[ PathGraph[ Range[ 5 ] ],
+    InfraSegment[ { { 1, 2, 3, 4, 5 } } ], 5 ],
+  $Failed,
+  TestID -> "FindInfraMidpoint-InfraSegment-strict-fails-when-too-few"
+]
+
+VerificationTest[
+  Length @ FindInfraMidpoint[ PathGraph[ Range[ 7 ] ],
+    InfraSegment[ { { 1, 2, 3, 4, 5, 6, 7 }, { 1, 2, 3, 4, 5 } } ], UpTo[ 1 ] ],
+  1,
+  TestID -> "FindInfraMidpoint-InfraSegment-upto-cap"
+]
+
 (* ===== FindInfraPerpendicular ===== *)
 
 VerificationTest[
@@ -254,32 +290,6 @@ VerificationTest[
   InfraPoint @ CompleteInfraEquilateralTriangle[CompleteGraph[4], 1, 2, 1],
   InfraPoint[{3}],
   TestID -> "CompleteInfraEquilateralTriangle-K4-strict-1"
-]
-
-(* ===== InfraSegmentLineAngle ===== *)
-
-VerificationTest[
-  InfraSegmentLineAngle[PathGraph[Range[5]], 1, 3, {1, 2, 3, 4, 5}],
-  0,
-  TestID -> "InfraSegmentLineAngle-segment-on-line"
-]
-
-VerificationTest[
-  InfraSegmentLineAngle[GridGraph[{3, 3}], 1, 9, {1, 2, 3}],
-  2,
-  TestID -> "InfraSegmentLineAngle-grid-far-endpoint"
-]
-
-VerificationTest[
-  InfraSegmentLineAngle[GridGraph[{3, 3}], 5, 9, {1, 2, 3}],
-  Infinity,
-  TestID -> "InfraSegmentLineAngle-near-endpoint-not-on-line"
-]
-
-VerificationTest[
-  InfraSegmentLineAngle[PathGraph[Range[5]], {1, 2, 3}, {1, 2, 3, 4, 5}],
-  0,
-  TestID -> "InfraSegmentLineAngle-segment-form"
 ]
 
 (* ===== FindInfraParallel: Method scaffolding ===== *)

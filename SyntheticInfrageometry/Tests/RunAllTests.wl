@@ -25,6 +25,12 @@ Print[TestReport[FileNameJoin[{$testDir, "InfraCurveGeometryTests.wlt"}]]]
 Print["Running PathSpaceTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "PathSpaceTests.wlt"}]]]
 
+Print["Running InfraLoopTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraLoopTests.wlt"}]]]
+
+Print["Running InfraStringTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraStringTests.wlt"}]]]
+
 Print["Running HomotopyTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "HomotopyTests.wlt"}]]]
 

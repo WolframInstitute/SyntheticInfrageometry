@@ -3,35 +3,55 @@ BeginTestSection["AlexandrovGeometry"]
 
 (* ===== InfraAngle Method dispatch ===== *)
 
-(* PunchOut at p = 2 in C_5: radius = 1, the open ball deletes only vertex 2
+(* Arclength at p = 2 in C_5: radius = 1, the open ball deletes only vertex 2
    itself (distance 0 < 1).  In the remaining graph on {1, 3, 4, 5},
    d(1, 3) = 3 (via 1-5-4-3), so the angle is 3 / 1 = 3. *)
 VerificationTest[
   InfraAngle[ CycleGraph[ 5 ], { 1, 2, 3 } ],
   3,
-  TestID -> "InfraAngle-CycleGraph5-PunchOut-default-unchanged"
+  TestID -> "InfraAngle-CycleGraph5-Arclength-default-unchanged"
 ]
 
 VerificationTest[
-  InfraAngle[ CompleteGraph[ 3 ], { 1, 2, 3 }, Method -> "Comparison" ],
+  InfraAngle[ CompleteGraph[ 3 ], { 1, 2, 3 }, Method -> "Alexandrov" ],
   Pi / 3,
   SameTest -> ( Abs[ N[ #1 ] - N[ #2 ] ] < 10^-10 & ),
-  TestID -> "InfraAngle-K3-Comparison-Pi-over-3"
+  TestID -> "InfraAngle-K3-Alexandrov-Pi-over-3"
 ]
 
 VerificationTest[
-  InfraAngle[ PathGraph[ Range[ 3 ] ], { 1, 2, 3 }, Method -> "Comparison" ],
+  InfraAngle[ PathGraph[ Range[ 3 ] ], { 1, 2, 3 }, Method -> "Alexandrov" ],
   Pi,
   SameTest -> ( Abs[ N[ #1 ] - N[ #2 ] ] < 10^-10 & ),
-  TestID -> "InfraAngle-P3-Comparison-degenerate-Pi"
+  TestID -> "InfraAngle-P3-Alexandrov-degenerate-Pi"
 ]
 
 VerificationTest[
   N @ InfraAngle[ CompleteGraph[ 3 ], { 1, 2, 3 },
-        Method -> { "Comparison", "Curvature" -> 0 } ],
+        Method -> { "Alexandrov", "Curvature" -> 0 } ],
   N[ Pi / 3 ],
   SameTest -> ( Abs[ #1 - #2 ] < 10^-10 & ),
-  TestID -> "InfraAngle-Comparison-Curvature0-matches-Euclidean"
+  TestID -> "InfraAngle-Alexandrov-Curvature0-matches-Euclidean"
+]
+
+(* ===== InfraAngle accepts InfraPoint[{v}] wrappers ===== *)
+
+VerificationTest[
+  InfraAngle[ GridGraph[ { 5, 5 } ], { InfraPoint[ { 3 } ], InfraPoint[ { 13 } ], InfraPoint[ { 11 } ] } ],
+  InfraAngle[ GridGraph[ { 5, 5 } ], { 3, 13, 11 } ],
+  TestID -> "InfraAngle-accepts-InfraPoint-wrappers-Arclength"
+]
+
+VerificationTest[
+  InfraAngle[ CompleteGraph[ 3 ], { InfraPoint[ { 1 } ], InfraPoint[ { 2 } ], InfraPoint[ { 3 } ] }, Method -> "Alexandrov" ],
+  InfraAngle[ CompleteGraph[ 3 ], { 1, 2, 3 }, Method -> "Alexandrov" ],
+  TestID -> "InfraAngle-accepts-InfraPoint-wrappers-Alexandrov"
+]
+
+VerificationTest[
+  InfraAngle[ GridGraph[ { 5, 5 } ], { 3, InfraPoint[ { 13 } ], 11 } ],
+  InfraAngle[ GridGraph[ { 5, 5 } ], { 3, 13, 11 } ],
+  TestID -> "InfraAngle-accepts-mixed-wrapped-and-bare"
 ]
 
 

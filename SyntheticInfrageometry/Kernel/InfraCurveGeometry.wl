@@ -9,6 +9,8 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
    around triple at v_1 is included so the result has length k - 1; for open
    paths the result has length k - 2. *)
 
+TurningAngles[ _Graph, { } ] := { }
+
 TurningAngles[ graph_Graph, path : { __ } ] :=
   With[ { triples =
       If[ First[ path ] === Last[ path ] && Length[ path ] >= 3,
@@ -18,6 +20,13 @@ TurningAngles[ graph_Graph, path : { __ } ] :=
     },
     Pi - ( InfraAngle[ graph, # ] & /@ triples )
   ]
+
+(* Polyline overload: turning happens only at the knot vertices where
+   consecutive geodesic legs meet -- the interior of each leg is straight
+   by construction.  One list of knot-turning angles per realisation. *)
+
+TurningAngles[ graph_Graph, InfraPolyline[ reps_List ] ] :=
+  TurningAngles[ graph, # ] & /@ polylineToKnotVertices[ reps ]
 
 
 (* ===================== TotalCurvature ===================== *)

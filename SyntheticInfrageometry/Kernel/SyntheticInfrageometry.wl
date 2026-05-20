@@ -24,12 +24,17 @@ PackageExport[FindInfraPath]
 PackageExport[ExtendInfraPath]
 PackageExport[ConcatenateInfraPath]
 
+(* InfraLoop.wl *)
+PackageExport[InfraLoop]
+
+(* InfraString.wl *)
+PackageExport[InfraString]
+
 (* InfraLine.wl *)
 PackageExport[FindInfraLine]
 PackageExport[FindInfraParallel]
 PackageExport[FindInfraPerpendicular]
 PackageExport[FindInfraCommonLine]
-PackageExport[InfraSegmentLineAngle]
 PackageExport[InfraLineQ]
 PackageExport[InfraParallelQ]
 PackageExport[PencilDirections]
@@ -110,20 +115,16 @@ PackageExport[EmbeddingClosest]
 PackageExport[GeodesicGraph]
 PackageExport[GeodesicSubgraph]
 PackageExport[PathSubgraph]
-PackageExport[InfraPathLength]
 
 (* Homotopy.wl *)
 PackageExport[InfraHomotopy]
 PackageExport[FindInfraHomotopy]
-PackageExport[FindInfraNullHomotopy]
-PackageExport[FindInfraMinimalForms]
-PackageExport[FindInfraReduction]
+PackageExport[FindInfraHomotopyRepresentative]
+PackageExport[FindInfraHomotopyRepresentativeHomotopy]
 PackageExport[HomotopicQ]
 PackageExport[NullHomotopicQ]
-PackageExport[ReducePath]
 PackageExport[HomotopyMoveType]
 PackageExport[HomotopyMoveTypes]
-PackageExport[HomotopicLoopsQ]
 
 (* MetricAlgebra.wl *)
 PackageExport[MetricInterval]

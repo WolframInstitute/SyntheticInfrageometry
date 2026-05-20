@@ -16,6 +16,17 @@ PackageScope[polylineToKnots]
 InfraPolyline[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPolyline[ _List ] ] ] :=
   InfraPolyline[ Flatten[ reps /. InfraPolyline[ xs_List ] :> xs, 1 ] ]
 
+(* "Length" = sum of leg edge counts per realisation; empty polyline = 0. *)
+InfraPolyline[ reps_List ][ "Length" ] :=
+  Replace[ reps,
+    { { }              -> 0,
+      segs : { _InfraSegment .. } :> Total[ ( Length[ #[[ 1, 1 ]] ] - 1 ) & /@ segs ] },
+    { 1 } ]
+
+(* "Knots" = list of knot vertices wrapped as unary InfraPoint, per realisation. *)
+InfraPolyline[ reps_List ][ "Knots" ] :=
+  Map[ Function[ poly, InfraPoint[ { # } ] & /@ polylineToKnots[ poly ] ], reps ]
+
 
 (* ===================== FindInfraPolylineSubdivision ===================== *)
 

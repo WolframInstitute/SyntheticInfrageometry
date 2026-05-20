@@ -12,7 +12,8 @@ InfraEllipse[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraEllipse[ _List ] ] ] :=
   InfraEllipse[ Flatten[ reps /. InfraEllipse[ xs_List ] :> xs, 1 ] ]
 
 InfraEllipse[ reps_List ][ "Realizations" ] := reps
-InfraEllipse[ reps_List ][ "Length" ]       := Length @ reps
+(* "Length" = circumference per realisation (#edges == #vertices for an open cycle). *)
+InfraEllipse[ reps_List ][ "Length" ]       := Length /@ reps
 InfraEllipse[ reps_List ][ "First" ]        := First @ reps
 
 

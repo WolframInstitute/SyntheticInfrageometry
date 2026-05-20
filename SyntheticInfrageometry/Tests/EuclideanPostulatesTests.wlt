@@ -705,7 +705,7 @@ VerificationTest[
 
 (* ===== FindInfraCircle ===== *)
 
-(* Default (Properties -> {}, Method -> "Exhaustive"): cycles sorted by length. *)
+(* Default Properties -> {"Separating", "Shortest"}: tied-shortest separating cycles. *)
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
@@ -725,16 +725,17 @@ VerificationTest[
   TestID -> "FindInfraCircle-all-cycles"
 ]
 
-(* Cycles are returned sorted by length ascending. *)
+(* Default Properties include "Shortest": every returned cycle has the
+   minimum admissible length, so all lengths are equal. *)
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     With[{lengths = Length /@ (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All])},
-      lengths === Sort[lengths]
+      Length[Union[lengths]] == 1
     ]
   ],
   True,
-  TestID -> "FindInfraCircle-Exhaustive-sorted-by-length"
+  TestID -> "FindInfraCircle-default-tied-shortest"
 ]
 
 (* count = 1 default returns the shortest cycle. *)
@@ -750,10 +751,20 @@ VerificationTest[
   TestID -> "FindInfraCircle-default-returns-shortest"
 ]
 
-(* Properties -> {"Separating"} restricts to separating cycles. *)
+(* Properties -> {"Separating"} (no "Shortest") accepts longer separating
+   cycles too; cycles are length-ordered. *)
 
-(* Properties -> {"Separating"} cycles are inside the level-set range;
-   admissibility (SeparatingSetQ) is enforced inside findCircleCore. *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    With[{lengths = Length /@ (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}])},
+      Length[lengths] >= 1 && lengths === Sort[lengths]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraCircle-drop-Shortest-length-ordered"
+]
+
+(* All returned cycles sit inside the level-set range. *)
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
@@ -766,44 +777,6 @@ VerificationTest[
   TestID -> "FindInfraCircle-Separating-all-in-level-set"
 ]
 
-(* Method -> "Peel" produces the same set as "Exhaustive" on a small graph. *)
-
-VerificationTest[
-  With[{g = GridGraph[{4, 4}]},
-    With[{exh  = Sort[Sort /@ (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}])],
-          peel = Sort[Sort /@ (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}, Method -> "Peel"])]},
-      Length[exh] >= 1 && exh === peel
-    ]
-  ],
-  True,
-  TestID -> "FindInfraCircle-Peel-and-Exhaustive-agree"
-]
-
-(* Method -> "Greedy" returns one admissible cycle; count > 1 fails. *)
-
-VerificationTest[
-  Length @ FindInfraCircle[GridGraph[{4, 4}], 6, {1, 2}, 1,
-    Properties -> {"Separating"}, Method -> "Greedy"],
-  1,
-  TestID -> "FindInfraCircle-Greedy-single-realisation"
-]
-
-VerificationTest[
-  FindInfraCircle[GridGraph[{4, 4}], 6, {1, 2}, 2,
-    Properties -> {"Separating"}, Method -> "Greedy"],
-  $Failed,
-  TestID -> "FindInfraCircle-Greedy-count-gt-1-fails"
-]
-
-(* Pruning caps the number of returned cycles. *)
-
-VerificationTest[
-  Length @ FindInfraCircle[GridGraph[{4, 4}], 6, {1, 2}, All,
-    Method -> {"Exhaustive", "Pruning" -> 2}] <= 2,
-  True,
-  TestID -> "FindInfraCircle-Pruning-caps-results"
-]
-
 (* Property "Connected" is not meaningful for cycles -> ::badproperty. *)
 
 VerificationTest[
@@ -813,9 +786,23 @@ VerificationTest[
   TestID -> "FindInfraCircle-badproperty-Connected"
 ]
 
+(* Any unknown property raises ::badproperty. *)
+
+VerificationTest[
+  FindInfraCircle[GridGraph[{4, 4}], 6, {1, 2}, 1, Properties -> {"Bogus"}],
+  $Failed,
+  {FindInfraCircle::badproperty},
+  TestID -> "FindInfraCircle-badproperty-unknown"
+]
+
+(* Under the default ({Separating, Shortest}) every returned cycle has the
+   same length, so SelectInfraCycle's longest / shortest circumference
+   selectors are trivially uniform.  Drop "Shortest" to get multiple lengths
+   and exercise the selector. *)
+
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = SelectInfraCycle[g, (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All]), All, "From" -> "LongestCircumference"]},
+    With[{circles = SelectInfraCycle[g, (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]), All, "From" -> "LongestCircumference"]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
@@ -825,7 +812,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = SelectInfraCycle[g, (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All]), All, "From" -> "ShortestCircumference"]},
+    With[{circles = SelectInfraCycle[g, (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]), All, "From" -> "ShortestCircumference"]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],

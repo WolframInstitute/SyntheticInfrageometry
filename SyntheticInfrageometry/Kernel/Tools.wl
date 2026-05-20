@@ -337,9 +337,9 @@ pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
    wrapper or a List of unary wrappers spreads into its bare realisations;
    anything else becomes a singleton. *)
 
-infraSpread[ ( InfraPoint | InfraSegment | InfraPath | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay | InfraPolyline )[ reps_List ] ] := reps
+infraSpread[ ( InfraPoint | InfraSegment | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay | InfraPolyline )[ reps_List ] ] := reps
 infraSpread[ list_List ] /; AllTrue[ list,
-    MatchQ[ ( InfraPoint | InfraSegment | InfraPath | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay | InfraPolyline )[ { _ } ] ] ] :=
+    MatchQ[ ( InfraPoint | InfraSegment | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay | InfraPolyline )[ { _ } ] ] ] :=
   #[[ 1, 1 ]] & /@ list
 infraSpread[ other_ ] := { other }
 
@@ -349,7 +349,7 @@ infraSpread[ other_ ] := { other }
    FindInfraCommonPoint). *)
 
 infraUnionSpread[ InfraPoint[ reps_List ] ] := DeleteDuplicates @ reps
-infraUnionSpread[ ( InfraSegment | InfraPath | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay )[ reps_List ] ] :=
+infraUnionSpread[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay )[ reps_List ] ] :=
   Union @@ reps
 infraUnionSpread[ InfraPolyline[ reps_List ] ] := Union @@ polylineToVertexSeqs[ reps ]
 infraUnionSpread[ other_ ] := { other }

@@ -1,6 +1,16 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 
+(* ===================== InfraObject wrapper ===================== *)
+
+(* InfraObject[vs] is the general single-vertex-set wrapper (no multi-realisation
+   form).  "Volume" returns the singleton list { Length[vs] } for consistency
+   with the always-a-list convention of "Volume" on multi-realisation set-like
+   wrappers (InfraBall, InfraShell, InfraPlane, InfraEllipticShell). *)
+
+InfraObject[ vs_List ][ "Volume" ] := { Length @ vs }
+
+
 (* ===================== FindInfraRevolution ===================== *)
 
 (* Multi-axis rotational object.  Each axis path is extended by a SET of

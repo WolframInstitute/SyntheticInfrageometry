@@ -11,6 +11,9 @@ PackageScope[findShellCore]
 InfraShell[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraShell[ _List ] ] ] :=
   InfraShell[ Flatten[ reps /. InfraShell[ xs_List ] :> xs, 1 ] ]
 
+(* "Volume" = vertex count per realisation. *)
+InfraShell[ reps_List ][ "Volume" ] := Length /@ reps
+
 
 (* ===================== FindInfraShell ===================== *)
 

@@ -110,6 +110,14 @@ FindInfraMidpoint[ graph_Graph, segment_List, opts : OptionsPattern[] ] /; Lengt
     ]
   ]
 
+FindInfraMidpoint[ graph_Graph, seg_InfraSegment,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  With[ { capped = infraCap[
+      DeleteDuplicates[ # [[ Ceiling[ Length[ # ] / 2 ] ]] & /@ First[ seg ] ],
+      count ] },
+    If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
+  ]
+
 FindInfraMidpoint[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraPoint, count, findMidpointCore[ graph, ##, opts ] &, p1, p2 ]

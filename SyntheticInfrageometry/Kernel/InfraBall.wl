@@ -9,6 +9,9 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 InfraBall[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraBall[ _List ] ] ] :=
   InfraBall[ Flatten[ reps /. InfraBall[ xs_List ] :> xs, 1 ] ]
 
+(* "Volume" = vertex count per realisation. *)
+InfraBall[ reps_List ][ "Volume" ] := Length /@ reps
+
 
 (* ===================== FindInfraBall ===================== *)
 

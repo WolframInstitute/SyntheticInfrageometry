@@ -9,6 +9,9 @@ PackageScope[geodesicDAGBaseFn]
 InfraSegment[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraSegment[ _List ] ] ] :=
   InfraSegment[ Flatten[ reps /. InfraSegment[ xs_List ] :> xs, 1 ] ]
 
+(* "Length" = list of edge counts, one per realisation: |path| - 1. *)
+InfraSegment[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
+
 
 (* ===================== FindInfraSegment ===================== *)
 

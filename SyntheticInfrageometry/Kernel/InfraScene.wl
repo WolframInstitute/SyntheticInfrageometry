@@ -94,12 +94,12 @@ selectFromName[ name_String  ] := name
 
 infraVertexSet[ InfraPoint[ vs_List ] ] := vs
 infraVertexSet[ InfraObject[ vs_List ] ] := vs
-infraVertexSet[ ( InfraSegment | InfraPath | InfraLine | InfraRay | InfraCircle
+infraVertexSet[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay | InfraCircle
                 | InfraShell | InfraPlane | InfraBall )[ reps_List ] ] :=
   Union @@ reps
 infraVertexSet[ list_List ] /;
     list =!= { } && AllTrue[ list,
-      MatchQ[ ( InfraPoint | InfraSegment | InfraPath | InfraLine | InfraRay |
+      MatchQ[ ( InfraPoint | InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay |
                 InfraCircle | InfraShell | InfraPlane | InfraBall )[ { _ } ] ] ] :=
   infraVertexSet[ Head[ First @ list ] @ ( #[[ 1, 1 ]] & /@ list ) ]
 infraVertexSet[ v_ ] := { v }

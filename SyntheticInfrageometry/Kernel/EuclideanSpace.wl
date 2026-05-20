@@ -76,30 +76,36 @@ FindInfraLinearCombination[ graph_Graph, o_, terms_List,
 (* ===================== InfraAngle ===================== *)
 
 (* An angle at p between q1, q2.
-   "PunchOut" (default): the open ball B(p, min(d(p, q1), d(p, q2))) is removed
-   and d(q1, q2) in the remaining graph is normalised by the radius -- the
-   ratio measures how far q1, q2 must travel around p.
-   "Comparison": Alexandrov comparison-triangle angle in model space M_k^2
+   "Arclength" (default): the open ball B(p, min(d(p, q1), d(p, q2))) is removed
+   and d(q1, q2) in the remaining graph is normalised by the radius -- a
+   synthetic radian measure of the detour around p.
+   "Alexandrov": Alexandrov comparison-triangle angle in model space M_k^2
    (k = 0 by default; "Curvature" -> k inside the Method list overrides). *)
 
-Options[ InfraAngle ] = { Method -> "PunchOut" };
+Options[ InfraAngle ] = { Method -> "Arclength" };
+
+(* Accept InfraPoint[{v}] wrappers anywhere in the triple -- paclet-wide
+   convention that wrapped and bare-vertex forms are interchangeable. *)
+InfraAngle[ graph_Graph, triple : { _, _, _ }, opts : OptionsPattern[] ] /;
+    ! FreeQ[ triple, _InfraPoint ] :=
+  InfraAngle[ graph, triple /. InfraPoint[ { v_ } ] :> v, opts ]
 
 InfraAngle[ graph_Graph, { q1_, p_, q2_ }, OptionsPattern[] ] :=
   Switch[ OptionValue[ Method ],
-    "PunchOut",
+    "Arclength",
       With[ { radius = Min[ GraphDistance[ graph, p, q1 ], GraphDistance[ graph, p, q2 ] ] },
         With[ { rem = VertexDelete[ graph,
                   Select[ VertexList[ graph ], GraphDistance[ graph, p, # ] < radius & ] ] },
           GraphDistance[ rem, q1, q2 ] / radius
         ]
       ],
-    "Comparison",
+    "Alexandrov",
       ArcCos @ comparisonAngleCos[
         GraphDistance[ graph, q1, q2 ],
         GraphDistance[ graph, p, q1 ],
         GraphDistance[ graph, p, q2 ],
         0 ],
-    { "Comparison", ___ },
+    { "Alexandrov", ___ },
       With[ { k = "Curvature" /. Rest @ OptionValue[ Method ] /. "Curvature" -> 0 },
         ArcCos @ comparisonAngleCos[
           GraphDistance[ graph, q1, q2 ],

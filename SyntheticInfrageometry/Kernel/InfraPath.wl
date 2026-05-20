@@ -11,6 +11,15 @@ PackageScope[allNeighboursBaseFn]
 InfraPath[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPath[ _List ] ] ] :=
   InfraPath[ Flatten[ reps /. InfraPath[ xs_List ] :> xs, 1 ] ]
 
+(* InfraPath[p1, p2, ..., pk] with InfraPoint args (or singleton lists thereof,
+   as returned by FindInfraPoint) builds the wrapper from the Cartesian product
+   of point realisations: each tuple is one walk. *)
+InfraPath[ args : ( _InfraPoint | { _InfraPoint } ) .. ] :=
+  InfraPath[ Tuples @ Map[ Replace[ #, { x_ } :> x ][[ 1 ]]&, { args } ] ]
+
+(* "Length" = list of edge counts, one per realisation: |walk| - 1. *)
+InfraPath[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
+
 
 (* ===================== FindInfraPath ===================== *)
 

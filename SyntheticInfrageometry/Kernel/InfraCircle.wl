@@ -16,82 +16,85 @@ PackageScope[greedyFirstAdmissibleCycle]
 InfraCircle[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraCircle[ _List ] ] ] :=
   InfraCircle[ Flatten[ reps /. InfraCircle[ xs_List ] :> xs, 1 ] ]
 
+(* "Length" = circumference per realisation: k for a k-vertex open cycle
+   (wrap-around edge implicit, so #edges == #vertices). *)
+InfraCircle[ reps_List ][ "Length" ] := Length /@ reps
+
 
 (* ===================== FindInfraCircle ===================== *)
 
 (* A circle of radius r around c is a simple cycle in the level-surface
    subgraph at distance ~r from c.  Returns open vertex sequences
-   { v0, v1, ..., vk } (the wrap-around edge is implicit).  Two
-   orthogonal axes:
-     Properties -- filters every realisation must satisfy.  Default
-       {"Separating"} requires the cycle's vertex set to disconnect c
-       from { v : d(c, v) > r } -- the topological condition that makes
-       a cycle in the level surface a genuine circle.  Empty {} returns
-       any simple cycle in the level surface (no separation).
-       "Connected" is not a meaningful property for cycles (always
-       connected) and raises ::badproperty.
-     Method     -- algorithmic strategy.  "Exhaustive" (default) does
-       direct cycle enumeration via FindCycle + filter + length sort
-       (so count = 1 returns the shortest admissible cycle).  The
-       nested {"Exhaustive", "Pruning" -> spec} caps the FindCycle
-       count or Bernoulli-subsamples the result list.  "Peel" runs
-       findAllMinimalAdmissible on the level-set vertices with cycle-
-       supporting admissibility, extracting one short cycle from each
-       leaf.  "Greedy" returns the first admissible cycle found. *)
+   { v0, v1, ..., vk } (the wrap-around edge is implicit).  The single
+   axis is Properties (a set, order-insensitive):
+     "Separating" -- cycle's vertex set disconnects c from
+       { v : d(c, v) > rmax }; the topological condition that makes a
+       level-surface cycle a genuine circle.
+     "Shortest"   -- only cycles tied at the minimum admissible length
+       (the canonical-optimum reading); the length sweep stops at the
+       first non-empty length class.
+   Default {"Separating", "Shortest"} returns the canonical infra-circle
+   (shortest separating cycle) and its ties.  Drop "Shortest" to accept
+   progressively longer separating cycles; drop "Separating" to accept
+   any simple cycle in the level surface.  Unknown property names
+   (including "Connected", since cycles are always connected) raise
+   ::badproperty.  The algorithm is a single length-by-length sweep
+   with FindCycle; there is no Method axis. *)
 
-FindInfraCircle::badmethod   = "Method `1` is not supported by FindInfraCircle.";
 FindInfraCircle::badproperty = "Property `1` is not supported by FindInfraCircle.";
 
 Options[ FindInfraCircle ] = {
-  Properties -> { "Separating" },
-  Method     -> "Exhaustive"
+  Properties -> { "Separating", "Shortest" }
 };
 
 FindInfraCircle[ graph_Graph, p_, r_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   infraSpreadAndCartesian[ InfraCircle, count,
-    findCircleCore[ graph, ##, opts ] &, p, r ]
+    findCircleCore[ graph, ##, count, opts ] &, p, r ]
 
 
-findCircleCore[ graph_Graph, p_, r_, opts : OptionsPattern[ FindInfraCircle ] ] :=
-  Module[ { properties, methodSpec, methodHead, pruning, range, localG, levelSet, radius, levelGraph },
+findCircleCore[ graph_Graph, p_, r_, count_, opts : OptionsPattern[ FindInfraCircle ] ] :=
+  Module[ { properties, unknown, range, localG, levelSet, radius, levelGraph,
+            vertsTest, tied, needed, k, kMax, batch, matching, accumulated },
     properties = OptionValue[ FindInfraCircle, { opts }, Properties ];
-    methodSpec = OptionValue[ FindInfraCircle, { opts }, Method ];
-    methodHead = methodName @ methodSpec;
-    pruning    = Replace[ methodSpec,
-                  { { _String, subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
-                    _ :> Infinity } ];
-    range = Replace[ r, d_?NumericQ :> { d, d } ];
-    localG = If[ NumericQ[ range[[ 2 ]] ],
-                 NeighborhoodGraph[ graph, p, Ceiling[ range[[ 2 ]] ] + 2 ], graph ];
-    levelSet = Select[ VertexList[ localG ],
-      range[[ 1 ]] <= GraphDistance[ localG, p, # ] <= range[[ 2 ]] & ];
-    radius = If[ NumericQ[ r ], r, Mean[ r ] ];
-    levelGraph = Subgraph[ localG, levelSet ];
     Catch[
-      With[ { vertsTest = admissibleCircleVerts[ localG, p, radius, properties ] },
-        Switch[ methodHead,
-          "Exhaustive",
-            SortBy[ Length ] @
-              Select[ cycleToVertexSequence /@ findCyclesWithPruning[ levelGraph, pruning ],
-                And[ Length[ # ] >= 3, vertsTest[ # ] ] & ],
-          "Peel",
-            DeleteDuplicatesBy[ Sort ] @
-              SortBy[ Length ] @
-              DeleteMissing[
-                extractAdmissibleCycle[ levelGraph, vertsTest, # ] & /@
-                  findAllMinimalAdmissible[ levelGraph, levelSet,
-                    admissibleCircleSet[ levelGraph, vertsTest ], pruning ] ],
-          "Greedy",
-            greedyFirstAdmissibleCycle[ levelGraph, vertsTest ],
-          _, Message[ FindInfraCircle::badmethod, methodSpec ]; $Failed
-        ]
-      ]
+      unknown = Complement[ properties, { "Separating", "Shortest" } ];
+      If[ unknown =!= { },
+        Message[ FindInfraCircle::badproperty, First @ unknown ]; Throw[ $Failed ] ];
+      range = Replace[ r, d_?NumericQ :> { d, d } ];
+      localG = If[ NumericQ[ range[[ 2 ]] ],
+                   NeighborhoodGraph[ graph, p, Ceiling[ range[[ 2 ]] ] + 2 ], graph ];
+      levelSet = Select[ VertexList[ localG ],
+        range[[ 1 ]] <= GraphDistance[ localG, p, # ] <= range[[ 2 ]] & ];
+      radius = If[ NumericQ[ r ], r, Mean[ r ] ];
+      levelGraph = Subgraph[ localG, levelSet ];
+      vertsTest  = admissibleCircleVerts[ localG, p, radius,
+                     DeleteCases[ properties, "Shortest" ] ];
+      tied = MemberQ[ properties, "Shortest" ];
+      needed = Switch[ count, _Integer, count, UpTo[ _Integer ], First @ count, _, Infinity ];
+      kMax = VertexCount[ levelGraph ];
+      accumulated = { };
+      k = 3;
+      While[ k <= kMax,
+        batch    = cycleToVertexSequence /@ FindCycle[ levelGraph, { k }, All ];
+        matching = Select[ batch, vertsTest ];
+        If[ matching =!= { },
+          accumulated = Join[ accumulated, matching ];
+          If[ tied || Length[ accumulated ] >= needed, Break[ ] ]
+        ];
+        k++
+      ];
+      accumulated
     ]
   ]
 
 
 cycleToVertexSequence[ cyc_List ] := First /@ cyc
+
+(* The findCyclesWithPruning / admissibleCircleSet / extractAdmissibleCycle /
+   greedyFirstAdmissibleCycle helpers below are no longer used by
+   FindInfraCircle (collapsed to a single length sweep in findCircleCore);
+   they remain because FindInfraEllipse still consumes them. *)
 
 (* Integer pruning caps FindCycle's enumeration; Infinity enumerates all;
    Bernoulli subsamples post-enumeration. *)
@@ -145,7 +148,7 @@ greedyFirstAdmissibleCycle[ levelGraph_Graph, vertsTest_ ] :=
 
 (* Simple cycles on graph (topological, not metric circles), returned as
    InfraCircle wrappers for direct use with NullHomotopicQ /
-   FindInfraNullHomotopy.  Sorted by length ascending. *)
+   FindInfraHomotopy.  Sorted by length ascending. *)
 
 FindInfraCycle[ graph_Graph, n : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
   FindInfraCycle[ graph, { 1, VertexCount[ graph ] }, n ]

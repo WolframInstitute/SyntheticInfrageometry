@@ -560,6 +560,33 @@ VerificationTest[
   TestID -> "FindInfraOrthogonalFrame-3x3grid-corner-L-bent-line"
 ]
 
+(* Straight-axis tiebreaker: on GridGraph[{5,5}] at the central vertex 13
+   both straight row+column axes and L-staircase axes exist with the same
+   length 5; the axisSortKey now ranks by ascending endpoint-geodesic
+   multiplicity, so the straight frame {11..15, 3-8-13-18-23} (multiplicity
+   1 each) outranks any L (multiplicity > 1). *)
+
+VerificationTest[
+  Sort[First @ Sort[{#, Reverse @ #}] & /@
+    (#[[ 1, 1 ]] & /@ FindInfraOrthogonalFrame[GridGraph[{5, 5}], 13, 2, "AxisCount" -> 2])],
+  Sort[First @ Sort[{#, Reverse @ #}] & /@ {{11, 12, 13, 14, 15}, {3, 8, 13, 18, 23}}],
+  TestID -> "FindInfraOrthogonalFrame-5x5grid-centre-straight"
+]
+
+(* Same setup, geodesic-multiplicity check: each axis of the returned
+   frame must be the unique geodesic between its endpoints. *)
+
+VerificationTest[
+  With[{g = GridGraph[{5, 5}],
+        frame = FindInfraOrthogonalFrame[GridGraph[{5, 5}], 13, 2, "AxisCount" -> 2]},
+    AllTrue[frame,
+      axis |-> With[{path = axis[[1, 1]]},
+        GeodesicMultiplicity[g, First @ path, Last @ path] === 1]]
+  ],
+  True,
+  TestID -> "FindInfraOrthogonalFrame-5x5grid-centre-unique-geodesics"
+]
+
 (* BranchSampleSize is Exhaustive-only; under Greedy it is forced to All
    so the result is fully deterministic. *)
 

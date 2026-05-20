@@ -11,6 +11,9 @@ PackageScope[findRayCore]
 InfraRay[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraRay[ _List ] ] ] :=
   InfraRay[ Flatten[ reps /. InfraRay[ xs_List ] :> xs, 1 ] ]
 
+(* "Length" = list of edge counts, one per realisation: |ray| - 1. *)
+InfraRay[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
+
 
 (* ===================== FindInfraRay ===================== *)
 

@@ -329,8 +329,12 @@ enumerateAxes[ g_Graph, dag_Graph, c_, minLength_Integer ] :=
   ]
 
 
-axisSortKey[ axis_List ] :=
-  { -Length[ axis ], Min[ axis, Reverse @ axis ] }
+(* axisSortKey: length-first, then ascending endpoint-geodesic-multiplicity
+   so straight axes (unique geodesic between endpoints) outrank L-shapes
+   (many parallel geodesics) on grids, then lex-min for full determinism. *)
+
+axisSortKey[ axisMult_ ][ axis_List ] :=
+  { -Length[ axis ], axisMult[ axis ], Min[ axis, Reverse @ axis ] }
 
 
 (* projectsToCenterQ: does w project to c on axis under tie-reducer sel?
@@ -349,8 +353,19 @@ canonicalFrame[ axes_List ] :=
   Sort[ First @ Sort[ { #, Reverse @ # } ] & /@ axes ]
 
 
-frameSortKey[ frame_List ] :=
-  { -Length[ frame ], -Total[ Length /@ frame ], canonicalFrame[ frame ] }
+frameSortKey[ axisMult_ ][ frame_List ] :=
+  { -Length[ frame ], -Total[ Length /@ frame ],
+    Total[ axisMult /@ frame ], canonicalFrame[ frame ] }
+
+
+(* axisMultiplicityFn[g]: closure axis |-> GeodesicMultiplicity[g, First, Last]
+   precomputed via GeodesicMultiplicityMatrix so per-axis lookup is O(1). *)
+
+axisMultiplicityFn[ g_Graph ] :=
+  With[ { mMat   = Last @ GeodesicMultiplicityMatrix[ g ],
+          posMap = AssociationThread[ VertexList[ g ] -> Range @ VertexCount[ g ] ] },
+    axis |-> mMat[[ posMap[ First @ axis ], posMap[ Last @ axis ] ]]
+  ]
 
 
 (* recordFrameQ / recurseDFSQ: when to record / when to keep descending
@@ -367,7 +382,7 @@ recurseDFSQ[ n_Integer ][ len_, vAxes_ ]  := len < n && vAxes =!= { }
 recurseDFSQ[ UpTo[ n_ ] ][ len_, vAxes_ ] := len < n && vAxes =!= { }
 
 
-orthogonalFrameDFS[ g_Graph, c_, fullDag_Graph, axisCountSpec_, minLength_, sampleSize_, maxFrames_, sel_ ] :=
+orthogonalFrameDFS[ g_Graph, c_, fullDag_Graph, axisCountSpec_, minLength_, sampleSize_, maxFrames_, sel_, axisMult_ ] :=
   Module[ { frames = { }, canonForms = { }, dfs },
     dfs[ dag_, currentAxes_ ] :=
       Module[ { len, axisCands, validAxes, sortedAxes, sampledAxes, canon },
@@ -385,7 +400,7 @@ orthogonalFrameDFS[ g_Graph, c_, fullDag_Graph, axisCountSpec_, minLength_, samp
           ]
         ];
         If[ recurseDFSQ[ axisCountSpec ][ len, validAxes ],
-          sortedAxes = SortBy[ validAxes, axisSortKey ];
+          sortedAxes = SortBy[ validAxes, axisSortKey[ axisMult ] ];
           sampledAxes = If[ sampleSize === All || Length[ sortedAxes ] <= sampleSize,
             sortedAxes,
             RandomSample[ sortedAxes, sampleSize ] ];
@@ -417,22 +432,24 @@ findOrthogonalFrameCore[ g_Graph, c_, axisLength_, count_, opts_List ] /; Member
     With[ { dag = GeodesicGraph[ localG, c, "AxisLength" -> Replace[ maxDepth, Infinity -> All ] ],
             axisCountSpec = "AxisCount" /. opts /. "AxisCount" -> Automatic,
             method = resolveSearchMethod[ opts ],
-            sel = "SelectCoordinate" /. opts /. "SelectCoordinate" -> "Centered" },
+            sel = "SelectCoordinate" /. opts /. "SelectCoordinate" -> "Centered",
+            axisMult = axisMultiplicityFn[ localG ] },
       With[ { sampleSize = If[ method === "Greedy", All,
                   "BranchSampleSize" /. opts /. "BranchSampleSize" -> All ],
               maxFrames  = If[ method === "Greedy" && IntegerQ @ count, count, Infinity ] },
-        With[ { frames = orthogonalFrameDFS[ localG, c, dag, axisCountSpec, minLength, sampleSize, maxFrames, sel ] },
-          If[ method === "Exhaustive", SortBy[ frames, frameSortKey ], frames ]
+        With[ { frames = orthogonalFrameDFS[ localG, c, dag, axisCountSpec, minLength, sampleSize, maxFrames, sel, axisMult ] },
+          If[ method === "Exhaustive", SortBy[ frames, frameSortKey[ axisMult ] ], frames ]
         ]
       ]
     ]
   ]
 
 findOrthogonalFrameCore[ g_Graph, InfraPoint[ vs_List ], axisLength_, count_, opts_List ] :=
-  With[ { method = resolveSearchMethod[ opts ] },
+  With[ { method = resolveSearchMethod[ opts ],
+          axisMult = axisMultiplicityFn[ g ] },
     With[ { perSource = Map[ findOrthogonalFrameCore[ g, #, axisLength, All, opts ] &, vs ] },
       With[ { allFrames = DeleteDuplicatesBy[ Catenate @ perSource, canonicalFrame ] },
-        With[ { sortedFrames = If[ method === "Exhaustive", SortBy[ allFrames, frameSortKey ], allFrames ],
+        With[ { sortedFrames = If[ method === "Exhaustive", SortBy[ allFrames, frameSortKey[ axisMult ] ], allFrames ],
                 maxFrames    = If[ count === All, Infinity, count ] },
           Take[ sortedFrames, UpTo[ maxFrames ] ]
         ]

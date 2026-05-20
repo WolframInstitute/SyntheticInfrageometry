@@ -11,6 +11,9 @@ PackageScope[findBisectingHyperplaneCore]
 InfraPlane[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPlane[ _List ] ] ] :=
   InfraPlane[ Flatten[ reps /. InfraPlane[ xs_List ] :> xs, 1 ] ]
 
+(* "Volume" = vertex count per realisation. *)
+InfraPlane[ reps_List ][ "Volume" ] := Length /@ reps
+
 
 (* ===================== FindInfraBisectingHyperplane ===================== *)
 
