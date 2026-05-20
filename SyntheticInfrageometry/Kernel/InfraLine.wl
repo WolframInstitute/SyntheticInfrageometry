@@ -42,7 +42,7 @@ Options[ FindInfraLine ] = {
 
 FindInfraLine[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
-    ! ListQ[ p1 ] :=
+    ! ListQ[ p1 ] && Head[ p1 ] =!= InfraSegment :=
   infraSpreadAndCartesian[ InfraLine, count,
     findLineCore[ graph, ##, opts ] &, p1, p2 ]
 
