@@ -50,6 +50,10 @@ FindInfraLine[ graph_Graph, p1_, p2_,
    matches the two-endpoint form; the segment list is taken as the line's
    middle and extended jointly via findLineExtensionsWith. *)
 
+FindInfraLine[ graph_Graph, InfraSegment[{ walk_List, ___ }],
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  FindInfraLine[ graph, walk, count, opts ]
+
 FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] | All ) : 1,
     opts : OptionsPattern[] ] /; Length[ segment ] >= 2 :=
   With[ { capped = infraCap[
