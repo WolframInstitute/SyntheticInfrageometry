@@ -18,6 +18,8 @@ PackageScope[infraSpread]
 PackageScope[infraCap]
 PackageScope[infraSpreadAndCartesian]
 PackageScope[infraUnionSpread]
+PackageScope[infraVertexMultiset]
+PackageScope[linePointSet]
 PackageScope[methodName]
 PackageScope[propertiesSubOpts]
 
@@ -375,3 +377,29 @@ infraSpreadAndCartesian[ wrapHead_, count_, core_, anchors__ ] :=
       ]
     ]
   ]
+
+
+(* Diffusion-diagram extractor: the vertex -> total-occurrence Association
+   used by InfraEqualQ.  Mirrors the per-head normalization of repVerts
+   inside InfraSceneVisualization.wl: realisations of point-shaped wrappers
+   are bare vertices; path / set / cycle wrappers carry vertex lists per
+   realisation; InfraPolyline realisations are leg-chains flattened via
+   polylineToVertexSeqs; InfraObject / InfraSet hold one bare vertex set. *)
+
+infraVertexMultiset[ InfraPoint[ reps_List ] ] :=
+  Counts @ reps
+infraVertexMultiset[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay |
+                       InfraShell | InfraEllipticShell | InfraBall | InfraPlane |
+                       InfraCircle | InfraEllipse )[ reps_List ] ] :=
+  Counts @ Catenate @ reps
+infraVertexMultiset[ InfraPolyline[ reps_List ] ] :=
+  Counts @ Catenate @ polylineToVertexSeqs[ reps ]
+infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] :=
+  Counts @ vs
+
+
+(* Vertex-set view of a line-like input (FindInfraCommonPoint, InfraPerpendicularQ).
+   Bare list = vertex sequence; line wrappers unwrap to the union of realisations. *)
+
+linePointSet[ ( InfraLine | InfraSegment | InfraPath | InfraRay )[ reps_List ] ] := Union @@ reps
+linePointSet[ line_List ] := line

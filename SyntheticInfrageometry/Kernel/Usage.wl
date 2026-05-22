@@ -39,6 +39,7 @@ FindInfraPerpendicular::usage = "FindInfraPerpendicular[graph, line, point] retu
 FindInfraCommonLine::usage = "FindInfraCommonLine[graph, vertices] returns a List of unary InfraLine[{line}] wrappers for the canonical lines containing every listed vertex, or $Failed. With n / UpTo[n] / All controls multiplicity. Entries may be bare vertices or InfraPoint / InfraSegment / InfraLine / InfraRay wrappers.";
 InfraLineQ::usage = "InfraLineQ[graph, segment] tests whether segment is a maximal geodesic.";
 InfraParallelQ::usage = "InfraParallelQ[graph, l1, l2] tests whether two lines are parallel (constant distance). InfraParallelQ[graph, l1, l2, threshold] allows distance variation up to threshold.";
+InfraPerpendicularQ::usage = "InfraPerpendicularQ[graph, l1, l2] tests whether two lines are perpendicular at every common vertex; returns False on empty intersection. Options: Method (\"Projection\" (default) -- the foot-of-perpendicular projection of each line onto the other lies within the intersection; \"Schoenberg\" -- exact Pythagorean test InfraAngle[..., \"Schoenberg\"] == 0; \"Arclength\" / \"Alexandrov\" / {\"Alexandrov\", \"Curvature\" -> k} -- pass-through to InfraAngle with right-angle test |angle - Pi/2| <= \"Tolerance\"). \"Equality\" (\"Subset\" (default, proj subset of intersection), \"Set\" / \"Multiset\" / \"Diffuse\" / \"Overlap\" -- forwarded to InfraEqualQ when Method is \"Projection\"). \"Tolerance\" -> 0 (radian methods only). \"Radius\" -> All (default) | k_Integer (restrict each test to the k-neighborhood of the common vertex).";
 PencilDirections::usage = "PencilDirections[graph, O] returns the canonical maximal geodesics through O, one per projective direction class at O.";
 PencilCardinality::usage = "PencilCardinality[graph, O] returns the number of distinct direction classes at O.";
 LineCount::usage = "LineCount[graph] returns the number of distinct canonical maximal geodesics in graph.";
@@ -106,7 +107,7 @@ InfraRevolutionQ::usage = "InfraRevolutionQ[graph, vs, axis, profile] tests whet
 
 InfraScalarProduct::usage = "InfraScalarProduct[graph, o, u, v] returns the base-point-relative scalar product of u and v with respect to o. Option: Method (\"Schoenberg\" (default) -- direct distance formula (d(o,u)^2 + d(o,v)^2 - d(u,v)^2)/2; \"Parallelogram\" -- polarization identity (||u+v||^2 - ||u-v||^2)/4 via FindInfraLinearCombination).";
 FindInfraLinearCombination::usage = "FindInfraLinearCombination[graph, o, {{lambda1, u1}, {lambda2, u2}, ...}] returns a List of unary InfraPoint[{v}] wrappers for the multi-valued vertex realisation of sum_i lambda_i u_i with base point o, computed as scaled-then-pairwise-summed left-to-right. With n / UpTo[n] / All controls multiplicity. Options: \"ScaleMethod\" (Automatic (default), \"Metric\", \"Line\", \"Midpoint\"); \"SumMethod\" (\"Metric\" (default), \"Parallel\").";
-InfraAngle::usage = "InfraAngle[graph, {q1, p, q2}] returns an angle at p. Option: Method (\"Arclength\" (default) -- delete the open ball of radius Min[d(p, q1), d(p, q2)] around p and return the shortest q1-q2 path length outside, divided by the radius (synthetic radian measure); \"Alexandrov\" -- the comparison-triangle angle at p in the Euclidean k = 0 model via the law of cosines; {\"Alexandrov\", \"Curvature\" -> k} -- the same angle in M_k^2 (spherical / Euclidean / hyperbolic) for arbitrary k).";
+InfraAngle::usage = "InfraAngle[graph, {q1, p, q2}] returns an angle at p. Option: Method (\"Arclength\" (default) -- delete the open ball of radius Min[d(p, q1), d(p, q2)] around p and return the shortest q1-q2 path length outside, divided by the radius (synthetic radian measure); \"Alexandrov\" -- the comparison-triangle angle at p in the Euclidean k = 0 model via the law of cosines; {\"Alexandrov\", \"Curvature\" -> k} -- the same angle in M_k^2 (spherical / Euclidean / hyperbolic) for arbitrary k; \"Schoenberg\" -- the polar form of the squared metric (d(p,q1)^2 + d(p,q2)^2 - d(q1,q2)^2)/2, returning the scalar product itself (NOT radians); right angle iff result == 0, exact on integer-distance graphs).";
 
 (* ===================== InfraCurveGeometry ===================== *)
 
@@ -234,6 +235,7 @@ InfraPlaneQ::usage = "InfraPlaneQ[h, p1, p2] asserts that h is a valid bisecting
 InfraCircleQ::usage = "InfraCircleQ[c] asserts that c is a valid metric circle.";
 InfraLineQ::usage = "InfraLineQ[s] asserts that s is a maximal geodesic.";
 InfraParallelQ::usage = "InfraParallelQ[l1, l2] asserts that two lines are parallel.";
+InfraPerpendicularQ::usage = "InfraPerpendicularQ[l1, l2] asserts that two lines are perpendicular at every common vertex.";
 InfraIntersectQ::usage = "InfraIntersectQ[s1, s2] asserts that two sets intersect.";
 InfraRevolutionQ::usage = "InfraRevolutionQ[vs, axis, profile] asserts that vs is the rotational vertex set around axis with the given radius profile.";
 
@@ -254,3 +256,7 @@ PointViewer::usage = "PointViewer[g] is an interactive viewer for selecting poin
 SegmentViewer::usage = "SegmentViewer[g] is an interactive viewer for exploring geodesic segments in graph g.";
 ShellViewer::usage = "ShellViewer[g] is an interactive viewer for exploring metric shells in graph g. Method setter: \"Metric\" | \"Separating\".";
 CircleViewer::usage = "CircleViewer[g] is an interactive viewer for exploring separating cycles in graph g.";
+
+(* ===================== InfraEquality ===================== *)
+
+InfraEqualQ::usage = "InfraEqualQ[graph, a, b] tests equality of two Infra* wrappers via their diffusion diagrams (vertex -> total-occurrence multisets). Returns False on head mismatch. Option Method (\"Diffuse\" (default; |A cap B| > |A delta B|, equivalently weighted Jaccard > 1/2) | \"Overlap\" (at least one common vertex) | \"Set\" (vertex sets identical) | \"Multiset\" (diffusion diagrams identical)).";

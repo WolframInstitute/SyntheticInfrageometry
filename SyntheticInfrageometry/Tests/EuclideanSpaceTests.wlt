@@ -185,4 +185,34 @@ VerificationTest[
   TestID -> "InfraAngle-symmetric"
 ]
 
+(* Schoenberg branch: scalar product, NOT radians.  Zero <=> right angle. *)
+VerificationTest[
+  InfraAngle[PathGraph[Range[7]], {1, 4, 7}, Method -> "Schoenberg"],
+  -9,
+  TestID -> "InfraAngle-Schoenberg-path-straight"
+]
+
+(* A custom graph with a (3, 4, 5) Pythagorean triple of graph distances:
+   d(1, 4) = 3, d(1, 8) = 4, d(4, 8) = 5 -- Schoenberg = (9 + 16 - 25)/2 = 0. *)
+VerificationTest[
+  InfraAngle[
+    Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 1 <-> 5, 5 <-> 6, 6 <-> 7, 7 <-> 8,
+           4 <-> 9, 9 <-> 10, 10 <-> 11, 11 <-> 12, 12 <-> 8}],
+    {4, 1, 8}, Method -> "Schoenberg"],
+  0,
+  TestID -> "InfraAngle-Schoenberg-right-angle-Pythagorean"
+]
+
+(* Schoenberg is the un-normalised, un-arccos'd cosine: ArcCos[SP / (|u||v|)]
+   recovers the Alexandrov(k = 0) radian angle. *)
+VerificationTest[
+  With[ { g = CycleGraph[8] },
+    ArcCos[
+      InfraAngle[g, {3, 1, 7}, Method -> "Schoenberg"] /
+      ( GraphDistance[g, 1, 3] GraphDistance[g, 1, 7] )
+    ] === InfraAngle[g, {3, 1, 7}, Method -> "Alexandrov"] ],
+  True,
+  TestID -> "InfraAngle-Schoenberg-recovers-Alexandrov"
+]
+
 EndTestSection[]

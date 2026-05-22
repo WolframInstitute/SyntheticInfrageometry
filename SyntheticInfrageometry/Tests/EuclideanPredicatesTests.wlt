@@ -182,6 +182,88 @@ VerificationTest[
   TestID -> "InfraParallelQ-matrix-form"
 ]
 
+(* ===== InfraPerpendicularQ ===== *)
+
+(* Empty intersection -> False regardless of method. *)
+VerificationTest[
+  InfraPerpendicularQ[PathGraph[Range[5]], {1, 2, 3}, {4, 5}],
+  False,
+  TestID -> "InfraPerpendicularQ-disjoint-False"
+]
+
+(* CycleGraph[5] line {1, 2, 3, 4} meets line {5, 1, 2} at {1, 2}; the foot
+   of perpendicular from 5 onto {1, 2, 3, 4} is 2 (in the intersection), and
+   feet from 3, 4 onto {5, 1, 2} lie at {5, 1}, so the Projection-with-Subset
+   test fails on the symmetric leg.  Overlap (loosest) passes. *)
+VerificationTest[
+  InfraPerpendicularQ[CycleGraph[5], {1, 2, 3, 4}, {5, 1, 2},
+                      "Equality" -> "Overlap"],
+  True,
+  TestID -> "InfraPerpendicularQ-Projection-Overlap-cycle"
+]
+
+VerificationTest[
+  InfraPerpendicularQ[CycleGraph[5], {1, 2, 3, 4}, {5, 1, 2}],
+  False,
+  TestID -> "InfraPerpendicularQ-Projection-Subset-cycle-False"
+]
+
+(* Custom (3, 4, 5) Pythagorean graph: d(4, 1) = 3, d(8, 1) = 4, d(4, 8) = 5.
+   Schoenberg's all-pairs strictness fails (only the (4, 8) endpoint pair is
+   exactly right-angled), so the predicate returns False -- this is the strict
+   synthetic notion and is correctly rare. *)
+VerificationTest[
+  With[{ g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 1 <-> 5, 5 <-> 6, 6 <-> 7, 7 <-> 8,
+                    4 <-> 9, 9 <-> 10, 10 <-> 11, 11 <-> 12, 12 <-> 8}] },
+    InfraPerpendicularQ[g, {4, 3, 2, 1}, {1, 5, 6, 7, 8}, Method -> "Schoenberg"]
+  ],
+  False,
+  TestID -> "InfraPerpendicularQ-Schoenberg-345-strict-False"
+]
+
+(* Schoenberg on a path is always negative (collinear), so the strict
+   predicate is False there too. *)
+VerificationTest[
+  InfraPerpendicularQ[PathGraph[Range[7]], {1, 2, 3, 4}, {4, 5, 6, 7},
+                      Method -> "Schoenberg"],
+  False,
+  TestID -> "InfraPerpendicularQ-Schoenberg-collinear-False"
+]
+
+(* Radius -> k localises to the k-neighborhood of the common vertex; with
+   k = 1 the line restricted to the immediate neighborhood is too short for
+   the isosceles-pair algorithm to find any feet (empty projection), so the
+   "Overlap" equality fails -- the test correctly tightens with smaller k. *)
+VerificationTest[
+  InfraPerpendicularQ[CycleGraph[5], {1, 2, 3, 4}, {5, 1, 2},
+                      "Equality" -> "Overlap", "Radius" -> 1],
+  False,
+  TestID -> "InfraPerpendicularQ-Projection-radius-1-tightens"
+]
+
+(* InfraSegment / InfraLine wrappers accepted via lineSequence unwrap. *)
+VerificationTest[
+  InfraPerpendicularQ[CycleGraph[5], InfraLine[{{1, 2, 3, 4}}], InfraSegment[{{5, 1, 2}}],
+                      "Equality" -> "Overlap"],
+  True,
+  TestID -> "InfraPerpendicularQ-wrapper-input"
+]
+
+(* Empty intersection still False even with Method override. *)
+VerificationTest[
+  InfraPerpendicularQ[PathGraph[Range[6]], {1, 2}, {5, 6}, Method -> "Schoenberg"],
+  False,
+  TestID -> "InfraPerpendicularQ-empty-intersection-False"
+]
+
+(* Bad method name reports an error and returns $Failed. *)
+VerificationTest[
+  InfraPerpendicularQ[PathGraph[Range[5]], {1, 2, 3}, {3, 4, 5}, Method -> "BogusMethod"],
+  $Failed,
+  {InfraPerpendicularQ::badmethod},
+  TestID -> "InfraPerpendicularQ-badmethod"
+]
+
 (* ===== SeparatesQ ===== *)
 
 VerificationTest[

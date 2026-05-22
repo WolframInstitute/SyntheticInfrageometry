@@ -262,6 +262,69 @@ findParallelExtensionsGreedy[ graph_Graph, line_List, p_ ] :=
   ]
 
 
+(* ===================== Sketch: Method dispatch (NOT WIRED) =====================
+   Two honest, computable parallelism criteria; see Wiki/Concepts/Parallelism.md
+   for the design rationale.
+
+     (E) Equidistant   -- the current implementation (level-set construction).
+                          phi_{L1}(v) := Min[d(v, u) : u in L1] is constant on L2.
+                          A Euclidean *theorem* used as a graph *definition*.
+
+     (T) Transversal   -- Euclid I.27 / I.29. Pick the shortest path t between
+                          L1 and L2; the angle t makes with L1 at its L1-end
+                          equals the angle t makes with L2 at its L2-end.
+
+   Planned signature:
+
+     Method -> "Equidistant" (default, current behaviour) |
+               "Transversal" (Euclid I.27)
+
+   InfraParallelQ would gain a _Graph overload because the transversal test
+   needs the graph itself, not just the distance matrix.
+
+   Sketch of the transversal branch (Euclid I.27, alternate-angle equality):
+
+     findTransversalParallel[ graph_Graph, line_List, p_ ] :=
+       Module[ { pencil, lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ] },
+         pencil = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, p, All ];
+         Select[ pencil, candidate |->
+           DisjointQ[ candidate, line ] &&
+           transversalAngleEqualQ[ graph, line, candidate ] ]
+       ]
+
+     transversalAngleEqualQ[ graph_Graph, l1_List, l2_List ] :=
+       Module[ { dm, minPair, a, b, ap, bp, alpha, beta },
+         dm = Outer[ GraphDistance[ graph, #1, #2 ] &, l1, l2 ];
+         minPair = First @ Position[ dm, Min @@ Flatten @ dm ];
+         a  = l1[[ minPair[[ 1 ]] ]];
+         b  = l2[[ minPair[[ 2 ]] ]];
+         ap = l1[[ If[ minPair[[ 1 ]] == Length[ l1 ],
+                       minPair[[ 1 ]] - 1, minPair[[ 1 ]] + 1 ] ]];
+         bp = l2[[ If[ minPair[[ 2 ]] == Length[ l2 ],
+                       minPair[[ 2 ]] - 1, minPair[[ 2 ]] + 1 ] ]];
+         alpha = InfraAngle[ graph, { ap, a, b } ];
+         beta  = InfraAngle[ graph, { bp, b, a } ];
+         alpha == beta
+       ]
+
+   Edge cases to settle on implementation:
+     - Non-unique shortest transversal: require equality for all of them.
+     - Orientation of {ap, bp} ("same side of the transversal"): the discrete
+       analogue of Euclid's "alternate interior" is unresolved. Provisional
+       choice in the sketch: pick the unique next-along-line vertex.
+     - Lines of length 1 (no a' / b'): skip the anchor and try the next pair.
+     - alpha == beta is a number equality with InfraAngle's "Arclength" measure;
+       a tolerance form alpha - beta is below threshold may be wanted.
+
+   Worked numbers in Wiki/Concepts/Parallelism.md:
+     - GridGraph[{6,6}], L1 = {1..6}, L2 = {7..12}:
+         (E) True; alpha = beta = 2  --> (T) True. Both agree.
+     - PetersenGraph[], L1 = {1, 4, 2}, L2 = {3, 8, 7}:
+         (E) False; alpha = beta = 3  --> (T) True. The criteria diverge.
+
+   ============================================================================= *)
+
+
 (* ===================== FindInfraPerpendicular ===================== *)
 
 (* Foot of the perpendicular from p to L (Euclid I.12, isosceles base midpoint):
@@ -343,6 +406,84 @@ InfraParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
   If[ IntersectingQ[ l1, l2 ], False,
     With[ { lineDistances = Table[ Min[ GraphDistance[ graph, v, # ] & /@ l2 ], { v, l1 } ] },
       Max[ lineDistances ] - Min[ lineDistances ] <= threshold ]
+  ]
+
+
+(* ===================== InfraPerpendicularQ ===================== *)
+
+(* Two lines are perpendicular if, at every common vertex p, the chosen test
+   holds.  "Projection" (default): the foot-of-perpendicular projection of one
+   line onto the other lies within the intersection ("Equality" -> "Subset"
+   default, the natural geometric test; the four InfraEqualQ methods "Set" /
+   "Multiset" / "Diffuse" / "Overlap" are stricter / looser alternatives).
+   "Schoenberg": InfraAngle[..., "Schoenberg"] == 0 (exact Pythagorean, all
+   pairs of direction representatives at p).
+   "Arclength" / "Alexandrov" / {"Alexandrov", "Curvature" -> k}: pass-through
+   to InfraAngle; right angle iff |angle - Pi/2| <= "Tolerance".
+   Option "Radius" -> All (default) | k_Integer restricts each test to a
+   k-neighborhood of the common vertex via NeighborhoodGraph. *)
+
+InfraPerpendicularQ::badmethod = "Method `1` is not supported by InfraPerpendicularQ.";
+
+Options[ InfraPerpendicularQ ] = {
+  Method      -> "Projection",
+  "Equality"  -> "Subset",
+  "Tolerance" -> 0,
+  "Radius"    -> All
+};
+
+InfraPerpendicularQ[ graph_Graph, l1_, l2_, OptionsPattern[] ] :=
+  With[ { seq1     = lineSequence[ l1 ],     seq2 = lineSequence[ l2 ],
+          mtd      = OptionValue[ Method ],  tol  = OptionValue[ "Tolerance" ],
+          equality = OptionValue[ "Equality" ], radius = OptionValue[ "Radius" ] },
+    With[ { common = Intersection[ seq1, seq2 ] },
+      Which[
+        Length[ common ] == 0, False,
+        methodName @ mtd === "Projection",
+          AllTrue[ common, perpendicularAtProjection[ graph, seq1, seq2, #, equality, radius ] & ],
+        MemberQ[ { "Schoenberg", "Arclength", "Alexandrov" }, methodName @ mtd ],
+          AllTrue[ common, perpendicularAtAngle[ graph, seq1, seq2, #, mtd, tol, radius ] & ],
+        True, Message[ InfraPerpendicularQ::badmethod, mtd ]; $Failed
+      ]
+    ]
+  ]
+
+
+(* Ordered first-realisation vertex sequence; bare list is its own sequence.
+   Companion to linePointSet (which gives the unordered union). *)
+
+lineSequence[ ( InfraLine | InfraSegment | InfraPath | InfraRay )[ reps_List ] ] := First @ reps
+lineSequence[ line_List ] := line
+
+
+perpendicularAtProjection[ g_Graph, seq1_List, seq2_List, p_, equality_, radius_ ] :=
+  Module[ { localG, ball, localSeq1, localSeq2, localCommon, proj12, proj21, compare },
+    localG    = If[ radius === All, g, NeighborhoodGraph[ g, p, radius ] ];
+    ball      = If[ radius === All, All, VertexList @ localG ];
+    localSeq1 = If[ ball === All, seq1, Select[ seq1, MemberQ[ ball, # ] & ] ];
+    localSeq2 = If[ ball === All, seq2, Select[ seq2, MemberQ[ ball, # ] & ] ];
+    localCommon = Intersection[ localSeq1, localSeq2 ];
+    proj12 = DeleteDuplicates @ Flatten[
+      findPerpendicularCore[ localG, localSeq1, # ] & /@ Complement[ localSeq2, localCommon ] ];
+    proj21 = DeleteDuplicates @ Flatten[
+      findPerpendicularCore[ localG, localSeq2, # ] & /@ Complement[ localSeq1, localCommon ] ];
+    compare = If[ equality === "Subset",
+      proj |-> SubsetQ[ localCommon, proj ],
+      proj |-> InfraEqualQ[ g, InfraPoint[ proj ], InfraPoint[ localCommon ], Method -> equality ] ];
+    compare[ proj12 ] && compare[ proj21 ]
+  ]
+
+
+perpendicularAtAngle[ g_Graph, seq1_List, seq2_List, p_, mtd_, tol_, radius_ ] :=
+  With[ { localG = If[ radius === All, g, NeighborhoodGraph[ g, p, radius ] ] },
+    With[ { ball = If[ radius === All, All, VertexList @ localG ] },
+      With[ { d1 = DeleteCases[ If[ ball === All, seq1, Select[ seq1, MemberQ[ ball, # ] & ] ], p ],
+              d2 = DeleteCases[ If[ ball === All, seq2, Select[ seq2, MemberQ[ ball, # ] & ] ], p ],
+              test = If[ MatchQ[ mtd, "Schoenberg" ], # == 0 &, Abs[ # - Pi/2 ] <= tol & ] },
+        AllTrue[ Tuples[ { d1, d2 } ],
+          test @ InfraAngle[ localG, { #[[ 1 ]], p, #[[ 2 ]] }, Method -> mtd ] & ]
+      ]
+    ]
   ]
 
 

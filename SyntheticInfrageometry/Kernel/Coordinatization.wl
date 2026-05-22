@@ -382,15 +382,13 @@ recurseDFSQ[ n_Integer ][ len_, vAxes_ ]  := len < n && vAxes =!= { }
 recurseDFSQ[ UpTo[ n_ ] ][ len_, vAxes_ ] := len < n && vAxes =!= { }
 
 
-orthogonalFrameDFS[ g_Graph, c_, fullDag_Graph, axisCountSpec_, minLength_, sampleSize_, maxFrames_, sel_, axisMult_ ] :=
+orthogonalFrameDFS[ g_Graph, c_, fullDag_Graph, axisCountSpec_, minLength_, sampleSize_, maxFrames_, sel_, axisMult_, perpQ_ ] :=
   Module[ { frames = { }, canonForms = { }, dfs },
     dfs[ dag_, currentAxes_ ] :=
       Module[ { len, axisCands, validAxes, sortedAxes, sampledAxes, canon },
         len = Length[ currentAxes ];
         axisCands = enumerateAxes[ g, dag, c, minLength ];
-        validAxes = Select[ axisCands,
-          cand |-> AllTrue[ currentAxes,
-            prev |-> AllTrue[ prev, w |-> projectsToCenterQ[ g, cand, c, w, sel ] ] ] ];
+        validAxes = Select[ axisCands, perpQ[ currentAxes, # ] & ];
         If[ recordFrameQ[ axisCountSpec ][ len, validAxes ],
           canon = canonicalFrame[ currentAxes ];
           If[ ! MemberQ[ canonForms, canon ],
@@ -424,6 +422,41 @@ resolveSearchMethod[ opts_List ] :=
   Replace[ Method /. opts /. Method -> Automatic, Automatic -> "Exhaustive" ]
 
 
+(* Default perpendicularity oracle: for every previously chosen axis, every one
+   of its vertices projects to the centre on the candidate.  Matches the
+   index-based test that drove the frame search before Method -> "Predicate". *)
+
+inlineFramePerpQ[ g_Graph, c_, sel_ ][ currentAxes_, cand_ ] :=
+  AllTrue[ currentAxes,
+    prev |-> AllTrue[ prev, w |-> projectsToCenterQ[ g, cand, c, w, sel ] ] ]
+
+(* Predicate-driven perpendicularity oracle: route each axis pair through
+   InfraPerpendicularQ with caller-supplied sub-options. *)
+
+predicateFramePerpQ[ g_Graph, predOpts_List ][ currentAxes_, cand_ ] :=
+  AllTrue[ currentAxes, prev |-> InfraPerpendicularQ[ g, prev, cand, Sequence @@ predOpts ] ]
+
+
+resolveFramePerpQ[ g_Graph, c_, sel_, methodSpec_ ] :=
+  If[ methodName @ methodSpec === "Predicate",
+    predicateFramePerpQ[ g, predicateSubOpts @ propertiesSubOpts @ methodSpec ],
+    inlineFramePerpQ[ g, c, sel ]
+  ]
+
+
+(* Translate {"Predicate", "Test" -> spec, "Radius" -> r, "Tolerance" -> t}
+   sub-options into InfraPerpendicularQ's option list.  "Test" -> Automatic
+   defaults to InfraPerpendicularQ's own default (Method -> "Projection"). *)
+
+predicateSubOpts[ subOpts_List ] :=
+  With[ { testVal = "Test" /. subOpts /. { "Test" -> Automatic } },
+    Join[
+      If[ testVal === Automatic, { }, { Method -> testVal } ],
+      Cases[ subOpts, ( "Radius" | "Tolerance" | "Equality" ) -> _ ]
+    ]
+  ]
+
+
 findOrthogonalFrameCore[ g_Graph, c_, axisLength_, count_, opts_List ] /; MemberQ[ VertexList[ g ], c ] :=
   Module[ { minLength, maxDepth, localG },
     { minLength, maxDepth } = parseAxisLengthSpec[ axisLength ];
@@ -431,25 +464,28 @@ findOrthogonalFrameCore[ g_Graph, c_, axisLength_, count_, opts_List ] /; Member
     localG = If[ maxDepth === Infinity, g, NeighborhoodGraph[ g, c, 2 maxDepth ] ];
     With[ { dag = GeodesicGraph[ localG, c, "AxisLength" -> Replace[ maxDepth, Infinity -> All ] ],
             axisCountSpec = "AxisCount" /. opts /. "AxisCount" -> Automatic,
-            method = resolveSearchMethod[ opts ],
+            methodSpec = resolveSearchMethod[ opts ],
             sel = "SelectCoordinate" /. opts /. "SelectCoordinate" -> "Centered",
             axisMult = axisMultiplicityFn[ localG ] },
-      With[ { sampleSize = If[ method === "Greedy", All,
-                  "BranchSampleSize" /. opts /. "BranchSampleSize" -> All ],
-              maxFrames  = If[ method === "Greedy" && IntegerQ @ count, count, Infinity ] },
-        With[ { frames = orthogonalFrameDFS[ localG, c, dag, axisCountSpec, minLength, sampleSize, maxFrames, sel, axisMult ] },
-          If[ method === "Exhaustive", SortBy[ frames, frameSortKey[ axisMult ] ], frames ]
+      With[ { method = methodName @ methodSpec,
+              perpQ  = resolveFramePerpQ[ localG, c, sel, methodSpec ] },
+        With[ { sampleSize = If[ method === "Greedy", All,
+                    "BranchSampleSize" /. opts /. "BranchSampleSize" -> All ],
+                maxFrames  = If[ method === "Greedy" && IntegerQ @ count, count, Infinity ] },
+          With[ { frames = orthogonalFrameDFS[ localG, c, dag, axisCountSpec, minLength, sampleSize, maxFrames, sel, axisMult, perpQ ] },
+            If[ method === "Greedy", frames, SortBy[ frames, frameSortKey[ axisMult ] ] ]
+          ]
         ]
       ]
     ]
   ]
 
 findOrthogonalFrameCore[ g_Graph, InfraPoint[ vs_List ], axisLength_, count_, opts_List ] :=
-  With[ { method = resolveSearchMethod[ opts ],
+  With[ { method = methodName @ resolveSearchMethod[ opts ],
           axisMult = axisMultiplicityFn[ g ] },
     With[ { perSource = Map[ findOrthogonalFrameCore[ g, #, axisLength, All, opts ] &, vs ] },
       With[ { allFrames = DeleteDuplicatesBy[ Catenate @ perSource, canonicalFrame ] },
-        With[ { sortedFrames = If[ method === "Exhaustive", SortBy[ allFrames, frameSortKey[ axisMult ] ], allFrames ],
+        With[ { sortedFrames = If[ method === "Greedy", allFrames, SortBy[ allFrames, frameSortKey[ axisMult ] ] ],
                 maxFrames    = If[ count === All, Infinity, count ] },
           Take[ sortedFrames, UpTo[ maxFrames ] ]
         ]

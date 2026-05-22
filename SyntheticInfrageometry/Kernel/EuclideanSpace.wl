@@ -80,7 +80,12 @@ FindInfraLinearCombination[ graph_Graph, o_, terms_List,
    and d(q1, q2) in the remaining graph is normalised by the radius -- a
    synthetic radian measure of the detour around p.
    "Alexandrov": Alexandrov comparison-triangle angle in model space M_k^2
-   (k = 0 by default; "Curvature" -> k inside the Method list overrides). *)
+   (k = 0 by default; "Curvature" -> k inside the Method list overrides).
+   "Schoenberg": polar form of the squared metric at p,
+   < q1 - p, q2 - p >_p = (d(p,q1)^2 + d(p,q2)^2 - d(q1,q2)^2)/2.
+   Returns the un-arccos'd, un-normalised scalar product -- NOT in radians.
+   Right angle iff result == 0 (exact on integer-distance graphs);
+   ArcCos[# / (d(p,q1) d(p,q2))] & recovers the Alexandrov(k=0) radian angle. *)
 
 Options[ InfraAngle ] = { Method -> "Arclength" };
 
@@ -112,6 +117,10 @@ InfraAngle[ graph_Graph, { q1_, p_, q2_ }, OptionsPattern[] ] :=
           GraphDistance[ graph, p, q1 ],
           GraphDistance[ graph, p, q2 ],
           k ]
+      ],
+    "Schoenberg",
+      With[ { d = { a, b } |-> GraphDistance[ graph, a, b ] },
+        ( d[ p, q1 ]^2 + d[ p, q2 ]^2 - d[ q1, q2 ]^2 ) / 2
       ]
   ]
 

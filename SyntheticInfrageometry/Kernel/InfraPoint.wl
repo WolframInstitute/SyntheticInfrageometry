@@ -204,13 +204,7 @@ completeEquilateralTriangleCore[ graph_Graph, p1_, p2_,
 
 (* Vertices common to every listed line: the intersection of the lines.
    Each input line is a bare vertex sequence or a wrapped InfraLine /
-   InfraSegment / InfraPath / InfraRay. *)
-
-linePointSet[ InfraLine   [ reps_List ] ] := Union @@ reps
-linePointSet[ InfraSegment[ reps_List ] ] := Union @@ reps
-linePointSet[ InfraPath   [ reps_List ] ] := Union @@ reps
-linePointSet[ InfraRay    [ reps_List ] ] := Union @@ reps
-linePointSet[ line_List ] := line
+   InfraSegment / InfraPath / InfraRay -- unwrap via linePointSet (Tools.wl). *)
 
 FindInfraCommonPoint[ graph_Graph, lines_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=

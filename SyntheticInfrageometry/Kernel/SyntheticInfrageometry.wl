@@ -37,6 +37,7 @@ PackageExport[FindInfraPerpendicular]
 PackageExport[FindInfraCommonLine]
 PackageExport[InfraLineQ]
 PackageExport[InfraParallelQ]
+PackageExport[InfraPerpendicularQ]
 PackageExport[PencilDirections]
 PackageExport[PencilCardinality]
 PackageExport[LineCount]
@@ -222,6 +223,9 @@ PackageExport[SegmentViewer]
 PackageExport[ShellViewer]
 PackageExport[CircleViewer]
 PackageExport[InfraSceneViewer]
+
+(* InfraEquality.wl *)
+PackageExport[InfraEqualQ]
 
 
 ClearAll["WolframInstitute`SyntheticInfrageometry`**`*", "WolframInstitute`SyntheticInfrageometry`*"]
