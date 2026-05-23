@@ -101,6 +101,101 @@ VerificationTest[
   TestID -> "FindInfraPerpendicular-strict-1"
 ]
 
+(* ===== FindClosestInfraPoint ===== *)
+
+VerificationTest[
+  InfraPoint @ FindClosestInfraPoint[GridGraph[{5, 5}],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], All],
+  InfraPoint[{3}],
+  TestID -> "FindClosestInfraPoint-grid-InfraSegment"
+]
+
+VerificationTest[
+  InfraPoint @ FindClosestInfraPoint[GridGraph[{5, 5}],
+    InfraLine[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], All],
+  InfraPoint[{3}],
+  TestID -> "FindClosestInfraPoint-grid-InfraLine"
+]
+
+VerificationTest[
+  InfraPoint @ FindClosestInfraPoint[GridGraph[{5, 5}],
+    {1, 2, 3, 4, 5}, 13, All],
+  InfraPoint[{3}],
+  TestID -> "FindClosestInfraPoint-bare-list-and-vertex"
+]
+
+(* Point already on the segment: closest is itself. *)
+VerificationTest[
+  InfraPoint @ FindClosestInfraPoint[GridGraph[{5, 5}],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{3}], All],
+  InfraPoint[{3}],
+  TestID -> "FindClosestInfraPoint-point-on-line"
+]
+
+(* Cartesian spread: two segment realisations, one point -> one closest per realisation. *)
+VerificationTest[
+  InfraPoint @ FindClosestInfraPoint[GridGraph[{5, 5}],
+    InfraSegment[{{1, 2, 3, 4, 5}, {1, 6, 11, 16, 21}}],
+    InfraPoint[{13}], All],
+  InfraPoint[{3, 11}],
+  TestID -> "FindClosestInfraPoint-multi-segment-Cartesian"
+]
+
+(* Cartesian spread: one segment, two point realisations. *)
+VerificationTest[
+  InfraPoint @ FindClosestInfraPoint[GridGraph[{5, 5}],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{11, 15}], All],
+  InfraPoint[{1, 5}],
+  TestID -> "FindClosestInfraPoint-multi-point-Cartesian"
+]
+
+(* Default count = 1 returns a single unary InfraPoint wrapper. *)
+VerificationTest[
+  FindClosestInfraPoint[GridGraph[{5, 5}],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{13}]],
+  {InfraPoint[{3}]},
+  TestID -> "FindClosestInfraPoint-default-count-1"
+]
+
+(* Strict count larger than available -> $Failed. *)
+VerificationTest[
+  FindClosestInfraPoint[GridGraph[{5, 5}],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], 5],
+  $Failed,
+  TestID -> "FindClosestInfraPoint-strict-count-too-large-fails"
+]
+
+(* UpTo caps gracefully. *)
+VerificationTest[
+  InfraPoint @ FindClosestInfraPoint[GridGraph[{5, 5}],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], UpTo[5]],
+  InfraPoint[{3}],
+  TestID -> "FindClosestInfraPoint-UpTo-caps"
+]
+
+(* Tied minimisers (CycleGraph[5], point 1 to opposite arc {3, 4}: both at distance 2). *)
+VerificationTest[
+  InfraPoint @ FindClosestInfraPoint[CycleGraph[5],
+    InfraSegment[{{3, 4}}], InfraPoint[{1}], All],
+  InfraPoint[{3, 4}],
+  TestID -> "FindClosestInfraPoint-ties-symmetric"
+]
+
+(* InfraPath and InfraRay heads are also accepted. *)
+VerificationTest[
+  InfraPoint @ FindClosestInfraPoint[GridGraph[{5, 5}],
+    InfraPath[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], All],
+  InfraPoint[{3}],
+  TestID -> "FindClosestInfraPoint-InfraPath"
+]
+
+VerificationTest[
+  InfraPoint @ FindClosestInfraPoint[GridGraph[{5, 5}],
+    InfraRay[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], All],
+  InfraPoint[{3}],
+  TestID -> "FindClosestInfraPoint-InfraRay"
+]
+
 (* ===== FindInfraBisectingHyperplane ===== *)
 
 (* Properties -> {} (default): the bisector slab itself as a single
