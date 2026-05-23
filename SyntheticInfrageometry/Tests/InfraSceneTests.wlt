@@ -461,5 +461,103 @@ VerificationTest[
   TestID -> "InfraDistance-FindInfraPoint-no-extraction"
 ]
 
+(* InfraPolyline (multi-leg) flattens via polylineToVertexSeqs.  On
+   PathGraph[Range[7]] the polyline 1-2-3 / 3-4-5 has vertex set {1..5};
+   nearest reach from vertex 7 is via 5, distance 2. *)
+VerificationTest[
+  InfraDistance[ PathGraph @ Range @ 7,
+    InfraPolyline[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4, 5 } } ] } } ],
+    7 ],
+  2,
+  TestID -> "InfraDistance-InfraPolyline-bare"
+]
+
+(* InfraEllipse uses the same path-realisation flattening as InfraCircle.
+   On CycleGraph[6] the closed walk {2,3,4,2} has vertex set {2,3,4};
+   nearest distance to vertex 1 is d(1,2) = 1. *)
+VerificationTest[
+  InfraDistance[ CycleGraph[ 6 ],
+    InfraEllipse[ { { 2, 3, 4, 2 } } ],
+    1 ],
+  1,
+  TestID -> "InfraDistance-InfraEllipse-bare"
+]
+
+(* InfraEllipticShell is set-shaped like InfraShell.  On PathGraph[Range[5]]
+   the shell vertex set {2,3,4} is at distance 1, 2, 3 from vertex 1; Min = 1. *)
+VerificationTest[
+  InfraDistance[ PathGraph @ Range @ 5,
+    InfraEllipticShell[ { { 2, 3, 4 } } ],
+    InfraPoint[ { 1 } ] ],
+  1,
+  TestID -> "InfraDistance-InfraEllipticShell-InfraPoint"
+]
+
+(* InfraSet is the bare-vertex-set alias of InfraObject.  On PathGraph[Range[5]]
+   the pair ({2,3}, {4,5}) has pairwise distances (2, 3, 1, 2); Min = 1. *)
+VerificationTest[
+  InfraDistance[ PathGraph @ Range @ 5,
+    InfraObject[ { 2, 3 } ],
+    InfraSet[ { 4, 5 } ] ],
+  1,
+  TestID -> "InfraDistance-InfraObject-InfraSet"
+]
+
+(* Symmetry: InfraDistance[g, p, q] == InfraDistance[g, q, p] for any two
+   multi-realisation arguments under any aggregator over the pairwise matrix. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], p = InfraPoint[ { 1, 3 } ], q = InfraPoint[ { 7, 9 } ] },
+    And @@ Map[
+      agg |-> InfraDistance[ g, p, q, "Aggregation" -> agg ] ===
+              InfraDistance[ g, q, p, "Aggregation" -> agg ],
+      { Min, Max, Mean } ]
+  ],
+  True,
+  TestID -> "InfraDistance-symmetry-Min-Max-Mean"
+]
+
+
+(* ===== InfraIntersection / InfraUnion (standalone) ===== *)
+
+VerificationTest[
+  InfraIntersection[
+    InfraSegment[ { { 1, 2, 3, 4 } } ],
+    InfraSegment[ { { 1, 5, 6, 3, 7 } } ] ],
+  { 1, 3 },
+  TestID -> "InfraIntersection-two-segments-vertex-set"
+]
+
+VerificationTest[
+  InfraIntersection[
+    InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
+    InfraSegment[ { { 3, 5, 6 } } ] ],
+  { 3 },
+  TestID -> "InfraIntersection-multi-realisation-union-then-intersect"
+]
+
+VerificationTest[
+  InfraIntersection[
+    InfraPoint[ { 1, 2, 3 } ],
+    InfraSegment[ { { 2, 3, 4 } } ],
+    InfraBall[ { { 3, 4, 5 } } ] ],
+  { 3 },
+  TestID -> "InfraIntersection-variadic-mixed-heads"
+]
+
+VerificationTest[
+  InfraUnion[
+    InfraPoint[ { 1, 2 } ],
+    InfraSegment[ { { 3, 4 } } ] ],
+  { 1, 2, 3, 4 },
+  TestID -> "InfraUnion-mixed-heads"
+]
+
+(* Symbolic args stay inert so InfraScene hypotheses are not perturbed. *)
+VerificationTest[
+  Head @ InfraIntersection[ s1, s2 ],
+  InfraIntersection,
+  TestID -> "InfraIntersection-symbolic-args-inert"
+]
+
 
 EndTestSection[]

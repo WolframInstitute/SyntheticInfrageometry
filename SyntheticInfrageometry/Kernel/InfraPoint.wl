@@ -4,6 +4,7 @@ PackageScope[findPointPool]
 PackageScope[findMidpointCore]
 PackageScope[findReflectionCore]
 PackageScope[completeEquilateralTriangleCore]
+PackageScope[findClosestInfraPointCore]
 PackageScope[selectFromPointSpace]
 
 
@@ -214,6 +215,22 @@ FindInfraCommonPoint[ graph_Graph, lines_List,
       If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
     ]
   ]
+
+
+(* ===================== FindClosestInfraPoint ===================== *)
+
+(* Metric argmin: vertices on line at minimum graph distance from point.
+   Distinct from FindInfraPerpendicular -- that runs the synthetic Euclid I.12
+   foot (midpoints of equidistant pairs); this is the closest-vertex test. *)
+
+FindClosestInfraPoint[ graph_Graph, line_, point_,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+  infraSpreadAndCartesian[ InfraPoint, count,
+    findClosestInfraPointCore[ graph, ## ] &, line, point ]
+
+
+findClosestInfraPointCore[ graph_Graph, line_List, point_ ] :=
+  MinimalBy[ line, GraphDistance[ graph, point, # ] & ]
 
 
 (* ===================== SelectInfraPoint ===================== *)

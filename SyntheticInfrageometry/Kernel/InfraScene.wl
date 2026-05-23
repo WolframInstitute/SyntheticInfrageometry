@@ -88,19 +88,25 @@ selectFromName[ name_String  ] := name
 
 (* infraVertexSet -- collect the underlying vertex set from any Infra* head
    or bare vertex.  Path realisations (InfraSegment / InfraLine / InfraRay /
-   InfraCircle) and set realisations (InfraShell / InfraPlane) both flatten
-   under Union @@ to the same vertex-set form needed for distance.  Bare
+   InfraCircle / InfraEllipse) and set realisations (InfraShell / InfraPlane /
+   InfraEllipticShell / InfraBall) both flatten under Union @@ to the same
+   vertex-set form needed for distance.  InfraPolyline realisations are
+   multi-leg sequences flattened by polylineToVertexSeqs first.  Bare
    vertices fall through to the singleton case. *)
 
 infraVertexSet[ InfraPoint[ vs_List ] ] := vs
-infraVertexSet[ InfraObject[ vs_List ] ] := vs
-infraVertexSet[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay | InfraCircle
-                | InfraShell | InfraPlane | InfraBall )[ reps_List ] ] :=
+infraVertexSet[ ( InfraObject | InfraSet )[ vs_List ] ] := vs
+infraVertexSet[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay
+                | InfraCircle | InfraEllipse
+                | InfraShell | InfraEllipticShell | InfraPlane | InfraBall )[ reps_List ] ] :=
   Union @@ reps
+infraVertexSet[ InfraPolyline[ reps_List ] ] :=
+  Union @@ polylineToVertexSeqs[ reps ]
 infraVertexSet[ list_List ] /;
     list =!= { } && AllTrue[ list,
       MatchQ[ ( InfraPoint | InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay |
-                InfraCircle | InfraShell | InfraPlane | InfraBall )[ { _ } ] ] ] :=
+                InfraCircle | InfraEllipse | InfraShell | InfraEllipticShell | InfraPlane | InfraBall |
+                InfraPolyline | InfraObject | InfraSet )[ { _ } ] ] ] :=
   infraVertexSet[ Head[ First @ list ] @ ( #[[ 1, 1 ]] & /@ list ) ]
 infraVertexSet[ v_ ] := { v }
 
@@ -117,6 +123,25 @@ InfraDistance[ g_Graph, p_, q_, OptionsPattern[] ] :=
   OptionValue[ "Aggregation" ] @
     Flatten @ Outer[ GraphDistance[ g, #1, #2 ] &,
       infraVertexSet[ p ], infraVertexSet[ q ], 1 ]
+
+
+(* ===================== InfraIntersection / InfraUnion ===================== *)
+
+(* Standalone vertex-set intersection / union across any number of Infra*
+   objects.  Each object contributes its full vertex set (union across
+   realisations, via infraVertexSet).  Guarded on recognised Infra* heads so
+   the InfraScene engine's symbolic uses stay inert until bindings resolve. *)
+
+$infraWrapperHeadPattern = _InfraPoint | _InfraObject | _InfraSet | _InfraSegment |
+  _InfraPath | _InfraLoop | _InfraString | _InfraLine | _InfraRay |
+  _InfraCircle | _InfraEllipse | _InfraShell | _InfraEllipticShell |
+  _InfraPlane | _InfraBall | _InfraPolyline;
+
+InfraIntersection[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraWrapperHeadPattern ] ] :=
+  Intersection @@ ( infraVertexSet /@ { args } )
+
+InfraUnion[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraWrapperHeadPattern ] ] :=
+  Union @@ ( infraVertexSet /@ { args } )
 
 
 (* ===================== Scene ===================== *)

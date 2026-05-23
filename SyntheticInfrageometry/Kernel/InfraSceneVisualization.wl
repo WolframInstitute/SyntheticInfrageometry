@@ -61,7 +61,12 @@ $InfraSceneHighlightPalette := Join[
    scene-construction shapes of these heads (e.g. `InfraSegment[p1, p2]`,
    `InfraShell[c, r]`, `InfraPlane[p1, p2]`, `InfraCircle[c, r]`) take more
    args and never collide.
-   Each entry may be plain or wrapped as `entry -> color`. *)
+   Each entry may be plain, `entry -> color`, `entry -> Directive[dirs]`, or
+   `Style[entry, dirs__]`.  Any user-supplied graphics directives are appended
+   *after* the computed `{color, opacity, size/thickness}` so that later
+   same-type directives win (Wolfram's `Directive` semantics), letting the
+   caller override colour, opacity, `AbsolutePointSize`, `AbsoluteThickness`,
+   etc. on a per-object basis. *)
 
 Options[ InfraSceneHighlight ] = Join[
   {
@@ -78,19 +83,25 @@ InfraSceneHighlight[ graph_Graph, obj : Except[_List], opts : OptionsPattern[] ]
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
   Module[ { triples, knotTriples, oRange, tRange, pRange, vEntries, eEntries, objects },
 
-    (* Normalise each item: merge {InfraX[{r1}],...} into InfraX[{r1,...}];
+    (* Normalise each item: unwrap Style[obj, dirs__] into obj -> Directive[dirs];
+       merge {InfraX[{r1}],...} into InfraX[{r1,...}];
        then strip $Failed / empty entries. *)
     objects = DeleteCases[
-      Replace[ #,
+      Replace[ #, {
+        Style[ obj_, dirs__ ] :> ( obj -> Directive[ dirs ] ),
         list_List /; Length[ list ] > 0 && SameQ @@ (Head /@ list) &&
             MatchQ[ First @ list, _[ _List ] ] :>
-          Head[ First @ list ][ Join @@ list[[ All, 1 ]] ] ] & /@ multiObjects,
+          Head[ First @ list ][ Join @@ list[[ All, 1 ]] ] } ] & /@ multiObjects,
       _[ $Failed ] | ( _[ $Failed ] -> _ ) | ( _ -> _[ $Failed ] ) | { } ];
 
     triples = MapIndexed[
-      { item, idx } |-> Replace[
-        If[ MatchQ[ item, _Rule ], List @@ item,
-          { item, Switch[ Head @ item,
+      { item, idx } |-> With[ {
+          obj     = If[ MatchQ[ item, _Rule ], First @ item, item ],
+          userDir = If[ MatchQ[ item, _Rule ],
+            Replace[ Last @ item, { d_Directive :> d, x_ :> Directive[ x ] } ],
+            Directive[] ] },
+        Replace[
+          { obj, Switch[ Head @ obj,
               InfraPoint,    $InfraPointColor,
               InfraSegment,  $InfraSegmentColor,
               InfraLine,     $InfraLineColor,
@@ -108,26 +119,27 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
               InfraPolyline,      $InfraSegmentColor,
               InfraSet,           $InfraShellColor,
               _,             $InfraSceneHighlightPalette[[
-                               1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ] } ],
-        {
-          { InfraPoint   [ b_List ], c_ } :> { b, c, "Points" },
-          { InfraSegment [ b_List ], c_ } :> { b, c, "Paths"  },
-          { InfraLine    [ b_List ], c_ } :> { b, c, "Paths"  },
-          { InfraPath    [ b_List ], c_ } :> { b, c, "Paths"  },
-          { InfraLoop    [ b_List ], c_ } :> { b, c, "Paths"  },
-          { InfraString  [ b_List ], c_ } :> { b, c, "Cycles" },
-          { InfraShell        [ b_List ], c_ } :> { b, c, "Sets"   },
-          { InfraBall         [ b_List ], c_ } :> { b, c, "Sets"   },
-          { InfraEllipticShell[ b_List ], c_ } :> { b, c, "Sets"   },
-          { InfraPlane        [ b_List ], c_ } :> { b, c, "Sets"   },
-          { InfraCircle       [ b_List ], c_ } :> { b, c, "Cycles" },
-          { InfraEllipse      [ b_List ], c_ } :> { b, c, "Cycles" },
-          { InfraRay     [ b_List ], c_ } :> { b, c, "Paths"  },
-          { InfraObject  [ b_List ], c_ } :> { { b }, c, "Sets"  },
-          { InfraPolyline[ b_List ], c_ } :> { polylineToVertexSeqs[ b ], c, "Paths" },
-          { InfraSet      [ b_List ], c_ } :> { { b }, c, "Sets" },
-          { b_, c_ }                      :> { b, c, Automatic }
-        } ],
+                               1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ],
+            userDir },
+          {
+            { InfraPoint   [ b_List ], c_, u_ } :> { b, c, "Points", u },
+            { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
+            { InfraLine    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
+            { InfraPath    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
+            { InfraLoop    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
+            { InfraString  [ b_List ], c_, u_ } :> { b, c, "Cycles", u },
+            { InfraShell        [ b_List ], c_, u_ } :> { b, c, "Sets"  , u },
+            { InfraBall         [ b_List ], c_, u_ } :> { b, c, "Sets"  , u },
+            { InfraEllipticShell[ b_List ], c_, u_ } :> { b, c, "Sets"  , u },
+            { InfraPlane        [ b_List ], c_, u_ } :> { b, c, "Sets"  , u },
+            { InfraCircle       [ b_List ], c_, u_ } :> { b, c, "Cycles", u },
+            { InfraEllipse      [ b_List ], c_, u_ } :> { b, c, "Cycles", u },
+            { InfraRay     [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
+            { InfraObject  [ b_List ], c_, u_ } :> { { b }, c, "Sets", u },
+            { InfraPolyline[ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Paths", u },
+            { InfraSet      [ b_List ], c_, u_ } :> { { b }, c, "Sets", u },
+            { b_, c_, u_ }                      :> { b, c, Automatic, u }
+          } ] ],
       objects ];
 
     (* Each InfraPolyline item additionally emits a knot triple (the leg
@@ -135,7 +147,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
        the path so the subdivision is visible.  *)
     knotTriples = Cases[ objects,
       ( InfraPolyline[ b_List ] | ( InfraPolyline[ b_List ] -> _ ) ) :>
-        { polylineToKnotVertices[ b ], $InfraPointColor, "PointSet" } ];
+        { polylineToKnotVertices[ b ], $InfraPointColor, "PointSet", Directive[] } ];
 
     triples = Join[ triples, knotTriples ];
     oRange = OptionValue[ "OpacityRange" ];
@@ -165,22 +177,22 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
         ] },
 
       vEntries = MapThread[
-        { reps, color, type } |-> With[ {
+        { reps, color, type, userDir } |-> With[ {
             counts  = Counts @ Catenate[ repVerts[ type, # ] & /@ reps ],
             numReps = Max[ Length @ reps, 1 ] },
           AssociationMap[
-            v |-> { color, counts[ v ] / numReps },
+            v |-> { color, counts[ v ] / numReps, userDir },
             Keys @ counts ] ],
-        { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]] } ];
+        { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]] } ];
 
       eEntries = MapThread[
-        { reps, color, type } |-> With[ {
+        { reps, color, type, userDir } |-> With[ {
             counts  = Counts @ Catenate[ repEdges[ type, # ] & /@ reps ],
             numReps = Max[ Length @ reps, 1 ] },
           AssociationMap[
-            e |-> { color, counts[ e ] / numReps },
+            e |-> { color, counts[ e ] / numReps, userDir },
             Keys @ counts ] ],
-        { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]] } ];
+        { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]] } ];
     ];
 
     HighlightGraph[ graph, Join[
@@ -189,14 +201,16 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           Style[ UndirectedEdge @@ e, Directive[
             last[[ 1 ]],
             Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) last[[ 2 ]] ],
-            AbsoluteThickness[ tRange[[ 1 ]] + ( tRange[[ 2 ]] - tRange[[ 1 ]] ) last[[ 2 ]] ] ] ] ],
+            AbsoluteThickness[ tRange[[ 1 ]] + ( tRange[[ 2 ]] - tRange[[ 1 ]] ) last[[ 2 ]] ],
+            Sequence @@ last[[ 3 ]] ] ] ],
         Merge[ eEntries, Identity ] ],
       KeyValueMap[
         { v, cs } |-> With[ { last = Last @ cs },
           Style[ v, Directive[
             last[[ 1 ]],
             Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) last[[ 2 ]] ],
-            AbsolutePointSize[ pRange[[ 1 ]] + ( pRange[[ 2 ]] - pRange[[ 1 ]] ) last[[ 2 ]] ] ] ] ],
+            AbsolutePointSize[ pRange[[ 1 ]] + ( pRange[[ 2 ]] - pRange[[ 1 ]] ) last[[ 2 ]] ],
+            Sequence @@ last[[ 3 ]] ] ] ],
         Merge[ vEntries, Identity ] ] ],
       FilterRules[ { opts }, Options @ HighlightGraph ] ]
   ]

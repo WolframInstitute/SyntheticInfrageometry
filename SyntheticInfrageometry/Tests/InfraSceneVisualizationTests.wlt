@@ -133,6 +133,45 @@ VerificationTest[
   TestID -> "InfraSceneHighlight-InfraSegment-sequential-edges"
 ]
 
+(* Per-object style override via Rule -> Directive[...]: an explicit
+   AbsolutePointSize must appear in the produced VertexStyle directive. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
+          { InfraPoint[ { 1, 6, 11 } ] -> Directive[ Blue, AbsolutePointSize[ 25 ] ] } ] },
+      ! FreeQ[ styles, AbsolutePointSize[ 25 ] ]
+    ]
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-rule-directive-pointsize-override"
+]
+
+(* Per-object style override via Style[obj, dirs__]: equivalent to the
+   Rule -> Directive[...] form. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
+          { Style[ InfraPoint[ { 1, 6 } ], Green, AbsolutePointSize[ 30 ] ] } ] },
+      ! FreeQ[ styles, AbsolutePointSize[ 30 ] ]
+    ]
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-style-wrapper-pointsize-override"
+]
+
+(* Edge-level override: AbsoluteThickness on InfraSegment must reach the
+   produced EdgeStyle directive. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
+          { InfraSegment[ { { 1, 2, 3, 4 } } ] -> Directive[ Orange, AbsoluteThickness[ 8 ] ] } ] },
+      ! FreeQ[ styles, AbsoluteThickness[ 8 ] ]
+    ]
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-rule-directive-thickness-override"
+]
+
 (* Regression test for the Flatten level bug: edges must actually be
    highlighted on a graph whose vertices are 2-lists.  Pre-fix, the bare
    Flatten call inside InfraSceneHighlight collapsed list-named vertices
