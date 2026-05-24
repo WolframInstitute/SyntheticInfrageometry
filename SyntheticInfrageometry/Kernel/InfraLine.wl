@@ -416,10 +416,13 @@ InfraParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
    line onto the other lies within the intersection ("Equality" -> "Subset"
    default, the natural geometric test; the four InfraEqualQ methods "Set" /
    "Multiset" / "Diffuse" / "Overlap" are stricter / looser alternatives).
-   "Schoenberg": InfraAngle[..., "Schoenberg"] == 0 (exact Pythagorean, all
-   pairs of direction representatives at p).
-   "Arclength" / "Alexandrov" / {"Alexandrov", "Curvature" -> k}: pass-through
-   to InfraAngle; right angle iff |angle - Pi/2| <= "Tolerance".
+   "Arclength" / "Alexandrov" / {"Alexandrov", "Curvature" -> k}: split each
+   line at p into left / right halves, pick the far endpoint of each half as
+   a direction representative, and require the four corner-wedge angles
+   InfraAngle[..., {a_pm, p, b_pm}, Method -> mtd] to be equal within
+   "Tolerance".  (In Euclidean the wedges sum to 2 Pi so equality forces
+   Pi/2; on a graph the synthetic angle is not perfectly additive around p,
+   so equality at a common value != Pi/2 is the honest right-angle test.)
    Option "Radius" -> All (default) | k_Integer restricts each test to a
    k-neighborhood of the common vertex via NeighborhoodGraph. *)
 
@@ -441,7 +444,7 @@ InfraPerpendicularQ[ graph_Graph, l1_, l2_, OptionsPattern[] ] :=
         Length[ common ] == 0, False,
         methodName @ mtd === "Projection",
           AllTrue[ common, perpendicularAtProjection[ graph, seq1, seq2, #, equality, radius ] & ],
-        MemberQ[ { "Schoenberg", "Arclength", "Alexandrov" }, methodName @ mtd ],
+        MemberQ[ { "Arclength", "Alexandrov" }, methodName @ mtd ],
           AllTrue[ common, perpendicularAtAngle[ graph, seq1, seq2, #, mtd, tol, radius ] & ],
         True, Message[ InfraPerpendicularQ::badmethod, mtd ]; $Failed
       ]
@@ -474,16 +477,33 @@ perpendicularAtProjection[ g_Graph, seq1_List, seq2_List, p_, equality_, radius_
   ]
 
 
+(* Four-corner symmetric perpendicularity at p: split each line at p into
+   left/right halves (truncated to the local NeighborhoodGraph), pick the
+   far endpoint of each half as a direction representative, and require the
+   four corner-wedge angles at p to be equal within "Tolerance".  In a
+   Euclidean limit the wedges sum to 2 Pi so equality forces Pi/2; on a
+   graph the synthetic angle is not perfectly additive around p, so the
+   equality at a common value != Pi/2 is the honest right-angle test. *)
+
 perpendicularAtAngle[ g_Graph, seq1_List, seq2_List, p_, mtd_, tol_, radius_ ] :=
-  With[ { localG = If[ radius === All, g, NeighborhoodGraph[ g, p, radius ] ] },
-    With[ { ball = If[ radius === All, All, VertexList @ localG ] },
-      With[ { d1 = DeleteCases[ If[ ball === All, seq1, Select[ seq1, MemberQ[ ball, # ] & ] ], p ],
-              d2 = DeleteCases[ If[ ball === All, seq2, Select[ seq2, MemberQ[ ball, # ] & ] ], p ],
-              test = If[ MatchQ[ mtd, "Schoenberg" ], # == 0 &, Abs[ # - Pi/2 ] <= tol & ] },
-        AllTrue[ Tuples[ { d1, d2 } ],
-          test @ InfraAngle[ localG, { #[[ 1 ]], p, #[[ 2 ]] }, Method -> mtd ] & ]
-      ]
-    ]
+  Module[ { localG, ball, s1, s2, i1, i2, h1L, h1R, h2L, h2R, angles },
+    localG = If[ radius === All, g, NeighborhoodGraph[ g, p, radius ] ];
+    ball   = If[ radius === All, All, VertexList @ localG ];
+    s1     = If[ ball === All, seq1, Select[ seq1, MemberQ[ ball, # ] & ] ];
+    s2     = If[ ball === All, seq2, Select[ seq2, MemberQ[ ball, # ] & ] ];
+    i1     = FirstPosition[ s1, p, { 0 }, { 1 }, Heads -> False ][[ 1 ]];
+    i2     = FirstPosition[ s2, p, { 0 }, { 1 }, Heads -> False ][[ 1 ]];
+    If[ i1 == 0 || i2 == 0, Return[ False, Module ] ];
+    h1L = s1[[ ;; i1 - 1 ]]; h1R = s1[[ i1 + 1 ;; ]];
+    h2L = s2[[ ;; i2 - 1 ]]; h2R = s2[[ i2 + 1 ;; ]];
+    If[ h1L === { } || h1R === { } || h2L === { } || h2R === { },
+      Return[ False, Module ] ];
+    angles = InfraAngle[ localG, #, Method -> mtd ] & /@
+      { { First[ h1L ], p, First[ h2L ] },
+        { First[ h1L ], p, Last [ h2R ] },
+        { Last [ h1R ], p, First[ h2L ] },
+        { Last [ h1R ], p, Last [ h2R ] } };
+    Max[ angles ] - Min[ angles ] <= tol
   ]
 
 

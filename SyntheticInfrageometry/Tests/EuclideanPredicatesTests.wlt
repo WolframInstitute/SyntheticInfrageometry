@@ -208,26 +208,44 @@ VerificationTest[
   TestID -> "InfraPerpendicularQ-Projection-Subset-cycle-False"
 ]
 
-(* Custom (3, 4, 5) Pythagorean graph: d(4, 1) = 3, d(8, 1) = 4, d(4, 8) = 5.
-   Schoenberg's all-pairs strictness fails (only the (4, 8) endpoint pair is
-   exactly right-angled), so the predicate returns False -- this is the strict
-   synthetic notion and is correctly rare. *)
+(* GridGraph: by 4-fold symmetry of the lattice at any interior vertex, the
+   four corner-wedge angles at the centre are all equal (each ArcCos[-1] = Pi
+   because graph distance between opposite-quadrant endpoints exceeds the
+   Euclidean diagonal -- but all four are equal, which is what the test asks).  *)
 VerificationTest[
-  With[{ g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 1 <-> 5, 5 <-> 6, 6 <-> 7, 7 <-> 8,
-                    4 <-> 9, 9 <-> 10, 10 <-> 11, 11 <-> 12, 12 <-> 8}] },
-    InfraPerpendicularQ[g, {4, 3, 2, 1}, {1, 5, 6, 7, 8}, Method -> "Schoenberg"]
-  ],
-  False,
-  TestID -> "InfraPerpendicularQ-Schoenberg-345-strict-False"
+  InfraPerpendicularQ[GridGraph[{5, 5}], {11, 12, 13, 14, 15}, {3, 8, 13, 18, 23},
+                      Method -> "Alexandrov"],
+  True,
+  TestID -> "InfraPerpendicularQ-Alexandrov-symmetric-True"
 ]
 
-(* Schoenberg on a path is always negative (collinear), so the strict
-   predicate is False there too. *)
+(* Asymmetric: a "+" cross with an extra diagonal edge 1<->3 collapses the
+   north-east corner angle without touching the other three, so the four
+   corner angles are not equal and the test must return False. *)
 VerificationTest[
-  InfraPerpendicularQ[PathGraph[Range[7]], {1, 2, 3, 4}, {4, 5, 6, 7},
-                      Method -> "Schoenberg"],
+  InfraPerpendicularQ[Graph[{0 <-> 1, 0 <-> 2, 0 <-> 3, 0 <-> 4, 1 <-> 3}],
+                      {1, 0, 2}, {3, 0, 4}, Method -> "Alexandrov", "Tolerance" -> 0.5],
   False,
-  TestID -> "InfraPerpendicularQ-Schoenberg-collinear-False"
+  TestID -> "InfraPerpendicularQ-Alexandrov-asymmetric-False"
+]
+
+(* When the common vertex sits at an endpoint of either line, one half is
+   empty and there is no second direction representative on that side, so
+   the angle test returns False. *)
+VerificationTest[
+  InfraPerpendicularQ[CycleGraph[5], {1, 2, 3, 4}, {5, 1, 2}, Method -> "Alexandrov"],
+  False,
+  TestID -> "InfraPerpendicularQ-Alexandrov-empty-half-False"
+]
+
+(* Schoenberg has been removed from InfraPerpendicularQ's method dispatch
+   (it carries the same geometric content as {"Alexandrov", "Curvature" -> 0});
+   passing it now reports the standard badmethod error. *)
+VerificationTest[
+  InfraPerpendicularQ[PathGraph[Range[5]], {1, 2, 3}, {3, 4, 5}, Method -> "Schoenberg"],
+  $Failed,
+  {InfraPerpendicularQ::badmethod},
+  TestID -> "InfraPerpendicularQ-Schoenberg-badmethod"
 ]
 
 (* Radius -> k localises to the k-neighborhood of the common vertex; with
@@ -251,7 +269,7 @@ VerificationTest[
 
 (* Empty intersection still False even with Method override. *)
 VerificationTest[
-  InfraPerpendicularQ[PathGraph[Range[6]], {1, 2}, {5, 6}, Method -> "Schoenberg"],
+  InfraPerpendicularQ[PathGraph[Range[6]], {1, 2}, {5, 6}, Method -> "Alexandrov"],
   False,
   TestID -> "InfraPerpendicularQ-empty-intersection-False"
 ]
