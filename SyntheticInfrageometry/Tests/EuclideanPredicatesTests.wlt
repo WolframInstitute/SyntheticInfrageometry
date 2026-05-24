@@ -197,7 +197,7 @@ VerificationTest[
    test fails on the symmetric leg.  Overlap (loosest) passes. *)
 VerificationTest[
   InfraPerpendicularQ[CycleGraph[5], {1, 2, 3, 4}, {5, 1, 2},
-                      "Equality" -> "Overlap"],
+                      Method -> {"Projection", "Equality" -> "Overlap"}],
   True,
   TestID -> "InfraPerpendicularQ-Projection-Overlap-cycle"
 ]
@@ -224,7 +224,7 @@ VerificationTest[
    corner angles are not equal and the test must return False. *)
 VerificationTest[
   InfraPerpendicularQ[Graph[{0 <-> 1, 0 <-> 2, 0 <-> 3, 0 <-> 4, 1 <-> 3}],
-                      {1, 0, 2}, {3, 0, 4}, Method -> "Alexandrov", "Tolerance" -> 0.5],
+                      {1, 0, 2}, {3, 0, 4}, Method -> {"Alexandrov", "Tolerance" -> 0.5}],
   False,
   TestID -> "InfraPerpendicularQ-Alexandrov-asymmetric-False"
 ]
@@ -248,24 +248,56 @@ VerificationTest[
   TestID -> "InfraPerpendicularQ-Schoenberg-badmethod"
 ]
 
-(* Centroid method: GridGraph by 4-fold symmetry sends every projection foot
-   to the centre, so the mean signed coordinate is exactly 0 in both
-   directions and the test passes. *)
+(* Coordinate method (ZeroTest -> "Mean" default): GridGraph by 4-fold
+   symmetry sends every projection foot to the centre, so the mean signed
+   coordinate is exactly 0 in both directions and the test passes. *)
 VerificationTest[
   InfraPerpendicularQ[GridGraph[{5, 5}], {11, 12, 13, 14, 15}, {3, 8, 13, 18, 23},
-                      Method -> "Centroid"],
+                      Method -> "Coordinate"],
   True,
-  TestID -> "InfraPerpendicularQ-Centroid-balanced-True"
+  TestID -> "InfraPerpendicularQ-Coordinate-Mean-balanced-True"
 ]
 
-(* Centroid on the "+"-cross with diagonal edge 1<->3: vertex 3 projects to
-   {1, 0} (tie), vertex 4 projects to {0}, giving signed coords {-0.5, 0}
-   with mean -0.25, so the test fails. *)
+(* Coordinate Mean on the "+"-cross with diagonal edge 1<->3: vertex 3
+   projects to {1, 0} (tie), vertex 4 projects to {0}, giving signed coords
+   {-0.5, 0} with mean -0.25, so the test fails. *)
 VerificationTest[
   InfraPerpendicularQ[Graph[{0 <-> 1, 0 <-> 2, 0 <-> 3, 0 <-> 4, 1 <-> 3}],
-                      {1, 0, 2}, {3, 0, 4}, Method -> "Centroid"],
+                      {1, 0, 2}, {3, 0, 4}, Method -> "Coordinate"],
   False,
-  TestID -> "InfraPerpendicularQ-Centroid-skewed-False"
+  TestID -> "InfraPerpendicularQ-Coordinate-Mean-skewed-False"
+]
+
+(* Coordinate ZeroTest -> "Contains": the same "+"-cross has signed coords
+   {-0.5, 0} in one direction (interval [-0.5, 0] contains 0 -> True) and
+   {-1, 1} in the other (interval [-1, 1] contains 0 -> True), so the
+   strictly weaker interval-containment test passes where Mean fails. *)
+VerificationTest[
+  InfraPerpendicularQ[Graph[{0 <-> 1, 0 <-> 2, 0 <-> 3, 0 <-> 4, 1 <-> 3}],
+                      {1, 0, 2}, {3, 0, 4},
+                      Method -> {"Coordinate", "ZeroTest" -> "Contains"}],
+  True,
+  TestID -> "InfraPerpendicularQ-Coordinate-Contains-True"
+]
+
+(* Coordinate with the nested ZeroTest spec {"Mean", "Tolerance" -> 0.3}
+   relaxes the Mean test enough for the skewed "+"-cross to pass
+   (|mean| = 0.25 <= 0.3). *)
+VerificationTest[
+  InfraPerpendicularQ[Graph[{0 <-> 1, 0 <-> 2, 0 <-> 3, 0 <-> 4, 1 <-> 3}],
+                      {1, 0, 2}, {3, 0, 4},
+                      Method -> {"Coordinate", "ZeroTest" -> {"Mean", "Tolerance" -> 0.3}}],
+  True,
+  TestID -> "InfraPerpendicularQ-Coordinate-Mean-nested-tolerance-True"
+]
+
+(* Coordinate with an unknown ZeroTest name reports badzerotest. *)
+VerificationTest[
+  InfraPerpendicularQ[GridGraph[{5, 5}], {11, 12, 13, 14, 15}, {3, 8, 13, 18, 23},
+                      Method -> {"Coordinate", "ZeroTest" -> "Bogus"}],
+  False,
+  {InfraPerpendicularQ::badzerotest},
+  TestID -> "InfraPerpendicularQ-Coordinate-badzerotest"
 ]
 
 (* Radius -> k localises to the k-neighborhood of the common vertex; with
@@ -274,7 +306,7 @@ VerificationTest[
    "Overlap" equality fails -- the test correctly tightens with smaller k. *)
 VerificationTest[
   InfraPerpendicularQ[CycleGraph[5], {1, 2, 3, 4}, {5, 1, 2},
-                      "Equality" -> "Overlap", "Radius" -> 1],
+                      Method -> {"Projection", "Equality" -> "Overlap"}, "Radius" -> 1],
   False,
   TestID -> "InfraPerpendicularQ-Projection-radius-1-tightens"
 ]
@@ -282,7 +314,7 @@ VerificationTest[
 (* InfraSegment / InfraLine wrappers accepted via lineSequence unwrap. *)
 VerificationTest[
   InfraPerpendicularQ[CycleGraph[5], InfraLine[{{1, 2, 3, 4}}], InfraSegment[{{5, 1, 2}}],
-                      "Equality" -> "Overlap"],
+                      Method -> {"Projection", "Equality" -> "Overlap"}],
   True,
   TestID -> "InfraPerpendicularQ-wrapper-input"
 ]

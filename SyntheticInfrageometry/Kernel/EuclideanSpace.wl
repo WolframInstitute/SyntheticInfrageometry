@@ -96,7 +96,7 @@ InfraAngle[ graph_Graph, triple : { _, _, _ }, opts : OptionsPattern[] ] /;
   InfraAngle[ graph, triple /. InfraPoint[ { v_ } ] :> v, opts ]
 
 InfraAngle[ graph_Graph, { q1_, p_, q2_ }, OptionsPattern[] ] :=
-  Switch[ OptionValue[ Method ],
+  Switch[ methodName @ OptionValue[ Method ],
     "Arclength",
       With[ { radius = Min[ GraphDistance[ graph, p, q1 ], GraphDistance[ graph, p, q2 ] ] },
         With[ { rem = VertexDelete[ graph,
@@ -105,13 +105,7 @@ InfraAngle[ graph_Graph, { q1_, p_, q2_ }, OptionsPattern[] ] :=
         ]
       ],
     "Alexandrov",
-      ArcCos @ comparisonAngleCos[
-        GraphDistance[ graph, q1, q2 ],
-        GraphDistance[ graph, p, q1 ],
-        GraphDistance[ graph, p, q2 ],
-        0 ],
-    { "Alexandrov", ___ },
-      With[ { k = "Curvature" /. Rest @ OptionValue[ Method ] /. "Curvature" -> 0 },
+      With[ { k = Lookup[ methodOptions @ OptionValue[ Method ], "Curvature", 0 ] },
         ArcCos @ comparisonAngleCos[
           GraphDistance[ graph, q1, q2 ],
           GraphDistance[ graph, p, q1 ],

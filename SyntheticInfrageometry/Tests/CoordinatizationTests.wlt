@@ -360,31 +360,31 @@ VerificationTest[
   TestID -> "FindInfraOrthogonalFrame-AxisCount-UpTo"
 ]
 
-(* GeodesicGraph primitive *)
+(* GeodesicSprayGraph primitive *)
 
 VerificationTest[
-  Sort @ VertexList @ GeodesicGraph[GridGraph[{3, 3}], 5],
+  Sort @ VertexList @ GeodesicSprayGraph[GridGraph[{3, 3}], 5],
   Range[9],
-  TestID -> "GeodesicGraph-3x3-vertices"
+  TestID -> "GeodesicSprayGraph-3x3-vertices"
 ]
 
 VerificationTest[
-  Length @ EdgeList @ GeodesicGraph[PathGraph[Range[5]], 3],
+  Length @ EdgeList @ GeodesicSprayGraph[PathGraph[Range[5]], 3],
   4,
-  TestID -> "GeodesicGraph-path-edges-symmetric"
+  TestID -> "GeodesicSprayGraph-path-edges-symmetric"
 ]
 
 VerificationTest[
-  Sort @ Select[VertexList[GeodesicGraph[GridGraph[{3, 3}], 5]],
-    VertexOutDegree[GeodesicGraph[GridGraph[{3, 3}], 5], #] == 0 &],
+  Sort @ Select[VertexList[GeodesicSprayGraph[GridGraph[{3, 3}], 5]],
+    VertexOutDegree[GeodesicSprayGraph[GridGraph[{3, 3}], 5], #] == 0 &],
   {1, 3, 7, 9},
-  TestID -> "GeodesicGraph-3x3-sinks-are-corners"
+  TestID -> "GeodesicSprayGraph-3x3-sinks-are-corners"
 ]
 
 VerificationTest[
-  Length @ VertexList @ GeodesicGraph[GridGraph[{3, 3}], 5, "AxisLength" -> 1],
+  Length @ VertexList @ GeodesicSprayGraph[GridGraph[{3, 3}], 5, "AxisLength" -> 1],
   5,
-  TestID -> "GeodesicGraph-AxisLength-truncation"
+  TestID -> "GeodesicSprayGraph-AxisLength-truncation"
 ]
 
 (* ===== FindInfraSpanningAxes (no-center form) ===== *)

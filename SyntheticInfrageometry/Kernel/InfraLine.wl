@@ -327,38 +327,88 @@ findParallelExtensionsGreedy[ graph_Graph, line_List, p_ ] :=
 
 (* ===================== FindInfraPerpendicular ===================== *)
 
-(* Foot of the perpendicular from p to L (Euclid I.12, isosceles base midpoint):
-   for each pair {a, b} of L-vertices equidistant from p, the midpoint of the
-   line-arc from a to b along L is a candidate foot. *)
+(* Perpendicular line(s) at `point` to `line`.  Returns InfraLine realisations
+   through `point`.  "Metric" (default): foot-of-perpendicular construction
+   (Euclid I.12, isosceles base midpoint) -- for each pair {a, b} of L-vertices
+   equidistant from p, the midpoint of the line-arc from a to b is a candidate
+   foot; the perpendicular line is the maximal geodesic through `point` and the
+   foot.  "Projection" / "Coordinate" / "Arclength" / "Alexandrov" /
+   {"Alexandrov", "Curvature" -> k}: enumerate maximal geodesics through
+   `point` and select those passing InfraPerpendicularQ with the named method.
+   Method-specific sub-options ("Equality", "ZeroTest", "Tolerance",
+   "Curvature") are carried inside the Method spec and forwarded verbatim to
+   InfraPerpendicularQ -- see its usage.  Option "Radius" -> All (default) |
+   r_Integer localises both the candidate enumeration (workGraph =
+   NeighborhoodGraph[g, point, r]) and the test. *)
 
 FindInfraPerpendicular::badmethod = "Method `1` is not supported by FindInfraPerpendicular.";
 
-Options[ FindInfraPerpendicular ] = { Method -> "Metric" };
+Options[ FindInfraPerpendicular ] = {
+  Method   -> "Metric",
+  "Radius" -> All
+};
 
 FindInfraPerpendicular[ graph_Graph, line_, point_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraPoint, count,
+  infraSpreadAndCartesian[ InfraLine, count,
     findPerpendicularCore[ graph, ##, opts ] &, line, point ]
 
 
 findPerpendicularCore[ graph_Graph, line_List, point_, opts : OptionsPattern[ FindInfraPerpendicular ] ] :=
-  With[ { spec = OptionValue[ FindInfraPerpendicular, { opts }, Method ] },
+  With[ {
+    spec   = OptionValue[ FindInfraPerpendicular, { opts }, Method   ],
+    radius = OptionValue[ FindInfraPerpendicular, { opts }, "Radius" ] },
+  With[ { workGraph = If[ radius === All, graph, NeighborhoodGraph[ graph, point, radius ] ] },
     Switch[ methodName @ spec,
-      "Metric",
-        With[ { distances = GraphDistance[ graph, point, # ] & /@ line },
-          Union @ Flatten[
-            ( group |-> Map[
-                pair |-> With[ { lo = Min @@ pair, hi = Max @@ pair },
-                  If[ OddQ[ hi - lo ],
-                    line[[ lo ;; hi ]][[ Ceiling[ ( hi - lo + 1 ) / 2 ] ]],
-                    Nothing ] ],
-                Subsets[ group, { 2 } ] ]
-            ) /@ Values @ GroupBy[ Range @ Length @ line, distances[[ # ]] & ]
-          ]
-        ],
-      _,
-        Message[ FindInfraPerpendicular::badmethod, spec ]; $Failed
+      "Metric",     perpendicularByMetric[ workGraph, line, point ],
+      "Projection" | "Coordinate" | "Arclength" | "Alexandrov",
+                    perpendicularByQ[ workGraph, graph, line, point, spec, radius ],
+      _,            Message[ FindInfraPerpendicular::badmethod, spec ]; $Failed
     ]
+  ] ]
+
+
+(* "Metric" recipe: feet via isosceles base midpoint, then maximal lines through
+   each foot and `point`.  Line restricted to vertices in workGraph. *)
+
+(* Euclid I.12 feet only: isosceles base midpoints of equidistant pairs on
+   line, point removed.  No line extension. *)
+
+perpendicularFeet[ workGraph_Graph, line_List, point_ ] :=
+  With[ { localLine = Select[ line, MemberQ[ VertexList[ workGraph ], # ] & ] },
+  With[ { distances = GraphDistance[ workGraph, point, # ] & /@ localLine },
+    DeleteCases[ DeleteDuplicates @ Flatten[
+      ( group |-> Map[
+          pair |-> With[ { lo = Min @@ pair, hi = Max @@ pair },
+            localLine[[ lo ;; hi ]][[ Ceiling[ ( hi - lo + 1 ) / 2 ] ]] ],
+          Subsets[ group, { 2 } ] ]
+      ) /@ Values @ GroupBy[ Range @ Length @ localLine, distances[[ # ]] & ],
+      1 ], point ]
+  ] ]
+
+perpendicularByMetric[ workGraph_Graph, line_List, point_ ] :=
+  With[ { feet = perpendicularFeet[ workGraph, line, point ] },
+    Select[
+      DeleteDuplicates @ Map[ canonicalLine, Catenate[
+        Map[ foot |-> Catenate[
+          findLineExtensions[ workGraph, # ] & /@ allGeodesics[ workGraph, foot, point ] ],
+          feet ] ] ],
+      Length[ # ] >= 2 & ]
+  ]
+
+
+(* Q-side recipe: candidates = canonical maximal geodesics through `point` in
+   workGraph; selection via InfraPerpendicularQ on the original graph with
+   "Radius" -> r so the test localises identically. *)
+
+perpendicularByQ[ workGraph_Graph, graph_Graph, line_, point_, spec_, radius_ ] :=
+  With[ { candidates = DeleteDuplicates @ Map[ canonicalLine, Catenate[
+      Map[ neighbor |-> findLineExtensions[ workGraph, { point, neighbor } ],
+        AdjacencyList[ workGraph, point ] ] ] ] },
+    Select[ candidates,
+      InfraPerpendicularQ[ graph, line, #,
+        Method   -> spec,
+        "Radius" -> radius ] & ]
   ]
 
 
@@ -412,48 +462,62 @@ InfraParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
 (* ===================== InfraPerpendicularQ ===================== *)
 
 (* Two lines are perpendicular if, at every common vertex p, the chosen test
-   holds.  "Projection" (default): the foot-of-perpendicular projection of one
-   line onto the other lies within the intersection ("Equality" -> "Subset"
-   default, the natural geometric test; the four InfraEqualQ methods "Set" /
-   "Multiset" / "Diffuse" / "Overlap" are stricter / looser alternatives).
-   "Arclength" / "Alexandrov" / {"Alexandrov", "Curvature" -> k}: split each
-   line at p into left / right halves, pick the far endpoint of each half as
-   a direction representative, and require the four corner-wedge angles
-   InfraAngle[..., {a_pm, p, b_pm}, Method -> mtd] to be equal within
-   "Tolerance".  (In Euclidean the wedges sum to 2 Pi so equality forces
-   Pi/2; on a graph the synthetic angle is not perfectly additive around p,
-   so equality at a common value != Pi/2 is the honest right-angle test.)
-   "Centroid": project each non-common vertex of one line onto the other
-   (FindClosestInfraPoint, metric argmin) to get a signed coordinate along
-   the receiving line, relative to p; pass iff the mean signed coordinate
-   is within "Tolerance" of 0 in both directions -- the projection feet
-   are *balanced* around p (whereas "Projection" tests *containment* in
-   the intersection set).
-   Option "Radius" -> All (default) | k_Integer restricts each test to a
-   k-neighborhood of the common vertex via NeighborhoodGraph. *)
+   holds.  Tolerance / Equality / ZeroTest are carried as sub-options of
+   the Method spec (so each tolerance has a clear per-method meaning):
 
-InfraPerpendicularQ::badmethod = "Method `1` is not supported by InfraPerpendicularQ.";
+   - "Projection" (default): the foot-of-perpendicular projection of one line
+     onto the other compared to the intersection set.  Sub-option "Equality"
+     selects the comparison: "Subset" (default; the natural geometric test,
+     proj subset of intersection) or one of the InfraEqualQ methods "Set" /
+     "Multiset" / "Diffuse" / "Overlap" (stricter / looser alternatives).
+
+   - "Arclength" / "Alexandrov" / {"Alexandrov", "Curvature" -> k, ...}: split
+     each line at p into left / right halves, pick the far endpoint of each
+     half as a direction representative, and require the four corner-wedge
+     angles InfraAngle[..., {a_pm, p, b_pm}, Method -> mtd] to be equal
+     within sub-option "Tolerance" (default 0; in radians).  In Euclidean
+     the wedges sum to 2 Pi so equality forces Pi/2; on a graph the
+     synthetic angle is not perfectly additive around p, so equality at a
+     common value != Pi/2 is the honest right-angle test.
+
+   - "Coordinate": project each non-common vertex of one line onto the
+     other (FindClosestInfraPoint, metric argmin) to get a signed coordinate
+     along the receiving line, relative to p.  Sub-option "ZeroTest" is the
+     predicate that decides whether the resulting coordinate cloud is at 0;
+     values: "Mean" (default; |Mean[c]| <= tol), "Median" (|Median[c]| <= tol
+     -- robust to outliers), "Contains" (Min[c] - tol <= 0 <= Max[c] + tol
+     -- 0 lies in the coordinate range), a string spec with its own
+     "Tolerance" sub-option (e.g. {"Mean", "Tolerance" -> 0.2}), or any user
+     predicate function f (f[c] called directly and the result coerced to
+     True / False).  The default "Tolerance" on the named ZeroTests is 0.
+
+   Top-level option "Radius" -> All (default) | k_Integer restricts each
+   test to a k-neighborhood of the common vertex via NeighborhoodGraph. *)
+
+InfraPerpendicularQ::badmethod   = "Method `1` is not supported by InfraPerpendicularQ.";
+InfraPerpendicularQ::badzerotest = "ZeroTest `1` is not supported by InfraPerpendicularQ \"Coordinate\".";
 
 Options[ InfraPerpendicularQ ] = {
-  Method      -> "Projection",
-  "Equality"  -> "Subset",
-  "Tolerance" -> 0,
-  "Radius"    -> All
+  Method   -> "Projection",
+  "Radius" -> All
 };
 
 InfraPerpendicularQ[ graph_Graph, l1_, l2_, OptionsPattern[] ] :=
-  With[ { seq1     = lineSequence[ l1 ],     seq2 = lineSequence[ l2 ],
-          mtd      = OptionValue[ Method ],  tol  = OptionValue[ "Tolerance" ],
-          equality = OptionValue[ "Equality" ], radius = OptionValue[ "Radius" ] },
-    With[ { common = Intersection[ seq1, seq2 ] },
+  With[ { seq1 = lineSequence[ l1 ], seq2 = lineSequence[ l2 ],
+          mtd  = OptionValue[ Method ], radius = OptionValue[ "Radius" ] },
+    With[ { common = Intersection[ seq1, seq2 ],
+            mtdHead = methodName @ mtd, mtdOpts = methodOptions @ mtd },
       Which[
         Length[ common ] == 0, False,
-        methodName @ mtd === "Projection",
-          AllTrue[ common, perpendicularAtProjection[ graph, seq1, seq2, #, equality, radius ] & ],
-        methodName @ mtd === "Centroid",
-          AllTrue[ common, perpendicularAtCentroid[ graph, seq1, seq2, #, tol, radius ] & ],
-        MemberQ[ { "Arclength", "Alexandrov" }, methodName @ mtd ],
-          AllTrue[ common, perpendicularAtAngle[ graph, seq1, seq2, #, mtd, tol, radius ] & ],
+        mtdHead === "Projection",
+          With[ { equality = Lookup[ mtdOpts, "Equality", "Subset" ] },
+            AllTrue[ common, perpendicularAtProjection[ graph, seq1, seq2, #, equality, radius ] & ] ],
+        mtdHead === "Coordinate",
+          With[ { zeroTest = Lookup[ mtdOpts, "ZeroTest", "Mean" ] },
+            AllTrue[ common, perpendicularAtCoordinate[ graph, seq1, seq2, #, zeroTest, radius ] & ] ],
+        MemberQ[ { "Arclength", "Alexandrov" }, mtdHead ],
+          With[ { tol = Lookup[ mtdOpts, "Tolerance", 0 ] },
+            AllTrue[ common, perpendicularAtAngle[ graph, seq1, seq2, #, mtd, tol, radius ] & ] ],
         True, Message[ InfraPerpendicularQ::badmethod, mtd ]; $Failed
       ]
     ]
@@ -475,9 +539,9 @@ perpendicularAtProjection[ g_Graph, seq1_List, seq2_List, p_, equality_, radius_
     localSeq2 = If[ ball === All, seq2, Select[ seq2, MemberQ[ ball, # ] & ] ];
     localCommon = Intersection[ localSeq1, localSeq2 ];
     proj12 = DeleteDuplicates @ Flatten[
-      findPerpendicularCore[ localG, localSeq1, # ] & /@ Complement[ localSeq2, localCommon ] ];
+      perpendicularFeet[ localG, localSeq1, # ] & /@ Complement[ localSeq2, localCommon ] ];
     proj21 = DeleteDuplicates @ Flatten[
-      findPerpendicularCore[ localG, localSeq2, # ] & /@ Complement[ localSeq1, localCommon ] ];
+      perpendicularFeet[ localG, localSeq2, # ] & /@ Complement[ localSeq1, localCommon ] ];
     compare = If[ equality === "Subset",
       proj |-> SubsetQ[ localCommon, proj ],
       proj |-> InfraEqualQ[ g, InfraPoint[ proj ], InfraPoint[ localCommon ], Method -> equality ] ];
@@ -515,16 +579,23 @@ perpendicularAtAngle[ g_Graph, seq1_List, seq2_List, p_, mtd_, tol_, radius_ ] :
   ]
 
 
-(* Centroid perpendicularity at p: project each non-common vertex of one
+(* Coordinate perpendicularity at p: project each non-common vertex of one
    line onto the other (FindClosestInfraPoint, metric argmin) to get a
    signed coordinate along the receiving line, relative to p's position;
-   tie-feet averaged.  Pass iff the mean signed coordinate is within
-   "Tolerance" of 0 in both directions -- the projection feet are
-   *balanced* around p, not (as in "Projection") *contained* in the
-   intersection set. *)
+   tie-feet averaged.  Pass iff the chosen ZeroTest indicates the cloud is
+   at 0 in both directions -- the projection feet are *balanced* around p,
+   not (as in "Projection") *contained* in the intersection set.  ZeroTest
+   spec: a bare name ("Mean" / "Median" / "Contains") uses Tolerance 0; the
+   nested form {name, "Tolerance" -> t} carries its own tolerance; an
+   arbitrary user predicate function f is called directly on the coordinate
+   list and the result coerced to True / False.  Test bodies:
+     "Mean"     -- Abs[ Mean[c] ]   <= tol
+     "Median"   -- Abs[ Median[c] ] <= tol
+     "Contains" -- Min[c] - tol <= 0 <= Max[c] + tol. *)
 
-perpendicularAtCentroid[ g_Graph, seq1_List, seq2_List, p_, tol_, radius_ ] :=
-  Module[ { localG, ball, s1, s2, i1, i2, signedCoord, c12, c21 },
+perpendicularAtCoordinate[ g_Graph, seq1_List, seq2_List, p_, zeroTest_, radius_ ] :=
+  Module[ { localG, ball, s1, s2, i1, i2, signedCoord, c12, c21,
+            ztHead, ztTol },
     localG = If[ radius === All, g, NeighborhoodGraph[ g, p, radius ] ];
     ball   = If[ radius === All, All, VertexList @ localG ];
     s1     = If[ ball === All, seq1, Select[ seq1, MemberQ[ ball, # ] & ] ];
@@ -533,13 +604,25 @@ perpendicularAtCentroid[ g_Graph, seq1_List, seq2_List, p_, tol_, radius_ ] :=
     i2     = FirstPosition[ s2, p, { 0 }, { 1 }, Heads -> False ][[ 1 ]];
     If[ i1 == 0 || i2 == 0, Return[ False, Module ] ];
     signedCoord[ seq_, pIdx_, v_ ] :=
-      With[ { feet = #[[ 1, 1 ]] & /@ FindClosestInfraPoint[ localG, seq, v ] },
+      With[ { feet = #[[ 1, 1 ]] & /@ FindClosestInfraPoint[ localG, seq, v, All ] },
         Mean[ ( FirstPosition[ seq, #, { 0 }, { 1 }, Heads -> False ][[ 1 ]] - pIdx ) & /@ feet ]
       ];
     c12 = signedCoord[ s1, i1, # ] & /@ DeleteCases[ s2, p ];
     c21 = signedCoord[ s2, i2, # ] & /@ DeleteCases[ s1, p ];
     If[ Length[ c12 ] == 0 || Length[ c21 ] == 0, Return[ False, Module ] ];
-    Abs[ N @ Mean[ c12 ] ] <= tol && Abs[ N @ Mean[ c21 ] ] <= tol
+    If[ StringQ[ zeroTest ] || MatchQ[ zeroTest, { _String, ___ } ],
+      ztHead = methodName    @ zeroTest;
+      ztTol  = Lookup[ methodOptions @ zeroTest, "Tolerance", 0 ];
+      Switch[ ztHead,
+        "Mean",     Abs[ N @ Mean[ c12 ] ]   <= ztTol && Abs[ N @ Mean[ c21 ] ]   <= ztTol,
+        "Median",   Abs[ N @ Median[ c12 ] ] <= ztTol && Abs[ N @ Median[ c21 ] ] <= ztTol,
+        "Contains", Min[ c12 ] - ztTol <= 0 <= Max[ c12 ] + ztTol
+                 && Min[ c21 ] - ztTol <= 0 <= Max[ c21 ] + ztTol,
+        _,          Message[ InfraPerpendicularQ::badzerotest, zeroTest ]; False
+      ],
+      (* user-supplied predicate function *)
+      TrueQ @ zeroTest[ c12 ] && TrueQ @ zeroTest[ c21 ]
+    ]
   ]
 
 

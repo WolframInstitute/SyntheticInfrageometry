@@ -81,24 +81,65 @@ VerificationTest[
 
 (* ===== FindInfraPerpendicular ===== *)
 
+(* C5, line {1,2,3,4}, point 5: foot is 2, perpendicular line is the maximal
+   geodesic {5, 1, 2} (canonical orientation: lex-min of seq and reverse). *)
+
 VerificationTest[
-  InfraPoint @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All],
-  InfraPoint[{2}],
-  TestID -> "FindInfraPerpendicular-CycleGraph5"
+  Sort /@ ( #[[ 1, 1 ]] & /@ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All] ),
+  { { 1, 2, 5 } },
+  TestID -> "FindInfraPerpendicular-CycleGraph5-Metric"
 ]
 
 VerificationTest[
-  With[{feet = (#[[ 1, 1 ]] & /@ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All])},
-    AllTrue[feet, MemberQ[{1, 2, 3, 4}, #] &]
+  Head /@ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All],
+  { InfraLine },
+  TestID -> "FindInfraPerpendicular-returns-InfraLine"
+]
+
+VerificationTest[
+  (* every returned perp line must pass through both `point` and at least one
+     vertex of `line` (a foot). *)
+  With[{lines = FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All]},
+    AllTrue[lines, MemberQ[#[[1, 1]], 5] && IntersectingQ[#[[1, 1]], {1, 2, 3, 4}] &]
   ],
   True,
-  TestID -> "FindInfraPerpendicular-feet-on-line"
+  TestID -> "FindInfraPerpendicular-through-point-and-foot"
 ]
 
 VerificationTest[
-  InfraPoint @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, 1],
-  InfraPoint[{2}],
+  Length @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, 1],
+  1,
   TestID -> "FindInfraPerpendicular-strict-1"
+]
+
+(* Q-side dispatch on C5: result is a List (smoke test).  C5 is a degenerate
+   configuration -- the metric perpendicular shares two vertices with `line`,
+   so Q-side tests legitimately reject it.  Substantive Q-side tests live in
+   the mesh-graph notebook demo. *)
+
+VerificationTest[
+  Head @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All,
+    Method -> "Projection"],
+  List,
+  TestID -> "FindInfraPerpendicular-CycleGraph5-Projection-shape"
+]
+
+VerificationTest[
+  Head @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All,
+    Method -> {"Alexandrov", "Curvature" -> 0, "Tolerance" -> 0.5}],
+  List,
+  TestID -> "FindInfraPerpendicular-CycleGraph5-Alexandrov0-shape"
+]
+
+(* Radius option: same setup, restrict to NeighborhoodGraph[g, 5, 1].  The
+   1-ball around 5 in C5 is {5, 1, 4}; line {1, 2, 3, 4} restricted is {1, 4}.
+   Foot recipe finds... no equidistant pair with the right parity, so should
+   return empty.  Just check it does not crash and returns a list. *)
+
+VerificationTest[
+  Head @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All, "Radius" -> 1],
+  List,
+  TestID -> "FindInfraPerpendicular-Radius-1"
 ]
 
 (* ===== FindClosestInfraPoint ===== *)

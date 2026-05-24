@@ -111,7 +111,7 @@ OrthogonalCoordinates[ g_Graph, c_, axes_List, opts : OptionsPattern[] ] :=
 
 (* Returns a list of axes mutually perpendicular at the centre c, each wrapped
    as InfraSegment[{path}] (one realisation: the maximal metric line through c
-   with c strictly interior).  Algorithm: build GeodesicGraph[g, c]; enumerate
+   with c strictly interior).  Algorithm: build GeodesicSprayGraph[g, c]; enumerate
    candidate lines via antipodal DAG-vertex pairs; DFS the choice tree,
    filtering the DAG by perpendicularity at each step.
 
@@ -462,7 +462,7 @@ findOrthogonalFrameCore[ g_Graph, c_, axisLength_, count_, opts_List ] /; Member
     { minLength, maxDepth } = parseAxisLengthSpec[ axisLength ];
     (* Localize: every distance the search needs lies in B(c, 2 maxDepth). *)
     localG = If[ maxDepth === Infinity, g, NeighborhoodGraph[ g, c, 2 maxDepth ] ];
-    With[ { dag = GeodesicGraph[ localG, c, "AxisLength" -> Replace[ maxDepth, Infinity -> All ] ],
+    With[ { dag = GeodesicSprayGraph[ localG, c, "AxisLength" -> Replace[ maxDepth, Infinity -> All ] ],
             axisCountSpec = "AxisCount" /. opts /. "AxisCount" -> Automatic,
             methodSpec = resolveSearchMethod[ opts ],
             sel = "SelectCoordinate" /. opts /. "SelectCoordinate" -> "Centered",

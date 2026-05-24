@@ -241,35 +241,35 @@ VerificationTest[
   TestID -> "SelectInfraPath-empty-wrapper-All-passthrough"
 ]
 
-(* ===== GeodesicSubgraph ===== *)
+(* ===== GeodesicSprayGraph ===== *)
 
 VerificationTest[
-  GraphQ @ GeodesicSubgraph[ PathGraph[ Range[ 5 ] ], { { 1, 5 } } ],
+  GraphQ @ GeodesicSprayGraph[ PathGraph[ Range[ 5 ] ], { { 1, 5 } } ],
   True,
-  TestID -> "GeodesicSubgraph-returns-graph"
+  TestID -> "GeodesicSprayGraph-returns-graph"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    EdgeCount @ GeodesicSubgraph[ g, { { 1, 9 } }, "PathThickness" -> Infinity ] >
-    EdgeCount @ GeodesicSubgraph[ g, { { 1, 9 } }, "PathThickness" -> 0 ]
+    EdgeCount @ GeodesicSprayGraph[ g, { { 1, 9 } }, "PathThickness" -> Infinity ] >
+    EdgeCount @ GeodesicSprayGraph[ g, { { 1, 9 } }, "PathThickness" -> 0 ]
   ],
   True,
-  TestID -> "GeodesicSubgraph-thickness-grows"
+  TestID -> "GeodesicSprayGraph-thickness-grows"
 ]
 
 VerificationTest[
-  DirectedGraphQ @ GeodesicSubgraph[ CycleGraph[ 6 ], { { 1, 4 } }, "Directed" -> False ],
+  DirectedGraphQ @ GeodesicSprayGraph[ CycleGraph[ 6 ], { { 1, 4 } }, "Directed" -> False ],
   False,
-  TestID -> "GeodesicSubgraph-undirected"
+  TestID -> "GeodesicSprayGraph-undirected"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    SubsetQ[ VertexList[ g ], VertexList @ GeodesicSubgraph[ g, { { 1, 9 }, { 3, 7 } } ] ]
+    SubsetQ[ VertexList[ g ], VertexList @ GeodesicSprayGraph[ g, { { 1, 9 }, { 3, 7 } } ] ]
   ],
   True,
-  TestID -> "GeodesicSubgraph-multi-pair"
+  TestID -> "GeodesicSprayGraph-multi-pair"
 ]
 
 (* ===== PathSubgraph ===== *)

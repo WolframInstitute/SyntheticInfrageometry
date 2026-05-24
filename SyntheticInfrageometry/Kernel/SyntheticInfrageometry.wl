@@ -114,8 +114,7 @@ PackageExport[InfraCurvature]
 PackageExport[SelectInfraPath]
 PackageExport[SelectInfraCycle]
 PackageExport[EmbeddingClosest]
-PackageExport[GeodesicGraph]
-PackageExport[GeodesicSubgraph]
+PackageExport[GeodesicSprayGraph]
 PackageExport[PathSubgraph]
 
 (* Homotopy.wl *)

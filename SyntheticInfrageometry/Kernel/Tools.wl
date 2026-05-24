@@ -21,6 +21,7 @@ PackageScope[infraUnionSpread]
 PackageScope[infraVertexMultiset]
 PackageScope[linePointSet]
 PackageScope[methodName]
+PackageScope[methodOptions]
 PackageScope[propertiesSubOpts]
 
 
@@ -37,6 +38,14 @@ PackageScope[propertiesSubOpts]
 
 methodName[ m_String ]          := m
 methodName[ { m_String, ___ } ] := m
+
+
+(* Sub-options carried by a Method spec.  Bare string -> {};
+   {"Name", opts___} -> {opts}.  Consumed by Method-dispatching predicates
+   that read per-method "Tolerance", "Equality", "Statistic", etc. via Lookup. *)
+
+methodOptions[ _String ]                := { }
+methodOptions[ { _String, opts___ } ]   := { opts }
 
 
 (* ===================== Centrality ===================== *)

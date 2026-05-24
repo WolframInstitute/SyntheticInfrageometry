@@ -192,37 +192,39 @@ embeddingRankShellSets[ graph_Graph, sets_List, center_, radius_ ] :=
 EmbeddingClosest[ graph_Graph, ref_List ] := EmbeddingClosest[ graph, #, ref ] &
 
 
-(* ===================== GeodesicGraph ===================== *)
+(* ===================== GeodesicSprayGraph ===================== *)
 
-(* BFS DAG of all geodesics from a source: directed graph on vertices reachable
-   from c, with edge u -> v whenever d(c, v) = d(c, u) + 1 and u-v is a g-edge.
-   InfraPoint[{c1, ..., ck}] uses the source-set distance min_i d(ci, v).
-   "AxisLength" -> All | k truncates the DAG at depth k. *)
+(* Union of geodesics over a source spec.  Three dispatch shapes:
+     [g, c]              -- BFS DAG of all geodesics from c: directed graph on
+                            vertices reachable from c, with edge u -> v whenever
+                            d(c, v) = d(c, u) + 1 and u-v is a g-edge.
+     [g, InfraPoint[vs]] -- multi-source spray: same DAG with d_c replaced by
+                            min_i d(ci, v).
+     [g, pairs]          -- union of geodesics between the listed vertex pairs;
+                            "PathThickness" controls per-pair selection.
+   "AxisLength" -> All | k truncates the source-spray DAG at depth k.
+   "PathThickness" -> 0 keeps one shortest path per pair; Infinity keeps every
+   shortest path; a finite positive value keeps geodesics whose path-Hausdorff
+   distance to the first geodesic is at most that threshold.
+   "Directed" -> True orients DAG/pair edges from source to sink. *)
 
-Options[ GeodesicGraph ] = { "AxisLength" -> All };
+Options[ GeodesicSprayGraph ] = {
+  "AxisLength"    -> All,
+  "PathThickness" -> 0,
+  "Directed"      -> True
+};
 
-GeodesicGraph[ g_Graph, c_, OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
-  geodesicGraphFromDistances[ g, AssociationThread[ VertexList[ g ], GraphDistance[ g, c ] ],
-    OptionValue[ "AxisLength" ] ]
+GeodesicSprayGraph[ g_Graph, c_, OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+  geodesicSprayFromDistances[ g, AssociationThread[ VertexList[ g ], GraphDistance[ g, c ] ],
+    OptionValue[ "AxisLength" ], OptionValue[ "Directed" ] ]
 
-GeodesicGraph[ g_Graph, InfraPoint[ vs_List ], OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
-  geodesicGraphFromDistances[ g,
+GeodesicSprayGraph[ g_Graph, InfraPoint[ vs_List ], OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+  geodesicSprayFromDistances[ g,
     AssociationThread[ VertexList[ g ],
       Min /@ Transpose[ GraphDistance[ g, # ] & /@ vs ] ],
-    OptionValue[ "AxisLength" ] ]
+    OptionValue[ "AxisLength" ], OptionValue[ "Directed" ] ]
 
-
-(* ===================== GeodesicSubgraph ===================== *)
-
-(* Union of geodesics between the listed vertex pairs.  "PathThickness" -> 0
-   keeps one shortest path per pair; Infinity keeps every shortest path;
-   a finite positive value keeps geodesics whose path-Hausdorff distance to
-   the first geodesic is at most that threshold.  "Directed" -> True orients
-   each path from the first vertex of the pair to the second. *)
-
-Options[ GeodesicSubgraph ] = { "PathThickness" -> 0, "Directed" -> True };
-
-GeodesicSubgraph[ g_Graph, pairs_List, OptionsPattern[] ] :=
+GeodesicSprayGraph[ g_Graph, pairs : { { _, _ } .. }, OptionsPattern[] ] :=
   With[ { thickness = OptionValue[ "PathThickness" ],
           directed  = OptionValue[ "Directed" ],
           vertexToIndex = AssociationThread[ VertexList[ g ], Range @ VertexCount[ g ] ],
@@ -628,17 +630,20 @@ geodesicDAGNeighbors[ graph_Graph, c_ ] :=
   ]
 
 
-(* GeodesicGraph construction from a precomputed distance map. *)
+(* GeodesicSprayGraph construction from a precomputed distance map.  When
+   directed -> True, each edge points outward from the source (along increasing
+   distance); when False, undirected edges are emitted. *)
 
-geodesicGraphFromDistances[ g_Graph, dist_Association, depthSpec_ ] :=
+geodesicSprayFromDistances[ g_Graph, dist_Association, depthSpec_, directed_ ] :=
   With[ { depth = Replace[ depthSpec, All -> Infinity ] },
     With[ { dagVerts = Select[ VertexList[ g ], dist[ # ] < Infinity && dist[ # ] <= depth & ] },
       Graph[ dagVerts,
         Map[
           e |-> With[ { u = e[[ 1 ]], v = e[[ 2 ]] },
             Which[
-              dist[ v ] == dist[ u ] + 1, DirectedEdge[ u, v ],
-              dist[ u ] == dist[ v ] + 1, DirectedEdge[ v, u ],
+              ! directed && Abs[ dist[ u ] - dist[ v ] ] == 1, UndirectedEdge[ u, v ],
+              directed && dist[ v ] == dist[ u ] + 1, DirectedEdge[ u, v ],
+              directed && dist[ u ] == dist[ v ] + 1, DirectedEdge[ v, u ],
               True, Nothing ] ],
           EdgeList @ UndirectedGraph @ Subgraph[ g, dagVerts ] ]
       ]
