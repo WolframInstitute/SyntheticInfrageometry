@@ -248,6 +248,26 @@ VerificationTest[
   TestID -> "InfraPerpendicularQ-Schoenberg-badmethod"
 ]
 
+(* Centroid method: GridGraph by 4-fold symmetry sends every projection foot
+   to the centre, so the mean signed coordinate is exactly 0 in both
+   directions and the test passes. *)
+VerificationTest[
+  InfraPerpendicularQ[GridGraph[{5, 5}], {11, 12, 13, 14, 15}, {3, 8, 13, 18, 23},
+                      Method -> "Centroid"],
+  True,
+  TestID -> "InfraPerpendicularQ-Centroid-balanced-True"
+]
+
+(* Centroid on the "+"-cross with diagonal edge 1<->3: vertex 3 projects to
+   {1, 0} (tie), vertex 4 projects to {0}, giving signed coords {-0.5, 0}
+   with mean -0.25, so the test fails. *)
+VerificationTest[
+  InfraPerpendicularQ[Graph[{0 <-> 1, 0 <-> 2, 0 <-> 3, 0 <-> 4, 1 <-> 3}],
+                      {1, 0, 2}, {3, 0, 4}, Method -> "Centroid"],
+  False,
+  TestID -> "InfraPerpendicularQ-Centroid-skewed-False"
+]
+
 (* Radius -> k localises to the k-neighborhood of the common vertex; with
    k = 1 the line restricted to the immediate neighborhood is too short for
    the isosceles-pair algorithm to find any feet (empty projection), so the

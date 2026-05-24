@@ -423,6 +423,12 @@ InfraParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
    "Tolerance".  (In Euclidean the wedges sum to 2 Pi so equality forces
    Pi/2; on a graph the synthetic angle is not perfectly additive around p,
    so equality at a common value != Pi/2 is the honest right-angle test.)
+   "Centroid": project each non-common vertex of one line onto the other
+   (FindClosestInfraPoint, metric argmin) to get a signed coordinate along
+   the receiving line, relative to p; pass iff the mean signed coordinate
+   is within "Tolerance" of 0 in both directions -- the projection feet
+   are *balanced* around p (whereas "Projection" tests *containment* in
+   the intersection set).
    Option "Radius" -> All (default) | k_Integer restricts each test to a
    k-neighborhood of the common vertex via NeighborhoodGraph. *)
 
@@ -444,6 +450,8 @@ InfraPerpendicularQ[ graph_Graph, l1_, l2_, OptionsPattern[] ] :=
         Length[ common ] == 0, False,
         methodName @ mtd === "Projection",
           AllTrue[ common, perpendicularAtProjection[ graph, seq1, seq2, #, equality, radius ] & ],
+        methodName @ mtd === "Centroid",
+          AllTrue[ common, perpendicularAtCentroid[ graph, seq1, seq2, #, tol, radius ] & ],
         MemberQ[ { "Arclength", "Alexandrov" }, methodName @ mtd ],
           AllTrue[ common, perpendicularAtAngle[ graph, seq1, seq2, #, mtd, tol, radius ] & ],
         True, Message[ InfraPerpendicularQ::badmethod, mtd ]; $Failed
@@ -504,6 +512,34 @@ perpendicularAtAngle[ g_Graph, seq1_List, seq2_List, p_, mtd_, tol_, radius_ ] :
         { Last [ h1R ], p, First[ h2L ] },
         { Last [ h1R ], p, Last [ h2R ] } };
     Max[ angles ] - Min[ angles ] <= tol
+  ]
+
+
+(* Centroid perpendicularity at p: project each non-common vertex of one
+   line onto the other (FindClosestInfraPoint, metric argmin) to get a
+   signed coordinate along the receiving line, relative to p's position;
+   tie-feet averaged.  Pass iff the mean signed coordinate is within
+   "Tolerance" of 0 in both directions -- the projection feet are
+   *balanced* around p, not (as in "Projection") *contained* in the
+   intersection set. *)
+
+perpendicularAtCentroid[ g_Graph, seq1_List, seq2_List, p_, tol_, radius_ ] :=
+  Module[ { localG, ball, s1, s2, i1, i2, signedCoord, c12, c21 },
+    localG = If[ radius === All, g, NeighborhoodGraph[ g, p, radius ] ];
+    ball   = If[ radius === All, All, VertexList @ localG ];
+    s1     = If[ ball === All, seq1, Select[ seq1, MemberQ[ ball, # ] & ] ];
+    s2     = If[ ball === All, seq2, Select[ seq2, MemberQ[ ball, # ] & ] ];
+    i1     = FirstPosition[ s1, p, { 0 }, { 1 }, Heads -> False ][[ 1 ]];
+    i2     = FirstPosition[ s2, p, { 0 }, { 1 }, Heads -> False ][[ 1 ]];
+    If[ i1 == 0 || i2 == 0, Return[ False, Module ] ];
+    signedCoord[ seq_, pIdx_, v_ ] :=
+      With[ { feet = #[[ 1, 1 ]] & /@ FindClosestInfraPoint[ localG, seq, v ] },
+        Mean[ ( FirstPosition[ seq, #, { 0 }, { 1 }, Heads -> False ][[ 1 ]] - pIdx ) & /@ feet ]
+      ];
+    c12 = signedCoord[ s1, i1, # ] & /@ DeleteCases[ s2, p ];
+    c21 = signedCoord[ s2, i2, # ] & /@ DeleteCases[ s1, p ];
+    If[ Length[ c12 ] == 0 || Length[ c21 ] == 0, Return[ False, Module ] ];
+    Abs[ N @ Mean[ c12 ] ] <= tol && Abs[ N @ Mean[ c21 ] ] <= tol
   ]
 
 
