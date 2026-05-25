@@ -981,6 +981,55 @@ VerificationTest[
 ]
 
 
+(* ===== "Direction" option on FindInfraLine ===== *)
+
+(* Forward-only extension of {3, 4} on PathGraph[7]: left end pinned at 3,
+   right end extended to 7. *)
+VerificationTest[
+  InfraLine @ FindInfraLine[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 1,
+    "Direction" -> "Forward" ],
+  InfraLine[ { { 3, 4, 5, 6, 7 } } ],
+  TestID -> "FindInfraLine-segment-Direction-Forward"
+]
+
+(* Backward-only extension of {3, 4} on PathGraph[7]: right end pinned at 4,
+   left end extended to 1. *)
+VerificationTest[
+  InfraLine @ FindInfraLine[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 1,
+    "Direction" -> "Backward" ],
+  InfraLine[ { { 1, 2, 3, 4 } } ],
+  TestID -> "FindInfraLine-segment-Direction-Backward"
+]
+
+(* Default BothSides matches the explicit value. *)
+VerificationTest[
+  FindInfraLine[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 1 ] ===
+    FindInfraLine[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 1,
+      "Direction" -> "BothSides" ],
+  True,
+  TestID -> "FindInfraLine-segment-Direction-BothSides-default"
+]
+
+(* Forward on the two-point form: p1 fixed as line start. *)
+VerificationTest[
+  AllTrue[
+    #[[ 1, 1 ]] & /@ FindInfraLine[ PathGraph[ Range[ 7 ] ], 3, 4, All,
+      "Direction" -> "Forward" ],
+    line |-> First[ line ] === 3 ],
+  True,
+  TestID -> "FindInfraLine-two-point-Direction-Forward-starts-at-p1"
+]
+
+(* Unknown direction -> $Failed with ::baddirection *)
+VerificationTest[
+  FindInfraLine[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 1,
+    "Direction" -> "Sideways" ],
+  $Failed,
+  {FindInfraLine::baddirection},
+  TestID -> "FindInfraLine-baddirection"
+]
+
+
 (* ===== Tarski A4 (5-arg ExtendInfraSegment, the only surviving form) ===== *)
 
 (* Tested in TarskiGeometryTests via the synthetic-extension axiom dashboard;

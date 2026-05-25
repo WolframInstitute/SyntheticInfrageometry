@@ -304,44 +304,6 @@ VerificationTest[
   TestID -> "ExtendInfraSegment-Tarski-CycleGraph-has-extension"
 ]
 
-(* ===== FindInfraMidpoint with Method -> "Tarski" (formerly FindTarskiMidpoint) ===== *)
-
-VerificationTest[
-  InfraPoint @ FindInfraMidpoint[PathGraph[Range[5]], 1, 5, All, Method -> "Tarski"],
-  InfraPoint[{3}],
-  TestID -> "FindInfraMidpoint-Tarski-PathGraph-even-distance-hit"
-]
-
-VerificationTest[
-  InfraPoint @ FindInfraMidpoint[PathGraph[Range[5]], 1, 4, All, Method -> "Tarski"],
-  InfraPoint[{}],
-  TestID -> "FindInfraMidpoint-Tarski-PathGraph-odd-distance-miss"
-]
-
-VerificationTest[
-  FindInfraMidpoint[PathGraph[Range[5]], 1, 4, Method -> "Tarski"],
-  $Failed,
-  TestID -> "FindInfraMidpoint-Tarski-PathGraph-odd-distance-strict-fails"
-]
-
-VerificationTest[
-  InfraPoint @ FindInfraMidpoint[PathGraph[Range[5]], 1, 4, UpTo[1], Method -> "Tarski"],
-  InfraPoint[{}],
-  TestID -> "FindInfraMidpoint-Tarski-PathGraph-odd-distance-UpTo-empty"
-]
-
-VerificationTest[
-  Sort @ (#[[ 1, 1 ]] & /@ FindInfraMidpoint[CycleGraph[4], 1, 3, All, Method -> "Tarski"]),
-  {2, 4},
-  TestID -> "FindInfraMidpoint-Tarski-CycleGraph4-antipodes-two-midpoints"
-]
-
-VerificationTest[
-  Length @ FindInfraMidpoint[CycleGraph[4], 1, 3, UpTo[1], Method -> "Tarski"],
-  1,
-  TestID -> "FindInfraMidpoint-Tarski-CycleGraph4-UpTo-caps"
-]
-
 (* ===== FindInfraReflection ===== *)
 
 VerificationTest[

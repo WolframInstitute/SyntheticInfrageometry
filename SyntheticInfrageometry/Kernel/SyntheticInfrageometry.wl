@@ -4,6 +4,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageExport[InfraPoint]
 PackageExport[FindInfraPoint]
 PackageExport[FindInfraMidpoint]
+PackageExport[FindInfraGoldenSection]
 PackageExport[FindInfraReflection]
 PackageExport[CompleteInfraEquilateralTriangle]
 PackageExport[FindInfraCommonPoint]
@@ -56,6 +57,9 @@ PackageExport[InfraEllipticShell]
 PackageExport[FindInfraEllipticShell]
 PackageExport[InfraEllipticShellQ]
 
+(* InfraQuadric.wl *)
+PackageExport[FindInfraQuadric]
+
 (* InfraBall.wl *)
 PackageExport[InfraBall]
 PackageExport[FindInfraBall]
@@ -66,6 +70,11 @@ PackageExport[InfraCircle]
 PackageExport[FindInfraCircle]
 PackageExport[FindInfraCycle]
 PackageExport[InfraCircleQ]
+
+(* InfraPolygon.wl *)
+PackageExport[InfraPolygon]
+PackageExport[FindInfraRegularPolygon]
+PackageExport[InfraRegularPolygonQ]
 
 (* InfraEllipse.wl *)
 PackageExport[InfraEllipse]

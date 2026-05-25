@@ -96,14 +96,15 @@ walkLengthAdmissibleQ[ { kmin_Integer, kmax_Integer } ] :=
    Same Properties as FindInfraPath; default Properties -> {} allows non-simple
    extensions. *)
 
-ExtendInfraPath::badproperty = "Property `1` is not supported by ExtendInfraPath.";
-ExtendInfraPath::badmethod   = "Method `1` is not supported by ExtendInfraPath.";
+ExtendInfraPath::badproperty  = "Property `1` is not supported by ExtendInfraPath.";
+ExtendInfraPath::badmethod    = "Method `1` is not supported by ExtendInfraPath.";
+ExtendInfraPath::baddirection = "Direction `1` is not supported by ExtendInfraPath.";
 
 Options[ ExtendInfraPath ] = {
-  Properties -> { },
-  Method     -> "Exhaustive",
-  "Length"   -> Automatic,
-  "Side"     -> "Both"
+  Properties  -> { },
+  Method      -> "Exhaustive",
+  "Length"    -> Automatic,
+  "Direction" -> "BothSides"
 };
 
 ExtendInfraPath[ graph_Graph, path_,
@@ -119,7 +120,7 @@ extendInfraPathCore[ graph_Graph, walk_List, opts : OptionsPattern[ ExtendInfraP
   Catch @ With[ {
       properties = OptionValue[ ExtendInfraPath, { opts }, Properties ],
       methodSpec = OptionValue[ ExtendInfraPath, { opts }, Method ] /. Automatic -> "Exhaustive",
-      side       = OptionValue[ ExtendInfraPath, { opts }, "Side" ],
+      direction  = OptionValue[ ExtendInfraPath, { opts }, "Direction" ],
       length     = OptionValue[ ExtendInfraPath, { opts }, "Length" ] },
     With[ { methodHead = methodName @ methodSpec,
             pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
@@ -128,20 +129,13 @@ extendInfraPathCore[ graph_Graph, walk_List, opts : OptionsPattern[ ExtendInfraP
       With[ { candidateFn = makeCandidateFn[ graph, allNeighboursBaseFn,
                               properties, ExtendInfraPath::badproperty ],
               simpleQ     = MemberQ[ properties, "Simple" | { "Simple" } ] },
-        With[ { forward  = If[ side === "Backward", { walk },
-                              extendOneSide[ graph, walk, candidateFn, length, pruning ] ],
-                backward = If[ side === "Forward", { walk },
-                              Reverse /@ extendOneSide[ graph, Reverse @ walk, candidateFn,
-                                                       length, pruning ] ] },
-          Switch[ side,
-            "Forward",  forward,
-            "Backward", backward,
-            "Both",
-              With[ { joined = DeleteDuplicates[ Join @@@ Tuples[
-                  { Drop[ #, -Length[ walk ] ] & /@ backward, forward } ] ] },
-                If[ simpleQ, Select[ joined, DuplicateFreeQ ], joined ]
-              ]
-          ]
+        Switch[ direction,
+          "Forward",   extendOneSide[ graph, walk, candidateFn, length, pruning ],
+          "Backward",  Reverse /@ extendOneSide[ graph, Reverse @ walk,
+                         candidateFn, length, pruning ],
+          "BothSides", extendBothSidesSymmetric[ graph, walk, candidateFn,
+                         length, pruning, simpleQ ],
+          _, Message[ ExtendInfraPath::baddirection, direction ]; Throw[ $Failed ]
         ]
       ]
     ]
@@ -165,6 +159,41 @@ extendOneSide[ graph_Graph, seed_List, candidateFn_, length_, pruning_ ] :=
       steps++
     ];
     DeleteDuplicates @ Join[ dead, live ]
+  ]
+
+
+(* Per-step symmetric BFS: each outer step grows the walk by at most one
+   vertex on each side.  A side freezes when its candidateFn returns {}; the
+   other side keeps growing one edge per step until it freezes too.  "Length"
+   counts outer steps. *)
+
+extendBothSidesSymmetric[ graph_Graph, seed_List, candidateFn_, length_, pruning_, simpleQ_ ] :=
+  Module[ { live = { seed }, dead = { }, steps = 0,
+            maxSteps = length /. Automatic -> Infinity },
+    While[ live =!= { } && steps < maxSteps,
+      With[ { pairs = ( w |-> { w, stepBothSides[ graph, w, candidateFn ] } ) /@ live },
+        dead = Join[ dead, Cases[ pairs, { w_, { } } :> w ] ];
+        live = applyPruning[
+          Flatten[ Cases[ pairs, { _, nexts : { __ } } :> nexts ], 1 ],
+          pruning ];
+        If[ simpleQ, live = Select[ live, DuplicateFreeQ ] ]
+      ];
+      steps++
+    ];
+    DeleteDuplicates @ Join[ dead, live ]
+  ]
+
+
+stepBothSides[ graph_Graph, walk_List, candidateFn_ ] :=
+  With[ { backCands = candidateFn[ graph, Reverse @ walk ],
+          fwdCands  = candidateFn[ graph, walk ] },
+    Which[
+      backCands === { } && fwdCands === { }, { },
+      backCands === { },                     Append[ walk, # ] & /@ fwdCands,
+      fwdCands  === { },                     Prepend[ walk, # ] & /@ backCands,
+      True, Flatten[ Outer[ Prepend[ Append[ walk, #2 ], #1 ] &,
+              backCands, fwdCands, 1 ], 1 ]
+    ]
   ]
 
 

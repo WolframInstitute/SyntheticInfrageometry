@@ -10,8 +10,14 @@ VerificationTest[
 
 VerificationTest[
   InfraPoint @ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}],
-  InfraPoint[{2}],
-  TestID -> "FindInfraMidpoint-segment-even-length-lower-central"
+  InfraPoint[{}],
+  TestID -> "FindInfraMidpoint-segment-odd-distance-strict-empty"
+]
+
+VerificationTest[
+  Sort @ ( #[[ 1, 1 ]] & /@ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}, "Tolerance" -> 1] ),
+  {2, 3},
+  TestID -> "FindInfraMidpoint-segment-odd-distance-tolerance-1"
 ]
 
 VerificationTest[
@@ -465,16 +471,30 @@ VerificationTest[
    wanting embedding-ranked feet compose with EmbeddingClosest. *)
 
 
-(* FindInfraMidpoint "Tarski" recipe is local: depends only on B(p1, d(p1, p2)). *)
+(* ===== FindInfraGoldenSection ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 10, 10 } ], p1 = 23, p2 = 67 },
-    Sort @ (#[[ 1, 1 ]] & /@ FindInfraMidpoint[ g, p1, p2, All, Method -> "Tarski" ]) ===
-      Sort @ (#[[ 1, 1 ]] & /@
-        FindInfraMidpoint[ NeighborhoodGraph[ g, p1, GraphDistance[ g, p1, p2 ] ], p1, p2, All, Method -> "Tarski" ])
-  ],
-  True,
-  TestID -> "FindInfraMidpoint-Tarski-locality"
+  FindInfraGoldenSection[PathGraph[Range[11]], 1, 11, All],
+  {},
+  TestID -> "FindInfraGoldenSection-strict-empty-irrational-ratio"
+]
+
+VerificationTest[
+  Sort @ ( #[[ 1, 1 ]] & /@ FindInfraGoldenSection[PathGraph[Range[11]], 1, 11, All, "Tolerance" -> 0.5] ),
+  {7},
+  TestID -> "FindInfraGoldenSection-tolerance-picks-vertex-7"
+]
+
+VerificationTest[
+  FindInfraGoldenSection[PathGraph[Range[11]], InfraSegment[{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}}], 1, "Tolerance" -> 0.5],
+  {InfraPoint[{7}]},
+  TestID -> "FindInfraGoldenSection-InfraSegment-tolerance"
+]
+
+VerificationTest[
+  Length @ FindInfraGoldenSection[PathGraph[Range[11]], 1, 11, 1, Method -> "Embedding"],
+  1,
+  TestID -> "FindInfraGoldenSection-Embedding-returns-one-vertex"
 ]
 
 EndTestSection[]

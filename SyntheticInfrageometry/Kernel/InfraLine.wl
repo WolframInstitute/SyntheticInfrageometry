@@ -31,13 +31,15 @@ InfraLine[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
    FindInfraLine[g, seg]: maximal geodesic lines containing seg as a sub-sequence
    (subsumes the deleted 2-arg ExtendInfraSegment). *)
 
-FindInfraLine::badmethod   = "Method `1` is not supported by FindInfraLine.";
-FindInfraLine::badproperty = "Property `1` is not supported by FindInfraLine (FindInfraLine accepts only Properties -> {}).";
+FindInfraLine::badmethod    = "Method `1` is not supported by FindInfraLine.";
+FindInfraLine::badproperty  = "Property `1` is not supported by FindInfraLine (FindInfraLine accepts only Properties -> {}).";
+FindInfraLine::baddirection = "Direction `1` is not supported by FindInfraLine.";
 
 Options[ FindInfraLine ] = {
   Properties   -> { },
   Method       -> "Exhaustive",
-  "Maximality" -> "Extension"
+  "Maximality" -> "Extension",
+  "Direction"  -> "BothSides"
 };
 
 FindInfraLine[ graph_Graph, p1_, p2_,
@@ -56,9 +58,12 @@ FindInfraLine[ graph_Graph, InfraSegment[{ walk_List, ___ }],
 
 FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] | All ) : 1,
     opts : OptionsPattern[] ] /; Length[ segment ] >= 2 :=
-  With[ { capped = infraCap[
-      findLineCoreFromSegment[ graph, segment, opts ], count ] },
-    If[ capped === $Failed, $Failed, InfraLine[ { # } ] & /@ capped ]
+  With[ { core = findLineCoreFromSegment[ graph, segment, opts ] },
+    If[ core === $Failed, $Failed,
+      With[ { capped = infraCap[ core, count ] },
+        If[ capped === $Failed, $Failed, InfraLine[ { # } ] & /@ capped ]
+      ]
+    ]
   ]
 
 
@@ -67,16 +72,19 @@ findLineCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindInfraLine ] ] /;
   Catch @ With[ {
       properties = OptionValue[ FindInfraLine, { opts }, Properties ],
       methodSpec = OptionValue[ FindInfraLine, { opts }, Method ] /. Automatic -> "Exhaustive",
-      maximality = OptionValue[ FindInfraLine, { opts }, "Maximality" ] },
+      maximality = OptionValue[ FindInfraLine, { opts }, "Maximality" ],
+      direction  = OptionValue[ FindInfraLine, { opts }, "Direction" ] },
     If[ properties =!= { },
       Message[ FindInfraLine::badproperty, properties ]; Throw[ $Failed ] ];
+    If[ ! MatchQ[ direction, "Forward" | "Backward" | "BothSides" ],
+      Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
     With[ { methodHead = methodName @ methodSpec,
             pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
       With[ { middles = allGeodesics[ graph, p1, p2 ] },
         With[ { ext = Union @ Flatten[
               Switch[ methodHead,
-                "Exhaustive",  findLineExtensions[ graph, #, pruning ] & /@ middles,
-                "Greedy",      findLineExtensionsGreedy[ graph, # ]     & /@ middles,
+                "Exhaustive",  findLineExtensions[ graph, #, pruning, direction ] & /@ middles,
+                "Greedy",      findLineExtensionsGreedy[ graph, #, direction ]     & /@ middles,
                 _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
               ], 1 ] },
           If[ maximality === "Diameter",
@@ -92,14 +100,17 @@ findLineCoreFromSegment[ graph_Graph, segment_List, opts : OptionsPattern[ FindI
   Catch @ With[ {
       properties = OptionValue[ FindInfraLine, { opts }, Properties ],
       methodSpec = OptionValue[ FindInfraLine, { opts }, Method ] /. Automatic -> "Exhaustive",
-      maximality = OptionValue[ FindInfraLine, { opts }, "Maximality" ] },
+      maximality = OptionValue[ FindInfraLine, { opts }, "Maximality" ],
+      direction  = OptionValue[ FindInfraLine, { opts }, "Direction" ] },
     If[ properties =!= { },
       Message[ FindInfraLine::badproperty, properties ]; Throw[ $Failed ] ];
+    If[ ! MatchQ[ direction, "Forward" | "Backward" | "BothSides" ],
+      Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
     With[ { methodHead = methodName @ methodSpec,
             pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
       With[ { ext = Switch[ methodHead,
-            "Exhaustive",  findLineExtensions[ graph, segment, pruning ],
-            "Greedy",      findLineExtensionsGreedy[ graph, segment ],
+            "Exhaustive",  findLineExtensions[ graph, segment, pruning, direction ],
+            "Greedy",      findLineExtensionsGreedy[ graph, segment, direction ],
             _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
           ] },
         If[ maximality === "Diameter",
@@ -110,28 +121,38 @@ findLineCoreFromSegment[ graph_Graph, segment_List, opts : OptionsPattern[ FindI
   ]
 
 
-(* Maximal geodesic extensions of a segment.  Asymmetric: each side is
-   extended independently to its maximal admissible length; among pairs
+(* Maximal geodesic extensions of a segment.  Asymmetric Cartesian: each side
+   is extended independently to its maximal admissible length; among pairs
    that achieve a valid joint geodesic (degenerate triangle inequality
    d(s, e) == d(s, p1) + d + d(p2, e)) we keep those with maximum total
    extension length b_s + a_e.  findLineExtensionsWith takes an optional
    admissibility predicate (used by FindInfraParallel to restrict to the
-   level set). *)
+   level set).  Direction \[Element] {"Forward", "Backward", "BothSides"}
+   controls which sides of the segment are extended; the default
+   "BothSides" reproduces the old behaviour.  For "Forward" the backward
+   anchor is pinned to p1 = First[segment]; for "Backward" the forward
+   anchor is pinned to p2 = Last[segment]; the output set is identical
+   under "BothSides" to per-step symmetric stepping (only intermediate
+   enumeration differs). *)
 
-findLineExtensions[ graph_Graph, segment_List, pruning_ : Infinity ] :=
-  findLineExtensionsWith[ graph, segment, pruning, True & ]
+findLineExtensions[ graph_Graph, segment_List, pruning_ : Infinity, direction_String : "BothSides" ] :=
+  findLineExtensionsWith[ graph, segment, pruning, True &, direction ]
 
 
-findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_ ] /; Length[ segment ] < 2 :=
+findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
+    direction_String : "BothSides" ] /; Length[ segment ] < 2 :=
   { segment }
 
-findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_ ] :=
+findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
+    direction_String : "BothSides" ] :=
   With[ { p1 = First[ segment ], p2 = Last[ segment ],
           d  = GraphDistance[ graph, First[ segment ], Last[ segment ] ] },
-    With[ { extendBefore = Select[ VertexList[ graph ],
-              c |-> admissible[ c ] && GraphDistance[ graph, c, p1 ] + d == GraphDistance[ graph, c, p2 ] ],
-            extendAfter  = Select[ VertexList[ graph ],
-              c |-> admissible[ c ] && GraphDistance[ graph, c, p2 ] + d == GraphDistance[ graph, p1, c ] ] },
+    With[ { extendBefore = If[ direction === "Forward", { p1 },
+              Select[ VertexList[ graph ],
+                c |-> admissible[ c ] && GraphDistance[ graph, c, p1 ] + d == GraphDistance[ graph, c, p2 ] ] ],
+            extendAfter  = If[ direction === "Backward", { p2 },
+              Select[ VertexList[ graph ],
+                c |-> admissible[ c ] && GraphDistance[ graph, c, p2 ] + d == GraphDistance[ graph, p1, c ] ] ] },
       With[ { validPairs = Select[ Tuples[ { extendBefore, extendAfter } ],
               pair |-> GraphDistance[ graph, pair[[1]], pair[[2]] ] ==
                        GraphDistance[ graph, pair[[1]], p1 ] + d + GraphDistance[ graph, p2, pair[[2]] ] ] },
@@ -165,19 +186,32 @@ findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_ ] :=
    necessarily of maximum total length. *)
 
 findLineExtensionsGreedy[ graph_Graph, segment_List ] :=
-  findLineExtensionsGreedy[ graph, segment, True & ]
+  findLineExtensionsGreedy[ graph, segment, "BothSides" ]
 
-findLineExtensionsGreedy[ graph_Graph, segment_List, admissible_ ] :=
-  { greedyWalkBoth[ graph, segment, admissible ] }
+findLineExtensionsGreedy[ graph_Graph, segment_List, direction_String ] :=
+  findLineExtensionsGreedy[ graph, segment, True &, direction ]
 
-greedyWalkBoth[ graph_Graph, segment_List, admissible_ ] /; Length[ segment ] < 2 := segment
+findLineExtensionsGreedy[ graph_Graph, segment_List, admissible_,
+    direction_String : "BothSides" ] /; ! StringQ[ admissible ] :=
+  { greedyWalkDirection[ graph, segment, admissible, direction ] }
 
-greedyWalkBoth[ graph_Graph, segment_List, admissible_ ] :=
+greedyWalkDirection[ graph_Graph, segment_List, admissible_, direction_String ] /;
+    Length[ segment ] < 2 := segment
+
+greedyWalkDirection[ graph_Graph, segment_List, admissible_, direction_String ] :=
   With[ { p1 = First[ segment ], p2 = Last[ segment ],
           d  = GraphDistance[ graph, First[ segment ], Last[ segment ] ] },
-    Join[ Reverse @ greedyWalk[ graph, p1, p2, d, admissible ],
-          segment,
-          greedyWalk[ graph, p2, p1, d, admissible ] ] ]
+    Switch[ direction,
+      "BothSides",
+        Join[ Reverse @ greedyWalk[ graph, p1, p2, d, admissible ],
+              segment,
+              greedyWalk[ graph, p2, p1, d, admissible ] ],
+      "Forward",
+        Join[ segment, greedyWalk[ graph, p2, p1, d, admissible ] ],
+      "Backward",
+        Join[ Reverse @ greedyWalk[ graph, p1, p2, d, admissible ], segment ]
+    ]
+  ]
 
 
 greedyWalk[ graph_Graph, h_, a_, db_, admissible_ ] :=
@@ -254,7 +288,7 @@ findParallelExtensionsGreedy[ graph_Graph, line_List, p_ ] :=
         With[ { admissible = c |-> lineDist[ c ] == r },
           With[ { seed = SelectFirst[ AdjacencyList[ graph, p ], admissible, Missing[] ] },
             If[ MissingQ[ seed ], { { p } },
-              { greedyWalkBoth[ graph, { p, seed }, admissible ] } ]
+              { greedyWalkDirection[ graph, { p, seed }, admissible, "BothSides" ] } ]
           ]
         ]
       ]

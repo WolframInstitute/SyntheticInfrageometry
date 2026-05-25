@@ -87,7 +87,7 @@ VerificationTest[
 
 VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
-    "Side" -> "Forward", "Length" -> 1,
+    "Direction" -> "Forward", "Length" -> 1,
     Properties -> {"Simple", "ShortestPath"} ],
   { InfraPath[ { { 3, 4, 5 } } ] },
   TestID -> "ExtendInfraPath-PathGraph-forward"
@@ -95,7 +95,7 @@ VerificationTest[
 
 VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
-    "Side" -> "Backward", "Length" -> 2,
+    "Direction" -> "Backward", "Length" -> 2,
     Properties -> {"Simple", "ShortestPath"} ],
   { InfraPath[ { { 1, 2, 3, 4 } } ] },
   TestID -> "ExtendInfraPath-PathGraph-backward"
@@ -112,7 +112,7 @@ VerificationTest[
 VerificationTest[
   Sort[ First @ #[[ 1 ]] & /@
     ExtendInfraPath[ CycleGraph[ 6 ], { 1 }, All,
-      "Side" -> "Forward", "Length" -> 2,
+      "Direction" -> "Forward", "Length" -> 2,
       Properties -> {"Simple", {"LongestPath", "Aggregation" -> "Sum"}} ] ],
   Sort[ { { 1, 2, 3 }, { 1, 6, 5 } } ],
   TestID -> "ExtendInfraPath-CycleGraph-LongestPath-sum"
@@ -121,7 +121,7 @@ VerificationTest[
 VerificationTest[
   AllTrue[
     ExtendInfraPath[ GridGraph[ { 3, 3 } ], { 1 }, All,
-      "Side" -> "Forward", "Length" -> 3, Properties -> { "Simple" } ],
+      "Direction" -> "Forward", "Length" -> 3, Properties -> { "Simple" } ],
     p |-> InfraPathQ[ GridGraph[ { 3, 3 } ], First @ p[[ 1 ]] ] ],
   True,
   TestID -> "ExtendInfraPath-all-extensions-pass-InfraPathQ"
@@ -130,7 +130,7 @@ VerificationTest[
 VerificationTest[
   AllTrue[
     ExtendInfraPath[ GridGraph[ { 3, 3 } ], { 1 }, All,
-      "Side" -> "Both", "Length" -> 2 ],
+      "Direction" -> "BothSides", "Length" -> 2 ],
     MatchQ[ InfraPath[ { _List } ] ] ],
   True,
   TestID -> "ExtendInfraPath-output-shape"
@@ -139,7 +139,7 @@ VerificationTest[
 VerificationTest[
   Length @ First @ First @
     ExtendInfraPath[ PathGraph[ Range[ 7 ] ], { 4, 5 }, 1,
-      "Side" -> "Forward", "Length" -> 2,
+      "Direction" -> "Forward", "Length" -> 2,
       Properties -> {"Simple", "ShortestPath"} ][[ 1 ]],
   4,
   TestID -> "ExtendInfraPath-Length-truncation"
@@ -150,7 +150,7 @@ VerificationTest[
   Sort[ First @ #[[ 1 ]] & /@
     ExtendInfraPath[ PathGraph[ Range[ 7 ] ],
       InfraPath[ { { 3 }, { 5 } } ], All,
-      "Side" -> "Forward", "Length" -> 1,
+      "Direction" -> "Forward", "Length" -> 1,
       Properties -> {"Simple", "ShortestPath"} ] ],
   Sort[ { { 3, 2 }, { 3, 4 }, { 5, 4 }, { 5, 6 } } ],
   TestID -> "ExtendInfraPath-multi-realisation"
@@ -159,7 +159,7 @@ VerificationTest[
 (* Dead-end freeze: forward extension of the right endpoint freezes *)
 VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 4, 5 }, 1,
-    "Side" -> "Forward", "Length" -> 5,
+    "Direction" -> "Forward", "Length" -> 5,
     Properties -> {"Simple", "ShortestPath"} ],
   { InfraPath[ { { 4, 5 } } ] },
   TestID -> "ExtendInfraPath-dead-end-freeze"
@@ -169,7 +169,40 @@ VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 1,
     Properties -> {"Simple", "ShortestPath"} ],
   { InfraPath[ { { 1, 2, 3, 4, 5 } } ] },
-  TestID -> "ExtendInfraPath-Both-extends-segment-to-line"
+  TestID -> "ExtendInfraPath-BothSides-extends-segment-to-line"
+]
+
+(* Per-step symmetric stepping: from oriented seed {3, 4} on PathGraph[5]
+   with Length -> 1, "BothSides" grows by exactly +1 edge on each side:
+   {2, 3, 4, 5}.  The old asymmetric Cartesian would also have produced
+   length-1 single-side walks ({3, 4, 5}, {2, 3, 4}). *)
+VerificationTest[
+  ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
+    "Length" -> 1, "Direction" -> "BothSides",
+    Properties -> {"Simple", "ShortestPath"} ],
+  { InfraPath[ { { 2, 3, 4, 5 } } ] },
+  TestID -> "ExtendInfraPath-BothSides-symmetric-one-step"
+]
+
+(* Asymmetric tail: from {4, 5} on PathGraph[5] with "BothSides", forward
+   freezes immediately (5 has no Simple+ShortestPath neighbor past it);
+   backward keeps growing one edge per step until it reaches vertex 1.
+   Outer-step budget Length -> 5 covers the full extension. *)
+VerificationTest[
+  ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 4, 5 }, 1,
+    "Length" -> 5, "Direction" -> "BothSides",
+    Properties -> {"Simple", "ShortestPath"} ],
+  { InfraPath[ { { 1, 2, 3, 4, 5 } } ] },
+  TestID -> "ExtendInfraPath-BothSides-asymmetric-tail"
+]
+
+(* Unknown direction -> $Failed with ::baddirection *)
+VerificationTest[
+  ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3 }, 1,
+    "Direction" -> "Sideways", Properties -> {"Simple"} ],
+  $Failed,
+  {ExtendInfraPath::baddirection},
+  TestID -> "ExtendInfraPath-baddirection"
 ]
 
 (* count > available: $Failed *)
