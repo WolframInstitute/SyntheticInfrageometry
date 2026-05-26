@@ -7,17 +7,27 @@ PackageScope[findInfraSum]
 (* ===================== InfraScalarProduct ===================== *)
 
 (* Base-point-relative inner product of u, v wrt o.
-   "Schoenberg" (default): <u, v>_o = (d(o, u)^2 + d(o, v)^2 - d(u, v)^2) / 2.
+   "Alexandrov" (default; equivalent to {"Alexandrov", "Curvature" -> 0}):
+       <u, v>_o = d(o, u) d(o, v) cos theta_k,  where theta_k is the comparison
+       angle at o in M_k^2.  k = 0 collapses to (d(o,u)^2 + d(o,v)^2 - d(u,v)^2) / 2
+       (the polar form of the squared metric); k != 0 uses the spherical /
+       hyperbolic law of cosines via comparisonAngleCos.
    "Parallelogram": polarisation <u, v>_o = (||u + v||_o^2 - ||u - v||_o^2) / 4
-   over realisations of u + v and u - v on the substrate (multi-valued). *)
+       over realisations of u + v and u - v on the substrate (multi-valued). *)
 
-Options[ InfraScalarProduct ] = { Method -> "Schoenberg" };
+InfraScalarProduct::badmethod = "Method `1` is not supported by InfraScalarProduct.";
+
+Options[ InfraScalarProduct ] = { Method -> "Alexandrov" };
 
 InfraScalarProduct[ graph_Graph, o_, u_, v_, OptionsPattern[] ] :=
-  Switch[ OptionValue[ Method ],
-    "Schoenberg",
-      With[ { d = { a, b } |-> GraphDistance[ graph, a, b ] },
-        ( d[ o, u ]^2 + d[ o, v ]^2 - d[ u, v ]^2 ) / 2
+  Switch[ methodName @ OptionValue[ Method ],
+    "Alexandrov",
+      With[ { k = Lookup[ methodOptions @ OptionValue[ Method ], "Curvature", 0 ],
+              d = { a, b } |-> GraphDistance[ graph, a, b ] },
+        If[ k === 0,
+          ( d[ o, u ]^2 + d[ o, v ]^2 - d[ u, v ]^2 ) / 2,
+          d[ o, u ] d[ o, v ] comparisonAngleCos[ d[ u, v ], d[ o, u ], d[ o, v ], k ]
+        ]
       ],
     "Parallelogram",
       With[ { plus  = #[[ 1, 1 ]] & /@ FindInfraLinearCombination[
@@ -31,7 +41,8 @@ InfraScalarProduct[ graph_Graph, o_, u_, v_, OptionsPattern[] ] :=
             If[ Length[ vals ] == 1, First @ vals, vals ]
           ]
         ]
-      ]
+      ],
+    _, Message[ InfraScalarProduct::badmethod, OptionValue[ Method ] ]; $Failed
   ]
 
 
@@ -81,11 +92,10 @@ FindInfraLinearCombination[ graph_Graph, o_, terms_List,
    synthetic radian measure of the detour around p.
    "Alexandrov": Alexandrov comparison-triangle angle in model space M_k^2
    (k = 0 by default; "Curvature" -> k inside the Method list overrides).
-   "Schoenberg": polar form of the squared metric at p,
-   < q1 - p, q2 - p >_p = (d(p,q1)^2 + d(p,q2)^2 - d(q1,q2)^2)/2.
-   Returns the un-arccos'd, un-normalised scalar product -- NOT in radians.
-   Right angle iff result == 0 (exact on integer-distance graphs);
-   ArcCos[# / (d(p,q1) d(p,q2))] & recovers the Alexandrov(k=0) radian angle. *)
+   The un-arccos'd scalar product (d(p,q1)^2 + d(p,q2)^2 - d(q1,q2)^2)/2 is
+   not an angle -- use InfraScalarProduct[g, p, q1, q2] for that. *)
+
+InfraAngle::badmethod = "Method `1` is not supported by InfraAngle.";
 
 Options[ InfraAngle ] = { Method -> "Arclength" };
 
@@ -112,10 +122,7 @@ InfraAngle[ graph_Graph, { q1_, p_, q2_ }, OptionsPattern[] ] :=
           GraphDistance[ graph, p, q2 ],
           k ]
       ],
-    "Schoenberg",
-      With[ { d = { a, b } |-> GraphDistance[ graph, a, b ] },
-        ( d[ p, q1 ]^2 + d[ p, q2 ]^2 - d[ q1, q2 ]^2 ) / 2
-      ]
+    _, Message[ InfraAngle::badmethod, OptionValue[ Method ] ]; $Failed
   ]
 
 

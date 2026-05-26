@@ -24,8 +24,9 @@ Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"201489a6-1011-4c1c-8848-b002
 
 Cell["\<\
 A worked tour of the metric-algebra layer: inner products from distances \
-(Schoenberg and parallelogram), angles at a vertex, comparison triangles, \
-CAT(k) thinness, and the local Alexandrov upper-curvature bound.\
+(Alexandrov-flat comparison form and parallelogram polarisation), angles at a \
+vertex, comparison triangles, CAT(k) thinness, and the local Alexandrov \
+upper-curvature bound.\
 \>", "Text",ExpressionUUID->"b831b918-77b2-43aa-ac3f-73871d51cd47"],
 
 Cell["Setup", "Section",ExpressionUUID->"ed8c96c5-eaf9-44d5-ad1c-e30857f830a7"],
@@ -68,7 +69,7 @@ Cell[BoxData[
 
 Cell["Inner product from distances", "Section",ExpressionUUID->"0866f8ea-888f-45d6-b70a-2ce92d1bd51e"],
 
-Cell["Schoenberg form at base point 4 on a path.", "CodeText",ExpressionUUID->"30391c74-9bc2-461f-bdda-0f7005c3b1aa"],
+Cell["Alexandrov-flat scalar product at base point 4 on a path.", "CodeText",ExpressionUUID->"30391c74-9bc2-461f-bdda-0f7005c3b1aa"],
 
 Cell[BoxData[
  RowBox[{"InfraScalarProduct", "[", 

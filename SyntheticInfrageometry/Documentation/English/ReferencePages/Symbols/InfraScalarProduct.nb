@@ -24,9 +24,11 @@ Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"6c44d0df-a63b-4577-9d75-a647
 
 Cell["\<\
 InfraScalarProduct[g, o, u, v] returns the base-point-relative scalar product \
-of u and v with respect to o. Option Method (\"Schoenberg\" (default) \
-\[LongDash] (d(o, u)^2 + d(o, v)^2 - d(u, v)^2)/2; \"Parallelogram\" \
-\[LongDash] polarisation identity (||u+v||^2 - ||u-v||^2)/4 via \
+of u and v with respect to o. Option Method (\"Alexandrov\" (default) \
+\[LongDash] d(o, u) d(o, v) cos(\[Theta]_0) which collapses to (d(o, u)^2 + \
+d(o, v)^2 - d(u, v)^2)/2; {\"Alexandrov\", \"Curvature\" -> k} \[LongDash] \
+spherical / hyperbolic law of cosines in M_k^2; \"Parallelogram\" \[LongDash] \
+polarisation identity (||u+v||^2 - ||u-v||^2)/4 via \
 FindInfraLinearCombination).\
 \>", "Text",ExpressionUUID->"64a0d84d-c698-4f65-ba8c-62dcfda56e20"],
 
@@ -47,7 +49,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "Schoenberg scalar product on a path graph."]], "Input",ExpressionUUID->\
+ "Alexandrov-flat scalar product on a path graph."]], "Input",ExpressionUUID->\
 "8d8f0298-9718-4152-983f-85681bc5e4fc"],
 
 Cell[BoxData[

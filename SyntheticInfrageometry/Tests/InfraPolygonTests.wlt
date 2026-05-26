@@ -180,5 +180,167 @@ VerificationTest[
   TestID -> "FindInfraRegularPolygon-too-many-diagonals"
 ]
 
+VerificationTest[
+  FindInfraRegularPolygon[ CycleGraph[ 6 ], { "foo" }, 6 ],
+  $Failed,
+  { FindInfraRegularPolygon::badslot },
+  TestID -> "FindInfraRegularPolygon-badslot"
+]
+
+
+(* ===================== Slot grammar: Automatic ===================== *)
+
+(* GridGraph[{3, 3}] unit squares: sides 1, 2-diagonals constant 2.
+   {1, Automatic} (any constant 2-diagonal) and {1, {2, 2}} (constant in [2, 2])
+   both find them; {1, {3, 3}} finds none. *)
+
+VerificationTest[
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, Automatic }, 4, All ],
+  4,
+  TestID -> "FindInfraRegularPolygon-grid-Automatic-2diagonal"
+]
+
+VerificationTest[
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, { 2, 2 } }, 4, All ],
+  4,
+  TestID -> "FindInfraRegularPolygon-grid-range-2diagonal"
+]
+
+VerificationTest[
+  FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, { 3, 3 } }, 4 ],
+  $Failed,
+  TestID -> "FindInfraRegularPolygon-grid-range-2diagonal-impossible"
+]
+
+(* PetersenGraph is 3-regular with girth 5; its 12 pentagons are all
+   distance-1 5-cycles, so {Automatic} finds the same 12 as {1}. *)
+
+VerificationTest[
+  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { Automatic }, 5, All ],
+  12,
+  TestID -> "FindInfraRegularPolygon-petersen-Automatic-equilateral"
+]
+
+(* {Automatic, Automatic}: 2-diagonal must also be constant.  In Petersen
+   every 2-diagonal in a 5-cycle is at distance 2, so all 12 pass. *)
+
+VerificationTest[
+  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { Automatic, Automatic }, 5, All ],
+  12,
+  TestID -> "FindInfraRegularPolygon-petersen-Automatic-pair"
+]
+
+
+(* ===================== InfraRegularPolygonQ slot grammar ===================== *)
+
+(* A 3x3 grid unit square satisfies {1, Automatic} (sides 1, 2-diagonal
+   constant = 2) but not {1, {3, 3}}. *)
+
+VerificationTest[
+  InfraRegularPolygonQ[ GridGraph[ { 3, 3 } ], { 1, 2, 5, 4 }, { 1, Automatic } ],
+  True,
+  TestID -> "InfraRegularPolygonQ-grid-Automatic-2diagonal"
+]
+
+VerificationTest[
+  InfraRegularPolygonQ[ GridGraph[ { 3, 3 } ], { 1, 2, 5, 4 }, { 1, { 2, 2 } } ],
+  True,
+  TestID -> "InfraRegularPolygonQ-grid-range-2diagonal"
+]
+
+VerificationTest[
+  InfraRegularPolygonQ[ GridGraph[ { 3, 3 } ], { 1, 2, 5, 4 }, { 1, { 3, 3 } } ],
+  False,
+  TestID -> "InfraRegularPolygonQ-grid-range-2diagonal-false"
+]
+
+
+(* ===================== "From" localization ===================== *)
+
+(* GridGraph[{5, 5}] has 16 unit squares.  Center vertex is 13; the four
+   unit squares incident to vertex 13 are {7, 8, 13, 12}, {8, 9, 14, 13},
+   {12, 13, 18, 17}, {13, 14, 19, 18}. *)
+
+VerificationTest[
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All ],
+  16,
+  TestID -> "FindInfraRegularPolygon-grid5-default-From-All"
+]
+
+VerificationTest[
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 ],
+  4,
+  TestID -> "FindInfraRegularPolygon-grid5-From-center-membership"
+]
+
+(* "From" -> v -> 1: squares whose vertices all lie in N_1(13) = {8, 12, 13, 14, 18}.
+   No 4-cycle fits in this 5-vertex star, so the result is empty. *)
+
+VerificationTest[
+  FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 -> 1 ],
+  { },
+  TestID -> "FindInfraRegularPolygon-grid5-From-radius1-empty"
+]
+
+(* "From" -> v -> 2: N_2(13) is large enough for unit squares around 13 to fit. *)
+
+VerificationTest[
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 -> 2 ] >= 4,
+  True,
+  TestID -> "FindInfraRegularPolygon-grid5-From-radius2-localized"
+]
+
+VerificationTest[
+  FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, "From" -> 13 -> "bar" ],
+  $Failed,
+  { FindInfraRegularPolygon::badfrom },
+  TestID -> "FindInfraRegularPolygon-badfrom"
+]
+
+(* "From" accepts InfraPoint[{v}] wrapper, unwrapping to a bare vertex. *)
+
+VerificationTest[
+  FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
+    "From" -> InfraPoint[ { 13 } ] ] ===
+  FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 ],
+  True,
+  TestID -> "FindInfraRegularPolygon-From-InfraPoint-unary"
+]
+
+(* "From" accepts the list-of-unaries shape returned by FindInfraPoint. *)
+
+VerificationTest[
+  FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
+    "From" -> FindInfraPoint[ GridGraph[ { 5, 5 } ], "From" -> "Center" ] -> 2 ] ===
+  FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
+    "From" -> 13 -> 2 ],
+  True,
+  TestID -> "FindInfraRegularPolygon-From-FindInfraPoint-pipe"
+]
+
+(* Multi-anchor InfraPoint[{v1, v2}] in localization: NeighborhoodGraph
+   accepts a list, giving N_r(v1) union N_r(v2). *)
+
+VerificationTest[
+  Sort @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
+    "From" -> InfraPoint[ { 1, 25 } ] -> 1 ] ===
+  Sort @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
+    "From" -> { 1, 25 } -> 1 ],
+  True,
+  TestID -> "FindInfraRegularPolygon-From-InfraPoint-multi-radius"
+]
+
+(* Multi-anchor membership: cycles containing at least one of the listed
+   vertices.  In GridGraph[{5,5}], "From" -> InfraPoint[{1, 25}] should
+   pick squares incident to corner 1 OR corner 25 = 2 squares total
+   (one per corner). *)
+
+VerificationTest[
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
+    "From" -> InfraPoint[ { 1, 25 } ] ],
+  2,
+  TestID -> "FindInfraRegularPolygon-From-InfraPoint-multi-membership"
+]
+
 
 EndTestSection[]

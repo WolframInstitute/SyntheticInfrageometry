@@ -68,11 +68,19 @@ $InfraSceneHighlightPalette := Join[
    caller override colour, opacity, `AbsolutePointSize`, `AbsoluteThickness`,
    etc. on a per-object basis. *)
 
+(* Diffuse-encoding ranges.  "OpacityRange" and "ThicknessRange" are on by
+   default, so multi-realisation visit counts are visible out of the box via
+   opacity gradient on vertices/edges and thickness gradient on edges.
+   "PointSizeRange" defaults to None, which suppresses the AbsolutePointSize
+   directive entirely so highlighted vertices inherit the underlying graph's
+   point size.  Opt into the point-size channel by setting "PointSizeRange"
+   to a {min, max} pair (e.g. $InfraPointSizeRange recovers the previous
+   default); set any *Range to None to suppress that channel. *)
 Options[ InfraSceneHighlight ] = Join[
   {
     "OpacityRange"   :> $InfraOpacityRange,
     "ThicknessRange" :> $InfraThicknessRange,
-    "PointSizeRange" :> $InfraPointSizeRange
+    "PointSizeRange" -> None
   },
   Options[ HighlightGraph ]
 ];
@@ -197,22 +205,31 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
         { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]] } ];
     ];
 
-    HighlightGraph[ graph, Join[
-      KeyValueMap[
-        { e, cs } |-> With[ { last = Last @ cs },
-          Style[ UndirectedEdge @@ e, Directive[
-            last[[ 1 ]],
-            Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) last[[ 2 ]] ],
-            AbsoluteThickness[ tRange[[ 1 ]] + ( tRange[[ 2 ]] - tRange[[ 1 ]] ) last[[ 2 ]] ],
-            Sequence @@ last[[ 3 ]] ] ] ],
-        Merge[ eEntries, Identity ] ],
-      KeyValueMap[
-        { v, cs } |-> With[ { last = Last @ cs },
-          Style[ v, Directive[
-            last[[ 1 ]],
-            Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) last[[ 2 ]] ],
-            AbsolutePointSize[ pRange[[ 1 ]] + ( pRange[[ 2 ]] - pRange[[ 1 ]] ) last[[ 2 ]] ],
-            Sequence @@ last[[ 3 ]] ] ] ],
-        Merge[ vEntries, Identity ] ] ],
-      FilterRules[ { opts }, Options @ HighlightGraph ] ]
+    (* A *Range option of None suppresses its directive.  Opacity is on by
+       default; thickness and point-size are opt-in. *)
+    With[ {
+        opacityDir = If[ oRange === None, {},
+          { r |-> Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) r ] } ],
+        thicknessDir = If[ tRange === None, {},
+          { r |-> AbsoluteThickness[ tRange[[ 1 ]] + ( tRange[[ 2 ]] - tRange[[ 1 ]] ) r ] } ],
+        pointSizeDir = If[ pRange === None, {},
+          { r |-> AbsolutePointSize[ pRange[[ 1 ]] + ( pRange[[ 2 ]] - pRange[[ 1 ]] ) r ] } ] },
+
+      HighlightGraph[ graph, Join[
+        KeyValueMap[
+          { e, cs } |-> With[ { last = Last @ cs },
+            Style[ UndirectedEdge @@ e, Directive[
+              last[[ 1 ]],
+              Sequence @@ ( # [ last[[ 2 ]] ] & /@ Join[ opacityDir, thicknessDir ] ),
+              Sequence @@ last[[ 3 ]] ] ] ],
+          Merge[ eEntries, Identity ] ],
+        KeyValueMap[
+          { v, cs } |-> With[ { last = Last @ cs },
+            Style[ v, Directive[
+              last[[ 1 ]],
+              Sequence @@ ( # [ last[[ 2 ]] ] & /@ Join[ opacityDir, pointSizeDir ] ),
+              Sequence @@ last[[ 3 ]] ] ] ],
+          Merge[ vEntries, Identity ] ] ],
+        FilterRules[ { opts }, Options @ HighlightGraph ] ]
+    ]
   ]
