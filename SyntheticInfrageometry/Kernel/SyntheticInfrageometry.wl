@@ -130,6 +130,7 @@ PackageExport[InfraCurvature]
 PackageExport[SelectInfraPath]
 PackageExport[SelectInfraCycle]
 PackageExport[EmbeddingClosest]
+PackageExport[FindEmbeddingClosestPath]
 PackageExport[GeodesicSprayGraph]
 PackageExport[PathSubgraph]
 

@@ -48,12 +48,17 @@ $InfraSceneHighlightPalette := Join[
    VertexShapeFunction (vertex channel), EdgeStyle / EdgeShapeFunction (edge
    channel), "OpacityRange" / "ThicknessRange" / "PointSizeRange" (per-object
    diffusion overrides), and any bare directive (both colour channels).  The
-   three ranges default to the global option values passed in `defaults`. *)
+   three ranges default to the global option values passed in `defaults`.
+   A *numeric* VertexSize -> n is shorthand for "PointSizeRange" -> {n, n}
+   (a constant absolute point size, the intuitive way to size a highlighted
+   point); a symbolic VertexSize (Tiny / Small / Large / Scaled[..]) stays on
+   the graph-coordinate HighlightGraph VertexSize channel. *)
 parseHighlightStyle[ spec_, defaults_Association ] :=
   Replace[
     Fold[
       { rec, elem } |-> Replace[ elem, {
         ( VertexStyle         -> v_ ) :> MapAt[ Append[ #, v ] &, rec, "VertexDir" ],
+        ( VertexSize          -> v_ ? NumericQ ) :> Append[ rec, "PointSizeRange" -> { v, v } ],
         ( VertexSize          -> v_ ) :> Append[ rec, "VertexSize" -> v ],
         ( VertexShapeFunction -> v_ ) :> Append[ rec, "VertexShapeFunction" -> v ],
         ( EdgeStyle           -> v_ ) :> Append[ rec, "EdgeStyle" -> v ],
@@ -294,9 +299,13 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                   Which[
                     rec[ "VertexShapeFunction" ] =!= None,
                       <| "VSF" -> ( v -> rec[ "VertexShapeFunction" ] ) |>,
-                    rec[ "PointSizeRange" ] =!= None,
+                    (* a fixed AbsolutePointSize / PointSize in the vertex channel, or the
+                       count-scaled "PointSizeRange" diffusion, is rerouted to a top-level
+                       VertexShapeFunction since HighlightGraph drops point sizing in Style[] specs *)
+                    rec[ "PointSizeRange" ] =!= None || ! FreeQ[ vDirs, _AbsolutePointSize | _PointSize ],
                       With[ { body = Flatten[ { color, oList,
-                          AbsolutePointSize[ lerp[ rec[ "PointSizeRange" ], w ] ], vDirs } ] },
+                          If[ rec[ "PointSizeRange" ] === None, { },
+                            { AbsolutePointSize[ lerp[ rec[ "PointSizeRange" ], w ] ] } ], vDirs } ] },
                         <| "VSF" -> ( v -> ( Append[ body, Point[ #1 ] ] & ) ) |> ],
                     True,
                       <| "Style" -> Style[ v, Directive[ color, Sequence @@ oList, Sequence @@ vDirs ] ],

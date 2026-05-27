@@ -105,7 +105,11 @@ SelectInfraCycle[ graph_Graph, countSpec : ( _Integer | UpTo[ _Integer ] | All )
 (* Polymorphic closest-by-embedding operator.  Reference shape {p1, p2} picks
    bundle elements closest to the Euclidean segment p1-p2 under GraphEmbedding;
    reference shape {center, radius_?NumericQ} picks bundle elements closest to
-   the Euclidean circle of given centre and radius.  Bundle elements may be
+   the Euclidean circle of given centre and radius; an arbitrary embedded curve
+   (a Line / BSplineCurve / BezierCurve, or a list of >= 3 plane points in the
+   embedding's coordinates) picks the bundle element whose embedded polyline is
+   closest (plane Hausdorff) to that curve -- i.e. draw any curve over the graph
+   embedding and get back the best-approximating path.  Bundle elements may be
    bare vertex sequences, InfraSegment / InfraLine / InfraPath / InfraRay /
    InfraCircle wrappers, or homogeneous lists of unary wrappers; wrappers are
    preserved. *)
@@ -187,9 +191,66 @@ embeddingRankShellSets[ graph_Graph, sets_List, center_, radius_ ] :=
   ]
 
 
+(* --- curve-shape: bundle of paths, reference an arbitrary embedded curve.
+   The curve is a Line / BSplineCurve / BezierCurve, or a bare list of >= 3 plane
+   points in the embedding's coordinates (a length-2 bare list stays a {p1, p2}
+   vertex reference -- wrap explicit coordinates in Line[..] to force a curve).
+   Returns the bundle element whose embedded polyline is closest (plane
+   Hausdorff) to the curve, wrapper head preserved. *)
+
+EmbeddingClosest[ graph_Graph, paths_List, crv_ ] /;
+    embeddingCurveQ[ crv ] && Length[ paths ] <= 1 &&
+    ( paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraLine | InfraPath | InfraRay )[ { _ } ] ] ] ) := paths
+
+EmbeddingClosest[ graph_Graph, paths_List, crv_ ] /;
+    embeddingCurveQ[ crv ] &&
+    ( paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraLine | InfraPath | InfraRay )[ { _ } ] ] ] ) :=
+  With[ { coords = resolveEmbeddingCoords[ graph, Automatic ],
+          vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ],
+          curvePts = embeddingCurvePoints[ crv ] },
+    MinimalBy[ paths,
+      path |-> EmbeddingCurveDistance[ coords, Lookup[ vertexIndex, path ], curvePts ] ]
+  ]
+
+EmbeddingClosest[ graph_Graph, ( head : InfraSegment | InfraLine | InfraPath | InfraRay )[ paths_List ], crv_ ] /;
+    embeddingCurveQ[ crv ] :=
+  head[ EmbeddingClosest[ graph, paths, crv ] ]
+
+EmbeddingClosest[ graph_Graph, list_List, crv_ ] /;
+    embeddingCurveQ[ crv ] && list =!= { } &&
+    AllTrue[ list, MatchQ[ ( InfraSegment | InfraLine | InfraPath | InfraRay )[ { _ } ] ] ] :=
+  With[ { head = Head @ First @ list },
+    head[ { # } ] & /@ EmbeddingClosest[ graph, #[[ 1, 1 ]] & /@ list, crv ] ]
+
+
 (* --- operator form --- *)
 
 EmbeddingClosest[ graph_Graph, ref_List ] := EmbeddingClosest[ graph, #, ref ] &
+
+EmbeddingClosest[ graph_Graph, crv : ( _Line | _BSplineCurve | _BezierCurve ) ] :=
+  EmbeddingClosest[ graph, #, crv ] &
+
+
+(* ===================== FindEmbeddingClosestPath ===================== *)
+
+(* Snap an arbitrary embedded curve to a graph walk: sample the curve, map each
+   sample to its nearest vertex under the embedding, drop consecutive repeats,
+   and join successive anchors by geodesics.  Returns InfraPath[{walk}] tracing
+   the curve -- the generative counterpart of EmbeddingClosest's curve selection
+   (no bundle to choose from, so the path is constructed).  `curve` is a Line /
+   BSplineCurve / BezierCurve or a list of plane points in the embedding's
+   coordinates. *)
+
+FindEmbeddingClosestPath[ graph_Graph, curve_ ] :=
+  With[ { coords = resolveEmbeddingCoords[ graph, Automatic ],
+          curvePts = embeddingCurvePoints[ curve ] },
+    With[ { anchors = First /@ Split[
+        Nearest[ coords -> VertexList[ graph ], curvePts ][[ All, 1 ]] ] },
+      InfraPath[ { Fold[
+        Join[ #1, Rest @ FindShortestPath[ graph, Last @ #1, #2 ] ] &,
+        { First @ anchors }, Rest @ anchors ] } ]
+    ]
+  ]
 
 
 (* ===================== GeodesicSprayGraph ===================== *)
@@ -360,6 +421,30 @@ EmbeddingCircleDistance[ coords_List, cycle_List, centerIdx_Integer, radius_ ] /
   ]
 
 EmbeddingCircleDistance[ _List, cycle_List, _Integer, _ ] /; Length[ cycle ] < 3 := Infinity
+
+
+(* embeddingCurveQ: is `crv` an arbitrary embedded curve reference?  A
+   Line / BSplineCurve / BezierCurve, or a bare list of >= 3 plane points.  A
+   length-2 bare list is left to the {p1, p2} vertex-reference branch. *)
+
+embeddingCurveQ[ _Line | _BSplineCurve | _BezierCurve ] := True
+embeddingCurveQ[ pts_ ] := MatrixQ[ pts, NumericQ ] && Last[ Dimensions[ pts ] ] === 2 && Length[ pts ] >= 3
+
+embeddingCurvePoints[ Line[ pts_ ] ] := pts
+embeddingCurvePoints[ BSplineCurve[ pts_, opts___ ] ] :=
+  BSplineFunction[ pts, opts ] /@ Subdivide[ 0., 1., Max[ 64, 4 Length[ pts ] ] ]
+embeddingCurvePoints[ BezierCurve[ pts_, ___ ] ] :=
+  BezierFunction[ pts ] /@ Subdivide[ 0., 1., Max[ 64, 4 Length[ pts ] ] ]
+embeddingCurvePoints[ pts_ ] := pts
+
+
+(* EmbeddingCurveDistance: plane Hausdorff between the embedded polyline of a
+   path (a single point when degenerate) and the reference curve's polyline. *)
+
+EmbeddingCurveDistance[ coords_List, path_List, curvePts_List ] :=
+  RegionHausdorffDistance[
+    If[ Length[ path ] >= 2, Line[ coords[[ path ]] ], Point[ coords[[ First @ path ]] ] ],
+    Line[ curvePts ] ]
 
 
 (* Pairwise path-space distance matrix between the supplied paths under

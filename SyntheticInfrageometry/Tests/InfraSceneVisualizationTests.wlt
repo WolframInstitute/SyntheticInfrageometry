@@ -134,13 +134,15 @@ VerificationTest[
 ]
 
 (* Per-object style override via Rule -> Directive[...]: an explicit
-   AbsolutePointSize must appear in the produced VertexStyle directive. *)
+   AbsolutePointSize is rerouted to a top-level VertexShapeFunction (it is a
+   no-op inside a Style[] highlight spec), so it must reach the produced
+   options. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
-          { InfraPoint[ { 1, 6, 11 } ] -> Directive[ Blue, AbsolutePointSize[ 25 ] ] } ] },
-      ! FreeQ[ styles, AbsolutePointSize[ 25 ] ]
-    ]
+    ! FreeQ[
+      Options @ InfraSceneHighlight[ g,
+        { InfraPoint[ { 1, 6, 11 } ] -> Directive[ Blue, AbsolutePointSize[ 25 ] ] } ],
+      AbsolutePointSize[ 25 ] ]
   ],
   True,
   TestID -> "InfraSceneHighlight-rule-directive-pointsize-override"
@@ -150,10 +152,10 @@ VerificationTest[
    Rule -> Directive[...] form. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
-          { Style[ InfraPoint[ { 1, 6 } ], Green, AbsolutePointSize[ 30 ] ] } ] },
-      ! FreeQ[ styles, AbsolutePointSize[ 30 ] ]
-    ]
+    ! FreeQ[
+      Options @ InfraSceneHighlight[ g,
+        { Style[ InfraPoint[ { 1, 6 } ], Green, AbsolutePointSize[ 30 ] ] } ],
+      AbsolutePointSize[ 30 ] ]
   ],
   True,
   TestID -> "InfraSceneHighlight-style-wrapper-pointsize-override"
@@ -228,4 +230,34 @@ VerificationTest[
   ],
   True,
   TestID -> "InfraSceneHighlight-pointsizerange-reroutes-to-vsf"
+]
+
+(* A numeric per-entry VertexSize is shorthand for a constant absolute point
+   size: it routes through the VertexShapeFunction / AbsolutePointSize path
+   (not the graph-coordinate top-level VertexSize), so a highlighted point gets
+   a consistent on-screen size regardless of layout scale. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    With[ { opts = Options @ InfraSceneHighlight[ g,
+          { InfraPoint[ { 13 } ] -> { VertexStyle -> Blue, VertexSize -> 12 } } ] },
+      Cases[ opts, HoldPattern[ VertexShapeFunction -> _ ], Infinity ] =!= { } &&
+      ! FreeQ[ opts, AbsolutePointSize[ 12 ] ] &&
+      Cases[ opts, HoldPattern[ VertexSize -> _ ], Infinity ] === { }
+    ]
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-numeric-vertexsize-is-absolute-pointsize"
+]
+
+(* A symbolic per-entry VertexSize (Large / Tiny / Scaled[..]) stays on the
+   graph-coordinate HighlightGraph VertexSize channel. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    Cases[
+      Options @ InfraSceneHighlight[ g,
+        { InfraPoint[ { 13 } ] -> { VertexSize -> Large } } ],
+      HoldPattern[ VertexSize -> _ ], Infinity ] =!= { }
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-symbolic-vertexsize-stays-graphcoord"
 ]

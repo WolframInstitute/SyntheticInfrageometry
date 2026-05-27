@@ -26,6 +26,39 @@ VerificationTest[
   TestID -> "EmbeddingClosest-returns-sublist"
 ]
 
+(* Arbitrary-curve reference: a bare list of >= 3 plane points picks the
+   best-approximating bundle element (a sublist of the input). *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    SubsetQ[ paths, EmbeddingClosest[ g, paths, { { 0, 0 }, { 1, 1 }, { 2, 2 } } ] ]
+  ],
+  True,
+  TestID -> "EmbeddingClosest-curve-list-returns-sublist"
+]
+
+(* Curve reference preserves the wrapper head (Line curve, InfraPath bundle). *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], bare = (#[[ 1, 1 ]] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ]) },
+    Head @ EmbeddingClosest[ g, InfraPath[ bare ], Line[ { { 0, 0 }, { 1, 1 }, { 2, 2 } } ] ]
+  ],
+  InfraPath,
+  TestID -> "EmbeddingClosest-curve-preserves-wrapper"
+]
+
+(* FindEmbeddingClosestPath: generative snap of a curve to a walk.  Returns an
+   InfraPath whose single realisation is a connected walk (consecutive vertices
+   adjacent), tracing the curve under the embedding. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    With[ { p = FindEmbeddingClosestPath[ g, Line[ GraphEmbedding[ g ][[ { 1, 13, 25 } ]] ] ] },
+      MatchQ[ p, InfraPath[ { { __ } } ] ] &&
+      AllTrue[ Partition[ p[[ 1, 1 ]], 2, 1 ], EdgeQ[ g, UndirectedEdge @@ # ] & ]
+    ]
+  ],
+  True,
+  TestID -> "FindEmbeddingClosestPath-traces-connected-walk"
+]
+
 (* ===== Count contract: strict n, UpTo, All ===== *)
 
 VerificationTest[
