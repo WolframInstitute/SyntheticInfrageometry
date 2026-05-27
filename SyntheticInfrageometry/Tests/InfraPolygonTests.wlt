@@ -2,16 +2,25 @@ BeginTestSection["InfraPolygon"]
 
 (* ===================== InfraPolygon wrapper ===================== *)
 
+(* Length = perimeter edge count (sum of leg edge counts) per realisation. *)
 VerificationTest[
-  InfraPolygon[ { { 1, 2, 3, 4, 5, 6 } } ][ "Length" ],
-  { 6 },
+  InfraPolygon[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4 } } ], InfraSegment[ { { 4, 1 } } ] } } ][ "Length" ],
+  { 4 },
   TestID -> "InfraPolygon-Length-single"
 ]
 
 VerificationTest[
-  InfraPolygon[ { { 1, 2, 3 }, { 4, 5, 6, 7 } } ][ "Length" ],
-  { 3, 4 },
+  InfraPolygon[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 1 } } ] },
+                  { InfraSegment[ { { 1, 2 } } ], InfraSegment[ { { 2, 3 } } ], InfraSegment[ { { 3, 1 } } ] } } ][ "Length" ],
+  { 3, 3 },
   TestID -> "InfraPolygon-Length-multi"
+]
+
+(* Sides returns the leg list per realisation; Vertices the corner points. *)
+VerificationTest[
+  InfraPolygon[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4 } } ], InfraSegment[ { { 4, 1 } } ] } } ][ "Vertices" ],
+  { { InfraPoint[ { 1 } ], InfraPoint[ { 3 } ], InfraPoint[ { 4 } ] } },
+  TestID -> "InfraPolygon-Vertices-single"
 ]
 
 VerificationTest[
@@ -340,6 +349,59 @@ VerificationTest[
     "From" -> InfraPoint[ { 1, 25 } ] ],
   2,
   TestID -> "FindInfraRegularPolygon-From-InfraPoint-multi-membership"
+]
+
+
+(* ===================== FindInfraPolygon (through corners) ===================== *)
+
+VerificationTest[
+  With[ { res = FindInfraPolygon[ GridGraph[ { 4, 4 } ], { 1, 4, 16, 13 } ] },
+    Head /@ res === { InfraPolygon } &&
+    Length[ ( First @ res )[ "Sides" ][[ 1 ]] ] == 4 &&
+    ( First @ res )[ "Length" ] === { 12 }
+  ],
+  True,
+  TestID -> "FindInfraPolygon-grid4x4-square"
+]
+
+(* Default count = 1 returns a single polygon. *)
+VerificationTest[
+  Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 } ],
+  1,
+  TestID -> "FindInfraPolygon-default-one"
+]
+
+(* All enumerates the Cartesian product of per-side geodesics; the diagonal
+   side 9 -> 1 of GridGraph[{3,3}] has 6 geodesics, the other two are unique. *)
+VerificationTest[
+  Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ],
+  6,
+  TestID -> "FindInfraPolygon-grid3x3-cartesian"
+]
+
+VerificationTest[
+  AllTrue[ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ],
+    InfraPolygonQ[ GridGraph[ { 3, 3 } ], # ] & ],
+  True,
+  TestID -> "FindInfraPolygon-all-valid"
+]
+
+(* InfraPolygonQ rejects an open (non-closed) leg chain. *)
+VerificationTest[
+  InfraPolygonQ[ PathGraph[ Range[ 4 ] ],
+    { InfraSegment[ { { 1, 2 } } ], InfraSegment[ { { 2, 3 } } ] } ],
+  False,
+  TestID -> "InfraPolygonQ-open-chain-False"
+]
+
+(* Migrated FindInfraRegularPolygon stores geodesic sides; the result is a
+   valid InfraPolygon. *)
+VerificationTest[
+  With[ { res = FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6 ] },
+    InfraPolygonQ[ CycleGraph[ 6 ], First @ res ]
+  ],
+  True,
+  TestID -> "FindInfraRegularPolygon-segment-sides-valid"
 ]
 
 

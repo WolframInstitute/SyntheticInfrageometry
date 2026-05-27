@@ -177,6 +177,9 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init_Association ] :=
           InfraShell,               InfraShell,
           InfraPlane,               InfraPlane,
           InfraCircle,              InfraCircle,
+          InfraPolygon,             InfraPolygon,
+          InfraTriangle,            InfraTriangle,
+          InfraPolyline,            InfraPolyline,
           _,                        InfraPoint ] &,
         scene[ "Objects" ] ] },
     DynamicModule[ {

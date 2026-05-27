@@ -73,8 +73,15 @@ PackageExport[InfraCircleQ]
 
 (* InfraPolygon.wl *)
 PackageExport[InfraPolygon]
+PackageExport[FindInfraPolygon]
 PackageExport[FindInfraRegularPolygon]
+PackageExport[InfraPolygonQ]
 PackageExport[InfraRegularPolygonQ]
+
+(* InfraTriangle.wl *)
+PackageExport[InfraTriangle]
+PackageExport[FindInfraTriangle]
+PackageExport[InfraTriangleQ]
 
 (* InfraEllipse.wl *)
 PackageExport[InfraEllipse]

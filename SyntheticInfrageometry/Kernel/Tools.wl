@@ -348,9 +348,9 @@ pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
    wrapper or a List of unary wrappers spreads into its bare realisations;
    anything else becomes a singleton. *)
 
-infraSpread[ ( InfraPoint | InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraPolygon | InfraRay | InfraPolyline )[ reps_List ] ] := reps
+infraSpread[ ( InfraPoint | InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraPolygon | InfraTriangle | InfraRay | InfraPolyline )[ reps_List ] ] := reps
 infraSpread[ list_List ] /; AllTrue[ list,
-    MatchQ[ ( InfraPoint | InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraPolygon | InfraRay | InfraPolyline )[ { _ } ] ] ] :=
+    MatchQ[ ( InfraPoint | InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraPolygon | InfraTriangle | InfraRay | InfraPolyline )[ { _ } ] ] ] :=
   #[[ 1, 1 ]] & /@ list
 infraSpread[ other_ ] := { other }
 
@@ -360,9 +360,10 @@ infraSpread[ other_ ] := { other }
    FindInfraCommonPoint). *)
 
 infraUnionSpread[ InfraPoint[ reps_List ] ] := DeleteDuplicates @ reps
-infraUnionSpread[ ( InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraPolygon | InfraRay )[ reps_List ] ] :=
+infraUnionSpread[ ( InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay )[ reps_List ] ] :=
   Union @@ reps
-infraUnionSpread[ InfraPolyline[ reps_List ] ] := Union @@ polylineToVertexSeqs[ reps ]
+infraUnionSpread[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] :=
+  Union @@ polylineToVertexSeqs[ reps ]
 infraUnionSpread[ other_ ] := { other }
 
 
@@ -399,9 +400,9 @@ infraVertexMultiset[ InfraPoint[ reps_List ] ] :=
   Counts @ reps
 infraVertexMultiset[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay |
                        InfraShell | InfraEllipticShell | InfraBall | InfraPlane |
-                       InfraCircle | InfraEllipse | InfraPolygon )[ reps_List ] ] :=
+                       InfraCircle | InfraEllipse )[ reps_List ] ] :=
   Counts @ Catenate @ reps
-infraVertexMultiset[ InfraPolyline[ reps_List ] ] :=
+infraVertexMultiset[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] :=
   Counts @ Catenate @ polylineToVertexSeqs[ reps ]
 infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] :=
   Counts @ vs

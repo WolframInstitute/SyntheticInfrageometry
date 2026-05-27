@@ -452,6 +452,14 @@ dispatchConstruction[ graph_Graph, InfraPoint[ ] ] :=
 dispatchConstruction[ graph_Graph, InfraPoint[ v_ ] ] /; MemberQ[ VertexList @ graph, v ] :=
   { v }
 
+(* A predefined, already-resolved point: the unary/multi InfraPoint[{v, ...}]
+   wrapper returned by FindInfraPoint et al.  Each underlying vertex is a
+   realisation, so a scene symbol can be bound directly to a computed point
+   (p == FindInfraPoint[graph, ...][[1]]) without unwrapping. *)
+dispatchConstruction[ graph_Graph, InfraPoint[ vs_List ] ] /;
+    vs =!= { } && SubsetQ[ VertexList @ graph, vs ] :=
+  vs
+
 dispatchConstruction[ graph_Graph, InfraPoint[ pool_String ] ] :=
   Switch[ pool,
     "Center",    GraphCenter[ graph ],

@@ -14,6 +14,8 @@ PackageScope[$InfraSceneHighlightPalette]
 PackageScope[$InfraOpacityRange]
 PackageScope[$InfraThicknessRange]
 PackageScope[$InfraPointSizeRange]
+PackageScope[parseHighlightStyle]
+PackageScope[normalizeHighlightSpec]
 
 
 $InfraPointColor   = RGBColor[ 0.95, 0.08, 0.08 ];
@@ -36,6 +38,41 @@ $InfraSceneHighlightPalette := Join[
   { $InfraSegmentColor, $InfraShellColor, $InfraCircleColor, $InfraPointColor, $InfraRayColor },
   Table[ ColorData[ "DarkRainbow" ][ k / 5 ], { k, 1, 5 } ]
 ];
+
+
+(* ===================== Per-object style spec ===================== *)
+
+(* Parse the RHS of a per-object `obj -> spec` entry into a style record.
+   `spec` is a colour / Directive[...] (applied to both channels), or a flat
+   list whose entries are auto-classified by key: VertexStyle / VertexSize /
+   VertexShapeFunction (vertex channel), EdgeStyle / EdgeShapeFunction (edge
+   channel), "OpacityRange" / "ThicknessRange" / "PointSizeRange" (per-object
+   diffusion overrides), and any bare directive (both colour channels).  The
+   three ranges default to the global option values passed in `defaults`. *)
+parseHighlightStyle[ spec_, defaults_Association ] :=
+  Replace[
+    Fold[
+      { rec, elem } |-> Replace[ elem, {
+        ( VertexStyle         -> v_ ) :> MapAt[ Append[ #, v ] &, rec, "VertexDir" ],
+        ( VertexSize          -> v_ ) :> Append[ rec, "VertexSize" -> v ],
+        ( VertexShapeFunction -> v_ ) :> Append[ rec, "VertexShapeFunction" -> v ],
+        ( EdgeStyle           -> v_ ) :> Append[ rec, "EdgeStyle" -> v ],
+        ( EdgeShapeFunction   -> v_ ) :> Append[ rec, "EdgeShapeFunction" -> v ],
+        ( ( k : "OpacityRange" | "ThicknessRange" | "PointSizeRange" ) -> v_ ) :> Append[ rec, k -> v ],
+        d_ :> MapAt[ Append[ #, d ] &, MapAt[ Append[ #, d ] &, rec, "VertexDir" ], "EdgeDir" ]
+      } ],
+      Join[ defaults, <|
+        "VertexDir" -> { }, "EdgeDir" -> { }, "EdgeStyle" -> None,
+        "EdgeShapeFunction" -> None, "VertexSize" -> None, "VertexShapeFunction" -> None |> ],
+      normalizeHighlightSpec @ spec ],
+    r_Association :> Join[ r, <|
+      "VertexDir" -> Directive @@ r[ "VertexDir" ],
+      "EdgeDir"   -> Directive @@ r[ "EdgeDir" ] |> ] ]
+
+normalizeHighlightSpec[ Automatic ]          := { }
+normalizeHighlightSpec[ list_List ]          := list
+normalizeHighlightSpec[ Directive[ d___ ] ]  := { d }
+normalizeHighlightSpec[ x_ ]                 := { x }
 
 
 (* ===================== InfraSceneHighlight ===================== *)
@@ -61,12 +98,18 @@ $InfraSceneHighlightPalette := Join[
    scene-construction shapes of these heads (e.g. `InfraSegment[p1, p2]`,
    `InfraShell[c, r]`, `InfraPlane[p1, p2]`, `InfraCircle[c, r]`) take more
    args and never collide.
-   Each entry may be plain, `entry -> color`, `entry -> Directive[dirs]`, or
-   `Style[entry, dirs__]`.  Any user-supplied graphics directives are appended
-   *after* the computed `{color, opacity, size/thickness}` so that later
-   same-type directives win (Wolfram's `Directive` semantics), letting the
-   caller override colour, opacity, `AbsolutePointSize`, `AbsoluteThickness`,
-   etc. on a per-object basis. *)
+   Each entry may be plain, `entry -> color`, `entry -> Directive[dirs]`,
+   `Style[entry, dirs__]`, or `entry -> {opts...}` with a flat option list that
+   `parseHighlightStyle` auto-sorts into three channels: vertex appearance
+   (`VertexStyle` / `VertexSize` / `VertexShapeFunction`), edge appearance
+   (`EdgeStyle` / `EdgeShapeFunction`), and per-object diffusion ranges
+   (`"OpacityRange"` / `"ThicknessRange"` / `"PointSizeRange"`, overriding the
+   global option for that object only).  A colour / `Directive` / bare directive
+   applies to both vertex and edge colour channels.  Colour + opacity ride the
+   per-element `Style[]` highlight specs; sizing / thickness are rerouted to
+   top-level `VertexShapeFunction` / `VertexSize` / `EdgeStyle` /
+   `EdgeShapeFunction` rule lists because HighlightGraph ignores
+   `AbsolutePointSize` / `AbsoluteThickness` inside Style[] highlight specs. *)
 
 (* Diffuse-encoding ranges.  "OpacityRange" and "ThicknessRange" are on by
    default, so multi-realisation visit counts are visible out of the box via
@@ -89,7 +132,7 @@ InfraSceneHighlight[ graph_Graph, obj : Except[_List], opts : OptionsPattern[] ]
   InfraSceneHighlight[ graph, { obj }, opts ]
 
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
-  Module[ { triples, knotTriples, oRange, tRange, pRange, vEntries, eEntries, objects },
+  Module[ { triples, knotTriples, ranges, defaultRecord, vEntries, eEntries, objects },
 
     (* Normalise each item: unwrap Style[obj, dirs__] into obj -> Directive[dirs];
        merge {InfraX[{r1}],...} into InfraX[{r1,...}];
@@ -102,12 +145,16 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           Head[ First @ list ][ Join @@ list[[ All, 1 ]] ] } ] & /@ multiObjects,
       _[ $Failed ] | ( _[ $Failed ] -> _ ) | ( _ -> _[ $Failed ] ) | { } ];
 
+    ranges = <|
+      "OpacityRange"   -> OptionValue[ "OpacityRange" ],
+      "ThicknessRange" -> OptionValue[ "ThicknessRange" ],
+      "PointSizeRange" -> OptionValue[ "PointSizeRange" ] |>;
+    defaultRecord = parseHighlightStyle[ Automatic, ranges ];
+
     triples = MapIndexed[
       { item, idx } |-> With[ {
-          obj     = If[ MatchQ[ item, _Rule ], First @ item, item ],
-          userDir = If[ MatchQ[ item, _Rule ],
-            Replace[ Last @ item, { d_Directive :> d, x_ :> Directive[ x ] } ],
-            Directive[] ] },
+          obj    = If[ MatchQ[ item, _Rule ], First @ item, item ],
+          record = parseHighlightStyle[ If[ MatchQ[ item, _Rule ], Last @ item, Automatic ], ranges ] },
         Replace[
           { obj, Switch[ Head @ obj,
               InfraPoint,    $InfraPointColor,
@@ -123,13 +170,14 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
               InfraCircle,        $InfraCircleColor,
               InfraEllipse,       $InfraCircleColor,
               InfraPolygon,       $InfraCircleColor,
+              InfraTriangle,      $InfraCircleColor,
               InfraRay,           $InfraRayColor,
               InfraObject,        $InfraObjectColor,
               InfraPolyline,      $InfraSegmentColor,
               InfraSet,           $InfraShellColor,
               _,             $InfraSceneHighlightPalette[[
                                1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ],
-            userDir },
+            record },
           {
             { InfraPoint   [ b_List ], c_, u_ } :> { b, c, "Points", u },
             { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
@@ -143,7 +191,8 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             { InfraPlane        [ b_List ], c_, u_ } :> { b, c, "Sets"  , u },
             { InfraCircle       [ b_List ], c_, u_ } :> { b, c, "Cycles", u },
             { InfraEllipse      [ b_List ], c_, u_ } :> { b, c, "Cycles", u },
-            { InfraPolygon      [ b_List ], c_, u_ } :> { b, c, "Cycles", u },
+            { InfraPolygon      [ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Cycles", u },
+            { InfraTriangle     [ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Cycles", u },
             { InfraRay     [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraObject  [ b_List ], c_, u_ } :> { { b }, c, "Sets", u },
             { InfraPolyline[ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Paths", u },
@@ -157,12 +206,16 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
        the path so the subdivision is visible.  *)
     knotTriples = Cases[ objects,
       ( InfraPolyline[ b_List ] | ( InfraPolyline[ b_List ] -> _ ) ) :>
-        { polylineToKnotVertices[ b ], $InfraPointColor, "PointSet", Directive[] } ];
+        { polylineToKnotVertices[ b ], $InfraPointColor, "PointSet", defaultRecord } ];
+
+    (* Polygon / triangle items emit their corner vertices as points, so the
+       defining corners stand out from the geodesic sides. *)
+    knotTriples = Join[ knotTriples, Cases[ objects,
+      ( ( InfraPolygon | InfraTriangle )[ b_List ] |
+        ( ( InfraPolygon | InfraTriangle )[ b_List ] -> _ ) ) :>
+        { Map[ Most @ polylineToKnots[ # ] &, b ], $InfraPointColor, "PointSet", defaultRecord } ] ];
 
     triples = Join[ triples, knotTriples ];
-    oRange = OptionValue[ "OpacityRange" ];
-    tRange = OptionValue[ "ThicknessRange" ];
-    pRange = OptionValue[ "PointSizeRange" ];
 
     With[ {
         repVerts = { type, rep } |-> Switch[ type,
@@ -187,49 +240,81 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
         ] },
 
       vEntries = MapThread[
-        { reps, color, type, userDir } |-> With[ {
+        { reps, color, type, record } |-> With[ {
             counts  = Counts @ Catenate[ repVerts[ type, # ] & /@ reps ],
             numReps = Max[ Length @ reps, 1 ] },
           AssociationMap[
-            v |-> { color, counts[ v ] / numReps, userDir },
+            v |-> { color, counts[ v ] / numReps, record },
             Keys @ counts ] ],
         { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]] } ];
 
       eEntries = MapThread[
-        { reps, color, type, userDir } |-> With[ {
+        { reps, color, type, record } |-> With[ {
             counts  = Counts @ Catenate[ repEdges[ type, # ] & /@ reps ],
             numReps = Max[ Length @ reps, 1 ] },
           AssociationMap[
-            e |-> { color, counts[ e ] / numReps, userDir },
+            e |-> { color, counts[ e ] / numReps, record },
             Keys @ counts ] ],
         { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]] } ];
     ];
 
-    (* A *Range option of None suppresses its directive.  Opacity is on by
-       default; thickness and point-size are opt-in. *)
-    With[ {
-        opacityDir = If[ oRange === None, {},
-          { r |-> Opacity[ oRange[[ 1 ]] + ( oRange[[ 2 ]] - oRange[[ 1 ]] ) r ] } ],
-        thicknessDir = If[ tRange === None, {},
-          { r |-> AbsoluteThickness[ tRange[[ 1 ]] + ( tRange[[ 2 ]] - tRange[[ 1 ]] ) r ] } ],
-        pointSizeDir = If[ pRange === None, {},
-          { r |-> AbsolutePointSize[ pRange[[ 1 ]] + ( pRange[[ 2 ]] - pRange[[ 1 ]] ) r ] } ] },
+    (* Colour + opacity ride per-element Style[] highlight specs (the channel
+       HighlightGraph honours).  Edge thickness and vertex point-size are
+       rerouted to top-level EdgeStyle / VertexShapeFunction rules because
+       HighlightGraph silently ignores AbsoluteThickness / AbsolutePointSize
+       inside Style[edge/vertex, ...].  A *Range record value of None
+       suppresses that channel; ranges are per-object. *)
+    With[ { lerp = { range, w } |-> range[[ 1 ]] + ( range[[ 2 ]] - range[[ 1 ]] ) w },
+      With[ {
+          edgeData = KeyValueMap[
+            { e, cs } |-> With[ { ue = UndirectedEdge @@ e, last = Last @ cs },
+              With[ { color = last[[ 1 ]], w = last[[ 2 ]], rec = last[[ 3 ]] },
+                With[ {
+                    oList = If[ rec[ "OpacityRange" ] === None, { },
+                      { Opacity[ lerp[ rec[ "OpacityRange" ], w ] ] } ],
+                    tList = If[ rec[ "ThicknessRange" ] === None, { },
+                      { AbsoluteThickness[ lerp[ rec[ "ThicknessRange" ], w ] ] } ],
+                    eDirs = List @@ rec[ "EdgeDir" ] },
+                  <|
+                    "Style" -> Style[ ue, Directive[ color, Sequence @@ oList, Sequence @@ eDirs ] ],
+                    "EdgeStyle" -> If[ tList === { } && rec[ "EdgeStyle" ] === None, Nothing,
+                      ue -> Directive[ color, Sequence @@ oList, Sequence @@ tList, Sequence @@ eDirs,
+                        Sequence @@ If[ rec[ "EdgeStyle" ] === None, { }, { rec[ "EdgeStyle" ] } ] ] ],
+                    "EdgeShapeFunction" -> If[ rec[ "EdgeShapeFunction" ] === None, Nothing,
+                      ue -> rec[ "EdgeShapeFunction" ] ]
+                  |> ] ] ],
+            Merge[ eEntries, Identity ] ],
+          vertexData = KeyValueMap[
+            { v, cs } |-> With[ { last = Last @ cs },
+              With[ { color = last[[ 1 ]], w = last[[ 2 ]], rec = last[[ 3 ]] },
+                With[ {
+                    oList = If[ rec[ "OpacityRange" ] === None, { },
+                      { Opacity[ lerp[ rec[ "OpacityRange" ], w ] ] } ],
+                    vDirs = List @@ rec[ "VertexDir" ] },
+                  Which[
+                    rec[ "VertexShapeFunction" ] =!= None,
+                      <| "VSF" -> ( v -> rec[ "VertexShapeFunction" ] ) |>,
+                    rec[ "PointSizeRange" ] =!= None,
+                      With[ { body = Flatten[ { color, oList,
+                          AbsolutePointSize[ lerp[ rec[ "PointSizeRange" ], w ] ], vDirs } ] },
+                        <| "VSF" -> ( v -> ( Append[ body, Point[ #1 ] ] & ) ) |> ],
+                    True,
+                      <| "Style" -> Style[ v, Directive[ color, Sequence @@ oList, Sequence @@ vDirs ] ],
+                         "VSize" -> If[ rec[ "VertexSize" ] === None, Nothing, v -> rec[ "VertexSize" ] ] |>
+                  ] ] ] ],
+            Merge[ vEntries, Identity ] ] },
 
-      HighlightGraph[ graph, Join[
-        KeyValueMap[
-          { e, cs } |-> With[ { last = Last @ cs },
-            Style[ UndirectedEdge @@ e, Directive[
-              last[[ 1 ]],
-              Sequence @@ ( # [ last[[ 2 ]] ] & /@ Join[ opacityDir, thicknessDir ] ),
-              Sequence @@ last[[ 3 ]] ] ] ],
-          Merge[ eEntries, Identity ] ],
-        KeyValueMap[
-          { v, cs } |-> With[ { last = Last @ cs },
-            Style[ v, Directive[
-              last[[ 1 ]],
-              Sequence @@ ( # [ last[[ 2 ]] ] & /@ Join[ opacityDir, pointSizeDir ] ),
-              Sequence @@ last[[ 3 ]] ] ] ],
-          Merge[ vEntries, Identity ] ] ],
-        FilterRules[ { opts }, Options @ HighlightGraph ] ]
+        HighlightGraph[ graph,
+          Join[
+            Cases[ edgeData,   kv_Association :> kv[ "Style" ] ],
+            Cases[ vertexData, kv_Association /; KeyExistsQ[ kv, "Style" ] :> kv[ "Style" ] ] ],
+          Sequence @@ DeleteCases[ {
+            EdgeStyle           -> DeleteCases[ Cases[ edgeData,   kv_Association :> kv[ "EdgeStyle" ] ], Nothing ],
+            EdgeShapeFunction   -> DeleteCases[ Cases[ edgeData,   kv_Association :> kv[ "EdgeShapeFunction" ] ], Nothing ],
+            VertexShapeFunction -> Cases[ vertexData, kv_Association /; KeyExistsQ[ kv, "VSF" ] :> kv[ "VSF" ] ],
+            VertexSize          -> DeleteCases[ Cases[ vertexData, kv_Association /; KeyExistsQ[ kv, "VSize" ] :> kv[ "VSize" ] ], Nothing ]
+          }, _ -> { } ],
+          FilterRules[ { opts }, Options @ HighlightGraph ] ]
+      ]
     ]
   ]

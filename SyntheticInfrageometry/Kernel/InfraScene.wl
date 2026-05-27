@@ -38,6 +38,7 @@ resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
       InfraPathQ[ w_ ]             :> InfraPathQ[ graph, w ],
       InfraSegmentQ[ s_ ]          :> InfraSegmentQ[ graph, s ],
       InfraShellQ[ vs_ ]           :> InfraShellQ[ graph, vs ],
+      InfraBallQ[ vs_ ]            :> InfraBallQ[ graph, vs ],
       InfraPlaneQ[ h_, p1_, p2_ ]  :> SeparatesQ[ graph, h, p1, p2 ] &&
                                        AllTrue[ h, GraphDistance[ graph, p1, # ] ==
                                                     GraphDistance[ graph, p2, # ] & ],
@@ -45,6 +46,8 @@ resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
       InfraLineQ[ s_ ]             :> InfraLineQ[ graph, s ],
       InfraParallelQ[ l1_, l2_ ]   :> InfraParallelQ[ graph, l1, l2 ],
       InfraIntersectQ[ s1_, s2_ ]  :> IntersectingQ[ s1, s2 ],
+      InfraPolylineQ[ poly_ ]      :> InfraPolylineQ[ graph, poly ],
+      InfraRegularPolygonQ[ c_, as_ ] :> InfraRegularPolygonQ[ graph, c, as ],
       InfraRevolutionQ[ vs_, axis_, profile_ ] :> InfraRevolutionQ[ graph, vs, axis, profile ] }
 
 extractBranches[ opts_List ] :=
@@ -100,13 +103,13 @@ infraVertexSet[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine
                 | InfraCircle | InfraEllipse
                 | InfraShell | InfraEllipticShell | InfraPlane | InfraBall )[ reps_List ] ] :=
   Union @@ reps
-infraVertexSet[ InfraPolyline[ reps_List ] ] :=
+infraVertexSet[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] :=
   Union @@ polylineToVertexSeqs[ reps ]
 infraVertexSet[ list_List ] /;
     list =!= { } && AllTrue[ list,
       MatchQ[ ( InfraPoint | InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay |
                 InfraCircle | InfraEllipse | InfraShell | InfraEllipticShell | InfraPlane | InfraBall |
-                InfraPolyline | InfraObject | InfraSet )[ { _ } ] ] ] :=
+                InfraPolyline | InfraPolygon | InfraTriangle | InfraObject | InfraSet )[ { _ } ] ] ] :=
   infraVertexSet[ Head[ First @ list ] @ ( #[[ 1, 1 ]] & /@ list ) ]
 infraVertexSet[ v_ ] := { v }
 
@@ -135,7 +138,7 @@ InfraDistance[ g_Graph, p_, q_, OptionsPattern[] ] :=
 $infraWrapperHeadPattern = _InfraPoint | _InfraObject | _InfraSet | _InfraSegment |
   _InfraPath | _InfraLoop | _InfraString | _InfraLine | _InfraRay |
   _InfraCircle | _InfraEllipse | _InfraShell | _InfraEllipticShell |
-  _InfraPlane | _InfraBall | _InfraPolyline;
+  _InfraPlane | _InfraBall | _InfraPolyline | _InfraPolygon | _InfraTriangle;
 
 InfraIntersection[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraWrapperHeadPattern ] ] :=
   Intersection @@ ( infraVertexSet /@ { args } )
@@ -251,12 +254,14 @@ evaluateConstruction[ graph_Graph, sym_, InfraIntersection[ obj1_, obj2_ ], bind
 
 evaluateConstruction[ graph_Graph, sym_, rhs_, bindings_Association ] :=
   With[ { results = dispatchConstruction[ graph, resolveExpression[ rhs, bindings, graph ] ] },
-    If[ results === {} || results === {{}}, {},
+    (* A construction that yields no result -- empty, or a dispatch with no
+       matching rule (non-list) -- simply stops propagating this branch. *)
+    If[ ! ListQ[ results ] || results === {} || results === {{}}, {},
       Append[ bindings, sym -> # ] & /@ results ] ]
 
 evaluateConstruction[ graph_Graph, syms_List, rhs_, bindings_Association ] :=
   With[ { tuples = dispatchConstruction[ graph, resolveExpression[ rhs, bindings, graph ] ] },
-    If[ tuples === {}, {},
+    If[ ! ListQ[ tuples ] || tuples === {}, {},
       Join[ bindings, AssociationThread[ syms, # ] ] & /@ tuples ] ]
 
 (* One construction step over a list of branches. Tuple-keyed constructions

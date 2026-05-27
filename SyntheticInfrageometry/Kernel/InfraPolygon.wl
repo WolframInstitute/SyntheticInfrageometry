@@ -3,18 +3,82 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageScope[findRegularPolygonCore]
 PackageScope[matchPolygonSlot]
 PackageScope[kDiagonals]
+PackageScope[findPolygonCore]
+PackageScope[cycleToPolygonLegs]
 
 
 (* ===================== InfraPolygon wrapper ===================== *)
 
-(* InfraPolygon[{cycle}] is the unary form; InfraPolygon[{cycle1, ..., cyclek}]
+(* InfraPolygon[{poly}] is the unary form: poly = {seg1, ..., segn} is a closed
+   chain of unary InfraSegment sides (Last[path_j] === First[path_{j+1}], and
+   the last side returns to the first corner).  InfraPolygon[{poly1, ..., polyk}]
    is the multi-realisation form.  Auto-flatten on nested wrappers. *)
 
 InfraPolygon[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPolygon[ _List ] ] ] :=
   InfraPolygon[ Flatten[ reps /. InfraPolygon[ xs_List ] :> xs, 1 ] ]
 
-(* "Length" = vertex count per realisation (= edge count, wrap-around implicit). *)
-InfraPolygon[ reps_List ][ "Length" ] := Length /@ reps
+(* "Sides" = the InfraSegment legs per realisation. *)
+InfraPolygon[ reps_List ][ "Sides" ] := reps
+
+(* "Length" = per-realisation perimeter edge count (sum of leg edge counts). *)
+InfraPolygon[ reps_List ][ "Length" ] :=
+  Replace[ reps,
+    { { }              -> 0,
+      segs : { _InfraSegment .. } :> Total[ ( Length[ #[[ 1, 1 ]] ] - 1 ) & /@ segs ] },
+    { 1 } ]
+
+(* "Vertices" = corner vertices per realisation, as unary InfraPoints. *)
+InfraPolygon[ reps_List ][ "Vertices" ] :=
+  Map[ Function[ poly, InfraPoint[ { # } ] & /@ Most @ polylineToKnots[ poly ] ], reps ]
+
+
+(* ===================== FindInfraPolygon ===================== *)
+
+(* Polygon through corners p1, ..., pn (n >= 3): each side (p_i, p_{i+1 mod n})
+   is a geodesic InfraSegment; a realisation is one geodesic per side, and the
+   Cartesian product over sides enumerates all polygons.  Sides reuse
+   findSegmentCore, so Properties / Method forward to the side geodesics. *)
+
+Options[ FindInfraPolygon ] = { Properties -> { }, Method -> "Exhaustive" };
+
+FindInfraPolygon[ graph_Graph, vertices_List /; Length[ vertices ] >= 3,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  With[ { core = findPolygonCore[ graph, vertices, count, opts ] },
+    If[ core === $Failed, $Failed, InfraPolygon[ { # } ] & /@ core ]
+  ]
+
+
+findPolygonCore[ graph_Graph, vertices_List, count_, opts : OptionsPattern[ FindInfraSegment ] ] :=
+  With[ { corners = polygonCorner /@ vertices },
+    With[ { sideReals = Function[ pair,
+        findSegmentCore[ graph, pair[[ 1 ]], pair[[ 2 ]], All, opts ] ] /@
+        Partition[ Append[ corners, First @ corners ], 2, 1 ] },
+      If[ MemberQ[ sideReals, $Failed ], $Failed,
+        infraCap[
+          Map[ paths |-> ( InfraSegment[ { # } ] & /@ paths ), Tuples @ sideReals ],
+          count ]
+      ]
+    ]
+  ]
+
+polygonCorner[ InfraPoint[ { v_ } ] ] := v
+polygonCorner[ v_ ]                   := v
+
+
+(* ===================== InfraPolygonQ ===================== *)
+
+(* A polygon is a closed chain of geodesic InfraSegment sides: every leg a
+   geodesic and consecutive legs (cyclically) share their endpoint. *)
+
+InfraPolygonQ[ graph_Graph, InfraPolygon[ reps_List ] ] :=
+  AllTrue[ reps, InfraPolygonQ[ graph, # ] & ]
+
+InfraPolygonQ[ graph_Graph, poly : { _InfraSegment .. } ] :=
+  AllTrue[ poly, InfraSegmentQ[ graph, #[[ 1, 1 ]] ] & ] &&
+  AllTrue[ Partition[ Append[ poly, First @ poly ], 2, 1 ],
+    pair |-> Last[ pair[[ 1, 1, 1 ]] ] === First[ pair[[ 2, 1, 1 ]] ] ]
+
+InfraPolygonQ[ _Graph, _ ] := False
 
 
 (* ===================== FindInfraRegularPolygon ===================== *)
@@ -46,10 +110,19 @@ FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
   With[ { core = findRegularPolygonCore[ graph, As, n, opts ] },
     If[ core === $Failed, $Failed,
       With[ { capped = infraCap[ core, count ] },
-        If[ capped === $Failed, $Failed, InfraPolygon[ { # } ] & /@ capped ]
+        If[ capped === $Failed, $Failed,
+          InfraPolygon[ { cycleToPolygonLegs[ graph, # ] } ] & /@ capped ]
       ]
     ]
   ]
+
+
+(* Promote a closed vertex cycle to a closed chain of geodesic InfraSegment
+   sides between consecutive corners (first shortest path per side). *)
+
+cycleToPolygonLegs[ graph_Graph, cyc_List ] :=
+  MapThread[ { a, b } |-> InfraSegment[ { FindShortestPath[ graph, a, b ] } ],
+    { cyc, RotateLeft @ cyc } ]
 
 
 findRegularPolygonCore[ graph_Graph, As_List, n_Integer, opts : OptionsPattern[ FindInfraRegularPolygon ] ] :=
@@ -193,3 +266,24 @@ InfraRegularPolygonQ[ _Graph, cycle_List, _List ] /; Length[ cycle ] < 3 := Fals
 
 validSlotShapesQ[ As_List ] :=
   AllTrue[ As, MatchQ[ _Integer | { _Integer, _Integer } | Automatic ] ]
+
+
+(* ===================== Scene-DSL constructors ===================== *)
+
+(* Regular n-gon (As distance tuple + size n) and the general through-corner
+   polygon (a single vertex list) are disambiguated by arity. *)
+
+dispatchConstruction[ graph_Graph, InfraPolygon[ As_List, n_Integer, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      #[[ 1, 1 ]] & /@ FindInfraRegularPolygon[ graph, As, n, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraRegularPolygon ] ] ],
+      "Select" /. { opts } /. "Select" -> None,
+      True, <||> ],
+    extractBranches[ { opts } ] ]
+
+dispatchConstruction[ graph_Graph, InfraPolygon[ verts_List, opts___Rule ] ] :=
+  capBranches[
+    #[[ 1, 1 ]] & /@ FindInfraPolygon[ graph, verts, All,
+      Sequence @@ FilterRules[ { opts }, Options[ FindInfraPolygon ] ] ],
+    extractBranches[ { opts } ] ]

@@ -58,6 +58,9 @@ Print[TestReport[FileNameJoin[{$testDir, "InfraPolylineTests.wlt"}]]]
 Print["Running InfraPolygonTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "InfraPolygonTests.wlt"}]]]
 
+Print["Running InfraTriangleTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraTriangleTests.wlt"}]]]
+
 Print["Running InfraRevolutionTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "InfraRevolutionTests.wlt"}]]]
 

@@ -194,3 +194,38 @@ VerificationTest[
   True,
   TestID -> "InfraSceneHighlight-list-vertex-edges-actually-highlighted"
 ]
+
+(* Structured per-object spec: a flat option list is auto-sorted into the
+   vertex / edge / diffusion channels.  EdgeStyle and VertexSize must reach
+   the produced top-level Graph options (not just the Style[] highlight
+   specs), and "ThicknessRange" must scale the per-edge thickness there. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    With[ {
+        opts = Options @ InfraSceneHighlight[ g, {
+          InfraSegment[ { { 1, 2, 3, 4, 5 } } ] -> {
+            VertexStyle      -> Red,
+            VertexSize       -> Large,
+            EdgeStyle        -> Directive[ Blue, AbsoluteThickness[ 7 ] ],
+            "ThicknessRange" -> { 1, 9 } } } ] },
+      ! FreeQ[ Cases[ opts, HoldPattern[ EdgeStyle -> e_ ] :> e, Infinity ], AbsoluteThickness[ 7 ] ] &&
+      Cases[ opts, HoldPattern[ VertexSize -> _ ], Infinity ] =!= { }
+    ]
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-structured-spec-toplevel-routing"
+]
+
+(* "PointSizeRange" opt-in reroutes vertex sizing to top-level
+   VertexShapeFunction rules (HighlightGraph ignores AbsolutePointSize in
+   Style[] highlight specs). *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    Cases[
+      Options @ InfraSceneHighlight[ g,
+        { InfraSegment[ { { 1, 2, 3, 4, 5 } } ] -> { "PointSizeRange" -> { 8, 20 } } } ],
+      HoldPattern[ VertexShapeFunction -> _ ], Infinity ] =!= { }
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-pointsizerange-reroutes-to-vsf"
+]

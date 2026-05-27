@@ -41,3 +41,14 @@ findRayCore[ graph_Graph, origin_, v_ ] :=
 FindInfraRay[ graph_Graph, origin_, v_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
   infraSpreadAndCartesian[ InfraRay, count, findRayCore[ graph, ##] &, origin, v ]
+
+
+(* ===================== Scene-DSL constructor ===================== *)
+
+dispatchConstruction[ graph_Graph, InfraRay[ origin_, v_, opts___Rule ] ] :=
+  capBranches[
+    applySelectOption[ graph,
+      #[[ 1, 1 ]] & /@ FindInfraRay[ graph, origin, v, All ],
+      "Select" /. { opts } /. "Select" -> None,
+      False, <| "Endpoints" -> { origin, v } |> ],
+    extractBranches[ { opts } ] ]

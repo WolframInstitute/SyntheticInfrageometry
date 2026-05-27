@@ -97,3 +97,12 @@ InfraPolylineQ[ graph_Graph, poly : { _InfraSegment .. } ] :=
     pair |-> Last[ pair[[ 1, 1, 1 ]] ] === First[ pair[[ 2, 1, 1 ]] ] ]
 
 InfraPolylineQ[ _Graph, _ ] := False
+
+
+(* ===================== Scene-DSL constructor ===================== *)
+
+dispatchConstruction[ graph_Graph, InfraPolyline[ path_, opts___Rule ] ] :=
+  capBranches[
+    { FindInfraPolylineSubdivision[ graph, path,
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraPolylineSubdivision ] ] ][[ 1, 1 ]] },
+    extractBranches[ { opts } ] ]
