@@ -97,6 +97,7 @@ selectFromName[ name_String  ] := name
    multi-leg sequences flattened by polylineToVertexSeqs first.  Bare
    vertices fall through to the singleton case. *)
 
+infraVertexSet[ InfraPoint[ vs_List, _List ] ] := vs
 infraVertexSet[ InfraPoint[ vs_List ] ] := vs
 infraVertexSet[ ( InfraObject | InfraSet )[ vs_List ] ] := vs
 infraVertexSet[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay

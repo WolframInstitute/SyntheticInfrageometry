@@ -23,6 +23,10 @@ InfraLine[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraLine[ _List ] ] ] :=
 (* "Length" = list of edge counts, one per realisation: |line| - 1. *)
 InfraLine[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
+(* line[[i]] = weighted InfraPoint of the i-th position across realisations
+   (mass = multiplicity).  First/Last and multi-index Part bypass this. *)
+InfraLine /: Part[ InfraLine[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]
+
 
 (* ===================== FindInfraLine ===================== *)
 

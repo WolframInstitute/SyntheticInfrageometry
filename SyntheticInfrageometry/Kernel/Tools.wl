@@ -348,6 +348,7 @@ pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
    wrapper or a List of unary wrappers spreads into its bare realisations;
    anything else becomes a singleton. *)
 
+infraSpread[ InfraPoint[ verts_List, _List ] ] := verts
 infraSpread[ ( InfraPoint | InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraPolygon | InfraTriangle | InfraRay | InfraPolyline )[ reps_List ] ] := reps
 infraSpread[ list_List ] /; AllTrue[ list,
     MatchQ[ ( InfraPoint | InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraPolygon | InfraTriangle | InfraRay | InfraPolyline )[ { _ } ] ] ] :=
@@ -355,10 +356,23 @@ infraSpread[ list_List ] /; AllTrue[ list,
 infraSpread[ other_ ] := { other }
 
 
+(* Project a bundle of vertex-sequence realisations onto position i: the
+   weighted InfraPoint whose support is the i-th vertices (only realisations
+   long enough contribute) and whose masses are their multiplicities.  i may
+   be negative (counted from the end). *)
+
+PackageScope[columnInfraPoint]
+
+columnInfraPoint[ reps_List, i_Integer ] :=
+  With[ { col = ( #[[ i ]] & ) /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] },
+    With[ { m = Counts @ col }, InfraPoint[ Keys @ m, Values @ m ] ] ]
+
+
 (* Collapse a wrapped entry to the union of its realisations, for set-
    conjunction Find* over a single _List argument (FindInfraCommonLine,
    FindInfraCommonPoint). *)
 
+infraUnionSpread[ InfraPoint[ verts_List, _List ] ] := DeleteDuplicates @ verts
 infraUnionSpread[ InfraPoint[ reps_List ] ] := DeleteDuplicates @ reps
 infraUnionSpread[ ( InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay )[ reps_List ] ] :=
   Union @@ reps
@@ -396,6 +410,8 @@ infraSpreadAndCartesian[ wrapHead_, count_, core_, anchors__ ] :=
    realisation; InfraPolyline realisations are leg-chains flattened via
    polylineToVertexSeqs; InfraObject / InfraSet hold one bare vertex set. *)
 
+infraVertexMultiset[ InfraPoint[ verts_List, weights_List ] ] :=
+  AssociationThread[ verts -> weights ]
 infraVertexMultiset[ InfraPoint[ reps_List ] ] :=
   Counts @ reps
 infraVertexMultiset[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay |

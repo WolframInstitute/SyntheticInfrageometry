@@ -131,43 +131,79 @@ FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
   ]
 
 
-(* ===================== FindInfraShellParameters ===================== *)
+(* ===================== FindInfraShellCenter ===================== *)
 
-(* For a vertex set vs, return the {center, radius} pairs for which vs
-   is a metric shell: in some component of g \ vs, a center c is
-   equidistant from every vertex of vs, dominates that component, and
-   is strictly closer to the inside than to the outside. *)
+(* Bisector estimator of a shell's center and radius: for each shell
+   vertex pair it with its farthest shell partner(s) (per-vertex
+   antipodes), bisect each antipodal chord, and union the midpoints into
+   one InfraPoint -- the central infra midpoint.  The radius is the
+   sorted union of the integer arms { Floor[d/2], Ceil[d/2] } of the kept
+   chords.  "Metric" picks the antipodes by ambient ("Extrinsic") or
+   shell-subgraph ("Intrinsic") distance; midpoints/parity/arms always
+   use ambient distance.  "Parity" keeps All chords, only even-distance
+   (pure single-vertex bisectors), or only odd-distance (two-vertex
+   mesopoints).  Returns { InfraPoint[midpoints], radii }. *)
 
-FindInfraShellParameters[ graph_Graph, vs_List ] :=
-  Module[ { rem, comps },
-    rem = VertexDelete[ graph, vs ];
-    comps = ConnectedComponents[ rem ];
-    Flatten[ Table[
-      With[ {
-          distMatrix = GraphDistanceMatrix[ Subgraph[ graph, comp ] ],
-          otherVertices = Complement[ VertexList[ rem ], comp ] },
-        With[ { scores = Max /@ distMatrix },
-          With[ { centers = Pick[ comp, scores, Min[ scores ] ] },
-            Select[
-              { #, GraphDistance[ graph, #, First[ vs ] ] } & /@ centers,
-              pair |-> With[ { v = pair[[ 1 ]], r = pair[[ 2 ]] },
-                AllTrue[ vs, GraphDistance[ graph, v, # ] == r & ] &&
-                AllTrue[ comp, GraphDistance[ graph, v, # ] <= r & ] &&
-                AllTrue[ otherVertices, GraphDistance[ graph, v, # ] > r & ]
-              ]
-            ]
-          ]
-        ]
-      ],
-      { comp, comps }
-    ], 1 ]
+FindInfraShellCenter::badmetric = "Metric `1` is not Extrinsic or Intrinsic.";
+FindInfraShellCenter::badparity = "Parity `1` is not All, Even, or Odd.";
+
+Options[ FindInfraShellCenter ] = { "Metric" -> "Extrinsic", "Parity" -> All };
+
+FindInfraShellCenter[ graph_Graph, shell_InfraShell, opts : OptionsPattern[] ] :=
+  FindInfraShellCenter[ graph, Union @@ First[ shell ], opts ]
+
+FindInfraShellCenter[ graph_Graph, vs_List, OptionsPattern[] ] :=
+  Module[ { metric, parity, dm, idx, dsel, antipodal, half, kept, midpoints, arms },
+    metric = OptionValue[ "Metric" ];
+    parity = OptionValue[ "Parity" ];
+    Switch[ metric, "Extrinsic" | "Intrinsic", Null, _, Message[ FindInfraShellCenter::badmetric, metric ]; Return[ $Failed ] ];
+    Switch[ parity, All | "Even" | "Odd", Null, _, Message[ FindInfraShellCenter::badparity, parity ]; Return[ $Failed ] ];
+    dm  = GraphDistanceMatrix[ graph ];
+    idx = AssociationThread[ VertexList[ graph ] -> Range @ VertexCount @ graph ];
+    dsel = If[ metric === "Intrinsic",
+               With[ { subg = Subgraph[ graph, vs ] },
+                 With[ { rows = Lookup[ AssociationThread[ VertexList[ subg ] -> Range @ VertexCount @ subg ], vs ] },
+                   GraphDistanceMatrix[ subg ][[ rows, rows ]] ] ],
+               dm[[ Lookup[ idx, vs ], Lookup[ idx, vs ] ]] ];
+    antipodal = DeleteDuplicates[ Sort /@ Flatten[
+      Table[
+        With[ { row = ReplacePart[ dsel[[ i ]], i -> Infinity ] },
+          With[ { ecc = Max @ Select[ row, # =!= Infinity & ] },
+            { vs[[ i ]], # } & /@ Pick[ vs, Thread[ row == ecc ], True ] ] ],
+        { i, Length[ vs ] } ], 1 ] ];
+    kept = Select[ antipodal,
+      With[ { d = dm[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] },
+        Switch[ parity, All, True, "Even", EvenQ[ d ], "Odd", OddQ[ d ] ] ] & ];
+    midpoints = Counts @ Catenate[ shellMidpointVertices[ dm, idx, # ] & /@ kept ];
+    arms = Union @@ ( With[ { d = dm[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] }, { Floor[ d/2 ], Ceiling[ d/2 ] } ] & /@ kept );
+    { InfraPoint[ Keys @ midpoints, Values @ midpoints ], Sort @ arms }
   ]
+
+(* Midpoints of the chord {a, b}: vertices on some a-b geodesic at the
+   middle distance(s) Floor[d/2] / Ceiling[d/2] -- the union over all
+   geodesics, computed directly from the distance matrix. *)
+
+shellMidpointVertices[ dm_, idx_, { a_, b_ } ] :=
+  With[ { ia = idx @ a, ib = idx @ b },
+    With[ { d = dm[[ ia, ib ]], verts = Keys @ idx },
+      With[ { half = { Floor[ d/2 ], Ceiling[ d/2 ] } },
+        Pick[ verts,
+          MapThread[ #1 + #2 == d && MemberQ[ half, #1 ] &, { dm[[ ia ]], dm[[ All, ib ]] } ],
+          True ] ] ] ]
 
 
 (* ===================== InfraShellQ ===================== *)
 
+(* vs is a metric shell iff some vertex c is equidistant from every
+   vertex of vs at a common finite radius r, and vs is exactly the level
+   set { v : d(c, v) == r }. *)
+
 InfraShellQ[ graph_Graph, vs_List ] :=
-  Length[ FindInfraShellParameters[ graph, vs ] ] > 0
+  AnyTrue[ VertexList[ graph ],
+    c |-> With[ { ds = GraphDistance[ graph, c, # ] & /@ vs },
+      SameQ @@ ds && First[ ds ] =!= Infinity &&
+      Sort @ Select[ VertexList[ graph ], GraphDistance[ graph, c, # ] === First[ ds ] & ] === Sort[ vs ]
+    ] ]
 
 
 (* ===================== SeparatesQ ===================== *)

@@ -102,24 +102,70 @@ VerificationTest[
   TestID -> "InfraShellQ-non-symmetric-pair-not-shell"
 ]
 
-(* ===== FindInfraShellParameters ===== *)
+(* ===== FindInfraShellCenter (bisector estimator) ===== *)
 
 VerificationTest[
-  With[{g = PetersenGraph[]},
-    Length[FindInfraShellParameters[g, {2, 5, 10, 9, 8, 7}]] >= 1
-  ],
-  True,
-  TestID -> "FindInfraShellParameters-finds-center"
+  FindInfraShellCenter[PathGraph[Range[7]], {1, 7}],
+  {InfraPoint[{4}], {3}},
+  TestID -> "FindInfraShellCenter-path-even-exact-midpoint"
 ]
 
 VerificationTest[
-  With[{g = PetersenGraph[]},
-    With[{params = FindInfraShellParameters[g, {2, 5, 10, 9, 8, 7}]},
-      AllTrue[params, MatchQ[{_, _Integer}]]
+  FindInfraShellCenter[CycleGraph[8], {1, 5}],
+  {InfraPoint[{3, 7}], {2}},
+  TestID -> "FindInfraShellCenter-cycle-two-antipodal-midpoints"
+]
+
+VerificationTest[
+  MatchQ[FindInfraShellCenter[PetersenGraph[], {2, 5, 10, 9, 8, 7}], {_InfraPoint, {___Integer}}],
+  True,
+  TestID -> "FindInfraShellCenter-returns-center-radius"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{5, 5}], shell = Select[VertexList[GridGraph[{5, 5}]], GraphDistance[GridGraph[{5, 5}], 13, #] == 2 &]},
+    MemberQ[First @ First @ FindInfraShellCenter[g, shell], 13]
+  ],
+  True,
+  TestID -> "FindInfraShellCenter-blob-contains-true-center"
+]
+
+VerificationTest[
+  FindInfraShellCenter[PathGraph[Range[6]], {1, 6}, "Parity" -> "Even"],
+  {InfraPoint[{}], {}},
+  TestID -> "FindInfraShellCenter-Even-drops-odd-chords"
+]
+
+VerificationTest[
+  FindInfraShellCenter[PathGraph[Range[6]], {1, 6}, "Parity" -> "Odd"],
+  {InfraPoint[{3, 4}], {2, 3}},
+  TestID -> "FindInfraShellCenter-Odd-keeps-mesopoint"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    FindInfraShellCenter[g, First @ FindInfraShell[g, 13, 2]] ===
+      FindInfraShellCenter[g, Select[VertexList[g], GraphDistance[g, 13, #] == 2 &]]
+  ],
+  True,
+  TestID -> "FindInfraShellCenter-accepts-InfraShell-wrapper"
+]
+
+VerificationTest[
+  FindInfraShellCenter[GridGraph[{3, 3}], {1, 9}, "Metric" -> "Bogus"],
+  $Failed,
+  {FindInfraShellCenter::badmetric},
+  TestID -> "FindInfraShellCenter-bad-metric"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{5, 5}], shell = Select[VertexList[GridGraph[{5, 5}]], GraphDistance[GridGraph[{5, 5}], 13, #] == 2 &]},
+    With[{center = First @ FindInfraShellCenter[g, shell]},
+      MemberQ[Pick[center["Support"], center["Weights"], Max @ center["Weights"]], 13]
     ]
   ],
   True,
-  TestID -> "FindInfraShellParameters-returns-pairs"
+  TestID -> "FindInfraShellCenter-heaviest-support-is-true-center"
 ]
 
 (* ===== InfraCircleQ ===== *)

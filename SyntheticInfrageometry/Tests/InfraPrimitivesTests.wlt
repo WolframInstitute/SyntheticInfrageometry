@@ -45,6 +45,75 @@ VerificationTest[
 ]
 
 
+(* ----- weighted InfraPoint (mass) ----- *)
+
+VerificationTest[
+  InfraPoint[ { a, a, b } ],
+  InfraPoint[ { a, b }, { 2, 1 } ],
+  TestID -> "InfraPoint-duplicate-merges-to-weighted"
+]
+
+VerificationTest[
+  InfraPoint[ { a, b }, { 1, 1 } ],
+  InfraPoint[ { a, b } ],
+  TestID -> "InfraPoint-all-ones-collapses"
+]
+
+VerificationTest[
+  { InfraPoint[ { a, b }, { 2, 1 } ][ "Support" ],
+    InfraPoint[ { a, b }, { 2, 1 } ][ "Weights" ],
+    InfraPoint[ { a, b }, { 2, 1 } ][ "Mass" ],
+    InfraPoint[ { a, b } ][ "Weights" ] },
+  { { a, b }, { 2, 1 }, 3, { 1, 1 } },
+  TestID -> "InfraPoint-weight-accessors"
+]
+
+VerificationTest[
+  InfraPoint[ { InfraPoint[ { a }, { 2 } ], InfraPoint[ { a, b } ] } ],
+  InfraPoint[ { a, b }, { 3, 1 } ],
+  TestID -> "InfraPoint-aggregation-sums-mass"
+]
+
+VerificationTest[
+  First @ InfraPoint[ { a, b }, { 2, 1 } ],
+  { a, b },
+  TestID -> "InfraPoint-First-bypasses-weight-Part"
+]
+
+
+(* ----- column projection: wrapper[[i]] ----- *)
+
+VerificationTest[
+  InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ 1 ]],
+  InfraPoint[ { 1 }, { 2 } ],
+  TestID -> "InfraSegment-column-start-weighted"
+]
+
+VerificationTest[
+  InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ -1 ]],
+  InfraPoint[ { 3 }, { 2 } ],
+  TestID -> "InfraSegment-column-end-weighted"
+]
+
+VerificationTest[
+  InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ 2 ]],
+  InfraPoint[ { 2, 4 } ],
+  TestID -> "InfraSegment-column-middle-spread"
+]
+
+VerificationTest[
+  InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ 1, 1 ]],
+  { 1, 2, 3 },
+  TestID -> "InfraSegment-multi-index-first-path-preserved"
+]
+
+VerificationTest[
+  InfraLine[ { { 1, 2, 3 }, { 1, 2, 5 } } ][[ 2 ]],
+  InfraPoint[ { 2 }, { 2 } ],
+  TestID -> "InfraLine-column-weighted"
+]
+
+
 (* ===================== FindInfraCycle ===================== *)
 
 VerificationTest[

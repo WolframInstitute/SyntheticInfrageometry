@@ -12,6 +12,10 @@ InfraSegment[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraSegment[ _List ] ] ] :=
 (* "Length" = list of edge counts, one per realisation: |path| - 1. *)
 InfraSegment[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
+(* seg[[i]] = weighted InfraPoint of the i-th position across realisations
+   (mass = multiplicity).  First/Last and multi-index Part bypass this. *)
+InfraSegment /: Part[ InfraSegment[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]
+
 
 (* ===================== FindInfraSegment ===================== *)
 

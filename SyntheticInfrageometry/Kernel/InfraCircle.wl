@@ -186,7 +186,7 @@ InfraCircleQ[ graph_Graph, cycle_List ] /; Length[ cycle ] >= 3 :=
         pairs = Partition[ closed, 2, 1 ] },
       DuplicateFreeQ[ verts ] &&
       AllTrue[ pairs, EdgeQ[ graph, UndirectedEdge @@ # ] & ] &&
-      Length[ FindInfraShellParameters[ graph, verts ] ] > 0
+      InfraShellQ[ graph, verts ]
     ]
   ]
 

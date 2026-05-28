@@ -48,7 +48,7 @@ PackageExport[LineCount]
 PackageExport[InfraShell]
 PackageExport[FindInfraShell]
 PackageExport[FindInfraOsculatingShell]
-PackageExport[FindInfraShellParameters]
+PackageExport[FindInfraShellCenter]
 PackageExport[InfraShellQ]
 PackageExport[SeparatesQ]
 

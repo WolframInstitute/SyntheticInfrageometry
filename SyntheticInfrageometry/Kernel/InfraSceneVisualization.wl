@@ -184,6 +184,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                                1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ],
             record },
           {
+            { InfraPoint   [ b_List, w_List ], c_, u_ } :> { b, c, "Points", Append[ u, "Weights" -> AssociationThread[ b -> w ] ] },
             { InfraPoint   [ b_List ], c_, u_ } :> { b, c, "Points", u },
             { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraLine    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
@@ -247,10 +248,12 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
       vEntries = MapThread[
         { reps, color, type, record } |-> With[ {
             counts  = Counts @ Catenate[ repVerts[ type, # ] & /@ reps ],
-            numReps = Max[ Length @ reps, 1 ] },
-          AssociationMap[
-            v |-> { color, counts[ v ] / numReps, record },
-            Keys @ counts ] ],
+            numReps = Max[ Length @ reps, 1 ],
+            wts     = record[ "Weights" ] },
+          With[ { norm = If[ AssociationQ @ wts, Max @ Values @ wts, numReps ] },
+            AssociationMap[
+              v |-> { color, ( If[ AssociationQ @ wts, wts[ v ], counts[ v ] ] ) / norm, record },
+              Keys @ counts ] ] ],
         { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]] } ];
 
       eEntries = MapThread[

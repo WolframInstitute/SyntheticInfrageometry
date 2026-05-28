@@ -13,8 +13,38 @@ PackageScope[selectFromPointSpace]
 
 (* ===================== InfraPoint wrapper ===================== *)
 
-InfraPoint[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPoint[ _List ] ] ] :=
-  InfraPoint[ Flatten[ reps /. InfraPoint[ xs_List ] :> xs, 1 ] ]
+(* InfraPoint[{v1, ...}] is the unweighted form (each vertex mass 1).
+   InfraPoint[{v1, ...}, {w1, ...}] carries explicit per-vertex mass.  The
+   canonical form has a duplicate-free support with positive masses; masses
+   add on aggregation (a commutative monoid), and the all-ones weighted form
+   collapses back to the bare 1-arg form. *)
+
+InfraPoint[ reps_List ] /; ! FreeQ[ reps, _InfraPoint ] :=
+  mergeInfraPoints @ Replace[ reps, {
+      InfraPoint[ vs_List, ws_List ] :> Thread[ vs -> ws ],
+      InfraPoint[ vs_List ]          :> Thread[ vs -> 1 ],
+      v_                             :> { v -> 1 } }, { 1 } ]
+
+InfraPoint[ reps_List ] /; FreeQ[ reps, _InfraPoint ] && ! DuplicateFreeQ[ reps ] :=
+  With[ { m = Counts @ reps }, InfraPoint[ Keys @ m, Values @ m ] ]
+
+InfraPoint[ verts_List, weights_List ] /; ! DuplicateFreeQ[ verts ] :=
+  With[ { m = Merge[ Thread[ verts -> weights ], Total ] }, InfraPoint[ Keys @ m, Values @ m ] ]
+
+InfraPoint[ verts_List, weights_List ] /;
+    DuplicateFreeQ[ verts ] && weights === ConstantArray[ 1, Length @ verts ] :=
+  InfraPoint[ verts ]
+
+mergeInfraPoints[ pairs_List ] :=
+  With[ { m = Merge[ Flatten[ pairs, 1 ], Total ] }, InfraPoint[ Keys @ m, Values @ m ] ]
+
+InfraPoint[ verts_List ][ "Support" ]               := verts
+InfraPoint[ verts_List, _List ][ "Support" ]        := verts
+InfraPoint[ verts_List ][ "Weights" ]               := ConstantArray[ 1, Length @ verts ]
+InfraPoint[ verts_List, weights_List ][ "Weights" ] := weights
+InfraPoint[ verts_List ][ "Mass" ]                  := Length @ verts
+InfraPoint[ verts_List, weights_List ][ "Mass" ]    := Total @ weights
+InfraPoint[ verts_List, ___ ][ "First" ]            := First @ verts
 
 
 (* ===================== FindInfraPoint ===================== *)
@@ -100,45 +130,37 @@ anchorDistMatchQ[ allDists_List, idx_Integer, "Max" ]                        :=
 
 (* ===================== FindInfraMidpoint ===================== *)
 
-(* Strict metric midpoint: on a walk of n vertices, the vertex at index i with
-   Abs[2 i - (n + 1)] <= 2 tolerance.  Tolerance 0 -> unique midpoint only when
-   n is odd (i.e. d(a, b) is even); empty otherwise. *)
+(* Midpoint of a walk: the vertices at the index/indices closest to the centre
+   index (n + 1)/2.  Even-length walks (odd distance) give two equidistant
+   vertices -- a mesopoint; odd-length walks give a single vertex.  Always
+   non-empty.  Across the walks of the segment the closest-index vertices are
+   unioned into one InfraPoint.  "Tolerance" widens the band beyond the closest
+   index by that many graph-distance units. *)
 
 Options[ FindInfraMidpoint ] = { Method -> "Metric", "Tolerance" -> 0 };
 
-FindInfraMidpoint[ graph_Graph, seg_InfraSegment,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+FindInfraMidpoint[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        With[ { capped = infraCap[
-            DeleteDuplicates @ Flatten[ midpointsOnWalk[ #, tol ] & /@ First[ seg ], 1 ],
-            count ] },
-          If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
-        ],
+        InfraPoint[ DeleteDuplicates @ Flatten[ midpointsOnWalk[ #, tol ] & /@ First[ seg ], 1 ] ],
       "Embedding",
-        With[ { ranked = embeddingRankMidpointsFromSegment[ graph, First[ seg ],
-                  parseEmbeddingMethod @ OptionValue[ Method ] ] },
-          With[ { capped = infraCap[ ranked, count ] },
-            If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
-          ]
-        ]
+        InfraPoint[ { First @ embeddingRankMidpointsFromSegment[ graph, First[ seg ],
+            parseEmbeddingMethod @ OptionValue[ Method ] ] } ]
     ]
   ]
 
 FindInfraMidpoint[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Length[ walk ] >= 2 :=
-  FindInfraMidpoint[ graph, InfraSegment[ { walk } ], All, opts ]
+  FindInfraMidpoint[ graph, InfraSegment[ { walk } ], opts ]
 
-FindInfraMidpoint[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+FindInfraMidpoint[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
   FindInfraMidpoint[ graph,
-    InfraSegment[ #[[ 1, 1 ]] & /@ FindInfraSegment[ graph, p1, p2, All ] ],
-    count, opts ]
+    InfraSegment[ #[[ 1, 1 ]] & /@ FindInfraSegment[ graph, p1, p2, All ] ], opts ]
 
 
 midpointsOnWalk[ walk_List, tol_ ] :=
-  With[ { n = Length[ walk ] },
-    walk[[ # ]] & /@ Select[ Range[ n ], Abs[ 2 # - ( n + 1 ) ] <= 2 tol & ]
+  With[ { offsets = Abs[ Range[ Length[ walk ] ] - ( Length[ walk ] + 1 ) / 2 ] },
+    Pick[ walk, Thread[ offsets <= Min[ offsets ] + tol ], True ]
   ]
 
 
@@ -178,48 +200,37 @@ embeddingRankMidpointsFromSegment[ graph_Graph, walks_List, embOpts_Association 
 
 (* ===================== FindInfraGoldenSection ===================== *)
 
-(* Golden-section vertex S on segment AB: AB/AS == AS/SB (i.e. AS == AB/phi).
-   For a walk of n + 1 vertices (n edges), a non-endpoint vertex at position
-   i + 1 has AS == i, SB == n - i; admitted iff Abs[ n/i - i/(n - i) ] <= tol.
-   1/phi is irrational, so the strict (Tolerance -> 0) case is essentially
-   always empty. *)
+(* Golden-section vertex S on segment AB: AB/AS == AS/SB, i.e. AS == AB/phi.
+   The vertex at the index closest to the golden index 1 + (n - 1)/phi (n =
+   walk length); the golden index is irrational, so it is a single vertex per
+   walk -- always a single point.  Across the walks of the segment the
+   closest-index vertices are unioned into one InfraPoint.  "Tolerance" widens
+   the band beyond the closest index by that many graph-distance units. *)
 
 Options[ FindInfraGoldenSection ] = { Method -> "Metric", "Tolerance" -> 0 };
 
-FindInfraGoldenSection[ graph_Graph, seg_InfraSegment,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+FindInfraGoldenSection[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        With[ { capped = infraCap[
-            DeleteDuplicates @ Flatten[ goldenSectionsOnWalk[ #, tol ] & /@ First[ seg ], 1 ],
-            count ] },
-          If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
-        ],
+        InfraPoint[ DeleteDuplicates @ Flatten[ goldenSectionsOnWalk[ #, tol ] & /@ First[ seg ], 1 ] ],
       "Embedding",
-        With[ { ranked = embeddingRankGoldenSectionsFromSegment[ graph, First[ seg ],
-                  parseEmbeddingMethod @ OptionValue[ Method ] ] },
-          With[ { capped = infraCap[ ranked, count ] },
-            If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
-          ]
-        ]
+        InfraPoint[ { First @ embeddingRankGoldenSectionsFromSegment[ graph, First[ seg ],
+            parseEmbeddingMethod @ OptionValue[ Method ] ] } ]
     ]
   ]
 
 FindInfraGoldenSection[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Length[ walk ] >= 3 :=
-  FindInfraGoldenSection[ graph, InfraSegment[ { walk } ], All, opts ]
+  FindInfraGoldenSection[ graph, InfraSegment[ { walk } ], opts ]
 
-FindInfraGoldenSection[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+FindInfraGoldenSection[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
   FindInfraGoldenSection[ graph,
-    InfraSegment[ #[[ 1, 1 ]] & /@ FindInfraSegment[ graph, p1, p2, All ] ],
-    count, opts ]
+    InfraSegment[ #[[ 1, 1 ]] & /@ FindInfraSegment[ graph, p1, p2, All ] ], opts ]
 
 
 goldenSectionsOnWalk[ walk_List, tol_ ] :=
-  With[ { n = Length[ walk ] - 1 },
-    walk[[ # + 1 ]] & /@ Select[ Range[ 1, n - 1 ],
-      Abs[ N[ n / # - # / ( n - # ) ] ] <= tol & ]
+  With[ { offsets = Abs[ Range[ Length[ walk ] ] - N[ 1 + ( Length[ walk ] - 1 ) / GoldenRatio ] ] },
+    Pick[ walk, Thread[ offsets <= Min[ offsets ] + tol ], True ]
   ]
 
 
