@@ -131,15 +131,46 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindInfraShellCenter[PathGraph[Range[6]], {1, 6}, "Parity" -> "Even"],
+  FindInfraShellCenter[PathGraph[Range[6]], {1, 6}, Method -> {"MaximalChordsBisectors", "Parity" -> "Even"}],
   {InfraPoint[{}], {}},
   TestID -> "FindInfraShellCenter-Even-drops-odd-chords"
 ]
 
 VerificationTest[
-  FindInfraShellCenter[PathGraph[Range[6]], {1, 6}, "Parity" -> "Odd"],
+  FindInfraShellCenter[PathGraph[Range[6]], {1, 6}, Method -> {"MaximalChordsBisectors", "Parity" -> "Odd"}],
   {InfraPoint[{3, 4}], {2, 3}},
   TestID -> "FindInfraShellCenter-Odd-keeps-mesopoint"
+]
+
+(* "Diameter" keeps only the globally longest chord {1,10}; "PerVertex"
+   also keeps vertex 4's own farthest chord {4,10}, adding midpoint 7. *)
+VerificationTest[
+  { FindInfraShellCenter[PathGraph[Range[10]], {1, 4, 10}, Method -> {"MaximalChordsBisectors", "Maximality" -> "Diameter"}],
+    FindInfraShellCenter[PathGraph[Range[10]], {1, 4, 10}, Method -> {"MaximalChordsBisectors", "Maximality" -> "PerVertex"}] },
+  { {InfraPoint[{5, 6}], {4, 5}}, {InfraPoint[{5, 6, 7}], {3, 4, 5}} },
+  TestID -> "FindInfraShellCenter-Maximality-Diameter-vs-PerVertex"
+]
+
+(* EquidistantPoints recovers the exact center / radius the bisector
+   estimator misses on a small-diameter graph: Petersen's radius-2 sphere
+   {2,5,10,9,8,7} is centered exactly at vertex 1. *)
+VerificationTest[
+  FindInfraShellCenter[PetersenGraph[], {2, 5, 10, 9, 8, 7}, Method -> "EquidistantPoints"],
+  {InfraPoint[{1}], {2}},
+  TestID -> "FindInfraShellCenter-EquidistantPoints-Petersen-true-center"
+]
+
+VerificationTest[
+  FindInfraShellCenter[CycleGraph[8], {1, 5}, Method -> "EquidistantPoints"],
+  {InfraPoint[{3, 7}], {2}},
+  TestID -> "FindInfraShellCenter-EquidistantPoints-cycle-two-centers"
+]
+
+VerificationTest[
+  FindInfraShellCenter[GridGraph[{3, 3}], {1, 9}, Method -> "Bogus"],
+  $Failed,
+  {FindInfraShellCenter::badmethod},
+  TestID -> "FindInfraShellCenter-bad-method"
 ]
 
 VerificationTest[
@@ -152,7 +183,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindInfraShellCenter[GridGraph[{3, 3}], {1, 9}, "Metric" -> "Bogus"],
+  FindInfraShellCenter[GridGraph[{3, 3}], {1, 9}, Method -> {"MaximalChordsBisectors", "Metric" -> "Bogus"}],
   $Failed,
   {FindInfraShellCenter::badmetric},
   TestID -> "FindInfraShellCenter-bad-metric"

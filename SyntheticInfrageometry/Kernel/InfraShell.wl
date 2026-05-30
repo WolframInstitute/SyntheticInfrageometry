@@ -133,29 +133,48 @@ FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
 
 (* ===================== FindInfraShellCenter ===================== *)
 
-(* Bisector estimator of a shell's center and radius: for each shell
-   vertex pair it with its farthest shell partner(s) (per-vertex
-   antipodes), bisect each antipodal chord, and union the midpoints into
-   one InfraPoint -- the central infra midpoint.  The radius is the
-   sorted union of the integer arms { Floor[d/2], Ceil[d/2] } of the kept
-   chords.  "Metric" picks the antipodes by ambient ("Extrinsic") or
-   shell-subgraph ("Intrinsic") distance; midpoints/parity/arms always
-   use ambient distance.  "Parity" keeps All chords, only even-distance
-   (pure single-vertex bisectors), or only odd-distance (two-vertex
-   mesopoints).  Returns { InfraPoint[midpoints], radii }. *)
+(* Center / radius of a metric shell, two methods.
 
-FindInfraShellCenter::badmetric = "Metric `1` is not Extrinsic or Intrinsic.";
-FindInfraShellCenter::badparity = "Parity `1` is not All, Even, or Odd.";
+   Method -> "MaximalChordsBisectors" (default): bisect the shell's
+   longest chords and union the midpoints into one weighted InfraPoint --
+   mass = how many chords bisect there, heaviest support vertex = best
+   center; radius = sorted union of the integer arms { Floor[d/2],
+   Ceil[d/2] }.  Sub-options "Maximality" ("PerVertex" (default): each
+   vertex's own farthest shell partner(s) | "Diameter": only the globally
+   longest chords), "Metric" ("Extrinsic" (default) | "Intrinsic":
+   antipodes by shell-subgraph distance; midpoints/parity/arms always use
+   ambient distance), "Parity" (All (default) | "Even" pure single-vertex
+   bisectors | "Odd" two-vertex mesopoints).
 
-Options[ FindInfraShellCenter ] = { "Metric" -> "Extrinsic", "Parity" -> All };
+   Method -> "EquidistantPoints": the exact centers -- every vertex
+   equidistant from the whole shell at a common finite radius > 0;
+   unweighted InfraPoint, radius = sorted distinct common distances.
+
+   Both return { InfraPoint[support, masses], radii }. *)
+
+FindInfraShellCenter::badmethod     = "Method `1` is not MaximalChordsBisectors or EquidistantPoints.";
+FindInfraShellCenter::badmaximality = "Maximality `1` is not PerVertex or Diameter.";
+FindInfraShellCenter::badmetric     = "Metric `1` is not Extrinsic or Intrinsic.";
+FindInfraShellCenter::badparity     = "Parity `1` is not All, Even, or Odd.";
+
+Options[ FindInfraShellCenter ] = { Method -> "MaximalChordsBisectors" };
 
 FindInfraShellCenter[ graph_Graph, shell_InfraShell, opts : OptionsPattern[] ] :=
   FindInfraShellCenter[ graph, Union @@ First[ shell ], opts ]
 
 FindInfraShellCenter[ graph_Graph, vs_List, OptionsPattern[] ] :=
-  Module[ { metric, parity, dm, idx, dsel, antipodal, half, kept, midpoints, arms },
-    metric = OptionValue[ "Metric" ];
-    parity = OptionValue[ "Parity" ];
+  With[ { spec = OptionValue[ Method ] },
+    Switch[ methodName @ spec,
+      "MaximalChordsBisectors", maximalChordsBisectors[ graph, vs, methodOptions @ spec ],
+      "EquidistantPoints",      equidistantShellPoints[ graph, vs ],
+      _, Message[ FindInfraShellCenter::badmethod, spec ]; $Failed ] ]
+
+maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
+  Module[ { maximality, metric, parity, dm, idx, dsel, chords, kept, midpoints, arms },
+    maximality = Lookup[ mopts, "Maximality", "PerVertex" ];
+    metric     = Lookup[ mopts, "Metric", "Extrinsic" ];
+    parity     = Lookup[ mopts, "Parity", All ];
+    Switch[ maximality, "PerVertex" | "Diameter", Null, _, Message[ FindInfraShellCenter::badmaximality, maximality ]; Return[ $Failed ] ];
     Switch[ metric, "Extrinsic" | "Intrinsic", Null, _, Message[ FindInfraShellCenter::badmetric, metric ]; Return[ $Failed ] ];
     Switch[ parity, All | "Even" | "Odd", Null, _, Message[ FindInfraShellCenter::badparity, parity ]; Return[ $Failed ] ];
     dm  = GraphDistanceMatrix[ graph ];
@@ -165,19 +184,35 @@ FindInfraShellCenter[ graph_Graph, vs_List, OptionsPattern[] ] :=
                  With[ { rows = Lookup[ AssociationThread[ VertexList[ subg ] -> Range @ VertexCount @ subg ], vs ] },
                    GraphDistanceMatrix[ subg ][[ rows, rows ]] ] ],
                dm[[ Lookup[ idx, vs ], Lookup[ idx, vs ] ]] ];
-    antipodal = DeleteDuplicates[ Sort /@ Flatten[
-      Table[
-        With[ { row = ReplacePart[ dsel[[ i ]], i -> Infinity ] },
-          With[ { ecc = Max @ Select[ row, # =!= Infinity & ] },
-            { vs[[ i ]], # } & /@ Pick[ vs, Thread[ row == ecc ], True ] ] ],
-        { i, Length[ vs ] } ], 1 ] ];
-    kept = Select[ antipodal,
+    chords = Switch[ maximality,
+      "Diameter",
+        With[ { dmax = Max @ Select[ Flatten @ dsel, Positive[ # ] && # =!= Infinity & ] },
+          { vs[[ #[[ 1 ]] ]], vs[[ #[[ 2 ]] ]] } & /@
+            Select[ Subsets[ Range @ Length @ vs, { 2 } ], dsel[[ #[[ 1 ]], #[[ 2 ]] ]] == dmax & ] ],
+      "PerVertex",
+        DeleteDuplicates[ Sort /@ Flatten[
+          Table[
+            With[ { row = ReplacePart[ dsel[[ i ]], i -> Infinity ] },
+              With[ { ecc = Max @ Select[ row, # =!= Infinity & ] },
+                { vs[[ i ]], # } & /@ Pick[ vs, Thread[ row == ecc ], True ] ] ],
+            { i, Length[ vs ] } ], 1 ] ] ];
+    kept = Select[ chords,
       With[ { d = dm[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] },
         Switch[ parity, All, True, "Even", EvenQ[ d ], "Odd", OddQ[ d ] ] ] & ];
     midpoints = Counts @ Catenate[ shellMidpointVertices[ dm, idx, # ] & /@ kept ];
     arms = Union @@ ( With[ { d = dm[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] }, { Floor[ d/2 ], Ceiling[ d/2 ] } ] & /@ kept );
     { InfraPoint[ Keys @ midpoints, Values @ midpoints ], Sort @ arms }
   ]
+
+equidistantShellPoints[ graph_Graph, vs_List ] :=
+  With[ { dm  = GraphDistanceMatrix[ graph ],
+          idx = AssociationThread[ VertexList[ graph ] -> Range @ VertexCount @ graph ] },
+    { rows = Lookup[ idx, vs ] },
+    { centers = Select[ VertexList[ graph ],
+        c |-> With[ { ds = dm[[ idx @ c, rows ]] },
+          SameQ @@ ds && First[ ds ] =!= Infinity && First[ ds ] > 0 ] ] },
+    { InfraPoint[ centers ],
+      Sort @ DeleteDuplicates[ ( dm[[ idx @ #, First @ rows ]] & ) /@ centers ] } ]
 
 (* Midpoints of the chord {a, b}: vertices on some a-b geodesic at the
    middle distance(s) Floor[d/2] / Ceiling[d/2] -- the union over all
