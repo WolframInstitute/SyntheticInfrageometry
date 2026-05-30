@@ -173,17 +173,9 @@ MedianVertices::usage = "MedianVertices[graph, vs] returns the vertices minimisi
 FindGeodesicConvexHull::usage = "FindGeodesicConvexHull[graph, S] returns the smallest superset of S closed under MetricInterval, as a sorted vertex list. Graph-intrinsic shadow of tropical convexity (see Wiki/Concepts/TropicalConvexity).";
 GeodesicallyConvexQ::usage = "GeodesicallyConvexQ[graph, S] tests geodesic convexity of S. Option Method (\"Strong\" (default): every geodesic between any pair of S lies in S; \"Weak\": some geodesic between each pair lies in S).";
 
-(* ===================== InfraTopology ===================== *)
+(* ===================== InfraSet ===================== *)
 
-InfraTopologicalSpace::usage = "InfraTopologicalSpace[graph, topo] wraps a graph with the Hasse diagram of a specialization preorder (auto-reduces topo via TransitiveReductionGraph). Convenience form: InfraTopologicalSpace[graph, \"Topology\" -> {\"Ball\", r}]. Displays as the graph with topology arrows overlaid. Accessors: [\"Graph\"], [\"Topology\"].";
-InfraBallTopology::usage = "InfraBallTopology[graph, r] returns the Hasse diagram of the r-ball specialization preorder on V(graph): edge q -> p iff B_r(p) is contained in B_r(q), with transitive edges removed. Option \"Dual\" (False (default): primal; True: ReverseGraph of primal Hasse).";
-InfraTopologicalGraph::usage = "InfraTopologicalGraph[graph, r] returns InfraTopologicalSpace[graph, InfraBallTopology[graph, r]], which displays as the graph with r-ball Hasse arrows overlaid.";
-InfraSet::usage = "InfraSet[vs] wraps a vertex list vs as a topological set. Accessors: [\"Vertices\"] (the vertex list), [\"Length\"] (cardinality).";
-InfraSetClosure::usage = "InfraSetClosure[ts, s] returns InfraSet[cl(S)] for InfraSet s in InfraTopologicalSpace ts: cl(S) = union of VertexInComponent[ts[\"Topology\"], {v}] over all v in S. Also accepts any Infra* wrapper (InfraBall, InfraShell, InfraPoint, ...) by taking the union of its realisations as S.";
-InfraSetInterior::usage = "InfraSetInterior[ts, s] returns InfraSet[int(S)] for InfraSet s in InfraTopologicalSpace ts, via int(S) = V \\ cl(V\\S). Also accepts any Infra* wrapper (InfraBall, InfraShell, InfraPoint, ...) by taking the union of its realisations as S.";
-InfraSetBoundary::usage = "InfraSetBoundary[ts, s] returns InfraSet[bd(S)] = InfraSet[cl(S) \\ int(S)] for InfraSet s in InfraTopologicalSpace ts. Also accepts any Infra* wrapper (InfraBall, InfraShell, InfraPoint, ...) by taking the union of its realisations as S.";
-InfraSetNeighborhood::usage = "InfraSetNeighborhood[ts, s] returns the unique minimal open neighborhood of s in the InfraTopologicalSpace ts -- the principal upset of s in the specialization preorder (VertexOutComponent of each vertex). Also accepts any Infra* wrapper.";
-ContinuousMapQ::usage = "ContinuousMapQ[f, s1, s2] tests whether the vertex map f is continuous from InfraTopologicalSpace s1 to s2: each Hasse edge q -> p in s1[\"Topology\"] must map to a pair f(q) -> f(p) reachable in the transitive closure of s2[\"Topology\"]. map: Association, list of Rule, or callable.";
+InfraSet::usage = "InfraSet[vs] wraps a vertex list vs as a set; coerces any Infra* wrapper to its underlying vertex set. Accessors: [\"Vertices\"] (the vertex list), [\"Length\"] (cardinality).";
 
 (* ===================== Coordinatization ===================== *)
 

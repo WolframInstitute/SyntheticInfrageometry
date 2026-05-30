@@ -37,8 +37,8 @@ Print[TestReport[FileNameJoin[{$testDir, "HomotopyTests.wlt"}]]]
 Print["Running MetricAlgebraTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "MetricAlgebraTests.wlt"}]]]
 
-Print["Running InfraTopologyTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraTopologyTests.wlt"}]]]
+Print["Running InfraSetTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "InfraSetTests.wlt"}]]]
 
 Print["Running LaplacianAlgebraTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "LaplacianAlgebraTests.wlt"}]]]

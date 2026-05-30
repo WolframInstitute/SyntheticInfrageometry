@@ -152,16 +152,12 @@ PackageExport[MedianVertices]
 PackageExport[FindGeodesicConvexHull]
 PackageExport[GeodesicallyConvexQ]
 
-(* InfraTopology.wl *)
-PackageExport[InfraTopologicalSpace]
-PackageExport[InfraBallTopology]
-PackageExport[InfraTopologicalGraph]
+(* InfraSet.wl *)
+(* The Alexandrov-topology layer (InfraTopologicalSpace / InfraBallTopology /
+   InfraSet{Closure,Interior,Boundary,Neighborhood} / ContinuousMapQ) was relocated
+   to the Infrageometry paclet as BallTopology / Topological* / ContinuousMapQ on
+   bare vertex lists. InfraSet stays here -- it is a scene primitive. *)
 PackageExport[InfraSet]
-PackageExport[InfraSetClosure]
-PackageExport[InfraSetInterior]
-PackageExport[InfraSetBoundary]
-PackageExport[InfraSetNeighborhood]
-PackageExport[ContinuousMapQ]
 
 (* Coordinatization.wl *)
 PackageExport[FindInfraRadarBasis]
