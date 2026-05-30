@@ -70,9 +70,17 @@ parseHighlightStyle[ spec_, defaults_Association ] :=
         "VertexDir" -> { }, "EdgeDir" -> { }, "EdgeStyle" -> None,
         "EdgeShapeFunction" -> None, "VertexSize" -> None, "VertexShapeFunction" -> None |> ],
       normalizeHighlightSpec @ spec ],
-    r_Association :> Join[ r, <|
-      "VertexDir" -> Directive @@ r[ "VertexDir" ],
-      "EdgeDir"   -> Directive @@ r[ "EdgeDir" ] |> ] ]
+    (* An explicit thickness directive (bare, or via EdgeStyle) supersedes the
+       count-driven thickness diffusion: suppress "ThicknessRange" so the
+       user's value is the only AbsoluteThickness emitted, rather than winning
+       on directive order alone. *)
+    r_Association :> With[ {
+        edgeThick = ! FreeQ[ { r[ "EdgeDir" ], r[ "EdgeStyle" ] },
+          Thickness | AbsoluteThickness | Thick | Thin ] },
+      Join[ r, <|
+        "VertexDir" -> Directive @@ r[ "VertexDir" ],
+        "EdgeDir"   -> Directive @@ r[ "EdgeDir" ],
+        If[ edgeThick, "ThicknessRange" -> None, Nothing ] |> ] ] ]
 
 normalizeHighlightSpec[ Automatic ]          := { }
 normalizeHighlightSpec[ list_List ]          := list
@@ -287,7 +295,8 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                     eDirs = List @@ rec[ "EdgeDir" ] },
                   <|
                     "Style" -> Style[ ue, Directive[ color, Sequence @@ oList, Sequence @@ eDirs ] ],
-                    "EdgeStyle" -> If[ tList === { } && rec[ "EdgeStyle" ] === None, Nothing,
+                    "EdgeStyle" -> If[ tList === { } && rec[ "EdgeStyle" ] === None &&
+                        FreeQ[ eDirs, Thickness | AbsoluteThickness | Thick | Thin ], Nothing,
                       ue -> Directive[ color, Sequence @@ oList, Sequence @@ tList, Sequence @@ eDirs,
                         Sequence @@ If[ rec[ "EdgeStyle" ] === None, { }, { rec[ "EdgeStyle" ] } ] ] ],
                     "EdgeShapeFunction" -> If[ rec[ "EdgeShapeFunction" ] === None, Nothing,

@@ -133,28 +133,31 @@ FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
 
 (* ===================== FindInfraShellCenter ===================== *)
 
-(* Center / radius of a metric shell, two methods.
+(* Center / radius of a metric shell, two methods.  Both return a list
+   of estimates { InfraPoint[support, masses], r }, one per radius r,
+   sorted ascending.
 
    Method -> "MaximalChordsBisectors" (default): bisect the shell's
-   longest chords and union the midpoints into one weighted InfraPoint --
-   mass = how many chords bisect there, heaviest support vertex = best
-   center; radius = sorted union of the integer arms { Floor[d/2],
-   Ceil[d/2] }.  Sub-options "Maximality" ("PerVertex" (default): each
+   longest chords and bin the midpoints by radius -- within a radius,
+   mass = how many chords bisect at that vertex, heaviest support vertex
+   = best center.  An even chord contributes one estimate at r = d/2; an
+   odd chord splits into r = Floor[d/2] (vertices nearer the lower
+   endpoint) and r = Ceil[d/2].  Sub-options "Maximality" ("PerVertex" (default): each
    vertex's own farthest shell partner(s) | "Diameter": only the globally
-   longest chords), "Metric" ("Extrinsic" (default) | "Intrinsic":
-   antipodes by shell-subgraph distance; midpoints/parity/arms always use
+   longest chords), "Distance" ("Extrinsic" (default) | "Intrinsic":
+   antipodes by shell-subgraph distance -- "Intrinsic" is empty on a
+   genuine sphere, whose vertices induce an edgeless subgraph, and is
+   meaningful only on a connected shell; midpoints/parity/arms always use
    ambient distance), "Parity" (All (default) | "Even" pure single-vertex
    bisectors | "Odd" two-vertex mesopoints).
 
    Method -> "EquidistantPoints": the exact centers -- every vertex
-   equidistant from the whole shell at a common finite radius > 0;
-   unweighted InfraPoint, radius = sorted distinct common distances.
-
-   Both return { InfraPoint[support, masses], radii }. *)
+   equidistant from the whole shell at a common finite radius > 0,
+   grouped into one unweighted-InfraPoint estimate per radius. *)
 
 FindInfraShellCenter::badmethod     = "Method `1` is not MaximalChordsBisectors or EquidistantPoints.";
 FindInfraShellCenter::badmaximality = "Maximality `1` is not PerVertex or Diameter.";
-FindInfraShellCenter::badmetric     = "Metric `1` is not Extrinsic or Intrinsic.";
+FindInfraShellCenter::baddistance   = "Distance `1` is not Extrinsic or Intrinsic.";
 FindInfraShellCenter::badparity     = "Parity `1` is not All, Even, or Odd.";
 
 Options[ FindInfraShellCenter ] = { Method -> "MaximalChordsBisectors" };
@@ -170,16 +173,16 @@ FindInfraShellCenter[ graph_Graph, vs_List, OptionsPattern[] ] :=
       _, Message[ FindInfraShellCenter::badmethod, spec ]; $Failed ] ]
 
 maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
-  Module[ { maximality, metric, parity, dm, idx, dsel, chords, kept, midpoints, arms },
+  Module[ { maximality, distance, parity, dm, idx, dsel, chords, kept, radiiBins },
     maximality = Lookup[ mopts, "Maximality", "PerVertex" ];
-    metric     = Lookup[ mopts, "Metric", "Extrinsic" ];
+    distance   = Lookup[ mopts, "Distance", "Extrinsic" ];
     parity     = Lookup[ mopts, "Parity", All ];
     Switch[ maximality, "PerVertex" | "Diameter", Null, _, Message[ FindInfraShellCenter::badmaximality, maximality ]; Return[ $Failed ] ];
-    Switch[ metric, "Extrinsic" | "Intrinsic", Null, _, Message[ FindInfraShellCenter::badmetric, metric ]; Return[ $Failed ] ];
+    Switch[ distance, "Extrinsic" | "Intrinsic", Null, _, Message[ FindInfraShellCenter::baddistance, distance ]; Return[ $Failed ] ];
     Switch[ parity, All | "Even" | "Odd", Null, _, Message[ FindInfraShellCenter::badparity, parity ]; Return[ $Failed ] ];
     dm  = GraphDistanceMatrix[ graph ];
     idx = AssociationThread[ VertexList[ graph ] -> Range @ VertexCount @ graph ];
-    dsel = If[ metric === "Intrinsic",
+    dsel = If[ distance === "Intrinsic",
                With[ { subg = Subgraph[ graph, vs ] },
                  With[ { rows = Lookup[ AssociationThread[ VertexList[ subg ] -> Range @ VertexCount @ subg ], vs ] },
                    GraphDistanceMatrix[ subg ][[ rows, rows ]] ] ],
@@ -199,9 +202,8 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
     kept = Select[ chords,
       With[ { d = dm[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] },
         Switch[ parity, All, True, "Even", EvenQ[ d ], "Odd", OddQ[ d ] ] ] & ];
-    midpoints = Counts @ Catenate[ shellMidpointVertices[ dm, idx, # ] & /@ kept ];
-    arms = Union @@ ( With[ { d = dm[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] }, { Floor[ d/2 ], Ceiling[ d/2 ] } ] & /@ kept );
-    { InfraPoint[ Keys @ midpoints, Values @ midpoints ], Sort @ arms }
+    radiiBins = GroupBy[ Catenate[ chordMidpointRadii[ dm, idx, # ] & /@ kept ], Last -> First ];
+    KeyValueMap[ { r, vlist } |-> With[ { ct = Counts @ vlist }, { InfraPoint[ Keys @ ct, Values @ ct ], r } ], KeySort @ radiiBins ]
   ]
 
 equidistantShellPoints[ graph_Graph, vs_List ] :=
@@ -211,20 +213,20 @@ equidistantShellPoints[ graph_Graph, vs_List ] :=
     { centers = Select[ VertexList[ graph ],
         c |-> With[ { ds = dm[[ idx @ c, rows ]] },
           SameQ @@ ds && First[ ds ] =!= Infinity && First[ ds ] > 0 ] ] },
-    { InfraPoint[ centers ],
-      Sort @ DeleteDuplicates[ ( dm[[ idx @ #, First @ rows ]] & ) /@ centers ] } ]
+    KeyValueMap[ { r, cs } |-> { InfraPoint[ cs ], r }, KeySort @ GroupBy[ centers, dm[[ idx @ #, First @ rows ]] & ] ] ]
 
-(* Midpoints of the chord {a, b}: vertices on some a-b geodesic at the
-   middle distance(s) Floor[d/2] / Ceiling[d/2] -- the union over all
-   geodesics, computed directly from the distance matrix. *)
+(* Midpoint incidences { v, r } of the chord {a, b} (a = lower endpoint):
+   vertices v on some a-b geodesic at a middle distance r = d(a, v) in
+   { Floor[d/2], Ceil[d/2] }.  An even chord yields one r = d/2; an odd
+   chord splits into r = Floor (vertices nearer a) and r = Ceil (nearer b). *)
 
-shellMidpointVertices[ dm_, idx_, { a_, b_ } ] :=
-  With[ { ia = idx @ a, ib = idx @ b },
-    With[ { d = dm[[ ia, ib ]], verts = Keys @ idx },
-      With[ { half = { Floor[ d/2 ], Ceiling[ d/2 ] } },
-        Pick[ verts,
-          MapThread[ #1 + #2 == d && MemberQ[ half, #1 ] &, { dm[[ ia ]], dm[[ All, ib ]] } ],
-          True ] ] ] ]
+chordMidpointRadii[ dm_, idx_, chord_ ] :=
+  With[ { ab = Sort @ chord, verts = Keys @ idx },
+    { ia = idx @ ab[[ 1 ]], ib = idx @ ab[[ 2 ]] },
+    { d = dm[[ ia, ib ]] },
+    { half = { Floor[ d/2 ], Ceiling[ d/2 ] } },
+    Cases[ Transpose @ { verts, dm[[ ia ]], dm[[ All, ib ]] },
+      { v_, da_, db_ } /; da + db == d && MemberQ[ half, da ] :> { v, da } ] ]
 
 
 (* ===================== InfraShellQ ===================== *)
