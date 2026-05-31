@@ -26,3 +26,6 @@ InfraSet[ wrapper_Symbol[ rs_List ] ] /;
 
 InfraSet[ vs_List ][ "Vertices" ] := vs
 InfraSet[ vs_List ][ "Length" ]   := Length[ vs ]
+
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
+InfraSet[ vs_List ][ "Measure" ]  := VisitMeasure[ InfraSet[ vs ] ]

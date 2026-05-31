@@ -18,6 +18,9 @@ Options[ InfraEqualQ ] = { Method -> "Diffuse" }
 
 InfraEqualQ[ _Graph, a_, b_, OptionsPattern[] ] /; Head[ a ] =!= Head[ b ] := False
 
+(* the "Diffuse" / "Overlap" / "Multiset" methods compare raw vertex visit
+   measures: infraVertexMultiset is the un-normalized core of VisitMeasure
+   (== VisitMeasure[obj, "Normalize" -> False]), shared with the renderer. *)
 InfraEqualQ[ _Graph, a_, b_, OptionsPattern[] ] :=
   With[ { ma = infraVertexMultiset @ a, mb = infraVertexMultiset @ b },
     Switch[ OptionValue @ Method,

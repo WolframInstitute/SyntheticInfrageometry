@@ -14,6 +14,9 @@ InfraLoop[ reps_List ] /;
     AnyTrue[ reps, w |-> MatchQ[ w, _List ] && Length[ w ] >= 2 && First @ w =!= Last @ w ] :=
   InfraLoop[ closeWalk /@ reps ]
 
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
+InfraLoop[ reps_List ][ "Measure" ] := VisitMeasure[ InfraLoop[ reps ] ]
+
 
 (* ===================== Scene-DSL constructor ===================== *)
 

@@ -22,6 +22,9 @@ InfraTriangle[ reps_List ][ "Length" ] :=
 InfraTriangle[ reps_List ][ "Vertices" ] :=
   Map[ Function[ poly, InfraPoint[ { # } ] & /@ Most @ polylineToKnots[ poly ] ], reps ]
 
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
+InfraTriangle[ reps_List ][ "Measure" ] := VisitMeasure[ InfraTriangle[ reps ] ]
+
 
 (* ===================== FindInfraTriangle ===================== *)
 

@@ -15,6 +15,8 @@ InfraEllipse[ reps_List ][ "Realizations" ] := reps
 (* "Length" = circumference per realisation (#edges == #vertices for an open cycle). *)
 InfraEllipse[ reps_List ][ "Length" ]       := Length /@ reps
 InfraEllipse[ reps_List ][ "First" ]        := First @ reps
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
+InfraEllipse[ reps_List ][ "Measure" ]      := VisitMeasure[ InfraEllipse[ reps ] ]
 
 
 (* ===================== FindInfraEllipse ===================== *)

@@ -14,6 +14,9 @@ InfraShell[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraShell[ _List ] ] ] :=
 (* "Volume" = vertex count per realisation. *)
 InfraShell[ reps_List ][ "Volume" ] := Length /@ reps
 
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
+InfraShell[ reps_List ][ "Measure" ] := VisitMeasure[ InfraShell[ reps ] ]
+
 
 (* ===================== FindInfraShell ===================== *)
 

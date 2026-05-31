@@ -27,6 +27,9 @@ InfraPolyline[ reps_List ][ "Length" ] :=
 InfraPolyline[ reps_List ][ "Knots" ] :=
   Map[ Function[ poly, InfraPoint[ { # } ] & /@ polylineToKnots[ poly ] ], reps ]
 
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
+InfraPolyline[ reps_List ][ "Measure" ] := VisitMeasure[ InfraPolyline[ reps ] ]
+
 
 (* ===================== FindInfraPolylineSubdivision ===================== *)
 

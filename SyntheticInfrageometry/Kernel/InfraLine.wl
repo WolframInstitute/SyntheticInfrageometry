@@ -23,6 +23,9 @@ InfraLine[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraLine[ _List ] ] ] :=
 (* "Length" = list of edge counts, one per realisation: |line| - 1. *)
 InfraLine[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
+InfraLine[ reps_List ][ "Measure" ] := VisitMeasure[ InfraLine[ reps ] ]
+
 (* line[[i]] = weighted InfraPoint of the i-th position across realisations
    (mass = multiplicity).  First/Last and multi-index Part bypass this. *)
 InfraLine /: Part[ InfraLine[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]
@@ -678,6 +681,53 @@ PencilDirections[ graph_Graph, origin_ ] :=
 PencilCardinality[ graph_Graph, origin_ ] := Length @ PencilDirections[ graph, origin ]
 
 LineCount[ graph_Graph ] := Length @ allCanonicalLines[ graph ]
+
+
+(* ===================== FindLineHull / LineHullQ ===================== *)
+
+(* Line hull of S: the smallest superset closed under the line operator
+   L(u, v) = the maximal geodesics through u, v.  Equivalently, grow T by
+   every line meeting T in >= 2 vertices, to a fixed point.  The
+   De Bruijn-Erdos / Chen-Chvatal collinearity closure; cf. the segment
+   hull (closure under metric intervals) in MetricAlgebra.wl.  Option
+   "LineStructure": None (default) closes under all maximal geodesics;
+   an InfraLineStructure (or a bare list of lines) closes under that fixed
+   family instead -- still a unique fixed point since the family is fixed. *)
+
+Options[ FindLineHull ] = { "LineStructure" -> None };
+
+FindLineHull[ graph_Graph, S_List, OptionsPattern[] ] :=
+  With[ { lines = Replace[ OptionValue[ "LineStructure" ],
+            { None -> allCanonicalLines @ graph, ls_InfraLineStructure :> ls[ "Lines" ] } ] },
+    FixedPoint[
+      T |-> Union[ T, Catenate @ Select[ lines, Length @ Intersection[ #, T ] >= 2 & ] ],
+      Union @ S
+    ]
+  ]
+
+(* S is line-closed: it already contains every line (of the chosen family)
+   that meets it in two or more vertices. *)
+
+Options[ LineHullQ ] = { "LineStructure" -> None };
+
+LineHullQ[ graph_Graph, S_List, opts : OptionsPattern[] ] := FindLineHull[ graph, S, opts ] === Union @ S
+
+
+(* ===================== UniversalLineQ ===================== *)
+
+(* The Chen-Chvatal line through u, v is L(u, v) = the union of all maximal
+   geodesics through both (the metrically-collinear vertices).  A line is
+   universal when it fills a whole connected component (De Bruijn-Erdos /
+   Chen-Chvatal).  UniversalLineQ[g, {u, v}] tests the single pair;
+   UniversalLineQ[g] asks whether any pair spans a universal line. *)
+
+UniversalLineQ[ graph_Graph, { u_, v_ } ] :=
+  AnyTrue[ ConnectedComponents @ graph,
+    c |-> ContainsAll[ c, { u, v } ] &&
+      Union @ Catenate @ Select[ allCanonicalLines @ graph, ContainsAll[ #, { u, v } ] & ] === Sort @ c ]
+
+UniversalLineQ[ graph_Graph ] :=
+  AnyTrue[ Subsets[ VertexList @ graph, { 2 } ], UniversalLineQ[ graph, # ] & ]
 
 
 (* ===================== Helpers: canonical lines ===================== *)

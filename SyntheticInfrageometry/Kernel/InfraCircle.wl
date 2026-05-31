@@ -20,6 +20,9 @@ InfraCircle[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraCircle[ _List ] ] ] :=
    (wrap-around edge implicit, so #edges == #vertices). *)
 InfraCircle[ reps_List ][ "Length" ] := Length /@ reps
 
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
+InfraCircle[ reps_List ][ "Measure" ] := VisitMeasure[ InfraCircle[ reps ] ]
+
 
 (* ===================== FindInfraCircle ===================== *)
 

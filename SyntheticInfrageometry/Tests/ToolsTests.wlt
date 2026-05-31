@@ -79,4 +79,25 @@ VerificationTest[
   TestID -> "VisitMeasure-weighted-point-sums-to-one"
 ]
 
+(* the ["Measure"] accessor delegates to the engine, across all wrapper shapes *)
+VerificationTest[
+  AllTrue[
+    { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
+      InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ],
+      InfraCircle[ { { 1, 2, 3 } } ],
+      InfraPoint[ { 1, 2 }, { 3, 1 } ],
+      InfraSet[ { 1, 2, 3 } ] },
+    w |-> w[ "Measure" ] === VisitMeasure[ w ] ],
+  True,
+  TestID -> "VisitMeasure-accessor-agrees-with-engine"
+]
+
+(* the accessor is the normalized vertex measure: set-like values in (0,1], single realisation all 1 *)
+VerificationTest[
+  { AllTrue[ Values @ InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ][ "Measure" ], 0 < # <= 1 & ],
+    InfraSegment[ { { 1, 2, 3 } } ][ "Measure" ] },
+  { True, <| 1 -> 1, 2 -> 1, 3 -> 1 |> },
+  TestID -> "VisitMeasure-accessor-invariants"
+]
+
 EndTestSection[]
