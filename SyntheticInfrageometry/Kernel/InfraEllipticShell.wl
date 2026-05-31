@@ -17,8 +17,8 @@ InfraEllipticShell[ reps_List ][ "Realizations" ] := reps
 (* "Volume" = vertex count per realisation. *)
 InfraEllipticShell[ reps_List ][ "Volume" ]       := Length /@ reps
 InfraEllipticShell[ reps_List ][ "First" ]        := First @ reps
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
-InfraEllipticShell[ reps_List ][ "Measure" ]      := VisitMeasure[ InfraEllipticShell[ reps ] ]
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+InfraEllipticShell[ reps_List ][ "Measure" ]      := InfraMeasure[ InfraEllipticShell[ reps ] ]
 
 
 (* ===================== FindInfraEllipticShell ===================== *)

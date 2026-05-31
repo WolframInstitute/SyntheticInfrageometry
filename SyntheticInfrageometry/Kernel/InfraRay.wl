@@ -14,8 +14,8 @@ InfraRay[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraRay[ _List ] ] ] :=
 (* "Length" = list of edge counts, one per realisation: |ray| - 1. *)
 InfraRay[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
-InfraRay[ reps_List ][ "Measure" ] := VisitMeasure[ InfraRay[ reps ] ]
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+InfraRay[ reps_List ][ "Measure" ] := InfraMeasure[ InfraRay[ reps ] ]
 
 
 (* ===================== FindInfraRay ===================== *)

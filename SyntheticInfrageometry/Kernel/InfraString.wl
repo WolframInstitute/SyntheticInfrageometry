@@ -19,8 +19,8 @@ InfraString[ reps_List ] /;
     AnyTrue[ reps, w |-> MatchQ[ w, _List ] && w =!= canonicalString[ w ] ] :=
   InfraString[ DeleteDuplicates[ canonicalString /@ reps ] ]
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
-InfraString[ reps_List ][ "Measure" ] := VisitMeasure[ InfraString[ reps ] ]
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+InfraString[ reps_List ][ "Measure" ] := InfraMeasure[ InfraString[ reps ] ]
 
 
 (* Canonical form: lex-least cyclic rotation of Most[closeWalk[walk]].

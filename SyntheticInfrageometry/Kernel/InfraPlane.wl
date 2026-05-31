@@ -14,8 +14,8 @@ InfraPlane[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPlane[ _List ] ] ] :=
 (* "Volume" = vertex count per realisation. *)
 InfraPlane[ reps_List ][ "Volume" ] := Length /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
-InfraPlane[ reps_List ][ "Measure" ] := VisitMeasure[ InfraPlane[ reps ] ]
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+InfraPlane[ reps_List ][ "Measure" ] := InfraMeasure[ InfraPlane[ reps ] ]
 
 
 (* ===================== FindInfraBisectingHyperplane ===================== *)

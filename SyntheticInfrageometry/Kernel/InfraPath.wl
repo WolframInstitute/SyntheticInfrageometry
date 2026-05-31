@@ -20,8 +20,8 @@ InfraPath[ args : ( _InfraPoint | { _InfraPoint } ) .. ] :=
 (* "Length" = list of edge counts, one per realisation: |walk| - 1. *)
 InfraPath[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
-InfraPath[ reps_List ][ "Measure" ] := VisitMeasure[ InfraPath[ reps ] ]
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+InfraPath[ reps_List ][ "Measure" ] := InfraMeasure[ InfraPath[ reps ] ]
 
 
 (* ===================== FindInfraPath ===================== *)

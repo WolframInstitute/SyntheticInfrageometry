@@ -233,7 +233,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
 
     triples = Join[ triples, knotTriples ];
 
-    (* repVerts / repEdges share the per-type dispatch with VisitMeasure via
+    (* repVerts / repEdges share the per-type dispatch with InfraMeasure via
        infraRepVerts / infraRepEdges (Tools.wl); only the Automatic-type branch
        for non-Infra highlight objects stays local (it needs the graph). *)
     With[ {

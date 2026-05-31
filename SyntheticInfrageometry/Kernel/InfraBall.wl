@@ -12,8 +12,8 @@ InfraBall[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraBall[ _List ] ] ] :=
 (* "Volume" = vertex count per realisation. *)
 InfraBall[ reps_List ][ "Volume" ] := Length /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
-InfraBall[ reps_List ][ "Measure" ] := VisitMeasure[ InfraBall[ reps ] ]
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+InfraBall[ reps_List ][ "Measure" ] := InfraMeasure[ InfraBall[ reps ] ]
 
 
 (* ===================== FindInfraBall ===================== *)

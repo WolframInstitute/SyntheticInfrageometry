@@ -46,8 +46,8 @@ InfraPoint[ verts_List ][ "Mass" ]                  := Length @ verts
 InfraPoint[ verts_List, weights_List ][ "Mass" ]    := Total @ weights
 InfraPoint[ verts_List, ___ ][ "First" ]            := First @ verts
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
-InfraPoint[ verts_List, w___ ][ "Measure" ]         := VisitMeasure[ InfraPoint[ verts, w ] ]
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+InfraPoint[ verts_List, w___ ][ "Measure" ]         := InfraMeasure[ InfraPoint[ verts, w ] ]
 
 
 (* ===================== FindInfraPoint ===================== *)

@@ -10,8 +10,8 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 InfraObject[ vs_List ][ "Volume" ] := { Length @ vs }
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
-InfraObject[ vs_List ][ "Measure" ] := VisitMeasure[ InfraObject[ vs ] ]
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+InfraObject[ vs_List ][ "Measure" ] := InfraMeasure[ InfraObject[ vs ] ]
 
 
 (* ===================== FindInfraRevolution ===================== *)

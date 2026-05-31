@@ -12,8 +12,8 @@ InfraSegment[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraSegment[ _List ] ] ] :=
 (* "Length" = list of edge counts, one per realisation: |path| - 1. *)
 InfraSegment[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
-InfraSegment[ reps_List ][ "Measure" ] := VisitMeasure[ InfraSegment[ reps ] ]
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+InfraSegment[ reps_List ][ "Measure" ] := InfraMeasure[ InfraSegment[ reps ] ]
 
 (* seg[[i]] = weighted InfraPoint of the i-th position across realisations
    (mass = multiplicity).  First/Last and multi-index Part bypass this. *)

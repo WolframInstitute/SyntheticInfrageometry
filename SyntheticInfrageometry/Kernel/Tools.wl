@@ -433,17 +433,17 @@ infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] :=
 (* ===================== Visit measure ===================== *)
 
 (* The realization-frequency measure: the marginal of a wrapper's realization
-   bundle onto its vertex / edge set.  VisitMeasure[obj] is the normalized
+   bundle onto its vertex / edge set.  InfraMeasure[obj] is the normalized
    vertex measure m(v) = c(v) / N (raw count over N realisations); the diffuse
    opacity rendered by InfraSceneHighlight is exactly this measure.  It is a
    lossy *view* of the bundle (discards order, co-occurrence) -- the bundle
    stays ground truth. *)
 
-Options[ VisitMeasure ] = { "On" -> "Vertices", "Normalize" -> True };
+Options[ InfraMeasure ] = { "On" -> "Vertices", "Normalize" -> True };
 
-VisitMeasure[ g_Graph, obj_, opts:OptionsPattern[] ] :=
+InfraMeasure[ g_Graph, obj_, opts:OptionsPattern[] ] :=
   visitMeasure[ g, obj, OptionValue[ "On" ], OptionValue[ "Normalize" ] ]
-VisitMeasure[ obj_, opts:OptionsPattern[] ] :=
+InfraMeasure[ obj_, opts:OptionsPattern[] ] :=
   visitMeasure[ None, obj, OptionValue[ "On" ], OptionValue[ "Normalize" ] ]
 
 visitMeasure[ g_, obj_, on_, normalize_ ] :=
@@ -487,7 +487,7 @@ infraRepSeqs[ head_[ reps_List, ___ ] ]                                       :=
    single source of truth shared with InfraSceneHighlight's repVerts / repEdges
    dispatch.  A point realisation is a bare vertex (wrapped to a singleton);
    path / cycle / set realisations are vertex lists.  Edges are sorted lists
-   {a, b} (VisitMeasure remaps them to UndirectedEdge for its public output). *)
+   {a, b} (InfraMeasure remaps them to UndirectedEdge for its public output). *)
 
 infraRepVerts[ "Points", rep_ ] := { rep }
 infraRepVerts[ _, rep_ ]        := rep
@@ -501,7 +501,7 @@ infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
 infraNumReps[ head_[ reps_List, ___ ] ]            := Max[ Length @ reps, 1 ]
 
 (* raw edge multiset, keyed by sorted lists {a, b}.  Sets-type edges are the
-   induced subgraph, hence the graph dependency.  VisitMeasure remaps the keys
+   induced subgraph, hence the graph dependency.  InfraMeasure remaps the keys
    to UndirectedEdge; the renderer consumes the sorted-list keys directly. *)
 
 infraEdgeMultiset[ g_, obj_ ] :=

@@ -11,72 +11,72 @@ VerificationTest[
   TestID -> "Tools-placeholder"
 ]
 
-(* ===================== VisitMeasure ===================== *)
+(* ===================== InfraMeasure ===================== *)
 
 (* set-like measure: every value is a frequency in (0, 1] *)
 VerificationTest[
-  AllTrue[ Values @ VisitMeasure[ InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ] ], 0 < # <= 1 & ],
+  AllTrue[ Values @ InfraMeasure[ InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ] ], 0 < # <= 1 & ],
   True,
-  TestID -> "VisitMeasure-set-values-in-unit-interval"
+  TestID -> "InfraMeasure-set-values-in-unit-interval"
 ]
 
 (* the two vertices common to both realisations carry full measure 1 *)
 VerificationTest[
-  Lookup[ VisitMeasure[ InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ] ], { 2, 3 } ],
+  Lookup[ InfraMeasure[ InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ] ], { 2, 3 } ],
   { 1, 1 },
-  TestID -> "VisitMeasure-set-common-vertices"
+  TestID -> "InfraMeasure-set-common-vertices"
 ]
 
 (* single realisation: every vertex visited exactly once per realisation maps to 1 *)
 VerificationTest[
-  VisitMeasure[ InfraSegment[ { { 1, 2, 3 } } ] ],
+  InfraMeasure[ InfraSegment[ { { 1, 2, 3 } } ] ],
   <| 1 -> 1, 2 -> 1, 3 -> 1 |>,
-  TestID -> "VisitMeasure-single-realisation-all-one"
+  TestID -> "InfraMeasure-single-realisation-all-one"
 ]
 
 (* raw counts: sum over vertices equals total membership across the bundle *)
 VerificationTest[
   With[ { reps = { { 1, 2, 3, 6, 9 }, { 1, 4, 7, 8, 9 }, { 1, 2, 5, 8, 9 } } },
-    Total @ Values @ VisitMeasure[ InfraSegment[ reps ], "Normalize" -> False ] ==
+    Total @ Values @ InfraMeasure[ InfraSegment[ reps ], "Normalize" -> False ] ==
       Total[ Length /@ reps ] ],
   True,
-  TestID -> "VisitMeasure-rawcount-sum-equals-membership"
+  TestID -> "InfraMeasure-rawcount-sum-equals-membership"
 ]
 
 (* normalisation divides raw counts by the number of realisations *)
 VerificationTest[
   With[ { obj = InfraSegment[ { { 1, 2, 3, 6, 9 }, { 1, 4, 7, 8, 9 }, { 1, 2, 5, 8, 9 } } ] },
-    VisitMeasure[ obj ] == VisitMeasure[ obj, "Normalize" -> False ] / 3 ],
+    InfraMeasure[ obj ] == InfraMeasure[ obj, "Normalize" -> False ] / 3 ],
   True,
-  TestID -> "VisitMeasure-normalise-is-rawcount-over-numreps"
+  TestID -> "InfraMeasure-normalise-is-rawcount-over-numreps"
 ]
 
 (* empty bundle yields the empty measure *)
 VerificationTest[
-  VisitMeasure[ InfraSegment[ { } ] ],
+  InfraMeasure[ InfraSegment[ { } ] ],
   <||>,
-  TestID -> "VisitMeasure-empty-bundle"
+  TestID -> "InfraMeasure-empty-bundle"
 ]
 
 (* edge measure: keys are sorted UndirectedEdges of the path's steps *)
 VerificationTest[
-  Keys @ VisitMeasure[ PathGraph @ Range[ 4 ], InfraSegment[ { { 1, 2, 3, 4 } } ], "On" -> "Edges" ],
+  Keys @ InfraMeasure[ PathGraph @ Range[ 4 ], InfraSegment[ { { 1, 2, 3, 4 } } ], "On" -> "Edges" ],
   { UndirectedEdge[ 1, 2 ], UndirectedEdge[ 2, 3 ], UndirectedEdge[ 3, 4 ] },
-  TestID -> "VisitMeasure-edge-keys-undirected"
+  TestID -> "InfraMeasure-edge-keys-undirected"
 ]
 
 (* "Both" returns the two marginals keyed by name *)
 VerificationTest[
-  Keys @ VisitMeasure[ PathGraph @ Range[ 4 ], InfraSegment[ { { 1, 2, 3, 4 } } ], "On" -> "Both" ],
+  Keys @ InfraMeasure[ PathGraph @ Range[ 4 ], InfraSegment[ { { 1, 2, 3, 4 } } ], "On" -> "Both" ],
   { "Vertices", "Edges" },
-  TestID -> "VisitMeasure-both-shape"
+  TestID -> "InfraMeasure-both-shape"
 ]
 
 (* weighted InfraPoint: measure is the weight-normalised probability distribution *)
 VerificationTest[
-  Total @ Values @ VisitMeasure[ InfraPoint[ { 1, 2 }, { 3, 1 } ] ],
+  Total @ Values @ InfraMeasure[ InfraPoint[ { 1, 2 }, { 3, 1 } ] ],
   1,
-  TestID -> "VisitMeasure-weighted-point-sums-to-one"
+  TestID -> "InfraMeasure-weighted-point-sums-to-one"
 ]
 
 (* the ["Measure"] accessor delegates to the engine, across all wrapper shapes *)
@@ -87,9 +87,9 @@ VerificationTest[
       InfraCircle[ { { 1, 2, 3 } } ],
       InfraPoint[ { 1, 2 }, { 3, 1 } ],
       InfraSet[ { 1, 2, 3 } ] },
-    w |-> w[ "Measure" ] === VisitMeasure[ w ] ],
+    w |-> w[ "Measure" ] === InfraMeasure[ w ] ],
   True,
-  TestID -> "VisitMeasure-accessor-agrees-with-engine"
+  TestID -> "InfraMeasure-accessor-agrees-with-engine"
 ]
 
 (* the accessor is the normalized vertex measure: set-like values in (0,1], single realisation all 1 *)
@@ -97,7 +97,7 @@ VerificationTest[
   { AllTrue[ Values @ InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ][ "Measure" ], 0 < # <= 1 & ],
     InfraSegment[ { { 1, 2, 3 } } ][ "Measure" ] },
   { True, <| 1 -> 1, 2 -> 1, 3 -> 1 |> },
-  TestID -> "VisitMeasure-accessor-invariants"
+  TestID -> "InfraMeasure-accessor-invariants"
 ]
 
 EndTestSection[]
