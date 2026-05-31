@@ -17,10 +17,11 @@ InfraEllipticShell[ reps_List ][ "Realizations" ] := reps
 (* "Volume" = vertex count per realisation. *)
 InfraEllipticShell[ reps_List ][ "Volume" ]       := Length /@ reps
 InfraEllipticShell[ reps_List ][ "First" ]        := First @ reps
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
-InfraEllipticShell[ reps_List ][ "Measure" ]      := InfraMeasure[ InfraEllipticShell[ reps ] ]
-
-
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraEllipticShell[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraEllipticShell[ reps ] ]
+InfraEllipticShell[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraEllipticShell[ reps ] ]
+InfraEllipticShell[ reps_List ][ "Measure" ] := InfraMeasure[ InfraEllipticShell[ reps ] ]
+InfraEllipticShell[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraEllipticShell[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraEllipticShell ===================== *)
 
 (* Elliptic shell for foci {p1, p2} at sum c: level set

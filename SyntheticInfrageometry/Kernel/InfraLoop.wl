@@ -14,10 +14,11 @@ InfraLoop[ reps_List ] /;
     AnyTrue[ reps, w |-> MatchQ[ w, _List ] && Length[ w ] >= 2 && First @ w =!= Last @ w ] :=
   InfraLoop[ closeWalk /@ reps ]
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraLoop[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraLoop[ reps ] ]
+InfraLoop[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraLoop[ reps ] ]
 InfraLoop[ reps_List ][ "Measure" ] := InfraMeasure[ InfraLoop[ reps ] ]
-
-
+InfraLoop[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraLoop[ reps ], Method -> "Probability" ]
 (* ===================== Scene-DSL constructor ===================== *)
 
 (* InfraLoop[v1, v2, ..., vk] is the literal closed walk with the given

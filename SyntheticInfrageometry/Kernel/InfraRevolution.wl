@@ -10,10 +10,11 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 InfraObject[ vs_List ][ "Volume" ] := { Length @ vs }
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraObject[ vs_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraObject[ vs ] ]
+InfraObject[ vs_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraObject[ vs ] ]
 InfraObject[ vs_List ][ "Measure" ] := InfraMeasure[ InfraObject[ vs ] ]
-
-
+InfraObject[ vs_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraObject[ vs ], Method -> "Probability" ]
 (* ===================== FindInfraRevolution ===================== *)
 
 (* Multi-axis rotational object.  Each axis path is extended by a SET of

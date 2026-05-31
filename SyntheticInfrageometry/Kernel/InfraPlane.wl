@@ -14,10 +14,11 @@ InfraPlane[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPlane[ _List ] ] ] :=
 (* "Volume" = vertex count per realisation. *)
 InfraPlane[ reps_List ][ "Volume" ] := Length /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraPlane[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraPlane[ reps ] ]
+InfraPlane[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraPlane[ reps ] ]
 InfraPlane[ reps_List ][ "Measure" ] := InfraMeasure[ InfraPlane[ reps ] ]
-
-
+InfraPlane[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPlane[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraBisectingHyperplane ===================== *)
 
 (* A bisecting hyperplane between p1 and p2 is a vertex subset of the

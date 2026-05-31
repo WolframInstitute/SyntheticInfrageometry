@@ -14,10 +14,11 @@ InfraRay[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraRay[ _List ] ] ] :=
 (* "Length" = list of edge counts, one per realisation: |ray| - 1. *)
 InfraRay[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraRay[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraRay[ reps ] ]
+InfraRay[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraRay[ reps ] ]
 InfraRay[ reps_List ][ "Measure" ] := InfraMeasure[ InfraRay[ reps ] ]
-
-
+InfraRay[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraRay[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraRay ===================== *)
 
 (* A ray from origin in v's direction is a pointed half of a maximal

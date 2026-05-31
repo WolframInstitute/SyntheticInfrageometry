@@ -12,10 +12,11 @@ InfraBall[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraBall[ _List ] ] ] :=
 (* "Volume" = vertex count per realisation. *)
 InfraBall[ reps_List ][ "Volume" ] := Length /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraBall[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraBall[ reps ] ]
+InfraBall[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraBall[ reps ] ]
 InfraBall[ reps_List ][ "Measure" ] := InfraMeasure[ InfraBall[ reps ] ]
-
-
+InfraBall[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraBall[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraBall ===================== *)
 
 (* The closed metric ball B_r(c) = { v : d(c, v) <= r }, returned as

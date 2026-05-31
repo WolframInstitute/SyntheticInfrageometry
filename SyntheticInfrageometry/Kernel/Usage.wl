@@ -186,7 +186,7 @@ SegmentHullQ::usage = "SegmentHullQ[graph, S] returns True if S is closed under 
 
 (* ===================== Visit measure ===================== *)
 
-InfraMeasure::usage = "InfraMeasure[obj] returns the normalized vertex visit measure <|v -> visits/numReps|> of an Infra* wrapper -- the marginal of its realization bundle onto its vertices. InfraMeasure[graph, obj] is graph-aware and unlocks the edge measure. Options \"On\" (\"Vertices\" (default), \"Edges\", \"Both\") and \"Normalize\" (True (default) divides by numReps; False returns raw integer counts).";
+InfraMeasure::usage = "InfraMeasure[obj] returns the vertex occupation measure <|v -> appearances|> of an Infra* wrapper -- the marginal of its realization bundle onto its vertices. InfraMeasure[graph, obj] is graph-aware and unlocks the edge measure. Options \"On\" (\"Vertices\" (default), \"Edges\", \"Both\") and Method (\"Occupation\" (default) divides by numReps, the membership measure in [0,1]; \"Probability\" divides by total appearances, the distribution summing to 1).";
 
 (* ===================== InfraSet ===================== *)
 

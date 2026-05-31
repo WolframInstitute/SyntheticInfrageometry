@@ -23,9 +23,11 @@ InfraLine[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraLine[ _List ] ] ] :=
 (* "Length" = list of edge counts, one per realisation: |line| - 1. *)
 InfraLine[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraLine[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraLine[ reps ] ]
+InfraLine[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraLine[ reps ] ]
 InfraLine[ reps_List ][ "Measure" ] := InfraMeasure[ InfraLine[ reps ] ]
-
+InfraLine[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraLine[ reps ], Method -> "Probability" ]
 (* line[[i]] = weighted InfraPoint of the i-th position across realisations
    (mass = multiplicity).  First/Last and multi-index Part bypass this. *)
 InfraLine /: Part[ InfraLine[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]
