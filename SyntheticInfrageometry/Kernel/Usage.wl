@@ -186,11 +186,15 @@ SegmentHullQ::usage = "SegmentHullQ[graph, S] returns True if S is closed under 
 
 (* ===================== Visit measure ===================== *)
 
-VisitMeasure::usage = "VisitMeasure[obj] returns the normalized vertex visit measure <|v -> visits/numReps|> of an Infra* wrapper -- the marginal of its realization bundle onto its vertices. VisitMeasure[graph, obj] is graph-aware and unlocks the edge measure. Options \"On\" (\"Vertices\" (default), \"Edges\", \"Both\") and \"Normalize\" (True (default) divides by numReps; False returns raw integer counts).";
+InfraMeasure::usage = "InfraMeasure[obj] returns the normalized vertex visit measure <|v -> visits/numReps|> of an Infra* wrapper -- the marginal of its realization bundle onto its vertices. InfraMeasure[graph, obj] is graph-aware and unlocks the edge measure. Options \"On\" (\"Vertices\" (default), \"Edges\", \"Both\") and \"Normalize\" (True (default) divides by numReps; False returns raw integer counts).";
 
 (* ===================== InfraSet ===================== *)
 
 InfraSet::usage = "InfraSet[vs] wraps a vertex list vs as a set; coerces any Infra* wrapper to its underlying vertex set. Accessors: [\"Vertices\"] (the vertex list), [\"Length\"] (cardinality).";
+
+InfraBoundary::usage = "InfraBoundary[g, s] is the boundary of the vertex set s (a bare vertex list or any Infra* object) in g, returned as an InfraSet. Option Method (\"Combinatorial\" (default), the inner vertex boundary via GraphBoundary; {\"Alexandrov\", \"Radius\" -> r}, the two-sided cl(s)\\int(s) in the closed-r-ball topology, default r = 1).";
+
+InfraInterior::usage = "InfraInterior[g, s] is the interior of the vertex set s (a bare vertex list or any Infra* object) in g, returned as an InfraSet. Option Method (\"Combinatorial\" (default), s minus its inner boundary via GraphInterior; {\"Alexandrov\", \"Radius\" -> r}, the topological interior in the closed-r-ball topology, default r = 1).";
 
 (* ===================== Coordinatization ===================== *)
 

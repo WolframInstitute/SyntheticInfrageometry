@@ -1,7 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* Tools.wl *)
-PackageExport[VisitMeasure]
+PackageExport[InfraMeasure]
 
 (* InfraPoint.wl *)
 PackageExport[InfraPoint]
@@ -165,10 +165,15 @@ PackageExport[SegmentHullQ]
 
 (* InfraSet.wl *)
 (* The Alexandrov-topology layer (InfraTopologicalSpace / InfraBallTopology /
-   InfraSet{Closure,Interior,Boundary,Neighborhood} / ContinuousMapQ) was relocated
-   to the Infrageometry paclet as BallTopology / Topological* / ContinuousMapQ on
-   bare vertex lists. InfraSet stays here -- it is a scene primitive. *)
+   ContinuousMapQ) was relocated to the Infrageometry paclet as BallTopology /
+   Topological* / ContinuousMapQ on bare vertex lists. InfraSet stays here -- it is
+   a scene primitive. InfraBoundary / InfraInterior are the synthetic front-ends:
+   they accept any Infra* object, dispatch over Method to GraphBoundary/GraphInterior
+   ("Combinatorial") or Topological{Boundary,Interior} ("Alexandrov") from
+   Infrageometry, and return an InfraSet. *)
 PackageExport[InfraSet]
+PackageExport[InfraBoundary]
+PackageExport[InfraInterior]
 
 (* Coordinatization.wl *)
 PackageExport[FindInfraRadarBasis]

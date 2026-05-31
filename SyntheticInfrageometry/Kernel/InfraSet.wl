@@ -1,5 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+PackageImport["WolframInstitute`Infrageometry`"]
+
 
 (* ===================== InfraSet ===================== *)
 
@@ -27,5 +29,41 @@ InfraSet[ wrapper_Symbol[ rs_List ] ] /;
 InfraSet[ vs_List ][ "Vertices" ] := vs
 InfraSet[ vs_List ][ "Length" ]   := Length[ vs ]
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see VisitMeasure). *)
-InfraSet[ vs_List ][ "Measure" ]  := VisitMeasure[ InfraSet[ vs ] ]
+(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+InfraSet[ vs_List ][ "Measure" ]  := InfraMeasure[ InfraSet[ vs ] ]
+
+
+(* ===================== InfraBoundary / InfraInterior ===================== *)
+
+(* Boundary / interior of a vertex set S (any Infra* object) in g, returned as an
+   InfraSet. Method -> "Combinatorial" (default): the inner vertex boundary
+   {v in S : v adjacent to V\S} and its complement S \ boundary (GraphBoundary /
+   GraphInterior). Method -> {"Alexandrov", "Radius" -> r}: the two-sided
+   cl(S)\int(S) and int(S) in the closed-r-ball Alexandrov topology BallTopology[g, r]
+   (default r = 1). Both backends come from WolframInstitute`Infrageometry`. *)
+
+InfraBoundary::badmethod = "Method `1` is not supported by InfraBoundary.";
+InfraInterior::badmethod = "Method `1` is not supported by InfraInterior.";
+
+Options[ InfraBoundary ] = { Method -> "Combinatorial" };
+Options[ InfraInterior ] = { Method -> "Combinatorial" };
+
+InfraBoundary[ g_Graph, s_, OptionsPattern[] ] :=
+  With[ { vs = infraVertexSet @ If[ ListQ[ s ], InfraSet[ s ], s ] },
+    Switch[ methodName @ OptionValue[ Method ],
+      "Combinatorial", InfraSet @ GraphBoundary[ g, vs ],
+      "Alexandrov",    InfraSet @ TopologicalBoundary[
+        BallTopology[ g, Lookup[ methodOptions @ OptionValue[ Method ], "Radius", 1 ] ], vs ],
+      _, Message[ InfraBoundary::badmethod, OptionValue[ Method ] ]; $Failed
+    ]
+  ]
+
+InfraInterior[ g_Graph, s_, OptionsPattern[] ] :=
+  With[ { vs = infraVertexSet @ If[ ListQ[ s ], InfraSet[ s ], s ] },
+    Switch[ methodName @ OptionValue[ Method ],
+      "Combinatorial", InfraSet @ GraphInterior[ g, vs ],
+      "Alexandrov",    InfraSet @ TopologicalInterior[
+        BallTopology[ g, Lookup[ methodOptions @ OptionValue[ Method ], "Radius", 1 ] ], vs ],
+      _, Message[ InfraInterior::badmethod, OptionValue[ Method ] ]; $Failed
+    ]
+  ]
