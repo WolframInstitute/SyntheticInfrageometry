@@ -571,15 +571,13 @@ poolPositions[ _, paths_List, _, _, _, _ ] := Range @ Length @ paths
    bundle is maximal. *)
 
 visitPoolPositions[ paths_List, cyclic_ ] :=
-  With[ { edgesOf = If[ cyclic, cycleEdges, sequentialEdges ] },
-    With[ { edgeSeqs = edgesOf /@ paths },
-      With[ { vCounts = Counts @ Catenate @ paths,
-              eCounts = Counts @ Catenate @ edgeSeqs },
-        With[ { scores = MapThread[
-              Total @ Lookup[ vCounts, #1, 0 ] + Total @ Lookup[ eCounts, #2, 0 ] &,
-              { paths, edgeSeqs } ] },
-          Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ]
-        ]
+  With[ { edgeSeqs = infraRepEdges[ None, If[ cyclic, "Cycles", "Paths" ], # ] & /@ paths },
+    With[ { vCounts = Counts @ Catenate @ paths,
+            eCounts = Counts @ Catenate @ edgeSeqs },
+      With[ { scores = MapThread[
+            Total @ Lookup[ vCounts, #1, 0 ] + Total @ Lookup[ eCounts, #2, 0 ] &,
+            { paths, edgeSeqs } ] },
+        Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ]
       ]
     ]
   ]
@@ -619,16 +617,6 @@ anchorMatchQ[ d_?NumericQ, _, { lo_?NumericQ, hi_?NumericQ } ]    := lo <= d <= 
 anchorMatchQ[ d_?NumericQ, allDistsForAnchor_List, "Max" ]        :=
   d == Max @ Select[ allDistsForAnchor, NumericQ ]
 anchorMatchQ[ _, _, _ ] := False
-
-
-sequentialEdges[ path_List ] :=
-  If[ Length[ path ] >= 2, Sort /@ Partition[ path, 2, 1 ], { } ]
-
-cycleEdges[ cycle_List ] :=
-  With[ { closed = If[ Length[ cycle ] >= 2 && First @ cycle === Last @ cycle,
-                       cycle, Append[ cycle, First @ cycle ] ] },
-    If[ Length[ closed ] >= 2, Sort /@ Partition[ closed, 2, 1 ], { } ]
-  ]
 
 
 (* ===================== Helpers: embedding methods ===================== *)

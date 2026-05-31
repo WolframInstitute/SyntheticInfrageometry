@@ -21,6 +21,8 @@ PackageScope[infraUnionSpread]
 PackageScope[infraVertexMultiset]
 PackageScope[infraRepType]
 PackageScope[infraRepSeqs]
+PackageScope[infraRepVerts]
+PackageScope[infraRepEdges]
 PackageScope[infraNumReps]
 PackageScope[infraEdgeMultiset]
 PackageScope[linePointSet]
@@ -448,9 +450,9 @@ visitMeasure[ g_, obj_, on_, normalize_ ] :=
   With[ { n = If[ TrueQ @ normalize, infraNumReps @ obj, 1 ] },
     Switch[ on,
       "Vertices", infraVertexMultiset[ obj ] / n,
-      "Edges",    infraEdgeMultiset[ g, obj ] / n,
+      "Edges",    KeyMap[ UndirectedEdge @@ # &, infraEdgeMultiset[ g, obj ] / n ],
       "Both",     <| "Vertices" -> infraVertexMultiset[ obj ] / n,
-                     "Edges"    -> infraEdgeMultiset[ g, obj ] / n |> ] ]
+                     "Edges"    -> KeyMap[ UndirectedEdge @@ # &, infraEdgeMultiset[ g, obj ] / n ] |> ] ]
 
 (* head -> topology type; the single source of truth shared with
    InfraSceneHighlight's repVerts / repEdges dispatch. *)
@@ -481,6 +483,15 @@ infraRepSeqs[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] :=
 infraRepSeqs[ ( InfraObject | InfraSet )[ vs_List ] ]                         := { vs }
 infraRepSeqs[ head_[ reps_List, ___ ] ]                                       := reps
 
+(* per-type vertex / edge extraction from one canonical realisation -- the
+   single source of truth shared with InfraSceneHighlight's repVerts / repEdges
+   dispatch.  A point realisation is a bare vertex (wrapped to a singleton);
+   path / cycle / set realisations are vertex lists.  Edges are sorted lists
+   {a, b} (VisitMeasure remaps them to UndirectedEdge for its public output). *)
+
+infraRepVerts[ "Points", rep_ ] := { rep }
+infraRepVerts[ _, rep_ ]        := rep
+
 (* normalization divisor N = number of realisations.  A weighted InfraPoint
    stores one vertex per realisation as multiplicities, so N = Total[weights];
    InfraObject / InfraSet hold a single set, so N = 1. *)
@@ -489,9 +500,9 @@ infraNumReps[ InfraPoint[ _List, weights_List ] ] := Max[ Total @ weights, 1 ]
 infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
 infraNumReps[ head_[ reps_List, ___ ] ]            := Max[ Length @ reps, 1 ]
 
-(* raw edge multiset, keyed by sorted UndirectedEdge.  Sets-type edges are the
-   induced subgraph, hence the graph dependency; UndirectedEdge is not orderless
-   under ===, so endpoints are sorted before counting. *)
+(* raw edge multiset, keyed by sorted lists {a, b}.  Sets-type edges are the
+   induced subgraph, hence the graph dependency.  VisitMeasure remaps the keys
+   to UndirectedEdge; the renderer consumes the sorted-list keys directly. *)
 
 infraEdgeMultiset[ g_, obj_ ] :=
   Counts @ Catenate[ infraRepEdges[ g, infraRepType @ Head @ obj, # ] & /@ infraRepSeqs @ obj ]
@@ -499,12 +510,12 @@ infraEdgeMultiset[ g_, obj_ ] :=
 infraRepEdges[ _, "Points", _ ]   := { }
 infraRepEdges[ _, "PointSet", _ ] := { }
 infraRepEdges[ _, "Paths", rep_ ] :=
-  If[ Length @ rep >= 2, UndirectedEdge @@ Sort[ # ] & /@ Partition[ rep, 2, 1 ], { } ]
+  If[ Length @ rep >= 2, Sort /@ Partition[ rep, 2, 1 ], { } ]
 infraRepEdges[ _, "Cycles", rep_ ] :=
   With[ { closed = If[ Length @ rep >= 2 && First @ rep === Last @ rep, rep, Append[ rep, First @ rep ] ] },
-    If[ Length @ closed >= 2, UndirectedEdge @@ Sort[ # ] & /@ Partition[ closed, 2, 1 ], { } ] ]
+    If[ Length @ closed >= 2, Sort /@ Partition[ closed, 2, 1 ], { } ] ]
 infraRepEdges[ g_, "Sets", rep_ ] :=
-  UndirectedEdge @@ Sort[ # ] & /@ ( List @@@ EdgeList @ Subgraph[ g, rep ] )
+  Sort /@ ( List @@@ EdgeList @ Subgraph[ g, rep ] )
 
 
 (* Vertex-set view of a line-like input (FindInfraCommonPoint, InfraPerpendicularQ).

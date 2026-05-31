@@ -233,26 +233,19 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
 
     triples = Join[ triples, knotTriples ];
 
+    (* repVerts / repEdges share the per-type dispatch with VisitMeasure via
+       infraRepVerts / infraRepEdges (Tools.wl); only the Automatic-type branch
+       for non-Infra highlight objects stays local (it needs the graph). *)
     With[ {
         repVerts = { type, rep } |-> Switch[ type,
-          "Points",   { rep },
-          "Paths",    rep,
-          "Cycles",   rep,
-          "Sets",     rep,
-          "PointSet", rep,
-          _,          If[ MemberQ[ VertexList @ graph, rep ], { rep }, rep ]
+          "Points" | "Paths" | "Cycles" | "Sets" | "PointSet", infraRepVerts[ type, rep ],
+          _, If[ MemberQ[ VertexList @ graph, rep ], { rep }, rep ]
         ],
         repEdges = { type, rep } |-> Switch[ type,
-          "Points",   {},
-          "Paths",    If[ Length @ rep >= 2, Sort /@ Partition[ rep, 2, 1 ], {} ],
-          "Cycles",   With[ {
-              closed = If[ Length @ rep >= 2 && First @ rep === Last @ rep,
-                rep, Append[ rep, First @ rep ] ] },
-            If[ Length @ closed >= 2, Sort /@ Partition[ closed, 2, 1 ], {} ] ],
-          "Sets",     Sort /@ ( List @@@ EdgeList @ Subgraph[ graph, rep ] ),
-          "PointSet", {},
-          _,          If[ MemberQ[ VertexList @ graph, rep ], {},
-                        Sort /@ ( List @@@ EdgeList @ Subgraph[ graph, rep ] ) ]
+          "Points" | "PointSet",        { },
+          "Paths" | "Cycles" | "Sets",  infraRepEdges[ graph, type, rep ],
+          _, If[ MemberQ[ VertexList @ graph, rep ], { },
+                Sort /@ ( List @@@ EdgeList @ Subgraph[ graph, rep ] ) ]
         ] },
 
       vEntries = MapThread[
