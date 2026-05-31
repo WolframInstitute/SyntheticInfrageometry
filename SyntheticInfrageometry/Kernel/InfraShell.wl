@@ -14,10 +14,11 @@ InfraShell[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraShell[ _List ] ] ] :=
 (* "Volume" = vertex count per realisation. *)
 InfraShell[ reps_List ][ "Volume" ] := Length /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraShell[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraShell[ reps ] ]
+InfraShell[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraShell[ reps ] ]
 InfraShell[ reps_List ][ "Measure" ] := InfraMeasure[ InfraShell[ reps ] ]
-
-
+InfraShell[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraShell[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraShell ===================== *)
 
 (* A shell of radius r around c is a vertex subset of the level surface

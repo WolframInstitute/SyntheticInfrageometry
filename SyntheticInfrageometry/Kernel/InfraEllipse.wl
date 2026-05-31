@@ -15,10 +15,11 @@ InfraEllipse[ reps_List ][ "Realizations" ] := reps
 (* "Length" = circumference per realisation (#edges == #vertices for an open cycle). *)
 InfraEllipse[ reps_List ][ "Length" ]       := Length /@ reps
 InfraEllipse[ reps_List ][ "First" ]        := First @ reps
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
-InfraEllipse[ reps_List ][ "Measure" ]      := InfraMeasure[ InfraEllipse[ reps ] ]
-
-
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraEllipse[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraEllipse[ reps ] ]
+InfraEllipse[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraEllipse[ reps ] ]
+InfraEllipse[ reps_List ][ "Measure" ] := InfraMeasure[ InfraEllipse[ reps ] ]
+InfraEllipse[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraEllipse[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraEllipse ===================== *)
 
 (* An ellipse for foci {p1, p2} at sum c is a simple cycle in the induced

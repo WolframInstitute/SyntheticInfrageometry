@@ -34,21 +34,22 @@ VerificationTest[
   TestID -> "InfraMeasure-single-realisation-all-one"
 ]
 
-(* raw counts: sum over vertices equals total membership across the bundle *)
+(* occupation: sum over vertices equals mean realisation length *)
 VerificationTest[
   With[ { reps = { { 1, 2, 3, 6, 9 }, { 1, 4, 7, 8, 9 }, { 1, 2, 5, 8, 9 } } },
-    Total @ Values @ InfraMeasure[ InfraSegment[ reps ], "Normalize" -> False ] ==
-      Total[ Length /@ reps ] ],
+    Total @ Values @ InfraMeasure[ InfraSegment[ reps ] ] ==
+      Total[ Length /@ reps ] / Length[ reps ] ],
   True,
-  TestID -> "InfraMeasure-rawcount-sum-equals-membership"
+  TestID -> "InfraMeasure-occupation-sum-equals-mean-length"
 ]
 
-(* normalisation divides raw counts by the number of realisations *)
+(* probability: the node distribution sums to 1 and is occupation renormalised *)
 VerificationTest[
   With[ { obj = InfraSegment[ { { 1, 2, 3, 6, 9 }, { 1, 4, 7, 8, 9 }, { 1, 2, 5, 8, 9 } } ] },
-    InfraMeasure[ obj ] == InfraMeasure[ obj, "Normalize" -> False ] / 3 ],
+    With[ { p = InfraMeasure[ obj, Method -> "Probability" ], occ = InfraMeasure[ obj ] },
+      Total @ Values @ p == 1 && p == occ / Total[ occ ] ] ],
   True,
-  TestID -> "InfraMeasure-normalise-is-rawcount-over-numreps"
+  TestID -> "InfraMeasure-probability-sums-to-one"
 ]
 
 (* empty bundle yields the empty measure *)
@@ -98,6 +99,23 @@ VerificationTest[
     InfraSegment[ { { 1, 2, 3 } } ][ "Measure" ] },
   { True, <| 1 -> 1, 2 -> 1, 3 -> 1 |> },
   TestID -> "InfraMeasure-accessor-invariants"
+]
+
+(* OccupationCount (raw integers), OccupationMeasure (== Measure), ProbabilityMeasure (count renormalised, sums to 1) across all wrapper shapes *)
+VerificationTest[
+  AllTrue[
+    { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
+      InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ],
+      InfraCircle[ { { 1, 2, 3 } } ],
+      InfraPoint[ { 1, 2 }, { 3, 1 } ],
+      InfraSet[ { 1, 2, 3 } ] },
+    w |-> And[
+      w[ "OccupationMeasure" ] === w[ "Measure" ],
+      AllTrue[ Values @ w[ "OccupationCount" ], IntegerQ ],
+      w[ "ProbabilityMeasure" ] === w[ "OccupationCount" ] / Total @ w[ "OccupationCount" ],
+      Total @ Values @ w[ "ProbabilityMeasure" ] === 1 ] ],
+  True,
+  TestID -> "InfraMeasure-occupation-probability-accessors"
 ]
 
 EndTestSection[]

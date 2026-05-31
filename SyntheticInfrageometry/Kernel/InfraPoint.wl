@@ -46,10 +46,11 @@ InfraPoint[ verts_List ][ "Mass" ]                  := Length @ verts
 InfraPoint[ verts_List, weights_List ][ "Mass" ]    := Total @ weights
 InfraPoint[ verts_List, ___ ][ "First" ]            := First @ verts
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
-InfraPoint[ verts_List, w___ ][ "Measure" ]         := InfraMeasure[ InfraPoint[ verts, w ] ]
-
-
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraPoint[ verts_List, w___ ][ "OccupationCount" ] := infraVertexMultiset[ InfraPoint[ verts, w ] ]
+InfraPoint[ verts_List, w___ ][ "OccupationMeasure" ] := InfraMeasure[ InfraPoint[ verts, w ] ]
+InfraPoint[ verts_List, w___ ][ "Measure" ] := InfraMeasure[ InfraPoint[ verts, w ] ]
+InfraPoint[ verts_List, w___ ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPoint[ verts, w ], Method -> "Probability" ]
 (* ===================== FindInfraPoint ===================== *)
 
 (* FindInfraPoint[g, n] returns n unary InfraPoint[{v}] wrappers.  With

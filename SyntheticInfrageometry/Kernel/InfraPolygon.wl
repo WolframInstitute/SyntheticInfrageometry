@@ -20,9 +20,11 @@ InfraPolygon[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPolygon[ _List ] ] ] :=
 (* "Sides" = the InfraSegment legs per realisation. *)
 InfraPolygon[ reps_List ][ "Sides" ] := reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraPolygon[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraPolygon[ reps ] ]
+InfraPolygon[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraPolygon[ reps ] ]
 InfraPolygon[ reps_List ][ "Measure" ] := InfraMeasure[ InfraPolygon[ reps ] ]
-
+InfraPolygon[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPolygon[ reps ], Method -> "Probability" ]
 (* "Length" = per-realisation perimeter edge count (sum of leg edge counts). *)
 InfraPolygon[ reps_List ][ "Length" ] :=
   Replace[ reps,

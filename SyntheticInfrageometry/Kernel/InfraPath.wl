@@ -20,10 +20,11 @@ InfraPath[ args : ( _InfraPoint | { _InfraPoint } ) .. ] :=
 (* "Length" = list of edge counts, one per realisation: |walk| - 1. *)
 InfraPath[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraPath[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraPath[ reps ] ]
+InfraPath[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraPath[ reps ] ]
 InfraPath[ reps_List ][ "Measure" ] := InfraMeasure[ InfraPath[ reps ] ]
-
-
+InfraPath[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPath[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraPath ===================== *)
 
 (* A walk from p1 to p2 (not necessarily simple, not necessarily geodesic).

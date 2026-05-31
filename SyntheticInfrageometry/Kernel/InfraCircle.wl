@@ -20,10 +20,11 @@ InfraCircle[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraCircle[ _List ] ] ] :=
    (wrap-around edge implicit, so #edges == #vertices). *)
 InfraCircle[ reps_List ][ "Length" ] := Length /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraCircle[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraCircle[ reps ] ]
+InfraCircle[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraCircle[ reps ] ]
 InfraCircle[ reps_List ][ "Measure" ] := InfraMeasure[ InfraCircle[ reps ] ]
-
-
+InfraCircle[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraCircle[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraCircle ===================== *)
 
 (* A circle of radius r around c is a simple cycle in the level-surface

@@ -12,9 +12,11 @@ InfraSegment[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraSegment[ _List ] ] ] :=
 (* "Length" = list of edge counts, one per realisation: |path| - 1. *)
 InfraSegment[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraSegment[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraSegment[ reps ] ]
+InfraSegment[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraSegment[ reps ] ]
 InfraSegment[ reps_List ][ "Measure" ] := InfraMeasure[ InfraSegment[ reps ] ]
-
+InfraSegment[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSegment[ reps ], Method -> "Probability" ]
 (* seg[[i]] = weighted InfraPoint of the i-th position across realisations
    (mass = multiplicity).  First/Last and multi-index Part bypass this. *)
 InfraSegment /: Part[ InfraSegment[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]

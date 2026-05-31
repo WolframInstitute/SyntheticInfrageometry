@@ -432,27 +432,38 @@ infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] :=
 
 (* ===================== Visit measure ===================== *)
 
-(* The realization-frequency measure: the marginal of a wrapper's realization
-   bundle onto its vertex / edge set.  InfraMeasure[obj] is the normalized
-   vertex measure m(v) = c(v) / N (raw count over N realisations); the diffuse
-   opacity rendered by InfraSceneHighlight is exactly this measure.  It is a
-   lossy *view* of the bundle (discards order, co-occurrence) -- the bundle
-   stays ground truth. *)
+(* The occupation measure of a wrapper: the marginal of its realization bundle
+   onto its vertex / edge set, c(v) = total appearances across realisations.
+   Method picks the normalization, same shape either way (a global rescaling):
+   "Occupation" (default) m(v) = c(v) / N -- mean occupation per realisation,
+   the membership / opacity InfraSceneHighlight draws; "Probability" p(v) =
+   c(v) / Total[c] -- the probability distribution on nodes, Sigma = 1.  A lossy
+   *view* of the bundle (discards order, co-occurrence) -- the bundle stays
+   ground truth. *)
 
-Options[ InfraMeasure ] = { "On" -> "Vertices", "Normalize" -> True };
+InfraMeasure::badmethod = "Method `1` is not one of \"Occupation\", \"Probability\".";
+
+Options[ InfraMeasure ] = { "On" -> "Vertices", Method -> "Occupation" };
 
 InfraMeasure[ g_Graph, obj_, opts:OptionsPattern[] ] :=
-  visitMeasure[ g, obj, OptionValue[ "On" ], OptionValue[ "Normalize" ] ]
+  visitMeasure[ g, obj, OptionValue[ "On" ], OptionValue[ Method ] ]
 InfraMeasure[ obj_, opts:OptionsPattern[] ] :=
-  visitMeasure[ None, obj, OptionValue[ "On" ], OptionValue[ "Normalize" ] ]
+  visitMeasure[ None, obj, OptionValue[ "On" ], OptionValue[ Method ] ]
 
-visitMeasure[ g_, obj_, on_, normalize_ ] :=
-  With[ { n = If[ TrueQ @ normalize, infraNumReps @ obj, 1 ] },
+visitMeasure[ g_, obj_, on_, method_ ] :=
+  With[ { vm = infraVertexMultiset[ obj ],
+          em = If[ on === "Vertices", <||>,
+                   KeyMap[ UndirectedEdge @@ # &, infraEdgeMultiset[ g, obj ] ] ] },
     Switch[ on,
-      "Vertices", infraVertexMultiset[ obj ] / n,
-      "Edges",    KeyMap[ UndirectedEdge @@ # &, infraEdgeMultiset[ g, obj ] / n ],
-      "Both",     <| "Vertices" -> infraVertexMultiset[ obj ] / n,
-                     "Edges"    -> KeyMap[ UndirectedEdge @@ # &, infraEdgeMultiset[ g, obj ] / n ] |> ] ]
+      "Vertices", normalizeMeasure[ method, vm, obj ],
+      "Edges",    normalizeMeasure[ method, em, obj ],
+      "Both",     <| "Vertices" -> normalizeMeasure[ method, vm, obj ],
+                     "Edges"    -> normalizeMeasure[ method, em, obj ] |> ] ]
+
+normalizeMeasure[ method_, counts_, obj_ ] := Switch[ method,
+  "Occupation",  counts / infraNumReps[ obj ],
+  "Probability", If[ Length @ counts === 0, counts, counts / Total[ counts ] ],
+  _,             Message[ InfraMeasure::badmethod, method ]; counts ]
 
 (* head -> topology type; the single source of truth shared with
    InfraSceneHighlight's repVerts / repEdges dispatch. *)

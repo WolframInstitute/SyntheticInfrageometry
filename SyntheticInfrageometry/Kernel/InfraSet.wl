@@ -29,10 +29,11 @@ InfraSet[ wrapper_Symbol[ rs_List ] ] /;
 InfraSet[ vs_List ][ "Vertices" ] := vs
 InfraSet[ vs_List ][ "Length" ]   := Length[ vs ]
 
-(* "Measure" = normalized vertex visit measure <|v -> visits/numReps|> (see InfraMeasure). *)
-InfraSet[ vs_List ][ "Measure" ]  := InfraMeasure[ InfraSet[ vs ] ]
-
-
+(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+InfraSet[ vs_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraSet[ vs ] ]
+InfraSet[ vs_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraSet[ vs ] ]
+InfraSet[ vs_List ][ "Measure" ] := InfraMeasure[ InfraSet[ vs ] ]
+InfraSet[ vs_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSet[ vs ], Method -> "Probability" ]
 (* ===================== InfraBoundary / InfraInterior ===================== *)
 
 (* Boundary / interior of a vertex set S (any Infra* object) in g, returned as an
