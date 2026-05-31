@@ -45,6 +45,9 @@ InfraPerpendicularQ::usage = "InfraPerpendicularQ[graph, l1, l2] tests whether t
 PencilDirections::usage = "PencilDirections[graph, O] returns the canonical maximal geodesics through O, one per projective direction class at O.";
 PencilCardinality::usage = "PencilCardinality[graph, O] returns the number of distinct direction classes at O.";
 LineCount::usage = "LineCount[graph] returns the number of distinct canonical maximal geodesics in graph.";
+FindLineHull::usage = "FindLineHull[graph, S] returns the smallest superset of S closed under the line operator (the maximal geodesics through each pair), as a sorted vertex list. Option \"LineStructure\" (None (default), or an InfraLineStructure / list of lines) closes under that fixed line family instead of all maximal geodesics.";
+LineHullQ::usage = "LineHullQ[graph, S] returns True if S is closed under the line operator, i.e. equals its own FindLineHull. Option \"LineStructure\" as in FindLineHull.";
+UniversalLineQ::usage = "UniversalLineQ[graph] returns True if some pair of vertices spans a line filling a whole connected component (Chen-Chvatal). UniversalLineQ[graph, {u, v}] tests the single line through u, v.";
 
 (* ===================== InfraLineStructure ===================== *)
 
@@ -178,8 +181,8 @@ MetricInterval::usage = "MetricInterval[graph, u, v] returns the vertex set { w 
 GeodesicMultiplicity::usage = "GeodesicMultiplicity[graph, u, v] returns the number of distinct geodesics from u to v, computed as (A^d)[u, v] where d = GraphDistance[graph, u, v].";
 GeodesicMultiplicityMatrix::usage = "GeodesicMultiplicityMatrix[graph] returns {D, M} where D is the distance matrix and M[i, j] is the number of geodesics from vertex i to vertex j.";
 MedianVertices::usage = "MedianVertices[graph, vs] returns the vertices minimising the sum of distances to vs. A graph is a median graph iff every triple has a unique median.";
-FindGeodesicConvexHull::usage = "FindGeodesicConvexHull[graph, S] returns the smallest superset of S closed under MetricInterval, as a sorted vertex list. Graph-intrinsic shadow of tropical convexity (see Wiki/Concepts/TropicalConvexity).";
-GeodesicallyConvexQ::usage = "GeodesicallyConvexQ[graph, S] tests geodesic convexity of S. Option Method (\"Strong\" (default): every geodesic between any pair of S lies in S; \"Weak\": some geodesic between each pair lies in S).";
+FindSegmentHull::usage = "FindSegmentHull[graph, S] returns the smallest superset of S closed under MetricInterval (the segment operator), as a sorted vertex list. Option \"LineStructure\" (None (default), or an InfraLineStructure / list of lines) closes under the chosen-geodesic stretch on that fixed family instead of all geodesics.";
+SegmentHullQ::usage = "SegmentHullQ[graph, S] returns True if S is closed under the segment operator, i.e. equals its own FindSegmentHull. Option \"LineStructure\" as in FindSegmentHull.";
 
 (* ===================== Visit measure ===================== *)
 

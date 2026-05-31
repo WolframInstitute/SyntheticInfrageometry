@@ -115,7 +115,7 @@ Cell["Geodesic convex hull", "Section",ExpressionUUID->"c364ba3a-1405-4a62-8696-
 Cell["Closure of a triple of grid vertices under MetricInterval.", "CodeText",ExpressionUUID->"c71522bb-8181-4264-b03d-08f3463a844c"],
 
 Cell[BoxData[
- RowBox[{"FindGeodesicConvexHull", "[", 
+ RowBox[{"FindSegmentHull", "[", 
   RowBox[{"g", ",", 
    RowBox[{"{", 
     RowBox[{"1", ",", "4", ",", "13"}], "}"}]}], "]"}]], "Input",ExpressionUUI\
@@ -124,7 +124,7 @@ D->"7c7e2bd6-08a5-4285-8a5a-089b0f91668e"],
 Cell["Single-pair hull = metric interval.", "CodeText",ExpressionUUID->"1f6c5eeb-7ba3-4b73-a4a9-16edfeb3a40c"],
 
 Cell[BoxData[
- RowBox[{"FindGeodesicConvexHull", "[", 
+ RowBox[{"FindSegmentHull", "[", 
   RowBox[{"g", ",", 
    RowBox[{"{", 
     RowBox[{"1", ",", "16"}], "}"}]}], "]"}]], "Input",ExpressionUUID->\
@@ -135,9 +135,9 @@ Cell["Strong and weak convexity", "Section",ExpressionUUID->"3704b0c0-966d-4549-
 Cell["A convex hull is geodesically convex (strong).", "CodeText",ExpressionUUID->"267880fb-9f18-4484-a8d3-dea56faf31d0"],
 
 Cell[BoxData[
- RowBox[{"GeodesicallyConvexQ", "[", 
+ RowBox[{"SegmentHullQ", "[", 
   RowBox[{"g", ",", 
-   RowBox[{"FindGeodesicConvexHull", "[", 
+   RowBox[{"FindSegmentHull", "[", 
     RowBox[{"g", ",", 
      RowBox[{"{", 
       RowBox[{"1", ",", "4", ",", "13"}], "}"}]}], "]"}]}], "]"}]], "Input",Ex\
@@ -148,11 +148,11 @@ Cell["A row of the grid is only weakly convex.", "CodeText",ExpressionUUID->"225
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   RowBox[{"GeodesicallyConvexQ", "[", 
+   RowBox[{"SegmentHullQ", "[", 
     RowBox[{"g", ",", 
      RowBox[{"{", 
       RowBox[{"1", ",", "2", ",", "3", ",", "4"}], "}"}]}], "]"}], ",", 
-   RowBox[{"GeodesicallyConvexQ", "[", 
+   RowBox[{"SegmentHullQ", "[", 
     RowBox[{"g", ",", 
      RowBox[{"{", 
       RowBox[{"1", ",", "2", ",", "3", ",", "4"}], "}"}], ",", 
@@ -181,7 +181,7 @@ Cell[BoxData[
   RowBox[{"g", ",", 
    RowBox[{"{", 
     RowBox[{
-     RowBox[{"FindGeodesicConvexHull", "[", 
+     RowBox[{"FindSegmentHull", "[", 
       RowBox[{"g", ",", 
        RowBox[{"{", 
         RowBox[{"1", ",", "4", ",", "13"}], "}"}]}], "]"}], "\[Rule]", 

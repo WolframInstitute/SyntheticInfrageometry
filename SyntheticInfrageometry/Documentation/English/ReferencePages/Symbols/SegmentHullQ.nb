@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["GeodesicallyConvexQ", "Title",ExpressionUUID->"df02910f-6b16-4a65-befb-9d555b7abb62"],
+Cell["SegmentHullQ", "Title",ExpressionUUID->"df02910f-6b16-4a65-befb-9d555b7abb62"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"e2af0fd4-f571-477a-b494-35982b1f36eb"],
 
 Cell["\<\
-GeodesicallyConvexQ[g, S] tests geodesic convexity of S. Option Method \
+SegmentHullQ[g, S] tests geodesic convexity of S. Option Method \
 (\"Strong\" (default): every geodesic between any pair of S lies in S; \"Weak\
 \": some geodesic between each pair lies in S).\
 \>", "Text",ExpressionUUID->"764a3ea6-7dd3-4400-a445-a86664b1d5fc"],
@@ -52,8 +52,8 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "With[{g = GridGraph[{4, 4}]}, GeodesicallyConvexQ[g, \
-FindGeodesicConvexHull[g, {1, 4, 13}]]]"]], "Input",ExpressionUUID->"a4b03bf1-\
+ "With[{g = GridGraph[{4, 4}]}, SegmentHullQ[g, \
+FindSegmentHull[g, {1, 4, 13}]]]"]], "Input",ExpressionUUID->"a4b03bf1-\
 83d0-48b1-bdc9-4c78adf783e8"],
 
 Cell[BoxData[
@@ -69,12 +69,12 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "GeodesicallyConvexQ[GridGraph[{3, 3}], {1, 2, 3}, Method -> \"Weak\"]"]], \
+ "SegmentHullQ[GridGraph[{3, 3}], {1, 2, 3}, Method -> \"Weak\"]"]], \
 "Input",ExpressionUUID->"d99cc7d8-1c8e-4b6e-8e9d-51ca9edfbeec"],
 
 Cell["See Also", "Section",ExpressionUUID->"923b6b70-4a45-4df5-8093-ba585d1280dd"],
 
-Cell["FindGeodesicConvexHull", "Item",ExpressionUUID->"56f08e4f-9031-475f-aa17-7af9e67ad6e2"],
+Cell["FindSegmentHull", "Item",ExpressionUUID->"56f08e4f-9031-475f-aa17-7af9e67ad6e2"],
 
 Cell["MetricInterval", "Item",ExpressionUUID->"95515628-e6e8-4a32-ab44-e3083c9a6a03"],
 

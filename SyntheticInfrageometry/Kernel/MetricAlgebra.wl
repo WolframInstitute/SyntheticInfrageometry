@@ -79,46 +79,42 @@ MedianVertices[ graph_Graph, vs_List ] :=
   ]
 
 
-(* ===================== Geodesic convex hull ===================== *)
+(* ===================== Segment hull ===================== *)
 
-(* The geodesic-convex hull of a vertex set S is the smallest superset
-   closed under taking metric intervals: FixedPoint of S |-> S union
-   union over pairs of MetricInterval.  The graph-intrinsic shadow of
-   tropical convexity (cf. Wiki/Concepts/TropicalConvexity.md). *)
+(* The segment hull of a vertex set S is the smallest superset closed under
+   taking metric intervals: FixedPoint of T |-> T union over pairs of
+   MetricInterval.  The Farber-Jamison geodesic convex hull (no metric
+   convexity is involved -- the closed sets form only an abstract convexity;
+   cf. Wiki/Concepts/Hulls.md).  Companion line hull: FindLineHull in
+   InfraLine.wl.  Option "LineStructure": None (default) closes under all
+   geodesics; an InfraLineStructure (or bare list of lines) closes under the
+   chosen-geodesic stretch between members on each line of that fixed family. *)
 
-FindGeodesicConvexHull[ graph_Graph, S_List ] :=
-  FixedPoint[
-    set |-> Sort @ DeleteDuplicates @ Flatten[
-      { set,
-        Map[
-          pair |-> MetricInterval[ graph, pair[[ 1 ]], pair[[ 2 ]] ],
-          Subsets[ set, { 2 } ]
-        ]
-      }
-    ],
-    Sort @ DeleteDuplicates @ S
-  ]
+Options[ FindSegmentHull ] = { "LineStructure" -> None };
 
-
-(* GeodesicallyConvexQ[graph, S, Method -> "Strong" | "Weak"]:
-   "Strong" (default) -- S is closed under MetricInterval, i.e. every
-   geodesic between any two members of S lies in S.
-   "Weak" -- for every pair in S there exists a geodesic of graph that
-   lies in S; equivalently Subgraph[graph, S] is isometric in graph. *)
-
-Options[ GeodesicallyConvexQ ] = { Method -> "Strong" };
-
-GeodesicallyConvexQ[ graph_Graph, S_List, OptionsPattern[] ] :=
-  Switch[ OptionValue[ Method ],
-    "Strong",
-      With[ { set = Sort @ DeleteDuplicates @ S },
-        FindGeodesicConvexHull[ graph, set ] === set
+FindSegmentHull[ graph_Graph, S_List, OptionsPattern[] ] :=
+  With[ { spec = OptionValue[ "LineStructure" ] },
+    If[ spec === None,
+      FixedPoint[
+        T |-> Union[ T, Catenate @ Map[
+          pair |-> MetricInterval[ graph, pair[[ 1 ]], pair[[ 2 ]] ], Subsets[ T, { 2 } ] ] ],
+        Union @ S
       ],
-    "Weak",
-      With[ { set = DeleteDuplicates @ S, sub = Subgraph[ graph, DeleteDuplicates @ S ] },
-        AllTrue[
-          Subsets[ set, { 2 } ],
-          pair |-> GraphDistance[ sub, pair[[ 1 ]], pair[[ 2 ]] ] === GraphDistance[ graph, pair[[ 1 ]], pair[[ 2 ]] ]
+      With[ { lines = Replace[ spec, ls_InfraLineStructure :> ls[ "Lines" ] ] },
+        FixedPoint[
+          T |-> Union[ T, Catenate @ Map[
+            ell |-> With[ { idx = Flatten @ Position[ ell, Alternatives @@ T ] },
+              If[ Length[ idx ] >= 2, ell[[ Min[ idx ] ;; Max[ idx ] ]], { } ] ],
+            lines ] ],
+          Union @ S
         ]
       ]
+    ]
   ]
+
+(* S is segment-closed: it equals its own segment hull (every geodesic, or
+   every chosen-line stretch under "LineStructure", between members lies in S). *)
+
+Options[ SegmentHullQ ] = { "LineStructure" -> None };
+
+SegmentHullQ[ graph_Graph, S_List, opts : OptionsPattern[] ] := FindSegmentHull[ graph, S, opts ] === Union @ S

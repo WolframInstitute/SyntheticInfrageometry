@@ -25,8 +25,8 @@ Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"860e76f7-f5e6-470d-9bce-de41
 Cell["\<\
 The tropical convexity layer studies vertex subsets closed under the metric \
 interval operation \[LongDash] the graph-intrinsic shadow of tropical / \
-min-plus convexity. The hull operation is FindGeodesicConvexHull; the closure \
-predicate is GeodesicallyConvexQ (strong and weak).\
+min-plus convexity. The hull operation is FindSegmentHull; the closure \
+predicate is SegmentHullQ (strong and weak).\
 \>", "Text",ExpressionUUID->"ecb52fd9-07db-4478-b662-adce98fd5c72"],
 
 Cell["Setup", "Section",ExpressionUUID->"68e50196-0e44-4c12-86de-cbb0ed6f76c0"],
@@ -41,9 +41,9 @@ Cell[BoxData[
 
 Cell["Hull and closure", "Section",ExpressionUUID->"4a8ba636-629d-4dae-a53a-9864c8b33e59"],
 
-Cell["FindGeodesicConvexHull", "Item",ExpressionUUID->"aed14569-6345-48d4-8b74-e4cff2e90769"],
+Cell["FindSegmentHull", "Item",ExpressionUUID->"aed14569-6345-48d4-8b74-e4cff2e90769"],
 
-Cell["GeodesicallyConvexQ", "Item",ExpressionUUID->"0f6991dd-666f-462b-a6f4-2aa25828e97a"],
+Cell["SegmentHullQ", "Item",ExpressionUUID->"0f6991dd-666f-462b-a6f4-2aa25828e97a"],
 
 Cell["Interval structure", "Section",ExpressionUUID->"12b964ef-c7c6-4943-9ed9-c455b11c1101"],
 
@@ -59,7 +59,7 @@ Cell["Notes on the tropical connection", "Section",ExpressionUUID->"94a1d823-4ab
 
 Cell["\<\
 On Z^n with the L1 metric, tropical convex hulls coincide with geodesic \
-convex hulls. On a graph, FindGeodesicConvexHull is the graph-intrinsic \
+convex hulls. On a graph, FindSegmentHull is the graph-intrinsic \
 closure under the interval operator I(u, v) = MetricInterval(g, u, v) and \
 recovers the L1 / min-plus picture on median graphs and Cayley graphs of Z^n \
 with standard generators.\

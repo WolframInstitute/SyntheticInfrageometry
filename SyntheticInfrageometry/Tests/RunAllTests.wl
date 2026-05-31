@@ -88,6 +88,9 @@ Print[TestReport[FileNameJoin[{$testDir, "InfraSceneInteractiveTests.wlt"}]]]
 Print["Running ProjectiveGeometryTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "ProjectiveGeometryTests.wlt"}]]]
 
+Print["Running HullsTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "HullsTests.wlt"}]]]
+
 Print["Running TarskiGeometryTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "TarskiGeometryTests.wlt"}]]]
 

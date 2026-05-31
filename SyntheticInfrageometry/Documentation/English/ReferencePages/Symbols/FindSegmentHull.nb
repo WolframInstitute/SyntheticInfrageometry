@@ -18,12 +18,12 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindGeodesicConvexHull", "Title",ExpressionUUID->"c5c7c6a1-9b81-4524-8a8e-5de7be1b4fb8"],
+Cell["FindSegmentHull", "Title",ExpressionUUID->"c5c7c6a1-9b81-4524-8a8e-5de7be1b4fb8"],
 
 Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"ab7b888e-87a0-43f9-9cf7-45b0b011cae7"],
 
 Cell["\<\
-FindGeodesicConvexHull[g, S] returns the smallest superset of S closed under \
+FindSegmentHull[g, S] returns the smallest superset of S closed under \
 MetricInterval, as a sorted vertex list. Graph-intrinsic shadow of tropical \
 convexity.\
 \>", "Text",ExpressionUUID->"b608334f-9383-4d2b-8dfd-2566750789b2"],
@@ -52,7 +52,7 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindGeodesicConvexHull[GridGraph[{4, 4}], {1, 4, 13}]"]], "Input",Expression\
+ "FindSegmentHull[GridGraph[{4, 4}], {1, 4, 13}]"]], "Input",Expression\
 UUID->"5cfc5b95-9c79-4afa-bb1c-e4ee4f7a7554"],
 
 Cell[BoxData[
@@ -68,12 +68,12 @@ Cell[BoxData[
 
 Cell[BoxData[
  $CellContext`buildCell[
- "FindGeodesicConvexHull[GridGraph[{3, 3}], {1, 9}]"]], "Input",ExpressionUUID\
+ "FindSegmentHull[GridGraph[{3, 3}], {1, 9}]"]], "Input",ExpressionUUID\
 ->"36399eee-c863-4b24-9a40-f343c5a09063"],
 
 Cell["See Also", "Section",ExpressionUUID->"37abb23b-25bf-4515-a76d-74d6ed115e2a"],
 
-Cell["GeodesicallyConvexQ", "Item",ExpressionUUID->"fc4eefb0-3680-4e7e-94de-553a72aadea0"],
+Cell["SegmentHullQ", "Item",ExpressionUUID->"fc4eefb0-3680-4e7e-94de-553a72aadea0"],
 
 Cell["MetricInterval", "Item",ExpressionUUID->"d90b8c9f-7dd6-461f-a7c3-8a19965b1a81"],
 

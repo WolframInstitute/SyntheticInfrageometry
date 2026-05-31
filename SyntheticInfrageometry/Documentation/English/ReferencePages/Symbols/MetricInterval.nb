@@ -77,7 +77,7 @@ Cell["GeodesicSubgraph", "Item",ExpressionUUID->"7974ad6c-b62e-4293-9e53-e6a16ea
 
 Cell["MedianVertices", "Item",ExpressionUUID->"25aee549-bffa-4ff2-bcc2-908810cc095d"],
 
-Cell["GeodesicallyConvexQ", "Item",ExpressionUUID->"e44e41c7-6a1f-484a-8b87-1bc80486dfc8"],
+Cell["SegmentHullQ", "Item",ExpressionUUID->"e44e41c7-6a1f-484a-8b87-1bc80486dfc8"],
 
 Cell["Related Guides", "Section",ExpressionUUID->"21329099-957f-4e39-996d-2cc868324f35"],
 

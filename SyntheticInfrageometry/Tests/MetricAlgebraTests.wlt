@@ -145,161 +145,106 @@ VerificationTest[
   TestID -> "MedianVertices-CycleGraph6-balanced-triple"
 ]
 
-(* ===== FindGeodesicConvexHull ===== *)
+(* ===== FindSegmentHull ===== *)
 
 VerificationTest[
-  FindGeodesicConvexHull[PathGraph[Range[5]], {1, 5}],
+  FindSegmentHull[PathGraph[Range[5]], {1, 5}],
   {1, 2, 3, 4, 5},
-  TestID -> "FindGeodesicConvexHull-PathGraph-endpoints"
+  TestID -> "FindSegmentHull-PathGraph-endpoints"
 ]
 
 VerificationTest[
-  FindGeodesicConvexHull[PathGraph[Range[5]], {2, 4}],
+  FindSegmentHull[PathGraph[Range[5]], {2, 4}],
   {2, 3, 4},
-  TestID -> "FindGeodesicConvexHull-PathGraph-interior"
+  TestID -> "FindSegmentHull-PathGraph-interior"
 ]
 
 VerificationTest[
-  FindGeodesicConvexHull[PathGraph[Range[5]], {3}],
+  FindSegmentHull[PathGraph[Range[5]], {3}],
   {3},
-  TestID -> "FindGeodesicConvexHull-singleton"
+  TestID -> "FindSegmentHull-singleton"
 ]
 
 VerificationTest[
-  FindGeodesicConvexHull[PathGraph[Range[5]], {}],
+  FindSegmentHull[PathGraph[Range[5]], {}],
   {},
-  TestID -> "FindGeodesicConvexHull-empty"
+  TestID -> "FindSegmentHull-empty"
 ]
 
 VerificationTest[
-  FindGeodesicConvexHull[CycleGraph[4], {1, 3}],
+  FindSegmentHull[CycleGraph[4], {1, 3}],
   {1, 2, 3, 4},
-  TestID -> "FindGeodesicConvexHull-CycleGraph4-antipodes-fill"
+  TestID -> "FindSegmentHull-CycleGraph4-antipodes-fill"
 ]
 
 VerificationTest[
-  FindGeodesicConvexHull[GridGraph[{3, 3}], {1, 9}],
+  FindSegmentHull[GridGraph[{3, 3}], {1, 9}],
   Range[9],
-  TestID -> "FindGeodesicConvexHull-GridGraph3x3-corners-fill"
+  TestID -> "FindSegmentHull-GridGraph3x3-corners-fill"
 ]
 
 VerificationTest[
-  FindGeodesicConvexHull[GridGraph[{3, 3}], {1, 3}],
+  FindSegmentHull[GridGraph[{3, 3}], {1, 3}],
   {1, 2, 3},
-  TestID -> "FindGeodesicConvexHull-GridGraph3x3-row-stays-row"
+  TestID -> "FindSegmentHull-GridGraph3x3-row-stays-row"
 ]
 
 VerificationTest[
-  FindGeodesicConvexHull[CompleteGraph[5], {1, 2}],
+  FindSegmentHull[CompleteGraph[5], {1, 2}],
   {1, 2},
-  TestID -> "FindGeodesicConvexHull-CompleteGraph-edge-stays-edge"
+  TestID -> "FindSegmentHull-CompleteGraph-edge-stays-edge"
 ]
 
-(* ===== GeodesicallyConvexQ ===== *)
+(* ===== SegmentHullQ ===== *)
 
 VerificationTest[
-  GeodesicallyConvexQ[PathGraph[Range[5]], {2, 3, 4}],
+  SegmentHullQ[PathGraph[Range[5]], {2, 3, 4}],
   True,
-  TestID -> "GeodesicallyConvexQ-PathGraph-interior-true"
+  TestID -> "SegmentHullQ-PathGraph-interior-true"
 ]
 
 VerificationTest[
-  GeodesicallyConvexQ[PathGraph[Range[5]], {1, 5}],
+  SegmentHullQ[PathGraph[Range[5]], {1, 5}],
   False,
-  TestID -> "GeodesicallyConvexQ-PathGraph-endpoints-false"
+  TestID -> "SegmentHullQ-PathGraph-endpoints-false"
 ]
 
 VerificationTest[
-  GeodesicallyConvexQ[PathGraph[Range[5]], {3}],
+  SegmentHullQ[PathGraph[Range[5]], {3}],
   True,
-  TestID -> "GeodesicallyConvexQ-singleton-true"
+  TestID -> "SegmentHullQ-singleton-true"
 ]
 
 VerificationTest[
-  GeodesicallyConvexQ[CycleGraph[4], {1, 3}],
+  SegmentHullQ[CycleGraph[4], {1, 3}],
   False,
-  TestID -> "GeodesicallyConvexQ-CycleGraph4-antipodes-false"
+  TestID -> "SegmentHullQ-CycleGraph4-antipodes-false"
 ]
 
 VerificationTest[
-  GeodesicallyConvexQ[CycleGraph[4], {1, 2, 3, 4}],
+  SegmentHullQ[CycleGraph[4], {1, 2, 3, 4}],
   True,
-  TestID -> "GeodesicallyConvexQ-CycleGraph4-whole-true"
+  TestID -> "SegmentHullQ-CycleGraph4-whole-true"
 ]
 
 VerificationTest[
-  GeodesicallyConvexQ[GridGraph[{3, 3}], {1, 2, 3}],
+  SegmentHullQ[GridGraph[{3, 3}], {1, 2, 3}],
   True,
-  TestID -> "GeodesicallyConvexQ-GridGraph3x3-row-true"
+  TestID -> "SegmentHullQ-GridGraph3x3-row-true"
 ]
 
 VerificationTest[
-  GeodesicallyConvexQ[CompleteGraph[5], {1, 3, 5}],
+  SegmentHullQ[CompleteGraph[5], {1, 3, 5}],
   True,
-  TestID -> "GeodesicallyConvexQ-CompleteGraph-arbitrary-true"
+  TestID -> "SegmentHullQ-CompleteGraph-arbitrary-true"
 ]
 
-(* ===== GeodesicallyConvexQ, Method -> "Weak" ===== *)
+(* ===== SegmentHullQ: a C6 arc has two geodesics, so it is not segment-closed ===== *)
 
 VerificationTest[
-  GeodesicallyConvexQ[CycleGraph[6], {1, 2, 3, 4}],
+  SegmentHullQ[CycleGraph[6], {1, 2, 3, 4}],
   False,
-  TestID -> "GeodesicallyConvexQ-CycleGraph6-arc-Strong-false"
-]
-
-VerificationTest[
-  GeodesicallyConvexQ[CycleGraph[6], {1, 2, 3, 4}, Method -> "Weak"],
-  True,
-  TestID -> "GeodesicallyConvexQ-CycleGraph6-arc-Weak-true"
-]
-
-VerificationTest[
-  GeodesicallyConvexQ[CycleGraph[4], {1, 3}, Method -> "Weak"],
-  False,
-  TestID -> "GeodesicallyConvexQ-CycleGraph4-antipodes-Weak-false"
-]
-
-VerificationTest[
-  GeodesicallyConvexQ[PathGraph[Range[5]], {2, 3, 4}, Method -> "Weak"],
-  True,
-  TestID -> "GeodesicallyConvexQ-PathGraph-interior-Weak-true"
-]
-
-VerificationTest[
-  GeodesicallyConvexQ[PathGraph[Range[5]], {1, 5}, Method -> "Weak"],
-  False,
-  TestID -> "GeodesicallyConvexQ-PathGraph-endpoints-Weak-false"
-]
-
-VerificationTest[
-  GeodesicallyConvexQ[GridGraph[{3, 3}], {1, 2, 3}, Method -> "Weak"],
-  True,
-  TestID -> "GeodesicallyConvexQ-GridGraph3x3-row-Weak-true"
-]
-
-VerificationTest[
-  GeodesicallyConvexQ[GridGraph[{3, 3}], {1, 9}, Method -> "Weak"],
-  False,
-  TestID -> "GeodesicallyConvexQ-GridGraph3x3-corners-Weak-false"
-]
-
-VerificationTest[
-  GeodesicallyConvexQ[PathGraph[Range[5]], {3}, Method -> "Weak"],
-  True,
-  TestID -> "GeodesicallyConvexQ-singleton-Weak-true"
-]
-
-VerificationTest[
-  GeodesicallyConvexQ[PathGraph[Range[5]], {}, Method -> "Weak"],
-  True,
-  TestID -> "GeodesicallyConvexQ-empty-Weak-true"
-]
-
-VerificationTest[
-  GeodesicallyConvexQ[CycleGraph[6], {1, 2, 3, 4}, Method -> "Strong"] ===
-    GeodesicallyConvexQ[CycleGraph[6], {1, 2, 3, 4}],
-  True,
-  TestID -> "GeodesicallyConvexQ-default-is-Strong"
+  TestID -> "SegmentHullQ-CycleGraph6-arc-false"
 ]
 
 EndTestSection[]

@@ -46,6 +46,9 @@ PackageExport[InfraPerpendicularQ]
 PackageExport[PencilDirections]
 PackageExport[PencilCardinality]
 PackageExport[LineCount]
+PackageExport[FindLineHull]
+PackageExport[LineHullQ]
+PackageExport[UniversalLineQ]
 
 (* InfraLineStructure.wl *)
 PackageExport[FindLineStructure]
@@ -157,8 +160,8 @@ PackageExport[MetricInterval]
 PackageExport[GeodesicMultiplicity]
 PackageExport[GeodesicMultiplicityMatrix]
 PackageExport[MedianVertices]
-PackageExport[FindGeodesicConvexHull]
-PackageExport[GeodesicallyConvexQ]
+PackageExport[FindSegmentHull]
+PackageExport[SegmentHullQ]
 
 (* InfraSet.wl *)
 (* The Alexandrov-topology layer (InfraTopologicalSpace / InfraBallTopology /
