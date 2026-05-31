@@ -159,4 +159,69 @@ VerificationTest[
   TestID -> "ConsistentPathSystemQ-association-swapped-stretch-fail"
 ]
 
+(* ===================== Derived views + recovery (T3) ===================== *)
+
+refGraphs = { PathGraph[ Range[ 5 ] ], CycleGraph[ 6 ], GridGraph[ { 3, 3 } ], PetersenGraph[] };
+
+(* ===== Lines -> Paths: each line is recovered as the path between its endpoints ===== *)
+
+VerificationTest[
+  And @@ Map[
+    g |-> With[ { ls = FindLineStructure[ g ] },
+      AllTrue[ ls[ "Lines" ],
+        L |-> canonSeq @ ls[ "Paths" ][ Sort @ { First @ L, Last @ L } ] === canonSeq @ L ] ],
+    refGraphs ],
+  True,
+  TestID -> "InfraLineStructure-Paths-recovers-lines"
+]
+
+(* ===== Lines <-> Incidence: vertices on line k are recovered from the transpose ===== *)
+
+VerificationTest[
+  And @@ Map[
+    g |-> With[ { ls = FindLineStructure[ g ] },
+      With[ { lines = ls[ "Lines" ], inc = ls[ "Incidence" ] },
+        Sort @ Keys @ inc === Sort @ VertexList @ g &&
+          AllTrue[ Range @ Length @ lines,
+            k |-> Sort @ Select[ Keys @ inc, MemberQ[ inc[ # ], k ] & ] === Sort @ lines[[ k ]] ] ] ],
+    refGraphs ],
+  True,
+  TestID -> "InfraLineStructure-Incidence-transpose-roundtrip"
+]
+
+(* ===== ["Path",u,v] reproduces ["Paths"][{u,v}] for every pair ===== *)
+
+VerificationTest[
+  And @@ Map[
+    g |-> With[ { ls = FindLineStructure[ g ] },
+      AllTrue[ Keys @ ls[ "Paths" ],
+        pair |-> ls[ "Path", First @ pair, Last @ pair ] === ls[ "Paths" ][ pair ] ] ],
+    refGraphs ],
+  True,
+  TestID -> "InfraLineStructure-Path-reproduces-Paths"
+]
+
+(* ===== ["Path",u,v] is oriented u -> v (and v -> u is its reverse) ===== *)
+
+VerificationTest[
+  With[ { ls = FindLineStructure[ PathGraph[ Range[ 5 ] ] ] },
+    { ls[ "Path", 2, 5 ], ls[ "Path", 5, 2 ] } ],
+  { { 2, 3, 4, 5 }, { 5, 4, 3, 2 } },
+  TestID -> "InfraLineStructure-Path-orientation"
+]
+
+(* ===== An interior pair on several lines yields the SAME stretch from each (C4 {3,4}) ===== *)
+
+VerificationTest[
+  With[ { lines = FindLineStructure[ CycleGraph[ 4 ] ][ "Lines" ] },
+    With[ { onBoth = Select[ lines, ContainsAll[ #, { 3, 4 } ] & ] },
+      Length @ onBoth >= 2 &&
+        SameQ @@ Map[
+          line |-> With[ { i = First @ FirstPosition[ line, 3 ], j = First @ FirstPosition[ line, 4 ] },
+            canonSeq @ line[[ Min[ i, j ] ;; Max[ i, j ] ]] ],
+          onBoth ] ] ],
+  True,
+  TestID -> "InfraLineStructure-multi-line-pair-same-stretch"
+]
+
 EndTestSection[]

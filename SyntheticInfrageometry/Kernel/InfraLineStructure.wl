@@ -19,6 +19,33 @@ InfraLineStructure[ lines_List ][ "First" ]        := First @ lines
 (* "Length" = list of edge counts, one per line: |line| - 1. *)
 InfraLineStructure[ lines_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ lines
 
+(* "Paths" = the unfolded association <|{u,v} -> P(u,v)|> -- every contiguous
+   stretch of every line, keyed by its sorted endpoint pair, oriented small->large.
+   Consistency makes the value well-defined when a pair lies on several lines. *)
+InfraLineStructure[ lines_List ][ "Paths" ] :=
+  Association @ Flatten @ Table[
+    With[ { line = lines[[ k ]] },
+      Table[
+        With[ { seg = line[[ i ;; j ]] },
+          Sort @ { line[[ i ]], line[[ j ]] } ->
+            If[ OrderedQ @ { line[[ i ]], line[[ j ]] }, seg, Reverse @ seg ] ],
+        { i, Length @ line - 1 }, { j, i + 1, Length @ line } ] ],
+    { k, Length @ lines } ]
+
+(* "Incidence" = the transpose of the line list: <|v -> {line numbers through v}|>.
+   Order along each line is held by the stored sequence, so positions are not kept. *)
+InfraLineStructure[ lines_List ][ "Incidence" ] :=
+  Sort /@ KeySort @ GroupBy[
+    Catenate @ MapIndexed[ { line, idx } |-> ( ( # -> First @ idx ) & /@ line ), lines ],
+    First -> Last ]
+
+(* "Path", u, v = recover P(u,v): the stretch of any line through both u and v,
+   oriented u->v.  Well-defined by consistency; order comes from the stored line. *)
+InfraLineStructure[ lines_List ][ "Path", u_, v_ ] :=
+  With[ { line = SelectFirst[ lines, ContainsAll[ #, { u, v } ] & ] },
+    { i = First @ FirstPosition[ line, u ], j = First @ FirstPosition[ line, v ] },
+    If[ i <= j, line[[ i ;; j ]], Reverse @ line[[ j ;; i ]] ] ]
+
 InfraLineStructure /: Part[ InfraLineStructure[ lines_List ], i_Integer ] := lines[[ i ]]
 
 
