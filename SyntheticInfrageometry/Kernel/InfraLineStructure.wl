@@ -1,6 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageScope[lineStructureWeights]
+PackageScope[edgeRanking]
 PackageScope[canonicalLineSeq]
 PackageScope[maximalLines]
 
@@ -39,6 +40,15 @@ InfraLineStructure[ lines_List ][ "Incidence" ] :=
     Catenate @ MapIndexed[ { line, idx } |-> ( ( # -> First @ idx ) & /@ line ), lines ],
     First -> Last ]
 
+(* "Coordinates" = incidence with positions: <|v -> {{line number, offset}, ...}|>,
+   offset = number of edges from the line's start to v.  The g-free coordinate atlas;
+   redundant given the stored ordered lines, so always recoverable, never stored. *)
+InfraLineStructure[ lines_List ][ "Coordinates" ] :=
+  Sort /@ KeySort @ GroupBy[
+    Catenate @ MapIndexed[
+      { line, idx } |-> MapIndexed[ ( #1 -> { First @ idx, First @ #2 - 1 } ) &, line ], lines ],
+    First -> Last ]
+
 (* "Path", u, v = recover P(u,v): the stretch of any line through both u and v,
    oriented u->v.  Well-defined by consistency; order comes from the stored line. *)
 InfraLineStructure[ lines_List ][ "Path", u_, v_ ] :=
@@ -57,10 +67,7 @@ InfraLineStructure /: Part[ InfraLineStructure[ lines_List ], i_Integer ] := lin
    weighting -- the unique min-weight path per pair is automatically consistent.
    The returned InfraLineStructure stores the maximal lines of that system. *)
 
-Options[ FindLineStructure ] = {
-  Method        -> "Lexicographic",
-  "Coordinates" -> False
-};
+Options[ FindLineStructure ] = { Method -> "Lexicographic" };
 
 FindLineStructure[ graph_Graph, opts : OptionsPattern[] ] :=
   With[
@@ -73,17 +80,40 @@ FindLineStructure[ graph_Graph, opts : OptionsPattern[] ] :=
   ]
 
 
-(* Exact 1 + 2^(-i) weighting: edges ranked 1..|E| by sorted endpoint labels.
-   Distinct-subset-sum of {2^(-i)} => unique min-weight path per pair; total
-   perturbation < 1 => hop-count dominates, so chosen paths are true geodesics.
-   Exact Rationals only -- machine reals underflow near |E| ~ 50 and re-collide. *)
+(* Every Method reduces to an edge RANKING e_1, ..., e_|E|, then the exact weight
+   w(e_i) = 1 + 2^(-i).  Distinct-subset-sum of {2^(-i)} => unique min-weight path
+   per pair (consistent); total perturbation < 1 => hop-count dominates (chosen
+   paths are true geodesics).  So any ranking yields a consistent geodesic system;
+   the Method only changes which geodesic wins among hop-count ties.  Exact
+   Rationals -- machine reals underflow near |E| ~ 50 and re-collide. *)
 
-lineStructureWeights[ graph_Graph, "Lexicographic" ] :=
+lineStructureWeights[ graph_Graph, method_ ] :=
   With[
     { edges = EdgeList[ graph ] },
-    { rank = Association @ MapIndexed[ #1 -> First[ #2 ] &, SortBy[ edges, Sort @* Apply[ List ] ] ] },
+    { rank = Association @ MapIndexed[ #1 -> First[ #2 ] &, edgeRanking[ graph, edges, method ] ] },
     ( 1 + 2^( -rank[ # ] ) ) & /@ edges
   ]
+
+(* the edges in ranked order; the ranking key is the only thing a Method changes *)
+edgeRanking[ graph_, edges_, "Lexicographic" ] := SortBy[ edges, Sort @* Apply[ List ] ]
+
+edgeRanking[ graph_, edges_, { "Random", seed_ } ] :=
+  BlockRandom[ SeedRandom[ seed ]; RandomSample @ edges ]
+
+(* resistance is only a ranking key, so machine PseudoInverse is fine and self-
+   contained; the 2^(-i) weights supply genericity, sorted endpoints break ties *)
+edgeRanking[ graph_, edges_, "Resistance" ] :=
+  With[
+    { lp = PseudoInverse @ N @ KirchhoffMatrix @ graph, idx = First /@ PositionIndex @ VertexList @ graph },
+    SortBy[ edges,
+      e |-> { With[ { a = idx[ First @ e ], b = idx[ Last @ e ] }, lp[[ a, a ]] + lp[[ b, b ]] - 2 lp[[ a, b ]] ],
+              Sort @ Apply[ List, e ] } ]
+  ]
+
+(* user edge function w[edge] as the ranking key; sorted endpoints break w-ties, so
+   no collision detection is needed -- the ranking is always a total order *)
+edgeRanking[ graph_, edges_, ( "Weight" -> w_ ) ] :=
+  SortBy[ edges, e |-> { w[ e ], Sort @ Apply[ List, e ] } ]
 
 
 (* ===================== ConsistentPathSystemQ ===================== *)

@@ -224,4 +224,70 @@ VerificationTest[
   TestID -> "InfraLineStructure-multi-line-pair-same-stretch"
 ]
 
+(* ===================== Methods + tie-break study (T4) ===================== *)
+
+(* Every method reduces to an edge ranking -> exact 1 + 2^(-i) weighting, so each
+   yields a consistent system whose lines are true unit-metric geodesics. *)
+
+trueGeodesicLinesQ[ g_, lines_ ] :=
+  AllTrue[ lines,
+    L |-> AllTrue[ Partition[ L, 2, 1 ], EdgeQ[ g, UndirectedEdge @@ # ] & ] &&
+      Length[ L ] - 1 == GraphDistance[ g, First @ L, Last @ L ] ];
+
+methodList = { "Lexicographic", { "Random", 1 }, { "Random", 2 }, "Resistance",
+  "Weight" -> ( First[ # ]^2 + Last[ # ] & ) };
+
+(* ===== Each method gives a consistent, true-geodesic, fully covering system ===== *)
+
+VerificationTest[
+  AllTrue[
+    Tuples[ { { CycleGraph[ 6 ], GridGraph[ { 3, 3 } ], PetersenGraph[] }, methodList } ],
+    pair |-> With[ { g = First @ pair, lines = FindLineStructure[ First @ pair, Method -> Last @ pair ][ "Lines" ] },
+      consistentLinesQ[ lines ] && trueGeodesicLinesQ[ g, lines ] && coversAllPairsQ[ g, lines ] ] ],
+  True,
+  TestID -> "FindLineStructure-all-methods-consistent-geodesic-covering"
+]
+
+(* ===== {"Random", seed} is deterministic given the seed ===== *)
+
+VerificationTest[
+  FindLineStructure[ GridGraph[ { 3, 4 } ], Method -> { "Random", 7 } ][ "Lines" ] ===
+    FindLineStructure[ GridGraph[ { 3, 4 } ], Method -> { "Random", 7 } ][ "Lines" ],
+  True,
+  TestID -> "FindLineStructure-Random-seed-deterministic"
+]
+
+(* ===== The tie-break choice can change the structure (line count is method-dependent) ===== *)
+
+VerificationTest[
+  Length @ DeleteDuplicates @ Map[
+    m |-> Length @ FindLineStructure[ GridGraph[ { 3, 4 } ], Method -> m ][ "Lines" ],
+    methodList ] > 1,
+  True,
+  TestID -> "FindLineStructure-line-count-method-dependent"
+]
+
+(* ===== ["Coordinates"]: <|v -> {{line, offset}|>; the offset recovers v on the line ===== *)
+
+VerificationTest[
+  And @@ Map[
+    g |-> With[ { ls = FindLineStructure[ g ] },
+      With[ { lines = ls[ "Lines" ], coords = ls[ "Coordinates" ] },
+        Sort @ Keys @ coords === Sort @ VertexList @ g &&
+          AllTrue[ Keys @ coords,
+            v |-> AllTrue[ coords[ v ], lp |-> lines[[ First @ lp, Last @ lp + 1 ]] === v ] ] ] ],
+    refGraphs ],
+  True,
+  TestID -> "InfraLineStructure-Coordinates-offset-recovers-vertex"
+]
+
+(* ===== ["Coordinates"] line numbers agree with ["Incidence"] ===== *)
+
+VerificationTest[
+  With[ { ls = FindLineStructure[ GridGraph[ { 3, 3 } ] ] },
+    ls[ "Incidence" ] === Map[ First, ls[ "Coordinates" ], { 2 } ] ],
+  True,
+  TestID -> "InfraLineStructure-Coordinates-matches-Incidence"
+]
+
 EndTestSection[]
