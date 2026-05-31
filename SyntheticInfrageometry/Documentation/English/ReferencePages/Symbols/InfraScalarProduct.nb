@@ -3,112 +3,54 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      6638,        145]
-NotebookOptionsPosition[      3951,        106]
-NotebookOutlinePosition[      4268,        120]
-CellTagsIndexPosition[      4225,        117]
+NotebookDataLength[      2962,         71]
+NotebookOptionsPosition[      1931,         50]
+NotebookOutlinePosition[      2248,         64]
+CellTagsIndexPosition[      2205,         61]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraScalarProduct", "Title",ExpressionUUID->"460c58d4-b625-4962-96e0-43f049cfe265"],
+Cell["InfraScalarProduct", "Title",ExpressionUUID->"2ca83dbc-1eda-4ab2-b600-704bce13d5af"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"6c44d0df-a63b-4577-9d75-a6471966cfab"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"c38059ab-d0a2-4ba5-8440-272287562911"],
 
 Cell["\<\
-InfraScalarProduct[g, o, u, v] returns the base-point-relative scalar product \
-of u and v with respect to o. Option Method (\"Alexandrov\" (default) \
-\[LongDash] d(o, u) d(o, v) cos(\[Theta]_0) which collapses to (d(o, u)^2 + \
-d(o, v)^2 - d(u, v)^2)/2; {\"Alexandrov\", \"Curvature\" -> k} \[LongDash] \
-spherical / hyperbolic law of cosines in M_k^2; \"Parallelogram\" \[LongDash] \
-polarisation identity (||u+v||^2 - ||u-v||^2)/4 via \
+InfraScalarProduct[graph, o, u, v] returns the base-point-relative scalar \
+product of u and v with respect to o. Option: Method (\"Alexandrov\" \
+(default) -- d(o,u) d(o,v) cos(theta_0) which collapses to (d(o,u)^2 + \
+d(o,v)^2 - d(u,v)^2)/2; {\"Alexandrov\", \"Curvature\" -> k} -- same with \
+spherical / hyperbolic law of cosines in M_k^2; \"Parallelogram\" -- \
+polarization identity (||u+v||^2 - ||u-v||^2)/4 via \
 FindInfraLinearCombination).\
-\>", "Text",ExpressionUUID->"64a0d84d-c698-4f65-ba8c-62dcfda56e20"],
+\>", "Text",ExpressionUUID->"a652bbaf-3f6a-405c-8bd6-c4f2fd76bc9c"],
 
-Cell["Setup", "Section",ExpressionUUID->"c7326717-dcc7-4b34-bdf5-96d84f794cce"],
+Cell["Setup", "Section",ExpressionUUID->"bc5639e9-c6ae-4575-8df0-ea42992202d5"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"de703050-3f88-4f24-b28b-4d2a8a15af2b"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"0825f4c7-58a8-4f38-946f-1281ce084981"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"bccbb605-caac-4611-8892-d71586850d12"],
+  True,ExpressionUUID->"56f6f501-857d-4734-a513-ca4ff60d4314"],
 
-Cell["Examples", "Section",ExpressionUUID->"8cad0702-2c6d-4621-87a8-0b2a5c2af4c3"],
+Cell["Related Guides", "Section",ExpressionUUID->"cc74378f-7e2d-483f-923d-776ad2bd0193"],
 
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"dbe50e1b-4abd-42a5-ac36-378fe57d56cf"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"99bca3b8-d543-4de5-a677-18d886896c08"],
 
-Cell[BoxData[
- $CellContext`buildCell[
- "Alexandrov-flat scalar product on a path graph."]], "Input",ExpressionUUID->\
-"8d8f0298-9718-4152-983f-85681bc5e4fc"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"71a6034f-0922-42f1-9fb4-c56d533f3b7c"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "InfraScalarProduct[PathGraph[Range[7]], 4, 1, 7]"]], "Input",ExpressionUUID->\
-"888a33fb-b827-474b-bef0-5d6c7af55451"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"ae5c6ad2-4597-4c17-a7d8-bb6944877b14"],
-
-Cell[BoxData[
- $CellContext`buildCell["On a grid."]], "Input",ExpressionUUID->"39b79d1c-efe9-4f29-ba84-5957c6585bf8"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"921a5665-8491-4c77-a897-1b98a91a02d8"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "InfraScalarProduct[GridGraph[{3, 3}], 5, 1, 9]"]], "Input",ExpressionUUID->\
-"c6a053a2-0cab-41c3-b0f9-e4aa092bf02c"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"a5665f6b-0eea-4771-b31c-b9d20e7ddbad"],
-
-Cell[BoxData[
- $CellContext`buildCell["Parallelogram polarisation method."]], "Input",Expres\
-sionUUID->"e749b819-d532-4190-8aab-8fa3e68555c3"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"c07df866-e7db-4caa-9d32-67a9f2183ffa"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "InfraScalarProduct[GridGraph[{3, 3}], 5, 1, 9, Method -> \
-\"Parallelogram\"]"]], "Input",ExpressionUUID->"433aebf1-b2e6-4614-9892-\
-01bcb555e448"],
-
-Cell["See Also", "Section",ExpressionUUID->"fcaea85a-3ad2-4a7c-a28c-d4c2c66de200"],
-
-Cell["InfraAngle", "Item",ExpressionUUID->"13060f7e-8903-4112-88c2-603a9789af86"],
-
-Cell["FindInfraLinearCombination", "Item",ExpressionUUID->"85c4c98e-6fa5-462d-a33b-d81f79cef6d2"],
-
-Cell["MetricInterval", "Item",ExpressionUUID->"194dba04-7c11-41ae-af10-682f2da0c26c"],
-
-Cell["Related Guides", "Section",ExpressionUUID->"6776bee2-4dec-46d2-85fe-f9ac5ca4bcc0"],
-
-Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"5d551522-8094-4312-b211-5351f6a38cfc"],
-
-Cell["Tutorials", "Section",ExpressionUUID->"617ddf54-f2cd-465f-b212-2fc59070374b"],
-
-Cell["MetricAlgebraTutorial", "Item",ExpressionUUID->"abc52ed4-5e91-4314-a8fd-3507434ba46e"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"f37e1dde-7caa-4a95-acdd-87a1e1447fe0"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
 ]
 (* End of Notebook Content *)
 
@@ -121,34 +63,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"460c58d4-b625-4962-96e0-43f049cfe265"],
-Cell[647, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"6c44d0df-a63b-4577-9d75-a6471966cfab"],
-Cell[740, 24, 396, 6, 70, "Text",ExpressionUUID->"64a0d84d-c698-4f65-ba8c-62dcfda56e20"],
-Cell[1139, 32, 79, 0, 70, "Section",ExpressionUUID->"c7326717-dcc7-4b34-bdf5-96d84f794cce"],
-Cell[1221, 34, 91, 0, 70, "CodeText",ExpressionUUID->"de703050-3f88-4f24-b28b-4d2a8a15af2b"],
-Cell[1315, 36, 192, 4, 70, "Code",ExpressionUUID->"bccbb605-caac-4611-8892-d71586850d12",
+Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"2ca83dbc-1eda-4ab2-b600-704bce13d5af"],
+Cell[647, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"c38059ab-d0a2-4ba5-8440-272287562911"],
+Cell[740, 24, 528, 8, 70, "Text",ExpressionUUID->"a652bbaf-3f6a-405c-8bd6-c4f2fd76bc9c"],
+Cell[1271, 34, 79, 0, 70, "Section",ExpressionUUID->"bc5639e9-c6ae-4575-8df0-ea42992202d5"],
+Cell[1353, 36, 91, 0, 70, "CodeText",ExpressionUUID->"0825f4c7-58a8-4f38-946f-1281ce084981"],
+Cell[1447, 38, 192, 4, 70, "Code",ExpressionUUID->"56f6f501-857d-4734-a513-ca4ff60d4314",
  InitializationCell->True],
-Cell[1510, 42, 82, 0, 70, "Section",ExpressionUUID->"8cad0702-2c6d-4621-87a8-0b2a5c2af4c3"],
-Cell[1595, 44, 115, 1, 70, "Input",ExpressionUUID->"dbe50e1b-4abd-42a5-ac36-378fe57d56cf"],
-Cell[1713, 47, 153, 3, 70, "Input",ExpressionUUID->"8d8f0298-9718-4152-983f-85681bc5e4fc"],
-Cell[1869, 52, 112, 1, 70, "Input",ExpressionUUID->"71a6034f-0922-42f1-9fb4-c56d533f3b7c"],
-Cell[1984, 55, 159, 3, 70, "Input",ExpressionUUID->"888a33fb-b827-474b-bef0-5d6c7af55451"],
-Cell[2146, 60, 115, 1, 70, "Input",ExpressionUUID->"ae5c6ad2-4597-4c17-a7d8-bb6944877b14"],
-Cell[2264, 63, 117, 1, 70, "Input",ExpressionUUID->"39b79d1c-efe9-4f29-ba84-5957c6585bf8"],
-Cell[2384, 66, 112, 1, 70, "Input",ExpressionUUID->"921a5665-8491-4c77-a897-1b98a91a02d8"],
-Cell[2499, 69, 157, 3, 70, "Input",ExpressionUUID->"c6a053a2-0cab-41c3-b0f9-e4aa092bf02c"],
-Cell[2659, 74, 115, 1, 70, "Input",ExpressionUUID->"a5665f6b-0eea-4771-b31c-b9d20e7ddbad"],
-Cell[2777, 77, 143, 2, 70, "Input",ExpressionUUID->"e749b819-d532-4190-8aab-8fa3e68555c3"],
-Cell[2923, 81, 112, 1, 70, "Input",ExpressionUUID->"c07df866-e7db-4caa-9d32-67a9f2183ffa"],
-Cell[3038, 84, 188, 4, 70, "Input",ExpressionUUID->"433aebf1-b2e6-4614-9892-01bcb555e448"],
-Cell[3229, 90, 82, 0, 70, "Section",ExpressionUUID->"fcaea85a-3ad2-4a7c-a28c-d4c2c66de200"],
-Cell[3314, 92, 81, 0, 70, "Item",ExpressionUUID->"13060f7e-8903-4112-88c2-603a9789af86"],
-Cell[3398, 94, 97, 0, 70, "Item",ExpressionUUID->"85c4c98e-6fa5-462d-a33b-d81f79cef6d2"],
-Cell[3498, 96, 85, 0, 70, "Item",ExpressionUUID->"194dba04-7c11-41ae-af10-682f2da0c26c"],
-Cell[3586, 98, 88, 0, 70, "Section",ExpressionUUID->"6776bee2-4dec-46d2-85fe-f9ac5ca4bcc0"],
-Cell[3677, 100, 89, 0, 70, "Item",ExpressionUUID->"5d551522-8094-4312-b211-5351f6a38cfc"],
-Cell[3769, 102, 83, 0, 70, "Section",ExpressionUUID->"617ddf54-f2cd-465f-b212-2fc59070374b"],
-Cell[3855, 104, 92, 0, 70, "Item",ExpressionUUID->"abc52ed4-5e91-4314-a8fd-3507434ba46e"]
+Cell[1642, 44, 88, 0, 70, "Section",ExpressionUUID->"cc74378f-7e2d-483f-923d-776ad2bd0193"],
+Cell[1733, 46, 93, 0, 70, "Item",ExpressionUUID->"99bca3b8-d543-4de5-a677-18d886896c08"],
+Cell[1829, 48, 98, 0, 70, "Item",ExpressionUUID->"f37e1dde-7caa-4a95-acdd-87a1e1447fe0"]
 }
 ]
 *)

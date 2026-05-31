@@ -1,0 +1,84 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3281,         75]
+NotebookOptionsPosition[      2249,         54]
+NotebookOutlinePosition[      2566,         68]
+CellTagsIndexPosition[      2523,         65]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraShellCenter", "Title",ExpressionUUID->"f7a31c62-03ea-4c25-9b19-1caf22c90fee"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"759f1483-f540-490c-8cf3-1b4935026fe1"],
+
+Cell["\<\
+FindInfraShellCenter[graph, shell] returns {center, radii} of a metric shell \
+as a weighted InfraPoint and a sorted radius list; shell is a vertex list or \
+an InfraShell. Method (\"MaximalChordsBisectors\" (default): bisect the \
+shell's longest chords and union the midpoints, mass = bisection \
+multiplicity, radius = union of integer arms; \"EquidistantPoints\": every \
+vertex equidistant from the whole shell, unweighted, radius = common \
+distance). \"MaximalChordsBisectors\" sub-options (inside the Method spec): \
+\"Maximality\" (\"PerVertex\" (default) | \"Diameter\"), \"Distance\" \
+(\"Extrinsic\" (default) | \"Intrinsic\", antipode-selection distance; \
+\"Intrinsic\" is empty on a genuine sphere), \"Parity\" (All (default) | \
+\"Even\" | \"Odd\").\
+\>", "Text",ExpressionUUID->"3936b6ae-b0b7-4244-b092-26129b6e3ee7"],
+
+Cell["Setup", "Section",ExpressionUUID->"52a5101b-d3bb-43dc-b2e7-5a094e416687"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"216c403c-4f4d-497b-95eb-e8cf3a800dc6"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"d158f3c4-eb99-4fd3-b780-90911423afac"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"b195c1fb-af5c-459e-9331-8f98e3734aec"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"6aba5209-c9a1-4d88-87c1-05fe2a6e440f"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"ecc5c100-2492-47fd-8a0d-05e257e07873"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 92, 0, 70, "Title",ExpressionUUID->"f7a31c62-03ea-4c25-9b19-1caf22c90fee"],
+Cell[649, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"759f1483-f540-490c-8cf3-1b4935026fe1"],
+Cell[742, 24, 844, 12, 70, "Text",ExpressionUUID->"3936b6ae-b0b7-4244-b092-26129b6e3ee7"],
+Cell[1589, 38, 79, 0, 70, "Section",ExpressionUUID->"52a5101b-d3bb-43dc-b2e7-5a094e416687"],
+Cell[1671, 40, 91, 0, 70, "CodeText",ExpressionUUID->"216c403c-4f4d-497b-95eb-e8cf3a800dc6"],
+Cell[1765, 42, 192, 4, 70, "Code",ExpressionUUID->"d158f3c4-eb99-4fd3-b780-90911423afac",
+ InitializationCell->True],
+Cell[1960, 48, 88, 0, 70, "Section",ExpressionUUID->"b195c1fb-af5c-459e-9331-8f98e3734aec"],
+Cell[2051, 50, 93, 0, 70, "Item",ExpressionUUID->"6aba5209-c9a1-4d88-87c1-05fe2a6e440f"],
+Cell[2147, 52, 98, 0, 70, "Item",ExpressionUUID->"ecc5c100-2492-47fd-8a0d-05e257e07873"]
+}
+]
+*)
+
+(* End of internal cache information *)

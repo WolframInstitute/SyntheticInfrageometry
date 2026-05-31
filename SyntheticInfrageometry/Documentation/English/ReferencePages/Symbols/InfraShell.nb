@@ -3,111 +3,53 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      6998,        148]
-NotebookOptionsPosition[      4131,        107]
-NotebookOutlinePosition[      4448,        121]
-CellTagsIndexPosition[      4405,        118]
+NotebookDataLength[      2909,         70]
+NotebookOptionsPosition[      1878,         49]
+NotebookOutlinePosition[      2195,         63]
+CellTagsIndexPosition[      2152,         60]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraShell", "Title",ExpressionUUID->"e058990d-332d-44c6-a6b7-8ff137982bc0"],
+Cell["InfraShell", "Title",ExpressionUUID->"dc751900-3967-40dd-a1bd-74afb1022ae5"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"ef667ca6-c9d5-421d-94cb-7cb25359741e"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"0b49f6f9-e841-42be-b6f2-67bafa31ac94"],
 
 Cell["\<\
-InfraShell is the wrapper head for metric-shell vertex sets. \
-InfraShell[{set}] is the unary form; InfraShell[{set1, \[Ellipsis], setk}] is \
-the multi-realisation form. FindInfraShell emits a List of unary InfraShell[{set}] \
-wrappers. Wrapping that List with InfraShell @ \[Ellipsis] collapses it to \
-the multi form via auto-flatten; InfraSceneHighlight consumes the multi form \
-with induced-subgraph semantics.\
-\>", "Text",ExpressionUUID->"f70bd8b0-516d-43d2-a733-a88c4c7fc0d1"],
+InfraShell[{set}] is the unary form (one metric shell vertex set); \
+InfraShell[{set1, ..., setk}] is the multi-realisation form. Find* returns a \
+List of unary wrappers; wrap with InfraShell @ ... to collapse to multi via \
+auto-flatten. Scene-language constructor InfraShell[center, radius] is used \
+inside InfraScene. The multi form is consumed by InfraSceneHighlight \
+(induced-subgraph semantics).\
+\>", "Text",ExpressionUUID->"0cbf3ee1-a519-49e1-b3f6-52c65491a338"],
 
-Cell["Setup", "Section",ExpressionUUID->"08bc2def-dd1c-4c0d-a0ae-ba04477a6e07"],
+Cell["Setup", "Section",ExpressionUUID->"71091bb8-fd7d-4007-aa22-a7d5cd6c4041"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"f1533926-3898-4a55-ae40-cab511dc87b4"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"0647d0b5-1236-4ba1-8510-d062e8483e77"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"d55e6aac-c8b7-43c4-abfb-420addf1975b"],
+  True,ExpressionUUID->"266dfa0e-4082-43ba-ba3f-e1657223e499"],
 
-Cell["Examples", "Section",ExpressionUUID->"0b76e5c6-e508-430b-bc05-64d576294fb2"],
+Cell["Related Guides", "Section",ExpressionUUID->"de0406e3-c721-4c22-a545-9e9b35a88794"],
 
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"686380ea-9324-403d-9c48-acb43f4afdbb"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"a5fab463-4cea-46fa-97e8-b503a047c1b1"],
 
-Cell[BoxData[
- $CellContext`buildCell["Realisations of a multi-shell."]], "Input",Expression\
-UUID->"105c4594-a812-4446-aaaf-bbf820fd7307"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"4e63d110-5368-435c-bb9a-fe74f2dbc105"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "InfraShell[{{2, 4, 5, 6, 8}}][\"Realizations\"]"]], "Input",ExpressionUUID->\
-"45ca1501-b882-4ad6-b9eb-01d94d88a79d"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"7eac9653-718c-4f2f-a3fe-1eb740e81009"],
-
-Cell[BoxData[
- $CellContext`buildCell["Find* output shape."]], "Input",ExpressionUUID->"f51606b0-b88a-4d2d-b9f9-24051d54bdca"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"22fd8766-badb-4891-b29a-6a686c75bba5"],
-
-Cell[BoxData[
- $CellContext`buildCell["FindInfraShell[GridGraph[{3, 3}], 5, 1]"]], "Input",Expres\
-sionUUID->"17192db6-ff49-4525-ba6d-b893f978ae58"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"8d04e2a6-c5ee-4b57-be74-921d3dae8b8a"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "Scene-language constructor with centre and radius."]], "Input",ExpressionUUI\
-D->"0ebd14de-d4e4-471d-af22-82434360d448"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"8f2770dc-3ca5-4fa7-a7f1-dc35f9beed60"],
-
-Cell[BoxData[
- $CellContext`buildCell["InfraShell[5, 1]"]], "Input",ExpressionUUID->"010ce30f-6b15-4730-abee-3bea5a02b043"],
-
-Cell["See Also", "Section",ExpressionUUID->"b1857b53-6364-4359-b6ba-cf47059eb865"],
-
-Cell["FindInfraShell", "Item",ExpressionUUID->"f9265292-70c9-44cf-8ca2-0e48e6cc4eb2"],
-
-Cell["FindInfraShellParameters", "Item",ExpressionUUID->"b519d2e9-7d7f-4226-a75e-5fcef8e2e602"],
-
-Cell["InfraShellQ", "Item",ExpressionUUID->"d0c9a63b-e5cd-442e-a948-0f5b87e64e47"],
-
-Cell["SeparatesQ", "Item",ExpressionUUID->"2737b992-d226-4a90-af87-8fb4af466356"],
-
-Cell["InfraCircle", "Item",ExpressionUUID->"581e392f-42b1-4baa-9911-aa7bfa9281ab"],
-
-Cell["Related Guides", "Section",ExpressionUUID->"8cdca50f-dee6-4bcd-9c4c-903056326d67"],
-
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"9748cb1f-dbbd-48b1-89f7-04625c373f68"],
-
-Cell["Tutorials", "Section",ExpressionUUID->"c1c8f6cc-f53a-492f-ad88-6dfab93f4ddf"],
-
-Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"724b0538-1830-49cf-9c4b-44a9135ec239"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"7d5ecdd6-cdcb-43e2-bda2-6dffd0544788"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
 ]
 (* End of Notebook Content *)
 
@@ -120,36 +62,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 82, 0, 70, "Title",ExpressionUUID->"e058990d-332d-44c6-a6b7-8ff137982bc0"],
-Cell[639, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"ef667ca6-c9d5-421d-94cb-7cb25359741e"],
-Cell[732, 24, 490, 7, 70, "Text",ExpressionUUID->"f70bd8b0-516d-43d2-a733-a88c4c7fc0d1"],
-Cell[1225, 33, 79, 0, 70, "Section",ExpressionUUID->"08bc2def-dd1c-4c0d-a0ae-ba04477a6e07"],
-Cell[1307, 35, 91, 0, 70, "CodeText",ExpressionUUID->"f1533926-3898-4a55-ae40-cab511dc87b4"],
-Cell[1401, 37, 192, 4, 70, "Code",ExpressionUUID->"d55e6aac-c8b7-43c4-abfb-420addf1975b",
+Cell[554, 20, 82, 0, 70, "Title",ExpressionUUID->"dc751900-3967-40dd-a1bd-74afb1022ae5"],
+Cell[639, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"0b49f6f9-e841-42be-b6f2-67bafa31ac94"],
+Cell[732, 24, 483, 7, 70, "Text",ExpressionUUID->"0cbf3ee1-a519-49e1-b3f6-52c65491a338"],
+Cell[1218, 33, 79, 0, 70, "Section",ExpressionUUID->"71091bb8-fd7d-4007-aa22-a7d5cd6c4041"],
+Cell[1300, 35, 91, 0, 70, "CodeText",ExpressionUUID->"0647d0b5-1236-4ba1-8510-d062e8483e77"],
+Cell[1394, 37, 192, 4, 70, "Code",ExpressionUUID->"266dfa0e-4082-43ba-ba3f-e1657223e499",
  InitializationCell->True],
-Cell[1596, 43, 82, 0, 70, "Section",ExpressionUUID->"0b76e5c6-e508-430b-bc05-64d576294fb2"],
-Cell[1681, 45, 115, 1, 70, "Input",ExpressionUUID->"686380ea-9324-403d-9c48-acb43f4afdbb"],
-Cell[1799, 48, 139, 2, 70, "Input",ExpressionUUID->"105c4594-a812-4446-aaaf-bbf820fd7307"],
-Cell[1941, 52, 112, 1, 70, "Input",ExpressionUUID->"4e63d110-5368-435c-bb9a-fe74f2dbc105"],
-Cell[2056, 55, 158, 3, 70, "Input",ExpressionUUID->"45ca1501-b882-4ad6-b9eb-01d94d88a79d"],
-Cell[2217, 60, 115, 1, 70, "Input",ExpressionUUID->"7eac9653-718c-4f2f-a3fe-1eb740e81009"],
-Cell[2335, 63, 126, 1, 70, "Input",ExpressionUUID->"f51606b0-b88a-4d2d-b9f9-24051d54bdca"],
-Cell[2464, 66, 112, 1, 70, "Input",ExpressionUUID->"22fd8766-badb-4891-b29a-6a686c75bba5"],
-Cell[2579, 69, 143, 2, 70, "Input",ExpressionUUID->"17192db6-ff49-4525-ba6d-b893f978ae58"],
-Cell[2725, 73, 115, 1, 70, "Input",ExpressionUUID->"8d04e2a6-c5ee-4b57-be74-921d3dae8b8a"],
-Cell[2843, 76, 161, 3, 70, "Input",ExpressionUUID->"0ebd14de-d4e4-471d-af22-82434360d448"],
-Cell[3007, 81, 112, 1, 70, "Input",ExpressionUUID->"8f2770dc-3ca5-4fa7-a7f1-dc35f9beed60"],
-Cell[3122, 84, 123, 1, 70, "Input",ExpressionUUID->"010ce30f-6b15-4730-abee-3bea5a02b043"],
-Cell[3248, 87, 82, 0, 70, "Section",ExpressionUUID->"b1857b53-6364-4359-b6ba-cf47059eb865"],
-Cell[3333, 89, 80, 0, 70, "Item",ExpressionUUID->"f9265292-70c9-44cf-8ca2-0e48e6cc4eb2"],
-Cell[3416, 91, 90, 0, 70, "Item",ExpressionUUID->"b519d2e9-7d7f-4226-a75e-5fcef8e2e602"],
-Cell[3509, 93, 77, 0, 70, "Item",ExpressionUUID->"d0c9a63b-e5cd-442e-a948-0f5b87e64e47"],
-Cell[3589, 95, 81, 0, 70, "Item",ExpressionUUID->"2737b992-d226-4a90-af87-8fb4af466356"],
-Cell[3673, 97, 82, 0, 70, "Item",ExpressionUUID->"581e392f-42b1-4baa-9911-aa7bfa9281ab"],
-Cell[3758, 99, 88, 0, 70, "Section",ExpressionUUID->"8cdca50f-dee6-4bcd-9c4c-903056326d67"],
-Cell[3849, 101, 93, 0, 70, "Item",ExpressionUUID->"9748cb1f-dbbd-48b1-89f7-04625c373f68"],
-Cell[3945, 103, 83, 0, 70, "Section",ExpressionUUID->"c1c8f6cc-f53a-492f-ad88-6dfab93f4ddf"],
-Cell[4031, 105, 96, 0, 70, "Item",ExpressionUUID->"724b0538-1830-49cf-9c4b-44a9135ec239"]
+Cell[1589, 43, 88, 0, 70, "Section",ExpressionUUID->"de0406e3-c721-4c22-a545-9e9b35a88794"],
+Cell[1680, 45, 93, 0, 70, "Item",ExpressionUUID->"a5fab463-4cea-46fa-97e8-b503a047c1b1"],
+Cell[1776, 47, 98, 0, 70, "Item",ExpressionUUID->"7d5ecdd6-cdcb-43e2-bda2-6dffd0544788"]
 }
 ]
 *)

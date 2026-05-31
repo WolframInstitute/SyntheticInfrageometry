@@ -1,0 +1,78 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2858,         69]
+NotebookOptionsPosition[      1826,         48]
+NotebookOutlinePosition[      2143,         62]
+CellTagsIndexPosition[      2100,         59]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraHomotopyRepresentativeHomotopy", "Title",ExpressionUUID->"0adad36d-2bf9-42e6-b868-e599a7d12960"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"32bca3b1-b780-4ed3-bbf3-0bd8238b6d1d"],
+
+Cell["\<\
+FindInfraHomotopyRepresentativeHomotopy[graph, obj] returns \
+{InfraHomotopy[{chain}]} for one reduction chain {obj, ..., m} of elementary \
+moves ending at a representative m. \
+FindInfraHomotopyRepresentativeHomotopy[graph, obj, n] / UpTo[n] / All \
+controls multiplicity. Same options as FindInfraHomotopyRepresentative.\
+\>", "Text",ExpressionUUID->"f3c1f311-6e11-4b27-adcc-36f1e05eebdb"],
+
+Cell["Setup", "Section",ExpressionUUID->"b7faa7e0-604f-4240-830f-1031985a485f"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"4dc7c701-3bdc-4042-bafb-866811d4df31"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"cceba400-809b-4b56-a7e8-b1e99e34232f"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"1dc72ce5-2a30-495f-a243-ad137833dfe0"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"e8073182-6c7e-46f0-85d7-181ae5d25d67"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"b8613cec-3794-4e90-bb19-0bd6a9cfc8ff"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 111, 0, 70, "Title",ExpressionUUID->"0adad36d-2bf9-42e6-b868-e599a7d12960"],
+Cell[668, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"32bca3b1-b780-4ed3-bbf3-0bd8238b6d1d"],
+Cell[761, 24, 402, 6, 70, "Text",ExpressionUUID->"f3c1f311-6e11-4b27-adcc-36f1e05eebdb"],
+Cell[1166, 32, 79, 0, 70, "Section",ExpressionUUID->"b7faa7e0-604f-4240-830f-1031985a485f"],
+Cell[1248, 34, 91, 0, 70, "CodeText",ExpressionUUID->"4dc7c701-3bdc-4042-bafb-866811d4df31"],
+Cell[1342, 36, 192, 4, 70, "Code",ExpressionUUID->"cceba400-809b-4b56-a7e8-b1e99e34232f",
+ InitializationCell->True],
+Cell[1537, 42, 88, 0, 70, "Section",ExpressionUUID->"1dc72ce5-2a30-495f-a243-ad137833dfe0"],
+Cell[1628, 44, 93, 0, 70, "Item",ExpressionUUID->"e8073182-6c7e-46f0-85d7-181ae5d25d67"],
+Cell[1724, 46, 98, 0, 70, "Item",ExpressionUUID->"b8613cec-3794-4e90-bb19-0bd6a9cfc8ff"]
+}
+]
+*)
+
+(* End of internal cache information *)

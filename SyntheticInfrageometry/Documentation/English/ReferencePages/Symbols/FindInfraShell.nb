@@ -1,0 +1,82 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3142,         73]
+NotebookOptionsPosition[      2110,         52]
+NotebookOutlinePosition[      2427,         66]
+CellTagsIndexPosition[      2384,         63]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraShell", "Title",ExpressionUUID->"76dd0ee4-0d03-471f-ba7b-218fbe592b5d"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"27d55bd0-1cbc-4ca0-96b0-3d8b84a01975"],
+
+Cell["\<\
+FindInfraShell[graph, c, r] returns {InfraShell[{levelSet}]} for the metric \
+shell { v : d(c, v) == r }; r may be {rmin, rmax} for a tolerance band. \
+FindInfraShell[graph, c, r, n] returns a List of n unary InfraShell[{set}] \
+wrappers or $Failed; UpTo[n] returns up to n; All returns all. Options: \
+Properties (list of \"Separating\" / \"Connected\"; AND-conjoined filter on \
+candidate subsets; empty default returns the level set itself), Method \
+(\"Exhaustive\" (default; BFS over the peel-DAG, accepts nested {\"Exhaustive\
+\", \"Pruning\" -> spec}) | \"Greedy\" (DFS, one realisation); ignored when \
+Properties is empty).\
+\>", "Text",ExpressionUUID->"00212eef-9703-431d-a0f0-a07e6fc8c557"],
+
+Cell["Setup", "Section",ExpressionUUID->"e2f001bb-84f1-4fa4-b3af-3ee68e59d762"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"32c0f2d0-4ba4-442a-bf70-435a51a1339a"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"e5c33de0-15ad-4d34-8bec-8676b3457a0f"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"630ba146-ce7d-40d0-b9a0-cdb4c18480b1"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"629bec4a-9496-43dd-bd89-84910ce59293"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"f0c7b1ad-edb8-4bfc-9076-0be3257851a3"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"76dd0ee4-0d03-471f-ba7b-218fbe592b5d"],
+Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"27d55bd0-1cbc-4ca0-96b0-3d8b84a01975"],
+Cell[736, 24, 711, 10, 70, "Text",ExpressionUUID->"00212eef-9703-431d-a0f0-a07e6fc8c557"],
+Cell[1450, 36, 79, 0, 70, "Section",ExpressionUUID->"e2f001bb-84f1-4fa4-b3af-3ee68e59d762"],
+Cell[1532, 38, 91, 0, 70, "CodeText",ExpressionUUID->"32c0f2d0-4ba4-442a-bf70-435a51a1339a"],
+Cell[1626, 40, 192, 4, 70, "Code",ExpressionUUID->"e5c33de0-15ad-4d34-8bec-8676b3457a0f",
+ InitializationCell->True],
+Cell[1821, 46, 88, 0, 70, "Section",ExpressionUUID->"630ba146-ce7d-40d0-b9a0-cdb4c18480b1"],
+Cell[1912, 48, 93, 0, 70, "Item",ExpressionUUID->"629bec4a-9496-43dd-bd89-84910ce59293"],
+Cell[2008, 50, 98, 0, 70, "Item",ExpressionUUID->"f0c7b1ad-edb8-4bfc-9076-0be3257851a3"]
+}
+]
+*)
+
+(* End of internal cache information *)

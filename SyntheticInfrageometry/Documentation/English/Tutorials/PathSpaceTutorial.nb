@@ -185,15 +185,15 @@ Cell["Geodesic graph and subgraph", "Section",ExpressionUUID->"30c3235e-c66c-4c1
 Cell["BFS DAG rooted at the centre of g.", "CodeText",ExpressionUUID->"f7a878df-d0e8-40a5-b337-206fca20dcac"],
 
 Cell[BoxData[
- RowBox[{"GeodesicGraph", "[", 
+ RowBox[{"GeodesicSprayGraph", "[",
   RowBox[{"g", ",", "6"}], "]"}]], "Input",ExpressionUUID->"c453f7c5-eb3c-\
 4ebd-9801-dccd86df03ce"],
 
 Cell["Union of all geodesics between two pairs.", "CodeText",ExpressionUUID->"27f7a1b0-3bf4-4601-8a30-be199ec334b7"],
 
 Cell[BoxData[
- RowBox[{"GeodesicSubgraph", "[", 
-  RowBox[{"g", ",", 
+ RowBox[{"GeodesicSprayGraph", "[",
+  RowBox[{"g", ",",
    RowBox[{"{", 
     RowBox[{
      RowBox[{"{", 

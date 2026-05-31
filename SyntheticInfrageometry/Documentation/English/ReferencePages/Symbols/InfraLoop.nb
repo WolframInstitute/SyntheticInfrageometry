@@ -1,0 +1,79 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2945,         70]
+NotebookOptionsPosition[      1914,         49]
+NotebookOutlinePosition[      2231,         63]
+CellTagsIndexPosition[      2188,         60]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["InfraLoop", "Title",ExpressionUUID->"59126007-0771-4db2-872d-1e8f7447cba8"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b0a14f5c-ca81-4fbc-a68d-8cf53bbae5f8"],
+
+Cell["\<\
+InfraLoop[{walk}] is the unary form (one closed walk, First === Last); \
+InfraLoop[{walk1, ..., walkk}] is the multi-realisation form. Open-walk \
+realisations are auto-closed by appending First. Inside InfraScene, \
+InfraLoop[v1, v2, ..., vk] is the scene-DSL constructor (auto-closes if \
+needed). Used by the polymorphic homotopy finders as the base-pointed loop \
+wrapper (homotopy fixes the base vertex unless \"FreeHomotopy\" -> True).\
+\>", "Text",ExpressionUUID->"0a68fbdf-d6c1-4b3d-a345-03661e2dd1d4"],
+
+Cell["Setup", "Section",ExpressionUUID->"a9514dca-f0ea-44ad-aedb-b51f8d411624"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"f189cb22-1eb5-4752-bf44-c3220c59fcd3"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"88772a02-d2f2-4d6a-b0bc-afbb2ec72748"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"a85e958b-e9f2-46ec-bb84-7e4157412c87"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"e1c359ba-c81a-4b4c-9d42-3eca37e31be1"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"83217405-4a6b-479c-b86f-dd91603f6404"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 81, 0, 70, "Title",ExpressionUUID->"59126007-0771-4db2-872d-1e8f7447cba8"],
+Cell[638, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b0a14f5c-ca81-4fbc-a68d-8cf53bbae5f8"],
+Cell[731, 24, 520, 7, 70, "Text",ExpressionUUID->"0a68fbdf-d6c1-4b3d-a345-03661e2dd1d4"],
+Cell[1254, 33, 79, 0, 70, "Section",ExpressionUUID->"a9514dca-f0ea-44ad-aedb-b51f8d411624"],
+Cell[1336, 35, 91, 0, 70, "CodeText",ExpressionUUID->"f189cb22-1eb5-4752-bf44-c3220c59fcd3"],
+Cell[1430, 37, 192, 4, 70, "Code",ExpressionUUID->"88772a02-d2f2-4d6a-b0bc-afbb2ec72748",
+ InitializationCell->True],
+Cell[1625, 43, 88, 0, 70, "Section",ExpressionUUID->"a85e958b-e9f2-46ec-bb84-7e4157412c87"],
+Cell[1716, 45, 93, 0, 70, "Item",ExpressionUUID->"e1c359ba-c81a-4b4c-9d42-3eca37e31be1"],
+Cell[1812, 47, 98, 0, 70, "Item",ExpressionUUID->"83217405-4a6b-479c-b86f-dd91603f6404"]
+}
+]
+*)
+
+(* End of internal cache information *)

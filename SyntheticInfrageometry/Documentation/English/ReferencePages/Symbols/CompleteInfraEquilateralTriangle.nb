@@ -1,0 +1,77 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2783,         68]
+NotebookOptionsPosition[      1751,         47]
+NotebookOutlinePosition[      2068,         61]
+CellTagsIndexPosition[      2025,         58]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["CompleteInfraEquilateralTriangle", "Title",ExpressionUUID->"df540832-f0e6-4d1b-baa8-fc049a98957d"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"0686f38e-5e63-45de-a74e-1abcd0aa2d1f"],
+
+Cell["\<\
+CompleteInfraEquilateralTriangle[graph, p1, p2] returns a List of unary \
+InfraPoint[{c}] apex vertices equidistant from p1 and p2 at distance d(p1, \
+p2) (Euclid I.1). With n / UpTo[n] / All controls multiplicity. Option: \
+Method (\"Metric\" (default)).\
+\>", "Text",ExpressionUUID->"1eca801f-deb9-49b1-9103-b1411eb59ca7"],
+
+Cell["Setup", "Section",ExpressionUUID->"73ce1e83-6bf5-411f-ad85-df0ed9a81f80"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"9167033a-c6eb-4067-85b2-88baf34ecfd2"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"76725e81-f929-491e-8c6a-8b2c3ce22057"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"81910211-e9eb-448b-a47f-203f54d2a811"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"36e116e2-9975-4807-b16b-9ce4b0903a56"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"807d493d-2368-472b-9e37-e167ba8265d3"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 104, 0, 70, "Title",ExpressionUUID->"df540832-f0e6-4d1b-baa8-fc049a98957d"],
+Cell[661, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"0686f38e-5e63-45de-a74e-1abcd0aa2d1f"],
+Cell[754, 24, 334, 5, 70, "Text",ExpressionUUID->"1eca801f-deb9-49b1-9103-b1411eb59ca7"],
+Cell[1091, 31, 79, 0, 70, "Section",ExpressionUUID->"73ce1e83-6bf5-411f-ad85-df0ed9a81f80"],
+Cell[1173, 33, 91, 0, 70, "CodeText",ExpressionUUID->"9167033a-c6eb-4067-85b2-88baf34ecfd2"],
+Cell[1267, 35, 192, 4, 70, "Code",ExpressionUUID->"76725e81-f929-491e-8c6a-8b2c3ce22057",
+ InitializationCell->True],
+Cell[1462, 41, 88, 0, 70, "Section",ExpressionUUID->"81910211-e9eb-448b-a47f-203f54d2a811"],
+Cell[1553, 43, 93, 0, 70, "Item",ExpressionUUID->"36e116e2-9975-4807-b16b-9ce4b0903a56"],
+Cell[1649, 45, 98, 0, 70, "Item",ExpressionUUID->"807d493d-2368-472b-9e37-e167ba8265d3"]
+}
+]
+*)
+
+(* End of internal cache information *)

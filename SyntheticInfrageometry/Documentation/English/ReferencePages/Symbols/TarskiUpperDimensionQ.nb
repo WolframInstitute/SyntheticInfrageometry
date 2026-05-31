@@ -3,91 +3,50 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5692,        123]
-NotebookOptionsPosition[      3286,         87]
-NotebookOutlinePosition[      3603,        101]
-CellTagsIndexPosition[      3560,         98]
+NotebookDataLength[      2678,         67]
+NotebookOptionsPosition[      1648,         46]
+NotebookOutlinePosition[      1965,         60]
+CellTagsIndexPosition[      1922,         57]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["TarskiUpperDimensionQ", "Title",ExpressionUUID->"431c28d8-3b5d-4756-b316-23490569503c"],
+Cell["TarskiUpperDimensionQ", "Title",ExpressionUUID->"883b20f6-7852-400d-b8af-6f31059a8951"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"1bc29391-8708-44dd-98ec-4aa4c663fcfe"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"565b056d-99e6-4ec5-a194-ddcc5b1150cd"],
 
 Cell["\<\
-TarskiUpperDimensionQ[g] tests Tarski axiom A9 (three points equidistant from \
-two distinct points are collinear). False on graphs of effective dimension \
-\[GreaterEqual] 3.\
-\>", "Text",ExpressionUUID->"9fd77df6-74b4-4bc9-9a62-efb502cefa5c"],
+TarskiUpperDimensionQ[graph] tests Tarski axiom A9 (three points equidistant \
+from two distinct points are collinear). False on graphs of effective \
+dimension >= 3.\
+\>", "Text",ExpressionUUID->"ae0f166c-be2d-455f-a835-537a75a9844d"],
 
-Cell["Setup", "Section",ExpressionUUID->"eaa31b7f-4776-40f6-95e5-886a0535a404"],
+Cell["Setup", "Section",ExpressionUUID->"3f6bdd73-9dd0-4fec-b5a0-ccebfd597d86"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"c29278f0-784d-4b77-8c21-a73612ea969b"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"79070161-df4f-4c4a-9fa8-9fc7e27dc992"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"6432ccdd-ead2-46ef-9af4-0fb78078beaa"],
+  True,ExpressionUUID->"06abd55f-9328-42f3-a37a-5673909ad347"],
 
-Cell["Examples", "Section",ExpressionUUID->"bc3ce51b-3c7d-486e-8ad1-59e96c3bf5f5"],
+Cell["Related Guides", "Section",ExpressionUUID->"7cffe1e7-572b-4ec4-a389-ef94aae7b6cc"],
 
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"4e885cb2-2077-46fb-bb8d-fbe62e5ce9f3"],
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"e5540198-986d-4b0d-9f59-26a9286c1565"],
 
-Cell[BoxData[
- $CellContext`buildCell["A9 on a path graph."]], "Input",ExpressionUUID->"7889297c-ee26-460c-a5fc-8f515ffc4e3d"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"c29c5818-a41d-4620-8cd9-3d2744817021"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "TarskiUpperDimensionQ[PathGraph[Range[5]]]"]], "Input",ExpressionUUID->\
-"5be1b140-edc7-4723-bc31-df46b230f099"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"faed5158-47aa-49a3-9889-e15001a487ce"],
-
-Cell[BoxData[
- $CellContext`buildCell["A9 on a grid."]], "Input",ExpressionUUID->"70970738-15e1-4fcf-8b0f-c30761c00f17"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"222404e0-469d-49c6-b349-1e2a8a8cce11"],
-
-Cell[BoxData[
- $CellContext`buildCell["TarskiUpperDimensionQ[GridGraph[{3, 3}]]"]], "Input",\
-ExpressionUUID->"b740a388-7fca-423a-8cd1-320665ced33b"],
-
-Cell["See Also", "Section",ExpressionUUID->"299c4d0d-d9bb-4ecf-bf61-045c197e6364"],
-
-Cell["TarskiAxiomQ", "Item",ExpressionUUID->"b6e97a63-db3a-43fd-9c83-0854679b2424"],
-
-Cell["CollinearQ", "Item",ExpressionUUID->"ff88bf58-2c76-4c01-87f0-e894b698e9e6"],
-
-Cell["TarskiLowerDimensionQ", "Item",ExpressionUUID->"ab68b29e-50c1-4f0b-94a8-e96881e478de"],
-
-Cell["EquidistanceQ", "Item",ExpressionUUID->"b8803dc0-c49b-4628-aba1-a00c5743a477"],
-
-Cell["Related Guides", "Section",ExpressionUUID->"886e8f04-e0dd-430d-8179-2db3277a00b5"],
-
-Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"3961a504-4f5f-4216-b720-a44155498ed0"],
-
-Cell["Tutorials", "Section",ExpressionUUID->"5bc7f1a7-eed2-49fd-a677-ee52a1a2a0e9"],
-
-Cell["TarskiGeometryTutorial", "Item",ExpressionUUID->"a03c8b75-1c8f-4dc4-8325-58fa02291d14"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"f712b653-160d-4d98-b91c-a31361a4ba03"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
 ]
 (* End of Notebook Content *)
 
@@ -100,31 +59,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 93, 0, 70, "Title",ExpressionUUID->"431c28d8-3b5d-4756-b316-23490569503c"],
-Cell[650, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"1bc29391-8708-44dd-98ec-4aa4c663fcfe"],
-Cell[743, 24, 254, 4, 70, "Text",ExpressionUUID->"9fd77df6-74b4-4bc9-9a62-efb502cefa5c"],
-Cell[1000, 30, 79, 0, 70, "Section",ExpressionUUID->"eaa31b7f-4776-40f6-95e5-886a0535a404"],
-Cell[1082, 32, 91, 0, 70, "CodeText",ExpressionUUID->"c29278f0-784d-4b77-8c21-a73612ea969b"],
-Cell[1176, 34, 192, 4, 70, "Code",ExpressionUUID->"6432ccdd-ead2-46ef-9af4-0fb78078beaa",
+Cell[554, 20, 93, 0, 70, "Title",ExpressionUUID->"883b20f6-7852-400d-b8af-6f31059a8951"],
+Cell[650, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"565b056d-99e6-4ec5-a194-ddcc5b1150cd"],
+Cell[743, 24, 245, 4, 70, "Text",ExpressionUUID->"ae0f166c-be2d-455f-a835-537a75a9844d"],
+Cell[991, 30, 79, 0, 70, "Section",ExpressionUUID->"3f6bdd73-9dd0-4fec-b5a0-ccebfd597d86"],
+Cell[1073, 32, 91, 0, 70, "CodeText",ExpressionUUID->"79070161-df4f-4c4a-9fa8-9fc7e27dc992"],
+Cell[1167, 34, 192, 4, 70, "Code",ExpressionUUID->"06abd55f-9328-42f3-a37a-5673909ad347",
  InitializationCell->True],
-Cell[1371, 40, 82, 0, 70, "Section",ExpressionUUID->"bc3ce51b-3c7d-486e-8ad1-59e96c3bf5f5"],
-Cell[1456, 42, 115, 1, 70, "Input",ExpressionUUID->"4e885cb2-2077-46fb-bb8d-fbe62e5ce9f3"],
-Cell[1574, 45, 126, 1, 70, "Input",ExpressionUUID->"7889297c-ee26-460c-a5fc-8f515ffc4e3d"],
-Cell[1703, 48, 112, 1, 70, "Input",ExpressionUUID->"c29c5818-a41d-4620-8cd9-3d2744817021"],
-Cell[1818, 51, 153, 3, 70, "Input",ExpressionUUID->"5be1b140-edc7-4723-bc31-df46b230f099"],
-Cell[1974, 56, 115, 1, 70, "Input",ExpressionUUID->"faed5158-47aa-49a3-9889-e15001a487ce"],
-Cell[2092, 59, 120, 1, 70, "Input",ExpressionUUID->"70970738-15e1-4fcf-8b0f-c30761c00f17"],
-Cell[2215, 62, 112, 1, 70, "Input",ExpressionUUID->"222404e0-469d-49c6-b349-1e2a8a8cce11"],
-Cell[2330, 65, 149, 2, 70, "Input",ExpressionUUID->"b740a388-7fca-423a-8cd1-320665ced33b"],
-Cell[2482, 69, 82, 0, 70, "Section",ExpressionUUID->"299c4d0d-d9bb-4ecf-bf61-045c197e6364"],
-Cell[2567, 71, 83, 0, 70, "Item",ExpressionUUID->"b6e97a63-db3a-43fd-9c83-0854679b2424"],
-Cell[2653, 73, 81, 0, 70, "Item",ExpressionUUID->"ff88bf58-2c76-4c01-87f0-e894b698e9e6"],
-Cell[2737, 75, 92, 0, 70, "Item",ExpressionUUID->"ab68b29e-50c1-4f0b-94a8-e96881e478de"],
-Cell[2832, 77, 84, 0, 70, "Item",ExpressionUUID->"b8803dc0-c49b-4628-aba1-a00c5743a477"],
-Cell[2919, 79, 88, 0, 70, "Section",ExpressionUUID->"886e8f04-e0dd-430d-8179-2db3277a00b5"],
-Cell[3010, 81, 90, 0, 70, "Item",ExpressionUUID->"3961a504-4f5f-4216-b720-a44155498ed0"],
-Cell[3103, 83, 83, 0, 70, "Section",ExpressionUUID->"5bc7f1a7-eed2-49fd-a677-ee52a1a2a0e9"],
-Cell[3189, 85, 93, 0, 70, "Item",ExpressionUUID->"a03c8b75-1c8f-4dc4-8325-58fa02291d14"]
+Cell[1362, 40, 88, 0, 70, "Section",ExpressionUUID->"7cffe1e7-572b-4ec4-a389-ef94aae7b6cc"],
+Cell[1453, 42, 90, 0, 70, "Item",ExpressionUUID->"e5540198-986d-4b0d-9f59-26a9286c1565"],
+Cell[1546, 44, 98, 0, 70, "Item",ExpressionUUID->"f712b653-160d-4d98-b91c-a31361a4ba03"]
 }
 ]
 *)

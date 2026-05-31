@@ -1,0 +1,83 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3280,         74]
+NotebookOptionsPosition[      2248,         53]
+NotebookOutlinePosition[      2565,         67]
+CellTagsIndexPosition[      2522,         64]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["SelectInfraPath", "Title",ExpressionUUID->"283cf082-a8e2-4cdc-a3b6-d1b4714e96df"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"5af424c6-6224-43a4-aaae-8c9af672da52"],
+
+Cell["\<\
+SelectInfraPath[graph, paths] returns one path drawn from the bundle treated \
+as a finite metric space in path-space. SelectInfraPath[graph, paths, n] \
+returns exactly n or $Failed; UpTo[n] returns up to n; All returns the whole \
+pool. Options mirror FindInfraPoint: \"From\" (All (default), \"Center\", \
+\"Periphery\", \"MostVisited\", anchor -> spec, InfraSegment[{...}] -> spec, \
+{\"Min\", scoreFn} / {\"Max\", scoreFn} with user-supplied path-aggregated \
+scoreFn[path] returning a comparable value), \"Distance\" (None (default), \
+\"Max\", d, {dMin, dMax}), \"Metric\" (\"Hausdorff\" (default), \"Frechet\", \
+\"MeanFrechet\"), \"MaxCliques\". Accepts InfraSegment and InfraRay wrappers; \
+preserves the wrapper. Operator form SelectInfraPath[graph, n, opts][paths].\
+\>", "Text",ExpressionUUID->"b0999132-6ce0-45b8-a415-c1ed00ec9559"],
+
+Cell["Setup", "Section",ExpressionUUID->"77069021-dede-4afc-8f3f-f0ea6e86fd82"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"9f904843-0a8d-45f1-b5f8-c2a98ea3018f"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"6df4210b-a16a-43d9-87ca-d8d3d6ec16f1"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"6f2f035e-79d1-4f23-a702-9c2a2e76eef7"],
+
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"e0d4023e-b320-4f14-9123-9dfa178b504e"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"5ea55059-7f27-4c1b-9c64-c698b7fe32da"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"283cf082-a8e2-4cdc-a3b6-d1b4714e96df"],
+Cell[644, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"5af424c6-6224-43a4-aaae-8c9af672da52"],
+Cell[737, 24, 856, 11, 70, "Text",ExpressionUUID->"b0999132-6ce0-45b8-a415-c1ed00ec9559"],
+Cell[1596, 37, 79, 0, 70, "Section",ExpressionUUID->"77069021-dede-4afc-8f3f-f0ea6e86fd82"],
+Cell[1678, 39, 91, 0, 70, "CodeText",ExpressionUUID->"9f904843-0a8d-45f1-b5f8-c2a98ea3018f"],
+Cell[1772, 41, 192, 4, 70, "Code",ExpressionUUID->"6df4210b-a16a-43d9-87ca-d8d3d6ec16f1",
+ InitializationCell->True],
+Cell[1967, 47, 88, 0, 70, "Section",ExpressionUUID->"6f2f035e-79d1-4f23-a702-9c2a2e76eef7"],
+Cell[2058, 49, 85, 0, 70, "Item",ExpressionUUID->"e0d4023e-b320-4f14-9123-9dfa178b504e"],
+Cell[2146, 51, 98, 0, 70, "Item",ExpressionUUID->"5ea55059-7f27-4c1b-9c64-c698b7fe32da"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,76 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2681,         67]
+NotebookOptionsPosition[      1651,         46]
+NotebookOutlinePosition[      1968,         60]
+CellTagsIndexPosition[      1925,         57]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["InfraSet", "Title",ExpressionUUID->"a2dbde80-c0a8-4520-af69-88203c679c58"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"e77f7a11-bc02-4129-a860-e8302cc989e0"],
+
+Cell["\<\
+InfraSet[vs] wraps a vertex list vs as a set; coerces any Infra* wrapper to \
+its underlying vertex set. Accessors: [\"Vertices\"] (the vertex list), \
+[\"Length\"] (cardinality).\
+\>", "Text",ExpressionUUID->"fe187c1f-ac60-474e-9f39-9b750088f3d9"],
+
+Cell["Setup", "Section",ExpressionUUID->"c64e3643-8288-496e-bfcd-7425e4cab38c"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"7105db62-2067-4da6-b23c-c22e0a9afd7b"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"b94380e2-935e-4cfb-9ccd-7480d8596da4"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"dd813f5e-63fb-4bdc-adba-827592d4cbef"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"e9dba1b5-0840-4021-a953-018e6f46e287"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"9bd1d9ca-c7fd-48dc-a6b5-016ad6e3090b"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 80, 0, 70, "Title",ExpressionUUID->"a2dbde80-c0a8-4520-af69-88203c679c58"],
+Cell[637, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"e77f7a11-bc02-4129-a860-e8302cc989e0"],
+Cell[730, 24, 258, 4, 70, "Text",ExpressionUUID->"fe187c1f-ac60-474e-9f39-9b750088f3d9"],
+Cell[991, 30, 79, 0, 70, "Section",ExpressionUUID->"c64e3643-8288-496e-bfcd-7425e4cab38c"],
+Cell[1073, 32, 91, 0, 70, "CodeText",ExpressionUUID->"7105db62-2067-4da6-b23c-c22e0a9afd7b"],
+Cell[1167, 34, 192, 4, 70, "Code",ExpressionUUID->"b94380e2-935e-4cfb-9ccd-7480d8596da4",
+ InitializationCell->True],
+Cell[1362, 40, 88, 0, 70, "Section",ExpressionUUID->"dd813f5e-63fb-4bdc-adba-827592d4cbef"],
+Cell[1453, 42, 93, 0, 70, "Item",ExpressionUUID->"e9dba1b5-0840-4021-a953-018e6f46e287"],
+Cell[1549, 44, 98, 0, 70, "Item",ExpressionUUID->"9bd1d9ca-c7fd-48dc-a6b5-016ad6e3090b"]
+}
+]
+*)
+
+(* End of internal cache information *)

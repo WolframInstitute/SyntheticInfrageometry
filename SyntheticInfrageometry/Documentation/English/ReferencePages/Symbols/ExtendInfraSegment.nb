@@ -1,0 +1,80 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3021,         71]
+NotebookOptionsPosition[      1990,         50]
+NotebookOutlinePosition[      2307,         64]
+CellTagsIndexPosition[      2264,         61]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["ExtendInfraSegment", "Title",ExpressionUUID->"a2ce585e-247a-4ed3-b076-1d11cd24fcc5"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"03e74c5f-0a38-4928-bfd3-894a8f309a8a"],
+
+Cell["\<\
+ExtendInfraSegment[graph, a, b, c, d] returns InfraPoint[{x}] for x with B(a, \
+b, x) and d(b, x) == d(c, d) (Tarski axiom A4 synthetic-extension). \
+ExtendInfraSegment[graph, a, b, c, d, n] / UpTo[n] / All controls \
+multiplicity. The 2-arg ExtendInfraSegment[graph, segment] form (extend \
+segment to a maximal line) has been removed; use FindInfraLine[graph, \
+segment] for the geodesic case or ExtendInfraPath[graph, segment, All, \
+Properties -> {\"Simple\", {\"ShortestPath\"}}] for per-step extension.\
+\>", "Text",ExpressionUUID->"a75a188f-2f5d-4868-8607-6f1d1a1dbb9c"],
+
+Cell["Setup", "Section",ExpressionUUID->"26fe41b4-5415-46d9-8c1b-695e3b91af58"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"77d30578-b4af-4191-92ea-14a1954d957c"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"4660ebd5-718e-4b49-a202-44f8512ea408"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"ba79cf6d-6215-4aee-a34f-4c234a1780a0"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"1bd2fffd-e337-4fbe-84dc-f52fc57080b1"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"2f0d0b75-8cc1-472b-bff6-56a7629ba62e"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"a2ce585e-247a-4ed3-b076-1d11cd24fcc5"],
+Cell[647, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"03e74c5f-0a38-4928-bfd3-894a8f309a8a"],
+Cell[740, 24, 587, 8, 70, "Text",ExpressionUUID->"a75a188f-2f5d-4868-8607-6f1d1a1dbb9c"],
+Cell[1330, 34, 79, 0, 70, "Section",ExpressionUUID->"26fe41b4-5415-46d9-8c1b-695e3b91af58"],
+Cell[1412, 36, 91, 0, 70, "CodeText",ExpressionUUID->"77d30578-b4af-4191-92ea-14a1954d957c"],
+Cell[1506, 38, 192, 4, 70, "Code",ExpressionUUID->"4660ebd5-718e-4b49-a202-44f8512ea408",
+ InitializationCell->True],
+Cell[1701, 44, 88, 0, 70, "Section",ExpressionUUID->"ba79cf6d-6215-4aee-a34f-4c234a1780a0"],
+Cell[1792, 46, 93, 0, 70, "Item",ExpressionUUID->"1bd2fffd-e337-4fbe-84dc-f52fc57080b1"],
+Cell[1888, 48, 98, 0, 70, "Item",ExpressionUUID->"2f0d0b75-8cc1-472b-bff6-56a7629ba62e"]
+}
+]
+*)
+
+(* End of internal cache information *)

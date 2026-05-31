@@ -1,0 +1,76 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2691,         67]
+NotebookOptionsPosition[      1660,         46]
+NotebookOutlinePosition[      1977,         60]
+CellTagsIndexPosition[      1934,         57]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["UniqueInfraSegmentQ", "Title",ExpressionUUID->"eab7729c-06e8-40f7-9d14-4bd8ca4ddf15"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"3e37bfe7-a787-48ad-8e6a-dd33091697be"],
+
+Cell["\<\
+UniqueInfraSegmentQ[graph, u, v] tests whether the geodesic from u to v is \
+unique. UniqueInfraSegmentQ[graph] tests the geodetic property (every pair \
+has a unique geodesic).\
+\>", "Text",ExpressionUUID->"6354a59c-72fa-49ca-90c9-4233e9da5bbf"],
+
+Cell["Setup", "Section",ExpressionUUID->"95476f5e-7aad-4e90-ae73-b4e6bc9f05b1"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"a8aa6aa5-15b7-4efb-81b5-25eef1ead5fd"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"fad5ea79-7e7a-48ac-ad3b-7d8a358918fb"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"5c4d0720-7681-4f00-9603-c30d87bfa81d"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"db785b7d-9b3c-4af7-8da7-ad3e7c6d33a6"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"3759b6ce-1067-46ca-a96d-9a7ec930a04d"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"eab7729c-06e8-40f7-9d14-4bd8ca4ddf15"],
+Cell[648, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"3e37bfe7-a787-48ad-8e6a-dd33091697be"],
+Cell[741, 24, 256, 4, 70, "Text",ExpressionUUID->"6354a59c-72fa-49ca-90c9-4233e9da5bbf"],
+Cell[1000, 30, 79, 0, 70, "Section",ExpressionUUID->"95476f5e-7aad-4e90-ae73-b4e6bc9f05b1"],
+Cell[1082, 32, 91, 0, 70, "CodeText",ExpressionUUID->"a8aa6aa5-15b7-4efb-81b5-25eef1ead5fd"],
+Cell[1176, 34, 192, 4, 70, "Code",ExpressionUUID->"fad5ea79-7e7a-48ac-ad3b-7d8a358918fb",
+ InitializationCell->True],
+Cell[1371, 40, 88, 0, 70, "Section",ExpressionUUID->"5c4d0720-7681-4f00-9603-c30d87bfa81d"],
+Cell[1462, 42, 93, 0, 70, "Item",ExpressionUUID->"db785b7d-9b3c-4af7-8da7-ad3e7c6d33a6"],
+Cell[1558, 44, 98, 0, 70, "Item",ExpressionUUID->"3759b6ce-1067-46ca-a96d-9a7ec930a04d"]
+}
+]
+*)
+
+(* End of internal cache information *)

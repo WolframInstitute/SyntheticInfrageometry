@@ -1,0 +1,85 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3397,         76]
+NotebookOptionsPosition[      2365,         55]
+NotebookOutlinePosition[      2682,         69]
+CellTagsIndexPosition[      2639,         66]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraLine", "Title",ExpressionUUID->"beb0f1ee-d16c-43c6-b8a8-8c62b79b6264"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"4f04bfa4-b338-4dc7-bb09-aa105d6a0862"],
+
+Cell["\<\
+FindInfraLine[graph, p1, p2] returns {InfraLine[{line}]} for one maximal \
+geodesic line through p1 and p2. FindInfraLine[graph, segment] returns \
+maximal geodesic lines containing segment as a contiguous sub-sequence. \
+FindInfraLine[graph, ..., n] / UpTo[n] / All controls multiplicity. Options: \
+Properties ({} only at present; raises ::badproperty otherwise), Method \
+(\"Exhaustive\" (default; joint-maximal enumeration via findLineExtensions), \
+{\"Exhaustive\", \"Pruning\" -> spec}, \"Greedy\" (DFS one realisation, walks \
+outward from each endpoint until inextensible)), \"Maximality\" \
+(\"Extension\" (default) | \"Diameter\"), \"Direction\" (\"BothSides\" \
+(default; extend the middle on both sides), \"Forward\" (extend only past the \
+right end, First[segment]/p1 fixed as line start), \"Backward\" (extend only \
+past the left end, Last[segment]/p2 fixed as line end)).\
+\>", "Text",ExpressionUUID->"8501ac05-eb7d-4230-9849-e922c3941e7a"],
+
+Cell["Setup", "Section",ExpressionUUID->"1e4c7761-4a02-4a54-8464-9f7764f2d5ba"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"15fa8334-7396-4e99-b641-763f4df6f69e"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"f1f8f913-fc7a-4bf5-98c2-f3791ce2f7e0"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"460681f4-aa29-4dde-a786-f27a3ac65011"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"efee9b44-cb3d-494b-9363-e385ff657043"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"f9b2f1dd-a541-494e-9e44-b66de8bcf459"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"beb0f1ee-d16c-43c6-b8a8-8c62b79b6264"],
+Cell[642, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"4f04bfa4-b338-4dc7-bb09-aa105d6a0862"],
+Cell[735, 24, 967, 13, 70, "Text",ExpressionUUID->"8501ac05-eb7d-4230-9849-e922c3941e7a"],
+Cell[1705, 39, 79, 0, 70, "Section",ExpressionUUID->"1e4c7761-4a02-4a54-8464-9f7764f2d5ba"],
+Cell[1787, 41, 91, 0, 70, "CodeText",ExpressionUUID->"15fa8334-7396-4e99-b641-763f4df6f69e"],
+Cell[1881, 43, 192, 4, 70, "Code",ExpressionUUID->"f1f8f913-fc7a-4bf5-98c2-f3791ce2f7e0",
+ InitializationCell->True],
+Cell[2076, 49, 88, 0, 70, "Section",ExpressionUUID->"460681f4-aa29-4dde-a786-f27a3ac65011"],
+Cell[2167, 51, 93, 0, 70, "Item",ExpressionUUID->"efee9b44-cb3d-494b-9363-e385ff657043"],
+Cell[2263, 53, 98, 0, 70, "Item",ExpressionUUID->"f9b2f1dd-a541-494e-9e44-b66de8bcf459"]
+}
+]
+*)
+
+(* End of internal cache information *)
