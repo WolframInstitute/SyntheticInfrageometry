@@ -3,97 +3,51 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      6078,        130]
-NotebookOptionsPosition[      3582,         93]
-NotebookOutlinePosition[      3899,        107]
-CellTagsIndexPosition[      3856,        104]
+NotebookDataLength[      2786,         68]
+NotebookOptionsPosition[      1755,         47]
+NotebookOutlinePosition[      2072,         61]
+CellTagsIndexPosition[      2029,         58]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["EnumerateGraphs", "Title",ExpressionUUID->"51eb5c7b-b03b-4d9c-bd0e-49b5a7483431"],
+Cell["EnumerateGraphs", "Title",ExpressionUUID->"061c6920-a3a0-4ec4-867c-aeeebce43ad7"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"7aa3cd46-6d14-4f72-8890-a7b73f063ada"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"0b0e3d66-a450-48b2-898e-8908e72f9afd"],
 
 Cell["\<\
 EnumerateGraphs[n, predQ] returns all connected n-vertex graphs from \
 GraphData satisfying predQ. EnumerateGraphs[n, predQ, k] returns exactly k or \
-$Failed; UpTo[k] returns up to k; All returns all. Option \"From\" (override \
+$Failed; UpTo[k] returns up to k; All returns all. Option: \"From\" (override \
 the default GraphData generator with a list).\
-\>", "Text",ExpressionUUID->"14a2dc06-c1b6-4b9d-b332-b2db74162d34"],
+\>", "Text",ExpressionUUID->"e2e8b130-09c1-4ba5-83fb-d308d718b16e"],
 
-Cell["Setup", "Section",ExpressionUUID->"4c02839d-4e2d-43e5-bf24-7453324ba228"],
+Cell["Setup", "Section",ExpressionUUID->"51e1a0fb-37f6-46a0-a7a8-be7a29f41312"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"78630b27-e17c-4166-9e67-04d2c372fcfd"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"7e2550b5-184e-4b97-9b2f-7c28f13b2985"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"c022c5b5-acbd-42ec-a72f-b34b1ae73211"],
+  True,ExpressionUUID->"1e9ea5a6-bec2-474d-9366-1ceef5c53477"],
 
-Cell["Examples", "Section",ExpressionUUID->"fb0fb95e-c15c-42cc-bd35-61beeddbc423"],
+Cell["Related Guides", "Section",ExpressionUUID->"07cc27ad-e180-4075-b70c-b8e19e11790e"],
 
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"1d5057a0-28fc-44fb-9c8a-bcbccd38013c"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"5ae57e88-47f6-4510-8836-7388cb2f3e28"],
 
-Cell[BoxData[
- $CellContext`buildCell[
- "Graphs on 4 vertices where every triple has a unique median."]], "Input",Exp\
-ressionUUID->"30e9de2f-92f3-42b6-ab41-5bb65751f87f"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"28f846ff-d4a4-4757-8337-b156d2c7bf69"],
-
-Cell[BoxData[
- $CellContext`buildCell["EnumerateGraphs[4, UniqueInfraSegmentQ, 3]"]], "Input",Exp\
-ressionUUID->"a341b909-3859-4651-b068-a99b4eb711ca"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"0afba2bb-907e-4c30-9aa1-ad11aa6dc93e"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "Up to five projective-plane candidates among small graphs."]], "Input",Expre\
-ssionUUID->"aa923433-d5a3-4a78-ae68-86ebb6617c7c"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"573a2c8b-eab3-4585-958b-be315005caca"],
-
-Cell[BoxData[
- $CellContext`buildCell["EnumerateGraphs[5, WhiteheadW2Q, UpTo[5]]"]], "Input",\
-ExpressionUUID->"3822e1dd-cc5b-4a83-aef3-b1135ebbcb3f"],
-
-Cell["See Also", "Section",ExpressionUUID->"95ad7b27-a7ec-4d30-993c-00ca8db43320"],
-
-Cell["UniqueInfraSegmentQ", "Item",ExpressionUUID->"c46dff3f-d65c-4fcd-a2c6-fe78e73f051d"],
-
-Cell["ProjectivePlaneGraphQ", "Item",ExpressionUUID->"08556e42-c242-4a42-b4aa-6b9401a8e54b"],
-
-Cell["TarskiAxiomQ", "Item",ExpressionUUID->"a4dc064c-4e8f-485b-b301-e4b2c61ec19e"],
-
-Cell["Related Guides", "Section",ExpressionUUID->"83c61ddb-4c0a-49e6-9699-c3cd35031ca7"],
-
-Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"33fb6ccb-0846-4569-bf5d-c8f9d9cb15fe"],
-
-Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"1f19cdb8-0da2-4fce-a20c-e071f0020168"],
-
-Cell["Tutorials", "Section",ExpressionUUID->"d2f99002-c2d1-47b1-992c-04020d69f4fb"],
-
-Cell["ProjectiveGeometryTutorial", "Item",ExpressionUUID->"47e8d120-a381-420b-bd10-35e5a4c2eeaf"],
-
-Cell["TarskiGeometryTutorial", "Item",ExpressionUUID->"34a62470-0b73-49a5-8446-1e328033a5fa"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"3d306a15-0659-4307-9954-883a3b8a2513"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
 ]
 (* End of Notebook Content *)
 
@@ -106,32 +60,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"51eb5c7b-b03b-4d9c-bd0e-49b5a7483431"],
-Cell[644, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"7aa3cd46-6d14-4f72-8890-a7b73f063ada"],
-Cell[737, 24, 354, 5, 70, "Text",ExpressionUUID->"14a2dc06-c1b6-4b9d-b332-b2db74162d34"],
-Cell[1094, 31, 79, 0, 70, "Section",ExpressionUUID->"4c02839d-4e2d-43e5-bf24-7453324ba228"],
-Cell[1176, 33, 91, 0, 70, "CodeText",ExpressionUUID->"78630b27-e17c-4166-9e67-04d2c372fcfd"],
-Cell[1270, 35, 192, 4, 70, "Code",ExpressionUUID->"c022c5b5-acbd-42ec-a72f-b34b1ae73211",
+Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"061c6920-a3a0-4ec4-867c-aeeebce43ad7"],
+Cell[644, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"0b0e3d66-a450-48b2-898e-8908e72f9afd"],
+Cell[737, 24, 355, 5, 70, "Text",ExpressionUUID->"e2e8b130-09c1-4ba5-83fb-d308d718b16e"],
+Cell[1095, 31, 79, 0, 70, "Section",ExpressionUUID->"51e1a0fb-37f6-46a0-a7a8-be7a29f41312"],
+Cell[1177, 33, 91, 0, 70, "CodeText",ExpressionUUID->"7e2550b5-184e-4b97-9b2f-7c28f13b2985"],
+Cell[1271, 35, 192, 4, 70, "Code",ExpressionUUID->"1e9ea5a6-bec2-474d-9366-1ceef5c53477",
  InitializationCell->True],
-Cell[1465, 41, 82, 0, 70, "Section",ExpressionUUID->"fb0fb95e-c15c-42cc-bd35-61beeddbc423"],
-Cell[1550, 43, 115, 1, 70, "Input",ExpressionUUID->"1d5057a0-28fc-44fb-9c8a-bcbccd38013c"],
-Cell[1668, 46, 171, 3, 70, "Input",ExpressionUUID->"30e9de2f-92f3-42b6-ab41-5bb65751f87f"],
-Cell[1842, 51, 112, 1, 70, "Input",ExpressionUUID->"28f846ff-d4a4-4757-8337-b156d2c7bf69"],
-Cell[1957, 54, 146, 2, 70, "Input",ExpressionUUID->"a341b909-3859-4651-b068-a99b4eb711ca"],
-Cell[2106, 58, 115, 1, 70, "Input",ExpressionUUID->"0afba2bb-907e-4c30-9aa1-ad11aa6dc93e"],
-Cell[2224, 61, 169, 3, 70, "Input",ExpressionUUID->"aa923433-d5a3-4a78-ae68-86ebb6617c7c"],
-Cell[2396, 66, 112, 1, 70, "Input",ExpressionUUID->"573a2c8b-eab3-4585-958b-be315005caca"],
-Cell[2511, 69, 150, 2, 70, "Input",ExpressionUUID->"3822e1dd-cc5b-4a83-aef3-b1135ebbcb3f"],
-Cell[2664, 73, 82, 0, 70, "Section",ExpressionUUID->"95ad7b27-a7ec-4d30-993c-00ca8db43320"],
-Cell[2749, 75, 85, 0, 70, "Item",ExpressionUUID->"c46dff3f-d65c-4fcd-a2c6-fe78e73f051d"],
-Cell[2837, 77, 92, 0, 70, "Item",ExpressionUUID->"08556e42-c242-4a42-b4aa-6b9401a8e54b"],
-Cell[2932, 79, 83, 0, 70, "Item",ExpressionUUID->"a4dc064c-4e8f-485b-b301-e4b2c61ec19e"],
-Cell[3018, 81, 88, 0, 70, "Section",ExpressionUUID->"83c61ddb-4c0a-49e6-9699-c3cd35031ca7"],
-Cell[3109, 83, 94, 0, 70, "Item",ExpressionUUID->"33fb6ccb-0846-4569-bf5d-c8f9d9cb15fe"],
-Cell[3206, 85, 90, 0, 70, "Item",ExpressionUUID->"1f19cdb8-0da2-4fce-a20c-e071f0020168"],
-Cell[3299, 87, 83, 0, 70, "Section",ExpressionUUID->"d2f99002-c2d1-47b1-992c-04020d69f4fb"],
-Cell[3385, 89, 97, 0, 70, "Item",ExpressionUUID->"47e8d120-a381-420b-bd10-35e5a4c2eeaf"],
-Cell[3485, 91, 93, 0, 70, "Item",ExpressionUUID->"34a62470-0b73-49a5-8446-1e328033a5fa"]
+Cell[1466, 41, 88, 0, 70, "Section",ExpressionUUID->"07cc27ad-e180-4075-b70c-b8e19e11790e"],
+Cell[1557, 43, 93, 0, 70, "Item",ExpressionUUID->"5ae57e88-47f6-4510-8836-7388cb2f3e28"],
+Cell[1653, 45, 98, 0, 70, "Item",ExpressionUUID->"3d306a15-0659-4307-9954-883a3b8a2513"]
 }
 ]
 *)

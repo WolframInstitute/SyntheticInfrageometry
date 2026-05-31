@@ -1,0 +1,82 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3177,         73]
+NotebookOptionsPosition[      2144,         52]
+NotebookOutlinePosition[      2461,         66]
+CellTagsIndexPosition[      2418,         63]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraBisectingHyperplane", "Title",ExpressionUUID->"52807999-f8f7-459a-b797-cb6a0650bd48"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"9efef8a8-fc09-4a52-8169-8824820a79b3"],
+
+Cell["\<\
+FindInfraBisectingHyperplane[graph, p1, p2] returns {InfraPlane[{slab}]} for \
+the bisector { v : d(p1, v) == d(p2, v) } (default Properties -> {}). \
+FindInfraBisectingHyperplane[graph, p1, p2, n] returns a List of n unary \
+InfraPlane[{set}] wrappers or $Failed; UpTo[n] returns up to n; All returns \
+all. A positional {lo, hi} widens the bisector slab to lo <= d(p1, v) - d(p2, \
+v) <= hi. Options: Properties (list of \"Separating\" / \"Connected\"; \
+AND-conjoined filter on candidate subsets), Method (\"Exhaustive\" (default; \
+BFS over the peel-DAG, accepts nested {\"Exhaustive\", \"Pruning\" -> spec}) \
+| \"Greedy\" (DFS, one realisation)).\
+\>", "Text",ExpressionUUID->"196d39cc-117b-4ab2-9359-92e26dba8178"],
+
+Cell["Setup", "Section",ExpressionUUID->"861aa59e-d398-42b5-b21a-0ea0a2c5483d"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"e04d5800-828f-49e2-979d-ac3371ead558"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"16f01471-c045-4ac1-a395-d6104b89157b"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"437bae47-ae50-4651-92f6-0c8495affad1"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"d68957d5-3edf-4e83-bb0e-494628a4d9a0"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"a4214fd7-e9a0-4df5-9537-8b9ec7423908"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 100, 0, 70, "Title",ExpressionUUID->"52807999-f8f7-459a-b797-cb6a0650bd48"],
+Cell[657, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"9efef8a8-fc09-4a52-8169-8824820a79b3"],
+Cell[750, 24, 731, 10, 70, "Text",ExpressionUUID->"196d39cc-117b-4ab2-9359-92e26dba8178"],
+Cell[1484, 36, 79, 0, 70, "Section",ExpressionUUID->"861aa59e-d398-42b5-b21a-0ea0a2c5483d"],
+Cell[1566, 38, 91, 0, 70, "CodeText",ExpressionUUID->"e04d5800-828f-49e2-979d-ac3371ead558"],
+Cell[1660, 40, 192, 4, 70, "Code",ExpressionUUID->"16f01471-c045-4ac1-a395-d6104b89157b",
+ InitializationCell->True],
+Cell[1855, 46, 88, 0, 70, "Section",ExpressionUUID->"437bae47-ae50-4651-92f6-0c8495affad1"],
+Cell[1946, 48, 93, 0, 70, "Item",ExpressionUUID->"d68957d5-3edf-4e83-bb0e-494628a4d9a0"],
+Cell[2042, 50, 98, 0, 70, "Item",ExpressionUUID->"a4214fd7-e9a0-4df5-9537-8b9ec7423908"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,82 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3161,         73]
+NotebookOptionsPosition[      2129,         52]
+NotebookOutlinePosition[      2446,         66]
+CellTagsIndexPosition[      2403,         63]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["GeodesicSprayGraph", "Title",ExpressionUUID->"f1312ed6-be36-40ea-ab58-0a2ce0be40ba"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"1de42459-20de-4dfe-a4a5-f1f57185c715"],
+
+Cell["\<\
+GeodesicSprayGraph[graph, c] returns the BFS DAG rooted at c: a directed \
+graph with edge u -> v whenever d(c, v) = d(c, u) + 1 and u-v is an edge of \
+graph. Sinks are peripheral vertices reachable from c; directed paths c -> \
+sink are exactly the maximal geodesics from c. GeodesicSprayGraph[graph, \
+InfraPoint[{c1, ..., ck}]] uses multi-source BFS. GeodesicSprayGraph[graph, \
+pairs] returns the union of geodesics between the listed vertex pairs. \
+Options: \"AxisLength\" (truncate the source-spray DAG at depth k; default \
+All), \"PathThickness\" (per-pair Hausdorff threshold; 0 keeps one geodesic \
+per pair, Infinity keeps all), \"Directed\".\
+\>", "Text",ExpressionUUID->"4d9ebf29-aedd-475c-a716-f2e714accd31"],
+
+Cell["Setup", "Section",ExpressionUUID->"f953ee82-8901-4229-9c4f-f3c1c94bf45d"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"62c80222-b20a-4c82-ad43-b40962df9e79"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"066f2e03-5816-46ca-8a43-59ddbd7e6a53"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"98b4377f-25dc-43a0-bed8-dbb946db9dc2"],
+
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"f7f59a18-2395-4805-af3d-4844507da632"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"a9ecc4e8-e434-4a88-ba5f-bfb423bd7a8c"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"f1312ed6-be36-40ea-ab58-0a2ce0be40ba"],
+Cell[647, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"1de42459-20de-4dfe-a4a5-f1f57185c715"],
+Cell[740, 24, 734, 10, 70, "Text",ExpressionUUID->"4d9ebf29-aedd-475c-a716-f2e714accd31"],
+Cell[1477, 36, 79, 0, 70, "Section",ExpressionUUID->"f953ee82-8901-4229-9c4f-f3c1c94bf45d"],
+Cell[1559, 38, 91, 0, 70, "CodeText",ExpressionUUID->"62c80222-b20a-4c82-ad43-b40962df9e79"],
+Cell[1653, 40, 192, 4, 70, "Code",ExpressionUUID->"066f2e03-5816-46ca-8a43-59ddbd7e6a53",
+ InitializationCell->True],
+Cell[1848, 46, 88, 0, 70, "Section",ExpressionUUID->"98b4377f-25dc-43a0-bed8-dbb946db9dc2"],
+Cell[1939, 48, 85, 0, 70, "Item",ExpressionUUID->"f7f59a18-2395-4805-af3d-4844507da632"],
+Cell[2027, 50, 98, 0, 70, "Item",ExpressionUUID->"a9ecc4e8-e434-4a88-ba5f-bfb423bd7a8c"]
+}
+]
+*)
+
+(* End of internal cache information *)

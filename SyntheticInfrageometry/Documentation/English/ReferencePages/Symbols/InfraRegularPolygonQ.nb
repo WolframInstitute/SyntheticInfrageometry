@@ -1,0 +1,77 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2758,         68]
+NotebookOptionsPosition[      1727,         47]
+NotebookOutlinePosition[      2044,         61]
+CellTagsIndexPosition[      2001,         58]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["InfraRegularPolygonQ", "Title",ExpressionUUID->"27e93e2e-6a60-41b4-93eb-6f36f098e1eb"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"6f2143f5-3a3e-41c1-b929-f01f638f8590"],
+
+Cell["\<\
+InfraRegularPolygonQ[graph, cycle, As] tests whether the cycle is a regular \
+n-gon w.r.t. the metric tuple As, with the same slot grammar as \
+FindInfraRegularPolygon (Integer | {lo, hi} | Automatic per slot). Accepts \
+open and closed input.\
+\>", "Text",ExpressionUUID->"9135286f-2eda-4f0a-bbb5-a565173067c0"],
+
+Cell["Setup", "Section",ExpressionUUID->"5393e8cc-e328-40d1-aff2-e007437ae02e"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"256b74d3-a790-425b-82ca-63f790dc5c0a"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"29d129af-1f4f-4b02-8531-cc6524bb37d6"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"d1ad2ad9-3344-4b1a-b443-276b4a8bd9c8"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"08f900fd-2e94-4f4f-8038-fc5d0a408edb"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"2257cf5a-0a37-492e-a60d-46d9aae4ee82"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 92, 0, 70, "Title",ExpressionUUID->"27e93e2e-6a60-41b4-93eb-6f36f098e1eb"],
+Cell[649, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"6f2143f5-3a3e-41c1-b929-f01f638f8590"],
+Cell[742, 24, 322, 5, 70, "Text",ExpressionUUID->"9135286f-2eda-4f0a-bbb5-a565173067c0"],
+Cell[1067, 31, 79, 0, 70, "Section",ExpressionUUID->"5393e8cc-e328-40d1-aff2-e007437ae02e"],
+Cell[1149, 33, 91, 0, 70, "CodeText",ExpressionUUID->"256b74d3-a790-425b-82ca-63f790dc5c0a"],
+Cell[1243, 35, 192, 4, 70, "Code",ExpressionUUID->"29d129af-1f4f-4b02-8531-cc6524bb37d6",
+ InitializationCell->True],
+Cell[1438, 41, 88, 0, 70, "Section",ExpressionUUID->"d1ad2ad9-3344-4b1a-b443-276b4a8bd9c8"],
+Cell[1529, 43, 93, 0, 70, "Item",ExpressionUUID->"08f900fd-2e94-4f4f-8038-fc5d0a408edb"],
+Cell[1625, 45, 98, 0, 70, "Item",ExpressionUUID->"2257cf5a-0a37-492e-a60d-46d9aae4ee82"]
+}
+]
+*)
+
+(* End of internal cache information *)

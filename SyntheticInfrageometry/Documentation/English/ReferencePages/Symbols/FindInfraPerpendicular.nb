@@ -1,0 +1,85 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3354,         76]
+NotebookOptionsPosition[      2322,         55]
+NotebookOutlinePosition[      2639,         69]
+CellTagsIndexPosition[      2596,         66]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraPerpendicular", "Title",ExpressionUUID->"1b7bd1d7-4ba2-4380-9377-068c640bc580"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"de002bac-cdbd-43f0-898a-ea68e2db5053"],
+
+Cell["\<\
+FindInfraPerpendicular[graph, line, point] returns a List of InfraLine \
+realisations through point perpendicular to line. \
+FindInfraPerpendicular[graph, line, point, n] / UpTo[n] / All controls \
+multiplicity. Options: Method (\"Metric\" (default; foot-of-perp via Euclid \
+I.12), \"Projection\", \"Coordinate\", \"Arclength\", \"Alexandrov\", or any \
+of these with sub-options inside the Method spec, e.g. {\"Alexandrov\", \
+\"Curvature\" -> k, \"Tolerance\" -> t}, {\"Coordinate\", \"ZeroTest\" -> \
+\"Mean\" | \"Median\" | \"Contains\" | {name, \"Tolerance\" -> t} | f}, \
+{\"Projection\", \"Equality\" -> \"Subset\" | \"Set\" | \"Multiset\" | \
+\"Diffuse\" | \"Overlap\"} -- forwarded verbatim to InfraPerpendicularQ); \
+\"Radius\" -> All (default) | r_Integer localises construction and test to \
+NeighborhoodGraph[g, point, r].\
+\>", "Text",ExpressionUUID->"257e0c24-fcce-4d4a-9f77-cbd1b446b988"],
+
+Cell["Setup", "Section",ExpressionUUID->"76b43296-4543-481c-a70a-d85d746dd320"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"10b1040a-46c7-4c9b-b922-7d0d81220f58"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"6a513577-77c0-4c4d-95aa-8570e9720049"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"0b7c33b1-4364-4406-8c02-da411c20fdaa"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"afb1325b-d71d-4aa4-9bc6-4d08e21ad369"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"3a9a416e-66b3-4af6-9b91-c2658af5056d"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 94, 0, 70, "Title",ExpressionUUID->"1b7bd1d7-4ba2-4380-9377-068c640bc580"],
+Cell[651, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"de002bac-cdbd-43f0-898a-ea68e2db5053"],
+Cell[744, 24, 915, 13, 70, "Text",ExpressionUUID->"257e0c24-fcce-4d4a-9f77-cbd1b446b988"],
+Cell[1662, 39, 79, 0, 70, "Section",ExpressionUUID->"76b43296-4543-481c-a70a-d85d746dd320"],
+Cell[1744, 41, 91, 0, 70, "CodeText",ExpressionUUID->"10b1040a-46c7-4c9b-b922-7d0d81220f58"],
+Cell[1838, 43, 192, 4, 70, "Code",ExpressionUUID->"6a513577-77c0-4c4d-95aa-8570e9720049",
+ InitializationCell->True],
+Cell[2033, 49, 88, 0, 70, "Section",ExpressionUUID->"0b7c33b1-4364-4406-8c02-da411c20fdaa"],
+Cell[2124, 51, 93, 0, 70, "Item",ExpressionUUID->"afb1325b-d71d-4aa4-9bc6-4d08e21ad369"],
+Cell[2220, 53, 98, 0, 70, "Item",ExpressionUUID->"3a9a416e-66b3-4af6-9b91-c2658af5056d"]
+}
+]
+*)
+
+(* End of internal cache information *)

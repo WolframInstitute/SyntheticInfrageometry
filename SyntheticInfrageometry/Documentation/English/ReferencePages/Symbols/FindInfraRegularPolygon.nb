@@ -1,0 +1,86 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3468,         77]
+NotebookOptionsPosition[      2435,         56]
+NotebookOutlinePosition[      2752,         70]
+CellTagsIndexPosition[      2709,         67]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraRegularPolygon", "Title",ExpressionUUID->"e05b5015-7dc0-4df2-8fbd-e7525b8f1942"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"e89e1f8c-67b0-4897-b979-008994d2742e"],
+
+Cell["\<\
+FindInfraRegularPolygon[graph, As, n] returns {InfraPolygon[{poly}]} (a \
+closed chain of geodesic sides) for a length-n cyclic vertex sequence whose \
+k-diagonal distance d(v_i, v_{i+k}) satisfies As[[k]] for each k = 1, ..., \
+Length[As] (Length[As] <= Floor[n/2]). Each entry of As is an Integer (exact \
+value), {lo_Integer, hi_Integer} (constant across i, value in [lo, hi]), or \
+Automatic (constant across i, any value); As[[1]] == Automatic enumerates \
+simple n-cycles of graph and is slow on large graphs. \
+FindInfraRegularPolygon[graph, As, n, count] / UpTo[count] / All controls \
+multiplicity. Options: Properties ({} only at present; raises ::badproperty \
+otherwise), Method (\"Exhaustive\" (default; FindCycle on the \
+candidate-source graph, slot filters post-applied) | {\"Exhaustive\", \
+\"Pruning\" -> spec}), \"From\" (All (default) | v (cycles containing v) | v \
+-> r_Integer (cycles within NeighborhoodGraph[graph, v, r])).\
+\>", "Text",ExpressionUUID->"a2898440-cd78-4cf6-918e-21cc8ffe2e90"],
+
+Cell["Setup", "Section",ExpressionUUID->"eeb3bb62-b6f3-4a71-b4c7-c232f8b19d16"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"155671d9-028a-4bb4-8bb3-8973ae8153bd"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"6bb1b953-885b-4941-8837-76a901b50b64"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"09f11ea7-f171-4bde-86e0-a10c47be47b2"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"6ad97100-03f6-4524-92ec-2f5ef4f10d61"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"01bde05e-aff4-4e6a-bdee-93fadf2915ef"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 95, 0, 70, "Title",ExpressionUUID->"e05b5015-7dc0-4df2-8fbd-e7525b8f1942"],
+Cell[652, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"e89e1f8c-67b0-4897-b979-008994d2742e"],
+Cell[745, 24, 1027, 14, 70, "Text",ExpressionUUID->"a2898440-cd78-4cf6-918e-21cc8ffe2e90"],
+Cell[1775, 40, 79, 0, 70, "Section",ExpressionUUID->"eeb3bb62-b6f3-4a71-b4c7-c232f8b19d16"],
+Cell[1857, 42, 91, 0, 70, "CodeText",ExpressionUUID->"155671d9-028a-4bb4-8bb3-8973ae8153bd"],
+Cell[1951, 44, 192, 4, 70, "Code",ExpressionUUID->"6bb1b953-885b-4941-8837-76a901b50b64",
+ InitializationCell->True],
+Cell[2146, 50, 88, 0, 70, "Section",ExpressionUUID->"09f11ea7-f171-4bde-86e0-a10c47be47b2"],
+Cell[2237, 52, 93, 0, 70, "Item",ExpressionUUID->"6ad97100-03f6-4524-92ec-2f5ef4f10d61"],
+Cell[2333, 54, 98, 0, 70, "Item",ExpressionUUID->"01bde05e-aff4-4e6a-bdee-93fadf2915ef"]
+}
+]
+*)
+
+(* End of internal cache information *)

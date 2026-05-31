@@ -3,97 +3,53 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      6084,        129]
-NotebookOptionsPosition[      3678,         93]
-NotebookOutlinePosition[      3995,        107]
-CellTagsIndexPosition[      3952,        104]
+NotebookDataLength[      2971,         70]
+NotebookOptionsPosition[      1940,         49]
+NotebookOutlinePosition[      2257,         63]
+CellTagsIndexPosition[      2214,         60]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindInfraLinearCombination", "Title",ExpressionUUID->"00ee8f72-8830-4f7f-8e15-e957a7e782f1"],
+Cell["FindInfraLinearCombination", "Title",ExpressionUUID->"4d158794-706a-4cdd-a6bd-6b755847c8cf"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"2d007646-918b-4cf6-a5a2-3baf5c24d6d4"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"14640125-8538-4035-927b-4e1793d4e765"],
 
 Cell["\<\
-FindInfraLinearCombination[g, o, {{lambda1, u1}, {lambda2, u2}, \[Ellipsis]}] \
-returns the multi-valued vertex realisation of sum_i lambda_i u_i with base \
-point o, computed as scaled-then-pairwise-summed left-to-right. Returns a \
-List of unary InfraPoint[{v}] wrappers; n / UpTo[n] / All control \
+FindInfraLinearCombination[graph, o, {{lambda1, u1}, {lambda2, u2}, ...}] \
+returns a List of unary InfraPoint[{v}] wrappers for the multi-valued vertex \
+realisation of sum_i lambda_i u_i with base point o, computed as \
+scaled-then-pairwise-summed left-to-right. With n / UpTo[n] / All controls \
 multiplicity. Options: \"ScaleMethod\" (Automatic (default), \"Metric\", \
 \"Line\", \"Midpoint\"); \"SumMethod\" (\"Metric\" (default), \"Parallel\").\
-\>", "Text",ExpressionUUID->"12ef209f-195f-4eb7-a476-66c1667e2423"],
+\>", "Text",ExpressionUUID->"f5f2779d-49ff-490c-a727-13d136234383"],
 
-Cell["Setup", "Section",ExpressionUUID->"d83ecffc-2755-4011-b540-13dd9e398eb2"],
+Cell["Setup", "Section",ExpressionUUID->"4e049716-8e11-4f3c-b114-b107af9e56b5"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"1dce1989-35d2-4c4e-ae40-45a579d579f5"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"70d8c185-6c8d-4840-b2ae-2b79e994d28f"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"9a11649d-f7e1-4354-82e6-60ce0a5b36dd"],
+  True,ExpressionUUID->"c79dc932-e475-485d-bd10-b9412f412571"],
 
-Cell["Examples", "Section",ExpressionUUID->"a8bb4d55-ff53-4382-aa7f-04732312ca58"],
+Cell["Related Guides", "Section",ExpressionUUID->"190fed90-7fb8-43bf-8275-a7613abdc167"],
 
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"7332fb9a-6297-4ff4-b8c2-8ed3a9bc5a30"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"37dff4c0-928d-4b12-a342-4d309ffe609d"],
 
-Cell[BoxData[
- $CellContext`buildCell["Linear combination 2*u with base point o."]], "Input",\
-ExpressionUUID->"f133ea09-68ca-4d74-9d38-b6a3496612f3"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"a86eacf3-ed1e-4adb-82e5-a1c1047bce4b"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "FindInfraLinearCombination[PathGraph[Range[7]], 1, {{2, 2}}, All]"]], \
-"Input",ExpressionUUID->"b5f87d2c-84a8-44eb-9fe7-fedb3e410f96"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"da53166b-ceff-4215-8424-9b869273c183"],
-
-Cell[BoxData[
- $CellContext`buildCell["Two-term combination u + v on a grid."]], "Input",Exp\
-ressionUUID->"9223453f-75a3-4e71-94d5-4c4c9ffd3729"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"63a78408-e838-43fe-a755-c2d28b94404a"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "FindInfraLinearCombination[GridGraph[{3, 3}], 5, {{1, 2}, {1, 6}}, All]"]], \
-"Input",ExpressionUUID->"9dc29626-440b-48de-97cb-4166ffc4f80f"],
-
-Cell["See Also", "Section",ExpressionUUID->"539a919a-80f8-4862-8688-a019776e9553"],
-
-Cell["InfraScalarProduct", "Item",ExpressionUUID->"6c7d261d-add4-41d8-8cf4-8d9108262407"],
-
-Cell["InfraPoint", "Item",ExpressionUUID->"f07ebd5e-323d-4c23-b1ea-48cfd524869e"],
-
-Cell["FindInfraMidpoint", "Item",ExpressionUUID->"237ed11f-f104-477d-ad89-18fdd2329380"],
-
-Cell["ResistanceCoordinates", "Item",ExpressionUUID->"6811d617-71c9-432a-9075-3b654df276cd"],
-
-Cell["Related Guides", "Section",ExpressionUUID->"ec64bdb1-7797-4cb9-a783-c6c1a59b08eb"],
-
-Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"4a765890-9521-437f-9382-9134596df9dc"],
-
-Cell["Tutorials", "Section",ExpressionUUID->"b89c09b7-22f1-468e-bc03-be6ca8aa0c5e"],
-
-Cell["MetricAlgebraTutorial", "Item",ExpressionUUID->"a49a832d-1f04-4b6a-b39c-02b5221076b6"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"7f8a73fb-afc2-421b-8df0-439d0e1bb43c"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
 ]
 (* End of Notebook Content *)
 
@@ -106,31 +62,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 98, 0, 70, "Title",ExpressionUUID->"00ee8f72-8830-4f7f-8e15-e957a7e782f1"],
-Cell[655, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"2d007646-918b-4cf6-a5a2-3baf5c24d6d4"],
-Cell[748, 24, 532, 7, 70, "Text",ExpressionUUID->"12ef209f-195f-4eb7-a476-66c1667e2423"],
-Cell[1283, 33, 79, 0, 70, "Section",ExpressionUUID->"d83ecffc-2755-4011-b540-13dd9e398eb2"],
-Cell[1365, 35, 91, 0, 70, "CodeText",ExpressionUUID->"1dce1989-35d2-4c4e-ae40-45a579d579f5"],
-Cell[1459, 37, 192, 4, 70, "Code",ExpressionUUID->"9a11649d-f7e1-4354-82e6-60ce0a5b36dd",
+Cell[554, 20, 98, 0, 70, "Title",ExpressionUUID->"4d158794-706a-4cdd-a6bd-6b755847c8cf"],
+Cell[655, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"14640125-8538-4035-927b-4e1793d4e765"],
+Cell[748, 24, 529, 7, 70, "Text",ExpressionUUID->"f5f2779d-49ff-490c-a727-13d136234383"],
+Cell[1280, 33, 79, 0, 70, "Section",ExpressionUUID->"4e049716-8e11-4f3c-b114-b107af9e56b5"],
+Cell[1362, 35, 91, 0, 70, "CodeText",ExpressionUUID->"70d8c185-6c8d-4840-b2ae-2b79e994d28f"],
+Cell[1456, 37, 192, 4, 70, "Code",ExpressionUUID->"c79dc932-e475-485d-bd10-b9412f412571",
  InitializationCell->True],
-Cell[1654, 43, 82, 0, 70, "Section",ExpressionUUID->"a8bb4d55-ff53-4382-aa7f-04732312ca58"],
-Cell[1739, 45, 115, 1, 70, "Input",ExpressionUUID->"7332fb9a-6297-4ff4-b8c2-8ed3a9bc5a30"],
-Cell[1857, 48, 150, 2, 70, "Input",ExpressionUUID->"f133ea09-68ca-4d74-9d38-b6a3496612f3"],
-Cell[2010, 52, 112, 1, 70, "Input",ExpressionUUID->"a86eacf3-ed1e-4adb-82e5-a1c1047bce4b"],
-Cell[2125, 55, 176, 3, 70, "Input",ExpressionUUID->"b5f87d2c-84a8-44eb-9fe7-fedb3e410f96"],
-Cell[2304, 60, 115, 1, 70, "Input",ExpressionUUID->"da53166b-ceff-4215-8424-9b869273c183"],
-Cell[2422, 63, 146, 2, 70, "Input",ExpressionUUID->"9223453f-75a3-4e71-94d5-4c4c9ffd3729"],
-Cell[2571, 67, 112, 1, 70, "Input",ExpressionUUID->"63a78408-e838-43fe-a755-c2d28b94404a"],
-Cell[2686, 70, 182, 3, 70, "Input",ExpressionUUID->"9dc29626-440b-48de-97cb-4166ffc4f80f"],
-Cell[2871, 75, 82, 0, 70, "Section",ExpressionUUID->"539a919a-80f8-4862-8688-a019776e9553"],
-Cell[2956, 77, 89, 0, 70, "Item",ExpressionUUID->"6c7d261d-add4-41d8-8cf4-8d9108262407"],
-Cell[3048, 79, 81, 0, 70, "Item",ExpressionUUID->"f07ebd5e-323d-4c23-b1ea-48cfd524869e"],
-Cell[3132, 81, 83, 0, 70, "Item",ExpressionUUID->"237ed11f-f104-477d-ad89-18fdd2329380"],
-Cell[3218, 83, 92, 0, 70, "Item",ExpressionUUID->"6811d617-71c9-432a-9075-3b654df276cd"],
-Cell[3313, 85, 88, 0, 70, "Section",ExpressionUUID->"ec64bdb1-7797-4cb9-a783-c6c1a59b08eb"],
-Cell[3404, 87, 89, 0, 70, "Item",ExpressionUUID->"4a765890-9521-437f-9382-9134596df9dc"],
-Cell[3496, 89, 83, 0, 70, "Section",ExpressionUUID->"b89c09b7-22f1-468e-bc03-be6ca8aa0c5e"],
-Cell[3582, 91, 92, 0, 70, "Item",ExpressionUUID->"a49a832d-1f04-4b6a-b39c-02b5221076b6"]
+Cell[1651, 43, 88, 0, 70, "Section",ExpressionUUID->"190fed90-7fb8-43bf-8275-a7613abdc167"],
+Cell[1742, 45, 93, 0, 70, "Item",ExpressionUUID->"37dff4c0-928d-4b12-a342-4d309ffe609d"],
+Cell[1838, 47, 98, 0, 70, "Item",ExpressionUUID->"7f8a73fb-afc2-421b-8df0-439d0e1bb43c"]
 }
 ]
 *)

@@ -1,0 +1,82 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3127,         73]
+NotebookOptionsPosition[      2095,         52]
+NotebookOutlinePosition[      2412,         66]
+CellTagsIndexPosition[      2369,         63]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["InfraString", "Title",ExpressionUUID->"2dcbf63e-c620-409e-96d2-0d11028904d8"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"2ba32a46-75eb-498e-8bdb-f393cee58bd4"],
+
+Cell["\<\
+InfraString[{walk}] is the unary form (one closed walk modulo cyclic \
+rotation); InfraString[{walk1, ..., walkk}] is the multi-realisation form. \
+Each realisation is stored as the lex-least cyclic rotation of \
+Most[closeWalk[walk]] (the open canonical form, without the wrap-around \
+vertex repetition); orientation is preserved. Equality between strings is \
+SameQ on canonical forms. Inside InfraScene, InfraString[v1, v2, ..., vk] is \
+the scene-DSL constructor (auto-closes and canonicalises). Used by the \
+polymorphic homotopy finders as the free-loop wrapper (no base point; cyclic \
+rotations are identified).\
+\>", "Text",ExpressionUUID->"50b0cc92-22de-471d-ba10-d839b3480e9b"],
+
+Cell["Setup", "Section",ExpressionUUID->"a3e38d28-dac5-4281-bc61-a37e63035513"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"af262cb6-a4b2-4d04-af55-907bea7ec95c"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"a9f4a22d-9f8c-4368-b3d4-454c8ed4bae0"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"d3653d04-5ede-467c-92d9-dd26ac25b658"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"3aaeea89-c2f4-454d-a48c-b1f7c76370bf"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"a25093f3-4bca-47a6-bd5a-720e2ed146b6"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 83, 0, 70, "Title",ExpressionUUID->"2dcbf63e-c620-409e-96d2-0d11028904d8"],
+Cell[640, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"2ba32a46-75eb-498e-8bdb-f393cee58bd4"],
+Cell[733, 24, 699, 10, 70, "Text",ExpressionUUID->"50b0cc92-22de-471d-ba10-d839b3480e9b"],
+Cell[1435, 36, 79, 0, 70, "Section",ExpressionUUID->"a3e38d28-dac5-4281-bc61-a37e63035513"],
+Cell[1517, 38, 91, 0, 70, "CodeText",ExpressionUUID->"af262cb6-a4b2-4d04-af55-907bea7ec95c"],
+Cell[1611, 40, 192, 4, 70, "Code",ExpressionUUID->"a9f4a22d-9f8c-4368-b3d4-454c8ed4bae0",
+ InitializationCell->True],
+Cell[1806, 46, 88, 0, 70, "Section",ExpressionUUID->"d3653d04-5ede-467c-92d9-dd26ac25b658"],
+Cell[1897, 48, 93, 0, 70, "Item",ExpressionUUID->"3aaeea89-c2f4-454d-a48c-b1f7c76370bf"],
+Cell[1993, 50, 98, 0, 70, "Item",ExpressionUUID->"a25093f3-4bca-47a6-bd5a-720e2ed146b6"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,79 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2973,         70]
+NotebookOptionsPosition[      1942,         49]
+NotebookOutlinePosition[      2259,         63]
+CellTagsIndexPosition[      2216,         60]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraCycle", "Title",ExpressionUUID->"d4ba5ad4-e077-4173-9760-7109bbc015e9"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"e5f9942c-f982-4ed1-988b-9240bccc2bae"],
+
+Cell["\<\
+FindInfraCycle[graph, n] returns n shortest simple cycles in graph as unary \
+InfraCircle[{cycle}] wrappers (open vertex sequences, sorted by length \
+ascending); UpTo[n] returns up to n; All returns all. FindInfraCycle[graph, \
+{k}, n] restricts to cycles of exactly length k; FindInfraCycle[graph, {kMin, \
+kMax}, n] to cycles in the length range. Returns $Failed when fewer than n \
+cycles exist. Results feed directly into NullHomotopicQ and FindInfraHomotopy.\
+\>", "Text",ExpressionUUID->"a286650d-067a-49a0-96eb-5b078038e6c3"],
+
+Cell["Setup", "Section",ExpressionUUID->"a9045f47-1966-4b95-9466-74e493e8af16"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"779c8a50-10d1-4ea1-8a86-d36a7355fa64"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"0a178918-ddcf-4f3b-b083-355f5ba9d032"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"a6197c8f-8e18-4d57-96b8-0b5dc3841fb5"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"3e3a8794-d3ab-4efa-86c1-a1b0f7746239"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"9002acb0-fa34-4fd9-b796-b44dd8e908eb"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"d4ba5ad4-e077-4173-9760-7109bbc015e9"],
+Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"e5f9942c-f982-4ed1-988b-9240bccc2bae"],
+Cell[736, 24, 543, 7, 70, "Text",ExpressionUUID->"a286650d-067a-49a0-96eb-5b078038e6c3"],
+Cell[1282, 33, 79, 0, 70, "Section",ExpressionUUID->"a9045f47-1966-4b95-9466-74e493e8af16"],
+Cell[1364, 35, 91, 0, 70, "CodeText",ExpressionUUID->"779c8a50-10d1-4ea1-8a86-d36a7355fa64"],
+Cell[1458, 37, 192, 4, 70, "Code",ExpressionUUID->"0a178918-ddcf-4f3b-b083-355f5ba9d032",
+ InitializationCell->True],
+Cell[1653, 43, 88, 0, 70, "Section",ExpressionUUID->"a6197c8f-8e18-4d57-96b8-0b5dc3841fb5"],
+Cell[1744, 45, 93, 0, 70, "Item",ExpressionUUID->"3e3a8794-d3ab-4efa-86c1-a1b0f7746239"],
+Cell[1840, 47, 98, 0, 70, "Item",ExpressionUUID->"9002acb0-fa34-4fd9-b796-b44dd8e908eb"]
+}
+]
+*)
+
+(* End of internal cache information *)

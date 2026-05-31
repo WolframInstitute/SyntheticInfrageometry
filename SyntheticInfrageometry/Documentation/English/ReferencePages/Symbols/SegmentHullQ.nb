@@ -3,94 +3,50 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5697,        125]
-NotebookOptionsPosition[      3381,         90]
-NotebookOutlinePosition[      3698,        104]
-CellTagsIndexPosition[      3655,        101]
+NotebookDataLength[      2669,         67]
+NotebookOptionsPosition[      1639,         46]
+NotebookOutlinePosition[      1956,         60]
+CellTagsIndexPosition[      1913,         57]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["SegmentHullQ", "Title",ExpressionUUID->"df02910f-6b16-4a65-befb-9d555b7abb62"],
+Cell["SegmentHullQ", "Title",ExpressionUUID->"f4698c8a-f844-42a6-bd1a-1cd70ab48aef"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"e2af0fd4-f571-477a-b494-35982b1f36eb"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"8cf39e60-de2f-4209-96ec-77a47799b31a"],
 
 Cell["\<\
-SegmentHullQ[g, S] tests geodesic convexity of S. Option Method \
-(\"Strong\" (default): every geodesic between any pair of S lies in S; \"Weak\
-\": some geodesic between each pair lies in S).\
-\>", "Text",ExpressionUUID->"764a3ea6-7dd3-4400-a445-a86664b1d5fc"],
+SegmentHullQ[graph, S] returns True if S is closed under the segment \
+operator, i.e. equals its own FindSegmentHull. Option \"LineStructure\" as in \
+FindSegmentHull.\
+\>", "Text",ExpressionUUID->"dc0a0343-288f-4b1b-81a7-986d5195c8ae"],
 
-Cell["Setup", "Section",ExpressionUUID->"7ed642b3-4117-43bf-9bea-9c0c891c6bbd"],
+Cell["Setup", "Section",ExpressionUUID->"a800820c-e36d-435b-9e23-13b7bba1fc02"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"d28784aa-cd4b-4b45-bbbc-8094ec570713"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"c74de673-8db1-49ad-89c4-71e1ea98265a"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"e625afac-5e20-4f23-8215-da1a87df5a0b"],
+  True,ExpressionUUID->"b6613fd1-74b9-4c37-84fd-c27f88e17bd9"],
 
-Cell["Examples", "Section",ExpressionUUID->"9cedb5ac-d627-4bff-8777-7603a032a88a"],
+Cell["Related Guides", "Section",ExpressionUUID->"4222253f-3b41-48ef-92b1-6aaed234a925"],
 
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"7c792a74-d822-48a6-a514-bf5a384f4865"],
+Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"a7316a52-c504-49fd-8b9b-9828d824379b"],
 
-Cell[BoxData[
- $CellContext`buildCell["A convex hull is geodesically convex."]], "Input",Exp\
-ressionUUID->"90382a29-8f8b-414b-a301-7da7fff9b048"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"195f1fb5-ebb2-47db-bde9-d6f742e7b955"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "With[{g = GridGraph[{4, 4}]}, SegmentHullQ[g, \
-FindSegmentHull[g, {1, 4, 13}]]]"]], "Input",ExpressionUUID->"a4b03bf1-\
-83d0-48b1-bdc9-4c78adf783e8"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"dda07535-b519-466c-a29b-6ad1ef268ab7"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "A path on the grid is weakly convex but not strongly."]], "Input",Expression\
-UUID->"f31fb6ba-6718-49d5-a000-e16a0a9bcdf4"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"77a17fd7-dd69-46c2-958a-ff6b06e64fc9"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "SegmentHullQ[GridGraph[{3, 3}], {1, 2, 3}, Method -> \"Weak\"]"]], \
-"Input",ExpressionUUID->"d99cc7d8-1c8e-4b6e-8e9d-51ca9edfbeec"],
-
-Cell["See Also", "Section",ExpressionUUID->"923b6b70-4a45-4df5-8093-ba585d1280dd"],
-
-Cell["FindSegmentHull", "Item",ExpressionUUID->"56f08e4f-9031-475f-aa17-7af9e67ad6e2"],
-
-Cell["MetricInterval", "Item",ExpressionUUID->"95515628-e6e8-4a32-ab44-e3083c9a6a03"],
-
-Cell["Related Guides", "Section",ExpressionUUID->"abd4b9bf-3f8f-4e19-b91c-b70cf77c19fe"],
-
-Cell["TropicalConvexityGuide", "Item",ExpressionUUID->"7a5f572b-506a-41ea-87f9-b390d5f903ec"],
-
-Cell["PathSpaceGuide", "Item",ExpressionUUID->"b7391361-4123-4f97-a98d-7482523ebc6c"],
-
-Cell["Tutorials", "Section",ExpressionUUID->"ab662502-b78e-4a97-82e9-58aa1ded44e0"],
-
-Cell["TropicalConvexityTutorial", "Item",ExpressionUUID->"6a2a8847-b11e-46db-b7d1-b8e77760358b"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"6d8fd279-2c5f-4654-ab6e-2363f8734710"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
 ]
 (* End of Notebook Content *)
 
@@ -103,30 +59,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"df02910f-6b16-4a65-befb-9d555b7abb62"],
-Cell[648, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"e2af0fd4-f571-477a-b494-35982b1f36eb"],
-Cell[741, 24, 278, 4, 70, "Text",ExpressionUUID->"764a3ea6-7dd3-4400-a445-a86664b1d5fc"],
-Cell[1022, 30, 79, 0, 70, "Section",ExpressionUUID->"7ed642b3-4117-43bf-9bea-9c0c891c6bbd"],
-Cell[1104, 32, 91, 0, 70, "CodeText",ExpressionUUID->"d28784aa-cd4b-4b45-bbbc-8094ec570713"],
-Cell[1198, 34, 192, 4, 70, "Code",ExpressionUUID->"e625afac-5e20-4f23-8215-da1a87df5a0b",
+Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"f4698c8a-f844-42a6-bd1a-1cd70ab48aef"],
+Cell[641, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"8cf39e60-de2f-4209-96ec-77a47799b31a"],
+Cell[734, 24, 246, 4, 70, "Text",ExpressionUUID->"dc0a0343-288f-4b1b-81a7-986d5195c8ae"],
+Cell[983, 30, 79, 0, 70, "Section",ExpressionUUID->"a800820c-e36d-435b-9e23-13b7bba1fc02"],
+Cell[1065, 32, 91, 0, 70, "CodeText",ExpressionUUID->"c74de673-8db1-49ad-89c4-71e1ea98265a"],
+Cell[1159, 34, 192, 4, 70, "Code",ExpressionUUID->"b6613fd1-74b9-4c37-84fd-c27f88e17bd9",
  InitializationCell->True],
-Cell[1393, 40, 82, 0, 70, "Section",ExpressionUUID->"9cedb5ac-d627-4bff-8777-7603a032a88a"],
-Cell[1478, 42, 115, 1, 70, "Input",ExpressionUUID->"7c792a74-d822-48a6-a514-bf5a384f4865"],
-Cell[1596, 45, 146, 2, 70, "Input",ExpressionUUID->"90382a29-8f8b-414b-a301-7da7fff9b048"],
-Cell[1745, 49, 112, 1, 70, "Input",ExpressionUUID->"195f1fb5-ebb2-47db-bde9-d6f742e7b955"],
-Cell[1860, 52, 205, 4, 70, "Input",ExpressionUUID->"a4b03bf1-83d0-48b1-bdc9-4c78adf783e8"],
-Cell[2068, 58, 115, 1, 70, "Input",ExpressionUUID->"dda07535-b519-466c-a29b-6ad1ef268ab7"],
-Cell[2186, 61, 164, 3, 70, "Input",ExpressionUUID->"f31fb6ba-6718-49d5-a000-e16a0a9bcdf4"],
-Cell[2353, 66, 112, 1, 70, "Input",ExpressionUUID->"77a17fd7-dd69-46c2-958a-ff6b06e64fc9"],
-Cell[2468, 69, 180, 3, 70, "Input",ExpressionUUID->"d99cc7d8-1c8e-4b6e-8e9d-51ca9edfbeec"],
-Cell[2651, 74, 82, 0, 70, "Section",ExpressionUUID->"923b6b70-4a45-4df5-8093-ba585d1280dd"],
-Cell[2736, 76, 93, 0, 70, "Item",ExpressionUUID->"56f08e4f-9031-475f-aa17-7af9e67ad6e2"],
-Cell[2832, 78, 85, 0, 70, "Item",ExpressionUUID->"95515628-e6e8-4a32-ab44-e3083c9a6a03"],
-Cell[2920, 80, 88, 0, 70, "Section",ExpressionUUID->"abd4b9bf-3f8f-4e19-b91c-b70cf77c19fe"],
-Cell[3011, 82, 93, 0, 70, "Item",ExpressionUUID->"7a5f572b-506a-41ea-87f9-b390d5f903ec"],
-Cell[3107, 84, 85, 0, 70, "Item",ExpressionUUID->"b7391361-4123-4f97-a98d-7482523ebc6c"],
-Cell[3195, 86, 83, 0, 70, "Section",ExpressionUUID->"ab662502-b78e-4a97-82e9-58aa1ded44e0"],
-Cell[3281, 88, 96, 0, 70, "Item",ExpressionUUID->"6a2a8847-b11e-46db-b7d1-b8e77760358b"]
+Cell[1354, 40, 88, 0, 70, "Section",ExpressionUUID->"4222253f-3b41-48ef-92b1-6aaed234a925"],
+Cell[1445, 42, 89, 0, 70, "Item",ExpressionUUID->"a7316a52-c504-49fd-8b9b-9828d824379b"],
+Cell[1537, 44, 98, 0, 70, "Item",ExpressionUUID->"6d8fd279-2c5f-4654-ab6e-2363f8734710"]
 }
 ]
 *)

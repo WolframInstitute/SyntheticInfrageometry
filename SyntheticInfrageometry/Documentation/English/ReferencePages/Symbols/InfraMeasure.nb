@@ -1,0 +1,79 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2904,         70]
+NotebookOptionsPosition[      1873,         49]
+NotebookOutlinePosition[      2190,         63]
+CellTagsIndexPosition[      2147,         60]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["InfraMeasure", "Title",ExpressionUUID->"cc406704-f9d3-40a5-a047-0bc8beb2e58c"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"c638b0a8-7079-4253-8e93-717a40b4deef"],
+
+Cell["\<\
+InfraMeasure[obj] returns the normalized vertex visit measure <|v -> \
+visits/numReps|> of an Infra* wrapper -- the marginal of its realization \
+bundle onto its vertices. InfraMeasure[graph, obj] is graph-aware and unlocks \
+the edge measure. Options \"On\" (\"Vertices\" (default), \"Edges\", \
+\"Both\") and \"Normalize\" (True (default) divides by numReps; False returns \
+raw integer counts).\
+\>", "Text",ExpressionUUID->"d255e744-8905-4c62-8ea3-0bdb7b2f53db"],
+
+Cell["Setup", "Section",ExpressionUUID->"309365ec-9f49-4e41-992d-7784aa4560a3"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"9b65b687-0e4d-4695-9c6f-f8627f8aa38f"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"270d7839-a24c-4282-851a-b7edba0f0185"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"bc041085-f6b3-4074-80f9-8c4147e23d63"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"85303859-530b-4825-9edb-28a7081d9fb8"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"e5817592-797b-407e-af2c-41f54a32a3e9"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"cc406704-f9d3-40a5-a047-0bc8beb2e58c"],
+Cell[641, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"c638b0a8-7079-4253-8e93-717a40b4deef"],
+Cell[734, 24, 476, 7, 70, "Text",ExpressionUUID->"d255e744-8905-4c62-8ea3-0bdb7b2f53db"],
+Cell[1213, 33, 79, 0, 70, "Section",ExpressionUUID->"309365ec-9f49-4e41-992d-7784aa4560a3"],
+Cell[1295, 35, 91, 0, 70, "CodeText",ExpressionUUID->"9b65b687-0e4d-4695-9c6f-f8627f8aa38f"],
+Cell[1389, 37, 192, 4, 70, "Code",ExpressionUUID->"270d7839-a24c-4282-851a-b7edba0f0185",
+ InitializationCell->True],
+Cell[1584, 43, 88, 0, 70, "Section",ExpressionUUID->"bc041085-f6b3-4074-80f9-8c4147e23d63"],
+Cell[1675, 45, 93, 0, 70, "Item",ExpressionUUID->"85303859-530b-4825-9edb-28a7081d9fb8"],
+Cell[1771, 47, 98, 0, 70, "Item",ExpressionUUID->"e5817592-797b-407e-af2c-41f54a32a3e9"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,75 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2633,         66]
+NotebookOptionsPosition[      1603,         45]
+NotebookOutlinePosition[      1920,         59]
+CellTagsIndexPosition[      1877,         56]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["TotalCurvature", "Title",ExpressionUUID->"b2bf8a56-3674-443e-80f5-8db42ec411e3"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"1472aa15-92c7-47cd-8ff4-8582a6e95bab"],
+
+Cell["\<\
+TotalCurvature[graph, path] returns the discrete total curvature Total @ \
+TurningAngles[graph, path] of the polygonal curve.\
+\>", "Text",ExpressionUUID->"fdcd80b1-2473-4bf7-92a0-eed503eece15"],
+
+Cell["Setup", "Section",ExpressionUUID->"d47d70c8-aa9f-4cd5-8a3b-9b7ab68ed2c6"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"afabbc42-7015-4650-8a0b-4810ea3263dd"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"154f59bd-c828-440a-8732-5d74841ad68c"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"1d44ff9d-bfeb-4f1e-8f43-31ccbdd8c1dd"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"7f1900af-1586-4218-8556-b178f6bb9973"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"fdeb1f8b-df42-41da-a0a7-ef4f5ce2738f"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"b2bf8a56-3674-443e-80f5-8db42ec411e3"],
+Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"1472aa15-92c7-47cd-8ff4-8582a6e95bab"],
+Cell[736, 24, 204, 3, 70, "Text",ExpressionUUID->"fdcd80b1-2473-4bf7-92a0-eed503eece15"],
+Cell[943, 29, 79, 0, 70, "Section",ExpressionUUID->"d47d70c8-aa9f-4cd5-8a3b-9b7ab68ed2c6"],
+Cell[1025, 31, 91, 0, 70, "CodeText",ExpressionUUID->"afabbc42-7015-4650-8a0b-4810ea3263dd"],
+Cell[1119, 33, 192, 4, 70, "Code",ExpressionUUID->"154f59bd-c828-440a-8732-5d74841ad68c",
+ InitializationCell->True],
+Cell[1314, 39, 88, 0, 70, "Section",ExpressionUUID->"1d44ff9d-bfeb-4f1e-8f43-31ccbdd8c1dd"],
+Cell[1405, 41, 93, 0, 70, "Item",ExpressionUUID->"7f1900af-1586-4218-8556-b178f6bb9973"],
+Cell[1501, 43, 98, 0, 70, "Item",ExpressionUUID->"fdeb1f8b-df42-41da-a0a7-ef4f5ce2738f"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,82 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3211,         73]
+NotebookOptionsPosition[      2179,         52]
+NotebookOutlinePosition[      2496,         66]
+CellTagsIndexPosition[      2453,         63]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraGoldenSection", "Title",ExpressionUUID->"8d8f7cf8-a1da-4971-bea6-e2573a05388a"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"ab730dfd-a1df-475f-81ef-44170a06723f"],
+
+Cell["\<\
+FindInfraGoldenSection[graph, InfraSegment[{walks}]] returns one InfraPoint: \
+the vertex at the index closest to each walk's golden index 1 + \
+(n-1)/GoldenRatio (AS == AB/phi), unioned over the walks; the golden index is \
+irrational, so it is a single point per walk. FindInfraGoldenSection[graph, \
+walk] is the bare-walk shortcut. FindInfraGoldenSection[graph, p1, p2] unions \
+over every geodesic. Options: Method (\"Metric\" (default) | \"Embedding\" \
+(single nearest vertex to the coord-space point A + (1/GoldenRatio)(B - A), \
+with sub-options \"Coordinates\" and \"Pool\")), \"Tolerance\" (0 (default); \
+widens the band beyond the closest index by that many graph-distance units).\
+\>", "Text",ExpressionUUID->"af48bee5-1c46-4c04-a0d5-cf4044e5ee71"],
+
+Cell["Setup", "Section",ExpressionUUID->"2cbfaec1-4e80-43ee-a315-70de4a540f13"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"c6518985-cd60-4569-be51-adb4fea2a8e8"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"4fe3f0b7-021c-477c-8ffb-90ee6fd857db"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"7075043e-f90c-46e5-91b7-9e4024863f3f"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"dee865e3-dfb0-4e02-81ff-f6a070bc6c07"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"2def3360-313b-49b9-a920-0441c7173083"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 94, 0, 70, "Title",ExpressionUUID->"8d8f7cf8-a1da-4971-bea6-e2573a05388a"],
+Cell[651, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"ab730dfd-a1df-475f-81ef-44170a06723f"],
+Cell[744, 24, 772, 10, 70, "Text",ExpressionUUID->"af48bee5-1c46-4c04-a0d5-cf4044e5ee71"],
+Cell[1519, 36, 79, 0, 70, "Section",ExpressionUUID->"2cbfaec1-4e80-43ee-a315-70de4a540f13"],
+Cell[1601, 38, 91, 0, 70, "CodeText",ExpressionUUID->"c6518985-cd60-4569-be51-adb4fea2a8e8"],
+Cell[1695, 40, 192, 4, 70, "Code",ExpressionUUID->"4fe3f0b7-021c-477c-8ffb-90ee6fd857db",
+ InitializationCell->True],
+Cell[1890, 46, 88, 0, 70, "Section",ExpressionUUID->"7075043e-f90c-46e5-91b7-9e4024863f3f"],
+Cell[1981, 48, 93, 0, 70, "Item",ExpressionUUID->"dee865e3-dfb0-4e02-81ff-f6a070bc6c07"],
+Cell[2077, 50, 98, 0, 70, "Item",ExpressionUUID->"2def3360-313b-49b9-a920-0441c7173083"]
+}
+]
+*)
+
+(* End of internal cache information *)

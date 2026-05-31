@@ -3,99 +3,55 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      6137,        131]
-NotebookOptionsPosition[      3731,         95]
-NotebookOutlinePosition[      4048,        109]
-CellTagsIndexPosition[      4005,        106]
+NotebookDataLength[      3054,         72]
+NotebookOptionsPosition[      2023,         51]
+NotebookOutlinePosition[      2340,         65]
+CellTagsIndexPosition[      2297,         62]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["OrthogonalCoordinates", "Title",ExpressionUUID->"a4b23949-171f-4e66-b958-97f3c6d7d297"],
+Cell["OrthogonalCoordinates", "Title",ExpressionUUID->"9ac1b884-d671-4416-a051-b16620cca439"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"53889302-8d09-4b63-a843-ff87fbb450d3"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"161cb118-0054-42bd-9cb9-446abfd642ac"],
 
 Cell["\<\
-OrthogonalCoordinates[g, c, {a1, a2, \[Ellipsis]}, v] returns the Z-valued \
-displacement of v on each axis ai through the centre c. \
-OrthogonalCoordinates[g, c, {a1, a2, \[Ellipsis]}] returns the Association \
-for all vertices. Centre c is a vertex or InfraPoint; each axis ai is an \
-InfraSegment, InfraLine, or bare vertex sequence. Option \"SelectCoordinate\" \
-controls projection-tie reduction (\"Centered\" (default), Min, Max, Mean, \
-Median, All, or a user function).\
-\>", "Text",ExpressionUUID->"e8ca3b50-02c1-47de-97b6-f9981554edae"],
+OrthogonalCoordinates[graph, c, {a1, a2, ...}, v] returns the Z-valued \
+displacement of v on each axis ai through the centre c; \
+OrthogonalCoordinates[graph, c, {a1, a2, ...}] returns the Association for \
+all vertices. Centre c is a vertex or InfraPoint; each axis ai is an \
+InfraSegment, InfraLine, or vertex sequence. Option \"SelectCoordinate\" \
+(projection-tie reducer applied to the shifted tied list ix_v - k: \"Centered\
+\" (default; 0 if 0 in shifted, else Round[Median]), Min, Max, Mean, Median, \
+All, or any user function).\
+\>", "Text",ExpressionUUID->"979370ab-624a-4079-99ef-580b14683dde"],
 
-Cell["Setup", "Section",ExpressionUUID->"c91da77e-6d91-47f9-8fc3-0efdeee21a6a"],
+Cell["Setup", "Section",ExpressionUUID->"106a5f2c-ecd1-45c8-8419-bbd5da218c8a"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"b2fb2c88-5127-4846-b1fc-3dd534a95f78"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"bc7a7b1b-6caa-4919-831a-b3d7b9dcbcee"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"a95fdddc-b78d-499a-afe0-b5e21dea5950"],
+  True,ExpressionUUID->"523a39ef-38b9-496b-a63f-c1129593f7c8"],
 
-Cell["Examples", "Section",ExpressionUUID->"dfbe4e34-e497-483b-b68b-2411b4cfb878"],
+Cell["Related Guides", "Section",ExpressionUUID->"62dd41d4-d1d0-46f6-b296-3bd0ecde69a8"],
 
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"098f099e-a32e-4f49-a00c-2d37f9fa6a0d"],
+Cell["CoordinatizationGuide", "Item",ExpressionUUID->"d06adc5d-939b-4be4-8aeb-6bdd1a287c3c"],
 
-Cell[BoxData[
- $CellContext`buildCell[
- "Z-coordinates of every vertex on a grid relative to two axes."]], "Input",Ex\
-pressionUUID->"9a24907d-220f-455d-b27c-596e88d4ff84"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"09cab438-f9f1-4c62-a6e6-33293601877d"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "OrthogonalCoordinates[GridGraph[{3, 3}], 5, {{2, 5, 8}, {4, 5, 6}}]"]], \
-"Input",ExpressionUUID->"98990f74-64e2-4d56-b535-83bdae2a6002"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"553df817-7fc0-4e99-80a5-a0a6ce82b42b"],
-
-Cell[BoxData[
- $CellContext`buildCell["Coordinates of a single vertex."]], "Input",Expressio\
-nUUID->"6415734f-a78e-480d-8bf1-8813a2ef0d1f"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"0fb9f08d-f4f4-425f-abdb-bfb11f3a22ae"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "OrthogonalCoordinates[GridGraph[{3, 3}], 5, {{2, 5, 8}, {4, 5, 6}}, 1]"]], \
-"Input",ExpressionUUID->"d73e1729-a87b-49bd-a5e3-9b3f079d5f60"],
-
-Cell["See Also", "Section",ExpressionUUID->"3764f7d1-a009-4fa8-b0a8-875734f76966"],
-
-Cell["FindInfraOrthogonalFrame", "Item",ExpressionUUID->"f9870344-3381-4ca1-8858-8ea050827a3d"],
-
-Cell["RadarCoordinates", "Item",ExpressionUUID->"f17abc24-d09d-4c29-8ab5-86549c09b4be"],
-
-Cell["ResistanceCoordinates", "Item",ExpressionUUID->"855d8707-6b74-4d25-bab4-33512c19030f"],
-
-Cell["FindInfraSpanningAxes", "Item",ExpressionUUID->"4bad0d70-dcae-4940-a13f-acc88d5f72c4"],
-
-Cell["Related Guides", "Section",ExpressionUUID->"cb1ee12e-90df-43eb-9f78-a270109ce9ad"],
-
-Cell["CoordinatizationGuide", "Item",ExpressionUUID->"8e2eddef-0ddf-4eda-8f80-28195d0ff0d0"],
-
-Cell["Tutorials", "Section",ExpressionUUID->"f7920c0f-1174-4a85-b88f-c53101c51759"],
-
-Cell["CoordinatizationTutorial", "Item",ExpressionUUID->"242dd107-13a6-4acc-88b5-cd1dd402b144"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"56c95f4a-2c3b-4506-9a73-14925152aef4"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
 ]
 (* End of Notebook Content *)
 
@@ -108,31 +64,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 93, 0, 70, "Title",ExpressionUUID->"a4b23949-171f-4e66-b958-97f3c6d7d297"],
-Cell[650, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"53889302-8d09-4b63-a843-ff87fbb450d3"],
-Cell[743, 24, 556, 8, 70, "Text",ExpressionUUID->"e8ca3b50-02c1-47de-97b6-f9981554edae"],
-Cell[1302, 34, 79, 0, 70, "Section",ExpressionUUID->"c91da77e-6d91-47f9-8fc3-0efdeee21a6a"],
-Cell[1384, 36, 91, 0, 70, "CodeText",ExpressionUUID->"b2fb2c88-5127-4846-b1fc-3dd534a95f78"],
-Cell[1478, 38, 192, 4, 70, "Code",ExpressionUUID->"a95fdddc-b78d-499a-afe0-b5e21dea5950",
+Cell[554, 20, 93, 0, 70, "Title",ExpressionUUID->"9ac1b884-d671-4416-a051-b16620cca439"],
+Cell[650, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"161cb118-0054-42bd-9cb9-446abfd642ac"],
+Cell[743, 24, 618, 9, 70, "Text",ExpressionUUID->"979370ab-624a-4079-99ef-580b14683dde"],
+Cell[1364, 35, 79, 0, 70, "Section",ExpressionUUID->"106a5f2c-ecd1-45c8-8419-bbd5da218c8a"],
+Cell[1446, 37, 91, 0, 70, "CodeText",ExpressionUUID->"bc7a7b1b-6caa-4919-831a-b3d7b9dcbcee"],
+Cell[1540, 39, 192, 4, 70, "Code",ExpressionUUID->"523a39ef-38b9-496b-a63f-c1129593f7c8",
  InitializationCell->True],
-Cell[1673, 44, 82, 0, 70, "Section",ExpressionUUID->"dfbe4e34-e497-483b-b68b-2411b4cfb878"],
-Cell[1758, 46, 115, 1, 70, "Input",ExpressionUUID->"098f099e-a32e-4f49-a00c-2d37f9fa6a0d"],
-Cell[1876, 49, 172, 3, 70, "Input",ExpressionUUID->"9a24907d-220f-455d-b27c-596e88d4ff84"],
-Cell[2051, 54, 112, 1, 70, "Input",ExpressionUUID->"09cab438-f9f1-4c62-a6e6-33293601877d"],
-Cell[2166, 57, 178, 3, 70, "Input",ExpressionUUID->"98990f74-64e2-4d56-b535-83bdae2a6002"],
-Cell[2347, 62, 115, 1, 70, "Input",ExpressionUUID->"553df817-7fc0-4e99-80a5-a0a6ce82b42b"],
-Cell[2465, 65, 140, 2, 70, "Input",ExpressionUUID->"6415734f-a78e-480d-8bf1-8813a2ef0d1f"],
-Cell[2608, 69, 112, 1, 70, "Input",ExpressionUUID->"0fb9f08d-f4f4-425f-abdb-bfb11f3a22ae"],
-Cell[2723, 72, 181, 3, 70, "Input",ExpressionUUID->"d73e1729-a87b-49bd-a5e3-9b3f079d5f60"],
-Cell[2907, 77, 82, 0, 70, "Section",ExpressionUUID->"3764f7d1-a009-4fa8-b0a8-875734f76966"],
-Cell[2992, 79, 90, 0, 70, "Item",ExpressionUUID->"f9870344-3381-4ca1-8858-8ea050827a3d"],
-Cell[3085, 81, 87, 0, 70, "Item",ExpressionUUID->"f17abc24-d09d-4c29-8ab5-86549c09b4be"],
-Cell[3175, 83, 92, 0, 70, "Item",ExpressionUUID->"855d8707-6b74-4d25-bab4-33512c19030f"],
-Cell[3270, 85, 87, 0, 70, "Item",ExpressionUUID->"4bad0d70-dcae-4940-a13f-acc88d5f72c4"],
-Cell[3360, 87, 88, 0, 70, "Section",ExpressionUUID->"cb1ee12e-90df-43eb-9f78-a270109ce9ad"],
-Cell[3451, 89, 92, 0, 70, "Item",ExpressionUUID->"8e2eddef-0ddf-4eda-8f80-28195d0ff0d0"],
-Cell[3546, 91, 83, 0, 70, "Section",ExpressionUUID->"f7920c0f-1174-4a85-b88f-c53101c51759"],
-Cell[3632, 93, 95, 0, 70, "Item",ExpressionUUID->"242dd107-13a6-4acc-88b5-cd1dd402b144"]
+Cell[1735, 45, 88, 0, 70, "Section",ExpressionUUID->"62dd41d4-d1d0-46f6-b296-3bd0ecde69a8"],
+Cell[1826, 47, 92, 0, 70, "Item",ExpressionUUID->"d06adc5d-939b-4be4-8aeb-6bdd1a287c3c"],
+Cell[1921, 49, 98, 0, 70, "Item",ExpressionUUID->"56c95f4a-2c3b-4506-9a73-14925152aef4"]
 }
 ]
 *)

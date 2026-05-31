@@ -1,0 +1,82 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3150,         73]
+NotebookOptionsPosition[      2118,         52]
+NotebookOutlinePosition[      2435,         66]
+CellTagsIndexPosition[      2392,         63]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraMidpoint", "Title",ExpressionUUID->"9ecf3af4-034e-4317-9079-58a08d144999"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"ffb54064-8e58-412a-8b33-dde5d1be00a1"],
+
+Cell["\<\
+FindInfraMidpoint[graph, InfraSegment[{walks}]] returns one InfraPoint: the \
+vertices at the index/indices closest to each walk's centre (n+1)/2, unioned \
+over the walks (a single vertex when d(p1, p2) is even, a two-vertex \
+mesopoint when odd). FindInfraMidpoint[graph, walk] is the bare-walk \
+shortcut. FindInfraMidpoint[graph, p1, p2] unions over every geodesic. \
+Options: Method (\"Metric\" (default) | \"Embedding\" (single nearest vertex \
+to the coord-space midpoint, with sub-options \"Coordinates\" and \"Pool\")), \
+\"Tolerance\" (0 (default); widens the band beyond the closest index by that \
+many graph-distance units).\
+\>", "Text",ExpressionUUID->"b5ca6665-bba2-40f5-a254-2bd18a713f50"],
+
+Cell["Setup", "Section",ExpressionUUID->"6dd31d74-62af-47b7-a987-88af2cdb468f"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"ba2fc4b4-b0dc-4fd9-b6a2-a5150c3e9826"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"6d9dde9f-5e87-4af1-8ef5-3fc303fb33db"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"3702b618-b6c5-465e-81f6-59c5ab381957"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"c38fe422-66fd-4c99-87d9-39ec850b6a44"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"e0558f39-9358-4dcb-8c1a-c99dd61baa44"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 89, 0, 70, "Title",ExpressionUUID->"9ecf3af4-034e-4317-9079-58a08d144999"],
+Cell[646, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"ffb54064-8e58-412a-8b33-dde5d1be00a1"],
+Cell[739, 24, 716, 10, 70, "Text",ExpressionUUID->"b5ca6665-bba2-40f5-a254-2bd18a713f50"],
+Cell[1458, 36, 79, 0, 70, "Section",ExpressionUUID->"6dd31d74-62af-47b7-a987-88af2cdb468f"],
+Cell[1540, 38, 91, 0, 70, "CodeText",ExpressionUUID->"ba2fc4b4-b0dc-4fd9-b6a2-a5150c3e9826"],
+Cell[1634, 40, 192, 4, 70, "Code",ExpressionUUID->"6d9dde9f-5e87-4af1-8ef5-3fc303fb33db",
+ InitializationCell->True],
+Cell[1829, 46, 88, 0, 70, "Section",ExpressionUUID->"3702b618-b6c5-465e-81f6-59c5ab381957"],
+Cell[1920, 48, 93, 0, 70, "Item",ExpressionUUID->"c38fe422-66fd-4c99-87d9-39ec850b6a44"],
+Cell[2016, 50, 98, 0, 70, "Item",ExpressionUUID->"e0558f39-9358-4dcb-8c1a-c99dd61baa44"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,76 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2703,         67]
+NotebookOptionsPosition[      1672,         46]
+NotebookOutlinePosition[      1989,         60]
+CellTagsIndexPosition[      1946,         57]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["UniversalLineQ", "Title",ExpressionUUID->"b89c6e8c-8941-489c-b4d2-7ae3174ef19e"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"01dd2d7c-6934-4db0-ab6a-a80fa700873e"],
+
+Cell["\<\
+UniversalLineQ[graph] returns True if some pair of vertices spans a line \
+filling a whole connected component (Chen-Chvatal). UniversalLineQ[graph, {u, \
+v}] tests the single line through u, v.\
+\>", "Text",ExpressionUUID->"0327981f-c410-49ec-9ab1-4e62be7514ca"],
+
+Cell["Setup", "Section",ExpressionUUID->"bb7078c7-bce9-4f3f-8793-4331b6d683a0"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"0eac97b6-f702-4ab4-bc39-ea71c1a7ca35"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"f9d892b0-59eb-4931-a771-6e0be9c1e22f"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"a8d22d85-5255-4f18-b043-6a8dfe4f6a8e"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"7678fe77-7b7f-4061-ba53-5e5a7ec73d58"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"724adb19-0adc-4cb5-8a2a-2f67137dea3f"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"b89c6e8c-8941-489c-b4d2-7ae3174ef19e"],
+Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"01dd2d7c-6934-4db0-ab6a-a80fa700873e"],
+Cell[736, 24, 273, 4, 70, "Text",ExpressionUUID->"0327981f-c410-49ec-9ab1-4e62be7514ca"],
+Cell[1012, 30, 79, 0, 70, "Section",ExpressionUUID->"bb7078c7-bce9-4f3f-8793-4331b6d683a0"],
+Cell[1094, 32, 91, 0, 70, "CodeText",ExpressionUUID->"0eac97b6-f702-4ab4-bc39-ea71c1a7ca35"],
+Cell[1188, 34, 192, 4, 70, "Code",ExpressionUUID->"f9d892b0-59eb-4931-a771-6e0be9c1e22f",
+ InitializationCell->True],
+Cell[1383, 40, 88, 0, 70, "Section",ExpressionUUID->"a8d22d85-5255-4f18-b043-6a8dfe4f6a8e"],
+Cell[1474, 42, 93, 0, 70, "Item",ExpressionUUID->"7678fe77-7b7f-4061-ba53-5e5a7ec73d58"],
+Cell[1570, 44, 98, 0, 70, "Item",ExpressionUUID->"724adb19-0adc-4cb5-8a2a-2f67137dea3f"]
+}
+]
+*)
+
+(* End of internal cache information *)

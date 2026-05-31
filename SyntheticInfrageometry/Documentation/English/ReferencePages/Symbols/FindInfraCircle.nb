@@ -1,0 +1,82 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3180,         73]
+NotebookOptionsPosition[      2148,         52]
+NotebookOutlinePosition[      2465,         66]
+CellTagsIndexPosition[      2422,         63]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraCircle", "Title",ExpressionUUID->"64ffa9ba-f072-4324-8143-54385e064e41"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"c5413b12-61c1-4e36-9e7c-9a46b95118a1"],
+
+Cell["\<\
+FindInfraCircle[graph, c, r] returns {InfraCircle[{cycle}]} for the canonical \
+infra-circle around c at radius r (shortest separating cycle in the level \
+surface), as an open vertex sequence. r is a scalar or {rmin, rmax} slab. \
+FindInfraCircle[graph, c, r, n] returns a List of n unary \
+InfraCircle[{cycle}] wrappers or $Failed; UpTo[n] returns up to n; All \
+returns all. Option Properties (default {\"Separating\", \"Shortest\"}, \
+order-insensitive set): \"Separating\" requires the cycle to disconnect c \
+from {v: d(c,v) > rmax}; \"Shortest\" restricts to cycles tied at the minimum \
+admissible length; empty {} permits any simple cycle in the level surface.\
+\>", "Text",ExpressionUUID->"fc795bd7-8378-4ce5-83d4-54a8cfd2755e"],
+
+Cell["Setup", "Section",ExpressionUUID->"bac86d5b-56f7-4439-a744-cc79b6d9f121"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"750dab65-314e-4046-86f5-8945b54c17db"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"a2b0d270-5545-4d0c-a27e-0babe00c51b5"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"16076f5a-134a-4bd3-a9df-6246a5000c3b"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"83364332-fd94-4794-8472-ad92754465ea"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"439f0961-b967-4c4d-9220-d1ce598c4200"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"64ffa9ba-f072-4324-8143-54385e064e41"],
+Cell[644, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"c5413b12-61c1-4e36-9e7c-9a46b95118a1"],
+Cell[737, 24, 748, 10, 70, "Text",ExpressionUUID->"fc795bd7-8378-4ce5-83d4-54a8cfd2755e"],
+Cell[1488, 36, 79, 0, 70, "Section",ExpressionUUID->"bac86d5b-56f7-4439-a744-cc79b6d9f121"],
+Cell[1570, 38, 91, 0, 70, "CodeText",ExpressionUUID->"750dab65-314e-4046-86f5-8945b54c17db"],
+Cell[1664, 40, 192, 4, 70, "Code",ExpressionUUID->"a2b0d270-5545-4d0c-a27e-0babe00c51b5",
+ InitializationCell->True],
+Cell[1859, 46, 88, 0, 70, "Section",ExpressionUUID->"16076f5a-134a-4bd3-a9df-6246a5000c3b"],
+Cell[1950, 48, 93, 0, 70, "Item",ExpressionUUID->"83364332-fd94-4794-8472-ad92754465ea"],
+Cell[2046, 50, 98, 0, 70, "Item",ExpressionUUID->"439f0961-b967-4c4d-9220-d1ce598c4200"]
+}
+]
+*)
+
+(* End of internal cache information *)

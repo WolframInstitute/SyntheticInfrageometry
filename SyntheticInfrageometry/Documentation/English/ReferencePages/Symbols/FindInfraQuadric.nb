@@ -1,0 +1,81 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3051,         72]
+NotebookOptionsPosition[      2020,         51]
+NotebookOutlinePosition[      2337,         65]
+CellTagsIndexPosition[      2294,         62]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraQuadric", "Title",ExpressionUUID->"84aebd60-75c7-4fdf-a843-80fcbf6b9576"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"eea52093-2106-4f83-9668-bf476e042b8e"],
+
+Cell["\<\
+FindInfraQuadric[graph, {p1, ..., pk}, c] returns InfraObject[{ v : sum_i \
+d(p_i, v) <= c }], the solid ellipsoid interior with foci p_i. \
+FindInfraQuadric[graph, foci, {cMin, cMax}] returns the band { v : cMin <= \
+sum_i d(p_i, v) <= cMax }. FindInfraQuadric[graph, foci, c, weights] uses the \
+weighted signed-distance sum sum_i w_i d(p_i, v); weights {1, -1} give a \
+hyperboloid (one branch via scalar c, two-sided via symmetric band {-c, c}). \
+Foci accept bare vertices or InfraPoint wrappers (multi-realisation reduced \
+to first).\
+\>", "Text",ExpressionUUID->"5d0e8aab-a43b-431d-89aa-67a34c5be89b"],
+
+Cell["Setup", "Section",ExpressionUUID->"5ffea207-6f35-4607-b852-0f2ad9e34eb7"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"01c1604e-c6df-492c-b797-2615a6130e6e"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"a526599d-ed6b-4516-b290-bfd8f5954be3"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"f2ef2235-ddbd-4e44-93d2-4d4e0f73a762"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"51cbcacb-63c0-4837-85c5-e052cb7750b5"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"570ca562-eff8-4314-a104-92c7806e25c3"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 88, 0, 70, "Title",ExpressionUUID->"84aebd60-75c7-4fdf-a843-80fcbf6b9576"],
+Cell[645, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"eea52093-2106-4f83-9668-bf476e042b8e"],
+Cell[738, 24, 619, 9, 70, "Text",ExpressionUUID->"5d0e8aab-a43b-431d-89aa-67a34c5be89b"],
+Cell[1360, 35, 79, 0, 70, "Section",ExpressionUUID->"5ffea207-6f35-4607-b852-0f2ad9e34eb7"],
+Cell[1442, 37, 91, 0, 70, "CodeText",ExpressionUUID->"01c1604e-c6df-492c-b797-2615a6130e6e"],
+Cell[1536, 39, 192, 4, 70, "Code",ExpressionUUID->"a526599d-ed6b-4516-b290-bfd8f5954be3",
+ InitializationCell->True],
+Cell[1731, 45, 88, 0, 70, "Section",ExpressionUUID->"f2ef2235-ddbd-4e44-93d2-4d4e0f73a762"],
+Cell[1822, 47, 93, 0, 70, "Item",ExpressionUUID->"51cbcacb-63c0-4837-85c5-e052cb7750b5"],
+Cell[1918, 49, 98, 0, 70, "Item",ExpressionUUID->"570ca562-eff8-4314-a104-92c7806e25c3"]
+}
+]
+*)
+
+(* End of internal cache information *)

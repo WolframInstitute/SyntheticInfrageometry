@@ -1,0 +1,82 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3154,         73]
+NotebookOptionsPosition[      2122,         52]
+NotebookOutlinePosition[      2439,         66]
+CellTagsIndexPosition[      2396,         63]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraOsculatingShell", "Title",ExpressionUUID->"536a6a42-0546-43ca-91ca-6cd471df891d"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"f40108cf-859c-4741-a912-cd9d139cf1fe"],
+
+Cell["\<\
+FindInfraOsculatingShell[graph, path, i, k] returns InfraShell[{set}] for the \
+smallest-radius osculating shell at the k-vertex window centered on \
+path[[i]]: the level set { v : d(c, v) == r } around an osculating center c \
+equidistant from every window-vertex with common distance r. \
+FindInfraOsculatingShell[graph, path, i, k, n] returns up to n shells sorted \
+by ascending radius (one shell per osculating center), with UpTo[n] / All for \
+the full calling triple. path may be a vertex list or an InfraPath wrapper \
+(multi-realisation paths are spread and unioned). Forwards Properties / \
+Method options to FindInfraShell.\
+\>", "Text",ExpressionUUID->"ea64c5e8-2bda-4b4c-8d70-9e75c07bf4b6"],
+
+Cell["Setup", "Section",ExpressionUUID->"199583bc-b58c-4c35-bf50-f578306153f2"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"33977f15-5f58-4018-ba6a-cf6fc074c93b"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"3f8d3c6f-6c2e-412a-83f3-f0e87bc0a341"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"b4120e84-4f5a-48e4-9f88-110aa7e3bded"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"93b4dbe2-f625-4a26-ab4c-5c8fd2a1ff85"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"74f3ddf6-132c-4442-a760-57751250571f"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 96, 0, 70, "Title",ExpressionUUID->"536a6a42-0546-43ca-91ca-6cd471df891d"],
+Cell[653, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"f40108cf-859c-4741-a912-cd9d139cf1fe"],
+Cell[746, 24, 713, 10, 70, "Text",ExpressionUUID->"ea64c5e8-2bda-4b4c-8d70-9e75c07bf4b6"],
+Cell[1462, 36, 79, 0, 70, "Section",ExpressionUUID->"199583bc-b58c-4c35-bf50-f578306153f2"],
+Cell[1544, 38, 91, 0, 70, "CodeText",ExpressionUUID->"33977f15-5f58-4018-ba6a-cf6fc074c93b"],
+Cell[1638, 40, 192, 4, 70, "Code",ExpressionUUID->"3f8d3c6f-6c2e-412a-83f3-f0e87bc0a341",
+ InitializationCell->True],
+Cell[1833, 46, 88, 0, 70, "Section",ExpressionUUID->"b4120e84-4f5a-48e4-9f88-110aa7e3bded"],
+Cell[1924, 48, 93, 0, 70, "Item",ExpressionUUID->"93b4dbe2-f625-4a26-ab4c-5c8fd2a1ff85"],
+Cell[2020, 50, 98, 0, 70, "Item",ExpressionUUID->"74f3ddf6-132c-4442-a760-57751250571f"]
+}
+]
+*)
+
+(* End of internal cache information *)

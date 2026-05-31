@@ -3,117 +3,58 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      7307,        154]
-NotebookOptionsPosition[      4437,        113]
-NotebookOutlinePosition[      4754,        127]
-CellTagsIndexPosition[      4711,        124]
+NotebookDataLength[      3330,         75]
+NotebookOptionsPosition[      2298,         54]
+NotebookOutlinePosition[      2615,         68]
+CellTagsIndexPosition[      2572,         65]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraSceneHighlight", "Title",ExpressionUUID->"bcc7938c-ff6a-466d-bcc4-77d9bdf95500"],
+Cell["InfraSceneHighlight", "Title",ExpressionUUID->"5dbee67b-287d-4877-b7c6-23c849bd3937"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"3f362e82-e911-407f-abfb-56b97c9d05ce"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b73cba98-4315-48c5-895d-43fdc46463b7"],
 
 Cell["\<\
 InfraSceneHighlight[g, multiObjects] renders a list of multi-objects \
-diffusely on g, with intensity scaling by overlap within each object and \
-colour-blending across objects. Each entry is auto-classified by \
-representation; explicit Infra* wrappers force the intended semantics, and \
-`entry -> color` overrides the default per-head colour. Options: \
-\"OpacityRange\", \"ThicknessRange\", \"PointSizeRange\".\
-\>", "Text",ExpressionUUID->"57d93b3b-387a-463c-a180-c08e7d795b42"],
+diffusely on graph g, with intensity scaling by overlap within each object \
+and color-blending across objects. InfraSceneHighlight[g, obj] is the \
+single-object shortcut for InfraSceneHighlight[g, {obj}]. Each entry is \
+auto-classified by representation; explicit Infra* wrappers force the \
+intended semantics. Per-object style overrides via `entry -> color`, `entry \
+-> Directive[dirs]`, `Style[entry, dirs__]`, or `entry -> {opts...}` with a \
+flat option list auto-sorted into vertex (VertexStyle / VertexSize / \
+VertexShapeFunction), edge (EdgeStyle / EdgeShapeFunction), and per-object \
+diffusion (\"OpacityRange\" / \"ThicknessRange\" / \"PointSizeRange\") \
+channels. Options: \"OpacityRange\", \"ThicknessRange\", \"PointSizeRange\".\
+\>", "Text",ExpressionUUID->"9781c50f-88ab-4104-b76a-de42dac8fa37"],
 
-Cell["Setup", "Section",ExpressionUUID->"31523e72-57b9-44d3-9f18-585ed3d39c30"],
+Cell["Setup", "Section",ExpressionUUID->"88bd39c4-959a-48a4-a84a-c88a73e6dd3f"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"b8a2602f-4b3c-40de-9527-170412239f88"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"b0d7fce4-540b-414f-9974-e3c6d8fcb467"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"e71e35b2-bcbb-4f79-8e47-6b358640ab53"],
+  True,ExpressionUUID->"99f7bc4f-576d-4097-8859-a4e05e14fef4"],
 
-Cell["Examples", "Section",ExpressionUUID->"ed730fc1-213f-4aaf-b7b0-5e18b56fe5b5"],
+Cell["Related Guides", "Section",ExpressionUUID->"7216bd34-7ed5-4e5c-a15c-60d09d8ce90f"],
 
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"be42e5bc-5135-498a-86b5-1bd2b5b6ce97"],
+Cell["VisualizationGuide", "Item",ExpressionUUID->"3fadeff0-49de-44b9-b51f-fd352d34390c"],
 
-Cell[BoxData[
- $CellContext`buildCell[
- "Render every geodesic between two grid corners."]], "Input",ExpressionUUID->\
-"824e8e32-4379-494e-900c-0ee56b8a3a11"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"7ecf653d-c1b8-4d57-afd6-4d00a0aebeb5"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindInfraSegment[g, 1, 16, \
-All]}]]"]], "Input",ExpressionUUID->"57c27875-abb1-44b8-ab27-15137d721029"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"3592850b-10c2-4f49-81ff-c2502676c667"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "Combine segment, shell, and circle layers."]], "Input",ExpressionUUID->\
-"c35e793c-17ca-4315-a64b-d2364a358950"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"0fd1136d-28e8-40ca-b87b-516c7afd1236"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindInfraSegment[g, 1, 16, \
-All] -> Blue, FindInfraShell[g, 6, 2] -> LightBlue, FindInfraCircle[g, 6, 2, All] -> \
-Green}]]"]], "Input",ExpressionUUID->"7e8bcb08-a81c-4839-a413-2a63b9ded6c2"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"c337e37d-2abf-4121-bf25-de8ba2802f3c"],
-
-Cell[BoxData[
- $CellContext`buildCell["Custom opacity range."]], "Input",ExpressionUUID->"fbd36dd3-d2f9-4474-9dc9-2ce114a6f4dc"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"6a2d619c-8467-4857-a7a1-7bbd09994fab"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "With[{g = GridGraph[{4, 4}]}, InfraSceneHighlight[g, {FindInfraSegment[g, 1, 16, \
-All]}, \"OpacityRange\" -> {0.2, 0.9}]]"]], "Input",ExpressionUUID->"79050300-\
-cd30-457b-b37c-2f22ddbf8e2b"],
-
-Cell["See Also", "Section",ExpressionUUID->"5e51de5b-52be-49ba-88ce-df4a47597a7e"],
-
-Cell["InfraSceneViewer", "Item",ExpressionUUID->"3c5882b1-43f7-4214-9381-ceef7633b697"],
-
-Cell["InfraScene", "Item",ExpressionUUID->"66164633-2f35-4150-a57d-587e28e75043"],
-
-Cell["FindInfraScene", "Item",ExpressionUUID->"01c0fd55-9336-474d-911a-a30e1e03117d"],
-
-Cell["$InfraPointColor", "Item",ExpressionUUID->"45a56009-b1dc-4ddf-a655-8e7df90ed5e2"],
-
-Cell["$InfraSegmentColor", "Item",ExpressionUUID->"807dbd70-2699-4433-afbd-26c04b005b1f"],
-
-Cell["Related Guides", "Section",ExpressionUUID->"31f49940-8f34-4da1-989e-34509b2455e7"],
-
-Cell["VisualizationGuide", "Item",ExpressionUUID->"e25bf435-22f7-4cc8-8325-42f009d0c9b9"],
-
-Cell["Tutorials", "Section",ExpressionUUID->"21057853-7daa-484f-bb91-c189e15dd2f5"],
-
-Cell["VisualizationTutorial", "Item",ExpressionUUID->"f2600f62-1554-41c5-bfec-3ee7d772a984"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"103df0ea-4889-4a47-b6e8-feb89c14649d"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
 ]
 (* End of Notebook Content *)
 
@@ -126,36 +67,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"bcc7938c-ff6a-466d-bcc4-77d9bdf95500"],
-Cell[648, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"3f362e82-e911-407f-abfb-56b97c9d05ce"],
-Cell[741, 24, 493, 7, 70, "Text",ExpressionUUID->"57d93b3b-387a-463c-a180-c08e7d795b42"],
-Cell[1237, 33, 79, 0, 70, "Section",ExpressionUUID->"31523e72-57b9-44d3-9f18-585ed3d39c30"],
-Cell[1319, 35, 91, 0, 70, "CodeText",ExpressionUUID->"b8a2602f-4b3c-40de-9527-170412239f88"],
-Cell[1413, 37, 192, 4, 70, "Code",ExpressionUUID->"e71e35b2-bcbb-4f79-8e47-6b358640ab53",
+Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"5dbee67b-287d-4877-b7c6-23c849bd3937"],
+Cell[648, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b73cba98-4315-48c5-895d-43fdc46463b7"],
+Cell[741, 24, 898, 12, 70, "Text",ExpressionUUID->"9781c50f-88ab-4104-b76a-de42dac8fa37"],
+Cell[1642, 38, 79, 0, 70, "Section",ExpressionUUID->"88bd39c4-959a-48a4-a84a-c88a73e6dd3f"],
+Cell[1724, 40, 91, 0, 70, "CodeText",ExpressionUUID->"b0d7fce4-540b-414f-9974-e3c6d8fcb467"],
+Cell[1818, 42, 192, 4, 70, "Code",ExpressionUUID->"99f7bc4f-576d-4097-8859-a4e05e14fef4",
  InitializationCell->True],
-Cell[1608, 43, 82, 0, 70, "Section",ExpressionUUID->"ed730fc1-213f-4aaf-b7b0-5e18b56fe5b5"],
-Cell[1693, 45, 115, 1, 70, "Input",ExpressionUUID->"be42e5bc-5135-498a-86b5-1bd2b5b6ce97"],
-Cell[1811, 48, 158, 3, 70, "Input",ExpressionUUID->"824e8e32-4379-494e-900c-0ee56b8a3a11"],
-Cell[1972, 53, 112, 1, 70, "Input",ExpressionUUID->"7ecf653d-c1b8-4d57-afd6-4d00a0aebeb5"],
-Cell[2087, 56, 194, 3, 70, "Input",ExpressionUUID->"57c27875-abb1-44b8-ab27-15137d721029"],
-Cell[2284, 61, 115, 1, 70, "Input",ExpressionUUID->"3592850b-10c2-4f49-81ff-c2502676c667"],
-Cell[2402, 64, 153, 3, 70, "Input",ExpressionUUID->"c35e793c-17ca-4315-a64b-d2364a358950"],
-Cell[2558, 69, 112, 1, 70, "Input",ExpressionUUID->"0fd1136d-28e8-40ca-b87b-516c7afd1236"],
-Cell[2673, 72, 272, 4, 70, "Input",ExpressionUUID->"7e8bcb08-a81c-4839-a413-2a63b9ded6c2"],
-Cell[2948, 78, 115, 1, 70, "Input",ExpressionUUID->"c337e37d-2abf-4121-bf25-de8ba2802f3c"],
-Cell[3066, 81, 128, 1, 70, "Input",ExpressionUUID->"fbd36dd3-d2f9-4474-9dc9-2ce114a6f4dc"],
-Cell[3197, 84, 112, 1, 70, "Input",ExpressionUUID->"6a2d619c-8467-4857-a7a1-7bbd09994fab"],
-Cell[3312, 87, 228, 4, 70, "Input",ExpressionUUID->"79050300-cd30-457b-b37c-2f22ddbf8e2b"],
-Cell[3543, 93, 82, 0, 70, "Section",ExpressionUUID->"5e51de5b-52be-49ba-88ce-df4a47597a7e"],
-Cell[3628, 95, 87, 0, 70, "Item",ExpressionUUID->"3c5882b1-43f7-4214-9381-ceef7633b697"],
-Cell[3718, 97, 81, 0, 70, "Item",ExpressionUUID->"66164633-2f35-4150-a57d-587e28e75043"],
-Cell[3802, 99, 85, 0, 70, "Item",ExpressionUUID->"01c0fd55-9336-474d-911a-a30e1e03117d"],
-Cell[3890, 101, 87, 0, 70, "Item",ExpressionUUID->"45a56009-b1dc-4ddf-a655-8e7df90ed5e2"],
-Cell[3980, 103, 89, 0, 70, "Item",ExpressionUUID->"807dbd70-2699-4433-afbd-26c04b005b1f"],
-Cell[4072, 105, 88, 0, 70, "Section",ExpressionUUID->"31f49940-8f34-4da1-989e-34509b2455e7"],
-Cell[4163, 107, 89, 0, 70, "Item",ExpressionUUID->"e25bf435-22f7-4cc8-8325-42f009d0c9b9"],
-Cell[4255, 109, 83, 0, 70, "Section",ExpressionUUID->"21057853-7daa-484f-bb91-c189e15dd2f5"],
-Cell[4341, 111, 92, 0, 70, "Item",ExpressionUUID->"f2600f62-1554-41c5-bfec-3ee7d772a984"]
+Cell[2013, 48, 88, 0, 70, "Section",ExpressionUUID->"7216bd34-7ed5-4e5c-a15c-60d09d8ce90f"],
+Cell[2104, 50, 89, 0, 70, "Item",ExpressionUUID->"3fadeff0-49de-44b9-b51f-fd352d34390c"],
+Cell[2196, 52, 98, 0, 70, "Item",ExpressionUUID->"103df0ea-4889-4a47-b6e8-feb89c14649d"]
 }
 ]
 *)

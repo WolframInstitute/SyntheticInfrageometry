@@ -3,91 +3,50 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5885,        124]
-NotebookOptionsPosition[      3389,         87]
-NotebookOutlinePosition[      3706,        101]
-CellTagsIndexPosition[      3663,         98]
+NotebookDataLength[      2704,         67]
+NotebookOptionsPosition[      1673,         46]
+NotebookOutlinePosition[      1990,         60]
+CellTagsIndexPosition[      1947,         57]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraLine", "Title",ExpressionUUID->"8272fee4-e341-4ec1-922f-d13134d2f2a5"],
+Cell["InfraLine", "Title",ExpressionUUID->"b94c2b25-97c1-4b4e-8171-ab4a851dc8a7"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"d470bf55-62c4-4ee0-aea5-c550ee174b74"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"71e3343e-1510-48e2-a2b6-b0985a61852f"],
 
 Cell["\<\
-InfraLine[p, q] represents maximal geodesic extensions through p and q in the \
-scene language. InfraLine[path] extends a given path. Multi-realisations are \
-returned as InfraSegment[{\[Ellipsis]}] (the only path-shaped wrapper).\
-\>", "Text",ExpressionUUID->"3b56d5ea-6989-4431-b4dc-7689ab03a72f"],
+InfraLine[p, q] represents maximal geodesic extensions through p and q. \
+InfraLine[path] extends a given path. Multi-realisations are returned as \
+InfraSegment[{...}] (the only path-shaped wrapper).\
+\>", "Text",ExpressionUUID->"f5c19d32-0e6c-474f-8247-7257af1d74d5"],
 
-Cell["Setup", "Section",ExpressionUUID->"25712401-5824-429a-8877-4c83619aa823"],
+Cell["Setup", "Section",ExpressionUUID->"f4bcd042-0d4f-45de-9988-0ea30384f707"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"5235e6d9-aeea-4a17-8f2f-54c4f84a84eb"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"8658cc5e-a953-42d3-a766-aaed49ec5c5e"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"e67257b6-8876-4965-a272-6715a767cccf"],
+  True,ExpressionUUID->"d60aadfe-fc0f-43f7-b774-ef519b2012e6"],
 
-Cell["Examples", "Section",ExpressionUUID->"fb56066d-49ad-4f0d-9054-a87c6148b003"],
+Cell["Related Guides", "Section",ExpressionUUID->"45c9cd4b-cefe-4706-96a8-5572949a9fc3"],
 
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"d97befb1-4189-4603-8880-b2ed7cd4920b"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"a6a5bbb5-cf2d-45a8-8730-13e5315ac44a"],
 
-Cell[BoxData[
- $CellContext`buildCell["Scene-language line constructor."]], "Input",Expressi\
-onUUID->"548e0726-3d2a-4f0b-90d2-5f84c624234e"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"11d57ab7-e81c-4673-bc6c-b0c7b0ab6065"],
-
-Cell[BoxData[
- $CellContext`buildCell["InfraLine[1, 9]"]], "Input",ExpressionUUID->"511dfd52-23e9-4f28-9376-b833229ecb58"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"0cc31f9e-f63c-425c-b1f1-ed79b5211539"],
-
-Cell[BoxData[
- $CellContext`buildCell["Line through a given path."]], "Input",ExpressionUUID->"56fa5e8a-d1e7-415f-9ec2-07d3232c1dba"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"95a0a838-eb32-473e-8153-2c69cd57f30d"],
-
-Cell[BoxData[
- $CellContext`buildCell["InfraLine[{1, 5, 9}]"]], "Input",ExpressionUUID->"88cec80c-3454-41c0-a42f-90bf9630de5f"],
-
-Cell["See Also", "Section",ExpressionUUID->"d6a56a32-cb70-4880-a292-a6dc1339cb62"],
-
-Cell["InfraSegment", "Item",ExpressionUUID->"a967a0f9-accd-45e3-b7f9-90d9bef9bd40"],
-
-Cell["FindInfraLine", "Item",ExpressionUUID->"851ad6d2-0c0a-4a2c-80e5-43acfd0a8329"],
-
-Cell["InfraRay", "Item",ExpressionUUID->"3c5abc8f-0c74-4fff-89ec-f1a5a2dcbec1"],
-
-Cell["InfraScene", "Item",ExpressionUUID->"36fe12ad-c36d-4e48-99a2-37704bb9ffa8"],
-
-Cell["Related Guides", "Section",ExpressionUUID->"6a730cda-c6b4-4a31-952f-200a8399839b"],
-
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"fd476494-984f-45c0-9183-98d7e68776c7"],
-
-Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"e081f804-7322-4160-b382-a86f9226ec42"],
-
-Cell["Tutorials", "Section",ExpressionUUID->"67301bbb-80eb-4466-9154-bf068e0a39c4"],
-
-Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"824dfd0c-5449-4fd0-ae26-9f5df8e75dbe"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"1d58235d-6c8e-4f9c-a94f-3e82281bad20"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
 ]
 (* End of Notebook Content *)
 
@@ -100,32 +59,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 81, 0, 70, "Title",ExpressionUUID->"8272fee4-e341-4ec1-922f-d13134d2f2a5"],
-Cell[638, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"d470bf55-62c4-4ee0-aea5-c550ee174b74"],
-Cell[731, 24, 309, 4, 70, "Text",ExpressionUUID->"3b56d5ea-6989-4431-b4dc-7689ab03a72f"],
-Cell[1043, 30, 79, 0, 70, "Section",ExpressionUUID->"25712401-5824-429a-8877-4c83619aa823"],
-Cell[1125, 32, 91, 0, 70, "CodeText",ExpressionUUID->"5235e6d9-aeea-4a17-8f2f-54c4f84a84eb"],
-Cell[1219, 34, 192, 4, 70, "Code",ExpressionUUID->"e67257b6-8876-4965-a272-6715a767cccf",
+Cell[554, 20, 81, 0, 70, "Title",ExpressionUUID->"b94c2b25-97c1-4b4e-8171-ab4a851dc8a7"],
+Cell[638, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"71e3343e-1510-48e2-a2b6-b0985a61852f"],
+Cell[731, 24, 279, 4, 70, "Text",ExpressionUUID->"f5c19d32-0e6c-474f-8247-7257af1d74d5"],
+Cell[1013, 30, 79, 0, 70, "Section",ExpressionUUID->"f4bcd042-0d4f-45de-9988-0ea30384f707"],
+Cell[1095, 32, 91, 0, 70, "CodeText",ExpressionUUID->"8658cc5e-a953-42d3-a766-aaed49ec5c5e"],
+Cell[1189, 34, 192, 4, 70, "Code",ExpressionUUID->"d60aadfe-fc0f-43f7-b774-ef519b2012e6",
  InitializationCell->True],
-Cell[1414, 40, 82, 0, 70, "Section",ExpressionUUID->"fb56066d-49ad-4f0d-9054-a87c6148b003"],
-Cell[1499, 42, 115, 1, 70, "Input",ExpressionUUID->"d97befb1-4189-4603-8880-b2ed7cd4920b"],
-Cell[1617, 45, 141, 2, 70, "Input",ExpressionUUID->"548e0726-3d2a-4f0b-90d2-5f84c624234e"],
-Cell[1761, 49, 112, 1, 70, "Input",ExpressionUUID->"11d57ab7-e81c-4673-bc6c-b0c7b0ab6065"],
-Cell[1876, 52, 122, 1, 70, "Input",ExpressionUUID->"511dfd52-23e9-4f28-9376-b833229ecb58"],
-Cell[2001, 55, 115, 1, 70, "Input",ExpressionUUID->"0cc31f9e-f63c-425c-b1f1-ed79b5211539"],
-Cell[2119, 58, 133, 1, 70, "Input",ExpressionUUID->"56fa5e8a-d1e7-415f-9ec2-07d3232c1dba"],
-Cell[2255, 61, 112, 1, 70, "Input",ExpressionUUID->"95a0a838-eb32-473e-8153-2c69cd57f30d"],
-Cell[2370, 64, 127, 1, 70, "Input",ExpressionUUID->"88cec80c-3454-41c0-a42f-90bf9630de5f"],
-Cell[2500, 67, 82, 0, 70, "Section",ExpressionUUID->"d6a56a32-cb70-4880-a292-a6dc1339cb62"],
-Cell[2585, 69, 83, 0, 70, "Item",ExpressionUUID->"a967a0f9-accd-45e3-b7f9-90d9bef9bd40"],
-Cell[2671, 71, 79, 0, 70, "Item",ExpressionUUID->"851ad6d2-0c0a-4a2c-80e5-43acfd0a8329"],
-Cell[2753, 73, 79, 0, 70, "Item",ExpressionUUID->"3c5abc8f-0c74-4fff-89ec-f1a5a2dcbec1"],
-Cell[2835, 75, 81, 0, 70, "Item",ExpressionUUID->"36fe12ad-c36d-4e48-99a2-37704bb9ffa8"],
-Cell[2919, 77, 88, 0, 70, "Section",ExpressionUUID->"6a730cda-c6b4-4a31-952f-200a8399839b"],
-Cell[3010, 79, 93, 0, 70, "Item",ExpressionUUID->"fd476494-984f-45c0-9183-98d7e68776c7"],
-Cell[3106, 81, 94, 0, 70, "Item",ExpressionUUID->"e081f804-7322-4160-b382-a86f9226ec42"],
-Cell[3203, 83, 83, 0, 70, "Section",ExpressionUUID->"67301bbb-80eb-4466-9154-bf068e0a39c4"],
-Cell[3289, 85, 96, 0, 70, "Item",ExpressionUUID->"824dfd0c-5449-4fd0-ae26-9f5df8e75dbe"]
+Cell[1384, 40, 88, 0, 70, "Section",ExpressionUUID->"45c9cd4b-cefe-4706-96a8-5572949a9fc3"],
+Cell[1475, 42, 93, 0, 70, "Item",ExpressionUUID->"a6a5bbb5-cf2d-45a8-8730-13e5315ac44a"],
+Cell[1571, 44, 98, 0, 70, "Item",ExpressionUUID->"1d58235d-6c8e-4f9c-a94f-3e82281bad20"]
 }
 ]
 *)

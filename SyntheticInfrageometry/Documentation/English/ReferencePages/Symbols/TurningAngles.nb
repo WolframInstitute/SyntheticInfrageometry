@@ -1,0 +1,80 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2985,         71]
+NotebookOptionsPosition[      1954,         50]
+NotebookOutlinePosition[      2271,         64]
+CellTagsIndexPosition[      2228,         61]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["TurningAngles", "Title",ExpressionUUID->"f24b795c-8695-45ee-bee2-4bc2bd4d531c"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"6882a520-a73d-41be-9cbb-ec9830e884ba"],
+
+Cell["\<\
+TurningAngles[graph, path] returns the list of discrete exterior angles Pi - \
+InfraAngle[graph, {v_{i-1}, v_i, v_{i+1}}] at each interior vertex of the \
+polygonal curve path = {v_1, ..., v_k}; closed cycles (First[path] == \
+Last[path]) include the wrap-around triple. TurningAngles[graph, polyline] \
+returns the list of turning angles at the knot vertices of an InfraPolyline \
+(one list per realisation); geodesic-interior vertices contribute no turning \
+by construction.\
+\>", "Text",ExpressionUUID->"0a1104f8-1f6b-4381-a16c-bef03fd85b17"],
+
+Cell["Setup", "Section",ExpressionUUID->"49730d35-d0c8-46bf-99b8-f63e7192a969"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"3ffefc82-db2d-4897-baa6-e5d9bcee9d81"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"da97f091-54d7-4320-9f31-dd40b3bddd74"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"0ccb59ff-0f9f-46b8-8491-77751b8676ba"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"65b71e75-538d-43fa-bf81-ba6602f0bc61"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"e56ef465-c286-43ec-a179-1fab6074fc9a"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"f24b795c-8695-45ee-bee2-4bc2bd4d531c"],
+Cell[642, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"6882a520-a73d-41be-9cbb-ec9830e884ba"],
+Cell[735, 24, 556, 8, 70, "Text",ExpressionUUID->"0a1104f8-1f6b-4381-a16c-bef03fd85b17"],
+Cell[1294, 34, 79, 0, 70, "Section",ExpressionUUID->"49730d35-d0c8-46bf-99b8-f63e7192a969"],
+Cell[1376, 36, 91, 0, 70, "CodeText",ExpressionUUID->"3ffefc82-db2d-4897-baa6-e5d9bcee9d81"],
+Cell[1470, 38, 192, 4, 70, "Code",ExpressionUUID->"da97f091-54d7-4320-9f31-dd40b3bddd74",
+ InitializationCell->True],
+Cell[1665, 44, 88, 0, 70, "Section",ExpressionUUID->"0ccb59ff-0f9f-46b8-8491-77751b8676ba"],
+Cell[1756, 46, 93, 0, 70, "Item",ExpressionUUID->"65b71e75-538d-43fa-bf81-ba6602f0bc61"],
+Cell[1852, 48, 98, 0, 70, "Item",ExpressionUUID->"e56ef465-c286-43ec-a179-1fab6074fc9a"]
+}
+]
+*)
+
+(* End of internal cache information *)

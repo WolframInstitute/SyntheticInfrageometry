@@ -1,0 +1,79 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2903,         70]
+NotebookOptionsPosition[      1872,         49]
+NotebookOutlinePosition[      2189,         63]
+CellTagsIndexPosition[      2146,         60]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["InfraEqualQ", "Title",ExpressionUUID->"92d16f7a-e13c-4c21-b284-af32b3b8ac6b"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b5c6f9b3-0971-4f74-8c88-e44ba8d943aa"],
+
+Cell["\<\
+InfraEqualQ[graph, a, b] tests equality of two Infra* wrappers via their \
+diffusion diagrams (vertex -> total-occurrence multisets). Returns False on \
+head mismatch. Option Method (\"Diffuse\" (default; |A cap B| > |A delta B|, \
+equivalently weighted Jaccard > 1/2) | \"Overlap\" (at least one common \
+vertex) | \"Set\" (vertex sets identical) | \"Multiset\" (diffusion diagrams \
+identical)).\
+\>", "Text",ExpressionUUID->"0af07758-1cd3-47d2-87ee-360808d0323b"],
+
+Cell["Setup", "Section",ExpressionUUID->"98958d0e-cd6d-4485-b780-02a5eddb9afd"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"319baeab-28c7-4e80-b2dd-314c4897d0aa"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"e70e336a-ce46-4d45-a86d-55e8c3f581c8"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"d7aac13b-1c1d-47fb-a5d8-dcdfa37c2bc0"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"cfdc0696-5a57-4885-a9db-5734d2ee79b8"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"4c93fa2d-26dd-4809-a1ad-b612080de0d3"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 83, 0, 70, "Title",ExpressionUUID->"92d16f7a-e13c-4c21-b284-af32b3b8ac6b"],
+Cell[640, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b5c6f9b3-0971-4f74-8c88-e44ba8d943aa"],
+Cell[733, 24, 476, 7, 70, "Text",ExpressionUUID->"0af07758-1cd3-47d2-87ee-360808d0323b"],
+Cell[1212, 33, 79, 0, 70, "Section",ExpressionUUID->"98958d0e-cd6d-4485-b780-02a5eddb9afd"],
+Cell[1294, 35, 91, 0, 70, "CodeText",ExpressionUUID->"319baeab-28c7-4e80-b2dd-314c4897d0aa"],
+Cell[1388, 37, 192, 4, 70, "Code",ExpressionUUID->"e70e336a-ce46-4d45-a86d-55e8c3f581c8",
+ InitializationCell->True],
+Cell[1583, 43, 88, 0, 70, "Section",ExpressionUUID->"d7aac13b-1c1d-47fb-a5d8-dcdfa37c2bc0"],
+Cell[1674, 45, 93, 0, 70, "Item",ExpressionUUID->"cfdc0696-5a57-4885-a9db-5734d2ee79b8"],
+Cell[1770, 47, 98, 0, 70, "Item",ExpressionUUID->"4c93fa2d-26dd-4809-a1ad-b612080de0d3"]
+}
+]
+*)
+
+(* End of internal cache information *)

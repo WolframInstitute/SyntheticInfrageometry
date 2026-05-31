@@ -1,0 +1,76 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2694,         67]
+NotebookOptionsPosition[      1663,         46]
+NotebookOutlinePosition[      1980,         60]
+CellTagsIndexPosition[      1937,         57]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["InfraEllipseQ", "Title",ExpressionUUID->"2ccf281f-d6aa-4654-b4f8-ef0fad01854b"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"a0664b33-4708-47f7-97e5-c01d5bb84fb8"],
+
+Cell["\<\
+InfraEllipseQ[graph, cycle] tests whether the vertex sequence cycle is a \
+metric ellipse (cyclic edge chain whose vertex set is an elliptic shell). \
+Accepts both open and closed input.\
+\>", "Text",ExpressionUUID->"db9bb27b-65ea-4ea9-98c4-da3ba6b190e8"],
+
+Cell["Setup", "Section",ExpressionUUID->"5f1d33a6-63d5-4069-973a-2f284a4b31df"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"a1979f97-485e-4f4b-9683-3b2256a68f76"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"d1587eb4-8869-4207-9595-299ef2e38c10"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"94c2fcb1-29c2-449c-bea3-27f3d47b38aa"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"028a76ff-b2ef-47c2-baf4-f247098e1d9d"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"3351f99a-7009-45c1-b917-44bfb382cf8b"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"2ccf281f-d6aa-4654-b4f8-ef0fad01854b"],
+Cell[642, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"a0664b33-4708-47f7-97e5-c01d5bb84fb8"],
+Cell[735, 24, 265, 4, 70, "Text",ExpressionUUID->"db9bb27b-65ea-4ea9-98c4-da3ba6b190e8"],
+Cell[1003, 30, 79, 0, 70, "Section",ExpressionUUID->"5f1d33a6-63d5-4069-973a-2f284a4b31df"],
+Cell[1085, 32, 91, 0, 70, "CodeText",ExpressionUUID->"a1979f97-485e-4f4b-9683-3b2256a68f76"],
+Cell[1179, 34, 192, 4, 70, "Code",ExpressionUUID->"d1587eb4-8869-4207-9595-299ef2e38c10",
+ InitializationCell->True],
+Cell[1374, 40, 88, 0, 70, "Section",ExpressionUUID->"94c2fcb1-29c2-449c-bea3-27f3d47b38aa"],
+Cell[1465, 42, 93, 0, 70, "Item",ExpressionUUID->"028a76ff-b2ef-47c2-baf4-f247098e1d9d"],
+Cell[1561, 44, 98, 0, 70, "Item",ExpressionUUID->"3351f99a-7009-45c1-b917-44bfb382cf8b"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,81 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3068,         72]
+NotebookOptionsPosition[      2037,         51]
+NotebookOutlinePosition[      2354,         65]
+CellTagsIndexPosition[      2311,         62]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindClosestInfraPoint", "Title",ExpressionUUID->"08d294b8-c8d4-4022-970f-02b6aebcda15"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"f12cd884-e075-4481-bd16-d4a522b4ff36"],
+
+Cell["\<\
+FindClosestInfraPoint[graph, line, point] returns a List of unary \
+InfraPoint[{v}] wrappers for the vertices on line at minimum graph distance \
+from point (metric argmin). FindClosestInfraPoint[graph, line, point, n] / \
+UpTo[n] / All controls multiplicity. line accepts a bare vertex sequence or \
+InfraSegment / InfraLine / InfraPath / InfraRay wrapper; point accepts a bare \
+vertex or InfraPoint[{...}]; multi-realisation wrappers spread Cartesian. \
+Distinct from FindInfraPerpendicular, which runs the synthetic Euclid I.12 \
+foot construction.\
+\>", "Text",ExpressionUUID->"b94c722f-3915-48cf-a780-08bb639ead2e"],
+
+Cell["Setup", "Section",ExpressionUUID->"a19d3f8f-f7c8-4662-9b5a-ec0c4c67f4f7"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"7d825aa4-f00a-4847-b236-4af235568e4f"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"e3d58b93-b023-4fe7-8dc0-c2b02714a0b3"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"baa985e0-1415-4785-9b80-78b81ef486f2"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"474639ed-cf01-4340-85f6-31c224e7d595"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"c5292e74-54fb-498e-b155-89a0fc7caf6d"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 93, 0, 70, "Title",ExpressionUUID->"08d294b8-c8d4-4022-970f-02b6aebcda15"],
+Cell[650, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"f12cd884-e075-4481-bd16-d4a522b4ff36"],
+Cell[743, 24, 631, 9, 70, "Text",ExpressionUUID->"b94c722f-3915-48cf-a780-08bb639ead2e"],
+Cell[1377, 35, 79, 0, 70, "Section",ExpressionUUID->"a19d3f8f-f7c8-4662-9b5a-ec0c4c67f4f7"],
+Cell[1459, 37, 91, 0, 70, "CodeText",ExpressionUUID->"7d825aa4-f00a-4847-b236-4af235568e4f"],
+Cell[1553, 39, 192, 4, 70, "Code",ExpressionUUID->"e3d58b93-b023-4fe7-8dc0-c2b02714a0b3",
+ InitializationCell->True],
+Cell[1748, 45, 88, 0, 70, "Section",ExpressionUUID->"baa985e0-1415-4785-9b80-78b81ef486f2"],
+Cell[1839, 47, 93, 0, 70, "Item",ExpressionUUID->"474639ed-cf01-4340-85f6-31c224e7d595"],
+Cell[1935, 49, 98, 0, 70, "Item",ExpressionUUID->"c5292e74-54fb-498e-b155-89a0fc7caf6d"]
+}
+]
+*)
+
+(* End of internal cache information *)

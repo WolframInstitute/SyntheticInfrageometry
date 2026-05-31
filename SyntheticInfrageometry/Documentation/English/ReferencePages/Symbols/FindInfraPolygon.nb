@@ -1,0 +1,81 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3098,         72]
+NotebookOptionsPosition[      2067,         51]
+NotebookOutlinePosition[      2384,         65]
+CellTagsIndexPosition[      2341,         62]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraPolygon", "Title",ExpressionUUID->"993196c3-8672-47ef-981f-e0eb6a7b8c45"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"0115cf12-b060-45fe-9111-90984b18b439"],
+
+Cell["\<\
+FindInfraPolygon[graph, {p1, ..., pn}] returns {InfraPolygon[{poly}]} for the \
+polygon through corners p1, ..., pn (n >= 3), each side a geodesic between \
+consecutive corners and the last side returning to p1. \
+FindInfraPolygon[graph, verts, count] returns exactly count or $Failed; \
+UpTo[count] returns up to count; All returns all polygons (the Cartesian \
+product of per-side geodesic realisations). Default count = 1 (first geodesic \
+per side). Corners accept bare vertices or unary InfraPoint. Options \
+Properties / Method forward to the side geodesics (see FindInfraSegment).\
+\>", "Text",ExpressionUUID->"a07eec81-5703-4f7c-8d3f-f44428fff245"],
+
+Cell["Setup", "Section",ExpressionUUID->"f556f191-4608-47ba-8348-80802a13de87"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"97086a9e-1839-410a-8177-3e48c2ead53b"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"50ca97d2-c21e-4aa3-b9f7-5ad25495cf76"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"372b6d54-6afc-4a57-bc7f-21f8dc9fda08"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"f1afc1c0-39f7-48e9-bcbf-33425955fe22"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"59a9fcc3-a7cf-4047-abb0-4f3094e0542c"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 88, 0, 70, "Title",ExpressionUUID->"993196c3-8672-47ef-981f-e0eb6a7b8c45"],
+Cell[645, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"0115cf12-b060-45fe-9111-90984b18b439"],
+Cell[738, 24, 666, 9, 70, "Text",ExpressionUUID->"a07eec81-5703-4f7c-8d3f-f44428fff245"],
+Cell[1407, 35, 79, 0, 70, "Section",ExpressionUUID->"f556f191-4608-47ba-8348-80802a13de87"],
+Cell[1489, 37, 91, 0, 70, "CodeText",ExpressionUUID->"97086a9e-1839-410a-8177-3e48c2ead53b"],
+Cell[1583, 39, 192, 4, 70, "Code",ExpressionUUID->"50ca97d2-c21e-4aa3-b9f7-5ad25495cf76",
+ InitializationCell->True],
+Cell[1778, 45, 88, 0, 70, "Section",ExpressionUUID->"372b6d54-6afc-4a57-bc7f-21f8dc9fda08"],
+Cell[1869, 47, 93, 0, 70, "Item",ExpressionUUID->"f1afc1c0-39f7-48e9-bcbf-33425955fe22"],
+Cell[1965, 49, 98, 0, 70, "Item",ExpressionUUID->"59a9fcc3-a7cf-4047-abb0-4f3094e0542c"]
+}
+]
+*)
+
+(* End of internal cache information *)

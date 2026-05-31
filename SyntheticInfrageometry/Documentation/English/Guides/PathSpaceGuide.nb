@@ -57,9 +57,7 @@ Cell["EmbeddingClosest", "Item",ExpressionUUID->"762d1468-a403-46f3-9a2e-a9099fe
 
 Cell["Geodesic-graph machinery", "Section",ExpressionUUID->"9f31f337-9a68-41fc-b574-66ef4b3ebbb6"],
 
-Cell["GeodesicGraph", "Item",ExpressionUUID->"1e2512af-db89-47fe-b68d-b462c0fa4d45"],
-
-Cell["GeodesicSubgraph", "Item",ExpressionUUID->"828e1d9e-3bf8-4f09-8b25-ff8b44e47973"],
+Cell["GeodesicSprayGraph", "Item",ExpressionUUID->"1e2512af-db89-47fe-b68d-b462c0fa4d45"],
 
 Cell["PathSubgraph", "Item",ExpressionUUID->"dc522690-f930-4907-b984-c130c29f6ad4"],
 

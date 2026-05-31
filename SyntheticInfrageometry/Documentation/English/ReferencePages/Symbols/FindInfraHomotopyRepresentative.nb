@@ -1,0 +1,82 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3202,         73]
+NotebookOptionsPosition[      2169,         52]
+NotebookOutlinePosition[      2486,         66]
+CellTagsIndexPosition[      2443,         63]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraHomotopyRepresentative", "Title",ExpressionUUID->"1510aca9-15ce-4ded-8fa4-bce37709c9f5"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"1917a428-738b-4f8c-b677-032c12ab2a5a"],
+
+Cell["\<\
+FindInfraHomotopyRepresentative[graph, obj] returns {head[{w}]} for one \
+length-shortest walk w in obj's homotopy class, where head matches the input \
+wrapper (InfraPath / InfraLoop / InfraString; InfraCircle coerces to \
+InfraString). FindInfraHomotopyRepresentative[graph, obj, n] / UpTo[n] / All \
+controls multiplicity. Options: Method (\"Exhaustive\" (default; BFS), \
+{\"Exhaustive\", \"Pruning\" -> spec}, \"Greedy\" (DFS contracting moves \
+only)), \"FreeHomotopy\" (False (default); True allows endpoint slides on \
+InfraPath and base-point rotation on InfraLoop), \"NullHomotopicCycles\" \
+(default {1, 2, 3}), \"MaxLength\" (Automatic), \"MaxMoves\" (Infinity).\
+\>", "Text",ExpressionUUID->"246d327f-ad45-41c9-b40d-c8b11966334a"],
+
+Cell["Setup", "Section",ExpressionUUID->"158da343-dba8-4c70-86ca-a8dc56b4338c"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"12343513-6dd8-462d-89ab-eb826a6caddb"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"42aad447-6e8b-411e-b7a8-37a39cd034db"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"b2c3966f-42a8-44f0-b60e-aad5b3afc630"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"3d344edd-d84d-4228-b7d4-77c86cc705a5"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"b9e8b15d-fde0-450f-b3a7-a12c07f5597c"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 103, 0, 70, "Title",ExpressionUUID->"1510aca9-15ce-4ded-8fa4-bce37709c9f5"],
+Cell[660, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"1917a428-738b-4f8c-b677-032c12ab2a5a"],
+Cell[753, 24, 753, 10, 70, "Text",ExpressionUUID->"246d327f-ad45-41c9-b40d-c8b11966334a"],
+Cell[1509, 36, 79, 0, 70, "Section",ExpressionUUID->"158da343-dba8-4c70-86ca-a8dc56b4338c"],
+Cell[1591, 38, 91, 0, 70, "CodeText",ExpressionUUID->"12343513-6dd8-462d-89ab-eb826a6caddb"],
+Cell[1685, 40, 192, 4, 70, "Code",ExpressionUUID->"42aad447-6e8b-411e-b7a8-37a39cd034db",
+ InitializationCell->True],
+Cell[1880, 46, 88, 0, 70, "Section",ExpressionUUID->"b2c3966f-42a8-44f0-b60e-aad5b3afc630"],
+Cell[1971, 48, 93, 0, 70, "Item",ExpressionUUID->"3d344edd-d84d-4228-b7d4-77c86cc705a5"],
+Cell[2067, 50, 98, 0, 70, "Item",ExpressionUUID->"b9e8b15d-fde0-450f-b3a7-a12c07f5597c"]
+}
+]
+*)
+
+(* End of internal cache information *)

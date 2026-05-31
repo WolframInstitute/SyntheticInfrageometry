@@ -3,110 +3,53 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      6810,        146]
-NotebookOptionsPosition[      4033,        106]
-NotebookOutlinePosition[      4350,        120]
-CellTagsIndexPosition[      4307,        117]
+NotebookDataLength[      2938,         70]
+NotebookOptionsPosition[      1907,         49]
+NotebookOutlinePosition[      2224,         63]
+CellTagsIndexPosition[      2181,         60]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["ComparisonTriangle", "Title",ExpressionUUID->"b2940c1e-5a99-492e-8d7a-945684125048"],
+Cell["ComparisonTriangle", "Title",ExpressionUUID->"5db53b5c-9aa1-44a1-aa24-bbc987533889"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"ae89671e-dfe7-448b-ac69-d268b2d588e2"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"4a8746ca-300e-41d9-a7da-311d7e266f7f"],
 
 Cell["\<\
 ComparisonTriangle[a, b, c] returns the Wolfram Triangle in R^2 with side \
-lengths {a, b, c}. ComparisonTriangle[a, b, c, \"Curvature\" -> k] for k \
-\[NotEqual] 0 returns InfraComparisonTriangle in M_k^2. ComparisonTriangle[g, \
-p, q, r, \"Curvature\" -> k] reads the side lengths from g.\
-\>", "Text",ExpressionUUID->"dab84e31-fc12-4231-8c5c-006581cc380f"],
+lengths {a, b, c} (a opposite p, b opposite q, c opposite r). \
+ComparisonTriangle[a, b, c, \"Curvature\" -> k] for k != 0 returns \
+InfraComparisonTriangle[<|\"Sides\" -> ..., \"Curvature\" -> k, \"Angles\" -> \
+{alpha_p, alpha_q, alpha_r}|>] in M_k^2. ComparisonTriangle[graph, p, q, r, \
+\"Curvature\" -> k] reads the side lengths from the graph.\
+\>", "Text",ExpressionUUID->"8c7013e6-c27a-4dff-8f54-2d7f9094ac61"],
 
-Cell["Setup", "Section",ExpressionUUID->"dc7960c5-7c12-4d16-8823-ee3ae7f35965"],
+Cell["Setup", "Section",ExpressionUUID->"04d37e54-9c2f-4161-a3c0-40944cccad6c"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"3f61cc8e-e853-4fb6-a9a7-7fba1b5f5310"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"56d6ee24-3e11-4552-ac25-37f3929055e6"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"048f3fac-a0ae-45b6-8d36-a7d9a29b5f02"],
+  True,ExpressionUUID->"0d06b655-0ea4-43f8-87b4-baf9fd6fe591"],
 
-Cell["Examples", "Section",ExpressionUUID->"8e22ba38-9a28-4546-955e-9be907b502d9"],
+Cell["Related Guides", "Section",ExpressionUUID->"98e3f6e3-386b-40ab-bbba-fcce2a7df8f2"],
 
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"3f0989c5-5642-466c-b484-d4886c33b32c"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"4cba8f8e-34e8-4c96-af06-b95bcd666ddc"],
 
-Cell[BoxData[
- $CellContext`buildCell[
- "Euclidean comparison triangle with sides 3, 4, 5."]], "Input",ExpressionUUID\
-->"3e701ad3-b0fc-4d6b-8bc9-860b44686d88"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"ab33e1af-4757-4c55-8d0b-6308d0cc5dcb"],
-
-Cell[BoxData[
- $CellContext`buildCell["ComparisonTriangle[3, 4, 5]"]], "Input",ExpressionUUID->"65fd3e3a-8270-4342-9b6f-d8e2faf2bf1b"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"643d9541-007d-46d6-afdf-2dda394bd041"],
-
-Cell[BoxData[
- $CellContext`buildCell["Spherical comparison triangle (k = 1)."]], "Input",Ex\
-pressionUUID->"9337de7c-dfe0-48d5-ae9d-282a08bc9220"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"54a23487-af69-4415-af08-7ea79d76a9d1"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "ComparisonTriangle[1, 1, 1, \"Curvature\" -> 1]"]], "Input",ExpressionUUID->\
-"21553242-70b4-4908-aba7-8d55eb8cc713"],
-
-Cell[BoxData[
- $CellContext`buildCell["CodeText"]], "Input",ExpressionUUID->"dcfbcd71-6578-4a27-83d3-92376dc4fbc1"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "Hyperbolic comparison triangle from graph distances."]], "Input",ExpressionU\
-UID->"0d2e6a2c-2d5f-4632-9025-1b3b7dff6157"],
-
-Cell[BoxData[
- $CellContext`buildCell["Input"]], "Input",ExpressionUUID->"122f72dc-08dc-4a91-93b6-aad378eda8d0"],
-
-Cell[BoxData[
- $CellContext`buildCell[
- "ComparisonTriangle[GridGraph[{4, 4}], 1, 6, 11, \"Curvature\" -> -1]"]], \
-"Input",ExpressionUUID->"861ebe9c-ca8d-47e9-a88f-c7a025d8fedb"],
-
-Cell["See Also", "Section",ExpressionUUID->"3c20f377-7759-4900-a78d-b4d785d8df31"],
-
-Cell["InfraComparisonTriangle", "Item",ExpressionUUID->"ee68a363-110a-4e92-ae01-c932fa2fd41b"],
-
-Cell["CATInequalityQ", "Item",ExpressionUUID->"4407a1d7-9758-4990-8326-1a65c3b4593d"],
-
-Cell["InfraCurvature", "Item",ExpressionUUID->"a6479c25-3177-4fd8-8f74-b940033c1446"],
-
-Cell["InfraAngle", "Item",ExpressionUUID->"773642e6-3cb5-4b7c-8c15-29edfc0b3ed3"],
-
-Cell["Related Guides", "Section",ExpressionUUID->"313fc684-f30e-462c-8292-fece541c145c"],
-
-Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"ca61a84f-99b7-49ec-be82-fe123813bf67"],
-
-Cell["Tutorials", "Section",ExpressionUUID->"3861f610-31d5-4b86-a80e-453ee138a841"],
-
-Cell["MetricAlgebraTutorial", "Item",ExpressionUUID->"79cf097a-1233-4c57-97c6-7484b852dba6"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"2047ca83-358f-476e-b7a8-44fa643358ee"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
+ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
 ]
 (* End of Notebook Content *)
 
@@ -119,35 +62,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"b2940c1e-5a99-492e-8d7a-945684125048"],
-Cell[647, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"ae89671e-dfe7-448b-ac69-d268b2d588e2"],
-Cell[740, 24, 369, 5, 70, "Text",ExpressionUUID->"dab84e31-fc12-4231-8c5c-006581cc380f"],
-Cell[1112, 31, 79, 0, 70, "Section",ExpressionUUID->"dc7960c5-7c12-4d16-8823-ee3ae7f35965"],
-Cell[1194, 33, 91, 0, 70, "CodeText",ExpressionUUID->"3f61cc8e-e853-4fb6-a9a7-7fba1b5f5310"],
-Cell[1288, 35, 192, 4, 70, "Code",ExpressionUUID->"048f3fac-a0ae-45b6-8d36-a7d9a29b5f02",
+Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"5db53b5c-9aa1-44a1-aa24-bbc987533889"],
+Cell[647, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"4a8746ca-300e-41d9-a7da-311d7e266f7f"],
+Cell[740, 24, 504, 7, 70, "Text",ExpressionUUID->"8c7013e6-c27a-4dff-8f54-2d7f9094ac61"],
+Cell[1247, 33, 79, 0, 70, "Section",ExpressionUUID->"04d37e54-9c2f-4161-a3c0-40944cccad6c"],
+Cell[1329, 35, 91, 0, 70, "CodeText",ExpressionUUID->"56d6ee24-3e11-4552-ac25-37f3929055e6"],
+Cell[1423, 37, 192, 4, 70, "Code",ExpressionUUID->"0d06b655-0ea4-43f8-87b4-baf9fd6fe591",
  InitializationCell->True],
-Cell[1483, 41, 82, 0, 70, "Section",ExpressionUUID->"8e22ba38-9a28-4546-955e-9be907b502d9"],
-Cell[1568, 43, 115, 1, 70, "Input",ExpressionUUID->"3f0989c5-5642-466c-b484-d4886c33b32c"],
-Cell[1686, 46, 160, 3, 70, "Input",ExpressionUUID->"3e701ad3-b0fc-4d6b-8bc9-860b44686d88"],
-Cell[1849, 51, 112, 1, 70, "Input",ExpressionUUID->"ab33e1af-4757-4c55-8d0b-6308d0cc5dcb"],
-Cell[1964, 54, 134, 1, 70, "Input",ExpressionUUID->"65fd3e3a-8270-4342-9b6f-d8e2faf2bf1b"],
-Cell[2101, 57, 115, 1, 70, "Input",ExpressionUUID->"643d9541-007d-46d6-afdf-2dda394bd041"],
-Cell[2219, 60, 147, 2, 70, "Input",ExpressionUUID->"9337de7c-dfe0-48d5-ae9d-282a08bc9220"],
-Cell[2369, 64, 112, 1, 70, "Input",ExpressionUUID->"54a23487-af69-4415-af08-7ea79d76a9d1"],
-Cell[2484, 67, 158, 3, 70, "Input",ExpressionUUID->"21553242-70b4-4908-aba7-8d55eb8cc713"],
-Cell[2645, 72, 115, 1, 70, "Input",ExpressionUUID->"dcfbcd71-6578-4a27-83d3-92376dc4fbc1"],
-Cell[2763, 75, 163, 3, 70, "Input",ExpressionUUID->"0d2e6a2c-2d5f-4632-9025-1b3b7dff6157"],
-Cell[2929, 80, 112, 1, 70, "Input",ExpressionUUID->"122f72dc-08dc-4a91-93b6-aad378eda8d0"],
-Cell[3044, 83, 179, 3, 70, "Input",ExpressionUUID->"861ebe9c-ca8d-47e9-a88f-c7a025d8fedb"],
-Cell[3226, 88, 82, 0, 70, "Section",ExpressionUUID->"3c20f377-7759-4900-a78d-b4d785d8df31"],
-Cell[3311, 90, 94, 0, 70, "Item",ExpressionUUID->"ee68a363-110a-4e92-ae01-c932fa2fd41b"],
-Cell[3408, 92, 85, 0, 70, "Item",ExpressionUUID->"4407a1d7-9758-4990-8326-1a65c3b4593d"],
-Cell[3496, 94, 85, 0, 70, "Item",ExpressionUUID->"a6479c25-3177-4fd8-8f74-b940033c1446"],
-Cell[3584, 96, 81, 0, 70, "Item",ExpressionUUID->"773642e6-3cb5-4b7c-8c15-29edfc0b3ed3"],
-Cell[3668, 98, 88, 0, 70, "Section",ExpressionUUID->"313fc684-f30e-462c-8292-fece541c145c"],
-Cell[3759, 100, 89, 0, 70, "Item",ExpressionUUID->"ca61a84f-99b7-49ec-be82-fe123813bf67"],
-Cell[3851, 102, 83, 0, 70, "Section",ExpressionUUID->"3861f610-31d5-4b86-a80e-453ee138a841"],
-Cell[3937, 104, 92, 0, 70, "Item",ExpressionUUID->"79cf097a-1233-4c57-97c6-7484b852dba6"]
+Cell[1618, 43, 88, 0, 70, "Section",ExpressionUUID->"98e3f6e3-386b-40ab-bbba-fcce2a7df8f2"],
+Cell[1709, 45, 93, 0, 70, "Item",ExpressionUUID->"4cba8f8e-34e8-4c96-af06-b95bcd666ddc"],
+Cell[1805, 47, 98, 0, 70, "Item",ExpressionUUID->"2047ca83-358f-476e-b7a8-44fa643358ee"]
 }
 ]
 *)
