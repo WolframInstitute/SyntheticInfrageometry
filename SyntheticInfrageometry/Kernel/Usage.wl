@@ -46,6 +46,14 @@ PencilDirections::usage = "PencilDirections[graph, O] returns the canonical maxi
 PencilCardinality::usage = "PencilCardinality[graph, O] returns the number of distinct direction classes at O.";
 LineCount::usage = "LineCount[graph] returns the number of distinct canonical maximal geodesics in graph.";
 
+(* ===================== InfraLineStructure ===================== *)
+
+InfraLineStructure::usage = "InfraLineStructure[{line1, ..., linek}] is a consistent geodesic path system, stored as its maximal lines (the structure's realisations). Accessors: [\"Lines\"] / [\"Realizations\"] the maximal lines, [\"First\"] / [[i]] one line, [\"Length\"] per-line edge counts; [\"Paths\"] the unfolded association <|{u,v} -> P(u,v)|>, [\"Incidence\"] the transpose <|v -> {line numbers}|>, [\"Coordinates\"] <|v -> {{line, offset}}|> (offset = edges from the line start), and [\"Path\", u, v] recovers P(u,v) oriented u -> v.";
+
+FindLineStructure::usage = "FindLineStructure[graph] returns an InfraLineStructure[{lines}]: a consistent (subpath-closed) geodesic path system -- one shortest path per pair, with every stretch of a chosen path again the chosen path -- stored as its maximal lines. Option Method (\"Lexicographic\" (default; exact 1 + 2^(-rank) weighting, edges ranked by sorted endpoints) | {\"Random\", seed} | \"Resistance\" | \"Weight\" -> w) supplies the edge ranking that breaks geodesic ties; every method yields a consistent system. See InfraLineStructure for accessors.";
+
+ConsistentPathSystemQ::usage = "ConsistentPathSystemQ[graph, obj] tests whether a geodesic path system is subpath-closed (Cizma-Linial consistent). obj is an InfraLineStructure, a list of lines, or an association <|{u,v} -> path|>.";
+
 (* ===================== InfraShell ===================== *)
 
 InfraShell::usage = "InfraShell[{set}] is the unary form (one metric shell vertex set); InfraShell[{set1, ..., setk}] is the multi-realisation form. Find* returns a List of unary wrappers; wrap with InfraShell @ ... to collapse to multi via auto-flatten. Scene-language constructor InfraShell[center, radius] is used inside InfraScene. The multi form is consumed by InfraSceneHighlight (induced-subgraph semantics).";
