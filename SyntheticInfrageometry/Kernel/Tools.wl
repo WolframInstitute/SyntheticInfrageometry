@@ -19,6 +19,10 @@ PackageScope[infraCap]
 PackageScope[infraSpreadAndCartesian]
 PackageScope[infraUnionSpread]
 PackageScope[infraVertexMultiset]
+PackageScope[infraRepType]
+PackageScope[infraRepSeqs]
+PackageScope[infraNumReps]
+PackageScope[infraEdgeMultiset]
 PackageScope[linePointSet]
 PackageScope[methodName]
 PackageScope[methodOptions]
@@ -422,6 +426,85 @@ infraVertexMultiset[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List
   Counts @ Catenate @ polylineToVertexSeqs[ reps ]
 infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] :=
   Counts @ vs
+
+
+(* ===================== Visit measure ===================== *)
+
+(* The realization-frequency measure: the marginal of a wrapper's realization
+   bundle onto its vertex / edge set.  VisitMeasure[obj] is the normalized
+   vertex measure m(v) = c(v) / N (raw count over N realisations); the diffuse
+   opacity rendered by InfraSceneHighlight is exactly this measure.  It is a
+   lossy *view* of the bundle (discards order, co-occurrence) -- the bundle
+   stays ground truth. *)
+
+Options[ VisitMeasure ] = { "On" -> "Vertices", "Normalize" -> True };
+
+VisitMeasure[ g_Graph, obj_, opts:OptionsPattern[] ] :=
+  visitMeasure[ g, obj, OptionValue[ "On" ], OptionValue[ "Normalize" ] ]
+VisitMeasure[ obj_, opts:OptionsPattern[] ] :=
+  visitMeasure[ None, obj, OptionValue[ "On" ], OptionValue[ "Normalize" ] ]
+
+visitMeasure[ g_, obj_, on_, normalize_ ] :=
+  With[ { n = If[ TrueQ @ normalize, infraNumReps @ obj, 1 ] },
+    Switch[ on,
+      "Vertices", infraVertexMultiset[ obj ] / n,
+      "Edges",    infraEdgeMultiset[ g, obj ] / n,
+      "Both",     <| "Vertices" -> infraVertexMultiset[ obj ] / n,
+                     "Edges"    -> infraEdgeMultiset[ g, obj ] / n |> ] ]
+
+(* head -> topology type; the single source of truth shared with
+   InfraSceneHighlight's repVerts / repEdges dispatch. *)
+
+infraRepType[ InfraPoint ]         = "Points";
+infraRepType[ InfraSegment ]       = "Paths";
+infraRepType[ InfraLine ]          = "Paths";
+infraRepType[ InfraPath ]          = "Paths";
+infraRepType[ InfraLoop ]          = "Paths";
+infraRepType[ InfraRay ]           = "Paths";
+infraRepType[ InfraPolyline ]      = "Paths";
+infraRepType[ InfraString ]        = "Cycles";
+infraRepType[ InfraCircle ]        = "Cycles";
+infraRepType[ InfraEllipse ]       = "Cycles";
+infraRepType[ InfraPolygon ]       = "Cycles";
+infraRepType[ InfraTriangle ]      = "Cycles";
+infraRepType[ InfraShell ]         = "Sets";
+infraRepType[ InfraBall ]          = "Sets";
+infraRepType[ InfraEllipticShell ] = "Sets";
+infraRepType[ InfraPlane ]         = "Sets";
+infraRepType[ InfraObject ]        = "Sets";
+infraRepType[ InfraSet ]           = "Sets";
+
+(* canonical realisation sequences (one vertex list per realisation), the
+   bundle repVerts / repEdges consume after the polyline / set transforms. *)
+
+infraRepSeqs[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] := polylineToVertexSeqs @ reps
+infraRepSeqs[ ( InfraObject | InfraSet )[ vs_List ] ]                         := { vs }
+infraRepSeqs[ head_[ reps_List, ___ ] ]                                       := reps
+
+(* normalization divisor N = number of realisations.  A weighted InfraPoint
+   stores one vertex per realisation as multiplicities, so N = Total[weights];
+   InfraObject / InfraSet hold a single set, so N = 1. *)
+
+infraNumReps[ InfraPoint[ _List, weights_List ] ] := Max[ Total @ weights, 1 ]
+infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
+infraNumReps[ head_[ reps_List, ___ ] ]            := Max[ Length @ reps, 1 ]
+
+(* raw edge multiset, keyed by sorted UndirectedEdge.  Sets-type edges are the
+   induced subgraph, hence the graph dependency; UndirectedEdge is not orderless
+   under ===, so endpoints are sorted before counting. *)
+
+infraEdgeMultiset[ g_, obj_ ] :=
+  Counts @ Catenate[ infraRepEdges[ g, infraRepType @ Head @ obj, # ] & /@ infraRepSeqs @ obj ]
+
+infraRepEdges[ _, "Points", _ ]   := { }
+infraRepEdges[ _, "PointSet", _ ] := { }
+infraRepEdges[ _, "Paths", rep_ ] :=
+  If[ Length @ rep >= 2, UndirectedEdge @@ Sort[ # ] & /@ Partition[ rep, 2, 1 ], { } ]
+infraRepEdges[ _, "Cycles", rep_ ] :=
+  With[ { closed = If[ Length @ rep >= 2 && First @ rep === Last @ rep, rep, Append[ rep, First @ rep ] ] },
+    If[ Length @ closed >= 2, UndirectedEdge @@ Sort[ # ] & /@ Partition[ closed, 2, 1 ], { } ] ]
+infraRepEdges[ g_, "Sets", rep_ ] :=
+  UndirectedEdge @@ Sort[ # ] & /@ ( List @@@ EdgeList @ Subgraph[ g, rep ] )
 
 
 (* Vertex-set view of a line-like input (FindInfraCommonPoint, InfraPerpendicularQ).

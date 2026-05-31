@@ -1,5 +1,8 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+(* Tools.wl *)
+PackageExport[VisitMeasure]
+
 (* InfraPoint.wl *)
 PackageExport[InfraPoint]
 PackageExport[FindInfraPoint]
@@ -43,6 +46,10 @@ PackageExport[InfraPerpendicularQ]
 PackageExport[PencilDirections]
 PackageExport[PencilCardinality]
 PackageExport[LineCount]
+
+(* InfraLineStructure.wl *)
+PackageExport[FindLineStructure]
+PackageExport[InfraLineStructure]
 
 (* InfraShell.wl *)
 PackageExport[InfraShell]

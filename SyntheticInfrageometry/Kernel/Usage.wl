@@ -173,6 +173,10 @@ MedianVertices::usage = "MedianVertices[graph, vs] returns the vertices minimisi
 FindGeodesicConvexHull::usage = "FindGeodesicConvexHull[graph, S] returns the smallest superset of S closed under MetricInterval, as a sorted vertex list. Graph-intrinsic shadow of tropical convexity (see Wiki/Concepts/TropicalConvexity).";
 GeodesicallyConvexQ::usage = "GeodesicallyConvexQ[graph, S] tests geodesic convexity of S. Option Method (\"Strong\" (default): every geodesic between any pair of S lies in S; \"Weak\": some geodesic between each pair lies in S).";
 
+(* ===================== Visit measure ===================== *)
+
+VisitMeasure::usage = "VisitMeasure[obj] returns the normalized vertex visit measure <|v -> visits/numReps|> of an Infra* wrapper -- the marginal of its realization bundle onto its vertices. VisitMeasure[graph, obj] is graph-aware and unlocks the edge measure. Options \"On\" (\"Vertices\" (default), \"Edges\", \"Both\") and \"Normalize\" (True (default) divides by numReps; False returns raw integer counts).";
+
 (* ===================== InfraSet ===================== *)
 
 InfraSet::usage = "InfraSet[vs] wraps a vertex list vs as a set; coerces any Infra* wrapper to its underlying vertex set. Accessors: [\"Vertices\"] (the vertex list), [\"Length\"] (cardinality).";
