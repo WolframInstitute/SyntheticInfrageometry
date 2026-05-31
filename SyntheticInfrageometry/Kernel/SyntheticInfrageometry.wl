@@ -50,6 +50,7 @@ PackageExport[LineCount]
 (* InfraLineStructure.wl *)
 PackageExport[FindLineStructure]
 PackageExport[InfraLineStructure]
+PackageExport[ConsistentPathSystemQ]
 
 (* InfraShell.wl *)
 PackageExport[InfraShell]

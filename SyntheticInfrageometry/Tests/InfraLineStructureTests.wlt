@@ -104,4 +104,59 @@ VerificationTest[
   TestID -> "InfraLineStructure-Length-edge-counts"
 ]
 
+(* ===================== ConsistentPathSystemQ (T2) ===================== *)
+
+(* ===== Every produced structure verifies as consistent ===== *)
+
+VerificationTest[
+  And @@ ( ConsistentPathSystemQ[ #, FindLineStructure[ # ] ] & /@
+    { PathGraph[ Range[ 5 ] ], CycleGraph[ 6 ], GridGraph[ { 3, 3 } ], PetersenGraph[] } ),
+  True,
+  TestID -> "ConsistentPathSystemQ-T1-output-passes"
+]
+
+(* ===== Hand-broken line set on C6: two antipodal geodesics for {1,4} disagree ===== *)
+
+VerificationTest[
+  ConsistentPathSystemQ[ CycleGraph[ 6 ], { { 1, 2, 3, 4 }, { 1, 6, 5, 4 } } ],
+  False,
+  TestID -> "ConsistentPathSystemQ-C6-conflicting-diagonals-fail"
+]
+
+VerificationTest[
+  ConsistentPathSystemQ[ CycleGraph[ 6 ], { { 1, 2, 3, 4 }, { 4, 5, 6 } } ],
+  True,
+  TestID -> "ConsistentPathSystemQ-C6-disjoint-pairs-pass"
+]
+
+(* ===== Essentiality: each maximal line's endpoint pair lies on exactly one line ===== *)
+
+VerificationTest[
+  And @@ Map[
+    g |-> With[ { lines = FindLineStructure[ g ][ "Lines" ] },
+      AllTrue[ lines, L |-> Count[ lines, o_ /; SubsetQ[ o, { First @ L, Last @ L } ] ] == 1 ] ],
+    { PathGraph[ Range[ 5 ] ], CycleGraph[ 6 ], GridGraph[ { 3, 3 } ], PetersenGraph[] } ],
+  True,
+  TestID -> "ConsistentPathSystemQ-essentiality-endpoint-pair-unique"
+]
+
+(* ===== Association form: unfolded single path consistent; a swapped stretch fails ===== *)
+
+VerificationTest[
+  ConsistentPathSystemQ[ PathGraph[ Range[ 5 ] ],
+    Association @ Catenate @ Table[
+      Sort @ { #[[ i ]], #[[ j ]] } -> canonSeq @ #[[ i ;; j ]],
+      { i, Length @ # - 1 }, { j, i + 1, Length @ # } ] & @ { 1, 2, 3, 4, 5 } ],
+  True,
+  TestID -> "ConsistentPathSystemQ-association-unfold-pass"
+]
+
+VerificationTest[
+  ConsistentPathSystemQ[ CycleGraph[ 6 ],
+    <| { 1, 2 } -> { 1, 2 }, { 2, 3 } -> { 2, 3 }, { 3, 4 } -> { 3, 4 },
+       { 1, 3 } -> { 1, 2, 3 }, { 2, 4 } -> { 2, 1, 6, 5, 4 }, { 1, 4 } -> { 1, 2, 3, 4 } |> ],
+  False,
+  TestID -> "ConsistentPathSystemQ-association-swapped-stretch-fail"
+]
+
 EndTestSection[]

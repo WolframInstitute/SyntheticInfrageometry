@@ -59,6 +59,40 @@ lineStructureWeights[ graph_Graph, "Lexicographic" ] :=
   ]
 
 
+(* ===================== ConsistentPathSystemQ ===================== *)
+
+(* a path system is consistent (subpath-closed) iff every contiguous stretch of a
+   chosen path is itself the chosen path between its endpoints -- Cizma-Linial
+   consistency = Bellman's principle of optimality.  Accepts the unfolded
+   association <|{u,v} -> path|>, a maximal-line set, or an InfraLineStructure. *)
+
+ConsistentPathSystemQ[ graph_Graph, ls_InfraLineStructure ] :=
+  ConsistentPathSystemQ[ graph, ls[ "Lines" ] ]
+
+(* line set: consistent iff no two lines induce conflicting stretches between a
+   shared endpoint pair (a conflict-free unfolding is automatically subpath-closed) *)
+ConsistentPathSystemQ[ graph_Graph, lines : { __List } ] :=
+  AllTrue[
+    GatherBy[
+      Catenate @ Map[
+        line |-> Catenate @ Table[
+          Sort @ { line[[ i ]], line[[ j ]] } -> canonicalLineSeq @ line[[ i ;; j ]],
+          { i, Length @ line - 1 }, { j, i + 1, Length @ line } ],
+        lines ],
+      First ],
+    grp |-> SameQ @@ Values @ grp ]
+
+(* association: each chosen path's every stretch equals the chosen path for its
+   own endpoint pair (which must itself be chosen) *)
+ConsistentPathSystemQ[ graph_Graph, paths_Association ] :=
+  AllTrue[ Keys @ paths,
+    key |-> With[ { p = paths[ key ] },
+      AllTrue[ Subsets[ Range @ Length @ p, { 2 } ],
+        ij |-> With[ { subkey = Sort @ { p[[ First @ ij ]], p[[ Last @ ij ]] } },
+          KeyExistsQ[ paths, subkey ] &&
+            canonicalLineSeq[ p[[ First @ ij ;; Last @ ij ]] ] === canonicalLineSeq @ paths[ subkey ] ] ] ] ]
+
+
 (* canonical orientation of a vertex sequence (lex-least of it and its reverse) *)
 canonicalLineSeq[ p_List ] := First @ Sort @ { p, Reverse @ p }
 
