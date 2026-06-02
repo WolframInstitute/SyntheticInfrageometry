@@ -27,6 +27,28 @@ InfraObject[ vs_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraObject[ vs 
 
 Options[ FindInfraRevolution ] = { "Form" -> "Solid", Method -> "Voronoi" };
 
+(* "Balls": union of metric balls B_{r_i}(c_i) over axis positions -- the sublevel
+   set { v : min_i (d(v, c_i) - r_i) <= 0 } of the varying-radius tube function.
+   No geodesic extension needed, so it also works for cyclic / non-extendable axes;
+   for a constant profile it coincides with the "Voronoi" cylinder. *)
+
+FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] /;
+  OptionValue[ FindInfraRevolution, { opts }, Method ] === "Balls" :=
+  With[
+    { positions = DeleteDuplicates /@ Transpose @ parseAxes @ axis,
+      surface = OptionValue[ FindInfraRevolution, { opts }, "Form" ] === "Surface" },
+    { radii = profileRadii[ profile, Length @ positions ] },
+    { candidates = VertexList @ NeighborhoodGraph[ graph, Union @@ positions, Max @ radii ],
+      slack = v |-> Min @ MapThread[
+        { posVerts, r } |-> Min[ GraphDistance[ graph, v, # ] & /@ posVerts ] - r,
+        { positions, radii } ] },
+    (* constant-radius solid: the r-neighborhood of the axis IS the union of balls,
+       so the candidate set is already the answer -- no per-vertex slack scan. *)
+    InfraObject @ Sort @ If[ ! surface && Equal @@ radii,
+      candidates,
+      Select[ candidates, If[ surface, slack[ # ] == 0, slack[ # ] <= 0 ] & ] ]
+  ]
+
 FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
   With[ { axisPaths = parseAxes @ axis,
           cmp = If[ OptionValue[ "Form" ] === "Surface", Equal, LessEqual ],
@@ -105,10 +127,11 @@ bisectorPasses[ dists_, i_, totalPos_ ] :=
 
 (* ===================== FindInfraCylinder ===================== *)
 
-Options[ FindInfraCylinder ] = Options[ FindInfraRevolution ];
+Options[ FindInfraCylinder ] = Join[ FilterRules[ Options[ FindInfraRevolution ], Except[ Method ] ], { Method -> "Balls" } ];
 
 FindInfraCylinder[ graph_Graph, axis_, radius_, opts : OptionsPattern[ ] ] :=
-  FindInfraRevolution[ graph, axis, radius, opts ]
+  FindInfraRevolution[ graph, axis, radius, Method -> OptionValue[ Method ],
+    FilterRules[ { opts }, Except[ Method ] ] ]
 
 
 (* ===================== FindInfraCone ===================== *)
