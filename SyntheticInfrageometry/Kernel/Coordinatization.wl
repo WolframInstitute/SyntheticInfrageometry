@@ -1,57 +1,16 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-
-(* ===================== FindInfraRadarBasis ===================== *)
-
-(* A radar basis (resolving set) is a vertex set B such that the distance
-   vector v |-> (d(v, b))_{b in B} is injective.  Enumerated by ascending
-   size; m restricts the candidate sizes (All, integer max, {min, max},
-   {exact}). *)
-
-FindInfraRadarBasis[ g_, n_ : 1, m_ : All ] :=
-  Module[ { v = VertexList[ g ], dm = GraphDistanceMatrix[ g ], vc = VertexCount[ g ], found = { }, mask, last },
-    Map[ v[[ # ]] &,
-      Catch[ Scan[
-        k |-> (
-          mask = 2^k - 1;
-          last = BitShiftLeft[ 2^k - 1, vc - k ];
-          While[ mask <= last,
-            With[ { s = Pick[ Range[ vc ], IntegerDigits[ mask, 2, vc ], 1 ] },
-              If[ DuplicateFreeQ[ dm[[ All, s ]] ],
-                AppendTo[ found, s ];
-                If[ Length @ found >= n, Throw[ found ] ]
-              ]
-            ];
-            (* Gosper's hack: next k-subset of {1, ..., vc} in lex-on-bitmasks
-               order.  c isolates the lowest set bit; r = mask + c carries
-               that bit's run leftward; the BitOr restores the displaced
-               lower bits at the smallest positions. *)
-            mask = With[ { c = BitAnd[ mask, -mask ] }, { r = mask + c },
-              BitOr[ r, Quotient[ BitXor[ r, mask ], 4 c ] ] ]
-          ]
-        ),
-        Replace[ m, {
-          All :> Range[ vc ],
-          _Integer :> Range[ m ],
-          { min_, max_ } :> Range[ min, max ],
-          { num_ } :> { num }
-        } ]
-      ]; Throw[ found ] ]
-    ]
-  ]
+PackageImport["WolframInstitute`Infrageometry`"]
 
 
-(* ===================== InfraRadarBasisQ ===================== *)
+(* ===================== FindInfraRadarBasis / InfraRadarBasisQ (deprecated) ===================== *)
 
-(* b resolves g iff the pointwise distance map v |-> (d(v, b1), ..., d(v, bk))
-   is injective over V(g). *)
+(* The radar basis (resolving set) and the radar map now live in the Infrageometry
+   paclet as FindResolvingSet / ResolvingSet / MetricDimension / RadarCoordinates.
+   FindInfraRadarBasis / InfraRadarBasisQ are kept as deprecation aliases. *)
 
-Options[ InfraRadarBasisQ ] = { "InfraPointAggregation" -> Min }
-
-InfraRadarBasisQ[ g_Graph, b_List, opts : OptionsPattern[] ] :=
-  With[ { agg = OptionValue[ "InfraPointAggregation" ] },
-    DuplicateFreeQ[ Table[ infraAnchorDistance[ g, v, #, agg ] & /@ b, { v, VertexList[ g ] } ] ]
-  ]
+FindInfraRadarBasis[ args___ ] := FindResolvingSet[ args ]
+InfraRadarBasisQ[ args___ ] := ResolvingSetQ[ args ]
 
 
 (* ===================== RadarCoordinates ===================== *)
@@ -62,9 +21,15 @@ InfraRadarBasisQ[ g_Graph, b_List, opts : OptionsPattern[] ] :=
    nearest-anchor reading, default).  The bulk form RadarCoordinates[g, b]
    returns an Association of all vertices' radar coordinates. *)
 
+(* The crisp RadarCoordinates[g, b, v] / [g, b] now lives in Infrageometry.  Here
+   we add the InfraObject overloads: an InfraPoint query point, and InfraPoint
+   anchors in the basis aggregated by "InfraPointAggregation" (Min default). *)
+
 Options[ RadarCoordinates ] = { "InfraPointAggregation" -> Min }
 
-RadarCoordinates[ g_Graph, b_List, v : Except[ _Rule | _RuleDelayed | _InfraPoint ], opts : OptionsPattern[] ] :=
+(* InfraPoint anchors in the basis -- more specific than the crisp Infrageometry
+   pattern b_List, so this is tried first. *)
+RadarCoordinates[ g_Graph, b : { ___, _InfraPoint, ___ }, v : Except[ _Rule | _RuleDelayed | _InfraPoint ], opts : OptionsPattern[] ] :=
   With[ { agg = OptionValue[ "InfraPointAggregation" ] },
     infraAnchorDistance[ g, v, #, agg ] & /@ b
   ]
@@ -73,11 +38,13 @@ RadarCoordinates[ g_Graph, b_List, InfraPoint[ { v_ } ], opts : OptionsPattern[]
   RadarCoordinates[ g, b, v, opts ]
 
 RadarCoordinates[ g_Graph, b_List, InfraPoint[ vs_List ], opts : OptionsPattern[] ] /;
-  SubsetQ[ VertexList[ g ], vs ] :=
+  Length[ vs ] > 1 && SubsetQ[ VertexList[ g ], vs ] :=
   RadarCoordinates[ g, b, #, opts ] & /@ vs
 
-RadarCoordinates[ g_Graph, b_List, opts : OptionsPattern[] ] :=
-  Association[ # -> RadarCoordinates[ g, b, #, opts ] & /@ VertexList[ g ] ]
+(* The crisp Infrageometry definitions load first, so Mathematica keeps them
+   ahead of these InfraPoint overloads in DownValues order.  Reorder so the
+   InfraPoint rules (which are the more specific cases) are tried first. *)
+DownValues[ RadarCoordinates ] = SortBy[ DownValues[ RadarCoordinates ], FreeQ[ #, InfraPoint ] & ]
 
 
 (* ===================== OrthogonalCoordinates ===================== *)
@@ -212,28 +179,9 @@ FindInfraSpanningAxes[ g_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
    smallest non-zero modes are kept; "Origin" shifts the embedding so the
    chosen vertex (or InfraPoint centroid) lands at the origin. *)
 
-Options[ ResistanceCoordinates ] = {
-  "Rescaling" -> "ResistanceMatching",
-  "Dimension" -> Automatic,
-  "Origin" -> None
-};
-
-ResistanceCoordinates[ g_Graph, opts : OptionsPattern[] ] :=
-  With[ { mat = resistanceEmbeddingMatrix[ g, OptionValue[ "Rescaling" ], OptionValue[ "Dimension" ] ],
-          origin = OptionValue[ "Origin" ],
-          idx = AssociationThread[ VertexList[ g ], Range @ VertexCount[ g ] ] },
-    With[ { originVec = Switch[ origin,
-              None,                  ConstantArray[ 0., Length @ First @ mat ],
-              InfraPoint[ { _ } ],   mat[[ idx[ origin[[ 1, 1 ]] ] ]],
-              InfraPoint[ _List ],   Mean[ mat[[ idx /@ origin[[ 1 ]] ]] ],
-              _,                     mat[[ idx[ origin ] ]]
-            ] },
-      AssociationThread[ VertexList[ g ], # - originVec & /@ mat ]
-    ]
-  ]
-
-ResistanceCoordinates[ g_Graph, v_, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], v ] :=
-  ResistanceCoordinates[ g, opts ][ v ]
+(* The crisp embedding ResistanceCoordinates[g] / [g, v] (Options "Rescaling",
+   "Dimension", "Origin") is relocated to the Infrageometry paclet.  The InfraPoint
+   query overloads stay here. *)
 
 ResistanceCoordinates[ g_Graph, InfraPoint[ { v_ } ], opts : OptionsPattern[] ] :=
   ResistanceCoordinates[ g, v, opts ]
@@ -568,28 +516,4 @@ orthogonalGreedy[ g_Graph, paths_List, opts_List ] :=
   ]
 
 
-(* ===================== Helpers: resistance embedding ===================== *)
-
-resistanceEmbeddingMatrix[ g_Graph, rescaling_, dimSpec_ ] :=
-  Module[ { vals, vecs, ord },
-    { vals, vecs } = Eigensystem[ N @ Normal @ KirchhoffMatrix[ g ] ];
-    ord = Ordering[ vals ];
-    { vals, vecs } = { vals[[ ord ]], vecs[[ ord ]] };
-    With[ { tol = 10^-10 Max[ Abs @ vals, 1 ] },
-      With[ { keep = Select[ Range @ Length @ vals, vals[[ # ]] > tol & ] },
-        With[ { dim = Replace[ dimSpec, {
-                Automatic | All :> Length[ keep ],
-                UpTo[ k_Integer ] :> Min[ k, Length[ keep ] ],
-                k_Integer :> Min[ k, Length[ keep ] ] } ] },
-          With[ { idx = Take[ keep, dim ] },
-            With[ { weights = Replace[ rescaling, {
-                    "ResistanceMatching" :> 1 / Sqrt[ vals[[ idx ]] ],
-                    "None" :> ConstantArray[ 1, Length[ idx ] ],
-                    ( "Diffusion" -> t_ ) :> Exp[ -t vals[[ idx ]] ] } ] },
-              Transpose[ weights vecs[[ idx ]] ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
+(* resistanceEmbeddingMatrix relocated to the Infrageometry paclet. *)

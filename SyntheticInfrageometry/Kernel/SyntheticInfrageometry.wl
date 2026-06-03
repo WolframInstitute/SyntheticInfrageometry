@@ -175,14 +175,14 @@ PackageExport[InfraSet]
 PackageExport[InfraBoundary]
 PackageExport[InfraInterior]
 
-(* Coordinatization.wl *)
+(* Coordinatization.wl -- RadarCoordinates / ResistanceCoordinates relocated to
+   the Infrageometry paclet; Synthetic adds InfraObject overloads to them and
+   keeps FindInfraRadarBasis / InfraRadarBasisQ as deprecation aliases. *)
 PackageExport[FindInfraRadarBasis]
 PackageExport[InfraRadarBasisQ]
-PackageExport[RadarCoordinates]
 PackageExport[OrthogonalCoordinates]
 PackageExport[FindInfraOrthogonalFrame]
 PackageExport[FindInfraSpanningAxes]
-PackageExport[ResistanceCoordinates]
 
 (* TarskiGeometry.wl *)
 PackageExport[BetweennessQ]
