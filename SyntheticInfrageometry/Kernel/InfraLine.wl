@@ -688,20 +688,22 @@ LineCount[ graph_Graph ] := Length @ allCanonicalLines[ graph ]
 (* ===================== FindLineHull / LineHullQ ===================== *)
 
 (* Line hull of S: the smallest superset closed under the line operator
-   L(u, v) = the maximal geodesics through u, v.  Equivalently, grow T by
-   every line meeting T in >= 2 vertices, to a fixed point.  The
-   De Bruijn-Erdos / Chen-Chvatal collinearity closure; cf. the segment
-   hull (closure under metric intervals) in MetricAlgebra.wl.  Option
-   "LineStructure": None (default) closes under all maximal geodesics;
-   an InfraLineStructure (or a bare list of lines) closes under that fixed
-   family instead -- still a unique fixed point since the family is fixed. *)
+   L(u, v) = the maximal geodesics through u, v, returned as an InfraSet.
+   Equivalently, grow T by every line meeting T in >= 2 vertices, to a fixed
+   point.  The De Bruijn-Erdos / Chen-Chvatal collinearity closure; cf. the
+   segment hull (metric intervals) in MetricAlgebra.wl and the ball hull
+   (intersection of balls) in InfraBall.wl.  S is any Infra* object, a list of
+   them, or a bare vertex list.  Option "LineStructure": None (default) closes
+   under all maximal geodesics; an InfraLineStructure (or a bare list of lines)
+   closes under that fixed family instead -- still a unique fixed point. *)
 
 Options[ FindLineHull ] = { "LineStructure" -> None };
 
-FindLineHull[ graph_Graph, S_List, OptionsPattern[] ] :=
+FindLineHull[ graph_Graph, s : Except[ _Rule | _RuleDelayed ], OptionsPattern[] ] :=
   With[ { lines = Replace[ OptionValue[ "LineStructure" ],
-            { None -> allCanonicalLines @ graph, ls_InfraLineStructure :> ls[ "Lines" ] } ] },
-    FixedPoint[
+            { None -> allCanonicalLines @ graph, ls_InfraLineStructure :> ls[ "Lines" ] } ],
+          S = hullVertices @ s },
+    InfraSet @ FixedPoint[
       T |-> Union[ T, Catenate @ Select[ lines, Length @ Intersection[ #, T ] >= 2 & ] ],
       Union @ S
     ]
@@ -712,7 +714,8 @@ FindLineHull[ graph_Graph, S_List, OptionsPattern[] ] :=
 
 Options[ LineHullQ ] = { "LineStructure" -> None };
 
-LineHullQ[ graph_Graph, S_List, opts : OptionsPattern[] ] := FindLineHull[ graph, S, opts ] === Union @ S
+LineHullQ[ graph_Graph, s : Except[ _Rule | _RuleDelayed ], opts : OptionsPattern[] ] :=
+  With[ { vs = hullVertices @ s }, FindLineHull[ graph, vs, opts ][ "Vertices" ] === Union @ vs ]
 
 
 (* ===================== UniversalLineQ ===================== *)

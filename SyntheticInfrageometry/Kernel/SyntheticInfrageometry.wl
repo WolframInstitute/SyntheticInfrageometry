@@ -75,6 +75,8 @@ PackageExport[FindInfraQuadric]
 PackageExport[InfraBall]
 PackageExport[FindInfraBall]
 PackageExport[InfraBallQ]
+PackageExport[FindBallHull]
+PackageExport[BallHullQ]
 
 (* InfraCircle.wl *)
 PackageExport[InfraCircle]

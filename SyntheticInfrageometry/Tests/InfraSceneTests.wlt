@@ -523,7 +523,7 @@ VerificationTest[
   InfraIntersection[
     InfraSegment[ { { 1, 2, 3, 4 } } ],
     InfraSegment[ { { 1, 5, 6, 3, 7 } } ] ],
-  { 1, 3 },
+  InfraSet[ { 1, 3 } ],
   TestID -> "InfraIntersection-two-segments-vertex-set"
 ]
 
@@ -531,7 +531,7 @@ VerificationTest[
   InfraIntersection[
     InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
     InfraSegment[ { { 3, 5, 6 } } ] ],
-  { 3 },
+  InfraSet[ { 3 } ],
   TestID -> "InfraIntersection-multi-realisation-union-then-intersect"
 ]
 
@@ -540,7 +540,7 @@ VerificationTest[
     InfraPoint[ { 1, 2, 3 } ],
     InfraSegment[ { { 2, 3, 4 } } ],
     InfraBall[ { { 3, 4, 5 } } ] ],
-  { 3 },
+  InfraSet[ { 3 } ],
   TestID -> "InfraIntersection-variadic-mixed-heads"
 ]
 
@@ -548,7 +548,7 @@ VerificationTest[
   InfraUnion[
     InfraPoint[ { 1, 2 } ],
     InfraSegment[ { { 3, 4 } } ] ],
-  { 1, 2, 3, 4 },
+  InfraSet[ { 1, 2, 3, 4 } ],
   TestID -> "InfraUnion-mixed-heads"
 ]
 

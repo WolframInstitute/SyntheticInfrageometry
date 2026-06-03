@@ -1,5 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+PackageImport["WolframInstitute`Infrageometry`"]
+
 
 (* ===================== InfraBall wrapper ===================== *)
 
@@ -39,6 +41,25 @@ InfraBallQ[ graph_Graph, vs_List ] :=
       Sort @ Select[ VertexList[ graph ], GraphDistance[ graph, c, # ] <= r & ] === Sort @ vs
     ]
   ]
+
+
+(* ===================== FindBallHull / BallHullQ ===================== *)
+
+(* The ball hull of S: the intersection of all closed balls containing S, the
+   smallest ball-convex (Mazur) superset, returned as an InfraSet.  S is any
+   Infra* object, a list of them, or a bare vertex list; the underlying vertex
+   set is handed to BallHull (WolframInstitute`Infrageometry`).  Companion of
+   the segment / line hulls (FindSegmentHull, FindLineHull) -- intersection of
+   balls rather than closure under geodesics. *)
+
+FindBallHull[ graph_Graph, s_ ] :=
+  InfraSet @ Sort @ BallHull[ graph, hullVertices @ s ]
+
+(* S is ball-convex: it equals its own ball hull (an intersection of balls). *)
+
+BallHullQ[ graph_Graph, s_ ] :=
+  With[ { vs = hullVertices @ s },
+    Sort @ BallHull[ graph, vs ] === Union @ vs ]
 
 
 (* ===================== Scene-DSL constructor ===================== *)

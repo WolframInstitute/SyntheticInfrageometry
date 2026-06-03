@@ -387,6 +387,18 @@ infraUnionSpread[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] 
 infraUnionSpread[ other_ ] := { other }
 
 
+(* Seed vertex set for the hull family (FindSegmentHull / FindLineHull /
+   FindBallHull): a bare vertex list passes through; any Infra* object, a list
+   of them, or a bare vertex falls to infraVertexSet. *)
+
+PackageScope[hullVertices]
+
+hullVertices[ s_List ] /; AnyTrue[ s, StringStartsQ[ SymbolName @ Head @ #, "Infra" ] & ] :=
+  infraVertexSet[ s ]
+hullVertices[ s_List ] := s
+hullVertices[ s_ ] := infraVertexSet[ s ]
+
+
 (* Apply n / UpTo[n] / All count semantics to a bare list of realisations.
    $Failed return is the mathematical "fewer than n exist" case. *)
 

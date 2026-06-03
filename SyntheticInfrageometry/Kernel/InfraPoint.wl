@@ -364,6 +364,12 @@ SelectInfraPoint[ graph_Graph, list_List,
     list =!= { } && AllTrue[ list, MatchQ[ InfraPoint[ { _ } ] ] ] :=
   SelectInfraPoint[ graph, First /@ list, countSpec, opts ]
 
+(* Any set-like Infra* wrapper is a vertex bundle: select from its vertex set. *)
+SelectInfraPoint[ graph_Graph,
+                  bundle : ( InfraBall | InfraShell | InfraEllipticShell | InfraPlane | InfraSet | InfraObject | InfraCircle | InfraEllipse )[ _List ],
+                  countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  SelectInfraPoint[ graph, infraVertexSet[ bundle ], countSpec, opts ]
+
 SelectInfraPoint[ graph_Graph, countSpec : ( _Integer | UpTo[ _Integer ] | All ), opts : OptionsPattern[] ] :=
   SelectInfraPoint[ graph, #, countSpec, opts ] &
 

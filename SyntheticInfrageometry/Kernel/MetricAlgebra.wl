@@ -83,18 +83,19 @@ MedianVertices[ graph_Graph, vs_List ] :=
 
 (* The segment hull of a vertex set S is the smallest superset closed under
    taking metric intervals: FixedPoint of T |-> T union over pairs of
-   MetricInterval.  The Farber-Jamison geodesic convex hull (no metric
-   convexity is involved -- the closed sets form only an abstract convexity;
-   cf. Wiki/Concepts/Hulls.md).  Companion line hull: FindLineHull in
-   InfraLine.wl.  Option "LineStructure": None (default) closes under all
-   geodesics; an InfraLineStructure (or bare list of lines) closes under the
-   chosen-geodesic stretch between members on each line of that fixed family. *)
+   MetricInterval, returned as an InfraSet.  The Farber-Jamison geodesic convex
+   hull (no metric convexity is involved -- the closed sets form only an
+   abstract convexity; cf. Wiki/Concepts/Hulls.md).  Companion hulls: FindLineHull
+   in InfraLine.wl, FindBallHull in InfraBall.wl.  S is any Infra* object, a list
+   of them, or a bare vertex list.  Option "LineStructure": None (default) closes
+   under all geodesics; an InfraLineStructure (or bare list of lines) closes under
+   the chosen-geodesic stretch between members on each line of that fixed family. *)
 
 Options[ FindSegmentHull ] = { "LineStructure" -> None };
 
-FindSegmentHull[ graph_Graph, S_List, OptionsPattern[] ] :=
-  With[ { spec = OptionValue[ "LineStructure" ] },
-    If[ spec === None,
+FindSegmentHull[ graph_Graph, s : Except[ _Rule | _RuleDelayed ], OptionsPattern[] ] :=
+  With[ { spec = OptionValue[ "LineStructure" ], S = hullVertices @ s },
+    InfraSet @ If[ spec === None,
       FixedPoint[
         T |-> Union[ T, Catenate @ Map[
           pair |-> MetricInterval[ graph, pair[[ 1 ]], pair[[ 2 ]] ], Subsets[ T, { 2 } ] ] ],
@@ -117,4 +118,5 @@ FindSegmentHull[ graph_Graph, S_List, OptionsPattern[] ] :=
 
 Options[ SegmentHullQ ] = { "LineStructure" -> None };
 
-SegmentHullQ[ graph_Graph, S_List, opts : OptionsPattern[] ] := FindSegmentHull[ graph, S, opts ] === Union @ S
+SegmentHullQ[ graph_Graph, s : Except[ _Rule | _RuleDelayed ], opts : OptionsPattern[] ] :=
+  With[ { vs = hullVertices @ s }, FindSegmentHull[ graph, vs, opts ][ "Vertices" ] === Union @ vs ]

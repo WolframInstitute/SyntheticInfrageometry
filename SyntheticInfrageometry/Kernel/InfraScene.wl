@@ -142,10 +142,10 @@ $infraWrapperHeadPattern = _InfraPoint | _InfraObject | _InfraSet | _InfraSegmen
   _InfraPlane | _InfraBall | _InfraPolyline | _InfraPolygon | _InfraTriangle;
 
 InfraIntersection[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraWrapperHeadPattern ] ] :=
-  Intersection @@ ( infraVertexSet /@ { args } )
+  InfraSet[ Intersection @@ ( infraVertexSet /@ { args } ) ]
 
 InfraUnion[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraWrapperHeadPattern ] ] :=
-  Union @@ ( infraVertexSet /@ { args } )
+  InfraSet[ Union @@ ( infraVertexSet /@ { args } ) ]
 
 
 (* ===================== Scene ===================== *)

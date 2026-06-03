@@ -149,49 +149,49 @@ VerificationTest[
 
 VerificationTest[
   FindSegmentHull[PathGraph[Range[5]], {1, 5}],
-  {1, 2, 3, 4, 5},
+  InfraSet[{1, 2, 3, 4, 5}],
   TestID -> "FindSegmentHull-PathGraph-endpoints"
 ]
 
 VerificationTest[
   FindSegmentHull[PathGraph[Range[5]], {2, 4}],
-  {2, 3, 4},
+  InfraSet[{2, 3, 4}],
   TestID -> "FindSegmentHull-PathGraph-interior"
 ]
 
 VerificationTest[
   FindSegmentHull[PathGraph[Range[5]], {3}],
-  {3},
+  InfraSet[{3}],
   TestID -> "FindSegmentHull-singleton"
 ]
 
 VerificationTest[
   FindSegmentHull[PathGraph[Range[5]], {}],
-  {},
+  InfraSet[{}],
   TestID -> "FindSegmentHull-empty"
 ]
 
 VerificationTest[
   FindSegmentHull[CycleGraph[4], {1, 3}],
-  {1, 2, 3, 4},
+  InfraSet[{1, 2, 3, 4}],
   TestID -> "FindSegmentHull-CycleGraph4-antipodes-fill"
 ]
 
 VerificationTest[
   FindSegmentHull[GridGraph[{3, 3}], {1, 9}],
-  Range[9],
+  InfraSet[Range[9]],
   TestID -> "FindSegmentHull-GridGraph3x3-corners-fill"
 ]
 
 VerificationTest[
   FindSegmentHull[GridGraph[{3, 3}], {1, 3}],
-  {1, 2, 3},
+  InfraSet[{1, 2, 3}],
   TestID -> "FindSegmentHull-GridGraph3x3-row-stays-row"
 ]
 
 VerificationTest[
   FindSegmentHull[CompleteGraph[5], {1, 2}],
-  {1, 2},
+  InfraSet[{1, 2}],
   TestID -> "FindSegmentHull-CompleteGraph-edge-stays-edge"
 ]
 
