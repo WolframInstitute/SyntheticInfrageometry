@@ -39,57 +39,65 @@ VerificationTest[
 (* ===== TorusTessellation: vertex counts and regularity ===== *)
 
 VerificationTest[
-  VertexCount @ TorusTessellation[ "Rectangular", { 5, 5 } ],
+  VertexCount @ TorusTessellation[ { 5, 5 }, "Square" ],
   25,
-  TestID -> "TorusTessellation-Rectangular-vertex-count"
+  TestID -> "TorusTessellation-Square-vertex-count"
 ]
 
 VerificationTest[
-  Union @ VertexDegree @ TorusTessellation[ "Rectangular", { 5, 5 } ],
+  Union @ VertexDegree @ TorusTessellation[ { 5, 5 }, "Square" ],
   { 4 },
-  TestID -> "TorusTessellation-Rectangular-is-4-regular"
+  TestID -> "TorusTessellation-Square-is-4-regular"
 ]
 
 VerificationTest[
-  VertexCount @ TorusTessellation[ "Triangular", { 5, 5 } ],
+  VertexCount @ TorusTessellation[ { 5, 5 }, "Triangular" ],
   25,
   TestID -> "TorusTessellation-Triangular-vertex-count"
 ]
 
 VerificationTest[
-  Union @ VertexDegree @ TorusTessellation[ "Triangular", { 5, 5 } ],
+  Union @ VertexDegree @ TorusTessellation[ { 5, 5 }, "Triangular" ],
   { 6 },
   TestID -> "TorusTessellation-Triangular-is-6-regular"
 ]
 
 VerificationTest[
-  VertexCount @ TorusTessellation[ "Hexagonal", { 4, 4 } ],
+  VertexCount @ TorusTessellation[ { 4, 4 }, "Hexagonal" ],
   32,
   TestID -> "TorusTessellation-Hexagonal-vertex-count"
 ]
 
 VerificationTest[
-  Union @ VertexDegree @ TorusTessellation[ "Hexagonal", { 4, 4 } ],
+  Union @ VertexDegree @ TorusTessellation[ { 4, 4 }, "Hexagonal" ],
   { 3 },
   TestID -> "TorusTessellation-Hexagonal-is-3-regular"
+]
+
+(* ===== TorusTessellation: shape defaults to Triangular ===== *)
+
+VerificationTest[
+  IsomorphicGraphQ[ TorusTessellation[ { 5, 5 } ], TorusTessellation[ { 5, 5 }, "Triangular" ] ],
+  True,
+  TestID -> "TorusTessellation-default-shape-is-Triangular"
 ]
 
 (* ===== TorusTessellation: vertex-transitivity ===== *)
 
 VerificationTest[
-  VertexTransitiveGraphQ @ TorusTessellation[ "Rectangular", { 4, 4 } ],
+  VertexTransitiveGraphQ @ TorusTessellation[ { 4, 4 }, "Square" ],
   True,
-  TestID -> "TorusTessellation-Rectangular-is-vertex-transitive"
+  TestID -> "TorusTessellation-Square-is-vertex-transitive"
 ]
 
 VerificationTest[
-  VertexTransitiveGraphQ @ TorusTessellation[ "Triangular", { 4, 4 } ],
+  VertexTransitiveGraphQ @ TorusTessellation[ { 4, 4 }, "Triangular" ],
   True,
   TestID -> "TorusTessellation-Triangular-is-vertex-transitive"
 ]
 
 VerificationTest[
-  VertexTransitiveGraphQ @ TorusTessellation[ "Hexagonal", { 3, 3 } ],
+  VertexTransitiveGraphQ @ TorusTessellation[ { 3, 3 }, "Hexagonal" ],
   True,
   TestID -> "TorusTessellation-Hexagonal-is-vertex-transitive"
 ]
@@ -97,11 +105,11 @@ VerificationTest[
 (* ===== Composes with paclet primitives ===== *)
 
 VerificationTest[
-  With[ { g = TorusTessellation[ "Rectangular", { 4, 4 } ] },
+  With[ { g = TorusTessellation[ { 4, 4 }, "Square" ] },
     MatchQ[ FindInfraSegment[ g, First @ VertexList @ g, Last @ VertexList @ g, All ], { InfraSegment[ { _ } ] .. } ]
   ],
   True,
-  TestID -> "TorusTessellation-Rectangular-feeds-FindInfraSegment"
+  TestID -> "TorusTessellation-Square-feeds-FindInfraSegment"
 ]
 
 EndTestSection[]

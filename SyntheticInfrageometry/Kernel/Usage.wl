@@ -250,7 +250,7 @@ EnumerateGraphs::usage = "EnumerateGraphs[n, predQ] returns all connected n-vert
 
 PunchHole::usage = "PunchHole[g, r] removes the closed r-ball around a random vertex; PunchHole[g, c -> r] removes the closed r-ball around vertex c. For multiple holes, Fold[PunchHole, g, list].";
 
-TorusTessellation::usage = "TorusTessellation[shape, {m, n}] returns the vertex-transitive flat-torus Cayley graph carrying the regular {p, q}-tessellation, where shape is \"Rectangular\" ({4, 4}, 4-regular), \"Triangular\" ({3, 6}, 6-regular), or \"Hexagonal\" ({6, 3}, 3-regular).";
+TorusTessellation::usage = "TorusTessellation[{m, n}, shape] returns the vertex-transitive flat-torus Cayley graph carrying the regular {p, q}-tessellation; shape defaults to \"Triangular\" ({3, 6}, 6-regular) and is also \"Square\" ({4, 4}, 4-regular) or \"Hexagonal\" ({6, 3}, 3-regular).";
 
 (* ===================== Scenes ===================== *)
 

@@ -18,16 +18,20 @@ PunchHole[ g_Graph, c_ -> r_Integer ] :=
 
 (* ===================== Torus tessellations ===================== *)
 
-(* TorusTessellation[shape, {m, n}] returns the vertex-transitive flat-torus
-   Cayley graph carrying the regular {p, q}-tessellation indicated by shape.
-     "Rectangular" -- {4, 4}, 4-regular, Cay(Z_m x Z_n, {+-e_1, +-e_2})
-     "Triangular"  -- {3, 6}, 6-regular, Cay(Z_m x Z_n, {+-e_1, +-e_2, +-(e_1+e_2)})
-     "Hexagonal"   -- {6, 3}, 3-regular, two-orbit Cay on Z_m x Z_n x Z_2 *)
+(* TorusTessellation[{m, n}, shape] returns the vertex-transitive flat-torus
+   Cayley graph carrying the regular {p, q}-tessellation indicated by shape;
+   shape defaults to "Triangular" (the most isotropic discrete plane).
+     "Square"     -- {4, 4}, 4-regular, Cay(Z_m x Z_n, {+-e_1, +-e_2})
+     "Triangular" -- {3, 6}, 6-regular, Cay(Z_m x Z_n, {+-e_1, +-e_2, +-(e_1+e_2)})
+     "Hexagonal"  -- {6, 3}, 3-regular, two-orbit Cay on Z_m x Z_n x Z_2 *)
 
-TorusTessellation[ "Rectangular", { m_Integer, n_Integer }, opts : OptionsPattern[ ] ] :=
-  Graph[ GraphProduct[ CycleGraph[ m ], CycleGraph[ n ], "Cartesian" ], opts ]
+TorusTessellation[ { m_Integer, n_Integer }, opts : OptionsPattern[ ] ] :=
+  TorusTessellation[ { m, n }, "Triangular", opts ]
 
-TorusTessellation[ "Triangular", { m_Integer, n_Integer }, opts : OptionsPattern[ ] ] :=
+TorusTessellation[ { m_Integer, n_Integer }, "Square", opts : OptionsPattern[ ] ] :=
+  Graph[ GraphProduct[ CycleGraph[ m ], CycleGraph[ n ], "Cartesian" ], opts, VertexCoordinates -> Automatic ]
+
+TorusTessellation[ { m_Integer, n_Integer }, "Triangular", opts : OptionsPattern[ ] ] :=
   Graph[
     Flatten @ Table[
       { { i, j } <-> { Mod[ i + 1, m ], j }
@@ -38,7 +42,7 @@ TorusTessellation[ "Triangular", { m_Integer, n_Integer }, opts : OptionsPattern
     opts
   ]
 
-TorusTessellation[ "Hexagonal", { m_Integer, n_Integer }, opts : OptionsPattern[ ] ] :=
+TorusTessellation[ { m_Integer, n_Integer }, "Hexagonal", opts : OptionsPattern[ ] ] :=
   Graph[
     Flatten @ Table[
       { { i, j, 0 } <-> { i, j, 1 }
