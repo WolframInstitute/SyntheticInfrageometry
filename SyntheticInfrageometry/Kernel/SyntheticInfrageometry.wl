@@ -225,6 +225,22 @@ PackageExport[EnumerateGraphs]
 PackageExport[PunchHole]
 PackageExport[TorusTessellation]
 
+(* RegularMaps.wl *)
+PackageExport[RegularMap]
+PackageExport[SchlafliTessellation]
+PackageExport[RegularMapsAt]
+PackageExport[RegularMapGenus]
+
+(* UniformMaps.wl *)
+PackageExport[ArchimedeanTessellation]
+PackageExport[RectifyMap]
+PackageExport[TruncateMap]
+PackageExport[DualMap]
+PackageExport[ExpandMap]
+PackageExport[BevelMap]
+PackageExport[MapGenus]
+PackageExport[UniformMapQ]
+
 (* InfraScene.wl *)
 PackageExport[InfraScene]
 PackageExport[FindInfraScene]

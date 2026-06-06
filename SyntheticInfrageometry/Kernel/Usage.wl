@@ -194,6 +194,7 @@ InfraMeasure::usage = "InfraMeasure[obj] returns the vertex occupation measure <
 
 InfraSet::usage = "InfraSet[vs] wraps a vertex list vs as a set; coerces any Infra* wrapper to its underlying vertex set. Accessors: [\"Vertices\"] (the vertex list), [\"Length\"] (cardinality).";
 
+
 InfraBoundary::usage = "InfraBoundary[g, s] is the boundary of the vertex set s (a bare vertex list or any Infra* object) in g, returned as an InfraSet. Option Method (\"Combinatorial\" (default), the inner vertex boundary via GraphBoundary; {\"Alexandrov\", \"Radius\" -> r}, the two-sided cl(s)\\int(s) in the closed-r-ball topology, default r = 1).";
 
 InfraInterior::usage = "InfraInterior[g, s] is the interior of the vertex set s (a bare vertex list or any Infra* object) in g, returned as an InfraSet. Option Method (\"Combinatorial\" (default), s minus its inner boundary via GraphInterior; {\"Alexandrov\", \"Radius\" -> r}, the topological interior in the closed-r-ball topology, default r = 1).";
@@ -251,6 +252,30 @@ EnumerateGraphs::usage = "EnumerateGraphs[n, predQ] returns all connected n-vert
 PunchHole::usage = "PunchHole[g, r] removes the closed r-ball around a random vertex; PunchHole[g, c -> r] removes the closed r-ball around vertex c. For multiple holes, Fold[PunchHole, g, list].";
 
 TorusTessellation::usage = "TorusTessellation[{m, n}, shape] returns the vertex-transitive flat-torus Cayley graph carrying the regular {p, q}-tessellation; shape defaults to \"Triangular\" ({3, 6}, 6-regular) and is also \"Square\" ({4, 4}, 4-regular) or \"Hexagonal\" ({6, 3}, 3-regular).";
+
+RegularMap::usage = "RegularMap[{p, q}, {r, s}] is the 1-skeleton of the regular map of type {p, q} carried by the finite (2,p,q)-generation r^p == s^q == (r s)^2 == 1: the coset graph on G/<s> joined by the edge-involution r s; q-regular with girth p. RegularMap[{p, q}, G] finds the generators inside a finite group G.";
+
+SchlafliTessellation::usage = "SchlafliTessellation[{p, q}] is the smallest regular map of type {p, q} as a graph -- the Platonic solid when (p-2)(q-2) < 4, the smallest hyperbolic quotient when (p-2)(q-2) > 4. SchlafliTessellation[{p, q}, n] sizes it: the n x n flat torus in the Euclidean case (p-2)(q-2) == 4, the n-th smallest PSL(2,ell) quotient in the hyperbolic case.";
+
+RegularMapsAt::usage = "RegularMapsAt[{p, q}, ell] returns one graph per isomorphism class of {p, q} regular map carried by PSL(2, ell) for a prime ell -- the distinct maps over all (2,p,q)-generations at level ell. Expensive beyond small ell; for the n-th smallest map use SchlafliTessellation[{p, q}, n] instead.";
+
+RegularMapGenus::usage = "RegularMapGenus[{p, q}, graph] returns the orientable genus 1 - E (1/p + 1/q - 1/2) of a type-{p, q} regular map graph: 0 spherical (Platonic), 1 Euclidean (torus), >= 2 hyperbolic. RegularMapGenus[graph] reads {p, q} off the graph (q = vertex degree, p = girth), valid for a regular-map graph.";
+
+ArchimedeanTessellation::usage = "ArchimedeanTessellation[config] is the uniform (Archimedean) map of vertex configuration config (the cyclic list of face sizes around a vertex, e.g. {3,6,3,6}) as a graph; ArchimedeanTessellation[config, n] sizes the Euclidean case. Spherical configs give the 13 Archimedean solids plus prisms {4,4,n} and antiprisms {3,3,3,n}; Euclidean configs give the uniform plane tilings on the n x n torus; an all-equal config forwards to SchlafliTessellation.";
+
+RectifyMap::usage = "RectifyMap[graph] is the rectification (ambo) of a regular-map graph -- the medial graph on its edges, taking type {p, q} to vertex configuration (p.q.p.q).";
+
+TruncateMap::usage = "TruncateMap[graph] is the truncation of a regular-map graph: each degree-q vertex becomes a q-gon and each p-gon face a 2p-gon, taking {p, q} to (q.2p.2p).";
+
+DualMap::usage = "DualMap[graph] is the dual of a regular-map graph -- one vertex per face, adjacent iff the faces share an edge, taking {p, q} to {q, p}.";
+
+ExpandMap::usage = "ExpandMap[graph] is the expansion (cantellation) of a regular-map graph, RectifyMap twice, taking {p, q} to (p.4.q.4).";
+
+BevelMap::usage = "BevelMap[graph] is the bevel (omnitruncation) of a regular-map graph, TruncateMap of RectifyMap, taking {p, q} to (4.2p.2q).";
+
+MapGenus::usage = "MapGenus[config, graph] returns the orientable genus 1 - (V - E + F)/2 of a uniform map of vertex configuration config, using E = V Length[config]/2 and F = V Sum[1/f_i].";
+
+UniformMapQ::usage = "UniformMapQ[graph] tests whether graph is a connected vertex-transitive simple graph -- the necessary 1-skeleton condition for a uniform map.";
 
 (* ===================== Scenes ===================== *)
 

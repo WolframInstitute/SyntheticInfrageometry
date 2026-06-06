@@ -100,5 +100,11 @@ Print[TestReport[FileNameJoin[{$testDir, "GraphEnumerationTests.wlt"}]]]
 Print["Running ExampleGraphsTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "ExampleGraphsTests.wlt"}]]]
 
+Print["Running RegularMapsTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "RegularMapsTests.wlt"}]]]
+
+Print["Running UniformMapsTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "UniformMapsTests.wlt"}]]]
+
 Print["Running CurvaturesTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "CurvaturesTests.wlt"}]]]
