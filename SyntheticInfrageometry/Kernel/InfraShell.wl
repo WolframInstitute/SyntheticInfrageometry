@@ -210,14 +210,14 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
     KeyValueMap[ { r, vlist } |-> With[ { ct = Counts @ vlist }, { InfraPoint[ Keys @ ct, Values @ ct ], r } ], KeySort @ radiiBins ]
   ]
 
+(* Centers equidistant from vs, binned by their common radius r = d(c, vs) > 0,
+   each bin an InfraPoint.  The equidistant locus is FindInfraEquidistantSet;
+   here it is split into nonempty positive-radius shells. *)
+
 equidistantShellPoints[ graph_Graph, vs_List ] :=
-  With[ { dm  = GraphDistanceMatrix[ graph ],
-          idx = AssociationThread[ VertexList[ graph ] -> Range @ VertexCount @ graph ] },
-    { rows = Lookup[ idx, vs ] },
-    { centers = Select[ VertexList[ graph ],
-        c |-> With[ { ds = dm[[ idx @ c, rows ]] },
-          SameQ @@ ds && First[ ds ] =!= Infinity && First[ ds ] > 0 ] ] },
-    KeyValueMap[ { r, cs } |-> { InfraPoint[ cs ], r }, KeySort @ GroupBy[ centers, dm[[ idx @ #, First @ rows ]] & ] ] ]
+  With[ { ds = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, First @ vs ] ] },
+    { centers = Select[ FindInfraEquidistantSet[ graph, vs ][ "Vertices" ], c |-> 0 < ds[ c ] < Infinity ] },
+    KeyValueMap[ { r, cs } |-> { InfraPoint[ cs ], r }, KeySort @ GroupBy[ centers, ds ] ] ]
 
 (* Midpoint incidences { v, r } of the chord {a, b} (a = lower endpoint):
    vertices v on some a-b geodesic at a middle distance r = d(a, v) in

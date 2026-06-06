@@ -1,4 +1,12 @@
 $pacletDir = DirectoryName[DirectoryName[$InputFileName]];
+
+(* FindBallHull / BallHullQ delegate to BallHull (WolframInstitute`Infrageometry`);
+   load the sibling submodule source if present so the dev BallHull resolves
+   instead of a stale installed paclet. *)
+$infraDir = FileNameJoin[{DirectoryName[DirectoryName[$pacletDir]], "Infrageometry", "Infrageometry"}];
+If[DirectoryQ[$infraDir], PacletDirectoryLoad[$infraDir]];
+Needs["WolframInstitute`Infrageometry`"];
+
 PacletDirectoryLoad[$pacletDir];
 Needs["WolframInstitute`SyntheticInfrageometry`"];
 
@@ -39,6 +47,9 @@ Print[TestReport[FileNameJoin[{$testDir, "MetricAlgebraTests.wlt"}]]]
 
 Print["Running InfraSetTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "InfraSetTests.wlt"}]]]
+
+Print["Running AdvancingInfraFrontTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "AdvancingInfraFrontTests.wlt"}]]]
 
 Print["Running LaplacianAlgebraTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "LaplacianAlgebraTests.wlt"}]]]

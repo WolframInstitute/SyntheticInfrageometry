@@ -174,6 +174,8 @@ PackageExport[SegmentHullQ]
    ("Combinatorial") or Topological{Boundary,Interior} ("Alexandrov") from
    Infrageometry, and return an InfraSet. *)
 PackageExport[InfraSet]
+PackageExport[FindInfraEquidistantSet]
+PackageExport[FindAdvancingInfraFront]
 PackageExport[InfraBoundary]
 PackageExport[InfraInterior]
 

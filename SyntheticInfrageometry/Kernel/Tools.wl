@@ -178,17 +178,19 @@ propertiesSubOpts[ { _String, opts___ } ]  := { opts }
    by Fold-ing per-property filters over the base candidate set baseFn[g, path].
    Each filter shrinks the candidate set in turn (AND-conjunction). *)
 
-makeCandidateFn[ graph_Graph, baseFn_, properties_List, badPropMsg_ ] :=
-  With[ { filters = propertyFilter[ graph, #, badPropMsg ] & /@ properties },
+makeCandidateFn[ graph_Graph, baseFn_, properties_List, fnSym_ ] :=
+  With[ { filters = propertyFilter[ graph, #, fnSym ] & /@ properties },
     Function[ { g, path },
       Fold[ #2[ g, path, #1 ] &, baseFn[ g, path ], filters ]
     ]
   ]
 
 
-(* propertyFilter[g, propertySpec, badPropMsg]: dispatch on property name,
-   return a closure (g, path, candidates) -> candidates'.  Unknown property
-   raises badPropMsg and Throw[$Failed]; caller wraps in Catch. *)
+(* propertyFilter[g, propertySpec, fnSym]: dispatch on property name, return a
+   closure (g, path, candidates) -> candidates'.  Unknown property raises
+   fnSym::badproperty and Throw[$Failed]; caller wraps in Catch.  fnSym is the
+   calling head symbol (not fnSym::badproperty -- a MessageName passed as a bare
+   argument evaluates to its template string, so Message would emit Message::name). *)
 
 propertyFilter[ _Graph, "Simple", _ ]                          := simpleFilter
 propertyFilter[ _Graph, { "Simple" }, _ ]                      := simpleFilter
@@ -206,8 +208,8 @@ propertyFilter[ graph_Graph, { "LongestPath", subs___ }, _ ]   :=
 propertyFilter[ _Graph, { "EdgeMin", f_ }, _ ]                 := edgeMinFilter[ f ]
 propertyFilter[ _Graph, { "EdgeMax", f_ }, _ ]                 := edgeMaxFilter[ f ]
 
-propertyFilter[ _Graph, other_, badPropMsg_ ] :=
-  ( Message[ badPropMsg, other ]; Throw[ $Failed ] )
+propertyFilter[ _Graph, other_, fnSym_ ] :=
+  ( Message[ MessageName[ fnSym, "badproperty" ], other ]; Throw[ $Failed ] )
 
 
 (* "Simple": disallow revisits. *)

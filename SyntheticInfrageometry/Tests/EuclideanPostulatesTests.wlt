@@ -933,11 +933,12 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Sort @ (#[[ 1, 1 ]] & /@ FindInfraLine[ g, 1, 16, All, Method -> "ShortestPath" ]) ===
+    Sort @ (#[[ 1, 1 ]] & /@ FindInfraLine[ g, 1, 16, All, Method -> "Exhaustive" ]) ===
       Sort @ (#[[ 1, 1 ]] & /@ FindInfraLine[ g, 1, 16, All, Method -> Automatic ])
   ],
   True,
-  TestID -> "FindInfraLine-Shortest-equals-Automatic"
+  TestID -> "FindInfraLine-Exhaustive-equals-Automatic"
+]
 
 (* ===== FindInfraLine[g, segment] overload (replaces 2-arg ExtendInfraSegment) ===== *)
 
@@ -1039,7 +1040,7 @@ VerificationTest[
   With[ { g = PathGraph[ Range[ 5 ] ] },
     InfraPoint @ ExtendInfraSegment[ g, 1, 2, 1, 2, All ]
   ],
-  InfraPoint[ { { 3 } } ],
+  InfraPoint[ { 3 } ],
   TestID -> "ExtendInfraSegment-A4-PathGraph"
 ]
 

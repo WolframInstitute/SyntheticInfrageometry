@@ -66,7 +66,7 @@ findInfraPathCore[ graph_Graph, p1_, p2_, kspec_, count_, opts : OptionsPattern[
             Select[
               frontierSweep[ graph, p1, p2,
                 makeCandidateFn[ graph, allNeighboursBaseFn,
-                  properties, FindInfraPath::badproperty ],
+                  properties, FindInfraPath ],
                 pruning, countLimit @ count ],
               walkLengthAdmissibleQ[ kspec ] ]
           ],
@@ -131,7 +131,7 @@ extendInfraPathCore[ graph_Graph, walk_List, opts : OptionsPattern[ ExtendInfraP
       If[ methodHead =!= "Exhaustive",
         Message[ ExtendInfraPath::badmethod, methodSpec ]; Throw[ $Failed ] ];
       With[ { candidateFn = makeCandidateFn[ graph, allNeighboursBaseFn,
-                              properties, ExtendInfraPath::badproperty ],
+                              properties, ExtendInfraPath ],
               simpleQ     = MemberQ[ properties, "Simple" | { "Simple" } ] },
         Switch[ direction,
           "Forward",   extendOneSide[ graph, walk, candidateFn, length, pruning ],

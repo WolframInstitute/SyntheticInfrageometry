@@ -50,6 +50,8 @@ findSegmentCore[ graph_Graph, p1_, p2_,
   Catch @ With[ {
       properties = OptionValue[ FindInfraSegment, { opts }, Properties ],
       methodSpec = OptionValue[ FindInfraSegment, { opts }, Method ] /. Automatic -> "Exhaustive" },
+    If[ AnyTrue[ properties, MatchQ[ "ShortestPath" | { "ShortestPath", ___ } ] ],
+      Message[ FindInfraSegment::badproperty, "ShortestPath" ]; Throw[ $Failed ] ];
     With[ { methodHead = methodName @ methodSpec,
             pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
             fastPathQ  = properties === { } },
@@ -65,7 +67,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
             ],
             frontierSweep[ graph, p1, p2,
               makeCandidateFn[ graph, geodesicDAGBaseFn[ graph, p1, p2 ],
-                properties, FindInfraSegment::badproperty ],
+                properties, FindInfraSegment ],
               pruning, countLimit @ count ]
           ],
         "Greedy",
@@ -74,7 +76,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
               If[ path === { }, { }, { path } ] ],
             greedyFrontierSweep[ graph, p1, p2,
               makeCandidateFn[ graph, geodesicDAGBaseFn[ graph, p1, p2 ],
-                properties, FindInfraSegment::badproperty ] ]
+                properties, FindInfraSegment ] ]
           ],
         _,
           Message[ FindInfraSegment::badmethod, methodSpec ]; $Failed

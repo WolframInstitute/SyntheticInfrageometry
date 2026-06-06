@@ -11,15 +11,15 @@ VerificationTest[
 ]
 
 
-(* PathGraph cylinder, r = 1, Solid: the +1 axis extension absorbs the
-   immediate-neighbour bubble at each endpoint, so the cylinder reduces
-   to the axis itself on a 1D substrate. *)
+(* PathGraph cylinder, r = 1, Solid (union-of-balls tube): the union of the
+   closed radius-1 balls around each axis vertex, which on the path picks up
+   the immediate neighbours 2 and 8 of the axis endpoints. *)
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 9, axis = { 3, 4, 5, 6, 7 } },
     FindInfraCylinder[ g, axis, 1, "Form" -> "Solid" ][[ 1 ]] ],
-  { 3, 4, 5, 6, 7 },
-  TestID -> "FindInfraCylinder-PathGraph-r1-axis-only-via-extension"
+  { 2, 3, 4, 5, 6, 7, 8 },
+  TestID -> "FindInfraCylinder-PathGraph-r1-tube"
 ]
 
 
@@ -112,13 +112,14 @@ VerificationTest[
 ]
 
 
-(* Default "Form" is "Solid" and default Method is "Voronoi" with +1 axis
-   extension; immediate-neighbour bubble at endpoints is absorbed. *)
+(* Default "Form" is "Solid" and default Method is "Balls": the cylinder is the
+   union of closed radius-1 balls around the axis (same tube as the explicit
+   Solid form above). *)
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 9, axis = { 3, 4, 5, 6, 7 } },
     FindInfraCylinder[ g, axis, 1 ][[ 1 ]] ],
-  { 3, 4, 5, 6, 7 },
+  { 2, 3, 4, 5, 6, 7, 8 },
   TestID -> "FindInfraCylinder-default-is-Solid"
 ]
 
