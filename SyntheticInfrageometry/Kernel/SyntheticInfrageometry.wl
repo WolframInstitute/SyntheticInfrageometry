@@ -223,25 +223,9 @@ PackageExport[ProjectivePlaneGraphQ]
 (* GraphEnumeration.wl *)
 PackageExport[EnumerateGraphs]
 
-(* ExampleGraphs.wl *)
-PackageExport[PunchHole]
-PackageExport[TorusTessellation]
-
-(* RegularMaps.wl *)
-PackageExport[RegularMap]
-PackageExport[SchlafliTessellation]
-PackageExport[RegularMapsAt]
-PackageExport[RegularMapGenus]
-
-(* UniformMaps.wl *)
-PackageExport[ArchimedeanTessellation]
-PackageExport[RectifyMap]
-PackageExport[TruncateMap]
-PackageExport[DualMap]
-PackageExport[ExpandMap]
-PackageExport[BevelMap]
-PackageExport[MapGenus]
-PackageExport[UniformMapQ]
+(* Graph generation (PunchHole / TorusTessellation / RegularMap / SchlafliTessellation /
+   RegularMapsAt / RegularMapGenus / ArchimedeanTessellation / MapGenus / UniformMapQ)
+   was relocated to the Infrageometry paclet (graph-generation layer). Load it separately. *)
 
 (* InfraScene.wl *)
 PackageExport[InfraScene]

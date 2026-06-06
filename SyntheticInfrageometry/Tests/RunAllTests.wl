@@ -108,14 +108,8 @@ Print[TestReport[FileNameJoin[{$testDir, "TarskiGeometryTests.wlt"}]]]
 Print["Running GraphEnumerationTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "GraphEnumerationTests.wlt"}]]]
 
-Print["Running ExampleGraphsTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "ExampleGraphsTests.wlt"}]]]
-
-Print["Running RegularMapsTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "RegularMapsTests.wlt"}]]]
-
-Print["Running UniformMapsTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "UniformMapsTests.wlt"}]]]
+(* ExampleGraphs / RegularMaps / UniformMaps tests moved to the Infrageometry paclet
+   along with the generators (TorusTessellation / SchlafliTessellation / Archimedean...). *)
 
 Print["Running CurvaturesTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "CurvaturesTests.wlt"}]]]
