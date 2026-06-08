@@ -55,8 +55,11 @@ InfraPoint[ verts_List, w___ ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPoi
 
 (* FindInfraPoint[g, n] returns n unary InfraPoint[{v}] wrappers.  With
    "Distance" -> r the n vertices are mutually at exactly distance r;
-   with {dMin, dMax} mutually within that range; with "Max" at the
-   maximum finite mutual distance.  "From" restricts the candidate pool. *)
+   with {dMin, dMax} mutually within that range; with "Max" mutually as far
+   apart as possible (maximal minimum pairwise gap, ties broken randomly);
+   with "Spread" the same maximal gap but ties broken toward the most
+   equidistant set (minimal variance of pairwise distances).  "From" restricts
+   the candidate pool. *)
 
 Options[ FindInfraPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
 
@@ -72,7 +75,7 @@ FindInfraPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
         finiteMax = Max @ Select[ Flatten @ distMatrix, # < Infinity & ];
         distMatrix = Replace[ distMatrix, Infinity -> finiteMax + 1, { 2 } ];
         With[ { mask = 1 - IdentityMatrix @ Length @ vertexIndex },
-          If[ dist === "Max",
+          If[ dist === "Max" || dist === "Spread",
             cliques = {};
             Do[
               cliques = FindClique[
@@ -80,7 +83,10 @@ FindInfraPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
                 { n, Length @ pool }, maxCl ];
               If[ cliques =!= {}, Break[] ],
               { d, Reverse @ DeleteCases[ Union @@ distMatrix, 0 | _?( # > finiteMax & ) ] } ];
-            If[ cliques === {}, {}, RandomSample[ RandomChoice @ cliques, UpTo[ n ] ] ],
+            Which[
+              cliques === {}, {},
+              dist === "Spread", mostEquidistantSubset[ cliques, distMatrix, pool, n ],
+              True, RandomSample[ RandomChoice @ cliques, UpTo[ n ] ] ],
             With[ { range = Replace[ dist,
                     { d_?NumericQ :> { d, d },
                       { dMin_, dMax_ } :> { dMin, dMax /. Infinity -> finiteMax } } ] },
@@ -130,6 +136,21 @@ anchorDistMatchQ[ allDists_List, idx_Integer, d_?NumericQ ]                  := 
 anchorDistMatchQ[ allDists_List, idx_Integer, { lo_?NumericQ, hi_?NumericQ } ] := lo <= allDists[[ idx ]] <= hi
 anchorDistMatchQ[ allDists_List, idx_Integer, "Max" ]                        :=
   allDists[[ idx ]] == Max @ Select[ allDists, # < Infinity & ]
+
+
+(* Among the max-min-gap cliques, the n-subset whose pairwise distances are
+   most equal -- minimal variance of pairwise distances, the most
+   equidistantly spread configuration.  distMatrix is the pool x pool distance
+   submatrix indexed by position in pool. *)
+
+mostEquidistantSubset[ cliques_List, distMatrix_, pool_List, n_Integer ] :=
+  With[ { idx = AssociationThread[ pool -> Range @ Length @ pool ],
+          subsets = DeleteDuplicates[ Sort /@ Catenate[ Subsets[ #, { n } ] & /@ cliques ] ] },
+    If[ n < 3,
+      First @ subsets,
+      First @ MinimalBy[ subsets,
+        s |-> Variance[ distMatrix[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] & /@ Subsets[ s, { 2 } ] ] ] ]
+  ]
 
 
 (* ===================== FindInfraMidpoint ===================== *)
@@ -393,7 +414,7 @@ selectFromPointSpace[ graph_Graph, vertices_List, nMax_Integer,
       _?( ! NumericQ @ # & ) -> 0 ];
     poolSubMatrix = Replace[ poolSubMatrix, Infinity -> finiteMax + 1, { 2 } ];
     Which[
-      distSpec === "Max",
+      distSpec === "Max" || distSpec === "Spread",
         thresholds = Reverse @ DeleteCases[ Union @@ poolSubMatrix, 0 | _?( # > finiteMax & ) ];
         cliques = { };
         Do[
@@ -403,7 +424,10 @@ selectFromPointSpace[ graph_Graph, vertices_List, nMax_Integer,
           cliques = FindClique[ auxiliaryGraph, { n, VertexCount[ auxiliaryGraph ] }, maxCl ];
           If[ cliques =!= { }, Break[ ] ],
           { d, thresholds } ];
-        If[ cliques === { }, { }, RandomSample[ RandomChoice @ cliques, UpTo[ n ] ] ],
+        Which[
+          cliques === { }, { },
+          distSpec === "Spread", mostEquidistantSubset[ cliques, poolSubMatrix, pool, n ],
+          True, RandomSample[ RandomChoice @ cliques, UpTo[ n ] ] ],
       True,
         range = Replace[ distSpec,
           { d_?NumericQ                  :> { d, d },

@@ -49,6 +49,30 @@ VerificationTest[
 ]
 
 VerificationTest[
+  With[{g = GridGraph[{6, 6}]},
+    With[{vs = #[[ 1, 1 ]] & /@ FindInfraPoint[g, 4, "Distance" -> "Max"]},
+      Min[GraphDistance[g, #[[1]], #[[2]]] & /@ Subsets[vs, {2}]] == 5
+    ]
+  ],
+  True,
+  TestID -> "FindInfraPoint-Max-maximizes-minimum-gap"
+]
+
+VerificationTest[
+  With[{g = GridGraph[{6, 6}]},
+    With[{spread = #[[ 1, 1 ]] & /@ FindInfraPoint[g, 4, "Distance" -> "Spread"],
+          corners = {1, 6, 31, 36}},
+      With[{spreadDists = GraphDistance[g, #[[1]], #[[2]]] & /@ Subsets[spread, {2}],
+            cornerDists = GraphDistance[g, #[[1]], #[[2]]] & /@ Subsets[corners, {2}]},
+        Min[spreadDists] == 5 && Variance[spreadDists] <= Variance[cornerDists]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraPoint-Spread-minimizes-variance-at-optimal-gap"
+]
+
+VerificationTest[
   With[{g = PetersenGraph[]},
     With[{pt = FindInfraPoint[g, 1, "From" -> {2, 3, 4}]},
       Length @ pt == 1 && SubsetQ[{2, 3, 4}, (#[[ 1, 1 ]] & /@ pt)]
