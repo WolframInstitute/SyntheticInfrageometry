@@ -223,9 +223,10 @@ PackageExport[ProjectivePlaneGraphQ]
 (* GraphEnumeration.wl *)
 PackageExport[EnumerateGraphs]
 
-(* Graph generation (PunchHole / TorusTessellation / RegularMap / SchlafliTessellation /
-   RegularMapsAt / RegularMapGenus / ArchimedeanTessellation / MapGenus / UniformMapQ)
-   was relocated to the Infrageometry paclet (graph-generation layer). Load it separately. *)
+(* Graph generation was relocated to the Infrageometry paclet (graph-generation layer):
+   the single TessellationGraph generator (regular maps by {p, q}, uniform/Archimedean maps
+   by vertex configuration, sized by n / {m, n} / a carrying group) plus PunchHole. Load it
+   separately via Needs["WolframInstitute`Infrageometry`"]. *)
 
 (* InfraScene.wl *)
 PackageExport[InfraScene]

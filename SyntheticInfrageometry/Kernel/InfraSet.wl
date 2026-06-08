@@ -62,63 +62,36 @@ FindInfraEquidistantSet[ graph_Graph, pts_List /; Length[ pts ] <= 1, { _Integer
 
 (* ===================== FindAdvancingInfraFront ===================== *)
 
-(* Advancing ORIENTED wavefront from a source.  The state is a set of geodesic
-   walk-TAILS; the head of each tail is a front vertex and the rest is the recent
-   history that orients the next step (the momentum a bare vertex set, and hence
-   the metric-sphere shell, lacks).  A tail (..., a, b) advances b -> c, and the
-   visible front S_i is the set of heads.  Two orthogonal option axes control
-   which c are admissible; the default ({1, None}) is the plain non-backtracking
-   front c in N(b) \ {a}, which never empties (eventually periodic) and so
-   outlives the metric sphere -- on a triangle {A,B,C} from A it runs
-   {A},{B,C},{B,C},{A},... (step 2 turns forward along BC, does NOT fall back to
-   A; only step 3 closes the loop).
+(* Bouncing wavefront from a source, as a pure vertex-set foliation.  Each vertex
+   u of the front S_i advances one step OUTWARD in the geodesic spray of the
+   k-th-predecessor shell R = S_{i-k}: to the neighbours v with d(R,v)=d(R,u)+1;
+   if u has no such outward neighbour it is KEPT.  The keep + trailing reference
+   is the momentum: the front expands as a thin shell, and where it can advance no
+   farther it stalls until the trailing shell R catches up, then "outward from R"
+   points back and the front REFLECTS -- a breathing shell on a closed map, a
+   sloshing band on a graph with boundary.  Because every u contributes >= 1
+   vertex the front never empties (infinite, eventually periodic), unlike the
+   metric-sphere shell FindInfraShell which dies at the eccentricity.  k (default
+   1) sets the dwell at each turning point; the first fold-back tracks the
+   graph injectivity radius (the non-contractible-systole question, see
+   Wiki/Concepts/SprayTransverseGrowth.md).  Returns
+   { InfraSet[S_0], ..., InfraSet[S_steps] }; origin is a single vertex (a bare
+   label, including a list-vertex {i, j}) or an InfraPoint[{...}] multi-source. *)
 
-   "SelfAvoidanceDepth" -> n (default 1) -- the memory axis: c may not be any of
-   the last n vertices of the tail.  n = 1 is non-backtracking; larger n forbids
-   closing any cycle of length <= n + 1 (n = 2 makes a triangle die at step 3
-   rather than circulate); n = Infinity is a fully self-avoiding front.
-
-   "GeodesicSprayDepth" -> None (default) | k_Integer | Infinity -- the transverse
-   axis: in the geodesic spray of a reference vertex p, every step b -> c is
-   outward / inward / transverse by d(p,c) - d(p,b) in {+1, -1, 0}; this option
-   forbids the transverse (0) steps.  None imposes nothing; an integer k takes
-   p = the k-th predecessor (a LOCAL moving frame -- delays but does not stop
-   surface flooding); Infinity takes p = origin (a GLOBAL radial layering -- the
-   wave stays a band forever, never flooding).  k = 1 with the immediate
-   predecessor is the strictest local frame.
-
-   Returns the foliation { InfraSet[S_0], ..., InfraSet[S_steps] }.  origin is a
-   single vertex (a bare label, including a list-vertex {i, j}); an
-   InfraPoint[{v1, ..., vk}] seeds a multi-source front. *)
-
-Options[ FindAdvancingInfraFront ] = { "SelfAvoidanceDepth" -> 1, "GeodesicSprayDepth" -> None };
-
-FindAdvancingInfraFront[ graph_Graph, origin_, steps_Integer, OptionsPattern[ ] ] :=
+FindAdvancingInfraFront[ graph_Graph, origin_, steps_Integer, k_Integer : 1 ] :=
   With[
     { vl  = VertexList[ graph ],
-      src = Replace[ origin, { InfraPoint[ vs_List, ___ ] :> vs, v_ :> { v } } ],
-      n   = OptionValue[ "SelfAvoidanceDepth" ],
-      ref = OptionValue[ "GeodesicSprayDepth" ] },
+      src = Replace[ origin, { InfraPoint[ vs_List, ___ ] :> vs, v_ :> { v } } ] },
     { adj  = AssociationMap[ AdjacencyList[ graph, # ] &, vl ],
       vidx = AssociationThread[ vl, Range[ Length @ vl ] ],
       dm   = GraphDistanceMatrix[ graph ] },
-    { dist   = dm[[ vidx[ #1 ], vidx[ #2 ] ]] &,
-      dsrc   = AssociationThread[ vl, Min /@ Transpose[ dm[[ Lookup[ vidx, src ] ]] ] ],
-      retain = Max[ n /. Infinity -> steps, If[ IntegerQ @ ref, ref, 0 ] ] + 1 },
-    { step = tails |-> DeleteDuplicates @ Catenate[
-        ( t |-> With[
-            { b = Last @ t, pred = If[ Length @ t >= 2, t[[ -2 ]], None ] },
-            { fwd    = If[ pred === None, adj[ b ], DeleteCases[ adj[ b ], pred ] ],
-              memSet = If[ Length @ t >= 2, Take[ Most @ t, - Min[ n /. Infinity -> Length @ t, Length @ t - 1 ] ], { } ],
-              refv   = If[ IntegerQ @ ref, t[[ Max[ 1, Length @ t - ref ] ]], ref ] },
-            { nxt = If[ fwd === { }, { pred },
-                Select[ fwd, ! MemberQ[ memSet, # ] && Which[
-                    ref === None,     True,
-                    ref === Infinity, dsrc[ # ] =!= dsrc[ b ],
-                    True,             dist[ refv, # ] =!= dist[ refv, b ] ] & ] ] },
-            ( With[ { w = Append[ t, # ] }, If[ Length @ w > retain, Rest @ w, w ] ] & ) /@ nxt ] )
-          /@ tails ] },
-    InfraSet[ DeleteDuplicates[ Last /@ # ] ] & /@ NestList[ step, List /@ src, steps ]
+    { step = hist |-> With[
+        { cur = Last @ hist, ref = hist[[ Max[ 1, Length @ hist - k ] ]] },
+        { dref = AssociationThread[ vl, Min /@ Transpose[ dm[[ Lookup[ vidx, ref ] ]] ] ] },
+        Append[ hist, DeleteDuplicates @ Catenate[
+          ( u |-> With[ { out = Select[ adj @ u, dref[ # ] == dref[ u ] + 1 & ] },
+              If[ out === { }, { u }, out ] ] ) /@ cur ] ] ] },
+    InfraSet /@ Nest[ step, { src }, steps ]
   ]
 
 
