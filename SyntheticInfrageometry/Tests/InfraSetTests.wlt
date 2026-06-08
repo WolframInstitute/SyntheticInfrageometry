@@ -146,13 +146,13 @@ VerificationTest[
 
 (* ===== FindAdvancingInfraFront ===== *)
 
-(* The bouncing front advances each vertex one step outward from the
-   k-th-predecessor shell, keeping any vertex that cannot advance. On a triangle
-   from 1 it expands to {2,3}, dwells, then folds back to {1} (the keep + trailing
-   reference is the bounce) -- never empties, unlike the metric sphere. *)
+(* The bouncing front moves each vertex one step outward from the previous front
+   and reflects it inward where it cannot advance. On a triangle from 1 it expands
+   to {2,3} then turns straight back to {1}, oscillating with no dwell -- never
+   empties, unlike the metric sphere. *)
 VerificationTest[
   Sort /@ ( #[ "Vertices" ] & /@ FindAdvancingInfraFront[ CompleteGraph[ 3 ], 1, 5 ] ),
-  {{1}, {2, 3}, {2, 3}, {1}, {1}, {2, 3}},
+  {{1}, {2, 3}, {1}, {2, 3}, {1}, {2, 3}},
   TestID -> "FindAdvancingInfraFront-triangle-bounces"
 ]
 
@@ -171,14 +171,14 @@ VerificationTest[
   TestID -> "FindAdvancingInfraFront-shape-and-seed"
 ]
 
-(* Locality + keep: S_{i+1} subset of S_i union N(S_i). *)
+(* Locality: S_{i+1} subset of S_i union N(S_i) (each vertex moves to a neighbour). *)
 VerificationTest[
   With[ { g = GridGraph[ {5, 5} ] },
     AllTrue[
       Partition[ #[ "Vertices" ] & /@ FindAdvancingInfraFront[ g, 13, 6 ], 2, 1 ],
       SubsetQ[ Union[ #[[ 1 ]], Union @@ ( AdjacencyList[ g, # ] & /@ #[[ 1 ]] ) ], #[[ 2 ]] ] & ] ],
   True,
-  TestID -> "FindAdvancingInfraFront-local-with-keep"
+  TestID -> "FindAdvancingInfraFront-local-step"
 ]
 
 (* It bounces: from the centre of a path the wave runs to the ends, reflects, and
@@ -189,12 +189,11 @@ VerificationTest[
   TestID -> "FindAdvancingInfraFront-refocuses-at-origin"
 ]
 
-(* k sets the dwell at each turning point: the longest run of consecutive equal
-   fronts is k+1, so it strictly increases with k. *)
+(* Immediate bounce: no two consecutive fronts are equal (longest run is 1). *)
 VerificationTest[
-  Table[ Max[ Length /@ Split[ #[ "Vertices" ] & /@ FindAdvancingInfraFront[ PathGraph @ Range @ 9, 5, 30, k ] ] ], { k, 1, 3 } ],
-  { 2, 3, 4 },
-  TestID -> "FindAdvancingInfraFront-k-controls-dwell"
+  Max[ Length /@ Split[ Sort /@ ( #[ "Vertices" ] & /@ FindAdvancingInfraFront[ PathGraph @ Range @ 9, 5, 30 ] ) ] ],
+  1,
+  TestID -> "FindAdvancingInfraFront-immediate-bounce"
 ]
 
 (* InfraPoint origin seeds a multi-source front: S_0 is the source set. *)

@@ -62,36 +62,36 @@ FindInfraEquidistantSet[ graph_Graph, pts_List /; Length[ pts ] <= 1, { _Integer
 
 (* ===================== FindAdvancingInfraFront ===================== *)
 
-(* Bouncing wavefront from a source, as a pure vertex-set foliation.  Each vertex
-   u of the front S_i advances one step OUTWARD in the geodesic spray of the
-   k-th-predecessor shell R = S_{i-k}: to the neighbours v with d(R,v)=d(R,u)+1;
-   if u has no such outward neighbour it is KEPT.  The keep + trailing reference
-   is the momentum: the front expands as a thin shell, and where it can advance no
-   farther it stalls until the trailing shell R catches up, then "outward from R"
-   points back and the front REFLECTS -- a breathing shell on a closed map, a
-   sloshing band on a graph with boundary.  Because every u contributes >= 1
-   vertex the front never empties (infinite, eventually periodic), unlike the
-   metric-sphere shell FindInfraShell which dies at the eccentricity.  k (default
-   1) sets the dwell at each turning point; the first fold-back tracks the
-   graph injectivity radius (the non-contractible-systole question, see
-   Wiki/Concepts/SprayTransverseGrowth.md).  Returns
-   { InfraSet[S_0], ..., InfraSet[S_steps] }; origin is a single vertex (a bare
-   label, including a list-vertex {i, j}) or an InfraPoint[{...}] multi-source. *)
+(* Bouncing wavefront from a source o, as a pure vertex-set foliation.  Each vertex
+   u of the front S_i steps one shell OUTWARD from the previous front S_{i-1} -- to
+   the neighbours v with d(S_{i-1}, v) = d(S_{i-1}, u) + 1 -- and where there is no
+   outward neighbour it REFLECTS, stepping back to a neighbour with d = d(u) - 1
+   (kept in place only in the degenerate case of neither).  The previous front is
+   the momentum: the front expands as a thin metric shell and turns straight around
+   at a boundary or focus, so it never empties and never dwells -- unlike the
+   metric-sphere shell FindInfraShell, which dies at the eccentricity.  The state is
+   the pair (S_{i-1}, S_i), so this is a NestList on consecutive-front pairs: the
+   discrete second-order (wave-equation) form, momentum carried as the trailing
+   front.  Returns { InfraSet[S_0], ..., InfraSet[S_steps] }; origin is a single
+   vertex (a bare label, including a list-vertex {i, j}) or an InfraPoint[{...}]
+   multi-source. *)
 
-FindAdvancingInfraFront[ graph_Graph, origin_, steps_Integer, k_Integer : 1 ] :=
+FindAdvancingInfraFront[ graph_Graph, origin_, steps_Integer ] :=
   With[
     { vl  = VertexList[ graph ],
       src = Replace[ origin, { InfraPoint[ vs_List, ___ ] :> vs, v_ :> { v } } ] },
     { adj  = AssociationMap[ AdjacencyList[ graph, # ] &, vl ],
       vidx = AssociationThread[ vl, Range[ Length @ vl ] ],
       dm   = GraphDistanceMatrix[ graph ] },
-    { step = hist |-> With[
-        { cur = Last @ hist, ref = hist[[ Max[ 1, Length @ hist - k ] ]] },
-        { dref = AssociationThread[ vl, Min /@ Transpose[ dm[[ Lookup[ vidx, ref ] ]] ] ] },
-        Append[ hist, DeleteDuplicates @ Catenate[
-          ( u |-> With[ { out = Select[ adj @ u, dref[ # ] == dref[ u ] + 1 & ] },
-              If[ out === { }, { u }, out ] ] ) /@ cur ] ] ] },
-    InfraSet /@ Nest[ step, { src }, steps ]
+    { step = pair |-> With[
+        { prev = pair[[ 1 ]], cur = pair[[ 2 ]] },
+        { dp = AssociationThread[ vl, Min /@ Transpose[ dm[[ Lookup[ vidx, prev ] ]] ] ] },
+        { cur, DeleteDuplicates @ Catenate[
+          ( u |-> With[
+              { out = Select[ adj @ u, dp[ # ] == dp[ u ] + 1 & ],
+                in  = Select[ adj @ u, dp[ # ] == dp[ u ] - 1 & ] },
+              Which[ out =!= { }, out, in =!= { }, in, True, { u } ] ] ) /@ cur ] } ] },
+    InfraSet /@ NestList[ step, { src, src }, steps ][[ All, 2 ]]
   ]
 
 
