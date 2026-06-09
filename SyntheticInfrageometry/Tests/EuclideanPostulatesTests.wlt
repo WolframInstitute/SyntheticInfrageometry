@@ -38,6 +38,35 @@ VerificationTest[
   TestID -> "FindInfraPoint-from-periphery"
 ]
 
+(* {"Center", 0} runs zero iterations -- identical pool to plain "Center". *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    Sort[#[[ 1, 1 ]] & /@ FindInfraPoint[g, All, "From" -> {"Center", 0}]] ===
+      Sort[#[[ 1, 1 ]] & /@ FindInfraPoint[g, All, "From" -> "Center"]]
+  ],
+  True,
+  TestID -> "FindInfraPoint-iterated-center-cap0-equals-center"
+]
+
+(* On a graph with a dominating center the orbit is already a fixed point, so the
+   iterated (uncapped) pool is the center of that fixed point -- a subset of the graph. *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    SubsetQ[VertexList[g], #[[ 1, 1 ]] & /@ FindInfraPoint[g, All, "From" -> {"Center", Infinity}]]
+  ],
+  True,
+  TestID -> "FindInfraPoint-iterated-center-stabilizes-in-graph"
+]
+
+(* A disconnected input is already a shattered region: the pool is its whole vertex set. *)
+VerificationTest[
+  With[{g = GraphDisjointUnion[PathGraph[{1, 2, 3}], PathGraph[{4, 5, 6}]]},
+    Sort[#[[ 1, 1 ]] & /@ FindInfraPoint[g, All, "From" -> {"Center", Infinity}]] === VertexList[g]
+  ],
+  True,
+  TestID -> "FindInfraPoint-iterated-center-disconnected-region"
+]
+
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
     With[{pts = (#[[ 1, 1 ]] & /@ FindInfraPoint[g, 2, "Distance" -> 4])},

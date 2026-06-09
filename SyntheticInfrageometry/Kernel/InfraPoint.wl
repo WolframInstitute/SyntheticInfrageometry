@@ -113,6 +113,17 @@ FindInfraPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 findPointPool[ graph_Graph, "Center" ]    := GraphCenter[ graph ]
 findPointPool[ graph_Graph, "Periphery" ] := GraphPeriphery[ graph ]
+
+(* iterated centre: orbit of c |-> NeighborhoodGraph[c, GraphCenter[c]] for up to
+   cap steps (Infinity = uncapped), stopping at a fixed point (pool = its centre)
+   or when the centre-neighbourhood first disconnects (pool = that whole region). *)
+findPointPool[ graph_Graph ? ConnectedGraphQ, { "Center", cap : ( _Integer | Infinity ) } ] :=
+  With[ { final = NestWhile[ NeighborhoodGraph[ #, GraphCenter[ # ] ] &, graph,
+            ConnectedGraphQ[ #2 ] && VertexCount[ #1 ] != VertexCount[ #2 ] &, 2, cap ] },
+    If[ ConnectedGraphQ[ final ], GraphCenter[ final ], VertexList[ final ] ] ]
+
+findPointPool[ graph_Graph, { "Center", _ } ] := VertexList[ graph ]
+
 findPointPool[ graph_Graph, _String ]     := VertexList[ graph ]
 
 findPointPool[ graph_Graph, InfraPoint[ reps_List ] ] := reps
