@@ -47,40 +47,55 @@ $InfraSceneHighlightPalette := Join[
    list whose entries are auto-classified by key: VertexStyle / VertexSize /
    VertexShapeFunction (vertex channel), EdgeStyle / EdgeShapeFunction (edge
    channel), "OpacityRange" / "ThicknessRange" / "PointSizeRange" (per-object
-   diffusion overrides), and any bare directive (both colour channels).  The
+   diffusion overrides).  A bare directive is routed by family: line-appearance
+   directives (Thickness / AbsoluteThickness / Thick / Thin / Dashing / Dashed /
+   Dotted / DotDashed) go to the edge channel, point-appearance directives
+   (PointSize / AbsolutePointSize) to the vertex channel, and everything else
+   (colours, Opacity, ...) to both.  The
    three ranges default to the global option values passed in `defaults`.
-   A *numeric* VertexSize -> n is shorthand for "PointSizeRange" -> {n, n}
-   (a constant absolute point size, the intuitive way to size a highlighted
-   point); a symbolic VertexSize (Tiny / Small / Large / Scaled[..]) stays on
-   the graph-coordinate HighlightGraph VertexSize channel. *)
+   An explicit appearance directive overrides the matching count-diffusion: a
+   thickness directive suppresses "ThicknessRange", a point-size directive
+   suppresses "PointSizeRange", and an Opacity directive suppresses
+   "OpacityRange", so the user's value is the only one emitted on that channel.
+   VertexSize is a plain graph-coordinate passthrough for every value (numeric
+   or symbolic); use AbsolutePointSize[n] for a constant on-screen point size
+   (rerouted to a VertexShapeFunction since HighlightGraph drops point sizing
+   inside Style[] highlight specs). *)
 parseHighlightStyle[ spec_, defaults_Association ] :=
   Replace[
     Fold[
       { rec, elem } |-> Replace[ elem, {
         ( VertexStyle         -> v_ ) :> MapAt[ Append[ #, v ] &, rec, "VertexDir" ],
-        ( VertexSize          -> v_ ? NumericQ ) :> Append[ rec, "PointSizeRange" -> { v, v } ],
         ( VertexSize          -> v_ ) :> Append[ rec, "VertexSize" -> v ],
         ( VertexShapeFunction -> v_ ) :> Append[ rec, "VertexShapeFunction" -> v ],
         ( EdgeStyle           -> v_ ) :> Append[ rec, "EdgeStyle" -> v ],
         ( EdgeShapeFunction   -> v_ ) :> Append[ rec, "EdgeShapeFunction" -> v ],
         ( ( k : "OpacityRange" | "ThicknessRange" | "PointSizeRange" ) -> v_ ) :> Append[ rec, k -> v ],
+        ( d : ( _Thickness | _AbsoluteThickness | Thick | Thin | _Dashing | Dashed | Dotted | DotDashed ) ) :>
+          MapAt[ Append[ #, d ] &, rec, "EdgeDir" ],
+        ( d : ( _PointSize | _AbsolutePointSize ) ) :>
+          MapAt[ Append[ #, d ] &, rec, "VertexDir" ],
         d_ :> MapAt[ Append[ #, d ] &, MapAt[ Append[ #, d ] &, rec, "VertexDir" ], "EdgeDir" ]
       } ],
       Join[ defaults, <|
         "VertexDir" -> { }, "EdgeDir" -> { }, "EdgeStyle" -> None,
         "EdgeShapeFunction" -> None, "VertexSize" -> None, "VertexShapeFunction" -> None |> ],
       normalizeHighlightSpec @ spec ],
-    (* An explicit thickness directive (bare, or via EdgeStyle) supersedes the
-       count-driven thickness diffusion: suppress "ThicknessRange" so the
-       user's value is the only AbsoluteThickness emitted, rather than winning
-       on directive order alone. *)
+    (* An explicit appearance directive supersedes the matching count-driven
+       diffusion: suppress the corresponding *Range so the user's value is the
+       only one emitted on that channel, rather than winning on directive order
+       alone. *)
     r_Association :> With[ {
-        edgeThick = ! FreeQ[ { r[ "EdgeDir" ], r[ "EdgeStyle" ] },
-          Thickness | AbsoluteThickness | Thick | Thin ] },
+        edgeThick  = ! FreeQ[ { r[ "EdgeDir" ], r[ "EdgeStyle" ] },
+          Thickness | AbsoluteThickness | Thick | Thin ],
+        vertPtSize = ! FreeQ[ r[ "VertexDir" ], _PointSize | _AbsolutePointSize ],
+        anyOpacity = ! FreeQ[ { r[ "VertexDir" ], r[ "EdgeDir" ], r[ "EdgeStyle" ] }, _Opacity ] },
       Join[ r, <|
         "VertexDir" -> Directive @@ r[ "VertexDir" ],
         "EdgeDir"   -> Directive @@ r[ "EdgeDir" ],
-        If[ edgeThick, "ThicknessRange" -> None, Nothing ] |> ] ] ]
+        If[ edgeThick,  "ThicknessRange" -> None, Nothing ],
+        If[ vertPtSize, "PointSizeRange" -> None, Nothing ],
+        If[ anyOpacity, "OpacityRange"   -> None, Nothing ] |> ] ] ]
 
 normalizeHighlightSpec[ Automatic ]          := { }
 normalizeHighlightSpec[ list_List ]          := list
@@ -111,18 +126,10 @@ normalizeHighlightSpec[ x_ ]                 := { x }
    scene-construction shapes of these heads (e.g. `InfraSegment[p1, p2]`,
    `InfraShell[c, r]`, `InfraPlane[p1, p2]`, `InfraCircle[c, r]`) take more
    args and never collide.
-   Each entry may be plain, `entry -> color`, `entry -> Directive[dirs]`,
-   `Style[entry, dirs__]`, or `entry -> {opts...}` with a flat option list that
-   `parseHighlightStyle` auto-sorts into three channels: vertex appearance
-   (`VertexStyle` / `VertexSize` / `VertexShapeFunction`), edge appearance
-   (`EdgeStyle` / `EdgeShapeFunction`), and per-object diffusion ranges
-   (`"OpacityRange"` / `"ThicknessRange"` / `"PointSizeRange"`, overriding the
-   global option for that object only).  A colour / `Directive` / bare directive
-   applies to both vertex and edge colour channels.  Colour + opacity ride the
-   per-element `Style[]` highlight specs; sizing / thickness are rerouted to
-   top-level `VertexShapeFunction` / `VertexSize` / `EdgeStyle` /
-   `EdgeShapeFunction` rule lists because HighlightGraph ignores
-   `AbsolutePointSize` / `AbsoluteThickness` inside Style[] highlight specs. *)
+   The per-object style spec (`entry -> color` / `-> Directive[..]` /
+   `Style[entry, ..]` / `-> {opts..}`) is parsed by `parseHighlightStyle` — see
+   there for channel routing, family-based directive dispatch, and the
+   diffusion-range overrides. *)
 
 (* Diffuse-encoding ranges.  "OpacityRange" and "ThicknessRange" are on by
    default, so multi-realisation visit counts are visible out of the box via

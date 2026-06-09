@@ -174,6 +174,21 @@ VerificationTest[
   TestID -> "InfraSceneHighlight-rule-directive-thickness-override"
 ]
 
+(* An explicit Opacity directive overrides the on-by-default "OpacityRange"
+   count-diffusion: only the user's opacity is emitted on each edge, so no
+   gradient-induced opacity values appear alongside it. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
+          { InfraSegment[ { { 1, 2, 3, 4 } } ] -> Directive[ Orange, Opacity[ 0.3 ] ] } ] },
+      ! FreeQ[ styles, Opacity[ 0.3 ] ] &&
+      Cases[ styles, Opacity[ x_ ] /; x =!= 0.3, Infinity ] === { }
+    ]
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-explicit-opacity-overrides-opacityrange"
+]
+
 (* Regression test for the Flatten level bug: edges must actually be
    highlighted on a graph whose vertices are 2-lists.  Pre-fix, the bare
    Flatten call inside InfraSceneHighlight collapsed list-named vertices
@@ -232,21 +247,36 @@ VerificationTest[
   TestID -> "InfraSceneHighlight-pointsizerange-reroutes-to-vsf"
 ]
 
-(* A numeric per-entry VertexSize is shorthand for a constant absolute point
-   size: it routes through the VertexShapeFunction / AbsolutePointSize path
-   (not the graph-coordinate top-level VertexSize), so a highlighted point gets
-   a consistent on-screen size regardless of layout scale. *)
+(* VertexSize is a plain graph-coordinate passthrough for every value: a
+   numeric per-entry VertexSize stays on the top-level VertexSize channel (no
+   AbsolutePointSize reroute), exactly like a symbolic one. *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     With[ { opts = Options @ InfraSceneHighlight[ g,
           { InfraPoint[ { 13 } ] -> { VertexStyle -> Blue, VertexSize -> 12 } } ] },
-      Cases[ opts, HoldPattern[ VertexShapeFunction -> _ ], Infinity ] =!= { } &&
-      ! FreeQ[ opts, AbsolutePointSize[ 12 ] ] &&
-      Cases[ opts, HoldPattern[ VertexSize -> _ ], Infinity ] === { }
+      Cases[ opts, HoldPattern[ VertexSize -> _ ], Infinity ] =!= { } &&
+      FreeQ[ opts, AbsolutePointSize ]
     ]
   ],
   True,
-  TestID -> "InfraSceneHighlight-numeric-vertexsize-is-absolute-pointsize"
+  TestID -> "InfraSceneHighlight-numeric-vertexsize-stays-graphcoord"
+]
+
+(* AbsolutePointSize[n] is the explicit constant-on-screen-size path: it
+   reroutes to a top-level VertexShapeFunction (HighlightGraph drops point
+   sizing inside Style[] specs) and suppresses the "PointSizeRange" diffusion. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    With[ { opts = Options @ InfraSceneHighlight[ g,
+          { InfraPoint[ { 13 } ] -> { Blue, AbsolutePointSize[ 12 ],
+            "PointSizeRange" -> { 4, 30 } } } ] },
+      Cases[ opts, HoldPattern[ VertexShapeFunction -> _ ], Infinity ] =!= { } &&
+      ! FreeQ[ opts, AbsolutePointSize[ 12 ] ] &&
+      FreeQ[ opts, AbsolutePointSize[ 4 ] | AbsolutePointSize[ 30 ] ]
+    ]
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-abspointsize-overrides-pointsizerange"
 ]
 
 (* A symbolic per-entry VertexSize (Large / Tiny / Scaled[..]) stays on the
