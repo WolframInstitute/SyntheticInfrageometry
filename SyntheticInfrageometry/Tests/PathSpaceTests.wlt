@@ -539,4 +539,54 @@ VerificationTest[
   TestID -> "SelectInfraPoint-anchor-distance-pool-is-sublist"
 ]
 
+
+(* ===== FindForwardDeformation ===== *)
+
+(* diamond-with-ear: geodesics 1-2-5 and 1-3-5; triangle {1,2,4} gives a LengthIncrease 1 bump *)
+
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    With[ { w = First[ FindForwardDeformation[ g, { 1, 2, 5 }, "LengthIncrease" -> { 1 } ] /. InfraPath[ x_, ___ ] :> x ] },
+      Length[ w ] - 1 == GraphDistance[ g, 1, 5 ] + 1 ]
+  ],
+  True,
+  TestID -> "FindForwardDeformation-LengthIncrease-equals-excess"
+]
+
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    With[ { w = First[ FindForwardDeformation[ g, { 1, 2, 5 }, "LengthIncrease" ] /. InfraPath[ x_, ___ ] :> x ] },
+      Length[ w ] - 1 == GraphDistance[ g, 1, 5 ] && w =!= { 1, 2, 5 } ]
+  ],
+  True,
+  TestID -> "FindForwardDeformation-min-LengthIncrease-is-shortest-alternative"
+]
+
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    With[ { w = First[ FindForwardDeformation[ g, { 1, 2, 5 }, "DeformationSize" ] /. InfraPath[ x_, ___ ] :> x ],
+            dA = AssociationThread[ VertexList[ g ], GraphDistance[ g, 1 ] ] },
+      First[ w ] == 1 && Last[ w ] == 5 &&
+      AllTrue[ Partition[ w, 2, 1 ], dA[ #[[ 2 ]] ] - dA[ #[[ 1 ]] ] >= 0 & ]
+    ]
+  ],
+  True,
+  TestID -> "FindForwardDeformation-forward-monotone-endpoints"
+]
+
+(* triangulated grid: every level-k deformation has length n + k *)
+VerificationTest[
+  With[ { g = Graph[ Flatten[ {
+       Table[ { i, j } <-> { i + 1, j }, { i, 2 }, { j, 3 } ],
+       Table[ { i, j } <-> { i, j + 1 }, { i, 3 }, { j, 2 } ],
+       Table[ { i, j } <-> { i + 1, j + 1 }, { i, 2 }, { j, 2 } ] } ] ] },
+    With[ { n = GraphDistance[ g, { 1, 1 }, { 3, 3 } ],
+            res = FindForwardDeformation[ g, { { 1, 1 }, { 3, 3 } }, "LengthIncrease" -> 2, All ] /. InfraPath[ x_, ___ ] :> x },
+      AllTrue[ Range[ 0, 2 ], k |-> AllTrue[ res[[ k + 1 ]], Length[ # ] - 1 == n + k & ] ]
+    ]
+  ],
+  True,
+  TestID -> "FindForwardDeformation-grid-length-equals-n-plus-k"
+]
+
 EndTestSection[]

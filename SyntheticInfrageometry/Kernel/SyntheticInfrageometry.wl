@@ -146,6 +146,7 @@ PackageExport[EmbeddingClosest]
 PackageExport[FindEmbeddingClosestPath]
 PackageExport[GeodesicSprayGraph]
 PackageExport[PathSubgraph]
+PackageExport[FindForwardDeformation]
 
 (* Homotopy.wl *)
 PackageExport[InfraHomotopy]

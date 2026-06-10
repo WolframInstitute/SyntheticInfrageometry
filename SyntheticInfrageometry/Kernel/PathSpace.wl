@@ -11,6 +11,21 @@ PackageScope[generateEmbeddingPaths]
 PackageScope[resolveEmbeddingCoords]
 PackageScope[parseEmbeddingMethod]
 
+PackageScope[forwardEndpoints]
+PackageScope[referenceWalk]
+PackageScope[augmentedSpray]
+PackageScope[weightedSpray]
+PackageScope[deformationSize]
+PackageScope[parseDeformationSpec]
+PackageScope[toDeformationRules]
+PackageScope[normDeformAxis]
+PackageScope[liDriven]
+PackageScope[liRange]
+PackageScope[deformSizeOK]
+PackageScope[slDriven]
+PackageScope[slRange]
+PackageScope[windowDeform]
+
 
 (* ===================== SelectInfraPath / SelectInfraCycle ===================== *)
 
@@ -338,6 +353,133 @@ PathSubgraph[ g_Graph, u_, v_, lengthSpec : ( _Integer | UpTo[ _Integer ] | All 
       ]
     ]
   ]
+
+
+(* ===================== FindForwardDeformation ===================== *)
+
+(* Forward deformations of a shortest path A -> B in the augmented spray from A: every edge
+   raises d(A, .) by 1 (radial) or keeps it equal (transverse).  A deformation has length
+   d(A, B) + LengthIncrease, where LengthIncrease = #transverse edges, and reroutes a geodesic
+   sub-arc of length DeformationSize.  spec names at least one of "LengthIncrease" /
+   "DeformationSize"; each takes {x} | x (<= x) | {lo, hi}, a bare name is the single minimum
+   by that axis, a bare integer/list is shorthand for "LengthIncrease". *)
+
+FindForwardDeformation[ g_Graph, seg_, spec_, count_ : 1 ] := Module[
+  { src, tgt, ref, dA, n, h, li, sl, cap, groups },
+  { src, tgt } = forwardEndpoints[ seg ];
+  ref = referenceWalk[ g, seg, src, tgt ];
+  dA  = AssociationThread[ VertexList[ g ], GraphDistance[ g, src ] ];
+  n   = dA[ tgt ];
+  h   = augmentedSpray[ g, dA, n, src, tgt ];
+  { li, sl } = parseDeformationSpec[ spec ];
+  cap = Replace[ count, { All -> Infinity, UpTo[ m_ ] :> m, m_Integer :> m } ];
+  groups = If[ li =!= None,
+     liDriven[ h, ref, src, tgt, n, li, sl, cap ],            (* edge-count enumeration (FindPath) *)
+     slDriven[ weightedSpray[ h, dA ], ref, n, sl, cap ] ];   (* min-transverse reroutes (FindShortestPath) *)
+  Which[ groups === { }, InfraPath[ { } ], Length[ groups ] == 1, First[ groups ], True, groups ]
+]
+
+(* endpoints A, B of the reference path *)
+forwardEndpoints[ InfraSegment[ rs_List, ___ ] ] := { First @ First @ rs, Last @ First @ rs }
+forwardEndpoints[ InfraPath[ rs_List, ___ ] ]    := { First @ First @ rs, Last @ First @ rs }
+forwardEndpoints[ w_List ]                          := { First @ w, Last @ w }
+
+(* the reference geodesic DeformationSize is measured against *)
+referenceWalk[ g_, InfraSegment[ rs_List, ___ ], _, _ ] := First[ rs ]
+referenceWalk[ g_, InfraPath[ rs_List, ___ ], _, _ ]    := First[ rs ]
+referenceWalk[ g_, w_List, src_, tgt_ ] := If[ Length[ w ] >= 3, w, FindShortestPath[ g, src, tgt ] ]
+
+(* directed augmented spray from src: radial (low -> high rank) + transverse (same rank, both
+   directions), ranks <= n, trimmed to vertices on some src -> tgt path.  Unweighted, so
+   FindPath counts edges (a path A -> B has length n + LengthIncrease). *)
+augmentedSpray[ g_, dA_, n_, src_, tgt_ ] := Module[ { edges, raw, keep },
+  edges = DeleteCases[ Flatten[ Map[
+     e |-> With[ { x = e[[ 1 ]], y = e[[ 2 ]] },
+       Which[
+         dA[ x ] > n || dA[ y ] > n, { },
+         dA[ y ] == dA[ x ] + 1, { DirectedEdge[ x, y ] },
+         dA[ x ] == dA[ y ] + 1, { DirectedEdge[ y, x ] },
+         dA[ x ] == dA[ y ],     { DirectedEdge[ x, y ], DirectedEdge[ y, x ] },
+         True, { } ] ],
+     EdgeList[ g ] ], 1 ], { } ];
+  raw  = Graph[ Select[ VertexList[ g ], dA[ # ] <= n & ], edges ];
+  keep = Intersection[ VertexOutComponent[ raw, src ], VertexInComponent[ raw, tgt ] ];
+  Subgraph[ raw, keep ]
+]
+
+(* same spray with EdgeWeight radial 0 / transverse 1, so FindShortestPath minimizes #transverse *)
+weightedSpray[ h_, dA_ ] := Graph[ VertexList[ h ], EdgeList[ h ],
+  EdgeWeight -> Map[ If[ dA[ #[[ 1 ]] ] == dA[ #[[ 2 ]] ], 1, 0 ] &, EdgeList[ h ] ] ]
+
+(* DeformationSize: # edges of the reference geodesic a deformation replaces
+   = n - sharedPrefixEdges - sharedSuffixEdges *)
+deformationSize[ ref_, def_ ] := With[
+  { m = Min[ Length @ ref, Length @ def ] },
+  { p = LengthWhile[ Transpose @ { Take[ ref, m ], Take[ def, m ] }, Apply @ SameQ ],
+    s = LengthWhile[ Transpose @ { Take[ Reverse @ ref, m ], Take[ Reverse @ def, m ] }, Apply @ SameQ ] },
+  Max[ 0, ( Length[ ref ] - 1 ) - ( p - 1 ) - ( s - 1 ) ]
+]
+
+parseDeformationSpec[ spec_ ] := With[ { rules = Association @ toDeformationRules[ spec ] },
+  { normDeformAxis @ Lookup[ rules, "LengthIncrease", None ],
+    normDeformAxis @ Lookup[ rules, "DeformationSize", None ] } ]
+
+toDeformationRules[ s_String ]                                     := { s -> "Min" }
+toDeformationRules[ r_Rule ]                                       := { r }
+toDeformationRules[ l_List ] /; AllTrue[ l, Head[ # ] === Rule & ] := l
+toDeformationRules[ v_Integer ]                                    := { "LengthIncrease" -> v }
+toDeformationRules[ v : { __Integer } ]                            := { "LengthIncrease" -> v }
+
+normDeformAxis[ None ]                       := None
+normDeformAxis[ "Min" ]                      := "Min"
+normDeformAxis[ { x_Integer } ]              := { "Exact", x }
+normDeformAxis[ x_Integer ]                  := { "UpTo", x }
+normDeformAxis[ { lo_Integer, hi_Integer } ] := { "Range", lo, hi }
+
+(* LengthIncrease drives: enumerate forward paths of length n + k, sort each level by DeformationSize *)
+liDriven[ h_, ref_, src_, tgt_, n_, li_, sl_, cap_ ] := Map[
+  k |-> InfraPath @ takeUpTo[
+     SortBy[ Select[ DeleteCases[ FindPath[ h, src, tgt, { n + k }, All ], ref ], deformSizeOK[ sl, ref, # ] & ],
+             deformationSize[ ref, # ] & ],
+     cap ],
+  liRange[ li, h, src, tgt, n, ref ] ]
+
+liRange[ { "Exact", k_ }, ___ ]       := { k }
+liRange[ { "UpTo", k_ }, ___ ]        := Range[ 0, k ]
+liRange[ { "Range", lo_, hi_ }, ___ ] := Range[ lo, hi ]
+liRange[ "Min", h_, src_, tgt_, n_, ref_ ] := With[
+  { k = SelectFirst[ Range[ 0, n ], DeleteCases[ FindPath[ h, src, tgt, { n + # }, All ], ref ] =!= { } & ] },
+  If[ MissingQ[ k ], { }, { k } ] ]
+
+deformSizeOK[ None, _, _ ]                        := True
+deformSizeOK[ { "Exact", s_ }, ref_, def_ ]       := deformationSize[ ref, def ] == s
+deformSizeOK[ { "UpTo", s_ }, ref_, def_ ]        := deformationSize[ ref, def ] <= s
+deformSizeOK[ { "Range", lo_, hi_ }, ref_, def_ ] := lo <= deformationSize[ ref, def ] <= hi
+deformSizeOK[ "Min", _, _ ]                       := True
+
+(* DeformationSize drives: reroute one geodesic window via the cheapest forward detour *)
+slDriven[ hw_, ref_, n_, sl_, cap_ ] := Map[
+  s |-> InfraPath @ takeUpTo[
+     SortBy[ DeleteCases[ Table[ windowDeform[ hw, ref, i, s ], { i, 0, n - s } ], $Failed ], Length ],
+     cap ],
+  slRange[ sl, hw, ref, n ] ]
+
+slRange[ { "Exact", s_ }, ___ ]       := { s }
+slRange[ { "UpTo", s_ }, ___ ]        := Range[ 1, s ]
+slRange[ { "Range", lo_, hi_ }, ___ ] := Range[ lo, hi ]
+slRange[ "Min", hw_, ref_, n_ ] := With[
+  { s = SelectFirst[ Range[ 1, n ],
+     sVal |-> AnyTrue[ Range[ 0, n - sVal ], iVal |-> windowDeform[ hw, ref, iVal, sVal ] =!= $Failed ] ] },
+  If[ MissingQ[ s ], { }, { s } ] ]
+
+(* min-LengthIncrease deformation rerouting the geodesic window [g_i, g_{i+s}]: drop the
+   original arc, take the cheapest forward reroute, stitch it back in *)
+windowDeform[ hw_, ref_, i_, s_ ] := Module[
+  { a = ref[[ i + 1 ]], b = ref[[ i + s + 1 ]], sub, p },
+  sub = If[ s == 1, EdgeDelete[ hw, DirectedEdge[ a, b ] ], VertexDelete[ hw, ref[[ i + 2 ;; i + s ]] ] ];
+  p = FindShortestPath[ sub, a, b ];
+  If[ Length[ p ] < 2, $Failed, Join[ ref[[ 1 ;; i + 1 ]], Rest[ p ], ref[[ i + s + 2 ;; ]] ] ]
+]
 
 
 (* ===================== Helpers: path-space metrics ===================== *)
