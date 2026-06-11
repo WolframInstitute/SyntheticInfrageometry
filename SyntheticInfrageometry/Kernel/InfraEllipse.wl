@@ -1,7 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[findEllipseCore]
-
 
 (* ===================== InfraEllipse wrapper ===================== *)
 
@@ -48,50 +46,45 @@ Options[ FindInfraEllipse ] = {
 
 FindInfraEllipse[ graph_Graph, foci : { _, _ }, c_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraEllipse, count,
-    findEllipseCore[ graph, ##, opts ] &,
-    Replace[ foci, InfraPoint[ { v_ } ] :> v, { 1 } ], c ]
-
-
-findEllipseCore[ graph_Graph, { p1_, p2_ }, c_,
-    opts : OptionsPattern[ FindInfraEllipse ] ] :=
-  Module[ { properties, methodSpec, methodHead, pruning, range, verts, idx, dm, row1, row2,
-            levelSet, levelGraph },
-    properties = OptionValue[ FindInfraEllipse, { opts }, Properties ];
-    methodSpec = OptionValue[ FindInfraEllipse, { opts }, Method ];
-    methodHead = methodName @ methodSpec;
-    pruning    = Replace[ methodSpec,
-                  { { _String, subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
-                    _ :> Infinity } ];
-    range      = Replace[ c, d_?NumericQ :> { d, d } ];
-    verts      = VertexList[ graph ];
-    idx        = AssociationThread[ verts, Range @ Length @ verts ];
-    dm         = GraphDistanceMatrix[ graph ];
-    row1       = dm[[ idx @ p1 ]];
-    row2       = dm[[ idx @ p2 ]];
-    levelSet   = ellipticLevelSet[ verts, row1, row2, range ];
-    levelGraph = Subgraph[ graph, levelSet ];
-    Catch[
-      With[ { vertsTest = admissibleEllipticCycleVerts[ graph, verts, row1, row2, range, properties ] },
-        Switch[ methodHead,
-          "Exhaustive",
-            SortBy[ Length ] @
-              Select[ cycleToVertexSequence /@ findCyclesWithPruning[ levelGraph, pruning ],
-                And[ Length[ # ] >= 3, vertsTest[ # ] ] & ],
-          "Peel",
-            DeleteDuplicatesBy[ Sort ] @
+  spreadFind[ InfraEllipse, count,
+    { foci0, c0 } |-> Module[ { properties, methodSpec, methodHead, pruning, range, verts, idx, dm, row1, row2,
+              levelSet, levelGraph },
+      properties = OptionValue[ FindInfraEllipse, { opts }, Properties ];
+      methodSpec = OptionValue[ FindInfraEllipse, { opts }, Method ];
+      methodHead = methodName @ methodSpec;
+      pruning    = Replace[ methodSpec,
+                    { { _String, subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
+                      _ :> Infinity } ];
+      range      = Replace[ c0, d_?NumericQ :> { d, d } ];
+      verts      = VertexList[ graph ];
+      idx        = AssociationThread[ verts, Range @ Length @ verts ];
+      dm         = GraphDistanceMatrix[ graph ];
+      row1       = dm[[ idx @ foci0[[ 1 ]] ]];
+      row2       = dm[[ idx @ foci0[[ 2 ]] ]];
+      levelSet   = ellipticLevelSet[ verts, row1, row2, range ];
+      levelGraph = Subgraph[ graph, levelSet ];
+      Catch[
+        With[ { vertsTest = admissibleEllipticCycleVerts[ graph, verts, row1, row2, range, properties ] },
+          Switch[ methodHead,
+            "Exhaustive",
               SortBy[ Length ] @
-              DeleteMissing[
-                extractAdmissibleCycle[ levelGraph, vertsTest, # ] & /@
-                  findAllMinimalAdmissible[ levelGraph, levelSet,
-                    admissibleCircleSet[ levelGraph, vertsTest ], pruning ] ],
-          "Greedy",
-            greedyFirstAdmissibleCycle[ levelGraph, vertsTest ],
-          _, Message[ FindInfraEllipse::badmethod, methodSpec ]; $Failed
+                Select[ cycleToVertexSequence /@ findCyclesWithPruning[ levelGraph, pruning ],
+                  And[ Length[ # ] >= 3, vertsTest[ # ] ] & ],
+            "Peel",
+              DeleteDuplicatesBy[ Sort ] @
+                SortBy[ Length ] @
+                DeleteMissing[
+                  extractAdmissibleCycle[ levelGraph, vertsTest, # ] & /@
+                    findAllMinimalAdmissible[ levelGraph, levelSet,
+                      admissibleCircleSet[ levelGraph, vertsTest ], pruning ] ],
+            "Greedy",
+              greedyFirstAdmissibleCycle[ levelGraph, vertsTest ],
+            _, Message[ FindInfraEllipse::badmethod, methodSpec ]; $Failed
+          ]
         ]
       ]
-    ]
-  ]
+    ],
+    Replace[ foci, InfraPoint[ { v_ } ] :> v, { 1 } ], c ]
 
 
 admissibleEllipticCycleVerts[ graph_Graph, verts_List, row1_List, row2_List, range_List,

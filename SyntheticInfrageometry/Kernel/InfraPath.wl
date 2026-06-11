@@ -1,7 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[findInfraPathCore]
-PackageScope[extendInfraPathCore]
 PackageScope[concatenatePathPair]
 PackageScope[allNeighboursBaseFn]
 
@@ -44,37 +42,33 @@ Options[ FindInfraPath ] = {
 FindInfraPath[ graph_Graph, p1_, p2_,
     kspec : ( _Integer | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraPath, count,
-    findInfraPathCore[ graph, ##, kspec, count, opts ] &, p1, p2 ]
-
-
-findInfraPathCore[ _Graph, p1_, p1_, _, _, ___ ] := { }
-
-findInfraPathCore[ graph_Graph, p1_, p2_, kspec_, count_, opts : OptionsPattern[ FindInfraPath ] ] :=
-  Catch @ With[ {
-      properties = OptionValue[ FindInfraPath, { opts }, Properties ],
-      methodSpec = OptionValue[ FindInfraPath, { opts }, Method ] /. Automatic -> "Exhaustive" },
-    With[ { methodHead = methodName @ methodSpec,
-            pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
-            fastPathQ  = properties === { } },
-      Switch[ methodHead,
-        "Exhaustive",
-          If[ fastPathQ,
-            Replace[
-              FindPath[ graph, p1, p2, kspec, count /. UpTo[ n_ ] :> n ],
-              Except[ _List ] -> { } ],
-            Select[
-              frontierSweep[ graph, p1, p2,
-                makeCandidateFn[ graph, allNeighboursBaseFn,
-                  properties, FindInfraPath ],
-                pruning, countLimit @ count ],
-              walkLengthAdmissibleQ[ kspec ] ]
-          ],
-        _,
-          Message[ FindInfraPath::badmethod, methodSpec ]; $Failed
+  spreadFind[ InfraPath, count,
+    { q1, q2 } |-> If[ q1 === q2, { },
+      Catch @ With[ {
+          properties = OptionValue[ FindInfraPath, { opts }, Properties ],
+          methodSpec = OptionValue[ FindInfraPath, { opts }, Method ] /. Automatic -> "Exhaustive" },
+        With[ { methodHead = methodName @ methodSpec,
+                pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
+                fastPathQ  = properties === { } },
+          Switch[ methodHead,
+            "Exhaustive",
+              If[ fastPathQ,
+                Replace[
+                  FindPath[ graph, q1, q2, kspec, count /. UpTo[ n_ ] :> n ],
+                  Except[ _List ] -> { } ],
+                Select[
+                  frontierSweep[ graph, q1, q2,
+                    makeCandidateFn[ graph, allNeighboursBaseFn,
+                      properties, FindInfraPath ],
+                    pruning, countLimit @ count ],
+                  walkLengthAdmissibleQ[ kspec ] ]
+              ],
+            _,
+              Message[ FindInfraPath::badmethod, methodSpec ]; $Failed
+          ]
+        ]
       ]
-    ]
-  ]
+    ], p1, p2 ]
 
 
 (* Path-family base candidate function: every adjacent vertex of Last @ path,
@@ -113,37 +107,32 @@ Options[ ExtendInfraPath ] = {
 
 ExtendInfraPath[ graph_Graph, path_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraPath, count,
-    extendInfraPathCore[ graph, ##, opts ] &, path ]
-
-
-extendInfraPathCore[ _Graph, walk_List, OptionsPattern[ ExtendInfraPath ] ] /;
-    Length[ walk ] < 1 := { walk }
-
-extendInfraPathCore[ graph_Graph, walk_List, opts : OptionsPattern[ ExtendInfraPath ] ] :=
-  Catch @ With[ {
-      properties = OptionValue[ ExtendInfraPath, { opts }, Properties ],
-      methodSpec = OptionValue[ ExtendInfraPath, { opts }, Method ] /. Automatic -> "Exhaustive",
-      direction  = OptionValue[ ExtendInfraPath, { opts }, "Direction" ],
-      length     = OptionValue[ ExtendInfraPath, { opts }, "Length" ] },
-    With[ { methodHead = methodName @ methodSpec,
-            pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-      If[ methodHead =!= "Exhaustive",
-        Message[ ExtendInfraPath::badmethod, methodSpec ]; Throw[ $Failed ] ];
-      With[ { candidateFn = makeCandidateFn[ graph, allNeighboursBaseFn,
-                              properties, ExtendInfraPath ],
-              simpleQ     = MemberQ[ properties, "Simple" | { "Simple" } ] },
-        Switch[ direction,
-          "Forward",   extendOneSide[ graph, walk, candidateFn, length, pruning ],
-          "Backward",  Reverse /@ extendOneSide[ graph, Reverse @ walk,
-                         candidateFn, length, pruning ],
-          "BothSides", extendBothSidesSymmetric[ graph, walk, candidateFn,
-                         length, pruning, simpleQ ],
-          _, Message[ ExtendInfraPath::baddirection, direction ]; Throw[ $Failed ]
+  spreadFind[ InfraPath, count,
+    walk0 |-> If[ Length[ walk0 ] < 1, { walk0 },
+      Catch @ With[ {
+          properties = OptionValue[ ExtendInfraPath, { opts }, Properties ],
+          methodSpec = OptionValue[ ExtendInfraPath, { opts }, Method ] /. Automatic -> "Exhaustive",
+          direction  = OptionValue[ ExtendInfraPath, { opts }, "Direction" ],
+          length     = OptionValue[ ExtendInfraPath, { opts }, "Length" ] },
+        With[ { methodHead = methodName @ methodSpec,
+                pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
+          If[ methodHead =!= "Exhaustive",
+            Message[ ExtendInfraPath::badmethod, methodSpec ]; Throw[ $Failed ] ];
+          With[ { candidateFn = makeCandidateFn[ graph, allNeighboursBaseFn,
+                                  properties, ExtendInfraPath ],
+                  simpleQ     = MemberQ[ properties, "Simple" | { "Simple" } ] },
+            Switch[ direction,
+              "Forward",   extendOneSide[ graph, walk0, candidateFn, length, pruning ],
+              "Backward",  Reverse /@ extendOneSide[ graph, Reverse @ walk0,
+                             candidateFn, length, pruning ],
+              "BothSides", extendBothSidesSymmetric[ graph, walk0, candidateFn,
+                             length, pruning, simpleQ ],
+              _, Message[ ExtendInfraPath::baddirection, direction ]; Throw[ $Failed ]
+            ]
+          ]
         ]
       ]
-    ]
-  ]
+    ], path ]
 
 
 (* One-side frontier BFS over walk space.  Walks with no admissible next
@@ -207,7 +196,7 @@ stepBothSides[ graph_Graph, walk_List, candidateFn_ ] :=
 
 ConcatenateInfraPath[ path1_, path2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
-  infraSpreadAndCartesian[ InfraPath, count, concatenatePathPair, path1, path2 ]
+  spreadFind[ InfraPath, count, concatenatePathPair, path1, path2 ]
 
 concatenatePathPair[ walk1_List, walk2_List ] :=
   If[ Last[ walk1 ] === First[ walk2 ], { Join[ walk1, Rest @ walk2 ] }, { } ]

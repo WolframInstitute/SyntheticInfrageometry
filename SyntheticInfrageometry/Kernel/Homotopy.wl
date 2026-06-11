@@ -8,7 +8,6 @@ PackageScope[loopRotations]
 PackageScope[faceMoves]
 PackageScope[applyMove]
 PackageScope[resolveFaces]
-PackageScope[fundamentalCycles]
 PackageScope[walkModeFor]
 
 
@@ -83,7 +82,7 @@ FindInfraHomotopyRepresentative[ graph_Graph, obj_,
   With[ { inHead = Head[ obj ], outHead = representativeHeadFor @ Head[ obj ] },
     If[ outHead === $Failed,
       Message[ FindInfraHomotopyRepresentative::wrap, inHead ]; $Failed,
-      infraSpreadAndCartesian[ outHead, count,
+      spreadFind[ outHead, count,
         representativeCore[ graph, ##, inHead, opts ] &, obj ]
     ]
   ]
@@ -111,7 +110,7 @@ FindInfraHomotopyRepresentativeHomotopy[ graph_Graph, obj_,
   With[ { inHead = Head[ obj ], outHead = representativeHeadFor @ Head[ obj ] },
     If[ outHead === $Failed,
       Message[ FindInfraHomotopyRepresentativeHomotopy::wrap, inHead ]; $Failed,
-      infraSpreadAndCartesian[ InfraHomotopy, count,
+      spreadFind[ InfraHomotopy, count,
         reductionCore[ graph, ##, inHead, opts ] &, obj ]
     ]
   ]
@@ -143,7 +142,7 @@ FindInfraHomotopy[ graph_Graph, a_, b_,
         Message[ FindInfraHomotopy::wrap, aHead, bHead ],
         Message[ FindInfraHomotopy::mismatch, aHead, bHead ] ];
       $Failed,
-      infraSpreadAndCartesian[ InfraHomotopy, count,
+      spreadFind[ InfraHomotopy, count,
         homotopyCore[ graph, ##, inHead, opts ] &, a, b ]
     ]
   ]
@@ -554,9 +553,6 @@ resolveFaces[ _Graph, { } ] := <| "Dup" -> False, "Spur" -> False, "Cycles" -> {
 
 
 cyclesOfLength[ graph_Graph, k_Integer ] := First /@ # & /@ FindCycle[ graph, { k }, All ]
-
-
-fundamentalCycles[ graph_Graph ] := First /@ # & /@ FindFundamentalCycles[ graph ]
 
 
 autoMaxLength[ walks_List, rules_Association ] :=

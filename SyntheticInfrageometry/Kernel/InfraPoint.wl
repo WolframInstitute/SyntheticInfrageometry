@@ -5,9 +5,6 @@ PackageScope[midpointsOnWalk]
 PackageScope[embeddingRankMidpointsFromSegment]
 PackageScope[goldenSectionsOnWalk]
 PackageScope[embeddingRankGoldenSectionsFromSegment]
-PackageScope[findReflectionCore]
-PackageScope[completeEquilateralTriangleCore]
-PackageScope[findClosestInfraPointCore]
 PackageScope[selectFromPointSpace]
 
 
@@ -294,18 +291,15 @@ embeddingRankGoldenSectionsFromSegment[ graph_Graph, walks_List, embOpts_Associa
 
 FindInfraReflection[ graph_Graph, x_, a_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
-  infraSpreadAndCartesian[ InfraPoint, count, findReflectionCore[ graph, ##] &, x, a ]
-
-
-findReflectionCore[ graph_Graph, x_, a_ ] :=
-  With[ { r = GraphDistance[ graph, a, x ] },
-    If[ r === Infinity, {},
-      (* Localize: reflection lives in B(a, r), straddle-paths stay in B(a, 2 r). *)
-      With[ { localG = NeighborhoodGraph[ graph, a, 2 r ] },
-        Select[ VertexList[ localG ],
-          y |-> BetweennessQ[ localG, x, a, y ] && GraphDistance[ localG, a, y ] === r ] ]
-    ]
-  ]
+  spreadFind[ InfraPoint, count,
+    { x0, a0 } |-> With[ { r = GraphDistance[ graph, a0, x0 ] },
+      If[ r === Infinity, {},
+        (* Localize: reflection lives in B(a, r), straddle-paths stay in B(a, 2 r). *)
+        With[ { localG = NeighborhoodGraph[ graph, a0, 2 r ] },
+          Select[ VertexList[ localG ],
+            y |-> BetweennessQ[ localG, x0, a0, y ] && GraphDistance[ localG, a0, y ] === r ] ]
+      ]
+    ], x, a ]
 
 
 (* ===================== CompleteInfraEquilateralTriangle ===================== *)
@@ -317,18 +311,14 @@ Options[ CompleteInfraEquilateralTriangle ] = { Method -> "Metric" };
 
 CompleteInfraEquilateralTriangle[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraPoint, count, completeEquilateralTriangleCore[ graph, ##, opts ] &, p1, p2 ]
-
-
-completeEquilateralTriangleCore[ graph_Graph, p1_, p2_,
-    opts : OptionsPattern[ CompleteInfraEquilateralTriangle ] ] :=
-  With[ { r = GraphDistance[ graph, p1, p2 ] },
-    If[ r === Infinity, {},
-      Intersection[
-        Select[ VertexList[ graph ], GraphDistance[ graph, p1, # ] == r & ],
-        Select[ VertexList[ graph ], GraphDistance[ graph, p2, # ] == r & ] ]
-    ]
-  ]
+  spreadFind[ InfraPoint, count,
+    { q1, q2 } |-> With[ { r = GraphDistance[ graph, q1, q2 ] },
+      If[ r === Infinity, {},
+        Intersection[
+          Select[ VertexList[ graph ], GraphDistance[ graph, q1, # ] == r & ],
+          Select[ VertexList[ graph ], GraphDistance[ graph, q2, # ] == r & ] ]
+      ]
+    ], p1, p2 ]
 
 
 (* ===================== FindInfraCommonPoint ===================== *)
@@ -355,12 +345,8 @@ FindInfraCommonPoint[ graph_Graph, lines_List,
 
 FindClosestInfraPoint[ graph_Graph, line_, point_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
-  infraSpreadAndCartesian[ InfraPoint, count,
-    findClosestInfraPointCore[ graph, ## ] &, line, point ]
-
-
-findClosestInfraPointCore[ graph_Graph, line_List, point_ ] :=
-  MinimalBy[ line, GraphDistance[ graph, point, # ] & ]
+  spreadFind[ InfraPoint, count,
+    { line0, point0 } |-> MinimalBy[ line0, GraphDistance[ graph, point0, # ] & ], line, point ]
 
 
 (* ===================== SelectInfraPoint ===================== *)

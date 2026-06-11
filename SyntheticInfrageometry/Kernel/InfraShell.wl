@@ -1,7 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[findShellCore]
-
 
 (* ===================== InfraShell wrapper ===================== *)
 
@@ -45,36 +43,32 @@ Options[ FindInfraShell ] = {
 
 FindInfraShell[ graph_Graph, p_, r_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraShell, count,
-    findShellCore[ graph, ##, opts ] &, p, r ]
-
-
-findShellCore[ graph_Graph, p_, r_, opts : OptionsPattern[ FindInfraShell ] ] :=
-  Module[ { properties, methodSpec, methodHead, pruning, range, localG, levelSet, radius, admissible },
-    properties = OptionValue[ FindInfraShell, { opts }, Properties ];
-    methodSpec = OptionValue[ FindInfraShell, { opts }, Method ];
-    methodHead = methodName @ methodSpec;
-    pruning    = Replace[ methodSpec,
-                  { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
-                    _ :> Infinity } ];
-    range = Replace[ r, d_?NumericQ :> { d, d } ];
-    localG = If[ NumericQ[ range[[ 2 ]] ],
-                 NeighborhoodGraph[ graph, p, Ceiling[ range[[ 2 ]] ] + 1 ], graph ];
-    levelSet = Select[ VertexList[ localG ],
-      range[[ 1 ]] <= GraphDistance[ localG, p, # ] <= range[[ 2 ]] & ];
-    radius = If[ NumericQ[ r ], r, Mean[ r ] ];
-    If[ properties === { },
-      { levelSet },
-      Catch[
-        admissible = admissibleShell[ localG, p, radius, properties ];
-        Switch[ methodHead,
-          "Exhaustive", findAllMinimalAdmissible[ localG, levelSet, admissible, pruning ],
-          "Greedy",     findGreedyMinimalAdmissible[ localG, levelSet, admissible ],
-          _,            Message[ FindInfraShell::badmethod, methodSpec ]; $Failed
+  spreadFind[ InfraShell, count,
+    { p0, r0 } |-> Module[ { properties, methodSpec, methodHead, pruning, range, localG, levelSet, radius, admissible },
+      properties = OptionValue[ FindInfraShell, { opts }, Properties ];
+      methodSpec = OptionValue[ FindInfraShell, { opts }, Method ];
+      methodHead = methodName @ methodSpec;
+      pruning    = Replace[ methodSpec,
+                    { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
+                      _ :> Infinity } ];
+      range = Replace[ r0, d_?NumericQ :> { d, d } ];
+      localG = If[ NumericQ[ range[[ 2 ]] ],
+                   NeighborhoodGraph[ graph, p0, Ceiling[ range[[ 2 ]] ] + 1 ], graph ];
+      levelSet = Select[ VertexList[ localG ],
+        range[[ 1 ]] <= GraphDistance[ localG, p0, # ] <= range[[ 2 ]] & ];
+      radius = If[ NumericQ[ r0 ], r0, Mean[ r0 ] ];
+      If[ properties === { },
+        { levelSet },
+        Catch[
+          admissible = admissibleShell[ localG, p0, radius, properties ];
+          Switch[ methodHead,
+            "Exhaustive", findAllMinimalAdmissible[ localG, levelSet, admissible, pruning ],
+            "Greedy",     findGreedyMinimalAdmissible[ localG, levelSet, admissible ],
+            _,            Message[ FindInfraShell::badmethod, methodSpec ]; $Failed
+          ]
         ]
       ]
-    ]
-  ]
+    ], p, r ]
 
 
 admissibleShell[ localG_Graph, center_, radius_, properties_List ] :=

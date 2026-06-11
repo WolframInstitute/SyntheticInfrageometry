@@ -1,7 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[findQuadricCore]
-
 
 (* ===================== FindInfraQuadric ===================== *)
 
@@ -18,21 +16,14 @@ FindInfraQuadric[ graph_Graph, foci_List, c_ ] :=
   FindInfraQuadric[ graph, foci, c, ConstantArray[ 1, Length @ foci ] ]
 
 FindInfraQuadric[ graph_Graph, foci_List, c_, weights_List ] :=
-  InfraObject @ findQuadricCore[
-    graph,
-    Replace[ foci, InfraPoint[ { v_, ___ } ] :> v, { 1 } ],
-    c, weights ]
-
-
-findQuadricCore[ graph_Graph, foci_List, c_, weights_List ] :=
-  With[
+  InfraObject @ With[
+    { foci0 = Replace[ foci, InfraPoint[ { v_, ___ } ] :> v, { 1 } ] },
     { dm   = GraphDistanceMatrix @ graph,
-      idxs = VertexIndex[ graph, # ] & /@ foci,
+      idxs = VertexIndex[ graph, # ] & /@ foci0,
       vs   = VertexList @ graph },
-    With[ { sums = Total @ MapThread[ #1 * dm[[ #2 ]] &, { weights, idxs } ] },
-      Pick[ vs,
-        Replace[ c,
-          { { cMin_, cMax_ } :> Thread[ cMin <= sums <= cMax ],
-            c0_ :> Thread[ sums <= c0 ] } ] ]
-    ]
+    { sums = Total @ MapThread[ #1 * dm[[ #2 ]] &, { weights, idxs } ] },
+    Pick[ vs,
+      Replace[ c,
+        { { cMin_, cMax_ } :> Thread[ cMin <= sums <= cMax ],
+          c0_ :> Thread[ sums <= c0 ] } ] ]
   ]

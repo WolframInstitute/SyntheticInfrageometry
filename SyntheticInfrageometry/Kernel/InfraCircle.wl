@@ -1,6 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[findCircleCore]
 PackageScope[cycleToVertexSequence]
 PackageScope[findCyclesWithPruning]
 PackageScope[admissibleCircleSet]
@@ -53,44 +52,40 @@ Options[ FindInfraCircle ] = {
 
 FindInfraCircle[ graph_Graph, p_, r_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraCircle, count,
-    findCircleCore[ graph, ##, count, opts ] &, p, r ]
-
-
-findCircleCore[ graph_Graph, p_, r_, count_, opts : OptionsPattern[ FindInfraCircle ] ] :=
-  Module[ { properties, unknown, range, localG, levelSet, radius, levelGraph,
-            vertsTest, tied, needed, k, kMax, batch, matching, accumulated },
-    properties = OptionValue[ FindInfraCircle, { opts }, Properties ];
-    Catch[
-      unknown = Complement[ properties, { "Separating", "Shortest" } ];
-      If[ unknown =!= { },
-        Message[ FindInfraCircle::badproperty, First @ unknown ]; Throw[ $Failed ] ];
-      range = Replace[ r, d_?NumericQ :> { d, d } ];
-      localG = If[ NumericQ[ range[[ 2 ]] ],
-                   NeighborhoodGraph[ graph, p, Ceiling[ range[[ 2 ]] ] + 2 ], graph ];
-      levelSet = Select[ VertexList[ localG ],
-        range[[ 1 ]] <= GraphDistance[ localG, p, # ] <= range[[ 2 ]] & ];
-      radius = If[ NumericQ[ r ], r, Mean[ r ] ];
-      levelGraph = Subgraph[ localG, levelSet ];
-      vertsTest  = admissibleCircleVerts[ localG, p, radius,
-                     DeleteCases[ properties, "Shortest" ] ];
-      tied = MemberQ[ properties, "Shortest" ];
-      needed = Switch[ count, _Integer, count, UpTo[ _Integer ], First @ count, _, Infinity ];
-      kMax = VertexCount[ levelGraph ];
-      accumulated = { };
-      k = 3;
-      While[ k <= kMax,
-        batch    = cycleToVertexSequence /@ FindCycle[ levelGraph, { k }, All ];
-        matching = Select[ batch, vertsTest ];
-        If[ matching =!= { },
-          accumulated = Join[ accumulated, matching ];
-          If[ tied || Length[ accumulated ] >= needed, Break[ ] ]
+  spreadFind[ InfraCircle, count,
+    { p0, r0 } |-> Module[ { properties, unknown, range, localG, levelSet, radius, levelGraph,
+              vertsTest, tied, needed, k, kMax, batch, matching, accumulated },
+      properties = OptionValue[ FindInfraCircle, { opts }, Properties ];
+      Catch[
+        unknown = Complement[ properties, { "Separating", "Shortest" } ];
+        If[ unknown =!= { },
+          Message[ FindInfraCircle::badproperty, First @ unknown ]; Throw[ $Failed ] ];
+        range = Replace[ r0, d_?NumericQ :> { d, d } ];
+        localG = If[ NumericQ[ range[[ 2 ]] ],
+                     NeighborhoodGraph[ graph, p0, Ceiling[ range[[ 2 ]] ] + 2 ], graph ];
+        levelSet = Select[ VertexList[ localG ],
+          range[[ 1 ]] <= GraphDistance[ localG, p0, # ] <= range[[ 2 ]] & ];
+        radius = If[ NumericQ[ r0 ], r0, Mean[ r0 ] ];
+        levelGraph = Subgraph[ localG, levelSet ];
+        vertsTest  = admissibleCircleVerts[ localG, p0, radius,
+                       DeleteCases[ properties, "Shortest" ] ];
+        tied = MemberQ[ properties, "Shortest" ];
+        needed = Switch[ count, _Integer, count, UpTo[ _Integer ], First @ count, _, Infinity ];
+        kMax = VertexCount[ levelGraph ];
+        accumulated = { };
+        k = 3;
+        While[ k <= kMax,
+          batch    = cycleToVertexSequence /@ FindCycle[ levelGraph, { k }, All ];
+          matching = Select[ batch, vertsTest ];
+          If[ matching =!= { },
+            accumulated = Join[ accumulated, matching ];
+            If[ tied || Length[ accumulated ] >= needed, Break[ ] ]
+          ];
+          k++
         ];
-        k++
-      ];
-      accumulated
-    ]
-  ]
+        accumulated
+      ]
+    ], p, r ]
 
 
 cycleToVertexSequence[ cyc_List ] := First /@ cyc

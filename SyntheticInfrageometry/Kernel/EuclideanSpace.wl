@@ -61,7 +61,7 @@ FindInfraLinearCombination[ graph_Graph, o_, terms_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   With[ { lambdas = terms[[ All, 1 ]], us = terms[[ All, 2 ]],
           scaleM = OptionValue[ "ScaleMethod" ], sumM = OptionValue[ "SumMethod" ] },
-    infraSpreadAndCartesian[ InfraPoint, count,
+    spreadFind[ InfraPoint, count,
       Function[ Null,
         With[ { thisO = #1, thisUs = { ##2 } },
           With[ { scaled = MapThread[ findInfraScale[ graph, thisO, #2, #1, scaleM ] &,

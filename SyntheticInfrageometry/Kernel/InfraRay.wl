@@ -1,7 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[findRayCore]
-
 
 (* ===================== InfraRay wrapper ===================== *)
 
@@ -28,23 +26,21 @@ InfraRay[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraRay[ reps ],
    come from the same direction class having multiple maximal-geodesic
    representatives in the graph (e.g. antipodes on an even cycle).      *)
 
-findRayCore[ graph_Graph, origin_, v_ ] :=
-  DeleteDuplicates @ Map[
-    line |->
-      With[ { oIdx = First[ FirstPosition[ line, origin, { 0 } ], 0 ],
-              vIdx = First[ FirstPosition[ line, v, { 0 } ], 0 ] },
-        Which[
-          oIdx == 0 || vIdx == 0, Nothing,
-          oIdx <= vIdx,           line[[ oIdx ;; -1 ]],
-          True,                   Reverse[ line[[ 1 ;; oIdx ]] ]
-        ]
-      ],
-    #[[ 1, 1 ]] & /@ FindInfraLine[ graph, origin, v, All ]
-  ]
-
 FindInfraRay[ graph_Graph, origin_, v_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
-  infraSpreadAndCartesian[ InfraRay, count, findRayCore[ graph, ##] &, origin, v ]
+  spreadFind[ InfraRay, count,
+    { origin0, v0 } |-> DeleteDuplicates @ Map[
+      line |->
+        With[ { oIdx = First[ FirstPosition[ line, origin0, { 0 } ], 0 ],
+                vIdx = First[ FirstPosition[ line, v0, { 0 } ], 0 ] },
+          Which[
+            oIdx == 0 || vIdx == 0, Nothing,
+            oIdx <= vIdx,           line[[ oIdx ;; -1 ]],
+            True,                   Reverse[ line[[ 1 ;; oIdx ]] ]
+          ]
+        ],
+      #[[ 1, 1 ]] & /@ FindInfraLine[ graph, origin0, v0, All ]
+    ], origin, v ]
 
 
 (* ===================== Scene-DSL constructor ===================== *)

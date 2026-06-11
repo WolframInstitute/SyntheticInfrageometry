@@ -1,7 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[findBisectingHyperplaneCore]
-
 
 (* ===================== InfraPlane wrapper ===================== *)
 
@@ -54,35 +52,30 @@ FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
 FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
     window : { _Integer, _Integer },
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraPlane, count,
-    findBisectingHyperplaneCore[ graph, ##, window, opts ] &, p1, p2 ]
-
-
-findBisectingHyperplaneCore[ graph_Graph, p1_, p2_,
-    { lo_Integer, hi_Integer }, opts : OptionsPattern[ FindInfraBisectingHyperplane ] ] :=
-  Module[ { properties, methodSpec, methodHead, pruning, bisector, aux, admissible },
-    properties = OptionValue[ FindInfraBisectingHyperplane, { opts }, Properties ];
-    methodSpec = OptionValue[ FindInfraBisectingHyperplane, { opts }, Method ];
-    methodHead = methodName @ methodSpec;
-    pruning    = Replace[ methodSpec, { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ), _ :> Infinity } ];
-    bisector   = Complement[
-      Pick[ VertexList[ graph ],
-        MapThread[ { x, y } |-> lo <= x - y <= hi,
-          { GraphDistance[ graph, p1 ], GraphDistance[ graph, p2 ] } ] ],
-      { p1, p2 } ];
-    If[ properties === { },
-      { bisector },
-      Catch[
-        aux = pairAuxiliaryGraph[ graph, bisector, p1, p2 ];
-        admissible = admissibleBisectingHyperplane[ graph, aux, p1, p2, properties ];
-        Switch[ methodHead,
-          "Exhaustive", findAllMinimalAdmissible[ graph, bisector, admissible, pruning ],
-          "Greedy",     findGreedyMinimalAdmissible[ graph, bisector, admissible ],
-          _,            Message[ FindInfraBisectingHyperplane::badmethod, methodSpec ]; $Failed
+  spreadFind[ InfraPlane, count,
+    { q1, q2 } |-> Module[ { properties, methodSpec, methodHead, pruning, bisector, aux, admissible },
+      properties = OptionValue[ FindInfraBisectingHyperplane, { opts }, Properties ];
+      methodSpec = OptionValue[ FindInfraBisectingHyperplane, { opts }, Method ];
+      methodHead = methodName @ methodSpec;
+      pruning    = Replace[ methodSpec, { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ), _ :> Infinity } ];
+      bisector   = Complement[
+        Pick[ VertexList[ graph ],
+          MapThread[ { x, y } |-> window[[1]] <= x - y <= window[[2]],
+            { GraphDistance[ graph, q1 ], GraphDistance[ graph, q2 ] } ] ],
+        { q1, q2 } ];
+      If[ properties === { },
+        { bisector },
+        Catch[
+          aux = pairAuxiliaryGraph[ graph, bisector, q1, q2 ];
+          admissible = admissibleBisectingHyperplane[ graph, aux, q1, q2, properties ];
+          Switch[ methodHead,
+            "Exhaustive", findAllMinimalAdmissible[ graph, bisector, admissible, pruning ],
+            "Greedy",     findGreedyMinimalAdmissible[ graph, bisector, admissible ],
+            _,            Message[ FindInfraBisectingHyperplane::badmethod, methodSpec ]; $Failed
+          ]
         ]
       ]
-    ]
-  ]
+    ], p1, p2 ]
 
 admissibleBisectingHyperplane[ graph_Graph, aux_Graph, p1_, p2_, properties_List ] :=
   With[ { tests = propertyPredicate[ graph, aux, p1, p2, # ] & /@ properties },

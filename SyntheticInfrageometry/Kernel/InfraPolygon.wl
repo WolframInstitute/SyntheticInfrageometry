@@ -1,6 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[findRegularPolygonCore]
 PackageScope[matchPolygonSlot]
 PackageScope[kDiagonals]
 PackageScope[findPolygonCore]
@@ -112,7 +111,39 @@ Options[ FindInfraRegularPolygon ] = {
 
 FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  With[ { core = findRegularPolygonCore[ graph, As, n, opts ] },
+  With[ { core = Module[ { properties, methodSpec, dm, idx, vs, candidates, pruning, methodHead,
+              fromSpec, anchor, radius, workGraph, workVs, workDm },
+      properties = OptionValue[ FindInfraRegularPolygon, { opts }, Properties ];
+      methodSpec = OptionValue[ FindInfraRegularPolygon, { opts }, Method ];
+      fromSpec   = OptionValue[ FindInfraRegularPolygon, { opts }, "From" ];
+      Catch[
+        If[ properties =!= { },
+          Message[ FindInfraRegularPolygon::badproperty, First @ properties ]; Throw[ $Failed ] ];
+        If[ Length[ As ] < 1 || Length[ As ] > Floor[ n / 2 ],
+          Message[ FindInfraRegularPolygon::badcount, As, n ]; Throw[ $Failed ] ];
+        validateSlots @ As;
+        methodHead = methodName @ methodSpec;
+        If[ methodHead =!= "Exhaustive",
+          Message[ FindInfraRegularPolygon::badmethod, methodSpec ]; Throw[ $Failed ] ];
+        { anchor, radius } = parseFromSpec @ fromSpec;
+        pruning = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity;
+        dm  = GraphDistanceMatrix @ graph;
+        vs  = VertexList @ graph;
+        idx = AssociationThread[ vs -> Range @ Length @ vs ];
+        workGraph = If[ anchor === None || radius === All, graph,
+          NeighborhoodGraph[ graph, anchor, radius ] ];
+        workVs = VertexList @ workGraph;
+        workDm = If[ workGraph === graph, dm, dm[[ idx /@ workVs, idx /@ workVs ]] ];
+        candidates = cycleToVertexSequence /@
+          FindCycle[ candidateSourceGraph[ workGraph, First @ As, workDm, workVs ], { n }, All ];
+        candidates = applyPruning[ candidates, pruning ];
+        If[ anchor =!= None && radius === All,
+          candidates = Select[ candidates, anchorContainedQ[ #, anchor ] & ] ];
+        DeleteDuplicates @ Select[ candidates,
+          cyc |-> AllTrue[ Range @ Length @ As,
+            matchPolygonSlot[ #, As[[ # ]], cyc, dm, idx ] & ] ]
+      ]
+    ] },
     If[ core === $Failed, $Failed,
       With[ { capped = infraCap[ core, count ] },
         If[ capped === $Failed, $Failed,
@@ -128,42 +159,6 @@ FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
 cycleToPolygonLegs[ graph_Graph, cyc_List ] :=
   MapThread[ { a, b } |-> InfraSegment[ { FindShortestPath[ graph, a, b ] } ],
     { cyc, RotateLeft @ cyc } ]
-
-
-findRegularPolygonCore[ graph_Graph, As_List, n_Integer, opts : OptionsPattern[ FindInfraRegularPolygon ] ] :=
-  Module[ { properties, methodSpec, dm, idx, vs, candidates, pruning, methodHead,
-            fromSpec, anchor, radius, workGraph, workVs, workDm },
-    properties = OptionValue[ FindInfraRegularPolygon, { opts }, Properties ];
-    methodSpec = OptionValue[ FindInfraRegularPolygon, { opts }, Method ];
-    fromSpec   = OptionValue[ FindInfraRegularPolygon, { opts }, "From" ];
-    Catch[
-      If[ properties =!= { },
-        Message[ FindInfraRegularPolygon::badproperty, First @ properties ]; Throw[ $Failed ] ];
-      If[ Length[ As ] < 1 || Length[ As ] > Floor[ n / 2 ],
-        Message[ FindInfraRegularPolygon::badcount, As, n ]; Throw[ $Failed ] ];
-      validateSlots @ As;
-      methodHead = methodName @ methodSpec;
-      If[ methodHead =!= "Exhaustive",
-        Message[ FindInfraRegularPolygon::badmethod, methodSpec ]; Throw[ $Failed ] ];
-      { anchor, radius } = parseFromSpec @ fromSpec;
-      pruning = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity;
-      dm  = GraphDistanceMatrix @ graph;
-      vs  = VertexList @ graph;
-      idx = AssociationThread[ vs -> Range @ Length @ vs ];
-      workGraph = If[ anchor === None || radius === All, graph,
-        NeighborhoodGraph[ graph, anchor, radius ] ];
-      workVs = VertexList @ workGraph;
-      workDm = If[ workGraph === graph, dm, dm[[ idx /@ workVs, idx /@ workVs ]] ];
-      candidates = cycleToVertexSequence /@
-        FindCycle[ candidateSourceGraph[ workGraph, First @ As, workDm, workVs ], { n }, All ];
-      candidates = applyPruning[ candidates, pruning ];
-      If[ anchor =!= None && radius === All,
-        candidates = Select[ candidates, anchorContainedQ[ #, anchor ] & ] ];
-      DeleteDuplicates @ Select[ candidates,
-        cyc |-> AllTrue[ Range @ Length @ As,
-          matchPolygonSlot[ #, As[[ # ]], cyc, dm, idx ] & ] ]
-    ]
-  ]
 
 
 (* "From" parser: returns {anchor, radius} pair.

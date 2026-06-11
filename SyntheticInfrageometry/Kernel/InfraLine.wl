@@ -1,11 +1,8 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[findLineCore]
 PackageScope[findLineExtensions]
 PackageScope[findLineExtensionsWith]
 PackageScope[findLineExtensionsGreedy]
-PackageScope[findParallelCore]
-PackageScope[findPerpendicularCore]
 PackageScope[canonicalLine]
 PackageScope[allCanonicalLines]
 
@@ -54,12 +51,36 @@ Options[ FindInfraLine ] = {
 FindInfraLine[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
     ! ListQ[ p1 ] && Head[ p1 ] =!= InfraSegment :=
-  infraSpreadAndCartesian[ InfraLine, count,
-    findLineCore[ graph, ##, opts ] &, p1, p2 ]
+  spreadFind[ InfraLine, count,
+    { q1, q2 } |-> Catch @ With[ {
+        properties = OptionValue[ FindInfraLine, { opts }, Properties ],
+        methodSpec = OptionValue[ FindInfraLine, { opts }, Method ] /. Automatic -> "Exhaustive",
+        maximality = OptionValue[ FindInfraLine, { opts }, "Maximality" ],
+        direction  = OptionValue[ FindInfraLine, { opts }, "Direction" ] },
+      If[ properties =!= { },
+        Message[ FindInfraLine::badproperty, properties ]; Throw[ $Failed ] ];
+      If[ ! MatchQ[ direction, "Forward" | "Backward" | "BothSides" ],
+        Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
+      With[ { methodHead = methodName @ methodSpec,
+              pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
+        With[ { middles = allGeodesics[ graph, q1, q2 ] },
+          With[ { ext = Union @ Flatten[
+                Switch[ methodHead,
+                  "Exhaustive",  findLineExtensions[ graph, #, pruning, direction ] & /@ middles,
+                  "Greedy",      findLineExtensionsGreedy[ graph, #, direction ]     & /@ middles,
+                  _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
+                ], 1 ] },
+            If[ maximality === "Diameter",
+              Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
+              ext ]
+          ]
+        ]
+      ]
+    ], p1, p2 ]
 
 (* Overload: extend a given segment to a maximal line.  count / opts shape
    matches the two-endpoint form; the segment list is taken as the line's
-   middle and extended jointly via findLineExtensionsWith. *)
+   middle and extended jointly via findLineExtensions. *)
 
 FindInfraLine[ graph_Graph, InfraSegment[{ walk_List, ___ }],
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
@@ -67,64 +88,31 @@ FindInfraLine[ graph_Graph, InfraSegment[{ walk_List, ___ }],
 
 FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] | All ) : 1,
     opts : OptionsPattern[] ] /; Length[ segment ] >= 2 :=
-  With[ { core = findLineCoreFromSegment[ graph, segment, opts ] },
-    If[ core === $Failed, $Failed,
-      With[ { capped = infraCap[ core, count ] },
-        If[ capped === $Failed, $Failed, InfraLine[ { # } ] & /@ capped ]
-      ]
-    ]
-  ]
-
-
-findLineCore[ graph_Graph, p1_, p2_, opts : OptionsPattern[ FindInfraLine ] ] /;
-    MemberQ[ VertexList[ graph ], p1 ] :=
-  Catch @ With[ {
-      properties = OptionValue[ FindInfraLine, { opts }, Properties ],
-      methodSpec = OptionValue[ FindInfraLine, { opts }, Method ] /. Automatic -> "Exhaustive",
-      maximality = OptionValue[ FindInfraLine, { opts }, "Maximality" ],
-      direction  = OptionValue[ FindInfraLine, { opts }, "Direction" ] },
-    If[ properties =!= { },
-      Message[ FindInfraLine::badproperty, properties ]; Throw[ $Failed ] ];
-    If[ ! MatchQ[ direction, "Forward" | "Backward" | "BothSides" ],
-      Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
-    With[ { methodHead = methodName @ methodSpec,
-            pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-      With[ { middles = allGeodesics[ graph, p1, p2 ] },
-        With[ { ext = Union @ Flatten[
-              Switch[ methodHead,
-                "Exhaustive",  findLineExtensions[ graph, #, pruning, direction ] & /@ middles,
-                "Greedy",      findLineExtensionsGreedy[ graph, #, direction ]     & /@ middles,
-                _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
-              ], 1 ] },
+  With[ { core = Catch @ With[ {
+        properties = OptionValue[ FindInfraLine, { opts }, Properties ],
+        methodSpec = OptionValue[ FindInfraLine, { opts }, Method ] /. Automatic -> "Exhaustive",
+        maximality = OptionValue[ FindInfraLine, { opts }, "Maximality" ],
+        direction  = OptionValue[ FindInfraLine, { opts }, "Direction" ] },
+      If[ properties =!= { },
+        Message[ FindInfraLine::badproperty, properties ]; Throw[ $Failed ] ];
+      If[ ! MatchQ[ direction, "Forward" | "Backward" | "BothSides" ],
+        Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
+      With[ { methodHead = methodName @ methodSpec,
+              pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
+        With[ { ext = Switch[ methodHead,
+              "Exhaustive",  findLineExtensions[ graph, segment, pruning, direction ],
+              "Greedy",      findLineExtensionsGreedy[ graph, segment, direction ],
+              _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
+            ] },
           If[ maximality === "Diameter",
             Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
             ext ]
         ]
       ]
-    ]
-  ]
-
-
-findLineCoreFromSegment[ graph_Graph, segment_List, opts : OptionsPattern[ FindInfraLine ] ] :=
-  Catch @ With[ {
-      properties = OptionValue[ FindInfraLine, { opts }, Properties ],
-      methodSpec = OptionValue[ FindInfraLine, { opts }, Method ] /. Automatic -> "Exhaustive",
-      maximality = OptionValue[ FindInfraLine, { opts }, "Maximality" ],
-      direction  = OptionValue[ FindInfraLine, { opts }, "Direction" ] },
-    If[ properties =!= { },
-      Message[ FindInfraLine::badproperty, properties ]; Throw[ $Failed ] ];
-    If[ ! MatchQ[ direction, "Forward" | "Backward" | "BothSides" ],
-      Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
-    With[ { methodHead = methodName @ methodSpec,
-            pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-      With[ { ext = Switch[ methodHead,
-            "Exhaustive",  findLineExtensions[ graph, segment, pruning, direction ],
-            "Greedy",      findLineExtensionsGreedy[ graph, segment, direction ],
-            _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
-          ] },
-        If[ maximality === "Diameter",
-          Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
-          ext ]
+    ] },
+    If[ core === $Failed, $Failed,
+      With[ { capped = infraCap[ core, count ] },
+        If[ capped === $Failed, $Failed, InfraLine[ { # } ] & /@ capped ]
       ]
     ]
   ]
@@ -246,25 +234,21 @@ Options[ FindInfraParallel ] = {
 
 FindInfraParallel[ graph_Graph, line_, p_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraLine, count,
-    findParallelCore[ graph, ##, opts ] &, line, p ]
-
-
-findParallelCore[ graph_Graph, line_List, p_, opts : OptionsPattern[ FindInfraParallel ] ] :=
-  Catch @ With[ {
-      properties = OptionValue[ FindInfraParallel, { opts }, Properties ],
-      methodSpec = OptionValue[ FindInfraParallel, { opts }, Method ] /. Automatic -> "Exhaustive" },
-    If[ properties =!= { },
-      Message[ FindInfraParallel::badproperty, properties ]; Throw[ $Failed ] ];
-    With[ { methodHead = methodName @ methodSpec,
-            pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-      Switch[ methodHead,
-        "Exhaustive", findParallelExtensions[ graph, line, p, pruning ],
-        "Greedy",     findParallelExtensionsGreedy[ graph, line, p ],
-        _,            Message[ FindInfraParallel::badmethod, methodSpec ]; Throw[ $Failed ]
+  spreadFind[ InfraLine, count,
+    { line0, p0 } |-> Catch @ With[ {
+        properties = OptionValue[ FindInfraParallel, { opts }, Properties ],
+        methodSpec = OptionValue[ FindInfraParallel, { opts }, Method ] /. Automatic -> "Exhaustive" },
+      If[ properties =!= { },
+        Message[ FindInfraParallel::badproperty, properties ]; Throw[ $Failed ] ];
+      With[ { methodHead = methodName @ methodSpec,
+              pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
+        Switch[ methodHead,
+          "Exhaustive", findParallelExtensions[ graph, line0, p0, pruning ],
+          "Greedy",     findParallelExtensionsGreedy[ graph, line0, p0 ],
+          _,            Message[ FindInfraParallel::badmethod, methodSpec ]; Throw[ $Failed ]
+        ]
       ]
-    ]
-  ]
+    ], line, p ]
 
 
 (* Maximal level-set geodesics through p: every vertex of the result lies at
@@ -393,22 +377,19 @@ Options[ FindInfraPerpendicular ] = {
 
 FindInfraPerpendicular[ graph_Graph, line_, point_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraLine, count,
-    findPerpendicularCore[ graph, ##, opts ] &, line, point ]
-
-
-findPerpendicularCore[ graph_Graph, line_List, point_, opts : OptionsPattern[ FindInfraPerpendicular ] ] :=
-  With[ {
-    spec   = OptionValue[ FindInfraPerpendicular, { opts }, Method   ],
-    radius = OptionValue[ FindInfraPerpendicular, { opts }, "Radius" ] },
-  With[ { workGraph = If[ radius === All, graph, NeighborhoodGraph[ graph, point, radius ] ] },
-    Switch[ methodName @ spec,
-      "Metric",     perpendicularByMetric[ workGraph, line, point ],
-      "Projection" | "Coordinate" | "Arclength" | "Alexandrov",
-                    perpendicularByQ[ workGraph, graph, line, point, spec, radius ],
-      _,            Message[ FindInfraPerpendicular::badmethod, spec ]; $Failed
-    ]
-  ] ]
+  spreadFind[ InfraLine, count,
+    { line0, point0 } |-> With[ {
+        spec   = OptionValue[ FindInfraPerpendicular, { opts }, Method   ],
+        radius = OptionValue[ FindInfraPerpendicular, { opts }, "Radius" ] },
+      With[ { workGraph = If[ radius === All, graph, NeighborhoodGraph[ graph, point0, radius ] ] },
+        Switch[ methodName @ spec,
+          "Metric",     perpendicularByMetric[ workGraph, line0, point0 ],
+          "Projection" | "Coordinate" | "Arclength" | "Alexandrov",
+                        perpendicularByQ[ workGraph, graph, line0, point0, spec, radius ],
+          _,            Message[ FindInfraPerpendicular::badmethod, spec ]; $Failed
+        ]
+      ]
+    ], line, point ]
 
 
 (* "Metric" recipe: feet via isosceles base midpoint, then maximal lines through

@@ -16,7 +16,7 @@ PackageScope[propertyFilter]
 PackageScope[applyPruning]
 PackageScope[infraSpread]
 PackageScope[infraCap]
-PackageScope[infraSpreadAndCartesian]
+PackageScope[spreadFind]
 PackageScope[infraUnionSpread]
 PackageScope[infraVertexMultiset]
 PackageScope[infraRepType]
@@ -413,7 +413,7 @@ infraCap[ _List, _Integer ]                             := $Failed
 (* Dispatch shell for source/endpoint anchors: spread each anchor, run the
    single-pair core over the Cartesian product, union-deduplicate, cap, wrap. *)
 
-infraSpreadAndCartesian[ wrapHead_, count_, core_, anchors__ ] :=
+spreadFind[ wrapHead_, count_, core_, anchors__ ] :=
   With[ { results = core @@@ Tuples[ infraSpread /@ { anchors } ] },
     If[ MemberQ[ results, $Failed ], $Failed,
       With[ { capped = infraCap[ DeleteDuplicates @ Flatten[ results, 1 ], count ] },

@@ -1,6 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[findEllipticShellCore]
 PackageScope[ellipticLevelSet]
 PackageScope[ellipticNearFar]
 
@@ -43,40 +42,35 @@ Options[ FindInfraEllipticShell ] = {
 
 FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraEllipticShell, count,
-    findEllipticShellCore[ graph, ##, opts ] &,
-    Replace[ foci, InfraPoint[ { v_ } ] :> v, { 1 } ], c ]
-
-
-findEllipticShellCore[ graph_Graph, { p1_, p2_ }, c_,
-    opts : OptionsPattern[ FindInfraEllipticShell ] ] :=
-  Module[ { properties, methodSpec, methodHead, pruning, range, verts, idx, dm, row1, row2,
-            levelSet, admissible },
-    properties = OptionValue[ FindInfraEllipticShell, { opts }, Properties ];
-    methodSpec = OptionValue[ FindInfraEllipticShell, { opts }, Method ];
-    methodHead = methodName @ methodSpec;
-    pruning    = Replace[ methodSpec,
-                  { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
-                    _ :> Infinity } ];
-    range = Replace[ c, d_?NumericQ :> { d, d } ];
-    verts = VertexList[ graph ];
-    idx   = AssociationThread[ verts, Range @ Length @ verts ];
-    dm    = GraphDistanceMatrix[ graph ];
-    row1  = dm[[ idx @ p1 ]];
-    row2  = dm[[ idx @ p2 ]];
-    levelSet = ellipticLevelSet[ verts, row1, row2, range ];
-    If[ properties === { },
-      { levelSet },
-      Catch[
-        admissible = admissibleEllipticShell[ graph, verts, row1, row2, range, properties ];
-        Switch[ methodHead,
-          "Exhaustive", findAllMinimalAdmissible[ graph, levelSet, admissible, pruning ],
-          "Greedy",     findGreedyMinimalAdmissible[ graph, levelSet, admissible ],
-          _,            Message[ FindInfraEllipticShell::badmethod, methodSpec ]; $Failed
+  spreadFind[ InfraEllipticShell, count,
+    { foci0, c0 } |-> Module[ { properties, methodSpec, methodHead, pruning, range, verts, idx, dm, row1, row2,
+              levelSet, admissible },
+      properties = OptionValue[ FindInfraEllipticShell, { opts }, Properties ];
+      methodSpec = OptionValue[ FindInfraEllipticShell, { opts }, Method ];
+      methodHead = methodName @ methodSpec;
+      pruning    = Replace[ methodSpec,
+                    { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
+                      _ :> Infinity } ];
+      range = Replace[ c0, d_?NumericQ :> { d, d } ];
+      verts = VertexList[ graph ];
+      idx   = AssociationThread[ verts, Range @ Length @ verts ];
+      dm    = GraphDistanceMatrix[ graph ];
+      row1  = dm[[ idx @ foci0[[ 1 ]] ]];
+      row2  = dm[[ idx @ foci0[[ 2 ]] ]];
+      levelSet = ellipticLevelSet[ verts, row1, row2, range ];
+      If[ properties === { },
+        { levelSet },
+        Catch[
+          admissible = admissibleEllipticShell[ graph, verts, row1, row2, range, properties ];
+          Switch[ methodHead,
+            "Exhaustive", findAllMinimalAdmissible[ graph, levelSet, admissible, pruning ],
+            "Greedy",     findGreedyMinimalAdmissible[ graph, levelSet, admissible ],
+            _,            Message[ FindInfraEllipticShell::badmethod, methodSpec ]; $Failed
+          ]
         ]
       ]
-    ]
-  ]
+    ],
+    Replace[ foci, InfraPoint[ { v_ } ] :> v, { 1 } ], c ]
 
 
 (* { v : cMin <= d(p1,v) + d(p2,v) <= cMax } as a vertex list *)

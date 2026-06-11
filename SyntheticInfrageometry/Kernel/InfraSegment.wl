@@ -39,7 +39,7 @@ Options[ FindInfraSegment ] = {
 
 FindInfraSegment[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  infraSpreadAndCartesian[ InfraSegment, count,
+  spreadFind[ InfraSegment, count,
     findSegmentCore[ graph, ##, count, opts ] &, p1, p2 ]
 
 
