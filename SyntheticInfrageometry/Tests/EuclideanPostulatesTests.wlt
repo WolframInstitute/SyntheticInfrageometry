@@ -855,22 +855,22 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = SelectInfraCycle[g, (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]), All, "From" -> "LongestCircumference"]},
+    With[{circles = SelectInfraCycle[g, (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]), All, "From" -> "MaxLength"]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
   True,
-  TestID -> "FindInfraCircle-SelectInfraCycle-LongestCircumference-uniform"
+  TestID -> "FindInfraCircle-SelectInfraCycle-MaxLength-uniform"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = SelectInfraCycle[g, (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]), All, "From" -> "ShortestCircumference"]},
+    With[{circles = SelectInfraCycle[g, (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]), All, "From" -> "MinLength"]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
   True,
-  TestID -> "FindInfraCircle-SelectInfraCycle-ShortestCircumference"
+  TestID -> "FindInfraCircle-SelectInfraCycle-MinLength"
 ]
 
 (* ===== FindInfraParallel ===== *)

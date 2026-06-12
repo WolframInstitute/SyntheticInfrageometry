@@ -168,23 +168,23 @@ VerificationTest[
 
 VerificationTest[
   SelectInfraCycle[ GridGraph[ { 3, 3 } ], { { 1, 2, 3, 4, 5 }, { 1, 2, 3 }, { 1, 2, 3, 4 } }, All,
-    "From" -> "ShortestCircumference" ],
+    "From" -> "MinLength" ],
   { { 1, 2, 3 } },
-  TestID -> "SelectInfraCycle-ShortestCircumference-picks-min"
+  TestID -> "SelectInfraCycle-MinLength-picks-min"
 ]
 
 VerificationTest[
   SelectInfraCycle[ GridGraph[ { 3, 3 } ], { { 1, 2, 3, 4, 5 }, { 1, 2, 3 }, { 1, 2, 3, 4 } }, All,
-    "From" -> "LongestCircumference" ],
+    "From" -> "MaxLength" ],
   { { 1, 2, 3, 4, 5 } },
-  TestID -> "SelectInfraCycle-LongestCircumference-picks-max"
+  TestID -> "SelectInfraCycle-MaxLength-picks-max"
 ]
 
 VerificationTest[
   SelectInfraCycle[ GridGraph[ { 3, 3 } ], { { 1, 2, 3 }, { 4, 5, 6 }, { 1, 2, 3, 4 } }, All,
-    "From" -> "ShortestCircumference" ],
+    "From" -> "MinLength" ],
   { { 1, 2, 3 }, { 4, 5, 6 } },
-  TestID -> "SelectInfraCycle-ShortestCircumference-keeps-ties"
+  TestID -> "SelectInfraCycle-MinLength-keeps-ties"
 ]
 
 (* ===== Metric option carries through ===== *)
@@ -542,24 +542,24 @@ VerificationTest[
 
 (* ===== FindForwardDeformation ===== *)
 
-(* diamond-with-ear: geodesics 1-2-5 and 1-3-5; triangle {1,2,4} gives a LengthIncrease 1 bump *)
+(* diamond-with-ear: geodesics 1-2-5 and 1-3-5; triangle {1,2,4} gives a LengthDelta 1 bump *)
 
 VerificationTest[
   With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    With[ { w = First[ FindForwardDeformation[ g, { 1, 2, 5 }, "LengthIncrease" -> { 1 } ] /. InfraPath[ x_, ___ ] :> x ] },
+    With[ { w = First[ FindForwardDeformation[ g, { 1, 2, 5 }, "LengthDelta" -> { 1 } ] /. InfraPath[ x_, ___ ] :> x ] },
       Length[ w ] - 1 == GraphDistance[ g, 1, 5 ] + 1 ]
   ],
   True,
-  TestID -> "FindForwardDeformation-LengthIncrease-equals-excess"
+  TestID -> "FindForwardDeformation-LengthDelta-equals-excess"
 ]
 
 VerificationTest[
   With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    With[ { w = First[ FindForwardDeformation[ g, { 1, 2, 5 }, "LengthIncrease" ] /. InfraPath[ x_, ___ ] :> x ] },
+    With[ { w = First[ FindForwardDeformation[ g, { 1, 2, 5 }, "LengthDelta" ] /. InfraPath[ x_, ___ ] :> x ] },
       Length[ w ] - 1 == GraphDistance[ g, 1, 5 ] && w =!= { 1, 2, 5 } ]
   ],
   True,
-  TestID -> "FindForwardDeformation-min-LengthIncrease-is-shortest-alternative"
+  TestID -> "FindForwardDeformation-min-LengthDelta-is-shortest-alternative"
 ]
 
 VerificationTest[
@@ -581,12 +581,57 @@ VerificationTest[
        Table[ { i, j } <-> { i, j + 1 }, { i, 3 }, { j, 2 } ],
        Table[ { i, j } <-> { i + 1, j + 1 }, { i, 2 }, { j, 2 } ] } ] ] },
     With[ { n = GraphDistance[ g, { 1, 1 }, { 3, 3 } ],
-            res = FindForwardDeformation[ g, { { 1, 1 }, { 3, 3 } }, "LengthIncrease" -> 2, All ] /. InfraPath[ x_, ___ ] :> x },
+            res = FindForwardDeformation[ g, { { 1, 1 }, { 3, 3 } }, "LengthDelta" -> 2, All ] /. InfraPath[ x_, ___ ] :> x },
       AllTrue[ Range[ 0, 2 ], k |-> AllTrue[ res[[ k + 1 ]], Length[ # ] - 1 == n + k & ] ]
     ]
   ],
   True,
   TestID -> "FindForwardDeformation-grid-length-equals-n-plus-k"
+]
+
+(* non-geodesic forward reference {1,4,2,5} (L = 3 > n = 2): deformations can shorten *)
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    FindForwardDeformation[ g, { 1, 4, 2, 5 }, "LengthDelta" -> { -1 }, All ] /. InfraPath[ x_, ___ ] :> x
+  ],
+  { { 1, 2, 5 }, { 1, 3, 5 } },
+  TestID -> "FindForwardDeformation-negative-delta-reaches-geodesics"
+]
+
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    FindForwardDeformation[ g, { 1, 4, 2, 5 }, "LengthDelta", All ] /. InfraPath[ x_, ___ ] :> x
+  ],
+  { { 1, 2, 5 }, { 1, 3, 5 } },
+  TestID -> "FindForwardDeformation-min-delta-is-distance-minus-reference-length"
+]
+
+(* non-forward reference (2 -> 1 runs against the spray): deformations straighten it,
+   DeformationSize measured against the given walk *)
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    With[ { dA = AssociationThread[ VertexList[ g ], GraphDistance[ g, 1 ] ],
+            groups = FindForwardDeformation[ g, { 1, 2, 1, 3, 5 }, "DeformationSize" -> { 1, 4 }, All ] /. InfraPath[ x_, ___ ] :> x },
+      ( FindForwardDeformation[ g, { 1, 2, 1, 3, 5 }, "DeformationSize", All ] /. InfraPath[ x_, ___ ] :> x ) === { { 1, 3, 5 } } &&
+      AllTrue[ Flatten[ groups, 1 ], w |-> AllTrue[ Partition[ w, 2, 1 ], dA[ #[[ 2 ]] ] - dA[ #[[ 1 ]] ] >= 0 & ] ]
+    ]
+  ],
+  True,
+  TestID -> "FindForwardDeformation-nonforward-base-straightened-forward"
+]
+
+(* spec order decides the driving axis: size-first groups by DeformationSize,
+   delta-first groups by LengthDelta *)
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    {
+      FindForwardDeformation[ g, { 1, 2, 5 }, { "DeformationSize" -> { 1 }, "LengthDelta" -> 1 }, All ] /. InfraPath[ x_, ___ ] :> x,
+      FindForwardDeformation[ g, { 1, 2, 5 }, { "LengthDelta" -> 1, "DeformationSize" -> { 1 } }, All ] /. InfraPath[ x_, ___ ] :> x,
+      FindForwardDeformation[ g, { 1, 2, 5 }, { "DeformationSize" -> { 1, 2 }, "LengthDelta" -> 1 }, All ] /. InfraPath[ x_, ___ ] :> x
+    }
+  ],
+  { { { 1, 4, 2, 5 } }, { { }, { { 1, 4, 2, 5 } } }, { { { 1, 4, 2, 5 } }, { { 1, 3, 5 } } } },
+  TestID -> "FindForwardDeformation-spec-order-decides-driver"
 ]
 
 EndTestSection[]

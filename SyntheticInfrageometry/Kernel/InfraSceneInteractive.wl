@@ -9,7 +9,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 $InfraSegmentSelectOptions = { None, "Central", "Peripheral", "EmbeddingClosest" };
 
 $InfraCircleSelectOptions = { None, "Central", "Peripheral",
-  "ShortestCircumference", "LongestCircumference", "EmbeddingClosest" };
+  "MinLength", "MaxLength", "EmbeddingClosest" };
 
 
 (* ===================== Per-object viewers ===================== *)
