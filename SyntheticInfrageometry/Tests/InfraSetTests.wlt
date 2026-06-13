@@ -90,6 +90,46 @@ VerificationTest[
   TestID -> "InfraBoundary-Alexandrov-dispatch"
 ]
 
+(* ===== InfraVolume ===== *)
+
+(* Set-like: Count - Boundary == Interior (a partition of the vertex set). *)
+VerificationTest[
+  With[ { g = GridGraph[ {5, 5} ], ball = FindInfraBall[ GridGraph[ {5, 5} ], 13, 2 ] },
+    InfraVolume[ g, ball, "Volume" -> "Count" ] - InfraVolume[ g, ball, "Volume" -> "Boundary" ]
+      == InfraVolume[ g, ball, "Volume" -> "Interior" ] ],
+  True,
+  TestID -> "InfraVolume-count-minus-boundary-equals-interior"
+]
+
+(* A thin geodesic line (top row of a grid) is 1-D in a 2-D graph: empty interior. *)
+VerificationTest[
+  InfraVolume[ GridGraph[ {4, 4} ], InfraLine[ {{1, 2, 3, 4}} ], "Volume" -> "Interior" ],
+  0,
+  TestID -> "InfraVolume-thin-line-empty-interior"
+]
+
+(* Line vs set on the SAME (space-filling) vertex set: the curve has ~no interior
+   (only the two pass-through corners), the induced 2-D region has full interior. *)
+VerificationTest[
+  With[
+    { g = GridGraph[ {4, 4} ],
+      snake = Catenate @ Table[ With[ { row = Range[ 4 (i - 1) + 1, 4 i ] }, If[ OddQ[ i ], row, Reverse[ row ] ] ], { i, 4 } ] },
+    { InfraVolume[ g, InfraLine[ {snake} ], "Volume" -> "Interior" ],
+      InfraVolume[ g, InfraSet[ snake ], "Volume" -> "Interior" ],
+      InfraVolume[ g, InfraLine[ {snake} ], "Volume" -> "Count" ]
+        === InfraVolume[ g, InfraSet[ snake ], "Volume" -> "Count" ] } ],
+  { 2, 16, True },
+  TestID -> "InfraVolume-line-vs-set-spanning-curve"
+]
+
+(* The line graph is the union of the walks, NOT the induced subgraph: two parallel
+   grid rows stay disconnected, so neither row gains interior from the other. *)
+VerificationTest[
+  InfraVolume[ GridGraph[ {4, 4} ], InfraLine[ {{1, 2, 3, 4}, {5, 6, 7, 8}} ], "Volume" -> "Interior" ],
+  0,
+  TestID -> "InfraVolume-line-union-not-induced"
+]
+
 (* ===== FindInfraEquidistantSet ===== *)
 
 (* Every vertex of the equidistant set sees all anchors at one common distance. *)

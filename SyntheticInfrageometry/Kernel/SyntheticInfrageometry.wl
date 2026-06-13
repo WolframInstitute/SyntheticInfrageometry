@@ -179,6 +179,7 @@ PackageExport[FindInfraEquidistantSet]
 PackageExport[FindAdvancingInfraFront]
 PackageExport[InfraBoundary]
 PackageExport[InfraInterior]
+PackageExport[InfraVolume]
 
 (* Coordinatization.wl -- RadarCoordinates / ResistanceCoordinates relocated to
    the Infrageometry paclet; Synthetic adds InfraObject overloads to them and

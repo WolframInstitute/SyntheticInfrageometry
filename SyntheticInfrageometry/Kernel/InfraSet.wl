@@ -129,3 +129,46 @@ InfraInterior[ g_Graph, s_, OptionsPattern[] ] :=
       _, Message[ InfraInterior::badmethod, OptionValue[ Method ] ]; $Failed
     ]
   ]
+
+
+(* ===================== InfraVolume ===================== *)
+
+(* InfraVolume[g, S]: the infra-observer's volume of a vertex set S (any Infra*
+   object or bare vertex list), taken over the union vertex set. "Volume" picks
+   the notion: "Interior" (default) = |S| - |boundary| = the genuine inside
+   excluding the boundary layer; "Count" = |S|; "Boundary" = |boundary|. The
+   boundary backend (Method -> "Combinatorial" inner vertex boundary, default, or
+   {"Alexandrov", "Radius" -> r}) is shared with InfraBoundary / InfraInterior. *)
+
+InfraVolume::badvolume = "Volume notion `1` is not supported by InfraVolume; use \"Interior\", \"Count\", or \"Boundary\".";
+
+Options[ InfraVolume ] = { "Volume" -> "Interior", Method -> "Combinatorial" };
+
+(* Line-like objects (InfraLine / InfraSegment / InfraPath / InfraRay) realise the
+   UNION of their walks as path graphs -- only each line's own consecutive edges,
+   so distinct lines are not joined and a line never gains the chords of its
+   induced subgraph. The interior is then the same GraphInterior, fed this graph
+   rather than a vertex list: a vertex is interior iff every g-edge at it is a
+   line edge, so a 1-D curve has ~empty interior (a space-filling grid path keeps
+   only its two pass-through corners). *)
+InfraVolume[ g_Graph, (InfraLine | InfraSegment | InfraPath | InfraRay)[ walks_List ], opts : OptionsPattern[] ] :=
+  With[
+    { h = Graph[ Union @@ walks,
+        DeleteDuplicates[ Sort /@ Catenate[ (UndirectedEdge @@@ Partition[ #, 2, 1 ] &) /@ walks ] ] ] },
+    Switch[ OptionValue[ "Volume" ],
+      "Count",    VertexCount[ h ],
+      "Interior", Length @ GraphInterior[ g, h ],
+      "Boundary", Length @ GraphBoundary[ g, h ],
+      _, Message[ InfraVolume::badvolume, OptionValue[ "Volume" ] ]; $Failed
+    ]
+  ]
+
+InfraVolume[ g_Graph, s_, opts : OptionsPattern[] ] :=
+  With[ { vs = infraVertexSet @ If[ ListQ[ s ], InfraSet[ s ], s ] },
+    Switch[ OptionValue[ "Volume" ],
+      "Count",    Length[ vs ],
+      "Interior", Length[ InfraInterior[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
+      "Boundary", Length[ InfraBoundary[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
+      _, Message[ InfraVolume::badvolume, OptionValue[ "Volume" ] ]; $Failed
+    ]
+  ]
