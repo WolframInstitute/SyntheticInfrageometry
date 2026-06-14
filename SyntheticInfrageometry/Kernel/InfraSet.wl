@@ -135,14 +135,15 @@ InfraInterior[ g_Graph, s_, OptionsPattern[] ] :=
 
 (* InfraVolume[g, S]: the infra-observer's volume of a vertex set S (any Infra*
    object or bare vertex list), taken over the union vertex set. "Volume" picks
-   the notion: "Interior" (default) = |S| - |boundary| = the genuine inside
-   excluding the boundary layer; "Count" = |S|; "Boundary" = |boundary|. The
+   the measure: "Hausdorff" (default) = |S| - |boundary| = the genuine inside
+   excluding the boundary layer (same GraphInterior count as BallVolumes'
+   "Measure" -> "Hausdorff"); "Counting" = |S|; "Boundary" = |boundary|. The
    boundary backend (Method -> "Combinatorial" inner vertex boundary, default, or
    {"Alexandrov", "Radius" -> r}) is shared with InfraBoundary / InfraInterior. *)
 
-InfraVolume::badvolume = "Volume notion `1` is not supported by InfraVolume; use \"Interior\", \"Count\", or \"Boundary\".";
+InfraVolume::badvolume = "Volume measure `1` is not supported by InfraVolume; use \"Hausdorff\", \"Counting\", or \"Boundary\".";
 
-Options[ InfraVolume ] = { "Volume" -> "Interior", Method -> "Combinatorial" };
+Options[ InfraVolume ] = { "Volume" -> "Hausdorff", Method -> "Combinatorial" };
 
 (* Line-like objects (InfraLine / InfraSegment / InfraPath / InfraRay) realise the
    UNION of their walks as path graphs -- only each line's own consecutive edges,
@@ -156,9 +157,9 @@ InfraVolume[ g_Graph, (InfraLine | InfraSegment | InfraPath | InfraRay)[ walks_L
     { h = Graph[ Union @@ walks,
         DeleteDuplicates[ Sort /@ Catenate[ (UndirectedEdge @@@ Partition[ #, 2, 1 ] &) /@ walks ] ] ] },
     Switch[ OptionValue[ "Volume" ],
-      "Count",    VertexCount[ h ],
-      "Interior", Length @ GraphInterior[ g, h ],
-      "Boundary", Length @ GraphBoundary[ g, h ],
+      "Counting",  VertexCount[ h ],
+      "Hausdorff", Length @ GraphInterior[ g, h ],
+      "Boundary",  Length @ GraphBoundary[ g, h ],
       _, Message[ InfraVolume::badvolume, OptionValue[ "Volume" ] ]; $Failed
     ]
   ]
@@ -166,9 +167,9 @@ InfraVolume[ g_Graph, (InfraLine | InfraSegment | InfraPath | InfraRay)[ walks_L
 InfraVolume[ g_Graph, s_, opts : OptionsPattern[] ] :=
   With[ { vs = infraVertexSet @ If[ ListQ[ s ], InfraSet[ s ], s ] },
     Switch[ OptionValue[ "Volume" ],
-      "Count",    Length[ vs ],
-      "Interior", Length[ InfraInterior[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
-      "Boundary", Length[ InfraBoundary[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
+      "Counting",  Length[ vs ],
+      "Hausdorff", Length[ InfraInterior[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
+      "Boundary",  Length[ InfraBoundary[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
       _, Message[ InfraVolume::badvolume, OptionValue[ "Volume" ] ]; $Failed
     ]
   ]

@@ -84,7 +84,7 @@ VerificationTest[
   TestID -> "InfraPoint-BallVolumes-accessor"
 ]
 
-(* the accessor respects BallVolumes["Closed"] == Accumulate[ShellAreas] *)
+(* the accessor respects BallVolumes (counting) == Accumulate[ShellAreas] *)
 VerificationTest[
   With[ { g = CycleGraph[ 10 ], p = InfraPoint[ { 1 } ] },
     First @ p[ "BallVolumes", g ] === Accumulate[ First @ p[ "ShellAreas", g ] ] ],
