@@ -1,5 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+PackageImport["WolframInstitute`Infrageometry`"]
+
 PackageScope[findPointPool]
 PackageScope[midpointsOnWalk]
 PackageScope[embeddingRankMidpointsFromSegment]
@@ -48,6 +50,25 @@ InfraPoint[ verts_List, w___ ][ "OccupationCount" ] := infraVertexMultiset[ Infr
 InfraPoint[ verts_List, w___ ][ "OccupationMeasure" ] := InfraMeasure[ InfraPoint[ verts, w ] ]
 InfraPoint[ verts_List, w___ ][ "Measure" ] := InfraMeasure[ InfraPoint[ verts, w ] ]
 InfraPoint[ verts_List, w___ ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPoint[ verts, w ], Method -> "Probability" ]
+
+(* synthetic-invariant accessors (Infrageometry primitives over the support, one result
+   per support vertex; the graph is passed in since the wrapper holds no graph).  Extra
+   args forward verbatim -- e.g. p["BallVolumes", g, {0, R}], p["Dimension", g, {1, 5}].
+   The dimension / curvature readouts project the Ball* keys of VolumeGrowthObservables. *)
+InfraPoint[ verts_List, ___ ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, verts, rest ]
+InfraPoint[ verts_List, ___ ][ "ShellAreas", g_, rest___ ]             := ShellAreas[ g, verts, rest ]
+InfraPoint[ verts_List, ___ ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients /@ BallVolumes[ g, verts, rest ]
+InfraPoint[ verts_List, ___ ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, verts, rest ]
+InfraPoint[ verts_List, ___ ][ "Dimension", g_, rest___ ]              := ( #[ "BallDimension" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
+InfraPoint[ verts_List, ___ ][ "ScalarCurvature", g_, rest___ ]        := ( #[ "BallScalarCurvature" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
+InfraPoint[ verts_List, ___ ][ "CurvatureByRadius", g_, rest___ ]      := ( #[ "BallCurvatureByRadius" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
+
+(* the same invariants the other way round: the Infrageometry primitives accept an
+   InfraPoint directly (via its support), so BallVolumes[g, p] == p["BallVolumes", g]. *)
+InfraPoint /: BallVolumes[ g_, p_InfraPoint, rest___ ]              := BallVolumes[ g, p[ "Support" ], rest ]
+InfraPoint /: ShellAreas[ g_, p_InfraPoint, rest___ ]              := ShellAreas[ g, p[ "Support" ], rest ]
+InfraPoint /: VolumeGrowthObservables[ g_, p_InfraPoint, rest___ ] := VolumeGrowthObservables[ g, p[ "Support" ], rest ]
+
 (* ===================== FindInfraPoint ===================== *)
 
 (* FindInfraPoint[g, n] returns n unary InfraPoint[{v}] wrappers.  With

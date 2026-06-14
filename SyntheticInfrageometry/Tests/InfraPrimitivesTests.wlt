@@ -74,6 +74,38 @@ VerificationTest[
   TestID -> "InfraPoint-aggregation-sums-mass"
 ]
 
+
+(* ----- synthetic-invariant accessors (delegate to Infrageometry over the support) ----- *)
+
+(* one ball-volume row per support vertex: on a path B_r(end) = r + 1 *)
+VerificationTest[
+  InfraPoint[ { 1 } ][ "BallVolumes", PathGraph @ Range[ 7 ], { 0, 3 } ],
+  { { 1, 2, 3, 4 } },
+  TestID -> "InfraPoint-BallVolumes-accessor"
+]
+
+(* the accessor respects BallVolumes["Closed"] == Accumulate[ShellAreas] *)
+VerificationTest[
+  With[ { g = CycleGraph[ 10 ], p = InfraPoint[ { 1 } ] },
+    First @ p[ "BallVolumes", g ] === Accumulate[ First @ p[ "ShellAreas", g ] ] ],
+  True,
+  TestID -> "InfraPoint-BallVolumes-accumulates-ShellAreas"
+]
+
+(* multi-support point: one row per support vertex *)
+VerificationTest[
+  Length @ InfraPoint[ { 1, 5 } ][ "ShellAreas", PathGraph @ Range[ 7 ], { 0, 2 } ],
+  2,
+  TestID -> "InfraPoint-ShellAreas-per-support-vertex"
+]
+
+(* dimension readout projects VolumeGrowthObservables["BallDimension"]: one numeric per support *)
+VerificationTest[
+  MatchQ[ InfraPoint[ { 25 } ][ "Dimension", GridGraph[ { 7, 7 } ] ], { _?NumericQ } ],
+  True,
+  TestID -> "InfraPoint-Dimension-accessor-numeric"
+]
+
 VerificationTest[
   First @ InfraPoint[ { a, b }, { 2, 1 } ],
   { a, b },
