@@ -18,35 +18,35 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraTriangleQ", "Title",ExpressionUUID->"b6bb5fd2-cda2-45d9-9f67-61eb2640267a"],
+Cell["InfraTriangleQ", "Title",ExpressionUUID->"22cc7830-7095-4d0f-bd93-0150e27c5863"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"81cfd664-8bb3-471a-b5ad-5e520965c200"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"f289a6cb-2ffc-4929-b3cd-2d895df567e5"],
 
 Cell["\<\
 InfraTriangleQ[graph, poly] tests whether poly is a triangle (a closed chain \
 of exactly three geodesic InfraSegment sides). Accepts an InfraTriangle \
 wrapper or a bare three-leg list.\
-\>", "Text",ExpressionUUID->"babe3931-ddef-484c-b3a9-f80eaa3c54e5"],
+\>", "Text",ExpressionUUID->"18e9c0dd-4a6e-49b4-b3e8-db8d6c29aaf3"],
 
-Cell["Setup", "Section",ExpressionUUID->"fb67000a-dcf9-4780-bc7d-6919a4bf185e"],
+Cell["Setup", "Section",ExpressionUUID->"7124abde-5b87-448e-897b-fd070bf48f48"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"b3073161-fe04-41e0-b17e-b55d58c2b88d"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"f7cee4bd-3eff-489a-baaa-d16f24d60f11"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"ebebd84e-5126-4e68-8deb-e6d86e36f14b"],
+  True,ExpressionUUID->"226bb50e-9887-4a2f-9e1b-a5e0226e7a9f"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"7426a626-2be5-4465-90f9-123c6d97040c"],
+Cell["Related Guides", "Section",ExpressionUUID->"95c4bb86-290a-427a-88af-c26318137fec"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"78051285-ddc4-43a5-807a-2530f7d6ef9b"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"a5b74897-c8e5-4257-a4f4-942ebe8ac19a"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"862ad9ba-c0bf-4387-b973-1da74fc9cecb"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"50f96076-b40d-4774-82dd-1da5b4b61fed"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"0949124b-e72f-43e7-8916-3e0f96989d31"
 ]
 (* End of Notebook Content *)
 
@@ -59,16 +59,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"b6bb5fd2-cda2-45d9-9f67-61eb2640267a"],
-Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"81cfd664-8bb3-471a-b5ad-5e520965c200"],
-Cell[736, 24, 265, 4, 70, "Text",ExpressionUUID->"babe3931-ddef-484c-b3a9-f80eaa3c54e5"],
-Cell[1004, 30, 79, 0, 70, "Section",ExpressionUUID->"fb67000a-dcf9-4780-bc7d-6919a4bf185e"],
-Cell[1086, 32, 91, 0, 70, "CodeText",ExpressionUUID->"b3073161-fe04-41e0-b17e-b55d58c2b88d"],
-Cell[1180, 34, 192, 4, 70, "Code",ExpressionUUID->"ebebd84e-5126-4e68-8deb-e6d86e36f14b",
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"22cc7830-7095-4d0f-bd93-0150e27c5863"],
+Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"f289a6cb-2ffc-4929-b3cd-2d895df567e5"],
+Cell[736, 24, 265, 4, 70, "Text",ExpressionUUID->"18e9c0dd-4a6e-49b4-b3e8-db8d6c29aaf3"],
+Cell[1004, 30, 79, 0, 70, "Section",ExpressionUUID->"7124abde-5b87-448e-897b-fd070bf48f48"],
+Cell[1086, 32, 91, 0, 70, "CodeText",ExpressionUUID->"f7cee4bd-3eff-489a-baaa-d16f24d60f11"],
+Cell[1180, 34, 192, 4, 70, "Code",ExpressionUUID->"226bb50e-9887-4a2f-9e1b-a5e0226e7a9f",
  InitializationCell->True],
-Cell[1375, 40, 88, 0, 70, "Section",ExpressionUUID->"7426a626-2be5-4465-90f9-123c6d97040c"],
-Cell[1466, 42, 93, 0, 70, "Item",ExpressionUUID->"78051285-ddc4-43a5-807a-2530f7d6ef9b"],
-Cell[1562, 44, 98, 0, 70, "Item",ExpressionUUID->"862ad9ba-c0bf-4387-b973-1da74fc9cecb"]
+Cell[1375, 40, 88, 0, 70, "Section",ExpressionUUID->"95c4bb86-290a-427a-88af-c26318137fec"],
+Cell[1466, 42, 93, 0, 70, "Item",ExpressionUUID->"a5b74897-c8e5-4257-a4f4-942ebe8ac19a"],
+Cell[1562, 44, 98, 0, 70, "Item",ExpressionUUID->"50f96076-b40d-4774-82dd-1da5b4b61fed"]
 }
 ]
 *)

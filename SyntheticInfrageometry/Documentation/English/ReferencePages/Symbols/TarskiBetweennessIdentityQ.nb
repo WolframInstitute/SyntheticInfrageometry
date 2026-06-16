@@ -18,34 +18,34 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["TarskiBetweennessIdentityQ", "Title",ExpressionUUID->"1593cce5-6285-4457-ad79-fc65fd682bee"],
+Cell["TarskiBetweennessIdentityQ", "Title",ExpressionUUID->"6e8ebb4c-4b2d-4a15-90b1-82536e4f596f"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b99e2c6f-f2e1-4ca3-a96e-7f4aae08c107"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"73a438bf-fc73-4a62-a874-7faa8723f378"],
 
 Cell["\<\
 TarskiBetweennessIdentityQ[graph] tests Tarski axiom A6 (B(a, b, a) implies a \
 == b). Always True on connected simple graphs.\
-\>", "Text",ExpressionUUID->"b9278788-429d-4444-9c1e-5b985416fc9a"],
+\>", "Text",ExpressionUUID->"0a68c5a7-d7d0-4493-9c3b-fd691ec074d8"],
 
-Cell["Setup", "Section",ExpressionUUID->"9e29215e-9f2d-41e7-b15b-f925f6c04a65"],
+Cell["Setup", "Section",ExpressionUUID->"e80f1741-1521-447a-9006-e18580b8b3db"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"36b50251-2453-497f-a801-f9a46bbf3245"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"73478d34-fdeb-44f1-8e7c-66436792af60"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"6de63f32-228a-43bf-8952-0bfd18302b41"],
+  True,ExpressionUUID->"acebfbc9-20c9-43df-890b-bad148f47057"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"876c3123-894e-4a43-a360-368a51425969"],
+Cell["Related Guides", "Section",ExpressionUUID->"2d8ea8c2-8da3-4719-9945-23b1b17204fe"],
 
-Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"0673a5ae-9959-446b-90f3-2c1038a37fec"],
+Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"765cf0a2-4650-4456-bdc6-c99f55f70b20"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"023efdc7-af75-4d8d-aebd-a3a0c33e5378"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"802c2ec0-3916-4189-ad1a-42102977edc1"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"ceb6c430-7d2d-4e3c-a42e-9704aba7fa04"
 ]
 (* End of Notebook Content *)
 
@@ -58,16 +58,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 98, 0, 70, "Title",ExpressionUUID->"1593cce5-6285-4457-ad79-fc65fd682bee"],
-Cell[655, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b99e2c6f-f2e1-4ca3-a96e-7f4aae08c107"],
-Cell[748, 24, 205, 3, 70, "Text",ExpressionUUID->"b9278788-429d-4444-9c1e-5b985416fc9a"],
-Cell[956, 29, 79, 0, 70, "Section",ExpressionUUID->"9e29215e-9f2d-41e7-b15b-f925f6c04a65"],
-Cell[1038, 31, 91, 0, 70, "CodeText",ExpressionUUID->"36b50251-2453-497f-a801-f9a46bbf3245"],
-Cell[1132, 33, 192, 4, 70, "Code",ExpressionUUID->"6de63f32-228a-43bf-8952-0bfd18302b41",
+Cell[554, 20, 98, 0, 70, "Title",ExpressionUUID->"6e8ebb4c-4b2d-4a15-90b1-82536e4f596f"],
+Cell[655, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"73a438bf-fc73-4a62-a874-7faa8723f378"],
+Cell[748, 24, 205, 3, 70, "Text",ExpressionUUID->"0a68c5a7-d7d0-4493-9c3b-fd691ec074d8"],
+Cell[956, 29, 79, 0, 70, "Section",ExpressionUUID->"e80f1741-1521-447a-9006-e18580b8b3db"],
+Cell[1038, 31, 91, 0, 70, "CodeText",ExpressionUUID->"73478d34-fdeb-44f1-8e7c-66436792af60"],
+Cell[1132, 33, 192, 4, 70, "Code",ExpressionUUID->"acebfbc9-20c9-43df-890b-bad148f47057",
  InitializationCell->True],
-Cell[1327, 39, 88, 0, 70, "Section",ExpressionUUID->"876c3123-894e-4a43-a360-368a51425969"],
-Cell[1418, 41, 90, 0, 70, "Item",ExpressionUUID->"0673a5ae-9959-446b-90f3-2c1038a37fec"],
-Cell[1511, 43, 98, 0, 70, "Item",ExpressionUUID->"023efdc7-af75-4d8d-aebd-a3a0c33e5378"]
+Cell[1327, 39, 88, 0, 70, "Section",ExpressionUUID->"2d8ea8c2-8da3-4719-9945-23b1b17204fe"],
+Cell[1418, 41, 90, 0, 70, "Item",ExpressionUUID->"765cf0a2-4650-4456-bdc6-c99f55f70b20"],
+Cell[1511, 43, 98, 0, 70, "Item",ExpressionUUID->"802c2ec0-3916-4189-ad1a-42102977edc1"]
 }
 ]
 *)

@@ -18,9 +18,9 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraCircle", "Title",ExpressionUUID->"9bc3f40b-ab70-4d94-80de-c506d175b239"],
+Cell["InfraCircle", "Title",ExpressionUUID->"de41f8e9-d711-4ec8-be69-36b252b14fa9"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"15d7a116-f16d-4490-a577-b9c171f2381f"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b30b82b7-5810-4590-bb33-d3db92f77e1f"],
 
 Cell["\<\
 InfraCircle[{cycle}] is the unary form; InfraCircle[{cycle1, ..., cyclek}] is \
@@ -29,27 +29,27 @@ InfraCircle @ ... to collapse to multi via auto-flatten. Scene-language \
 constructor InfraCircle[center, radius] is used inside InfraScene. The multi \
 form is consumed by InfraSceneHighlight (sequential edges with auto-closure).\
 \
-\>", "Text",ExpressionUUID->"b993ad49-f97e-49c8-adf9-3abe67e79273"],
+\>", "Text",ExpressionUUID->"91f8bace-43a4-4c91-b60f-3473f9880b80"],
 
-Cell["Setup", "Section",ExpressionUUID->"18fb4c13-e427-4743-bee1-08f8c74896bd"],
+Cell["Setup", "Section",ExpressionUUID->"5fb04a1f-af48-4f6c-ad44-ed2b6868050b"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"89e2cdbe-2422-412c-836e-ea2581f563c0"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"b7f809ab-12d0-44b3-a530-57cb045d8ab1"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"8d5dd150-c33e-411f-adcf-a720e9ea8e7b"],
+  True,ExpressionUUID->"cfb06760-d580-4374-b15c-d5ee139c46d1"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"2249951a-9ff9-4695-b05b-4c68dd229ae7"],
+Cell["Related Guides", "Section",ExpressionUUID->"d3ac24d4-eb01-4000-8b31-4a72aaeaa1a6"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"5c08d540-6a93-47bd-b077-1e81b860c17f"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"a6c59355-bcee-4f06-b259-069e4b3635a1"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"73fd7d68-3cab-4680-bffa-65f507df1e13"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"e92ae763-843e-4fc4-9378-9ecac949f001"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"43e003ba-a7b9-40d3-9035-fa2543002815"
 ]
 (* End of Notebook Content *)
 
@@ -62,16 +62,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 83, 0, 70, "Title",ExpressionUUID->"9bc3f40b-ab70-4d94-80de-c506d175b239"],
-Cell[640, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"15d7a116-f16d-4490-a577-b9c171f2381f"],
-Cell[733, 24, 471, 7, 70, "Text",ExpressionUUID->"b993ad49-f97e-49c8-adf9-3abe67e79273"],
-Cell[1207, 33, 79, 0, 70, "Section",ExpressionUUID->"18fb4c13-e427-4743-bee1-08f8c74896bd"],
-Cell[1289, 35, 91, 0, 70, "CodeText",ExpressionUUID->"89e2cdbe-2422-412c-836e-ea2581f563c0"],
-Cell[1383, 37, 192, 4, 70, "Code",ExpressionUUID->"8d5dd150-c33e-411f-adcf-a720e9ea8e7b",
+Cell[554, 20, 83, 0, 70, "Title",ExpressionUUID->"de41f8e9-d711-4ec8-be69-36b252b14fa9"],
+Cell[640, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b30b82b7-5810-4590-bb33-d3db92f77e1f"],
+Cell[733, 24, 471, 7, 70, "Text",ExpressionUUID->"91f8bace-43a4-4c91-b60f-3473f9880b80"],
+Cell[1207, 33, 79, 0, 70, "Section",ExpressionUUID->"5fb04a1f-af48-4f6c-ad44-ed2b6868050b"],
+Cell[1289, 35, 91, 0, 70, "CodeText",ExpressionUUID->"b7f809ab-12d0-44b3-a530-57cb045d8ab1"],
+Cell[1383, 37, 192, 4, 70, "Code",ExpressionUUID->"cfb06760-d580-4374-b15c-d5ee139c46d1",
  InitializationCell->True],
-Cell[1578, 43, 88, 0, 70, "Section",ExpressionUUID->"2249951a-9ff9-4695-b05b-4c68dd229ae7"],
-Cell[1669, 45, 93, 0, 70, "Item",ExpressionUUID->"5c08d540-6a93-47bd-b077-1e81b860c17f"],
-Cell[1765, 47, 98, 0, 70, "Item",ExpressionUUID->"73fd7d68-3cab-4680-bffa-65f507df1e13"]
+Cell[1578, 43, 88, 0, 70, "Section",ExpressionUUID->"d3ac24d4-eb01-4000-8b31-4a72aaeaa1a6"],
+Cell[1669, 45, 93, 0, 70, "Item",ExpressionUUID->"a6c59355-bcee-4f06-b259-069e4b3635a1"],
+Cell[1765, 47, 98, 0, 70, "Item",ExpressionUUID->"e92ae763-843e-4fc4-9378-9ecac949f001"]
 }
 ]
 *)

@@ -18,36 +18,36 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraEllipticShell", "Title",ExpressionUUID->"2b1a29ec-fe03-4a88-b122-8468014fe53c"],
+Cell["InfraEllipticShell", "Title",ExpressionUUID->"7bad3267-b788-4e1f-b043-d450c4329647"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"7a4c2657-8048-48ba-a7a0-a60a9dcbc395"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"01115c7a-07e6-491d-b03f-33e3e1ac4a0c"],
 
 Cell["\<\
 InfraEllipticShell[{set}] is the unary form (one elliptic-shell vertex set); \
 InfraEllipticShell[{set1, ..., setk}] is the multi-realisation form. Find* \
 returns a List of unary wrappers; wrap with InfraEllipticShell @ ... to \
 collapse to multi via auto-flatten.\
-\>", "Text",ExpressionUUID->"28fe6b0a-836b-4389-839a-e538b98809bd"],
+\>", "Text",ExpressionUUID->"753baf89-77d0-40e0-837e-91196aa3cec8"],
 
-Cell["Setup", "Section",ExpressionUUID->"df94b15c-c848-443a-94db-36ae0ed84bf2"],
+Cell["Setup", "Section",ExpressionUUID->"b706b96b-ef9c-41a2-9f4a-541557291dbb"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"cb2e4b5a-fd87-494a-8f71-46da6389bb34"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"8c236bd3-8c2c-42ec-b909-4dec3902e6e3"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"15a0ba88-71d7-4dfb-83dc-fc5be1b65568"],
+  True,ExpressionUUID->"966c5543-9419-4604-a970-bbfc3e384006"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"e7ac904a-3ed4-4943-ade1-23a8780f8134"],
+Cell["Related Guides", "Section",ExpressionUUID->"7184691f-b978-4bbb-bcb4-71b45a36a980"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"81b05618-92ba-4e30-a0ce-f7c55c18e632"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"47a69cea-a575-4766-bb6a-360cbc5367c5"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"21457c7b-d1d9-4d27-a2df-d6f216ac5427"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"9ceeacab-41ed-4866-a658-cb3ad6fcfd59"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"32f51762-fcbc-4e19-a606-4ea8dfdd771f"
 ]
 (* End of Notebook Content *)
 
@@ -60,16 +60,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"2b1a29ec-fe03-4a88-b122-8468014fe53c"],
-Cell[647, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"7a4c2657-8048-48ba-a7a0-a60a9dcbc395"],
-Cell[740, 24, 344, 5, 70, "Text",ExpressionUUID->"28fe6b0a-836b-4389-839a-e538b98809bd"],
-Cell[1087, 31, 79, 0, 70, "Section",ExpressionUUID->"df94b15c-c848-443a-94db-36ae0ed84bf2"],
-Cell[1169, 33, 91, 0, 70, "CodeText",ExpressionUUID->"cb2e4b5a-fd87-494a-8f71-46da6389bb34"],
-Cell[1263, 35, 192, 4, 70, "Code",ExpressionUUID->"15a0ba88-71d7-4dfb-83dc-fc5be1b65568",
+Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"7bad3267-b788-4e1f-b043-d450c4329647"],
+Cell[647, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"01115c7a-07e6-491d-b03f-33e3e1ac4a0c"],
+Cell[740, 24, 344, 5, 70, "Text",ExpressionUUID->"753baf89-77d0-40e0-837e-91196aa3cec8"],
+Cell[1087, 31, 79, 0, 70, "Section",ExpressionUUID->"b706b96b-ef9c-41a2-9f4a-541557291dbb"],
+Cell[1169, 33, 91, 0, 70, "CodeText",ExpressionUUID->"8c236bd3-8c2c-42ec-b909-4dec3902e6e3"],
+Cell[1263, 35, 192, 4, 70, "Code",ExpressionUUID->"966c5543-9419-4604-a970-bbfc3e384006",
  InitializationCell->True],
-Cell[1458, 41, 88, 0, 70, "Section",ExpressionUUID->"e7ac904a-3ed4-4943-ade1-23a8780f8134"],
-Cell[1549, 43, 93, 0, 70, "Item",ExpressionUUID->"81b05618-92ba-4e30-a0ce-f7c55c18e632"],
-Cell[1645, 45, 98, 0, 70, "Item",ExpressionUUID->"21457c7b-d1d9-4d27-a2df-d6f216ac5427"]
+Cell[1458, 41, 88, 0, 70, "Section",ExpressionUUID->"7184691f-b978-4bbb-bcb4-71b45a36a980"],
+Cell[1549, 43, 93, 0, 70, "Item",ExpressionUUID->"47a69cea-a575-4766-bb6a-360cbc5367c5"],
+Cell[1645, 45, 98, 0, 70, "Item",ExpressionUUID->"9ceeacab-41ed-4866-a658-cb3ad6fcfd59"]
 }
 ]
 *)

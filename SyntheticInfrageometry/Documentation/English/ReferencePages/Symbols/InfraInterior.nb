@@ -18,9 +18,9 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraInterior", "Title",ExpressionUUID->"480580d9-74d0-4030-a0b4-c1f6e2463f46"],
+Cell["InfraInterior", "Title",ExpressionUUID->"6a0e406f-e740-48a4-8a1b-df83c5c1a9f3"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"15a998a0-a039-4a3b-b51f-e046e7c6da56"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"36387290-5f66-44e5-8dcf-12b6bbe19879"],
 
 Cell["\<\
 InfraInterior[g, s] is the interior of the vertex set s (a bare vertex list \
@@ -28,27 +28,27 @@ or any Infra* object) in g, returned as an InfraSet. Option Method \
 (\"Combinatorial\" (default), s minus its inner boundary via GraphInterior; {\
 \"Alexandrov\", \"Radius\" -> r}, the topological interior in the \
 closed-r-ball topology, default r = 1).\
-\>", "Text",ExpressionUUID->"d4b36831-50c9-41de-b0d0-2b413ec7fb4b"],
+\>", "Text",ExpressionUUID->"4fdcf939-3760-43ae-8caf-ee4396a645e2"],
 
-Cell["Setup", "Section",ExpressionUUID->"f810f392-6803-41ce-b3bc-e89cb403d64b"],
+Cell["Setup", "Section",ExpressionUUID->"509db5e5-48db-40dd-988d-6c25623707f4"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"2aa4e254-692c-4800-8f15-9dd0078973ea"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"19b27404-4301-43ec-b573-f625ca7236aa"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"fc25d847-9fe4-452b-a41d-e652e2dbf3cb"],
+  True,ExpressionUUID->"5f67a811-9393-4e4f-b6e3-65e3dc628155"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"8ff55af7-d27a-49a0-9020-6b7264935e9a"],
+Cell["Related Guides", "Section",ExpressionUUID->"a86e86e3-b24a-4fef-9983-297c22935771"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"98951555-70ff-4626-990b-692bd6755b62"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"2c156273-93f1-480d-a426-178fbcd968e0"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"6ac091db-d39c-44d7-9c46-9c18e2f79b8f"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"fef580e9-ad66-44c7-b86b-56469f4d42ce"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"f4f194de-84a7-4f39-bf5e-0b13994a7161"
 ]
 (* End of Notebook Content *)
 
@@ -61,16 +61,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"480580d9-74d0-4030-a0b4-c1f6e2463f46"],
-Cell[642, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"15a998a0-a039-4a3b-b51f-e046e7c6da56"],
-Cell[735, 24, 412, 6, 70, "Text",ExpressionUUID->"d4b36831-50c9-41de-b0d0-2b413ec7fb4b"],
-Cell[1150, 32, 79, 0, 70, "Section",ExpressionUUID->"f810f392-6803-41ce-b3bc-e89cb403d64b"],
-Cell[1232, 34, 91, 0, 70, "CodeText",ExpressionUUID->"2aa4e254-692c-4800-8f15-9dd0078973ea"],
-Cell[1326, 36, 192, 4, 70, "Code",ExpressionUUID->"fc25d847-9fe4-452b-a41d-e652e2dbf3cb",
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"6a0e406f-e740-48a4-8a1b-df83c5c1a9f3"],
+Cell[642, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"36387290-5f66-44e5-8dcf-12b6bbe19879"],
+Cell[735, 24, 412, 6, 70, "Text",ExpressionUUID->"4fdcf939-3760-43ae-8caf-ee4396a645e2"],
+Cell[1150, 32, 79, 0, 70, "Section",ExpressionUUID->"509db5e5-48db-40dd-988d-6c25623707f4"],
+Cell[1232, 34, 91, 0, 70, "CodeText",ExpressionUUID->"19b27404-4301-43ec-b573-f625ca7236aa"],
+Cell[1326, 36, 192, 4, 70, "Code",ExpressionUUID->"5f67a811-9393-4e4f-b6e3-65e3dc628155",
  InitializationCell->True],
-Cell[1521, 42, 88, 0, 70, "Section",ExpressionUUID->"8ff55af7-d27a-49a0-9020-6b7264935e9a"],
-Cell[1612, 44, 93, 0, 70, "Item",ExpressionUUID->"98951555-70ff-4626-990b-692bd6755b62"],
-Cell[1708, 46, 98, 0, 70, "Item",ExpressionUUID->"6ac091db-d39c-44d7-9c46-9c18e2f79b8f"]
+Cell[1521, 42, 88, 0, 70, "Section",ExpressionUUID->"a86e86e3-b24a-4fef-9983-297c22935771"],
+Cell[1612, 44, 93, 0, 70, "Item",ExpressionUUID->"2c156273-93f1-480d-a426-178fbcd968e0"],
+Cell[1708, 46, 98, 0, 70, "Item",ExpressionUUID->"fef580e9-ad66-44c7-b86b-56469f4d42ce"]
 }
 ]
 *)

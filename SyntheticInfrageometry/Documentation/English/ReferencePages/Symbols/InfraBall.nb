@@ -18,36 +18,36 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraBall", "Title",ExpressionUUID->"51220352-1237-452a-ad82-386cea6590e9"],
+Cell["InfraBall", "Title",ExpressionUUID->"759f0eb3-d5b6-464b-8c50-89b0fb0ef663"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"f764221d-582e-419f-b0c1-3fb7f8e8dacf"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"9260dc32-07ee-4ae2-90d6-92c34999ae15"],
 
 Cell["\<\
 InfraBall[{ball}] is the unary form (one closed metric ball vertex set); \
 InfraBall[{ball1, ..., ballk}] is the multi-realisation form. Scene-language \
 constructor InfraBall[center, radius] is used inside InfraScene. The multi \
 form is consumed by InfraSceneHighlight (induced-subgraph semantics).\
-\>", "Text",ExpressionUUID->"ce552420-cdce-4bb9-9e0b-0f9367f93970"],
+\>", "Text",ExpressionUUID->"a406e28e-65f5-4fdc-a079-900c1e0b94fc"],
 
-Cell["Setup", "Section",ExpressionUUID->"f8003bbd-fb8f-4649-8bbf-5d76aa6d86bb"],
+Cell["Setup", "Section",ExpressionUUID->"7250ade3-d965-4cfd-81b3-2e8f8c00a35f"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"03e16873-cd4c-4063-bbda-8374b65b9f30"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"7d3ba3ee-f116-4f31-b1e7-d58d15433c4d"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"50253b6d-876f-4915-9a7b-6b7dff7201d8"],
+  True,ExpressionUUID->"bd0e398f-9ad9-453f-8185-86bfe5049279"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"1d3af426-0406-48d0-ad9c-0e8ed5b49843"],
+Cell["Related Guides", "Section",ExpressionUUID->"77da6291-db40-44b9-85c1-bfccede73247"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"8fd0cd5b-1229-41a2-9a83-85fd8c082564"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"e6fab72a-1c8e-4303-8902-0d0ab5f24997"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"7c42154d-119b-4fbd-8586-875ad980629b"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"c56646ad-87fb-44d8-860a-76965fd559bc"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"b90d6115-ebea-4b3f-9739-d43d09ca12ae"
 ]
 (* End of Notebook Content *)
 
@@ -60,16 +60,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 81, 0, 70, "Title",ExpressionUUID->"51220352-1237-452a-ad82-386cea6590e9"],
-Cell[638, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"f764221d-582e-419f-b0c1-3fb7f8e8dacf"],
-Cell[731, 24, 379, 5, 70, "Text",ExpressionUUID->"ce552420-cdce-4bb9-9e0b-0f9367f93970"],
-Cell[1113, 31, 79, 0, 70, "Section",ExpressionUUID->"f8003bbd-fb8f-4649-8bbf-5d76aa6d86bb"],
-Cell[1195, 33, 91, 0, 70, "CodeText",ExpressionUUID->"03e16873-cd4c-4063-bbda-8374b65b9f30"],
-Cell[1289, 35, 192, 4, 70, "Code",ExpressionUUID->"50253b6d-876f-4915-9a7b-6b7dff7201d8",
+Cell[554, 20, 81, 0, 70, "Title",ExpressionUUID->"759f0eb3-d5b6-464b-8c50-89b0fb0ef663"],
+Cell[638, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"9260dc32-07ee-4ae2-90d6-92c34999ae15"],
+Cell[731, 24, 379, 5, 70, "Text",ExpressionUUID->"a406e28e-65f5-4fdc-a079-900c1e0b94fc"],
+Cell[1113, 31, 79, 0, 70, "Section",ExpressionUUID->"7250ade3-d965-4cfd-81b3-2e8f8c00a35f"],
+Cell[1195, 33, 91, 0, 70, "CodeText",ExpressionUUID->"7d3ba3ee-f116-4f31-b1e7-d58d15433c4d"],
+Cell[1289, 35, 192, 4, 70, "Code",ExpressionUUID->"bd0e398f-9ad9-453f-8185-86bfe5049279",
  InitializationCell->True],
-Cell[1484, 41, 88, 0, 70, "Section",ExpressionUUID->"1d3af426-0406-48d0-ad9c-0e8ed5b49843"],
-Cell[1575, 43, 93, 0, 70, "Item",ExpressionUUID->"8fd0cd5b-1229-41a2-9a83-85fd8c082564"],
-Cell[1671, 45, 98, 0, 70, "Item",ExpressionUUID->"7c42154d-119b-4fbd-8586-875ad980629b"]
+Cell[1484, 41, 88, 0, 70, "Section",ExpressionUUID->"77da6291-db40-44b9-85c1-bfccede73247"],
+Cell[1575, 43, 93, 0, 70, "Item",ExpressionUUID->"e6fab72a-1c8e-4303-8902-0d0ab5f24997"],
+Cell[1671, 45, 98, 0, 70, "Item",ExpressionUUID->"c56646ad-87fb-44d8-860a-76965fd559bc"]
 }
 ]
 *)

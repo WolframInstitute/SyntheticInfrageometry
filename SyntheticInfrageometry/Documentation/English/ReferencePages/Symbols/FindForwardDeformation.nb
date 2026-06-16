@@ -1,0 +1,84 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3345,         75]
+NotebookOptionsPosition[      2313,         54]
+NotebookOutlinePosition[      2630,         68]
+CellTagsIndexPosition[      2587,         65]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindForwardDeformation", "Title",ExpressionUUID->"64697753-94cf-4209-8a9c-12cb4a69adc8"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b40cc162-2836-4622-b911-1c11aa4ffa6e"],
+
+Cell["\<\
+FindForwardDeformation[graph, walk, spec] returns forward deformations of a \
+walk from A to B (an InfraSegment / InfraPath / vertex list, or its endpoint \
+pair): A -> B walks that never run against the spray from A, with LengthDelta \
+= edge count minus the reference's (negative when the reference is not \
+geodesic) and DeformationSize = reference edges rerouted. spec names at least \
+one of \"LengthDelta\" / \"DeformationSize\", each as {x} (exact), x (<= x), \
+{lo, hi} (range), or the bare name (single minimum); the first-named axis \
+groups the output, the other filters within groups; a bare integer or list \
+abbreviates \"LengthDelta\". FindForwardDeformation[graph, walk, spec, n] / \
+UpTo[n] / All sets the count per group (default 1); a single group returns \
+one InfraPath, several a list grouped by the leading axis.\
+\>", "Text",ExpressionUUID->"5cc74f8e-ac8a-461c-9a96-294b9ca808cf"],
+
+Cell["Setup", "Section",ExpressionUUID->"8b155d42-71b5-4af0-b5c1-f4ad4f4a56cd"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"b7036345-9bb3-421d-a346-4b4b9b05d47f"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"35286483-6e21-403d-ae78-97cc676fecb0"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"c8aaa8ea-e9f3-4de9-adbb-45820d337e8f"],
+
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"b5f65b62-6fbd-46a9-8344-49f90b2eb6c6"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"f12b0b2c-a341-4a2c-8154-bbfca1270b13"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"9219f046-a74a-4dcb-9c72-025bd167af18"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 94, 0, 70, "Title",ExpressionUUID->"64697753-94cf-4209-8a9c-12cb4a69adc8"],
+Cell[651, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b40cc162-2836-4622-b911-1c11aa4ffa6e"],
+Cell[744, 24, 914, 12, 70, "Text",ExpressionUUID->"5cc74f8e-ac8a-461c-9a96-294b9ca808cf"],
+Cell[1661, 38, 79, 0, 70, "Section",ExpressionUUID->"8b155d42-71b5-4af0-b5c1-f4ad4f4a56cd"],
+Cell[1743, 40, 91, 0, 70, "CodeText",ExpressionUUID->"b7036345-9bb3-421d-a346-4b4b9b05d47f"],
+Cell[1837, 42, 192, 4, 70, "Code",ExpressionUUID->"35286483-6e21-403d-ae78-97cc676fecb0",
+ InitializationCell->True],
+Cell[2032, 48, 88, 0, 70, "Section",ExpressionUUID->"c8aaa8ea-e9f3-4de9-adbb-45820d337e8f"],
+Cell[2123, 50, 85, 0, 70, "Item",ExpressionUUID->"b5f65b62-6fbd-46a9-8344-49f90b2eb6c6"],
+Cell[2211, 52, 98, 0, 70, "Item",ExpressionUUID->"f12b0b2c-a341-4a2c-8154-bbfca1270b13"]
+}
+]
+*)
+
+(* End of internal cache information *)

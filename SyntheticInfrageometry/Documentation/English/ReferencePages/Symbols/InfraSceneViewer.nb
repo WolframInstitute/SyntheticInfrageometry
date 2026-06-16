@@ -18,36 +18,36 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraSceneViewer", "Title",ExpressionUUID->"18cfccea-bd01-4536-b114-7724bdfc717e"],
+Cell["InfraSceneViewer", "Title",ExpressionUUID->"32ffb898-5936-4b01-ac7b-11828425be13"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"87bf9d8a-a97b-4a51-bfee-f544ce33552f"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"c1f5238e-bffd-471d-a142-a6aa9ffa045f"],
 
 Cell["\<\
 InfraSceneViewer[scene, graph] is an interactive visualisation of an \
 InfraScene on a graph; an optional third Association of pre-fixed bindings is \
 supported. Controls: step arrows, \"Branch\"/\"Diffuse\" mode setter, and (in \
 Branch mode) branch arrows.\
-\>", "Text",ExpressionUUID->"3a5ad54b-c68e-4de8-b6a2-bbf21dc8165c"],
+\>", "Text",ExpressionUUID->"8018f0ad-caa0-4d1f-b16d-1fce06d4fd20"],
 
-Cell["Setup", "Section",ExpressionUUID->"fcba1223-391a-469a-a831-e82952746705"],
+Cell["Setup", "Section",ExpressionUUID->"9712f52e-92e8-46db-97f3-84f72d6558de"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"08e997bc-9bef-4292-9e2d-1da462bbe77c"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"928426c4-c136-48c7-9076-ec189e57d4e1"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"bcaf83c5-92be-4f7a-85dc-ade31b6e85ed"],
+  True,ExpressionUUID->"0e3d6e2f-5c6f-4f64-b06f-3beea50df6e2"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"4d204aea-26ca-4798-9372-e0bcabef675c"],
+Cell["Related Guides", "Section",ExpressionUUID->"b1fb64b3-7f58-4db4-bc31-4266e03f23a7"],
 
-Cell["VisualizationGuide", "Item",ExpressionUUID->"1b2c6b11-75aa-400e-a36b-019e35f3d247"],
+Cell["VisualizationGuide", "Item",ExpressionUUID->"374f945e-913d-4e0e-bac4-875dcf95e78f"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"99069eb4-afcc-4d19-9568-43b923ba456f"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"ddf2aeab-209c-4aca-bcae-5866ca466753"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"f3ec6db2-3a1c-4c69-ac52-ac8f03463629"
 ]
 (* End of Notebook Content *)
 
@@ -60,16 +60,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 88, 0, 70, "Title",ExpressionUUID->"18cfccea-bd01-4536-b114-7724bdfc717e"],
-Cell[645, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"87bf9d8a-a97b-4a51-bfee-f544ce33552f"],
-Cell[738, 24, 337, 5, 70, "Text",ExpressionUUID->"3a5ad54b-c68e-4de8-b6a2-bbf21dc8165c"],
-Cell[1078, 31, 79, 0, 70, "Section",ExpressionUUID->"fcba1223-391a-469a-a831-e82952746705"],
-Cell[1160, 33, 91, 0, 70, "CodeText",ExpressionUUID->"08e997bc-9bef-4292-9e2d-1da462bbe77c"],
-Cell[1254, 35, 192, 4, 70, "Code",ExpressionUUID->"bcaf83c5-92be-4f7a-85dc-ade31b6e85ed",
+Cell[554, 20, 88, 0, 70, "Title",ExpressionUUID->"32ffb898-5936-4b01-ac7b-11828425be13"],
+Cell[645, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"c1f5238e-bffd-471d-a142-a6aa9ffa045f"],
+Cell[738, 24, 337, 5, 70, "Text",ExpressionUUID->"8018f0ad-caa0-4d1f-b16d-1fce06d4fd20"],
+Cell[1078, 31, 79, 0, 70, "Section",ExpressionUUID->"9712f52e-92e8-46db-97f3-84f72d6558de"],
+Cell[1160, 33, 91, 0, 70, "CodeText",ExpressionUUID->"928426c4-c136-48c7-9076-ec189e57d4e1"],
+Cell[1254, 35, 192, 4, 70, "Code",ExpressionUUID->"0e3d6e2f-5c6f-4f64-b06f-3beea50df6e2",
  InitializationCell->True],
-Cell[1449, 41, 88, 0, 70, "Section",ExpressionUUID->"4d204aea-26ca-4798-9372-e0bcabef675c"],
-Cell[1540, 43, 89, 0, 70, "Item",ExpressionUUID->"1b2c6b11-75aa-400e-a36b-019e35f3d247"],
-Cell[1632, 45, 98, 0, 70, "Item",ExpressionUUID->"99069eb4-afcc-4d19-9568-43b923ba456f"]
+Cell[1449, 41, 88, 0, 70, "Section",ExpressionUUID->"b1fb64b3-7f58-4db4-bc31-4266e03f23a7"],
+Cell[1540, 43, 89, 0, 70, "Item",ExpressionUUID->"374f945e-913d-4e0e-bac4-875dcf95e78f"],
+Cell[1632, 45, 98, 0, 70, "Item",ExpressionUUID->"ddf2aeab-209c-4aca-bcae-5866ca466753"]
 }
 ]
 *)

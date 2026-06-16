@@ -18,36 +18,36 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["HomotopicQ", "Title",ExpressionUUID->"5e01bff9-e9d9-49bb-8c81-2615e8266fbd"],
+Cell["HomotopicQ", "Title",ExpressionUUID->"c74002b4-cdc0-471a-a4f0-6e551bb92c44"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"ec0c2709-0fe0-4472-b99c-657b46c9fe9f"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"08bf2632-adf5-446f-9690-c37a80479f76"],
 
 Cell["\<\
 HomotopicQ[graph, a, b] tests whether a and b are in the same homotopy class. \
 a and b must share a wrapper head (InfraPath / InfraLoop / InfraString; \
 InfraCircle coerces to InfraString). Spreads over multi-realisation inputs as \
 a Cartesian-AllTrue conjunction. Inherits FindInfraHomotopy options.\
-\>", "Text",ExpressionUUID->"9b74780c-bf96-43a3-8e68-6b1c611f56c7"],
+\>", "Text",ExpressionUUID->"9de7396a-71ba-48f9-a9e8-d63755b74714"],
 
-Cell["Setup", "Section",ExpressionUUID->"64c3eacd-e056-4fda-a3b4-b921ef83f3da"],
+Cell["Setup", "Section",ExpressionUUID->"6939fdab-accb-4e23-9815-38b367a6b1be"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"039d3ee5-9796-4888-9238-20123efb9890"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"72a315d8-bdb8-4b59-87ad-a68497cec199"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"30163ff6-8e30-446b-9dfb-8345da342911"],
+  True,ExpressionUUID->"fcc4a20a-1af4-4cca-8f31-b8298c441a75"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"516ee8d8-062b-45b0-a892-8ee10af115e6"],
+Cell["Related Guides", "Section",ExpressionUUID->"937c595a-0f91-4dca-91ce-ebebf0ba1cac"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"6ed15263-2cc0-4677-be51-d25a07915d6f"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"be51a3a1-e58f-472f-8c32-8d6147bf6c15"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"6e1d652e-5dcb-4ee6-b6bb-6002e4be4950"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"ffedfdbe-36b0-4184-b394-5e3ed6186195"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"282ae6f2-0450-4613-9c91-046502f65cc3"
 ]
 (* End of Notebook Content *)
 
@@ -60,16 +60,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 82, 0, 70, "Title",ExpressionUUID->"5e01bff9-e9d9-49bb-8c81-2615e8266fbd"],
-Cell[639, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"ec0c2709-0fe0-4472-b99c-657b46c9fe9f"],
-Cell[732, 24, 381, 5, 70, "Text",ExpressionUUID->"9b74780c-bf96-43a3-8e68-6b1c611f56c7"],
-Cell[1116, 31, 79, 0, 70, "Section",ExpressionUUID->"64c3eacd-e056-4fda-a3b4-b921ef83f3da"],
-Cell[1198, 33, 91, 0, 70, "CodeText",ExpressionUUID->"039d3ee5-9796-4888-9238-20123efb9890"],
-Cell[1292, 35, 192, 4, 70, "Code",ExpressionUUID->"30163ff6-8e30-446b-9dfb-8345da342911",
+Cell[554, 20, 82, 0, 70, "Title",ExpressionUUID->"c74002b4-cdc0-471a-a4f0-6e551bb92c44"],
+Cell[639, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"08bf2632-adf5-446f-9690-c37a80479f76"],
+Cell[732, 24, 381, 5, 70, "Text",ExpressionUUID->"9de7396a-71ba-48f9-a9e8-d63755b74714"],
+Cell[1116, 31, 79, 0, 70, "Section",ExpressionUUID->"6939fdab-accb-4e23-9815-38b367a6b1be"],
+Cell[1198, 33, 91, 0, 70, "CodeText",ExpressionUUID->"72a315d8-bdb8-4b59-87ad-a68497cec199"],
+Cell[1292, 35, 192, 4, 70, "Code",ExpressionUUID->"fcc4a20a-1af4-4cca-8f31-b8298c441a75",
  InitializationCell->True],
-Cell[1487, 41, 88, 0, 70, "Section",ExpressionUUID->"516ee8d8-062b-45b0-a892-8ee10af115e6"],
-Cell[1578, 43, 93, 0, 70, "Item",ExpressionUUID->"6ed15263-2cc0-4677-be51-d25a07915d6f"],
-Cell[1674, 45, 98, 0, 70, "Item",ExpressionUUID->"6e1d652e-5dcb-4ee6-b6bb-6002e4be4950"]
+Cell[1487, 41, 88, 0, 70, "Section",ExpressionUUID->"937c595a-0f91-4dca-91ce-ebebf0ba1cac"],
+Cell[1578, 43, 93, 0, 70, "Item",ExpressionUUID->"be51a3a1-e58f-472f-8c32-8d6147bf6c15"],
+Cell[1674, 45, 98, 0, 70, "Item",ExpressionUUID->"ffedfdbe-36b0-4184-b394-5e3ed6186195"]
 }
 ]
 *)

@@ -10,17 +10,17 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      3230,         74]
-NotebookOptionsPosition[      2198,         53]
-NotebookOutlinePosition[      2515,         67]
-CellTagsIndexPosition[      2472,         64]
+NotebookDataLength[      3375,         76]
+NotebookOptionsPosition[      2343,         55]
+NotebookOutlinePosition[      2660,         69]
+CellTagsIndexPosition[      2617,         66]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindInfraRevolution", "Title",ExpressionUUID->"77cadcbc-0487-49b0-bcb4-49807e6795c4"],
+Cell["FindInfraRevolution", "Title",ExpressionUUID->"1786cc54-6e18-4614-bc88-11ec208e4b93"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"f1e53a88-e73e-40c0-aadc-e4d458719e5b"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"07ac0a73-105c-467e-aefb-793f1872770f"],
 
 Cell["\<\
 FindInfraRevolution[graph, axis, profile] returns InfraObject[set] for the \
@@ -32,28 +32,30 @@ Association vertex -> radius, or any callable applied to index 1..|axis|. \
 Options: \"Form\" (\"Solid\" (default) | \"Surface\"); Method (\"Voronoi\" \
 (default) -- closest extended position must be in the original axis range; \
 \"PerpendicularBisector\" -- u included at position i iff d(u, v_{i-1}) == \
-d(u, v_{i+1})).\
-\>", "Text",ExpressionUUID->"788a84b8-e29a-49bd-a909-db24dc9e5fbf"],
+d(u, v_{i+1}); \"Balls\" -- union of metric balls B_{r_i}(c_i), the \
+varying-radius tubular neighborhood, which also works for cyclic / \
+non-extendable axes).\
+\>", "Text",ExpressionUUID->"c695b45d-498b-42fc-8157-90e89b7a32e8"],
 
-Cell["Setup", "Section",ExpressionUUID->"60a9e98d-af58-48b8-b335-59a83d6745a2"],
+Cell["Setup", "Section",ExpressionUUID->"a4161fdc-8741-4ba2-b22c-8ee34eff51cf"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"b50b2c64-a85c-473a-a4d6-76c53f06171a"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"f339b14c-dfad-41e1-b55a-f5e903554ad5"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"5a53c2ea-575a-448a-87a0-4313ccca0844"],
+  True,ExpressionUUID->"baa73bb1-4277-43f7-b2a2-1204a4904a90"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"faa75a53-4b8d-4e5f-b7e5-a1d71aea4798"],
+Cell["Related Guides", "Section",ExpressionUUID->"995f7b0d-10dc-47c2-9a8d-6164e4ea0cd3"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"7bc4b6de-45f8-4848-acaf-976da97dafaa"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"a86e76d6-c354-49ba-84ff-aeafb75207c3"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"dcf1a9ac-f46a-4946-a437-620960acc416"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"d1b71c94-1ea4-4bda-bb2f-8553937c407e"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"e8e17862-c637-4a39-b7db-6aa9a5ce4944"
 ]
 (* End of Notebook Content *)
 
@@ -66,16 +68,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"77cadcbc-0487-49b0-bcb4-49807e6795c4"],
-Cell[648, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"f1e53a88-e73e-40c0-aadc-e4d458719e5b"],
-Cell[741, 24, 794, 11, 70, "Text",ExpressionUUID->"788a84b8-e29a-49bd-a909-db24dc9e5fbf"],
-Cell[1538, 37, 79, 0, 70, "Section",ExpressionUUID->"60a9e98d-af58-48b8-b335-59a83d6745a2"],
-Cell[1620, 39, 91, 0, 70, "CodeText",ExpressionUUID->"b50b2c64-a85c-473a-a4d6-76c53f06171a"],
-Cell[1714, 41, 192, 4, 70, "Code",ExpressionUUID->"5a53c2ea-575a-448a-87a0-4313ccca0844",
+Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"1786cc54-6e18-4614-bc88-11ec208e4b93"],
+Cell[648, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"07ac0a73-105c-467e-aefb-793f1872770f"],
+Cell[741, 24, 939, 13, 70, "Text",ExpressionUUID->"c695b45d-498b-42fc-8157-90e89b7a32e8"],
+Cell[1683, 39, 79, 0, 70, "Section",ExpressionUUID->"a4161fdc-8741-4ba2-b22c-8ee34eff51cf"],
+Cell[1765, 41, 91, 0, 70, "CodeText",ExpressionUUID->"f339b14c-dfad-41e1-b55a-f5e903554ad5"],
+Cell[1859, 43, 192, 4, 70, "Code",ExpressionUUID->"baa73bb1-4277-43f7-b2a2-1204a4904a90",
  InitializationCell->True],
-Cell[1909, 47, 88, 0, 70, "Section",ExpressionUUID->"faa75a53-4b8d-4e5f-b7e5-a1d71aea4798"],
-Cell[2000, 49, 93, 0, 70, "Item",ExpressionUUID->"7bc4b6de-45f8-4848-acaf-976da97dafaa"],
-Cell[2096, 51, 98, 0, 70, "Item",ExpressionUUID->"dcf1a9ac-f46a-4946-a437-620960acc416"]
+Cell[2054, 49, 88, 0, 70, "Section",ExpressionUUID->"995f7b0d-10dc-47c2-9a8d-6164e4ea0cd3"],
+Cell[2145, 51, 93, 0, 70, "Item",ExpressionUUID->"a86e76d6-c354-49ba-84ff-aeafb75207c3"],
+Cell[2241, 53, 98, 0, 70, "Item",ExpressionUUID->"d1b71c94-1ea4-4bda-bb2f-8553937c407e"]
 }
 ]
 *)

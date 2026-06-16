@@ -18,36 +18,36 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraPolylineQ", "Title",ExpressionUUID->"6adf03f6-9ed9-44c5-adcf-4b9fee297d48"],
+Cell["InfraPolylineQ", "Title",ExpressionUUID->"873301ca-b632-4449-8e9e-b2bab02aaf41"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b5fc4618-8188-41b8-a70e-59a71e41babd"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"a8b548ee-cc10-4bab-90dc-599292be1a4b"],
 
 Cell["\<\
 InfraPolylineQ[graph, poly] tests whether poly = {seg1, ..., segk} of unary \
 InfraSegment wrappers is a valid polyline in graph: every leg is a geodesic \
 and consecutive legs share an endpoint. Accepts the wrapped form \
 InfraPolyline[{...}] as well (AllTrue over realisations).\
-\>", "Text",ExpressionUUID->"fb0fa4bc-748e-43ce-8add-9e798cf5a369"],
+\>", "Text",ExpressionUUID->"76f764e6-54eb-48ba-80ce-d78e8263e348"],
 
-Cell["Setup", "Section",ExpressionUUID->"a28d7cf8-147d-42fd-83e1-c833cdfdacc3"],
+Cell["Setup", "Section",ExpressionUUID->"1f59e931-5e4f-4105-9384-4bb4f233b193"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"a8325024-f86c-4694-8177-e524f7bef241"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"418bdbad-5eec-4360-825e-8996ee76dc4e"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"d274002b-67ca-45c0-b898-f69ce08d2383"],
+  True,ExpressionUUID->"d9323de3-5d7d-477d-b966-eb40715c3bdd"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"a626ddfc-8371-4b86-b051-febf155e005b"],
+Cell["Related Guides", "Section",ExpressionUUID->"047e15a7-a2ab-4940-80dd-b66926d344d7"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"4a631a69-1f33-45ad-92f3-f43dd69c65bf"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"6e50334a-02a5-4b80-89e1-e596b1f54366"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"a9cfcf5e-688c-4fe8-827b-81ed7d447436"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"7250c348-1107-492c-b7df-7c8ae552253c"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"b036a1e3-b08f-495a-b2e8-d48491bd0a9b"
 ]
 (* End of Notebook Content *)
 
@@ -60,16 +60,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"6adf03f6-9ed9-44c5-adcf-4b9fee297d48"],
-Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b5fc4618-8188-41b8-a70e-59a71e41babd"],
-Cell[736, 24, 359, 5, 70, "Text",ExpressionUUID->"fb0fa4bc-748e-43ce-8add-9e798cf5a369"],
-Cell[1098, 31, 79, 0, 70, "Section",ExpressionUUID->"a28d7cf8-147d-42fd-83e1-c833cdfdacc3"],
-Cell[1180, 33, 91, 0, 70, "CodeText",ExpressionUUID->"a8325024-f86c-4694-8177-e524f7bef241"],
-Cell[1274, 35, 192, 4, 70, "Code",ExpressionUUID->"d274002b-67ca-45c0-b898-f69ce08d2383",
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"873301ca-b632-4449-8e9e-b2bab02aaf41"],
+Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"a8b548ee-cc10-4bab-90dc-599292be1a4b"],
+Cell[736, 24, 359, 5, 70, "Text",ExpressionUUID->"76f764e6-54eb-48ba-80ce-d78e8263e348"],
+Cell[1098, 31, 79, 0, 70, "Section",ExpressionUUID->"1f59e931-5e4f-4105-9384-4bb4f233b193"],
+Cell[1180, 33, 91, 0, 70, "CodeText",ExpressionUUID->"418bdbad-5eec-4360-825e-8996ee76dc4e"],
+Cell[1274, 35, 192, 4, 70, "Code",ExpressionUUID->"d9323de3-5d7d-477d-b966-eb40715c3bdd",
  InitializationCell->True],
-Cell[1469, 41, 88, 0, 70, "Section",ExpressionUUID->"a626ddfc-8371-4b86-b051-febf155e005b"],
-Cell[1560, 43, 93, 0, 70, "Item",ExpressionUUID->"4a631a69-1f33-45ad-92f3-f43dd69c65bf"],
-Cell[1656, 45, 98, 0, 70, "Item",ExpressionUUID->"a9cfcf5e-688c-4fe8-827b-81ed7d447436"]
+Cell[1469, 41, 88, 0, 70, "Section",ExpressionUUID->"047e15a7-a2ab-4940-80dd-b66926d344d7"],
+Cell[1560, 43, 93, 0, 70, "Item",ExpressionUUID->"6e50334a-02a5-4b80-89e1-e596b1f54366"],
+Cell[1656, 45, 98, 0, 70, "Item",ExpressionUUID->"7250c348-1107-492c-b7df-7c8ae552253c"]
 }
 ]
 *)

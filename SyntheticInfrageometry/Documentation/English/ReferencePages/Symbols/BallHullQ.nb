@@ -1,0 +1,75 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2612,         66]
+NotebookOptionsPosition[      1582,         45]
+NotebookOutlinePosition[      1899,         59]
+CellTagsIndexPosition[      1856,         56]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["BallHullQ", "Title",ExpressionUUID->"cf2e0f46-94a2-4392-b79f-322553c20eb7"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"085cc64f-c9f8-4441-9f51-0b7de62d151d"],
+
+Cell["\<\
+BallHullQ[graph, S] returns True if S is ball-convex, i.e. equals its own \
+ball hull (an intersection of balls).\
+\>", "Text",ExpressionUUID->"8b23856e-ed02-477a-8bf6-c9bd12fb0878"],
+
+Cell["Setup", "Section",ExpressionUUID->"21bb46e2-1e3e-4b47-b863-15e2d109a45a"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"21f0eb52-afb7-4e61-ae14-156ffafb3864"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"8f0cb0f0-47ed-4527-afa3-fca56947a105"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"8df04814-9d07-48eb-9625-93fb1e69b47a"],
+
+Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"1371b4fc-e31e-4a71-b3ed-911bc3193464"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"308f992b-15ba-4a02-8ff6-c2664d055825"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"49c2f62f-f1fb-44ad-93e9-aae01d2957c0"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 81, 0, 70, "Title",ExpressionUUID->"cf2e0f46-94a2-4392-b79f-322553c20eb7"],
+Cell[638, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"085cc64f-c9f8-4441-9f51-0b7de62d151d"],
+Cell[731, 24, 192, 3, 70, "Text",ExpressionUUID->"8b23856e-ed02-477a-8bf6-c9bd12fb0878"],
+Cell[926, 29, 79, 0, 70, "Section",ExpressionUUID->"21bb46e2-1e3e-4b47-b863-15e2d109a45a"],
+Cell[1008, 31, 91, 0, 70, "CodeText",ExpressionUUID->"21f0eb52-afb7-4e61-ae14-156ffafb3864"],
+Cell[1102, 33, 192, 4, 70, "Code",ExpressionUUID->"8f0cb0f0-47ed-4527-afa3-fca56947a105",
+ InitializationCell->True],
+Cell[1297, 39, 88, 0, 70, "Section",ExpressionUUID->"8df04814-9d07-48eb-9625-93fb1e69b47a"],
+Cell[1388, 41, 89, 0, 70, "Item",ExpressionUUID->"1371b4fc-e31e-4a71-b3ed-911bc3193464"],
+Cell[1480, 43, 98, 0, 70, "Item",ExpressionUUID->"308f992b-15ba-4a02-8ff6-c2664d055825"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,78 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2856,         69]
+NotebookOptionsPosition[      1825,         48]
+NotebookOutlinePosition[      2142,         62]
+CellTagsIndexPosition[      2099,         59]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindInfraEquidistantSet", "Title",ExpressionUUID->"375a7ea7-4c73-4398-8cd3-cd23f3cd0e70"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"9c4580bd-49da-4d4c-837e-c50f73b2a04d"],
+
+Cell["\<\
+FindInfraEquidistantSet[graph, {p1, ..., pn}] returns the equidistant set {v \
+: d(p1, v) == ... == d(pn, v)} as an InfraSet, the intersection of the n-1 \
+consecutive perpendicular bisectors. FindInfraEquidistantSet[graph, {p1, ..., \
+pn}, {lo, hi}] thickens each consecutive bisector to the slab lo <= d(p_i, v) \
+- d(p_{i+1}, v) <= hi.\
+\>", "Text",ExpressionUUID->"866efc20-d868-44a3-b60d-4bba189eeaf1"],
+
+Cell["Setup", "Section",ExpressionUUID->"72a98a0b-f9a9-4cfa-8b46-0d0ce62e5897"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"fe41f5f3-c60d-4d09-87fa-cd8556314592"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"e8113be8-b75a-481a-bec1-f1b34cfc2ecc"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"dfeef162-ecf8-4408-a009-d2b8790054a2"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"bee64f0c-87b3-44eb-a86c-14aec5062f2c"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"c5b6a0cd-9b41-4847-960d-72eb7a78ee4c"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"48009ab0-8b6c-4b61-a50a-12583a0e8515"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 95, 0, 70, "Title",ExpressionUUID->"375a7ea7-4c73-4398-8cd3-cd23f3cd0e70"],
+Cell[652, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"9c4580bd-49da-4d4c-837e-c50f73b2a04d"],
+Cell[745, 24, 417, 6, 70, "Text",ExpressionUUID->"866efc20-d868-44a3-b60d-4bba189eeaf1"],
+Cell[1165, 32, 79, 0, 70, "Section",ExpressionUUID->"72a98a0b-f9a9-4cfa-8b46-0d0ce62e5897"],
+Cell[1247, 34, 91, 0, 70, "CodeText",ExpressionUUID->"fe41f5f3-c60d-4d09-87fa-cd8556314592"],
+Cell[1341, 36, 192, 4, 70, "Code",ExpressionUUID->"e8113be8-b75a-481a-bec1-f1b34cfc2ecc",
+ InitializationCell->True],
+Cell[1536, 42, 88, 0, 70, "Section",ExpressionUUID->"dfeef162-ecf8-4408-a009-d2b8790054a2"],
+Cell[1627, 44, 93, 0, 70, "Item",ExpressionUUID->"bee64f0c-87b3-44eb-a86c-14aec5062f2c"],
+Cell[1723, 46, 98, 0, 70, "Item",ExpressionUUID->"c5b6a0cd-9b41-4847-960d-72eb7a78ee4c"]
+}
+]
+*)
+
+(* End of internal cache information *)

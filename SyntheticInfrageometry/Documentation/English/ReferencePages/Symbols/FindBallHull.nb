@@ -1,0 +1,77 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      2731,         68]
+NotebookOptionsPosition[      1700,         47]
+NotebookOutlinePosition[      2017,         61]
+CellTagsIndexPosition[      1974,         58]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FindBallHull", "Title",ExpressionUUID->"e5e0f9c7-7d56-4e56-8f00-89d30ba1c901"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"d0081e2f-6b54-43b3-b9e0-b15800451fce"],
+
+Cell["\<\
+FindBallHull[graph, S] returns the ball hull of S as an InfraSet: the \
+intersection of all closed balls containing S, the smallest ball-convex \
+(Mazur) superset. S is any Infra* object, a list of them, or a bare vertex \
+list.\
+\>", "Text",ExpressionUUID->"6c602928-33f4-4a6e-a064-9b55dc661ddd"],
+
+Cell["Setup", "Section",ExpressionUUID->"f393ca37-2109-43f3-b6f6-d9a3f2581778"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"9956f963-fc2d-41b9-bee3-956ad20584ea"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"6a6c16fb-bf60-4b96-beca-905880b0fcaa"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"0bdf9d59-cf6a-4d6d-9262-be63586c0a1e"],
+
+Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"a37134e1-76cf-4775-ad5c-28676126e993"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"b8c3b76f-0660-41eb-b78e-bb2987ac7088"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"272e0faf-dcd0-43cf-aee9-a355f34764a2"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"e5e0f9c7-7d56-4e56-8f00-89d30ba1c901"],
+Cell[641, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"d0081e2f-6b54-43b3-b9e0-b15800451fce"],
+Cell[734, 24, 307, 5, 70, "Text",ExpressionUUID->"6c602928-33f4-4a6e-a064-9b55dc661ddd"],
+Cell[1044, 31, 79, 0, 70, "Section",ExpressionUUID->"f393ca37-2109-43f3-b6f6-d9a3f2581778"],
+Cell[1126, 33, 91, 0, 70, "CodeText",ExpressionUUID->"9956f963-fc2d-41b9-bee3-956ad20584ea"],
+Cell[1220, 35, 192, 4, 70, "Code",ExpressionUUID->"6a6c16fb-bf60-4b96-beca-905880b0fcaa",
+ InitializationCell->True],
+Cell[1415, 41, 88, 0, 70, "Section",ExpressionUUID->"0bdf9d59-cf6a-4d6d-9262-be63586c0a1e"],
+Cell[1506, 43, 89, 0, 70, "Item",ExpressionUUID->"a37134e1-76cf-4775-ad5c-28676126e993"],
+Cell[1598, 45, 98, 0, 70, "Item",ExpressionUUID->"b8c3b76f-0660-41eb-b78e-bb2987ac7088"]
+}
+]
+*)
+
+(* End of internal cache information *)

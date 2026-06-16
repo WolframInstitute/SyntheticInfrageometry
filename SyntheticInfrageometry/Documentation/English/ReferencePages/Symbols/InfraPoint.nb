@@ -10,51 +10,57 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      3308,         75]
-NotebookOptionsPosition[      2276,         54]
-NotebookOutlinePosition[      2593,         68]
-CellTagsIndexPosition[      2550,         65]
+NotebookDataLength[      3707,         81]
+NotebookOptionsPosition[      2674,         60]
+NotebookOutlinePosition[      2991,         74]
+CellTagsIndexPosition[      2948,         71]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraPoint", "Title",ExpressionUUID->"c64f667d-b2ec-48a8-96a4-cd8b8acb804a"],
+Cell["InfraPoint", "Title",ExpressionUUID->"0c44a567-c143-4117-a290-5c8508ff6f41"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"9272daf1-e99a-4d57-990e-d2cbe029b38f"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"eab49220-9f17-4a0f-9d47-b6c2565a8995"],
 
 Cell["\<\
 InfraPoint[{v1, ..., vk}] is the unweighted multi-realisation form (each \
 vertex mass 1); InfraPoint[{v1, ...}, {w1, ...}] carries explicit per-vertex \
 mass. The canonical form has a duplicate-free support with positive masses \
 that add on aggregation; an all-ones weighted form collapses to the bare \
-1-arg form. Accessors [\"Support\"], [\"Weights\"], [\"Mass\"], [\"First\"]. \
-Find* finders return a List of unary InfraPoint[{v}] wrappers; wrap with \
-InfraPoint @ ... to collapse via auto-flatten (masses add). Scene-language \
-variants InfraPoint[] / InfraPoint[\"Center\"] / InfraPoint[\"Periphery\"] / \
-InfraPoint[origin, dist] / InfraPoint[n] are constructors used inside \
-InfraScene. In InfraSceneHighlight a weighted InfraPoint renders as a mass \
-heat-map (heaviest vertex brightest).\
-\>", "Text",ExpressionUUID->"5bbebb75-f9a0-4318-b05e-b6ae00da3c66"],
+1-arg form. Accessors [\"Support\"], [\"Weights\"], [\"Mass\"], [\"First\"], \
+and the graph-keyed synthetic invariants [\"BallVolumes\", g], \
+[\"ShellAreas\", g], [\"LogDifferenceQuotients\", g], [\"Dimension\", g], \
+[\"ScalarCurvature\", g], [\"CurvatureByRadius\", g] (one result per support \
+vertex; extra args forward, e.g. [\"BallVolumes\", g, {0, R}]); the \
+Infrageometry primitives also accept the wrapper directly (BallVolumes[g, p] \
+== p[\"BallVolumes\", g]). Find* finders return a List of unary \
+InfraPoint[{v}] wrappers; wrap with InfraPoint @ ... to collapse via \
+auto-flatten (masses add). Scene-language variants InfraPoint[] / InfraPoint[\
+\"Center\"] / InfraPoint[\"Periphery\"] / InfraPoint[origin, dist] / \
+InfraPoint[n] are constructors used inside InfraScene. In InfraSceneHighlight \
+a weighted InfraPoint renders as a mass heat-map (heaviest vertex brightest).\
+\
+\>", "Text",ExpressionUUID->"f18d820a-2615-49c7-bec4-d28330bc9627"],
 
-Cell["Setup", "Section",ExpressionUUID->"06af31ae-dbac-4017-9cc1-717173ebe9bb"],
+Cell["Setup", "Section",ExpressionUUID->"85b72d12-3aaf-4282-8739-3a8a520e4429"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"996246aa-4254-4ea4-9f3c-d2854c6f6993"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"e52636c9-0905-45e7-a264-4694f8507333"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"6c49a3a7-e939-4f49-8169-0775fe570a06"],
+  True,ExpressionUUID->"e5adb072-e9a0-458b-84b5-4853b530363e"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"b54cafb1-18b0-478e-ab71-f5db4ca3c9ef"],
+Cell["Related Guides", "Section",ExpressionUUID->"ed8f5d53-002c-490c-b277-aa8bb6475974"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"f6ad075e-2002-488b-8e2a-8fab970fa500"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"18dc28ff-65c8-4ac4-9236-35dd3904e9af"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"c386f6ce-b441-48e5-963e-8a662620eadb"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"a7be7884-4bd5-4644-9c2f-2fb3a57791cc"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"1f97e8c4-b81a-4ae6-8212-3aaa8784e121"
 ]
 (* End of Notebook Content *)
 
@@ -67,16 +73,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 82, 0, 70, "Title",ExpressionUUID->"c64f667d-b2ec-48a8-96a4-cd8b8acb804a"],
-Cell[639, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"9272daf1-e99a-4d57-990e-d2cbe029b38f"],
-Cell[732, 24, 881, 12, 70, "Text",ExpressionUUID->"5bbebb75-f9a0-4318-b05e-b6ae00da3c66"],
-Cell[1616, 38, 79, 0, 70, "Section",ExpressionUUID->"06af31ae-dbac-4017-9cc1-717173ebe9bb"],
-Cell[1698, 40, 91, 0, 70, "CodeText",ExpressionUUID->"996246aa-4254-4ea4-9f3c-d2854c6f6993"],
-Cell[1792, 42, 192, 4, 70, "Code",ExpressionUUID->"6c49a3a7-e939-4f49-8169-0775fe570a06",
+Cell[554, 20, 82, 0, 70, "Title",ExpressionUUID->"0c44a567-c143-4117-a290-5c8508ff6f41"],
+Cell[639, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"eab49220-9f17-4a0f-9d47-b6c2565a8995"],
+Cell[732, 24, 1279, 18, 70, "Text",ExpressionUUID->"f18d820a-2615-49c7-bec4-d28330bc9627"],
+Cell[2014, 44, 79, 0, 70, "Section",ExpressionUUID->"85b72d12-3aaf-4282-8739-3a8a520e4429"],
+Cell[2096, 46, 91, 0, 70, "CodeText",ExpressionUUID->"e52636c9-0905-45e7-a264-4694f8507333"],
+Cell[2190, 48, 192, 4, 70, "Code",ExpressionUUID->"e5adb072-e9a0-458b-84b5-4853b530363e",
  InitializationCell->True],
-Cell[1987, 48, 88, 0, 70, "Section",ExpressionUUID->"b54cafb1-18b0-478e-ab71-f5db4ca3c9ef"],
-Cell[2078, 50, 93, 0, 70, "Item",ExpressionUUID->"f6ad075e-2002-488b-8e2a-8fab970fa500"],
-Cell[2174, 52, 98, 0, 70, "Item",ExpressionUUID->"c386f6ce-b441-48e5-963e-8a662620eadb"]
+Cell[2385, 54, 88, 0, 70, "Section",ExpressionUUID->"ed8f5d53-002c-490c-b277-aa8bb6475974"],
+Cell[2476, 56, 93, 0, 70, "Item",ExpressionUUID->"18dc28ff-65c8-4ac4-9236-35dd3904e9af"],
+Cell[2572, 58, 98, 0, 70, "Item",ExpressionUUID->"a7be7884-4bd5-4644-9c2f-2fb3a57791cc"]
 }
 ]
 *)

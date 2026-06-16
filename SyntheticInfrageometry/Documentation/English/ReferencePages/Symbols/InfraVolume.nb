@@ -1,0 +1,84 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3295,         75]
+NotebookOptionsPosition[      2263,         54]
+NotebookOutlinePosition[      2580,         68]
+CellTagsIndexPosition[      2537,         65]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["InfraVolume", "Title",ExpressionUUID->"014c19b8-dae3-417e-ae66-4366690f0f21"],
+
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"4c046fa4-39d5-445c-96b7-825777566a7d"],
+
+Cell["\<\
+InfraVolume[g, s] is the volume of s (a bare vertex list or any Infra* \
+object) in g. Option \"Volume\" (\"Hausdorff\" (default), |s| minus its \
+boundary; \"Counting\", |s|; \"Boundary\", the boundary count). For set-like \
+s (InfraSet, InfraBall, InfraShell, ...) the boundary is the inner vertex \
+boundary of the union vertex set (Method \"Combinatorial\" (default) or \
+{\"Alexandrov\", \"Radius\" -> r}, shared with InfraBoundary / \
+InfraInterior). For line-like s (InfraLine, InfraSegment, InfraPath, \
+InfraRay) the graph is the union of the walks as path graphs (line edges \
+only, so distinct lines are not joined), and a vertex is interior iff all its \
+g-edges are line edges -- a curve in a higher-dimensional graph has ~empty \
+interior even when it spans the whole graph.\
+\>", "Text",ExpressionUUID->"0a71940f-5c26-49db-8313-95d6a34a8a47"],
+
+Cell["Setup", "Section",ExpressionUUID->"d100dfb9-dcc7-4198-8778-1b1fe87efe27"],
+
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"f3053ff3-8511-4ede-b434-caca4950d78e"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}]], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"82a84b2e-610a-4b57-b712-8d68c33467c6"],
+
+Cell["Related Guides", "Section",ExpressionUUID->"b170143d-5d55-4032-8bf3-875c19d7b5bb"],
+
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"a1c071bc-a5b4-437b-b850-8448a00df839"],
+
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"8245abd7-9ea1-44e9-b1a4-3cfa32c260a1"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"5bda7dc5-2bba-4592-b576-b4b9975fdebd"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 83, 0, 70, "Title",ExpressionUUID->"014c19b8-dae3-417e-ae66-4366690f0f21"],
+Cell[640, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"4c046fa4-39d5-445c-96b7-825777566a7d"],
+Cell[733, 24, 867, 12, 70, "Text",ExpressionUUID->"0a71940f-5c26-49db-8313-95d6a34a8a47"],
+Cell[1603, 38, 79, 0, 70, "Section",ExpressionUUID->"d100dfb9-dcc7-4198-8778-1b1fe87efe27"],
+Cell[1685, 40, 91, 0, 70, "CodeText",ExpressionUUID->"f3053ff3-8511-4ede-b434-caca4950d78e"],
+Cell[1779, 42, 192, 4, 70, "Code",ExpressionUUID->"82a84b2e-610a-4b57-b712-8d68c33467c6",
+ InitializationCell->True],
+Cell[1974, 48, 88, 0, 70, "Section",ExpressionUUID->"b170143d-5d55-4032-8bf3-875c19d7b5bb"],
+Cell[2065, 50, 93, 0, 70, "Item",ExpressionUUID->"a1c071bc-a5b4-437b-b850-8448a00df839"],
+Cell[2161, 52, 98, 0, 70, "Item",ExpressionUUID->"8245abd7-9ea1-44e9-b1a4-3cfa32c260a1"]
+}
+]
+*)
+
+(* End of internal cache information *)

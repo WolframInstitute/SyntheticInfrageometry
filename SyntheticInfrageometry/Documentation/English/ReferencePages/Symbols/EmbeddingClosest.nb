@@ -18,9 +18,9 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["EmbeddingClosest", "Title",ExpressionUUID->"514dcfed-7148-4195-95a5-64107b08b7e3"],
+Cell["EmbeddingClosest", "Title",ExpressionUUID->"403400fe-9674-49b6-a3dd-865feaa61160"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"bea5b282-4d1e-4a33-8a13-efb7b5e5eb39"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b533008a-ea75-4167-9671-10c39b706032"],
 
 Cell["\<\
 EmbeddingClosest[graph, bundle, {p1, p2}] keeps the bundle elements whose \
@@ -36,27 +36,27 @@ best-approximating path. Accepts bare lists, InfraSegment / InfraLine / \
 InfraPath / InfraRay / InfraCircle wrappers, or homogeneous lists of unary \
 wrappers; wrappers are preserved. Operator form EmbeddingClosest[graph, \
 ref][bundle].\
-\>", "Text",ExpressionUUID->"936d36c8-6431-4371-b0b8-a798e9b1c0c8"],
+\>", "Text",ExpressionUUID->"95568194-eb4e-4ba4-9734-c6c469931433"],
 
-Cell["Setup", "Section",ExpressionUUID->"f3c46a8c-c768-42cc-85cf-5e3c3bb39797"],
+Cell["Setup", "Section",ExpressionUUID->"d4ae5056-16cf-44c7-9e61-01a01f9a07dd"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"ef94c463-c73e-4bf3-8f17-976b5549a2a2"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"94b9f121-a2d4-4025-b706-83bd61adf634"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"ecda1e97-4d6d-4a39-9c93-d99cbee35c8e"],
+  True,ExpressionUUID->"bd8cf141-58dd-4114-a5cb-c2823007bd07"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"7adb4d4e-46b6-4ed1-bd94-b48076be1330"],
+Cell["Related Guides", "Section",ExpressionUUID->"6cbc8748-6888-4e59-a34a-636b25062df3"],
 
-Cell["PathSpaceGuide", "Item",ExpressionUUID->"21c5f491-d258-4f08-8470-42ac8efdb21d"],
+Cell["PathSpaceGuide", "Item",ExpressionUUID->"132e192b-8cdb-4440-8c04-dff6a11bf856"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"3f70d449-37da-41f9-bfe3-5002e849f02e"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"3bde6ff7-3ffe-4ed2-b162-324f1233318f"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"5525a715-bab4-4f40-b737-ef43d5cc1042"
 ]
 (* End of Notebook Content *)
 
@@ -69,16 +69,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 88, 0, 70, "Title",ExpressionUUID->"514dcfed-7148-4195-95a5-64107b08b7e3"],
-Cell[645, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"bea5b282-4d1e-4a33-8a13-efb7b5e5eb39"],
-Cell[738, 24, 1009, 14, 70, "Text",ExpressionUUID->"936d36c8-6431-4371-b0b8-a798e9b1c0c8"],
-Cell[1750, 40, 79, 0, 70, "Section",ExpressionUUID->"f3c46a8c-c768-42cc-85cf-5e3c3bb39797"],
-Cell[1832, 42, 91, 0, 70, "CodeText",ExpressionUUID->"ef94c463-c73e-4bf3-8f17-976b5549a2a2"],
-Cell[1926, 44, 192, 4, 70, "Code",ExpressionUUID->"ecda1e97-4d6d-4a39-9c93-d99cbee35c8e",
+Cell[554, 20, 88, 0, 70, "Title",ExpressionUUID->"403400fe-9674-49b6-a3dd-865feaa61160"],
+Cell[645, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b533008a-ea75-4167-9671-10c39b706032"],
+Cell[738, 24, 1009, 14, 70, "Text",ExpressionUUID->"95568194-eb4e-4ba4-9734-c6c469931433"],
+Cell[1750, 40, 79, 0, 70, "Section",ExpressionUUID->"d4ae5056-16cf-44c7-9e61-01a01f9a07dd"],
+Cell[1832, 42, 91, 0, 70, "CodeText",ExpressionUUID->"94b9f121-a2d4-4025-b706-83bd61adf634"],
+Cell[1926, 44, 192, 4, 70, "Code",ExpressionUUID->"bd8cf141-58dd-4114-a5cb-c2823007bd07",
  InitializationCell->True],
-Cell[2121, 50, 88, 0, 70, "Section",ExpressionUUID->"7adb4d4e-46b6-4ed1-bd94-b48076be1330"],
-Cell[2212, 52, 85, 0, 70, "Item",ExpressionUUID->"21c5f491-d258-4f08-8470-42ac8efdb21d"],
-Cell[2300, 54, 98, 0, 70, "Item",ExpressionUUID->"3f70d449-37da-41f9-bfe3-5002e849f02e"]
+Cell[2121, 50, 88, 0, 70, "Section",ExpressionUUID->"6cbc8748-6888-4e59-a34a-636b25062df3"],
+Cell[2212, 52, 85, 0, 70, "Item",ExpressionUUID->"132e192b-8cdb-4440-8c04-dff6a11bf856"],
+Cell[2300, 54, 98, 0, 70, "Item",ExpressionUUID->"3bde6ff7-3ffe-4ed2-b162-324f1233318f"]
 }
 ]
 *)

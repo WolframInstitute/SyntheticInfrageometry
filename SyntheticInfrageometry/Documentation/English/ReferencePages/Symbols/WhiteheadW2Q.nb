@@ -18,34 +18,34 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["WhiteheadW2Q", "Title",ExpressionUUID->"07fa29f8-6137-4d61-9a67-273799b671cd"],
+Cell["WhiteheadW2Q", "Title",ExpressionUUID->"df6faa9c-8e81-4bbf-9c7a-a50faa762312"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"7fd6e750-477c-4d32-af58-d1f2b3c4286d"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"f741979a-cfc3-4899-ac43-6085a877d536"],
 
 Cell["\<\
 WhiteheadW2Q[graph] tests Whitehead axiom W2: through any two distinct \
 vertices there is exactly one line (geodetic property).\
-\>", "Text",ExpressionUUID->"77c08bce-5a4f-479b-8b7c-8f799c5ee6dd"],
+\>", "Text",ExpressionUUID->"127ff5b0-bbe1-4d44-9064-f9ef70d734c8"],
 
-Cell["Setup", "Section",ExpressionUUID->"a84076c7-d351-4474-b2e8-1ba308e12543"],
+Cell["Setup", "Section",ExpressionUUID->"31d1d261-98e1-405a-8359-4bc73487a09d"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"120031ae-6eda-4400-80f2-3de120c257cd"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"47155ea6-9729-4386-9911-36646bb158c5"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"6fc2bb98-f7d6-4ad4-b258-5114c62136fb"],
+  True,ExpressionUUID->"cf6b77ee-8224-41fa-a2d9-471c52bac3c7"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"6200e2b7-dadc-47d0-b0de-3e47b263649a"],
+Cell["Related Guides", "Section",ExpressionUUID->"ca011da5-00eb-43cf-a663-1736d63ac09c"],
 
-Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"9a81f38a-4616-4bfb-accd-40cd874771ef"],
+Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"c8773bc3-73be-42c5-9799-df87e6734f88"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"4ae2e1af-2177-4828-9f64-41e5216ba608"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"6cf07f3b-2bf9-48f2-9509-0f6d3617dca0"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"ebdf0053-3f43-449b-8910-554315825d67"
 ]
 (* End of Notebook Content *)
 
@@ -58,16 +58,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"07fa29f8-6137-4d61-9a67-273799b671cd"],
-Cell[641, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"7fd6e750-477c-4d32-af58-d1f2b3c4286d"],
-Cell[734, 24, 207, 3, 70, "Text",ExpressionUUID->"77c08bce-5a4f-479b-8b7c-8f799c5ee6dd"],
-Cell[944, 29, 79, 0, 70, "Section",ExpressionUUID->"a84076c7-d351-4474-b2e8-1ba308e12543"],
-Cell[1026, 31, 91, 0, 70, "CodeText",ExpressionUUID->"120031ae-6eda-4400-80f2-3de120c257cd"],
-Cell[1120, 33, 192, 4, 70, "Code",ExpressionUUID->"6fc2bb98-f7d6-4ad4-b258-5114c62136fb",
+Cell[554, 20, 84, 0, 70, "Title",ExpressionUUID->"df6faa9c-8e81-4bbf-9c7a-a50faa762312"],
+Cell[641, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"f741979a-cfc3-4899-ac43-6085a877d536"],
+Cell[734, 24, 207, 3, 70, "Text",ExpressionUUID->"127ff5b0-bbe1-4d44-9064-f9ef70d734c8"],
+Cell[944, 29, 79, 0, 70, "Section",ExpressionUUID->"31d1d261-98e1-405a-8359-4bc73487a09d"],
+Cell[1026, 31, 91, 0, 70, "CodeText",ExpressionUUID->"47155ea6-9729-4386-9911-36646bb158c5"],
+Cell[1120, 33, 192, 4, 70, "Code",ExpressionUUID->"cf6b77ee-8224-41fa-a2d9-471c52bac3c7",
  InitializationCell->True],
-Cell[1315, 39, 88, 0, 70, "Section",ExpressionUUID->"6200e2b7-dadc-47d0-b0de-3e47b263649a"],
-Cell[1406, 41, 94, 0, 70, "Item",ExpressionUUID->"9a81f38a-4616-4bfb-accd-40cd874771ef"],
-Cell[1503, 43, 98, 0, 70, "Item",ExpressionUUID->"4ae2e1af-2177-4828-9f64-41e5216ba608"]
+Cell[1315, 39, 88, 0, 70, "Section",ExpressionUUID->"ca011da5-00eb-43cf-a663-1736d63ac09c"],
+Cell[1406, 41, 94, 0, 70, "Item",ExpressionUUID->"c8773bc3-73be-42c5-9799-df87e6734f88"],
+Cell[1503, 43, 98, 0, 70, "Item",ExpressionUUID->"6cf07f3b-2bf9-48f2-9509-0f6d3617dca0"]
 }
 ]
 *)

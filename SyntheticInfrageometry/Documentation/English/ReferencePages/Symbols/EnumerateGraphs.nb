@@ -18,36 +18,36 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["EnumerateGraphs", "Title",ExpressionUUID->"061c6920-a3a0-4ec4-867c-aeeebce43ad7"],
+Cell["EnumerateGraphs", "Title",ExpressionUUID->"cf200a42-3d8e-43b6-b8ed-1d06836c0a33"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"0b0e3d66-a450-48b2-898e-8908e72f9afd"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"787a6dba-4bca-4313-af3e-104404dee945"],
 
 Cell["\<\
 EnumerateGraphs[n, predQ] returns all connected n-vertex graphs from \
 GraphData satisfying predQ. EnumerateGraphs[n, predQ, k] returns exactly k or \
 $Failed; UpTo[k] returns up to k; All returns all. Option: \"From\" (override \
 the default GraphData generator with a list).\
-\>", "Text",ExpressionUUID->"e2e8b130-09c1-4ba5-83fb-d308d718b16e"],
+\>", "Text",ExpressionUUID->"685f8791-f5ef-4516-bcc8-1eac696a15fb"],
 
-Cell["Setup", "Section",ExpressionUUID->"51e1a0fb-37f6-46a0-a7a8-be7a29f41312"],
+Cell["Setup", "Section",ExpressionUUID->"1e1ef0d0-abe4-43df-af96-7cdbff74aa8a"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"7e2550b5-184e-4b97-9b2f-7c28f13b2985"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"bde13130-79d5-41b1-b6a0-0047bbd29aad"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"1e9ea5a6-bec2-474d-9366-1ceef5c53477"],
+  True,ExpressionUUID->"80eb629f-5763-43ea-b3f4-3e11af96878e"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"07cc27ad-e180-4075-b70c-b8e19e11790e"],
+Cell["Related Guides", "Section",ExpressionUUID->"26eae385-40eb-411d-b23b-acaa0d508b4e"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"5ae57e88-47f6-4510-8836-7388cb2f3e28"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"718f69fa-8188-4e3d-8621-20410e35b134"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"3d306a15-0659-4307-9954-883a3b8a2513"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"69a62d11-151e-4b6b-88bf-4361ed00c5a9"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"e0efb4d6-399e-42ef-9b5e-5aac5e847c2f"
 ]
 (* End of Notebook Content *)
 
@@ -60,16 +60,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"061c6920-a3a0-4ec4-867c-aeeebce43ad7"],
-Cell[644, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"0b0e3d66-a450-48b2-898e-8908e72f9afd"],
-Cell[737, 24, 355, 5, 70, "Text",ExpressionUUID->"e2e8b130-09c1-4ba5-83fb-d308d718b16e"],
-Cell[1095, 31, 79, 0, 70, "Section",ExpressionUUID->"51e1a0fb-37f6-46a0-a7a8-be7a29f41312"],
-Cell[1177, 33, 91, 0, 70, "CodeText",ExpressionUUID->"7e2550b5-184e-4b97-9b2f-7c28f13b2985"],
-Cell[1271, 35, 192, 4, 70, "Code",ExpressionUUID->"1e9ea5a6-bec2-474d-9366-1ceef5c53477",
+Cell[554, 20, 87, 0, 70, "Title",ExpressionUUID->"cf200a42-3d8e-43b6-b8ed-1d06836c0a33"],
+Cell[644, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"787a6dba-4bca-4313-af3e-104404dee945"],
+Cell[737, 24, 355, 5, 70, "Text",ExpressionUUID->"685f8791-f5ef-4516-bcc8-1eac696a15fb"],
+Cell[1095, 31, 79, 0, 70, "Section",ExpressionUUID->"1e1ef0d0-abe4-43df-af96-7cdbff74aa8a"],
+Cell[1177, 33, 91, 0, 70, "CodeText",ExpressionUUID->"bde13130-79d5-41b1-b6a0-0047bbd29aad"],
+Cell[1271, 35, 192, 4, 70, "Code",ExpressionUUID->"80eb629f-5763-43ea-b3f4-3e11af96878e",
  InitializationCell->True],
-Cell[1466, 41, 88, 0, 70, "Section",ExpressionUUID->"07cc27ad-e180-4075-b70c-b8e19e11790e"],
-Cell[1557, 43, 93, 0, 70, "Item",ExpressionUUID->"5ae57e88-47f6-4510-8836-7388cb2f3e28"],
-Cell[1653, 45, 98, 0, 70, "Item",ExpressionUUID->"3d306a15-0659-4307-9954-883a3b8a2513"]
+Cell[1466, 41, 88, 0, 70, "Section",ExpressionUUID->"26eae385-40eb-411d-b23b-acaa0d508b4e"],
+Cell[1557, 43, 93, 0, 70, "Item",ExpressionUUID->"718f69fa-8188-4e3d-8621-20410e35b134"],
+Cell[1653, 45, 98, 0, 70, "Item",ExpressionUUID->"69a62d11-151e-4b6b-88bf-4361ed00c5a9"]
 }
 ]
 *)

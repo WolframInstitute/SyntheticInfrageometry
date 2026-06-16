@@ -18,36 +18,36 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindTarskiCounterexample", "Title",ExpressionUUID->"cdfe4b18-40dd-44e4-9890-0495abc9b9c8"],
+Cell["FindTarskiCounterexample", "Title",ExpressionUUID->"6de5e1e0-9c8f-4a93-8f04-756efda658ff"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"485122e6-0c34-4fa9-a09d-e533190e1688"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"19c68903-7bec-4f77-8f4a-c1261c923cee"],
 
 Cell["\<\
 FindTarskiCounterexample[graph, predQ] returns one vertex tuple witnessing \
 the failure of the Tarski axiom predicate predQ, or $Failed. With n / UpTo[n] \
 / All caps witness count. Returns $Failed for always-True axioms and \
 TarskiContinuityQ.\
-\>", "Text",ExpressionUUID->"b2c9fa62-b5a5-4b54-bc86-e9d144152883"],
+\>", "Text",ExpressionUUID->"c1f24c8f-0dd5-4c5f-be64-98a1f5232705"],
 
-Cell["Setup", "Section",ExpressionUUID->"2027c920-4701-4d91-bf09-e7376ac9b0d3"],
+Cell["Setup", "Section",ExpressionUUID->"d1518029-4092-4cd6-a286-756ebd02cb00"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"b5ef786c-1df1-477f-9204-518ec9752e2f"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"66dd8157-df46-416d-84dc-421df55f3296"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"12d87146-16a2-4f72-bc6f-ec0b5acb4515"],
+  True,ExpressionUUID->"baf3c1c2-a567-4124-af28-7f6a8d567c6c"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"af1bc862-afc6-47db-af12-63c4190994cf"],
+Cell["Related Guides", "Section",ExpressionUUID->"58bdb3a0-ee4f-4a47-a36a-97e27edb51b6"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"f1ea9215-3a2d-4221-840f-60e9726925fc"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"54532ba0-8973-40da-997d-ca5a15ec1f17"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"5e794e41-7499-41ac-b16f-8e975bf6d3ad"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"4ac36bd7-da5f-491c-aa1d-eacadd2ba70a"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"f302e069-1771-4b4d-ae4b-661493f14a10"
 ]
 (* End of Notebook Content *)
 
@@ -60,16 +60,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 96, 0, 70, "Title",ExpressionUUID->"cdfe4b18-40dd-44e4-9890-0495abc9b9c8"],
-Cell[653, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"485122e6-0c34-4fa9-a09d-e533190e1688"],
-Cell[746, 24, 325, 5, 70, "Text",ExpressionUUID->"b2c9fa62-b5a5-4b54-bc86-e9d144152883"],
-Cell[1074, 31, 79, 0, 70, "Section",ExpressionUUID->"2027c920-4701-4d91-bf09-e7376ac9b0d3"],
-Cell[1156, 33, 91, 0, 70, "CodeText",ExpressionUUID->"b5ef786c-1df1-477f-9204-518ec9752e2f"],
-Cell[1250, 35, 192, 4, 70, "Code",ExpressionUUID->"12d87146-16a2-4f72-bc6f-ec0b5acb4515",
+Cell[554, 20, 96, 0, 70, "Title",ExpressionUUID->"6de5e1e0-9c8f-4a93-8f04-756efda658ff"],
+Cell[653, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"19c68903-7bec-4f77-8f4a-c1261c923cee"],
+Cell[746, 24, 325, 5, 70, "Text",ExpressionUUID->"c1f24c8f-0dd5-4c5f-be64-98a1f5232705"],
+Cell[1074, 31, 79, 0, 70, "Section",ExpressionUUID->"d1518029-4092-4cd6-a286-756ebd02cb00"],
+Cell[1156, 33, 91, 0, 70, "CodeText",ExpressionUUID->"66dd8157-df46-416d-84dc-421df55f3296"],
+Cell[1250, 35, 192, 4, 70, "Code",ExpressionUUID->"baf3c1c2-a567-4124-af28-7f6a8d567c6c",
  InitializationCell->True],
-Cell[1445, 41, 88, 0, 70, "Section",ExpressionUUID->"af1bc862-afc6-47db-af12-63c4190994cf"],
-Cell[1536, 43, 93, 0, 70, "Item",ExpressionUUID->"f1ea9215-3a2d-4221-840f-60e9726925fc"],
-Cell[1632, 45, 98, 0, 70, "Item",ExpressionUUID->"5e794e41-7499-41ac-b16f-8e975bf6d3ad"]
+Cell[1445, 41, 88, 0, 70, "Section",ExpressionUUID->"58bdb3a0-ee4f-4a47-a36a-97e27edb51b6"],
+Cell[1536, 43, 93, 0, 70, "Item",ExpressionUUID->"54532ba0-8973-40da-997d-ca5a15ec1f17"],
+Cell[1632, 45, 98, 0, 70, "Item",ExpressionUUID->"4ac36bd7-da5f-491c-aa1d-eacadd2ba70a"]
 }
 ]
 *)

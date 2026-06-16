@@ -18,36 +18,36 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindInfraCone", "Title",ExpressionUUID->"17cdca02-5243-45c9-91d0-22723395d20b"],
+Cell["FindInfraCone", "Title",ExpressionUUID->"51193b5f-7ff2-4f78-bce8-2de14df8cb9e"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"8911bbc0-387a-4971-98af-cf657cb5f64d"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b311be53-6311-40a6-abc2-34397b77fdb2"],
 
 Cell["\<\
 FindInfraCone[graph, axis, slope] returns InfraObject[set] for the cone of \
 given slope with apex at axis[[1]]: radii are slope * Range[0, Length[axis] - \
 1]. Option \"Apex\" (First (default) | Last) flips the apex end; inherits \
 remaining options from FindInfraRevolution.\
-\>", "Text",ExpressionUUID->"68e78cf4-5caf-42d1-8122-74e697a6235a"],
+\>", "Text",ExpressionUUID->"653e321b-a47d-408f-bc00-e5ff868016b3"],
 
-Cell["Setup", "Section",ExpressionUUID->"ef420984-c1c0-48c7-8389-ced39eb35366"],
+Cell["Setup", "Section",ExpressionUUID->"08303295-56aa-4c7d-89db-b2fe0566c02f"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"3e0f7c97-bc1e-48ed-8de7-57aec8fd4d1b"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"f3448b90-a8a1-465e-9d35-1721d4472cf0"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"beda93d0-0aac-4085-82a3-c534430eaf93"],
+  True,ExpressionUUID->"3646f900-375d-42cf-8791-4cc1fc5cca84"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"0f4ed542-e6b4-4b7c-a8c9-cee88c5d294f"],
+Cell["Related Guides", "Section",ExpressionUUID->"e8980330-5f3d-4b70-b288-fc3c4217546b"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"02203074-8005-4515-941e-34c0c590e971"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"bd04e2b7-30cb-4303-98d9-180389fc465f"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"fca1915d-30b6-4dae-9c0f-75ee7aa58bc6"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"a24daec3-3894-4427-a772-0053c075d80f"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"2c983a16-8a8e-4f2a-b02f-1bf25fa4ca7d"
 ]
 (* End of Notebook Content *)
 
@@ -60,16 +60,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"17cdca02-5243-45c9-91d0-22723395d20b"],
-Cell[642, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"8911bbc0-387a-4971-98af-cf657cb5f64d"],
-Cell[735, 24, 355, 5, 70, "Text",ExpressionUUID->"68e78cf4-5caf-42d1-8122-74e697a6235a"],
-Cell[1093, 31, 79, 0, 70, "Section",ExpressionUUID->"ef420984-c1c0-48c7-8389-ced39eb35366"],
-Cell[1175, 33, 91, 0, 70, "CodeText",ExpressionUUID->"3e0f7c97-bc1e-48ed-8de7-57aec8fd4d1b"],
-Cell[1269, 35, 192, 4, 70, "Code",ExpressionUUID->"beda93d0-0aac-4085-82a3-c534430eaf93",
+Cell[554, 20, 85, 0, 70, "Title",ExpressionUUID->"51193b5f-7ff2-4f78-bce8-2de14df8cb9e"],
+Cell[642, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b311be53-6311-40a6-abc2-34397b77fdb2"],
+Cell[735, 24, 355, 5, 70, "Text",ExpressionUUID->"653e321b-a47d-408f-bc00-e5ff868016b3"],
+Cell[1093, 31, 79, 0, 70, "Section",ExpressionUUID->"08303295-56aa-4c7d-89db-b2fe0566c02f"],
+Cell[1175, 33, 91, 0, 70, "CodeText",ExpressionUUID->"f3448b90-a8a1-465e-9d35-1721d4472cf0"],
+Cell[1269, 35, 192, 4, 70, "Code",ExpressionUUID->"3646f900-375d-42cf-8791-4cc1fc5cca84",
  InitializationCell->True],
-Cell[1464, 41, 88, 0, 70, "Section",ExpressionUUID->"0f4ed542-e6b4-4b7c-a8c9-cee88c5d294f"],
-Cell[1555, 43, 93, 0, 70, "Item",ExpressionUUID->"02203074-8005-4515-941e-34c0c590e971"],
-Cell[1651, 45, 98, 0, 70, "Item",ExpressionUUID->"fca1915d-30b6-4dae-9c0f-75ee7aa58bc6"]
+Cell[1464, 41, 88, 0, 70, "Section",ExpressionUUID->"e8980330-5f3d-4b70-b288-fc3c4217546b"],
+Cell[1555, 43, 93, 0, 70, "Item",ExpressionUUID->"bd04e2b7-30cb-4303-98d9-180389fc465f"],
+Cell[1651, 45, 98, 0, 70, "Item",ExpressionUUID->"a24daec3-3894-4427-a772-0053c075d80f"]
 }
 ]
 *)

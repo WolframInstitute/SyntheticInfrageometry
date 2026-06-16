@@ -10,17 +10,17 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      3330,         75]
-NotebookOptionsPosition[      2298,         54]
-NotebookOutlinePosition[      2615,         68]
-CellTagsIndexPosition[      2572,         65]
+NotebookDataLength[      3553,         78]
+NotebookOptionsPosition[      2520,         57]
+NotebookOutlinePosition[      2837,         71]
+CellTagsIndexPosition[      2794,         68]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["InfraSceneHighlight", "Title",ExpressionUUID->"5dbee67b-287d-4877-b7c6-23c849bd3937"],
+Cell["InfraSceneHighlight", "Title",ExpressionUUID->"fc7ff1c3-f8b4-40d0-98e2-ee4e463195cb"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"b73cba98-4315-48c5-895d-43fdc46463b7"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"c9408e51-0010-45db-9eba-fd46b4c89673"],
 
 Cell["\<\
 InfraSceneHighlight[g, multiObjects] renders a list of multi-objects \
@@ -33,28 +33,31 @@ intended semantics. Per-object style overrides via `entry -> color`, `entry \
 flat option list auto-sorted into vertex (VertexStyle / VertexSize / \
 VertexShapeFunction), edge (EdgeStyle / EdgeShapeFunction), and per-object \
 diffusion (\"OpacityRange\" / \"ThicknessRange\" / \"PointSizeRange\") \
-channels. Options: \"OpacityRange\", \"ThicknessRange\", \"PointSizeRange\".\
-\>", "Text",ExpressionUUID->"9781c50f-88ab-4104-b76a-de42dac8fa37"],
+channels. A bare directive routes by family (thickness/dashing to edges, \
+point-size to vertices, color/opacity to both) and overrides the matching \
+diffusion range; use AbsolutePointSize[n] for a constant on-screen point \
+size. Options: \"OpacityRange\", \"ThicknessRange\", \"PointSizeRange\".\
+\>", "Text",ExpressionUUID->"7ad7b782-1bd0-4d9b-b7c9-99c30ccf50df"],
 
-Cell["Setup", "Section",ExpressionUUID->"88bd39c4-959a-48a4-a84a-c88a73e6dd3f"],
+Cell["Setup", "Section",ExpressionUUID->"2c7f8747-3d78-4f1f-8a10-ac29abdf28ec"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"b0d7fce4-540b-414f-9974-e3c6d8fcb467"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"b6041a06-4ca1-4e3f-b5fd-c4725c96f98d"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"99f7bc4f-576d-4097-8859-a4e05e14fef4"],
+  True,ExpressionUUID->"fde24c4e-b01a-4a3a-b1b0-118beb95d2e3"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"7216bd34-7ed5-4e5c-a15c-60d09d8ce90f"],
+Cell["Related Guides", "Section",ExpressionUUID->"07801f9b-0e82-4829-8c8a-75fb18b987ba"],
 
-Cell["VisualizationGuide", "Item",ExpressionUUID->"3fadeff0-49de-44b9-b51f-fd352d34390c"],
+Cell["VisualizationGuide", "Item",ExpressionUUID->"56d93ac6-cc52-40f0-bc12-0d02aac67802"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"103df0ea-4889-4a47-b6e8-feb89c14649d"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"d2ecf6ad-0c50-4da6-9c3f-b6f7b813e0e3"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"19046ae5-d194-4df0-936d-f2635b148a7b"
 ]
 (* End of Notebook Content *)
 
@@ -67,16 +70,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"5dbee67b-287d-4877-b7c6-23c849bd3937"],
-Cell[648, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"b73cba98-4315-48c5-895d-43fdc46463b7"],
-Cell[741, 24, 898, 12, 70, "Text",ExpressionUUID->"9781c50f-88ab-4104-b76a-de42dac8fa37"],
-Cell[1642, 38, 79, 0, 70, "Section",ExpressionUUID->"88bd39c4-959a-48a4-a84a-c88a73e6dd3f"],
-Cell[1724, 40, 91, 0, 70, "CodeText",ExpressionUUID->"b0d7fce4-540b-414f-9974-e3c6d8fcb467"],
-Cell[1818, 42, 192, 4, 70, "Code",ExpressionUUID->"99f7bc4f-576d-4097-8859-a4e05e14fef4",
+Cell[554, 20, 91, 0, 70, "Title",ExpressionUUID->"fc7ff1c3-f8b4-40d0-98e2-ee4e463195cb"],
+Cell[648, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"c9408e51-0010-45db-9eba-fd46b4c89673"],
+Cell[741, 24, 1120, 15, 70, "Text",ExpressionUUID->"7ad7b782-1bd0-4d9b-b7c9-99c30ccf50df"],
+Cell[1864, 41, 79, 0, 70, "Section",ExpressionUUID->"2c7f8747-3d78-4f1f-8a10-ac29abdf28ec"],
+Cell[1946, 43, 91, 0, 70, "CodeText",ExpressionUUID->"b6041a06-4ca1-4e3f-b5fd-c4725c96f98d"],
+Cell[2040, 45, 192, 4, 70, "Code",ExpressionUUID->"fde24c4e-b01a-4a3a-b1b0-118beb95d2e3",
  InitializationCell->True],
-Cell[2013, 48, 88, 0, 70, "Section",ExpressionUUID->"7216bd34-7ed5-4e5c-a15c-60d09d8ce90f"],
-Cell[2104, 50, 89, 0, 70, "Item",ExpressionUUID->"3fadeff0-49de-44b9-b51f-fd352d34390c"],
-Cell[2196, 52, 98, 0, 70, "Item",ExpressionUUID->"103df0ea-4889-4a47-b6e8-feb89c14649d"]
+Cell[2235, 51, 88, 0, 70, "Section",ExpressionUUID->"07801f9b-0e82-4829-8c8a-75fb18b987ba"],
+Cell[2326, 53, 89, 0, 70, "Item",ExpressionUUID->"56d93ac6-cc52-40f0-bc12-0d02aac67802"],
+Cell[2418, 55, 98, 0, 70, "Item",ExpressionUUID->"d2ecf6ad-0c50-4da6-9c3f-b6f7b813e0e3"]
 }
 ]
 *)

@@ -18,36 +18,36 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["NullHomotopicQ", "Title",ExpressionUUID->"4e0668ee-62bb-4725-9c5d-8dbc63ae206e"],
+Cell["NullHomotopicQ", "Title",ExpressionUUID->"96d99f42-4a65-4c90-86c0-2d75be198ebc"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"a2c6b9c4-c3d1-4633-8230-dc7e6fff13a6"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"42382a8f-3624-4d31-8928-c98c1e5cbf2f"],
 
 Cell["\<\
 NullHomotopicQ[graph, cycle] tests whether a closed walk is null-homotopic. \
 Accepts a bare closed walk (auto-closed via {cycle, First[cycle]}), an \
 InfraLoop[{...}], InfraString[{...}], or InfraCircle[{...}] \
 (Cartesian-AllTrue over realisations). Inherits FindInfraHomotopy options.\
-\>", "Text",ExpressionUUID->"5a0fc485-c9f8-4597-b2f9-e88e5f0aaa89"],
+\>", "Text",ExpressionUUID->"8b06ea5b-171d-4816-84b2-3d7b13b1ae13"],
 
-Cell["Setup", "Section",ExpressionUUID->"a2818dcc-e718-4e8d-835d-91ad299c1c9c"],
+Cell["Setup", "Section",ExpressionUUID->"bf5acfd3-145c-4736-8196-bfdb864959c8"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"2d956b41-a486-4ea3-9f3c-3ce0ef74ffec"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"a3a1ded0-6396-4c9e-864f-e518349be221"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"a39a7a85-d436-4e55-aee3-b57d8119a5dd"],
+  True,ExpressionUUID->"09b2c871-806e-437b-9df9-6bcf98f5f132"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"37276475-01ad-4587-9089-009c0ddfe2b5"],
+Cell["Related Guides", "Section",ExpressionUUID->"2809c867-557a-4c69-9074-ccdea54a3f9a"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"2babbbed-e57e-4c23-9a37-f8454634e277"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"761034b7-b467-4a72-95e1-6543c34caa15"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"409e1989-50fe-43e6-90d9-077a483b8105"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"535ea7aa-153e-4238-915b-a516919dacad"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"818bf642-9ba9-4fc3-84ab-45036b1800a3"
 ]
 (* End of Notebook Content *)
 
@@ -60,16 +60,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"4e0668ee-62bb-4725-9c5d-8dbc63ae206e"],
-Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"a2c6b9c4-c3d1-4633-8230-dc7e6fff13a6"],
-Cell[736, 24, 366, 5, 70, "Text",ExpressionUUID->"5a0fc485-c9f8-4597-b2f9-e88e5f0aaa89"],
-Cell[1105, 31, 79, 0, 70, "Section",ExpressionUUID->"a2818dcc-e718-4e8d-835d-91ad299c1c9c"],
-Cell[1187, 33, 91, 0, 70, "CodeText",ExpressionUUID->"2d956b41-a486-4ea3-9f3c-3ce0ef74ffec"],
-Cell[1281, 35, 192, 4, 70, "Code",ExpressionUUID->"a39a7a85-d436-4e55-aee3-b57d8119a5dd",
+Cell[554, 20, 86, 0, 70, "Title",ExpressionUUID->"96d99f42-4a65-4c90-86c0-2d75be198ebc"],
+Cell[643, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"42382a8f-3624-4d31-8928-c98c1e5cbf2f"],
+Cell[736, 24, 366, 5, 70, "Text",ExpressionUUID->"8b06ea5b-171d-4816-84b2-3d7b13b1ae13"],
+Cell[1105, 31, 79, 0, 70, "Section",ExpressionUUID->"bf5acfd3-145c-4736-8196-bfdb864959c8"],
+Cell[1187, 33, 91, 0, 70, "CodeText",ExpressionUUID->"a3a1ded0-6396-4c9e-864f-e518349be221"],
+Cell[1281, 35, 192, 4, 70, "Code",ExpressionUUID->"09b2c871-806e-437b-9df9-6bcf98f5f132",
  InitializationCell->True],
-Cell[1476, 41, 88, 0, 70, "Section",ExpressionUUID->"37276475-01ad-4587-9089-009c0ddfe2b5"],
-Cell[1567, 43, 93, 0, 70, "Item",ExpressionUUID->"2babbbed-e57e-4c23-9a37-f8454634e277"],
-Cell[1663, 45, 98, 0, 70, "Item",ExpressionUUID->"409e1989-50fe-43e6-90d9-077a483b8105"]
+Cell[1476, 41, 88, 0, 70, "Section",ExpressionUUID->"2809c867-557a-4c69-9074-ccdea54a3f9a"],
+Cell[1567, 43, 93, 0, 70, "Item",ExpressionUUID->"761034b7-b467-4a72-95e1-6543c34caa15"],
+Cell[1663, 45, 98, 0, 70, "Item",ExpressionUUID->"535ea7aa-153e-4238-915b-a516919dacad"]
 }
 ]
 *)

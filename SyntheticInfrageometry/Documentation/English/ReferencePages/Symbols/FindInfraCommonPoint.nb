@@ -18,36 +18,36 @@ WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["FindInfraCommonPoint", "Title",ExpressionUUID->"d635042d-f2a7-421f-a91b-b8570ec61d56"],
+Cell["FindInfraCommonPoint", "Title",ExpressionUUID->"728b2f09-b016-4135-89ed-9ab895b56827"],
 
-Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"0d2fe1b5-c738-46b3-8829-c59322a0b07c"],
+Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"e1f1fe46-3993-46d0-b3ef-094114de64a6"],
 
 Cell["\<\
 FindInfraCommonPoint[graph, lines] returns a List of unary InfraPoint[{v}] \
 wrappers for the vertices on every listed line, or $Failed. With n / UpTo[n] \
 / All controls multiplicity. Entries may be bare vertex sequences or \
 InfraSegment / InfraRay wrappers.\
-\>", "Text",ExpressionUUID->"35baf761-8a06-42c3-bbcc-f46c02fa93ef"],
+\>", "Text",ExpressionUUID->"2706ce79-b100-4b68-9898-c2a1746a98e5"],
 
-Cell["Setup", "Section",ExpressionUUID->"6439bdbc-f1e9-462e-9d9b-208a9c3b3150"],
+Cell["Setup", "Section",ExpressionUUID->"898e4b97-eada-481f-8c96-d69dde9136fa"],
 
-Cell["Load the paclet.", "CodeText",ExpressionUUID->"633e5533-04a8-49a8-a5c1-b0a4fe356e3f"],
+Cell["Load the paclet.", "CodeText",ExpressionUUID->"4cb26d61-83e3-4526-986f-a0bf1951e288"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
   "]"}]], "Code",
  InitializationCell->
-  True,ExpressionUUID->"e1dbca7b-5116-4e00-b302-49b09d915fc5"],
+  True,ExpressionUUID->"e2d1461a-e534-4939-8f7a-5fdbc1059062"],
 
-Cell["Related Guides", "Section",ExpressionUUID->"6d0f6dfd-7703-4bfe-9e54-51dae04c2494"],
+Cell["Related Guides", "Section",ExpressionUUID->"d24c54b7-068a-4a0f-9925-f827f67818dd"],
 
-Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"6654be1a-2388-47a1-9289-5b2fb58007b7"],
+Cell["EuclideanGeometryGuide", "Item",ExpressionUUID->"119e8976-d20c-425f-832b-ed10b2150e68"],
 
-Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"ff4bbcbf-d242-4789-8d2f-0d9441bf5dc5"]
+Cell["SyntheticInfrageometryGuide", "Item",ExpressionUUID->"1097b806-e3cd-4679-b333-0334c4c10929"]
 },
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"91e83a25-f3ce-486e-837c-31d64da4d71a"
+ExpressionUUID->"9324fc7e-d4cf-4ae6-85d1-84c95750a076"
 ]
 (* End of Notebook Content *)
 
@@ -60,16 +60,16 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 92, 0, 70, "Title",ExpressionUUID->"d635042d-f2a7-421f-a91b-b8570ec61d56"],
-Cell[649, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"0d2fe1b5-c738-46b3-8829-c59322a0b07c"],
-Cell[742, 24, 339, 5, 70, "Text",ExpressionUUID->"35baf761-8a06-42c3-bbcc-f46c02fa93ef"],
-Cell[1084, 31, 79, 0, 70, "Section",ExpressionUUID->"6439bdbc-f1e9-462e-9d9b-208a9c3b3150"],
-Cell[1166, 33, 91, 0, 70, "CodeText",ExpressionUUID->"633e5533-04a8-49a8-a5c1-b0a4fe356e3f"],
-Cell[1260, 35, 192, 4, 70, "Code",ExpressionUUID->"e1dbca7b-5116-4e00-b302-49b09d915fc5",
+Cell[554, 20, 92, 0, 70, "Title",ExpressionUUID->"728b2f09-b016-4135-89ed-9ab895b56827"],
+Cell[649, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"e1f1fe46-3993-46d0-b3ef-094114de64a6"],
+Cell[742, 24, 339, 5, 70, "Text",ExpressionUUID->"2706ce79-b100-4b68-9898-c2a1746a98e5"],
+Cell[1084, 31, 79, 0, 70, "Section",ExpressionUUID->"898e4b97-eada-481f-8c96-d69dde9136fa"],
+Cell[1166, 33, 91, 0, 70, "CodeText",ExpressionUUID->"4cb26d61-83e3-4526-986f-a0bf1951e288"],
+Cell[1260, 35, 192, 4, 70, "Code",ExpressionUUID->"e2d1461a-e534-4939-8f7a-5fdbc1059062",
  InitializationCell->True],
-Cell[1455, 41, 88, 0, 70, "Section",ExpressionUUID->"6d0f6dfd-7703-4bfe-9e54-51dae04c2494"],
-Cell[1546, 43, 93, 0, 70, "Item",ExpressionUUID->"6654be1a-2388-47a1-9289-5b2fb58007b7"],
-Cell[1642, 45, 98, 0, 70, "Item",ExpressionUUID->"ff4bbcbf-d242-4789-8d2f-0d9441bf5dc5"]
+Cell[1455, 41, 88, 0, 70, "Section",ExpressionUUID->"d24c54b7-068a-4a0f-9925-f827f67818dd"],
+Cell[1546, 43, 93, 0, 70, "Item",ExpressionUUID->"119e8976-d20c-425f-832b-ed10b2150e68"],
+Cell[1642, 45, 98, 0, 70, "Item",ExpressionUUID->"1097b806-e3cd-4679-b333-0334c4c10929"]
 }
 ]
 *)
