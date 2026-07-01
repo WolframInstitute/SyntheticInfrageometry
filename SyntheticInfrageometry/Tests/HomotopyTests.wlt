@@ -117,7 +117,7 @@ VerificationTest[
 
 VerificationTest[
   Module[{grid23 = GridGraph[{2, 3}], paths},
-    paths = #[[1, 1]] & /@ FindInfraSegment[grid23, 1, 6, All];
+    paths = FindInfraSegment[grid23, 1, 6, All]["Paths"];
     Length @ FindInfraHomotopy[grid23,
       InfraPath[paths], InfraPath[paths], All,
       "NullHomotopicCycles" -> {3, 4}]
@@ -128,7 +128,7 @@ VerificationTest[
 
 VerificationTest[
   Module[{grid23 = GridGraph[{2, 3}], paths},
-    paths = #[[1, 1]] & /@ FindInfraSegment[grid23, 1, 6, All];
+    paths = FindInfraSegment[grid23, 1, 6, All]["Paths"];
     HomotopicQ[grid23,
       InfraPath[paths], InfraPath[paths],
       "NullHomotopicCycles" -> {3, 4}]

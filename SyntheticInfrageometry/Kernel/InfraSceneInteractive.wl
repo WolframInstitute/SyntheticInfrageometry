@@ -54,7 +54,7 @@ SegmentViewer[ g_Graph ] :=
       With[ {
           segments = If[ p1 === p2 || GraphDistance[ g, p1, p2 ] === Infinity, {},
             Take[
-              applySelectOption[ g, #[[ 1, 1 ]] & /@ FindInfraSegment[ g, p1, p2, All ],
+              applySelectOption[ g, segReps @ FindInfraSegment[ g, p1, p2, All ],
                 sel, False, <| "Endpoints" -> { p1, p2 } |> ],
               UpTo[ n ] ] ] },
         EventHandler[

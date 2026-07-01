@@ -1,5 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+PackageImport["WolframInstitute`Infrageometry`"]
+
 PackageScope[findSegmentCore]
 PackageScope[geodesicDAGBaseFn]
 
@@ -22,6 +24,31 @@ InfraSegment[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSegment[
 InfraSegment /: Part[ InfraSegment[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]
 
 
+(* ===== geodesic-DAG form: InfraSegment[dag_Graph] ===== *)
+
+(* The whole geodesic family between two points, stored compactly as the
+   geodesic interval DAG (GeodesicIntervalGraph).  Invariants are read straight
+   off the DAG -- occupation by the Brandes count DP, never enumerating the
+   (possibly astronomically many) geodesics.  ["Realizations"] is the bridge
+   back to the explicit InfraSegment[{paths}] form.  Occupation accessors share
+   the InfraMeasure association shape, so the renderer composes unchanged. *)
+
+InfraSegment[ dag_Graph ][ "Graph" ]              := dag
+InfraSegment[ dag_Graph ][ "Vertices" ]           := VertexList[ dag ]
+InfraSegment[ dag_Graph ][ "Length" ]             :=
+  If[ VertexCount[ dag ] == 0, 0,
+    Max @ GraphDistance[ dag, First @ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ] ]
+InfraSegment[ dag_Graph ][ "Multiplicity" ]       := infraNumReps[ InfraSegment[ dag ] ]
+InfraSegment[ dag_Graph ][ "OccupationCount" ]    := GeodesicOccupation[ dag ]
+InfraSegment[ dag_Graph ][ "OccupationMeasure" ]  := InfraMeasure[ InfraSegment[ dag ] ]
+InfraSegment[ dag_Graph ][ "Measure" ]            := InfraMeasure[ InfraSegment[ dag ] ]
+InfraSegment[ dag_Graph ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSegment[ dag ], Method -> "Probability" ]
+InfraSegment[ dag_Graph ][ "Realizations" ]               := InfraSegment[ dagGeodesics[ dag ] ]
+InfraSegment[ dag_Graph ][ "Realizations", spec_ ]        := InfraSegment[ infraCap[ dagGeodesics[ dag ], spec ] ]
+InfraSegment[ dag_Graph ][ "Paths" ]                      := dagGeodesics[ dag ]
+InfraSegment /: Part[ InfraSegment[ dag_Graph ], i_Integer ] := columnInfraPoint[ dagGeodesics[ dag ], i ]
+
+
 (* ===================== FindInfraSegment ===================== *)
 
 (* A segment between p1 and p2: a geodesic vertex sequence
@@ -37,10 +64,21 @@ Options[ FindInfraSegment ] = {
   Method     -> "Exhaustive"
 };
 
+(* No extra conditions (empty Properties, Exhaustive, the whole family over plain
+   vertex endpoints) -> the compact geodesic-DAG form.  An explicit finite count,
+   any Properties filter, Greedy, or set/InfraPoint endpoints -> the enumerated
+   path form (the calling triple over spreadFind, as before). *)
+
 FindInfraSegment[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  spreadFind[ InfraSegment, count,
-    findSegmentCore[ graph, ##, count, opts ] &, p1, p2 ]
+    count : ( _Integer | UpTo[ _Integer ] | All ) : Automatic, opts : OptionsPattern[] ] :=
+  If[ ( count === Automatic || count === All ) &&
+      OptionValue[ FindInfraSegment, { opts }, Properties ] === { } &&
+      methodName[ OptionValue[ FindInfraSegment, { opts }, Method ] /. Automatic -> "Exhaustive" ] === "Exhaustive" &&
+      VertexQ[ graph, p1 ] && VertexQ[ graph, p2 ],
+    InfraSegment[ GeodesicIntervalGraph[ graph, p1, p2 ] ],
+    With[ { n = count /. Automatic -> 1 },
+      spreadFind[ InfraSegment, n, findSegmentCore[ graph, ##, n, opts ] &, p1, p2 ] ]
+  ]
 
 
 findSegmentCore[ _Graph, p1_, p1_, ___ ] := { }
@@ -118,7 +156,7 @@ ExtendInfraSegment[ graph_Graph, a_, b_, c_, d_,
 dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindInfraSegment[ graph, p1, p2, All,
+      segReps @ FindInfraSegment[ graph, p1, p2, All,
         Sequence @@ FilterRules[ { opts }, Options[ FindInfraSegment ] ] ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],

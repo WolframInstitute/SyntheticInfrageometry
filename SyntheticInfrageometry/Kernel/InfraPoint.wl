@@ -193,6 +193,9 @@ mostEquidistantSubset[ cliques_List, distMatrix_, pool_List, n_Integer ] :=
 
 Options[ FindInfraMidpoint ] = { Method -> "Metric", "Tolerance" -> 0 };
 
+FindInfraMidpoint[ graph_Graph, InfraSegment[ dag_Graph ], opts : OptionsPattern[] ] :=
+  FindInfraMidpoint[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ]
+
 FindInfraMidpoint[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
@@ -209,7 +212,7 @@ FindInfraMidpoint[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Length[ 
 
 FindInfraMidpoint[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
   FindInfraMidpoint[ graph,
-    InfraSegment[ #[[ 1, 1 ]] & /@ FindInfraSegment[ graph, p1, p2, All ] ], opts ]
+    InfraSegment[ segReps @ FindInfraSegment[ graph, p1, p2, All ] ], opts ]
 
 
 midpointsOnWalk[ walk_List, tol_ ] :=
@@ -263,6 +266,9 @@ embeddingRankMidpointsFromSegment[ graph_Graph, walks_List, embOpts_Association 
 
 Options[ FindInfraGoldenSection ] = { Method -> "Metric", "Tolerance" -> 0 };
 
+FindInfraGoldenSection[ graph_Graph, InfraSegment[ dag_Graph ], opts : OptionsPattern[] ] :=
+  FindInfraGoldenSection[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ]
+
 FindInfraGoldenSection[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
@@ -279,7 +285,7 @@ FindInfraGoldenSection[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Len
 
 FindInfraGoldenSection[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
   FindInfraGoldenSection[ graph,
-    InfraSegment[ #[[ 1, 1 ]] & /@ FindInfraSegment[ graph, p1, p2, All ] ], opts ]
+    InfraSegment[ segReps @ FindInfraSegment[ graph, p1, p2, All ] ], opts ]
 
 
 goldenSectionsOnWalk[ walk_List, tol_ ] :=

@@ -1,6 +1,6 @@
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Head @ InfraSceneHighlight[ g, { InfraSegment @ FindInfraSegment[ g, 1, 16, All ] } ]
+    Head @ InfraSceneHighlight[ g, { FindInfraSegment[ g, 1, 16, All ] } ]
   ],
   Graph,
   TestID -> "InfraSceneHighlight-single-multiobject"
@@ -40,7 +40,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Head @ InfraSceneHighlight[ g,
-      { InfraSegment @ FindInfraSegment[ g, 1, 16, All ] -> Blue,
+      { FindInfraSegment[ g, 1, 16, All ] -> Blue,
         { 1, 16 }                                   -> Red } ]
   ],
   Graph,
@@ -50,7 +50,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Head @ InfraSceneHighlight[ g,
-      { InfraSegment @ FindInfraSegment[ g, 1, 16, All ] -> Blue,
+      { FindInfraSegment[ g, 1, 16, All ] -> Blue,
         InfraCircle @ FindInfraCircle[ g, 1, 2, All ] -> Green } ]
   ],
   Graph,
@@ -200,7 +200,7 @@ VerificationTest[
         Rectangle[], MaxCellMeasure -> 0.1 ] },
     With[ {
         vs  = VertexList @ g,
-        seg = InfraSegment @ FindInfraSegment[ g,
+        seg = FindInfraSegment[ g,
           First @ VertexList @ g, Last @ VertexList @ g, All ] },
       MatchQ[ First @ vs, { _, _ } ] &&
       Length @ Cases[

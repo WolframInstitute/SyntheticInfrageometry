@@ -104,6 +104,7 @@ infraVertexSet[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine
                 | InfraCircle | InfraEllipse
                 | InfraShell | InfraEllipticShell | InfraPlane | InfraBall )[ reps_List ] ] :=
   Union @@ reps
+infraVertexSet[ InfraSegment[ dag_Graph ] ] := VertexList[ dag ]
 infraVertexSet[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] :=
   Union @@ polylineToVertexSeqs[ reps ]
 infraVertexSet[ list_List ] /;

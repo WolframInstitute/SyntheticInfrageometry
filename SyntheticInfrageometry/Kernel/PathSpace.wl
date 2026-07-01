@@ -74,6 +74,11 @@ SelectInfraPath[ graph_Graph, ( head : InfraSegment | InfraLine | InfraPath | In
   With[ { result = SelectInfraPath[ graph, paths, countSpec, opts ] },
     If[ result === $Failed, $Failed, head[ result ] ] ]
 
+(* geodesic-DAG segment: enumerate its geodesics, then select as a path bundle. *)
+SelectInfraPath[ graph_Graph, InfraSegment[ dag_Graph ],
+            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  SelectInfraPath[ graph, InfraSegment[ dagGeodesics[ dag ] ], countSpec, opts ]
+
 (* List of unary InfraSegment / InfraRay wrappers: route through the bare-paths
    core, re-wrap each result under the matching head. *)
 
@@ -150,6 +155,9 @@ EmbeddingClosest[ graph_Graph, paths_List, { p1_, p2_ } ] /;
 
 EmbeddingClosest[ graph_Graph, ( head : InfraSegment | InfraLine | InfraPath | InfraRay )[ paths_List ], { p1_, p2_ } ] :=
   head[ EmbeddingClosest[ graph, paths, { p1, p2 } ] ]
+
+EmbeddingClosest[ graph_Graph, InfraSegment[ dag_Graph ], ref_ ] :=
+  EmbeddingClosest[ graph, InfraSegment[ dagGeodesics[ dag ] ], ref ]
 
 EmbeddingClosest[ graph_Graph, list_List, { p1_, p2_ } ] /;
     list =!= { } && AllTrue[ list, MatchQ[ ( InfraSegment | InfraLine | InfraPath | InfraRay )[ { _ } ] ] ] :=
@@ -386,11 +394,13 @@ FindForwardDeformation[ g_Graph, seg_, spec_, count_ : 1 ] := Module[
 
 (* endpoints A, B of the reference path *)
 forwardEndpoints[ InfraSegment[ rs_List, ___ ] ] := { First @ First @ rs, Last @ First @ rs }
+forwardEndpoints[ InfraSegment[ dag_Graph ] ]    := { First @ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ], First @ Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] }
 forwardEndpoints[ InfraPath[ rs_List, ___ ] ]    := { First @ First @ rs, Last @ First @ rs }
 forwardEndpoints[ w_List ]                          := { First @ w, Last @ w }
 
 (* the reference geodesic DeformationSize is measured against *)
 referenceWalk[ g_, InfraSegment[ rs_List, ___ ], _, _ ] := First[ rs ]
+referenceWalk[ g_, InfraSegment[ dag_Graph ], _, _ ]    := First @ dagGeodesics[ dag ]
 referenceWalk[ g_, InfraPath[ rs_List, ___ ], _, _ ]    := First[ rs ]
 referenceWalk[ g_, w_List, src_, tgt_ ] := If[ Length[ w ] >= 3, w, FindShortestPath[ g, src, tgt ] ]
 

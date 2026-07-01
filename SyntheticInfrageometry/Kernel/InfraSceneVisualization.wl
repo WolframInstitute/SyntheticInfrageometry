@@ -203,6 +203,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                 Append[ If[ u[ "PointSizeRange" ] === None, Append[ u, "PointSizeRange" -> $InfraPointSizeRange ], u ],
                         "Weights" -> AssociationThread[ b -> w ] ] },
             { InfraPoint   [ b_List ], c_, u_ } :> { b, c, "Points", u },
+            { InfraSegment [ dag_Graph ], c_, u_ } :> { dagGeodesics[ dag ], c, "Paths" , u },
             { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraLine    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraPath    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },

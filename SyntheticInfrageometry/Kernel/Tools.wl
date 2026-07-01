@@ -1,5 +1,9 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+PackageImport["WolframInstitute`Infrageometry`"]
+
+PackageScope[dagGeodesics]
+PackageScope[segReps]
 PackageScope[CentralElement]
 PackageScope[PeripheralElement]
 PackageScope[SeparatingSetQ]
@@ -376,6 +380,29 @@ columnInfraPoint[ reps_List, i_Integer ] :=
     With[ { m = Counts @ col }, InfraPoint[ Keys @ m, Values @ m ] ] ]
 
 
+(* Enumerate every geodesic of a geodesic-DAG segment: all source -> sink
+   directed paths (the one exponential step, materialised on demand). *)
+
+dagGeodesics[ dag_Graph ] := Which[
+  VertexCount[ dag ] == 0, { },
+  EdgeCount[ dag ] == 0,   List /@ VertexList[ dag ],
+  True,
+    With[ { srcs = Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ],
+            snks = Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] },
+      DeleteDuplicates @ Catenate @ Catenate @
+        Table[ FindPath[ dag, s, t, Infinity, All ], { s, srcs }, { t, snks } ] ] ]
+
+
+(* The geodesic vertex sequences behind an InfraSegment, regardless of form:
+   a geodesic DAG enumerates on demand, a realisation list passes through, a
+   list of unary Find* wrappers flattens.  The bridge reps-expecting consumers
+   call when handed the DAG form. *)
+
+segReps[ InfraSegment[ dag_Graph ] ]        := dagGeodesics[ dag ]
+segReps[ InfraSegment[ reps_List, ___ ] ]   := reps
+segReps[ ws : { ___InfraSegment } ]         := Catenate[ segReps /@ ws ]
+
+
 (* Collapse a wrapped entry to the union of its realisations, for set-
    conjunction Find* over a single _List argument (FindInfraCommonLine,
    FindInfraCommonPoint). *)
@@ -384,6 +411,7 @@ infraUnionSpread[ InfraPoint[ verts_List, _List ] ] := DeleteDuplicates @ verts
 infraUnionSpread[ InfraPoint[ reps_List ] ] := DeleteDuplicates @ reps
 infraUnionSpread[ ( InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay )[ reps_List ] ] :=
   Union @@ reps
+infraUnionSpread[ InfraSegment[ dag_Graph ] ] := VertexList[ dag ]
 infraUnionSpread[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] :=
   Union @@ polylineToVertexSeqs[ reps ]
 infraUnionSpread[ other_ ] := { other }
@@ -438,6 +466,7 @@ infraVertexMultiset[ ( InfraSegment | InfraPath | InfraLoop | InfraString | Infr
                        InfraShell | InfraEllipticShell | InfraBall | InfraPlane |
                        InfraCircle | InfraEllipse )[ reps_List ] ] :=
   Counts @ Catenate @ reps
+infraVertexMultiset[ InfraSegment[ dag_Graph ] ] := GeodesicOccupation[ dag ]
 infraVertexMultiset[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] :=
   Counts @ Catenate @ polylineToVertexSeqs[ reps ]
 infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] :=
@@ -523,6 +552,7 @@ infraRepVerts[ _, rep_ ]        := rep
 
 infraNumReps[ InfraPoint[ _List, weights_List ] ] := Max[ Total @ weights, 1 ]
 infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
+infraNumReps[ InfraSegment[ dag_Graph ] ]          := With[ { occ = GeodesicOccupation[ dag ] }, If[ Length @ occ === 0, 1, Max[ Values @ occ ] ] ]
 infraNumReps[ head_[ reps_List, ___ ] ]            := Max[ Length @ reps, 1 ]
 
 (* raw edge multiset, keyed by sorted lists {a, b}.  Sets-type edges are the
