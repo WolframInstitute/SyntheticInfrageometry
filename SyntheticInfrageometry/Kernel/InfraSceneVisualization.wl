@@ -12,8 +12,8 @@ PackageExport[$InfraObjectColor]
 PackageExport[$InfraTopologyColor]
 PackageScope[$InfraSceneHighlightPalette]
 PackageScope[$InfraOpacityRange]
-PackageScope[$InfraThicknessRange]
-PackageScope[$InfraPointSizeRange]
+PackageScope[$InfraEdgeThickness]
+PackageScope[$InfraPointSize]
 PackageScope[parseHighlightStyle]
 PackageScope[normalizeHighlightSpec]
 
@@ -30,9 +30,9 @@ $InfraPathColor    = RGBColor[ 0.85, 0.62, 0.32 ];
 $InfraObjectColor   = RGBColor[ 0.55, 0.70, 0.85 ];
 $InfraTopologyColor = RGBColor[ 0.85, 0.55, 0.75 ];
 
-$InfraOpacityRange   = { 0.40, 1.0 };
-$InfraThicknessRange = { 2.5, 9.0 };
-$InfraPointSizeRange = { 6, 14 };
+$InfraOpacityRange  = { 0.40, 1.0 };
+$InfraEdgeThickness = 9.0;
+$InfraPointSize     = 14;
 
 $InfraSceneHighlightPalette := Join[
   { $InfraSegmentColor, $InfraShellColor, $InfraCircleColor, $InfraPointColor, $InfraRayColor },
@@ -52,11 +52,14 @@ $InfraSceneHighlightPalette := Join[
    Dotted / DotDashed) go to the edge channel, point-appearance directives
    (PointSize / AbsolutePointSize) to the vertex channel, and everything else
    (colours, Opacity, ...) to both.  The
-   three ranges default to the global option values passed in `defaults`.
+   three ranges default to the global option values passed in `defaults`;
+   a range value is None (off), a scalar base measure (distributed across
+   realisations as measure * weight), or a {min, max} envelope.
    An explicit appearance directive overrides the matching count-diffusion: a
-   thickness directive suppresses "ThicknessRange", a point-size directive
-   suppresses "PointSizeRange", and an Opacity directive suppresses
-   "OpacityRange", so the user's value is the only one emitted on that channel.
+   thickness directive suppresses "ThicknessRange", a point-size directive or
+   a VertexSize value suppresses "PointSizeRange", and an Opacity directive
+   suppresses "OpacityRange", so the user's value is the only one emitted on
+   that channel.
    VertexSize is a plain graph-coordinate passthrough for every value (numeric
    or symbolic); use AbsolutePointSize[n] for a constant on-screen point size
    (rerouted to a VertexShapeFunction since HighlightGraph drops point sizing
@@ -88,7 +91,7 @@ parseHighlightStyle[ spec_, defaults_Association ] :=
     r_Association :> With[ {
         edgeThick  = ! FreeQ[ { r[ "EdgeDir" ], r[ "EdgeStyle" ] },
           Thickness | AbsoluteThickness | Thick | Thin ],
-        vertPtSize = ! FreeQ[ r[ "VertexDir" ], _PointSize | _AbsolutePointSize ],
+        vertPtSize = ! FreeQ[ r[ "VertexDir" ], _PointSize | _AbsolutePointSize ] || r[ "VertexSize" ] =!= None,
         anyOpacity = ! FreeQ[ { r[ "VertexDir" ], r[ "EdgeDir" ], r[ "EdgeStyle" ] }, _Opacity ] },
       Join[ r, <|
         "VertexDir" -> Directive @@ r[ "VertexDir" ],
@@ -131,19 +134,21 @@ normalizeHighlightSpec[ x_ ]                 := { x }
    there for channel routing, family-based directive dispatch, and the
    diffusion-range overrides. *)
 
-(* Diffuse-encoding ranges.  "OpacityRange" and "ThicknessRange" are on by
-   default, so multi-realisation visit counts are visible out of the box via
-   opacity gradient on vertices/edges and thickness gradient on edges.
-   "PointSizeRange" defaults to None, which suppresses the AbsolutePointSize
-   directive entirely so highlighted vertices inherit the underlying graph's
-   point size.  Opt into the point-size channel by setting "PointSizeRange"
-   to a {min, max} pair (e.g. $InfraPointSizeRange recovers the previous
-   default); set any *Range to None to suppress that channel. *)
+(* Diffuse-encoding channels.  A channel value is None (off), a scalar base
+   measure t (the absolute thickness / point size a crisp single-realisation
+   object gets; a fuzzy object distributes it as t * count/numReps, so the
+   total measure across realisations is conserved), or a {min, max} envelope
+   (linear interpolation by weight; the floor keeps rare elements visible).
+   "ThicknessRange" defaults to the base measure $InfraEdgeThickness;
+   "OpacityRange" keeps the floored envelope.  "PointSizeRange" defaults to
+   Automatic: point-shaped objects (InfraPoint, polyline knots, polygon
+   corners) distribute the base measure $InfraPointSize, while vertices of
+   path- and set-shaped objects inherit the underlying graph's point size. *)
 Options[ InfraSceneHighlight ] = Join[
   {
     "OpacityRange"   :> $InfraOpacityRange,
-    "ThicknessRange" :> $InfraThicknessRange,
-    "PointSizeRange" -> None
+    "ThicknessRange" :> $InfraEdgeThickness,
+    "PointSizeRange" -> Automatic
   },
   Options[ HighlightGraph ]
 ];
@@ -200,8 +205,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             record },
           {
             { InfraPoint   [ b_List, w_List ], c_, u_ } :> { b, c, "Points",
-                Append[ If[ u[ "PointSizeRange" ] === None, Append[ u, "PointSizeRange" -> $InfraPointSizeRange ], u ],
-                        "Weights" -> AssociationThread[ b -> w ] ] },
+                Append[ u, "Weights" -> AssociationThread[ b -> w ] ] },
             { InfraPoint   [ b_List ], c_, u_ } :> { b, c, "Points", u },
             { InfraSegment [ dag_Graph ], c_, u_ } :> { dagGeodesics[ dag ], c, "Paths" , u },
             { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
@@ -240,6 +244,14 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
         { Map[ Most @ polylineToKnots[ # ] &, b ], $InfraPointColor, "PointSet", defaultRecord } ] ];
 
     triples = Join[ triples, knotTriples ];
+
+    (* Resolve the Automatic point-size default per object type: point-shaped
+       objects distribute the base measure, everything else stays off. *)
+    triples = Apply[
+      { reps, color, type, record } |-> { reps, color, type,
+        Append[ record, "PointSizeRange" -> Replace[ record[ "PointSizeRange" ],
+          Automatic :> If[ MatchQ[ type, "Points" | "PointSet" ], $InfraPointSize, None ] ] ] },
+      triples, { 1 } ];
 
     (* repVerts / repEdges share the per-type dispatch with InfraMeasure via
        infraRepVerts / infraRepEdges (Tools.wl); only the Automatic-type branch
@@ -283,7 +295,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
        HighlightGraph silently ignores AbsoluteThickness / AbsolutePointSize
        inside Style[edge/vertex, ...].  A *Range record value of None
        suppresses that channel; ranges are per-object. *)
-    With[ { lerp = { range, w } |-> range[[ 1 ]] + ( range[[ 2 ]] - range[[ 1 ]] ) w },
+    With[ { lerp = { spec, w } |-> If[ ListQ @ spec, spec[[ 1 ]] + ( spec[[ 2 ]] - spec[[ 1 ]] ) w, spec w ] },
       With[ {
           edgeData = KeyValueMap[
             { e, cs } |-> With[ { ue = UndirectedEdge @@ e, last = Last @ cs },

@@ -64,11 +64,13 @@ VerificationTest[
   With[ { g = MeshConnectivityGraph @ DiscretizeRegion[
         Rectangle[], MaxCellMeasure -> 0.1 ] },
     With[ {
-        pts    = Take[ VertexList @ g, 2 ],
-        styles = GraphHighlightStyle /. Options @
+        pts  = Take[ VertexList @ g, 2 ],
+        opts = Options @
           InfraSceneHighlight[ g, { InfraPoint[ Take[ VertexList @ g, 2 ] ] -> Red } ] },
-      Length @ Cases[ styles, ( v_List -> _ ) /; MemberQ[ pts, v ], Infinity ] > 0 &&
-      Length @ Cases[ styles, _UndirectedEdge -> _, Infinity ] == 0
+      Length @ Flatten @ Cases[ opts,
+        HoldPattern[ VertexShapeFunction -> rules_ ] :>
+          Cases[ rules, ( v_ -> _ ) /; MemberQ[ pts, v ] ], Infinity ] > 0 &&
+      Length @ Cases[ GraphHighlightStyle /. opts, _UndirectedEdge -> _, Infinity ] == 0
     ]
   ],
   True,
@@ -277,6 +279,62 @@ VerificationTest[
   ],
   True,
   TestID -> "InfraSceneHighlight-abspointsize-overrides-pointsizerange"
+]
+
+(* Scalar "ThicknessRange": the base measure is distributed across
+   realisations.  On CycleGraph[4] the two geodesics 1-2-3 and 1-4-3 split
+   the measure, so every edge renders at exactly half the base thickness. *)
+VerificationTest[
+  With[ { g = CycleGraph[ 4 ] },
+    With[ { opts = Options @ InfraSceneHighlight[ g,
+          { FindInfraSegment[ g, 1, 3, All ] }, "ThicknessRange" -> 8 ] },
+      ! FreeQ[ opts, AbsoluteThickness[ 4 ] ] && FreeQ[ opts, AbsoluteThickness[ 8 ] ]
+    ]
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-scalar-thickness-distributes-measure"
+]
+
+(* A crisp single-realisation object carries the full base measure. *)
+VerificationTest[
+  With[ { g = PathGraph[ Range[ 4 ] ] },
+    ! FreeQ[
+      Options @ InfraSceneHighlight[ g,
+        { InfraSegment[ { { 1, 2, 3, 4 } } ] }, "ThicknessRange" -> 8 ],
+      AbsoluteThickness[ 8 ] ]
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-scalar-thickness-crisp-full-measure"
+]
+
+(* Default point sizing: a fuzzy InfraPoint distributes $InfraPointSize over
+   its candidate vertices (two candidates -> half the base size each), a
+   crisp one gets the full base size. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ {
+        fuzzy = Options @ InfraSceneHighlight[ g, { InfraPoint[ { 1, 6 } ] } ],
+        crisp = Options @ InfraSceneHighlight[ g, { InfraPoint[ { 1 } ] } ] },
+      ! FreeQ[ fuzzy, AbsolutePointSize[ 7 ] ] &&
+      ! FreeQ[ crisp, AbsolutePointSize[ 14 ] ]
+    ]
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-fuzzy-point-distributes-size"
+]
+
+(* The Automatic point-size default stays off for non-point objects: a set
+   highlight emits no VertexShapeFunction, its vertices inherit the graph's
+   point size. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Cases[
+      Options @ InfraSceneHighlight[ g,
+        { InfraShell @ FindInfraShell[ g, 1, { 1, 2 }, All ] } ],
+      HoldPattern[ VertexShapeFunction -> _ ], Infinity ] === { }
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-automatic-pointsize-off-for-sets"
 ]
 
 (* A symbolic per-entry VertexSize (Large / Tiny / Scaled[..]) stays on the
