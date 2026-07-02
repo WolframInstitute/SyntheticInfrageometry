@@ -42,13 +42,8 @@ PacletInstall["https://www.wolframcloud.com/obj/hajek_pavel/SyntheticInfrageomet
 Needs["WolframInstitute`SyntheticInfrageometry`"]
 ```
 
-Or load a local checkout for development:
+Explore the paclet in the **[LLM-generated presentation notebook](https://www.wolframcloud.com/obj/hajek_pavel/SyntheticInfrageometry/Presentation.nb)** (runs on the Wolfram Cloud).
 
-```wolfram
-PacletDirectoryLoad["/path/to/SyntheticInfrageometry"]
-Needs["WolframInstitute`SyntheticInfrageometry`"]
-```
-
-## ∴ License
+## ⚖️ License
 
 MIT
