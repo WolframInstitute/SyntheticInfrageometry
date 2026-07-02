@@ -31,7 +31,7 @@ $InfraObjectColor   = RGBColor[ 0.55, 0.70, 0.85 ];
 $InfraTopologyColor = RGBColor[ 0.85, 0.55, 0.75 ];
 
 $InfraOpacityRange   = { 0.40, 1.0 };
-$InfraThicknessRange = { 1.0, 5.0 };
+$InfraThicknessRange = { 2.5, 9.0 };
 $InfraPointSizeRange = { 6, 14 };
 
 $InfraSceneHighlightPalette := Join[
