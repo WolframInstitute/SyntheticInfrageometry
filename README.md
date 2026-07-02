@@ -1,5 +1,7 @@
 # 📐 SyntheticInfrageometry
 
+> ⚠️ **Actively developed, experimental research code.** It undergoes frequent cleanings and refactors, and the API may change without notice.
+
 This repository contains experimental code that studies what geometric constructions an observer constrained to a discrete substrate, the so-called **infra-observer**, would develop.
 
 ## 🪢 Motivation from classical geometry
