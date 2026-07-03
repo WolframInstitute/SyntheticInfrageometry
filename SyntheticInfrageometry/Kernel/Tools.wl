@@ -3,6 +3,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageImport["WolframInstitute`Infrageometry`"]
 
 PackageScope[dagGeodesics]
+PackageScope[geodesicEdgeOccupation]
 PackageScope[segReps]
 PackageScope[CentralElement]
 PackageScope[PeripheralElement]
@@ -391,6 +392,31 @@ dagGeodesics[ dag_Graph ] := Which[
             snks = Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] },
       DeleteDuplicates @ Catenate @ Catenate @
         Table[ FindPath[ dag, s, t, Infinity, All ], { s, srcs }, { t, snks } ] ] ]
+
+
+(* edge occupation of a geodesic DAG: sorted-pair {a, b} -> (#source->a)(#b->sink),
+   the number of geodesics through the edge, by topological-order DP (no enumeration).
+   Companion to the vertex-occupation GeodesicOccupation; sources / sinks are all
+   in-degree-0 / out-degree-0 vertices. *)
+
+geodesicEdgeOccupation[ dag_Graph ] :=
+  With[ { edges = List @@@ EdgeList[ dag ] },
+    If[ edges === { }, <||>,
+      Module[ { topo = TopologicalSort @ dag, srcs, snks, succ, pred, fwd, bwd },
+        srcs = Select[ topo, VertexInDegree[ dag, # ] == 0 & ];
+        snks = Select[ topo, VertexOutDegree[ dag, # ] == 0 & ];
+        succ = GroupBy[ edges, First -> Last ];
+        pred = GroupBy[ edges, Last -> First ];
+        fwd = AssociationThread[ srcs -> 1 ];
+        Do[ fwd[ w ] = Total @ Lookup[ fwd, Lookup[ pred, w, { } ], 0 ],
+            { w, DeleteCases[ topo, Alternatives @@ srcs ] } ];
+        bwd = AssociationThread[ snks -> 1 ];
+        Do[ bwd[ w ] = Total @ Lookup[ bwd, Lookup[ succ, w, { } ], 0 ],
+            { w, Reverse @ DeleteCases[ topo, Alternatives @@ snks ] } ];
+        Association[ ( Sort[ # ] -> fwd[ #[[ 1 ]] ] bwd[ #[[ 2 ]] ] ) & /@ edges ]
+      ]
+    ]
+  ]
 
 
 (* The geodesic vertex sequences behind an InfraSegment, regardless of form:

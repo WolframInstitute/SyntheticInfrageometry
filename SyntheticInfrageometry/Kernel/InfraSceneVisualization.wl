@@ -207,7 +207,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             { InfraPoint   [ b_List, w_List ], c_, u_ } :> { b, c, "Points",
                 Append[ u, "Weights" -> AssociationThread[ b -> w ] ] },
             { InfraPoint   [ b_List ], c_, u_ } :> { b, c, "Points", u },
-            { InfraSegment [ dag_Graph ], c_, u_ } :> { dagGeodesics[ dag ], c, "Paths" , u },
+            { InfraSegment [ dag_Graph ], c_, u_ } :> { { dag }, c, "Paths" , u },
             { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraLine    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraPath    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
@@ -270,8 +270,10 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
 
       vEntries = MapThread[
         { reps, color, type, record } |-> With[ {
-            counts  = Counts @ Catenate[ repVerts[ type, # ] & /@ reps ],
-            numReps = Max[ Length @ reps, 1 ],
+            counts  = If[ MatchQ[ reps, { _Graph } ], infraVertexMultiset[ InfraSegment[ First @ reps ] ],
+                          Counts @ Catenate[ repVerts[ type, # ] & /@ reps ] ],
+            numReps = If[ MatchQ[ reps, { _Graph } ], infraNumReps[ InfraSegment[ First @ reps ] ],
+                          Max[ Length @ reps, 1 ] ],
             wts     = record[ "Weights" ] },
           With[ { norm = If[ AssociationQ @ wts, Max @ Values @ wts, numReps ] },
             AssociationMap[
@@ -281,8 +283,10 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
 
       eEntries = MapThread[
         { reps, color, type, record } |-> With[ {
-            counts  = Counts @ Catenate[ repEdges[ type, # ] & /@ reps ],
-            numReps = Max[ Length @ reps, 1 ] },
+            counts  = If[ MatchQ[ reps, { _Graph } ], geodesicEdgeOccupation[ First @ reps ],
+                          Counts @ Catenate[ repEdges[ type, # ] & /@ reps ] ],
+            numReps = If[ MatchQ[ reps, { _Graph } ], infraNumReps[ InfraSegment[ First @ reps ] ],
+                          Max[ Length @ reps, 1 ] ] },
           AssociationMap[
             e |-> { color, counts[ e ] / numReps, record },
             Keys @ counts ] ],
