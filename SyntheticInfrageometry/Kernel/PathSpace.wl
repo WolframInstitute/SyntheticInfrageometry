@@ -74,6 +74,44 @@ SelectInfraPath[ graph_Graph, ( head : InfraSegment | InfraLine | InfraPath | In
   With[ { result = SelectInfraPath[ graph, paths, countSpec, opts ] },
     If[ result === $Failed, $Failed, head[ result ] ] ]
 
+(* geodesic-DAG segment, "MostVisited" without distance spread: the most-visited
+   geodesic(s) are the longest additive-weight source->sink paths of the DAG under
+   node weight c(v) and edge weight w->x = f(w) b(x) (f, b = forward / backward path
+   counts; both are geodesic-occupation counts), so only the optimal geodesics
+   returned are ever enumerated -- never the whole (possibly astronomical) family. *)
+SelectInfraPath[ graph_Graph, InfraSegment[ dag_Graph ],
+            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
+    OptionValue[ SelectInfraPath, { opts }, "From" ] === "MostVisited" &&
+    OptionValue[ SelectInfraPath, { opts }, "Distance" ] === None :=
+  Module[ { topo = TopologicalSort @ dag, edges = List @@@ EdgeList @ dag,
+            source, sink, succ, pred, fwd, bwd, vC, eC, suf, pre, sStar, tight, out, tightDFS },
+    source = SelectFirst[ topo, VertexInDegree[ dag, # ] == 0 & ];
+    sink   = SelectFirst[ topo, VertexOutDegree[ dag, # ] == 0 & ];
+    succ = GroupBy[ edges, First -> Last ];
+    pred = GroupBy[ edges, Last -> First ];
+    fwd = <| source -> 1 |>;
+    Do[ fwd[ w ] = Total @ Lookup[ fwd, Lookup[ pred, w, { } ], 0 ], { w, DeleteCases[ topo, source ] } ];
+    bwd = <| sink -> 1 |>;
+    Do[ bwd[ w ] = Total @ Lookup[ bwd, Lookup[ succ, w, { } ], 0 ], { w, Reverse @ DeleteCases[ topo, sink ] } ];
+    vC = AssociationMap[ fwd[ # ] bwd[ # ] &, topo ];
+    eC = AssociationThread[ edges -> ( fwd[ #[[ 1 ]] ] bwd[ #[[ 2 ]] ] & /@ edges ) ];
+    suf = <| sink -> vC[ sink ] |>;
+    Do[ suf[ w ] = vC[ w ] + Max[ ( eC[ { w, # } ] + suf[ # ] & ) /@ Lookup[ succ, w, { } ] ],
+        { w, Reverse @ DeleteCases[ topo, sink ] } ];
+    pre = <| source -> vC[ source ] |>;
+    Do[ pre[ w ] = vC[ w ] + Max[ ( eC[ { #, w } ] + pre[ # ] & ) /@ Lookup[ pred, w, { } ] ],
+        { w, DeleteCases[ topo, source ] } ];
+    sStar = suf[ source ];
+    tight = AssociationMap[ w |-> Select[ Lookup[ succ, w, { } ], x |-> pre[ w ] + eC[ { w, x } ] + suf[ x ] == sStar ], topo ];
+    out = { };
+    tightDFS[ path_ ] := If[ Length @ out < countLimit @ countSpec,
+      If[ Last @ path === sink, AppendTo[ out, path ],
+        Scan[ x |-> tightDFS[ Append[ path, x ] ], tight[ Last @ path ] ] ] ];
+    tightDFS[ { source } ];
+    With[ { result = SelectInfraPath[ graph, out, countSpec, "From" -> All ] },
+      If[ result === $Failed, $Failed, InfraSegment[ result ] ] ]
+  ]
+
 (* geodesic-DAG segment: enumerate its geodesics, then select as a path bundle. *)
 SelectInfraPath[ graph_Graph, InfraSegment[ dag_Graph ],
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=

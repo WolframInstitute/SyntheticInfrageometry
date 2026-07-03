@@ -14,6 +14,10 @@ InfraSegment[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraSegment[ _List ] ] ] :=
 (* "Length" = list of edge counts, one per realisation: |path| - 1. *)
 InfraSegment[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
+(* source / sink InfraPoints: the distinct first / last vertices across realisations *)
+InfraSegment[ reps_List ][ "Start" ] := InfraPoint[ DeleteDuplicates[ First /@ reps ] ]
+InfraSegment[ reps_List ][ "End" ]   := InfraPoint[ DeleteDuplicates[ Last /@ reps ] ]
+
 (* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
 InfraSegment[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraSegment[ reps ] ]
 InfraSegment[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraSegment[ reps ] ]
@@ -46,6 +50,9 @@ InfraSegment[ dag_Graph ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSegment[
 InfraSegment[ dag_Graph ][ "Realizations" ]               := InfraSegment[ dagGeodesics[ dag ] ]
 InfraSegment[ dag_Graph ][ "Realizations", spec_ ]        := InfraSegment[ infraCap[ dagGeodesics[ dag ], spec ] ]
 InfraSegment[ dag_Graph ][ "Paths" ]                      := dagGeodesics[ dag ]
+(* source / sink InfraPoints: the in-degree-0 / out-degree-0 DAG vertices *)
+InfraSegment[ dag_Graph ][ "Start" ] := InfraPoint[ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ]
+InfraSegment[ dag_Graph ][ "End" ]   := InfraPoint[ Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] ]
 InfraSegment /: Part[ InfraSegment[ dag_Graph ], i_Integer ] := columnInfraPoint[ dagGeodesics[ dag ], i ]
 
 
@@ -64,20 +71,25 @@ Options[ FindInfraSegment ] = {
   Method     -> "Exhaustive"
 };
 
-(* No extra conditions (empty Properties, Exhaustive, the whole family over plain
-   vertex endpoints) -> the compact geodesic-DAG form.  An explicit finite count,
-   any Properties filter, Greedy, or set/InfraPoint endpoints -> the enumerated
-   path form (the calling triple over spreadFind, as before). *)
+(* No extra conditions (empty Properties, Exhaustive, both endpoints a single
+   vertex -- bare or a one-realisation InfraPoint[{v}]) -> the compact geodesic-DAG
+   form.  An explicit finite count, any Properties filter, Greedy, or genuinely
+   multi-realisation InfraPoint endpoints -> the enumerated path form (the calling
+   triple over spreadFind).  A multi-source / multi-sink union of geodesic intervals
+   is not acyclic in general (opposite orientations from different sources), so only
+   the single-vertex case collapses to one DAG. *)
 
 FindInfraSegment[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : Automatic, opts : OptionsPattern[] ] :=
-  If[ ( count === Automatic || count === All ) &&
-      OptionValue[ FindInfraSegment, { opts }, Properties ] === { } &&
-      methodName[ OptionValue[ FindInfraSegment, { opts }, Method ] /. Automatic -> "Exhaustive" ] === "Exhaustive" &&
-      VertexQ[ graph, p1 ] && VertexQ[ graph, p2 ],
-    InfraSegment[ GeodesicIntervalGraph[ graph, p1, p2 ] ],
-    With[ { n = count /. Automatic -> 1 },
-      spreadFind[ InfraSegment, n, findSegmentCore[ graph, ##, n, opts ] &, p1, p2 ] ]
+  With[ { ends = ( If[ VertexQ[ graph, # ], #, Replace[ #, { InfraPoint[ { u_ } ] :> u, _ :> $Failed } ] ] & ) /@ { p1, p2 } },
+    If[ ( count === Automatic || count === All ) &&
+        OptionValue[ FindInfraSegment, { opts }, Properties ] === { } &&
+        methodName[ OptionValue[ FindInfraSegment, { opts }, Method ] /. Automatic -> "Exhaustive" ] === "Exhaustive" &&
+        FreeQ[ ends, $Failed ],
+      InfraSegment[ GeodesicIntervalGraph[ graph, ends[[ 1 ]], ends[[ 2 ]] ] ],
+      With[ { n = count /. Automatic -> 1 },
+        spreadFind[ InfraSegment, n, findSegmentCore[ graph, ##, n, opts ] &, p1, p2 ] ]
+    ]
   ]
 
 

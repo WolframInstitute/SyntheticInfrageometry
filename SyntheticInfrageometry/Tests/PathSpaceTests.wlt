@@ -18,6 +18,21 @@ VerificationTest[
   TestID -> "SelectInfraPath-Periphery-pool-is-sublist"
 ]
 
+(* the geodesic-DAG shortcut for "MostVisited" (longest additive-weight path
+   under geodesic-occupation weights) selects the same set of most-visited
+   geodesics as scoring the fully enumerated bundle *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    ( SelectInfraPath[ g, FindInfraSegment[ g, 1, 25 ], All, "From" -> "MostVisited" ]
+        /. InfraSegment[ r_List ] :> Sort[ Sort /@ r ] )
+    ===
+    ( SelectInfraPath[ g, FindInfraSegment[ g, 1, 25 ][ "Realizations" ], All, "From" -> "MostVisited" ]
+        /. InfraSegment[ r_List ] :> Sort[ Sort /@ r ] )
+  ],
+  True,
+  TestID -> "SelectInfraPath-MostVisited-DAG-equals-enumeration"
+]
+
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
     SubsetQ[ paths, EmbeddingClosest[ g, paths, { 1, 9 } ] ]

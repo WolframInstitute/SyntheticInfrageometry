@@ -192,6 +192,31 @@ VerificationTest[
   TestID -> "InfraSegment-Length-edge-count"
 ]
 
+(* single-realisation InfraPoint endpoints collapse to the same geodesic DAG as
+   bare vertices -- FindInfraPoint output composes into FindInfraSegment directly *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    FindInfraSegment[ g, InfraPoint[ { 1 } ], InfraPoint[ { 25 } ] ] === FindInfraSegment[ g, 1, 25 ] ],
+  True,
+  TestID -> "FindInfraSegment-InfraPoint-endpoints-give-DAG"
+]
+
+(* the DAG "Start" / "End" are the source / sink InfraPoints (in/out-degree-0) *)
+VerificationTest[
+  With[ { seg = FindInfraSegment[ GridGraph[ { 5, 5 } ], 1, 25 ] },
+    { seg[ "Start" ], seg[ "End" ] } ],
+  { InfraPoint[ { 1 } ], InfraPoint[ { 25 } ] },
+  TestID -> "InfraSegment-DAG-Start-End-source-sink"
+]
+
+(* the enumerated form agrees: distinct first / last vertices across realisations *)
+VerificationTest[
+  { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][ "Start" ],
+    InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][ "End" ] },
+  { InfraPoint[ { 1 } ], InfraPoint[ { 3 } ] },
+  TestID -> "InfraSegment-reps-Start-End"
+]
+
 VerificationTest[
   InfraPath[ { { 1, 2, 3, 2, 1 } } ][ "Length" ],
   { 4 },
