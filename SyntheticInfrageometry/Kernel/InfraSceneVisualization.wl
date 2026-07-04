@@ -301,6 +301,11 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
        suppresses that channel; ranges are per-object. *)
     With[ { lerp = { spec, w } |-> If[ ListQ @ spec, spec[[ 1 ]] + ( spec[[ 2 ]] - spec[[ 1 ]] ) w, spec w ] },
       With[ {
+          (* All edge styling (colour, opacity, thickness) rides top-level EdgeStyle,
+             never a Style[edge, ..] highlight spec: HighlightGraph gives a highlight
+             Style priority over EdgeStyle AND drops AbsoluteThickness inside it, so an
+             edge listed both ways renders at default thickness.  EdgeStyle honours all
+             three channels, so the count-driven thickness diffusion actually shows. *)
           edgeData = KeyValueMap[
             { e, cs } |-> With[ { ue = UndirectedEdge @@ e, last = Last @ cs },
               With[ { color = last[[ 1 ]], w = last[[ 2 ]], rec = last[[ 3 ]] },
@@ -311,11 +316,8 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                       { AbsoluteThickness[ lerp[ rec[ "ThicknessRange" ], w ] ] } ],
                     eDirs = List @@ rec[ "EdgeDir" ] },
                   <|
-                    "Style" -> Style[ ue, Directive[ color, Sequence @@ oList, Sequence @@ eDirs ] ],
-                    "EdgeStyle" -> If[ tList === { } && rec[ "EdgeStyle" ] === None &&
-                        FreeQ[ eDirs, Thickness | AbsoluteThickness | Thick | Thin ], Nothing,
-                      ue -> Directive[ color, Sequence @@ oList, Sequence @@ tList, Sequence @@ eDirs,
-                        Sequence @@ If[ rec[ "EdgeStyle" ] === None, { }, { rec[ "EdgeStyle" ] } ] ] ],
+                    "EdgeStyle" -> ( ue -> Directive[ color, Sequence @@ oList, Sequence @@ tList, Sequence @@ eDirs,
+                        Sequence @@ If[ rec[ "EdgeStyle" ] === None, { }, { rec[ "EdgeStyle" ] } ] ] ),
                     "EdgeShapeFunction" -> If[ rec[ "EdgeShapeFunction" ] === None, Nothing,
                       ue -> rec[ "EdgeShapeFunction" ] ]
                   |> ] ] ],
@@ -345,9 +347,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             Merge[ vEntries, Identity ] ] },
 
         HighlightGraph[ graph,
-          Join[
-            Cases[ edgeData,   kv_Association :> kv[ "Style" ] ],
-            Cases[ vertexData, kv_Association /; KeyExistsQ[ kv, "Style" ] :> kv[ "Style" ] ] ],
+          Cases[ vertexData, kv_Association /; KeyExistsQ[ kv, "Style" ] :> kv[ "Style" ] ],
           Sequence @@ DeleteCases[ {
             EdgeStyle           -> DeleteCases[ Cases[ edgeData,   kv_Association :> kv[ "EdgeStyle" ] ], Nothing ],
             EdgeShapeFunction   -> DeleteCases[ Cases[ edgeData,   kv_Association :> kv[ "EdgeShapeFunction" ] ], Nothing ],
