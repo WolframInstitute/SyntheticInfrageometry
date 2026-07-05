@@ -18,6 +18,12 @@ InfraPath[ args : ( _InfraPoint | { _InfraPoint } ) .. ] :=
 (* "Length" = list of edge counts, one per realisation: |walk| - 1. *)
 InfraPath[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
+(* endpoint InfraPoints, multiplicity kept: the end-vertex multiset is the
+   occupation measure of where the walks terminate (unlike InfraSegment, whose
+   endpoints are deduplicated geodesic ends). *)
+InfraPath[ reps_List ][ "Start" ] := InfraPoint[ First /@ reps ]
+InfraPath[ reps_List ][ "End" ]   := InfraPoint[ Last /@ reps ]
+
 (* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
 InfraPath[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraPath[ reps ] ]
 InfraPath[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraPath[ reps ] ]

@@ -256,4 +256,15 @@ VerificationTest[
   TestID -> "InfraPath-scene-DSL-non-simple-kept"
 ]
 
+(* endpoint accessors keep multiplicity: the end-vertex multiset is the
+   occupation measure of where the walks terminate. *)
+VerificationTest[
+  With[ { reps = { { 1, 2, 4 }, { 5, 6, 4 }, { 7, 8, 9 } } },
+    KeySort @ InfraPath[ reps ][ "End" ][ "OccupationCount" ] === KeySort @ Counts[ Last /@ reps ] &&
+    KeySort @ InfraPath[ reps ][ "Start" ][ "OccupationCount" ] === KeySort @ Counts[ First /@ reps ]
+  ],
+  True,
+  TestID -> "InfraPath-endpoint-accessors-keep-multiplicity"
+]
+
 EndTestSection[]
