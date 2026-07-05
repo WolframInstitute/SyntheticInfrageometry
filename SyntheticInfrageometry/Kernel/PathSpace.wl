@@ -34,7 +34,8 @@ PackageScope[windowDeform]
 
 (* Chainable post-filters on the bundle of paths treated as a finite metric
    space.  Calling triple n_Integer | UpTo[n] | All (default n = 1); options
-   "From" (pool selector: All, "Center", "Periphery", "MostVisited", anchor
+   "From" (pool selector: All, "Center", "Periphery", "MostVisited" (max total
+   occupation), "Bottleneck" (max-min occupation, widest corridor), anchor
    -> spec, multi-anchor InfraSegment[{...}] -> spec; "MinLength"
    / "MaxLength" (shortest / longest, circumference for cycles); {"Min", scoreFn} / {"Max", scoreFn}
    with user-supplied path-aggregated scoreFn[path] returning a comparable value),
@@ -775,7 +776,10 @@ poolPositions[ _Graph, _List, "Periphery", pathMatrix_List, _, _ ] :=
     Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ] ]
 
 poolPositions[ _Graph, paths_List, "MostVisited", _, _, cyclic_ ] :=
-  visitPoolPositions[ paths, cyclic ]
+  visitPoolPositions[ paths, cyclic, Total ]
+
+poolPositions[ _Graph, paths_List, "Bottleneck", _, _, cyclic_ ] :=
+  visitPoolPositions[ paths, cyclic, Min ]
 
 poolPositions[ _Graph, paths_List, "MinLength", _, _, _ ] :=
   With[ { lens = Length /@ paths },
@@ -802,15 +806,16 @@ poolPositions[ _Graph, paths_List, { "Max", scoreFn_ }, _, _, _ ] :=
 poolPositions[ _, paths_List, _, _, _, _ ] := Range @ Length @ paths
 
 
-(* Positions of paths whose total vertex + edge visit count across the
-   bundle is maximal. *)
+(* Positions of paths extremising the bundle visit counts of their vertices and
+   edges: agg = Total picks max total occupation ("MostVisited"), agg = Min picks
+   the max-min bottleneck (widest continuous corridor, "Bottleneck"). *)
 
-visitPoolPositions[ paths_List, cyclic_ ] :=
+visitPoolPositions[ paths_List, cyclic_, agg_ ] :=
   With[ { edgeSeqs = infraRepEdges[ None, If[ cyclic, "Cycles", "Paths" ], # ] & /@ paths },
     With[ { vCounts = Counts @ Catenate @ paths,
             eCounts = Counts @ Catenate @ edgeSeqs },
       With[ { scores = MapThread[
-            Total @ Lookup[ vCounts, #1, 0 ] + Total @ Lookup[ eCounts, #2, 0 ] &,
+            agg @ Join[ Lookup[ vCounts, #1, 0 ], Lookup[ eCounts, #2, 0 ] ] &,
             { paths, edgeSeqs } ] },
         Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ]
       ]

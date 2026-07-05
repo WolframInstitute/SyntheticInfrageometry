@@ -248,6 +248,22 @@ VerificationTest[
   TestID -> "SelectInfraCycle-MostVisited-returns-sublist"
 ]
 
+(* ===== Bottleneck pool: max-min bundle occupation of vertices + edges ===== *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+    With[ { vC = Counts @ Catenate @ paths,
+            eC = Counts @ Catenate @ ( Sort /@ Partition[ #, 2, 1 ] & /@ paths ) },
+      With[ { scores = Min @ Join[ Lookup[ vC, #, 0 ], Lookup[ eC, Sort /@ Partition[ #, 2, 1 ], 0 ] ] & /@ paths },
+        Sort @ SelectInfraPath[ g, paths, All, "From" -> "Bottleneck" ] ===
+          Sort @ Pick[ paths, Thread[ scores == Max @ scores ] ]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "SelectInfraPath-Bottleneck-maximin-occupation"
+]
+
 (* ===== Distance constraint: Max k-clique in path-space ===== *)
 
 VerificationTest[
