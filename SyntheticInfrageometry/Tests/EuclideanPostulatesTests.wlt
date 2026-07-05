@@ -845,6 +845,23 @@ VerificationTest[
   TestID -> "FindInfraCircle-default-returns-shortest"
 ]
 
+(* Separating disconnects c from { d > rmax } and the shortest such cycle
+   hugs the inner edge rmin, so widening the outer radius does not lengthen
+   it: shortest({rmin, rmax+1}) == shortest({rmin, rmax}).  (The old
+   mean-pinned separating test failed this -- {2,4} came out longer than
+   {2,3}.) *)
+
+VerificationTest[
+  With[{g = GridGraph[{11, 11}]},
+    With[{inner = First @ First @ First @ FindInfraCircle[g, First @ GraphCenter[g], {2, 3}],
+          wide  = First @ First @ First @ FindInfraCircle[g, First @ GraphCenter[g], {2, 4}]},
+      Length[wide] == Length[inner]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraCircle-shortest-hugs-inner-edge"
+]
+
 (* Properties -> {"Separating"} (no "Shortest") accepts longer separating
    cycles too; cycles are length-ordered. *)
 

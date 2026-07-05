@@ -65,7 +65,7 @@ FindInfraCircle[ graph_Graph, p_, r_,
                      NeighborhoodGraph[ graph, p0, Ceiling[ range[[ 2 ]] ] + 2 ], graph ];
         levelSet = Select[ VertexList[ localG ],
           range[[ 1 ]] <= GraphDistance[ localG, p0, # ] <= range[[ 2 ]] & ];
-        radius = If[ NumericQ[ r0 ], r0, Mean[ r0 ] ];
+        radius = range[[ 2 ]];
         levelGraph = Subgraph[ localG, levelSet ];
         vertsTest  = admissibleCircleVerts[ localG, p0, radius,
                        DeleteCases[ properties, "Shortest" ] ];
@@ -114,8 +114,15 @@ admissibleCircleSet[ levelGraph_Graph, vertsTest_ ] :=
           cyc |-> vertsTest[ cycleToVertexSequence @ cyc ] ]
 
 
+(* Separating = deleting the cycle traps the center within { d <= rmax },
+   i.e. disconnects c from { v : d(c, v) > rmax }.  The shortest such cycle
+   hugs the inner edge rmin; no clean cut at the mean (that is why the
+   circle here differs from SeparatingSetQ, which FindInfraShell still uses). *)
 propertyPredicateCircle[ localG_Graph, center_, radius_, "Separating" ] :=
-  verts |-> SeparatingSetQ[ localG, verts, center, radius ]
+  verts |-> With[ { rem = VertexDelete[ localG, verts ] },
+    With[ { cc = SelectFirst[ ConnectedComponents[ rem ], MemberQ[ #, center ] & ] },
+      cc =!= Missing[ "NotFound" ] &&
+      AllTrue[ cc, GraphDistance[ localG, center, # ] <= radius & ] ] ]
 
 propertyPredicateCircle[ _, _, _, other_ ] :=
   ( Message[ FindInfraCircle::badproperty, other ]; Throw[ $Failed ] )
