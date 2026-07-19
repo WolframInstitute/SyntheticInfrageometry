@@ -67,7 +67,11 @@ OrthogonalCoordinates[ g_Graph, c_, axes_List, v_, opts : OptionsPattern[] ] /;
       axisPaths = Replace[ #, InfraSegment[ reps_List ] :> First @ reps ] & /@ axes,
       sel       = OptionValue[ "SelectCoordinate" ]
     },
-    orthogonalCoordsCore[ g, axisPaths, v, perAxisAnchor[ #, centerVs ] & /@ axisPaths, sel ]
+    Map[
+      axis |-> selectCoordinate[ sel,
+        axisLayerIndex[ g, axis, v ] -
+          First @ axisLayerIndex[ g, axis, perAxisAnchor[ axis, centerVs ] ] ],
+      axisPaths ]
   ]
 
 OrthogonalCoordinates[ g_Graph, c_, axes_List, opts : OptionsPattern[] ] :=
@@ -229,14 +233,6 @@ selectCoordinate[ "Centered", shifted_List ] :=
   If[ MemberQ[ shifted, 0 ], 0, Round @ Median[ shifted ] ]
 selectCoordinate[ All, ix_List ] := ix
 selectCoordinate[ f_,   ix_List ] := f @ ix
-
-
-orthogonalCoordsCore[ g_Graph, axes_List, v_, anchors_List, sel_ ] :=
-  MapThread[
-    { axis, anchor } |-> selectCoordinate[ sel,
-      axisLayerIndex[ g, axis, v ] - First @ axisLayerIndex[ g, axis, anchor ] ],
-    { axes, anchors }
-  ]
 
 
 perAxisAnchor[ axis_List, vs_List ] :=

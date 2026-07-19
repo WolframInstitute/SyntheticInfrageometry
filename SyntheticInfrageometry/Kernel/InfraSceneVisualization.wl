@@ -282,8 +282,26 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
         { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]] } ];
 
       eEntries = MapThread[
+        (* DAG segments: edge occupation {a, b} -> (#source->a)(#b->sink), the
+           number of geodesics through the edge, by topological-order DP (no
+           enumeration; companion to the vertex-occupation GeodesicOccupation) *)
         { reps, color, type, record } |-> With[ {
-            counts  = If[ MatchQ[ reps, { _Graph } ], geodesicEdgeOccupation[ First @ reps ],
+            counts  = If[ MatchQ[ reps, { _Graph } ],
+                          With[ { dag = First @ reps }, { edges = List @@@ EdgeList[ dag ] },
+                            If[ edges === { }, <||>,
+                              Module[ { topo = TopologicalSort @ dag, srcs, snks, succ, pred, fwd, bwd },
+                                srcs = Select[ topo, VertexInDegree[ dag, # ] == 0 & ];
+                                snks = Select[ topo, VertexOutDegree[ dag, # ] == 0 & ];
+                                succ = GroupBy[ edges, First -> Last ];
+                                pred = GroupBy[ edges, Last -> First ];
+                                fwd = AssociationThread[ srcs -> 1 ];
+                                Do[ fwd[ w ] = Total @ Lookup[ fwd, Lookup[ pred, w, { } ], 0 ],
+                                    { w, DeleteCases[ topo, Alternatives @@ srcs ] } ];
+                                bwd = AssociationThread[ snks -> 1 ];
+                                Do[ bwd[ w ] = Total @ Lookup[ bwd, Lookup[ succ, w, { } ], 0 ],
+                                    { w, Reverse @ DeleteCases[ topo, Alternatives @@ snks ] } ];
+                                Association[ ( Sort[ # ] -> fwd[ #[[ 1 ]] ] bwd[ #[[ 2 ]] ] ) & /@ edges ]
+                              ] ] ],
                           Counts @ Catenate[ repEdges[ type, # ] & /@ reps ] ],
             numReps = If[ MatchQ[ reps, { _Graph } ], infraNumReps[ InfraSegment[ First @ reps ] ],
                           Max[ Length @ reps, 1 ] ] },

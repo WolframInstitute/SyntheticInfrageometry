@@ -444,18 +444,14 @@ perpendicularByQ[ workGraph_Graph, graph_Graph, line_, point_, spec_, radius_ ] 
 
 (* Canonical maximal geodesics through every vertex in verts. *)
 
-findCommonLineCore[ graph_Graph, verts_List ] :=
-  With[ { uverts = DeleteDuplicates @ Catenate[ infraUnionSpread /@ verts ] },
-    If[ Length[ uverts ] < 2, { },
-      DeleteDuplicates @ Select[
-        canonicalLine[ #[[ 1, 1 ]] ] & /@ FindInfraLine[ graph, First @ uverts, uverts[[ 2 ]], All ],
-        line |-> SubsetQ[ line, uverts ] ]
-    ]
-  ]
-
 FindInfraCommonLine[ graph_Graph, verts_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
-  With[ { capped = infraCap[ findCommonLineCore[ graph, verts ], count ] },
+  With[ { uverts = DeleteDuplicates @ Catenate[ infraVertexSet /@ verts ] },
+    { common = If[ Length[ uverts ] < 2, { },
+        DeleteDuplicates @ Select[
+          canonicalLine[ #[[ 1, 1 ]] ] & /@ FindInfraLine[ graph, First @ uverts, uverts[[ 2 ]], All ],
+          line |-> SubsetQ[ line, uverts ] ] ] },
+    { capped = infraCap[ common, count ] },
     If[ capped === $Failed, $Failed, InfraLine[ { # } ] & /@ capped ]
   ]
 

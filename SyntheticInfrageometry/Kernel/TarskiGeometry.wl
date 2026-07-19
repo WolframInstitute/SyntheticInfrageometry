@@ -1,12 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[tarskiCongruenceIdentityCounter]
-PackageScope[tarskiSegmentConstructionCounter]
-PackageScope[tarskiFiveSegmentsCounter]
-PackageScope[tarskiBetweennessIdentityCounter]
-PackageScope[tarskiInnerPaschCounter]
-PackageScope[tarskiLowerDimensionCounter]
-PackageScope[tarskiUpperDimensionCounter]
 
 
 (* ===================== BetweennessQ / EquidistanceQ ===================== *)
@@ -209,13 +202,65 @@ FindTarskiCounterexample[ graph_Graph, predQ_Symbol, All ] :=
   Switch[ predQ,
     TarskiCongruenceReflexivityQ,   { },
     TarskiCongruenceTransitivityQ,  { },
-    TarskiCongruenceIdentityQ,      tarskiCongruenceIdentityCounter[ graph ],
-    TarskiSegmentConstructionQ,     tarskiSegmentConstructionCounter[ graph ],
-    TarskiFiveSegmentsQ,            tarskiFiveSegmentsCounter[ graph ],
-    TarskiBetweennessIdentityQ,     tarskiBetweennessIdentityCounter[ graph ],
-    TarskiInnerPaschQ,              tarskiInnerPaschCounter[ graph ],
-    TarskiLowerDimensionQ,          tarskiLowerDimensionCounter[ graph ],
-    TarskiUpperDimensionQ,          tarskiUpperDimensionCounter[ graph ],
+    TarskiCongruenceIdentityQ,
+      Cases[ Subsets[ VertexList[ graph ], { 2 } ],
+        pair_ /; GraphDistance[ graph, pair[[ 1 ]], pair[[ 2 ]] ] === 0 :> pair ],
+    TarskiSegmentConstructionQ,
+      Select[ Tuples[ VertexList[ graph ], 4 ],
+        tuple |-> Length @ ExtendInfraSegment[ graph,
+          tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ] === 0 ],
+    TarskiFiveSegmentsQ,
+      (* cap = 200000 keeps the 8-tuple sweep bounded on non-trivial graphs *)
+      Module[ { found = { }, count = 0, cap = 200000 },
+        Catch[
+          Do[
+            With[ {
+              a = eight[[ 1 ]], b = eight[[ 2 ]], c = eight[[ 3 ]], d = eight[[ 4 ]],
+              ap = eight[[ 5 ]], bp = eight[[ 6 ]], cp = eight[[ 7 ]], dp = eight[[ 8 ]] },
+              count++;
+              If[ count > cap, Throw[ Null ] ];
+              If[ a =!= b &&
+                  GraphDistance[ graph, a, b ] === GraphDistance[ graph, ap, bp ] &&
+                  GraphDistance[ graph, b, c ] === GraphDistance[ graph, bp, cp ] &&
+                  GraphDistance[ graph, a, d ] === GraphDistance[ graph, ap, dp ] &&
+                  GraphDistance[ graph, b, d ] === GraphDistance[ graph, bp, dp ] &&
+                  BetweennessQ[ graph, a, b, c ] && BetweennessQ[ graph, ap, bp, cp ] &&
+                  GraphDistance[ graph, c, d ] =!= GraphDistance[ graph, cp, dp ],
+                AppendTo[ found, eight ] ]
+            ],
+            { eight, Tuples[ VertexList[ graph ], 8 ] } ]
+        ];
+        found
+      ],
+    TarskiBetweennessIdentityQ,
+      Cases[ Tuples[ VertexList[ graph ], 2 ],
+        pair_ /;
+          pair[[ 1 ]] =!= pair[[ 2 ]] &&
+          BetweennessQ[ graph, pair[[ 1 ]], pair[[ 2 ]], pair[[ 1 ]] ] :> pair ],
+    TarskiInnerPaschQ,
+      Select[ Tuples[ VertexList[ graph ], 5 ],
+        tuple |-> With[ {
+            a = tuple[[ 1 ]], b = tuple[[ 2 ]], c = tuple[[ 3 ]],
+            p = tuple[[ 4 ]], q = tuple[[ 5 ]] },
+          BetweennessQ[ graph, a, p, c ] && BetweennessQ[ graph, b, q, c ] &&
+          Intersection[ MetricInterval[ graph, p, b ], MetricInterval[ graph, q, a ] ] === { }
+        ] ],
+    TarskiLowerDimensionQ,
+      If[ AnyTrue[ Subsets[ VertexList[ graph ], { 3 } ],
+            triple |-> ! CollinearQ[ graph, triple ] ],
+        { },
+        { { } } ],
+    TarskiUpperDimensionQ,
+      Select[ Tuples[ VertexList[ graph ], 5 ],
+        tuple |-> With[ {
+            p = tuple[[ 1 ]], q = tuple[[ 2 ]],
+            a = tuple[[ 3 ]], b = tuple[[ 4 ]], c = tuple[[ 5 ]] },
+          p =!= q &&
+          EquidistanceQ[ graph, a, p, a, q ] &&
+          EquidistanceQ[ graph, b, p, b, q ] &&
+          EquidistanceQ[ graph, c, p, c, q ] &&
+          ! CollinearQ[ graph, { a, b, c } ]
+        ] ],
     TarskiEuclidAxiomQ,             { },
     TarskiContinuityQ,              $Failed
   ]
@@ -229,78 +274,3 @@ FindTarskiCounterexample[ graph_Graph, predQ_Symbol, n_Integer : 1 ] :=
   With[ { result = FindTarskiCounterexample[ graph, predQ, UpTo[ n ] ] },
     Which[ ! ListQ[ result ], result, Length[ result ] < n, $Failed, True, result ]
   ]
-
-
-(* ===================== Helpers: per-axiom counterexample searchers ===================== *)
-
-tarskiCongruenceIdentityCounter[ graph_Graph ] :=
-  Cases[ Subsets[ VertexList[ graph ], { 2 } ],
-    pair_ /; GraphDistance[ graph, pair[[ 1 ]], pair[[ 2 ]] ] === 0 :> pair ]
-
-
-tarskiBetweennessIdentityCounter[ graph_Graph ] :=
-  Cases[ Tuples[ VertexList[ graph ], 2 ],
-    pair_ /;
-      pair[[ 1 ]] =!= pair[[ 2 ]] &&
-      BetweennessQ[ graph, pair[[ 1 ]], pair[[ 2 ]], pair[[ 1 ]] ] :> pair ]
-
-
-tarskiSegmentConstructionCounter[ graph_Graph ] :=
-  Select[ Tuples[ VertexList[ graph ], 4 ],
-    tuple |-> Length @ ExtendInfraSegment[ graph,
-      tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ] === 0 ]
-
-
-tarskiFiveSegmentsCounter[ graph_Graph ] :=
-  Module[ { found = { }, count = 0,
-            vs = VertexList[ graph ], cap = 200000 },
-    Catch[
-      Do[
-        With[ {
-          a = eight[[ 1 ]], b = eight[[ 2 ]], c = eight[[ 3 ]], d = eight[[ 4 ]],
-          ap = eight[[ 5 ]], bp = eight[[ 6 ]], cp = eight[[ 7 ]], dp = eight[[ 8 ]] },
-          count++;
-          If[ count > cap, Throw[ Null ] ];
-          If[ a =!= b &&
-              GraphDistance[ graph, a, b ] === GraphDistance[ graph, ap, bp ] &&
-              GraphDistance[ graph, b, c ] === GraphDistance[ graph, bp, cp ] &&
-              GraphDistance[ graph, a, d ] === GraphDistance[ graph, ap, dp ] &&
-              GraphDistance[ graph, b, d ] === GraphDistance[ graph, bp, dp ] &&
-              BetweennessQ[ graph, a, b, c ] && BetweennessQ[ graph, ap, bp, cp ] &&
-              GraphDistance[ graph, c, d ] =!= GraphDistance[ graph, cp, dp ],
-            AppendTo[ found, eight ] ]
-        ],
-        { eight, Tuples[ vs, 8 ] } ]
-    ];
-    found
-  ]
-
-
-tarskiInnerPaschCounter[ graph_Graph ] :=
-  Select[ Tuples[ VertexList[ graph ], 5 ],
-    tuple |-> With[ {
-        a = tuple[[ 1 ]], b = tuple[[ 2 ]], c = tuple[[ 3 ]],
-        p = tuple[[ 4 ]], q = tuple[[ 5 ]] },
-      BetweennessQ[ graph, a, p, c ] && BetweennessQ[ graph, b, q, c ] &&
-      Intersection[ MetricInterval[ graph, p, b ], MetricInterval[ graph, q, a ] ] === { }
-    ] ]
-
-
-tarskiLowerDimensionCounter[ graph_Graph ] :=
-  If[ AnyTrue[ Subsets[ VertexList[ graph ], { 3 } ],
-        triple |-> ! CollinearQ[ graph, triple ] ],
-    { },
-    { { } } ]
-
-
-tarskiUpperDimensionCounter[ graph_Graph ] :=
-  Select[ Tuples[ VertexList[ graph ], 5 ],
-    tuple |-> With[ {
-        p = tuple[[ 1 ]], q = tuple[[ 2 ]],
-        a = tuple[[ 3 ]], b = tuple[[ 4 ]], c = tuple[[ 5 ]] },
-      p =!= q &&
-      EquidistanceQ[ graph, a, p, a, q ] &&
-      EquidistanceQ[ graph, b, p, b, q ] &&
-      EquidistanceQ[ graph, c, p, c, q ] &&
-      ! CollinearQ[ graph, { a, b, c } ]
-    ] ]

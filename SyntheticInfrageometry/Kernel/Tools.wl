@@ -3,12 +3,10 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageImport["WolframInstitute`Infrageometry`"]
 
 PackageScope[dagGeodesics]
-PackageScope[geodesicEdgeOccupation]
 PackageScope[segReps]
 PackageScope[SeparatingSetQ]
 PackageScope[findAllMinimalAdmissible]
 PackageScope[findGreedyMinimalAdmissible]
-PackageScope[pairAuxiliaryGraph]
 PackageScope[countLimit]
 PackageScope[takeUpTo]
 PackageScope[allGeodesics]
@@ -20,14 +18,12 @@ PackageScope[applyPruning]
 PackageScope[infraSpread]
 PackageScope[infraCap]
 PackageScope[spreadFind]
-PackageScope[infraUnionSpread]
 PackageScope[infraVertexMultiset]
 PackageScope[infraRepType]
 PackageScope[infraRepSeqs]
 PackageScope[infraRepVerts]
 PackageScope[infraRepEdges]
 PackageScope[infraNumReps]
-PackageScope[infraEdgeMultiset]
 PackageScope[linePointSet]
 PackageScope[cycleToVertexSequence]
 PackageScope[methodName]
@@ -301,23 +297,6 @@ findAllMinimalAdmissible[ graph_Graph, set_List, admissible_, pruning_ ] :=
   ]
 
 
-pairAuxiliaryGraph[ graph_Graph, set_List, p1_, p2_ ] :=
-  With[ { nodes = Union[ set, { p1, p2 } ] },
-    With[ { components = ConnectedComponents @ Subgraph[ graph,
-              Complement[ VertexList[ graph ], nodes ] ] },
-      With[ { paired = Flatten[
-                ( comp |-> UndirectedEdge @@@ Subsets[
-                    Intersection[ nodes, Union @@ ( AdjacencyList[ graph, # ] & /@ comp ) ],
-                    { 2 } ] ) /@ components, 1 ],
-              direct = Cases[ EdgeList[ graph ],
-                ( UndirectedEdge | DirectedEdge )[ u_, v_ ] /;
-                  MemberQ[ nodes, u ] && MemberQ[ nodes, v ] :> UndirectedEdge[ u, v ] ] },
-        Graph[ nodes, DeleteDuplicates[ Join[ paired, direct ] ] ]
-      ]
-    ]
-  ]
-
-
 (* ===================== Multi-realisation wrapper helpers ===================== *)
 
 (* Find* functions return a List of unary wrappers InfraX[{r}]; the multi-
@@ -363,29 +342,6 @@ dagGeodesics[ dag_Graph ] := Which[
         Table[ FindPath[ dag, s, t, Infinity, All ], { s, srcs }, { t, snks } ] ] ]
 
 
-(* edge occupation of a geodesic DAG: sorted-pair {a, b} -> (#source->a)(#b->sink),
-   the number of geodesics through the edge, by topological-order DP (no enumeration).
-   Companion to the vertex-occupation GeodesicOccupation; sources / sinks are all
-   in-degree-0 / out-degree-0 vertices. *)
-
-geodesicEdgeOccupation[ dag_Graph ] :=
-  With[ { edges = List @@@ EdgeList[ dag ] },
-    If[ edges === { }, <||>,
-      Module[ { topo = TopologicalSort @ dag, srcs, snks, succ, pred, fwd, bwd },
-        srcs = Select[ topo, VertexInDegree[ dag, # ] == 0 & ];
-        snks = Select[ topo, VertexOutDegree[ dag, # ] == 0 & ];
-        succ = GroupBy[ edges, First -> Last ];
-        pred = GroupBy[ edges, Last -> First ];
-        fwd = AssociationThread[ srcs -> 1 ];
-        Do[ fwd[ w ] = Total @ Lookup[ fwd, Lookup[ pred, w, { } ], 0 ],
-            { w, DeleteCases[ topo, Alternatives @@ srcs ] } ];
-        bwd = AssociationThread[ snks -> 1 ];
-        Do[ bwd[ w ] = Total @ Lookup[ bwd, Lookup[ succ, w, { } ], 0 ],
-            { w, Reverse @ DeleteCases[ topo, Alternatives @@ snks ] } ];
-        Association[ ( Sort[ # ] -> fwd[ #[[ 1 ]] ] bwd[ #[[ 2 ]] ] ) & /@ edges ]
-      ]
-    ]
-  ]
 
 
 (* The geodesic vertex sequences behind an InfraSegment, regardless of form:
@@ -396,20 +352,6 @@ geodesicEdgeOccupation[ dag_Graph ] :=
 segReps[ InfraSegment[ dag_Graph ] ]        := dagGeodesics[ dag ]
 segReps[ InfraSegment[ reps_List, ___ ] ]   := reps
 segReps[ ws : { ___InfraSegment } ]         := Catenate[ segReps /@ ws ]
-
-
-(* Collapse a wrapped entry to the union of its realisations, for set-
-   conjunction Find* over a single _List argument (FindInfraCommonLine,
-   FindInfraCommonPoint). *)
-
-infraUnionSpread[ InfraPoint[ verts_List, _List ] ] := DeleteDuplicates @ verts
-infraUnionSpread[ InfraPoint[ reps_List ] ] := DeleteDuplicates @ reps
-infraUnionSpread[ ( InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraRay )[ reps_List ] ] :=
-  Union @@ reps
-infraUnionSpread[ InfraSegment[ dag_Graph ] ] := VertexList[ dag ]
-infraUnionSpread[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] :=
-  Union @@ polylineToVertexSeqs[ reps ]
-infraUnionSpread[ other_ ] := { other }
 
 
 (* Seed vertex set for the hull family (FindSegmentHull / FindLineHull /
@@ -491,7 +433,8 @@ InfraMeasure[ obj_, opts:OptionsPattern[] ] :=
 visitMeasure[ g_, obj_, on_, method_ ] :=
   With[ { vm = infraVertexMultiset[ obj ],
           em = If[ on === "Vertices", <||>,
-                   KeyMap[ UndirectedEdge @@ # &, infraEdgeMultiset[ g, obj ] ] ] },
+                   KeyMap[ UndirectedEdge @@ # &, Counts @ Catenate[
+                     infraRepEdges[ g, infraRepType @ Head @ obj, # ] & /@ infraRepSeqs @ obj ] ] ] },
     Switch[ on,
       "Vertices", normalizeMeasure[ method, vm, obj ],
       "Edges",    normalizeMeasure[ method, em, obj ],
@@ -550,12 +493,9 @@ infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
 infraNumReps[ InfraSegment[ dag_Graph ] ]          := With[ { occ = GeodesicOccupation[ dag ] }, If[ Length @ occ === 0, 1, Max[ Values @ occ ] ] ]
 infraNumReps[ head_[ reps_List, ___ ] ]            := Max[ Length @ reps, 1 ]
 
-(* raw edge multiset, keyed by sorted lists {a, b}.  Sets-type edges are the
-   induced subgraph, hence the graph dependency.  InfraMeasure remaps the keys
-   to UndirectedEdge; the renderer consumes the sorted-list keys directly. *)
-
-infraEdgeMultiset[ g_, obj_ ] :=
-  Counts @ Catenate[ infraRepEdges[ g, infraRepType @ Head @ obj, # ] & /@ infraRepSeqs @ obj ]
+(* per-type edge extraction, keyed by sorted lists {a, b}.  Sets-type edges are
+   the induced subgraph, hence the graph dependency.  InfraMeasure remaps the
+   keys to UndirectedEdge. *)
 
 infraRepEdges[ _, "Points", _ ]   := { }
 infraRepEdges[ _, "PointSet", _ ] := { }

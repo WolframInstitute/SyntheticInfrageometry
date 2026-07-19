@@ -3,10 +3,6 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageImport["WolframInstitute`Infrageometry`"]
 
 PackageScope[findPointPool]
-PackageScope[midpointsOnWalk]
-PackageScope[embeddingRankMidpointsFromSegment]
-PackageScope[goldenSectionsOnWalk]
-PackageScope[embeddingRankGoldenSectionsFromSegment]
 PackageScope[selectFromPointSpace]
 
 
@@ -200,10 +196,23 @@ FindInfraMidpoint[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        InfraPoint[ DeleteDuplicates @ Flatten[ midpointsOnWalk[ #, tol ] & /@ First[ seg ], 1 ] ],
+        InfraPoint[ DeleteDuplicates @ Flatten[
+          Map[
+            walk |-> With[ { offsets = Abs[ Range[ Length[ walk ] ] - ( Length[ walk ] + 1 ) / 2 ] },
+              Pick[ walk, Thread[ offsets <= Min[ offsets ] + tol ], True ] ],
+            First[ seg ] ], 1 ] ],
       "Embedding",
-        InfraPoint[ { First @ embeddingRankMidpointsFromSegment[ graph, First[ seg ],
-            parseEmbeddingMethod @ OptionValue[ Method ] ] } ]
+        (* closest vertex to the coord-space midpoint of the endpoints; pool
+           "ShortestPaths" = vertices of the supplied walks, "AllPaths" = all *)
+        With[ { walks = First[ seg ], embOpts = parseEmbeddingMethod @ OptionValue[ Method ] },
+          { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
+            vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
+          { target = ( coords[[ vertexIndex[ First @ First @ walks ] ]] +
+                       coords[[ vertexIndex[ Last @ First @ walks ] ]] ) / 2,
+            pool = If[ embOpts[ "Pool" ] === "AllPaths",
+                     VertexList[ graph ], DeleteDuplicates @ Catenate @ walks ] },
+          InfraPoint[ { First @
+            SortBy[ pool, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ] } ] ]
     ]
   ]
 
@@ -213,46 +222,6 @@ FindInfraMidpoint[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Length[ 
 FindInfraMidpoint[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
   FindInfraMidpoint[ graph,
     InfraSegment[ segReps @ FindInfraSegment[ graph, p1, p2, All ] ], opts ]
-
-
-midpointsOnWalk[ walk_List, tol_ ] :=
-  With[ { offsets = Abs[ Range[ Length[ walk ] ] - ( Length[ walk ] + 1 ) / 2 ] },
-    Pick[ walk, Thread[ offsets <= Min[ offsets ] + tol ], True ]
-  ]
-
-
-(* Sort by Euclidean distance from each vertex's embedding coordinate to the
-   coord-space midpoint of the segment endpoints (shared across all walks).
-   Pool: "ShortestPaths" uses the union of vertices in the supplied walks;
-   "AllPaths" uses every graph vertex. *)
-
-embeddingRankMidpoints[ graph_Graph, p1_, p2_, embOpts_Association ] :=
-  With[ { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
-          vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ],
-          total = GraphDistance[ graph, p1, p2 ] },
-    With[ { target = ( coords[[ vertexIndex[ p1 ] ]] + coords[[ vertexIndex[ p2 ] ]] ) / 2 },
-      SortBy[
-        If[ embOpts[ "Pool" ] === "AllPaths", VertexList[ graph ],
-          Select[ VertexList[ graph ],
-            GraphDistance[ graph, p1, # ] + GraphDistance[ graph, #, p2 ] == total & ] ],
-        v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ]
-    ]
-  ]
-
-
-embeddingRankMidpointsFromSegment[ graph_Graph, walks_List, embOpts_Association ] :=
-  With[ { p1 = First @ First @ walks, p2 = Last @ First @ walks },
-    If[ embOpts[ "Pool" ] === "AllPaths",
-      embeddingRankMidpoints[ graph, p1, p2, embOpts ],
-      With[ { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
-              vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
-        With[ { target = ( coords[[ vertexIndex[ p1 ] ]] + coords[[ vertexIndex[ p2 ] ]] ) / 2 },
-          SortBy[ DeleteDuplicates @ Catenate @ walks,
-            v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ]
-        ]
-      ]
-    ]
-  ]
 
 
 (* ===================== FindInfraGoldenSection ===================== *)
@@ -273,10 +242,25 @@ FindInfraGoldenSection[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ]
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        InfraPoint[ DeleteDuplicates @ Flatten[ goldenSectionsOnWalk[ #, tol ] & /@ First[ seg ], 1 ] ],
+        InfraPoint[ DeleteDuplicates @ Flatten[
+          Map[
+            walk |-> With[ { offsets =
+                  Abs[ Range[ Length[ walk ] ] - N[ 1 + ( Length[ walk ] - 1 ) / GoldenRatio ] ] },
+              Pick[ walk, Thread[ offsets <= Min[ offsets ] + tol ], True ] ],
+            First[ seg ] ], 1 ] ],
       "Embedding",
-        InfraPoint[ { First @ embeddingRankGoldenSectionsFromSegment[ graph, First[ seg ],
-            parseEmbeddingMethod @ OptionValue[ Method ] ] } ]
+        (* closest vertex to the coord-space golden point p1 + (p2 - p1)/phi;
+           pool as in FindInfraMidpoint *)
+        With[ { walks = First[ seg ], embOpts = parseEmbeddingMethod @ OptionValue[ Method ] },
+          { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
+            vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
+          { target = coords[[ vertexIndex[ First @ First @ walks ] ]] +
+                     ( coords[[ vertexIndex[ Last @ First @ walks ] ]] -
+                       coords[[ vertexIndex[ First @ First @ walks ] ]] ) / N[ GoldenRatio ],
+            pool = If[ embOpts[ "Pool" ] === "AllPaths",
+                     VertexList[ graph ], DeleteDuplicates @ Catenate @ walks ] },
+          InfraPoint[ { First @
+            SortBy[ pool, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ] } ] ]
     ]
   ]
 
@@ -286,29 +270,6 @@ FindInfraGoldenSection[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Len
 FindInfraGoldenSection[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
   FindInfraGoldenSection[ graph,
     InfraSegment[ segReps @ FindInfraSegment[ graph, p1, p2, All ] ], opts ]
-
-
-goldenSectionsOnWalk[ walk_List, tol_ ] :=
-  With[ { offsets = Abs[ Range[ Length[ walk ] ] - N[ 1 + ( Length[ walk ] - 1 ) / GoldenRatio ] ] },
-    Pick[ walk, Thread[ offsets <= Min[ offsets ] + tol ], True ]
-  ]
-
-
-embeddingRankGoldenSectionsFromSegment[ graph_Graph, walks_List, embOpts_Association ] :=
-  With[ { p1 = First @ First @ walks, p2 = Last @ First @ walks,
-          phi = N[ GoldenRatio ] },
-    With[ { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
-            vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
-      With[ { target = coords[[ vertexIndex[ p1 ] ]] +
-                       ( 1 / phi ) ( coords[[ vertexIndex[ p2 ] ]] - coords[[ vertexIndex[ p1 ] ]] ) },
-        SortBy[
-          If[ embOpts[ "Pool" ] === "AllPaths", VertexList[ graph ],
-            DeleteDuplicates @ Catenate @ walks ],
-          v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ]
-        ]
-      ]
-    ]
-  ]
 
 
 (* ===================== FindInfraReflection ===================== *)

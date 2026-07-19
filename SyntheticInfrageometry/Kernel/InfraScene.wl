@@ -2,7 +2,6 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageScope[toVertexSet]
 PackageScope[infraVertexSet]
-PackageScope[topologicalLevels]
 PackageScope[resolveExpression]
 PackageScope[extractBranches]
 PackageScope[capBranches]
@@ -10,7 +9,6 @@ PackageScope[applySelectOption]
 PackageScope[constructionPatternQ]
 PackageScope[dispatchConstruction]
 PackageScope[evaluateConstruction]
-PackageScope[evaluateStep]
 
 
 (* ===================== Helpers ===================== *)
@@ -18,17 +16,6 @@ PackageScope[evaluateStep]
 (* Atomic-vs-list normalization: a single vertex becomes a singleton list. *)
 toVertexSet[ v_ ] /; AtomQ[ v ] := { v }
 toVertexSet[ vs_List ] := vs
-
-(* Topological levels of a DAG; each level is the current source-vertex set. *)
-topologicalLevels[ dag_Graph ] :=
-  Module[ { remaining = VertexList @ dag, levels = {} },
-    While[ remaining =!= {},
-      With[ { current = Select[ remaining,
-          v |-> VertexInDegree[ Subgraph[ dag, remaining ], v ] == 0 ] },
-        AppendTo[ levels, current ];
-        remaining = Complement[ remaining, current ] ] ];
-    levels
-  ]
 
 (* Substitute scene-object bindings into an expression, then resolve
    InfraDistance / InfraQ heads against the graph. *)
@@ -188,7 +175,7 @@ InfraScene[ objects_List, hypotheses_List ] /;
 (* Auto-step form: hypotheses are bare constructions and assertions; steps are
    the topological levels of the dependency DAG. *)
 InfraScene[ objects_List, hypotheses_List ] :=
-  Module[ { constructions, assertions, dag, steps },
+  Module[ { constructions, assertions, dag, steps = { }, remaining },
     constructions = Association @ Cases[ hypotheses,
       ( key_ == rhs_ ) /; constructionPatternQ[ objects, key == rhs ] :> ( key -> rhs ) ];
     assertions = Select[ hypotheses, ! constructionPatternQ[ objects, # ] & ];
@@ -200,7 +187,13 @@ InfraScene[ objects_List, hypotheses_List ] :=
           DirectedEdge[ #1, #2 ] & @@@ Tuples[ { deps, targets } ] ],
         constructions ],
       DirectedEdges -> True ];
-    steps = topologicalLevels[ dag ];
+    (* topological levels of the dependency DAG: each step is the current source set *)
+    remaining = VertexList @ dag;
+    While[ remaining =!= { },
+      With[ { current = Select[ remaining,
+          v |-> VertexInDegree[ Subgraph[ dag, remaining ], v ] == 0 ] },
+        AppendTo[ steps, current ];
+        remaining = Complement[ remaining, current ] ] ];
     InfraScene[ <|
       "Objects"         -> objects,
       "Constructions"   -> constructions,
@@ -266,23 +259,6 @@ evaluateConstruction[ graph_Graph, syms_List, rhs_, bindings_Association ] :=
     If[ ! ListQ[ tuples ] || tuples === {}, {},
       Join[ bindings, AssociationThread[ syms, # ] ] & /@ tuples ] ]
 
-(* One construction step over a list of branches. Tuple-keyed constructions
-   (sym lists) are evaluated last so their parts are not double-bound. *)
-evaluateStep[ graph_Graph, step_List, constructions_Association, branches_List ] :=
-  With[ { tupleKeys = Select[ Keys @ constructions, ListQ ] },
-    With[ {
-        tuplesInStep = Select[ tupleKeys, ContainsAny[ #, step ] & ],
-        tupleParts   = Flatten @ Select[ tupleKeys, ContainsAny[ #, step ] & ] },
-      Fold[
-        { currentBranches, key } |->
-          Flatten[ evaluateConstruction[ graph, key, constructions[ key ], # ] & /@
-            currentBranches, 1 ],
-        branches,
-        Join[
-          Select[ Complement[ step, tupleParts ], KeyExistsQ[ constructions, # ] & ],
-          tuplesInStep ] ] ] ]
-
-
 (* ===================== FindInfraScene ===================== *)
 
 Options[ FindInfraScene ] = { "PruneProbability" -> 0 };
@@ -304,7 +280,20 @@ FindInfraScene[ scene_InfraScene, graph_Graph, nSteps_Integer, init_Association,
       With[ { effective = Select[ step,
           ! KeyExistsQ[ First[ branches, <||> ], # ] & ] },
         If[ effective =!= {},
-          branches = evaluateStep[ graph, effective, scene[ "Constructions" ], branches ];
+          (* tuple-keyed constructions (sym lists) are evaluated last so their
+             parts are not double-bound *)
+          branches = With[ { constructions = scene[ "Constructions" ] },
+            { tuplesInStep = Select[ Select[ Keys @ constructions, ListQ ],
+                ContainsAny[ #, effective ] & ] },
+            Fold[
+              { currentBranches, key } |->
+                Flatten[ evaluateConstruction[ graph, key, constructions[ key ], # ] & /@
+                  currentBranches, 1 ],
+              branches,
+              Join[
+                Select[ Complement[ effective, Flatten @ tuplesInStep ],
+                  KeyExistsQ[ constructions, # ] & ],
+                tuplesInStep ] ] ];
           If[ prob > 0,
             branches = With[ { kept = Pick[ branches,
                 UnitStep[ RandomReal[ { 0, 1 }, Length @ branches ] - prob ], 1 ] },

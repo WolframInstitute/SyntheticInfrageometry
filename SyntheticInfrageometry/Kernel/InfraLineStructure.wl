@@ -1,9 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[lineStructureWeights]
 PackageScope[edgeRanking]
 PackageScope[canonicalLineSeq]
-PackageScope[maximalLines]
 
 
 (* ===================== InfraLineStructure wrapper ===================== *)
@@ -69,17 +67,6 @@ InfraLineStructure /: Part[ InfraLineStructure[ lines_List ], i_Integer ] := lin
 
 Options[ FindLineStructure ] = { Method -> "Lexicographic" };
 
-FindLineStructure[ graph_Graph, opts : OptionsPattern[] ] :=
-  With[
-    { wg = Graph[ graph, EdgeWeight -> lineStructureWeights[ graph, OptionValue[ Method ] ] ] },
-    { spf = FindShortestPath[ wg, All, All ] },
-    { paths = DeleteCases[
-        Association @ Map[ Sort[ # ] -> spf @@ # &, Subsets[ VertexList[ graph ], { 2 } ] ],
-        { } ] },
-    InfraLineStructure @ maximalLines @ Values @ paths
-  ]
-
-
 (* Every Method reduces to an edge RANKING e_1, ..., e_|E|, then the exact weight
    w(e_i) = 1 + 2^(-i).  Distinct-subset-sum of {2^(-i)} => unique min-weight path
    per pair (consistent); total perturbation < 1 => hop-count dominates (chosen
@@ -87,12 +74,24 @@ FindLineStructure[ graph_Graph, opts : OptionsPattern[] ] :=
    the Method only changes which geodesic wins among hop-count ties.  Exact
    Rationals -- machine reals underflow near |E| ~ 50 and re-collide. *)
 
-lineStructureWeights[ graph_Graph, method_ ] :=
+FindLineStructure[ graph_Graph, opts : OptionsPattern[] ] :=
   With[
-    { edges = EdgeList[ graph ] },
-    { rank = Association @ MapIndexed[ #1 -> First[ #2 ] &, edgeRanking[ graph, edges, method ] ] },
-    ( 1 + 2^( -rank[ # ] ) ) & /@ edges
+    { rank = Association @ MapIndexed[ #1 -> First[ #2 ] &,
+        edgeRanking[ graph, EdgeList @ graph, OptionValue[ Method ] ] ] },
+    { wg = Graph[ graph, EdgeWeight -> ( ( 1 + 2^( -rank[ # ] ) ) & /@ EdgeList @ graph ) ] },
+    { spf = FindShortestPath[ wg, All, All ] },
+    { paths = DeleteCases[
+        Association @ Map[ Sort[ # ] -> spf @@ # &, Subsets[ VertexList[ graph ], { 2 } ] ],
+        { } ] },
+    { cands = DeleteDuplicates[ canonicalLineSeq /@ Values @ paths ] },
+    (* maximal lines: chosen paths that are not a contiguous infix (either
+       orientation) of a strictly longer chosen path *)
+    InfraLineStructure @ Select[ cands,
+      c |-> NoneTrue[ cands,
+        o |-> o =!= c &&
+          ( SequencePosition[ o, c, 1 ] =!= { } || SequencePosition[ Reverse @ o, c, 1 ] =!= { } ) ] ]
   ]
+
 
 (* the edges in ranked order; the ranking key is the only thing a Method changes *)
 edgeRanking[ graph_, edges_, "Lexicographic" ] := SortBy[ edges, Sort @* Apply[ List ] ]
@@ -153,12 +152,3 @@ ConsistentPathSystemQ[ graph_Graph, paths_Association ] :=
 (* canonical orientation of a vertex sequence (lex-least of it and its reverse) *)
 canonicalLineSeq[ p_List ] := First @ Sort @ { p, Reverse @ p }
 
-(* maximal lines: chosen paths that are not a contiguous infix (either
-   orientation) of a strictly longer chosen path *)
-maximalLines[ paths_List ] :=
-  With[ { cands = DeleteDuplicates[ canonicalLineSeq /@ paths ] },
-    Select[ cands,
-      c |-> NoneTrue[ cands,
-        o |-> o =!= c &&
-          ( SequencePosition[ o, c, 1 ] =!= { } || SequencePosition[ Reverse @ o, c, 1 ] =!= { } ) ] ]
-  ]

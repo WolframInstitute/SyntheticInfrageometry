@@ -3,7 +3,6 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageScope[matchPolygonSlot]
 PackageScope[kDiagonals]
 PackageScope[findPolygonCore]
-PackageScope[cycleToPolygonLegs]
 
 
 (* ===================== InfraPolygon wrapper ===================== *)
@@ -147,18 +146,16 @@ FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
     If[ core === $Failed, $Failed,
       With[ { capped = infraCap[ core, count ] },
         If[ capped === $Failed, $Failed,
-          InfraPolygon[ { cycleToPolygonLegs[ graph, # ] } ] & /@ capped ]
+          (* promote each closed corner cycle to a closed chain of geodesic
+             InfraSegment sides (first shortest path per side) *)
+          Map[
+            cyc |-> InfraPolygon[ {
+              MapThread[ { a, b } |-> InfraSegment[ { FindShortestPath[ graph, a, b ] } ],
+                { cyc, RotateLeft @ cyc } ] } ],
+            capped ] ]
       ]
     ]
   ]
-
-
-(* Promote a closed vertex cycle to a closed chain of geodesic InfraSegment
-   sides between consecutive corners (first shortest path per side). *)
-
-cycleToPolygonLegs[ graph_Graph, cyc_List ] :=
-  MapThread[ { a, b } |-> InfraSegment[ { FindShortestPath[ graph, a, b ] } ],
-    { cyc, RotateLeft @ cyc } ]
 
 
 (* "From" parser: returns {anchor, radius} pair.

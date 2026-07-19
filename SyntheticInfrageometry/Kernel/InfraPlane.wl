@@ -66,7 +66,19 @@ FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
       If[ properties === { },
         { bisector },
         Catch[
-          aux = pairAuxiliaryGraph[ graph, bisector, q1, q2 ];
+          (* aux graph on bisector + {q1, q2}: direct edges plus pairs joined
+             through connected components of the complement *)
+          aux = With[ { nodes = Union[ bisector, { q1, q2 } ] },
+            { components = ConnectedComponents @ Subgraph[ graph,
+                Complement[ VertexList[ graph ], nodes ] ] },
+            { paired = Flatten[
+                ( comp |-> UndirectedEdge @@@ Subsets[
+                    Intersection[ nodes, Union @@ ( AdjacencyList[ graph, # ] & /@ comp ) ],
+                    { 2 } ] ) /@ components, 1 ],
+              direct = Cases[ EdgeList[ graph ],
+                ( UndirectedEdge | DirectedEdge )[ u_, v_ ] /;
+                  MemberQ[ nodes, u ] && MemberQ[ nodes, v ] :> UndirectedEdge[ u, v ] ] },
+            Graph[ nodes, DeleteDuplicates[ Join[ paired, direct ] ] ] ];
           admissible = admissibleBisectingHyperplane[ graph, aux, q1, q2, properties ];
           Switch[ methodHead,
             "Exhaustive", findAllMinimalAdmissible[ graph, bisector, admissible, pruning ],

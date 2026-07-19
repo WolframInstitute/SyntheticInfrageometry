@@ -1,6 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[concatenatePathPair]
 PackageScope[allNeighboursBaseFn]
 
 
@@ -202,10 +201,10 @@ stepBothSides[ graph_Graph, walk_List, candidateFn_ ] :=
 
 ConcatenateInfraPath[ path1_, path2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
-  spreadFind[ InfraPath, count, concatenatePathPair, path1, path2 ]
-
-concatenatePathPair[ walk1_List, walk2_List ] :=
-  If[ Last[ walk1 ] === First[ walk2 ], { Join[ walk1, Rest @ walk2 ] }, { } ]
+  spreadFind[ InfraPath, count,
+    { walk1, walk2 } |->
+      If[ Last[ walk1 ] === First[ walk2 ], { Join[ walk1, Rest @ walk2 ] }, { } ],
+    path1, path2 ]
 
 
 (* ===================== Scene-DSL constructor ===================== *)
