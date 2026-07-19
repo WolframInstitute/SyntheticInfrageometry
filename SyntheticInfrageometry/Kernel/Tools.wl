@@ -5,8 +5,6 @@ PackageImport["WolframInstitute`Infrageometry`"]
 PackageScope[dagGeodesics]
 PackageScope[geodesicEdgeOccupation]
 PackageScope[segReps]
-PackageScope[CentralElement]
-PackageScope[PeripheralElement]
 PackageScope[SeparatingSetQ]
 PackageScope[findAllMinimalAdmissible]
 PackageScope[findGreedyMinimalAdmissible]
@@ -31,6 +29,7 @@ PackageScope[infraRepEdges]
 PackageScope[infraNumReps]
 PackageScope[infraEdgeMultiset]
 PackageScope[linePointSet]
+PackageScope[cycleToVertexSequence]
 PackageScope[methodName]
 PackageScope[methodOptions]
 PackageScope[propertiesSubOpts]
@@ -59,41 +58,11 @@ methodOptions[ _String ]                := { }
 methodOptions[ { _String, opts___ } ]   := { opts }
 
 
-(* ===================== Centrality ===================== *)
+(* ===================== Cycle helper ===================== *)
 
-(* CentralElement: n indices into distanceMatrix minimising eccentricity
-   (Max-of-row); ties broken by maximin against the running selection.
-   PeripheralElement is the symmetric maximiser. *)
+(* FindCycle edge cycle -> open vertex sequence (wrap-around implicit). *)
 
-CentralElement[ distanceMatrix_List, n_ : 1 ] :=
-  Module[ { selected, remaining,
-            pool = Flatten @ Position[ Max /@ distanceMatrix, Min[ Max /@ distanceMatrix ] ] },
-    If[ Length[ pool ] <= n, pool,
-      selected = { First @ pool };
-      remaining = Rest @ pool;
-      Do[
-        With[ { best = First @ MaximalBy[ remaining, idx |-> Min[ distanceMatrix[[ idx, selected ]] ] ] },
-          AppendTo[ selected, best ];
-          remaining = DeleteCases[ remaining, best ] ],
-        { n - 1 } ];
-      selected
-    ]
-  ]
-
-PeripheralElement[ distanceMatrix_List, n_ : 1 ] :=
-  Module[ { selected, remaining,
-            pool = Flatten @ Position[ Max /@ distanceMatrix, Max[ Max /@ distanceMatrix ] ] },
-    If[ Length[ pool ] <= n, pool,
-      selected = { First @ pool };
-      remaining = Rest @ pool;
-      Do[
-        With[ { best = First @ MaximalBy[ remaining, idx |-> Max[ distanceMatrix[[ idx, selected ]] ] ] },
-          AppendTo[ selected, best ];
-          remaining = DeleteCases[ remaining, best ] ],
-        { n - 1 } ];
-      selected
-    ]
-  ]
+cycleToVertexSequence[ cyc_List ] := First /@ cyc
 
 
 (* ===================== Count semantics ===================== *)
