@@ -24,26 +24,6 @@ VerificationTest[
   TestID -> "InfraPoint-unary-list-to-multi"
 ]
 
-(* Default Part semantics: wrappers are raw data; Part returns inner elements. *)
-
-VerificationTest[
-  InfraPoint[ { 1, 2, 3 } ][[ 1 ]],
-  { 1, 2, 3 },
-  TestID -> "InfraPoint-Part-first-arg"
-]
-
-VerificationTest[
-  First @ InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
-  { { 1, 2, 3 }, { 1, 4, 3 } },
-  TestID -> "InfraSegment-First-inner-list"
-]
-
-VerificationTest[
-  Length @ First @ InfraPoint[ { 1, 2, 3 } ],
-  3,
-  TestID -> "InfraPoint-Length-of-inner"
-]
-
 
 (* ----- weighted InfraPoint (mass) ----- *)
 

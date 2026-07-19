@@ -82,7 +82,7 @@ VerificationTest[
    induced subgraph edges; verify they are highlighted. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
+    With[ { styles = EdgeStyle /. Options @ InfraSceneHighlight[ g,
           { InfraShell @ FindInfraShell[ g, 1, { 1, 2 }, All ] -> Green } ] },
       Length @ Cases[ styles, _UndirectedEdge -> _, Infinity ] > 0
     ]
@@ -97,7 +97,7 @@ VerificationTest[
    {1,2}, {2,6}, {6,5}, {5,1}. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ], cyc = { 1, 2, 6, 5 } },
-    With[ { styles = GraphHighlightStyle /. Options @
+    With[ { styles = EdgeStyle /. Options @
           InfraSceneHighlight[ g, { InfraCircle[ { cyc } ] -> Blue } ] },
       Length @ Cases[ styles, _UndirectedEdge -> _, Infinity ] == 4
     ]
@@ -111,10 +111,11 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ], open = { 1, 2, 6, 5 }, closed = { 1, 2, 6, 5, 1 } },
     With[ {
-        sOpen   = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g, { InfraCircle[ { open   } ] -> Blue } ],
-        sClosed = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g, { InfraCircle[ { closed } ] -> Blue } ] },
-      Sort @ Cases[ sOpen,   e_UndirectedEdge -> _, Infinity ] ===
-      Sort @ Cases[ sClosed, e_UndirectedEdge -> _, Infinity ]
+        sOpen   = EdgeStyle /. Options @ InfraSceneHighlight[ g, { InfraCircle[ { open   } ] -> Blue } ],
+        sClosed = EdgeStyle /. Options @ InfraSceneHighlight[ g, { InfraCircle[ { closed } ] -> Blue } ] },
+      Sort @ Cases[ sOpen,   ( e_UndirectedEdge -> _ ) :> e, Infinity ] ===
+      Sort @ Cases[ sClosed, ( e_UndirectedEdge -> _ ) :> e, Infinity ] &&
+      Length @ Cases[ sOpen, _UndirectedEdge -> _, Infinity ] == 4
     ]
   ],
   True,
@@ -126,7 +127,7 @@ VerificationTest[
    sequential pairs. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ], path = { 1, 2, 3, 4 } },
-    With[ { styles = GraphHighlightStyle /. Options @
+    With[ { styles = EdgeStyle /. Options @
           InfraSceneHighlight[ g, { InfraSegment[ { path } ] -> Blue } ] },
       Length @ Cases[ styles, _UndirectedEdge -> _, Infinity ] == 3
     ]
@@ -167,7 +168,7 @@ VerificationTest[
    produced EdgeStyle directive. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
+    With[ { styles = EdgeStyle /. Options @ InfraSceneHighlight[ g,
           { InfraSegment[ { { 1, 2, 3, 4 } } ] -> Directive[ Orange, AbsoluteThickness[ 8 ] ] } ] },
       ! FreeQ[ styles, AbsoluteThickness[ 8 ] ]
     ]
@@ -206,7 +207,7 @@ VerificationTest[
           First @ VertexList @ g, Last @ VertexList @ g, All ] },
       MatchQ[ First @ vs, { _, _ } ] &&
       Length @ Cases[
-        GraphHighlightStyle /. Options @ InfraSceneHighlight[ g, { seg -> Red } ],
+        EdgeStyle /. Options @ InfraSceneHighlight[ g, { seg -> Red } ],
         ( UndirectedEdge[ { _, _ }, { _, _ } ] -> _ ), Infinity ] > 0
     ]
   ],
