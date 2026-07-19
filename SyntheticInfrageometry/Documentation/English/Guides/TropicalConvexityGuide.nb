@@ -3,17 +3,17 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      5768,        122]
-NotebookOptionsPosition[      3638,         89]
-NotebookOutlinePosition[      3955,        103]
-CellTagsIndexPosition[      3912,        100]
+NotebookDataLength[     10311,        232]
+NotebookOptionsPosition[      7583,        192]
+NotebookOutlinePosition[      7900,        206]
+CellTagsIndexPosition[      7857,        203]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -51,6 +51,109 @@ Cell["MetricInterval", "Item",ExpressionUUID->"6e6e4a7b-d033-4a3a-b808-d1807c11c
 
 Cell["MedianVertices", "Item",ExpressionUUID->"962dcb2b-afd5-4289-a361-713cdf63d559"],
 
+Cell["Examples on large graphs", "Section",ExpressionUUID->"be207a6e-738a-470f-974e-261de0cde3ba"],
+
+Cell["\<\
+The segment hull (closure under geodesic intervals) of three mutually distant \
+seeds on a large grid interior -- the graph-intrinsic shadow of tropical \
+convexity.\
+\>", "Text",ExpressionUUID->"c9995eee-2a02-4907-bf97-59fd6dcecf18"],
+
+Cell["Define the substrate.", "CodeText",ExpressionUUID->"adbf92be-32c0-4d9d-bb43-2cf59fcf6cd9"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+  "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"Needs", "[", "\"\<WolframInstitute`Infrageometry`\>\"", "]"}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"graph", " ", "=", " ", 
+   RowBox[{"First", "[", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"g", " ", "|->", " ", 
+       RowBox[{"With", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"h", " ", "=", " ", 
+           RowBox[{"Graph", "[", 
+            RowBox[{
+             RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+             RowBox[{"EdgeList", "[", "g", "]"}]}], "]"}]}], "}"}], ",", "\n",
+          "     ", 
+         RowBox[{
+          RowBox[{"SeedRandom", "[", "1", "]"}], ";", "\n", "     ", 
+          RowBox[{"Graph", "[", 
+           RowBox[{"h", ",", " ", 
+            RowBox[{"VertexCoordinates", " ", "->", " ", 
+             RowBox[{"GraphEmbedding", "[", 
+              RowBox[{"h", ",", " ", "\"\<SpringElectricalEmbedding\>\""}], 
+              "]"}]}], ",", "\n", "       ", 
+            RowBox[{"EdgeStyle", " ", "->", " ", 
+             RowBox[{"Directive", "[", 
+              RowBox[{"StandardGray", ",", " ", 
+               RowBox[{"Opacity", "[", "0.15", "]"}]}], "]"}]}], ",", "\n", 
+            "       ", 
+            RowBox[{"VertexStyle", " ", "->", " ", 
+             RowBox[{"Directive", "[", 
+              RowBox[{"StandardGray", ",", " ", 
+               RowBox[{"Opacity", "[", "0.3", "]"}]}], "]"}]}]}], "]"}]}]}], 
+        "]"}]}], ")"}], " ", "/@", " ", 
+     RowBox[{"{", "\n", "   ", 
+      RowBox[{"InteriorGraph", "[", 
+       RowBox[{"GridGraph", "[", 
+        RowBox[{"{", 
+         RowBox[{"25", ",", " ", "25"}], "}"}], "]"}], "]"}], "}"}]}], 
+    "]"}]}], ";"}]}], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"4a0d8bf2-5043-4bfc-ab00-0f188f4f1fcc"],
+
+Cell["\<\
+Three seeds in the central ball at mutual distance 6 to 8, and their segment \
+hull.\
+\>", "CodeText",ExpressionUUID->"ad78c9d6-42fb-4ce5-bea7-c78f00a50075"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"center", " ", "=", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"SeedRandom", "[", "2", "]"}], ";", " ", 
+       RowBox[{"First", " ", "@", " ", 
+        RowBox[{"FindInfraPoint", "[", 
+         RowBox[{"graph", ",", " ", 
+          RowBox[{"\"\<From\>\"", " ", "->", " ", "\"\<Center\>\""}]}], 
+         "]"}]}]}], ")"}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"seeds", " ", "=", " ", 
+     RowBox[{"SelectInfraPoint", "[", 
+      RowBox[{"graph", ",", " ", 
+       RowBox[{"First", " ", "@", " ", 
+        RowBox[{"First", " ", "@", " ", 
+         RowBox[{"FindInfraBall", "[", 
+          RowBox[{"graph", ",", " ", "center", ",", " ", "6"}], "]"}]}]}], ",",
+        "\n", "     ", "3", ",", " ", 
+       RowBox[{"\"\<Distance\>\"", " ", "->", " ", 
+        RowBox[{"{", 
+         RowBox[{"6", ",", " ", "8"}], "}"}]}], ",", " ", 
+       RowBox[{"\"\<MaxCliques\>\"", " ", "->", " ", "20"}]}], "]"}]}], "}"}],
+    ",", "\n", "  ", 
+   RowBox[{"InfraSceneHighlight", "[", 
+    RowBox[{"graph", ",", " ", 
+     RowBox[{"Join", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"FindSegmentHull", "[", 
+         RowBox[{"graph", ",", " ", "seeds"}], "]"}], "}"}], ",", " ", 
+       "seeds"}], "]"}], ",", " ", 
+     RowBox[{"ImageSize", " ", "->", " ", "300"}]}], "]"}]}], "]"}]], "Input",\
+ExpressionUUID->"1ea39e50-c4f1-4a3e-8bb7-ca1c5e436ad4"],
+
 Cell["Tutorial", "Section",ExpressionUUID->"0105065f-be7b-4444-8323-496cac195167"],
 
 Cell["See TropicalConvexityTutorial for runnable examples.", "Item",ExpressionUUID->"100a09fd-a9a9-46ae-89c2-5aba1eb20f0b"],
@@ -59,10 +162,10 @@ Cell["Notes on the tropical connection", "Section",ExpressionUUID->"94a1d823-4ab
 
 Cell["\<\
 On Z^n with the L1 metric, tropical convex hulls coincide with geodesic \
-convex hulls. On a graph, FindSegmentHull is the graph-intrinsic \
-closure under the interval operator I(u, v) = MetricInterval(g, u, v) and \
-recovers the L1 / min-plus picture on median graphs and Cayley graphs of Z^n \
-with standard generators.\
+convex hulls. On a graph, FindSegmentHull is the graph-intrinsic closure \
+under the interval operator I(u, v) = MetricInterval(g, u, v) and recovers \
+the L1 / min-plus picture on median graphs and Cayley graphs of Z^n with \
+standard generators.\
 \>", "Text",ExpressionUUID->"41efb387-8309-44fe-84c5-58b478ff7a93"],
 
 Cell["References", "Section",ExpressionUUID->"bd22b379-61e0-47c3-baed-e1d0eba0ad03"],
@@ -87,7 +190,7 @@ Imrich and Klavzar, Product Graphs: Structure and Recognition, Wiley 2000 \
 (median / partial cube structures)\
 \>", "Item",ExpressionUUID->"8ac026d9-2afb-443f-9a73-47fb7f09f57d"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
@@ -104,26 +207,33 @@ CellTagsIndex->{}
 Notebook[{
 Cell[554, 20, 90, 0, 70, "Title",ExpressionUUID->"af61d5e4-f12c-4008-a456-c4215bef726c"],
 Cell[647, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"860e76f7-f5e6-470d-9bce-de41a48fcfc6"],
-Cell[740, 24, 362, 5, 70, "Text",ExpressionUUID->"ecb52fd9-07db-4478-b662-adce98fd5c72"],
-Cell[1105, 31, 79, 0, 70, "Section",ExpressionUUID->"68e50196-0e44-4c12-86de-cbb0ed6f76c0"],
-Cell[1187, 33, 91, 0, 70, "CodeText",ExpressionUUID->"18d8c2f3-a901-4187-8071-8955f4dab40c"],
-Cell[1281, 35, 192, 4, 70, "Code",ExpressionUUID->"5989daf0-74cd-4492-a49b-d6495f40b070",
+Cell[740, 24, 348, 5, 70, "Text",ExpressionUUID->"ecb52fd9-07db-4478-b662-adce98fd5c72"],
+Cell[1091, 31, 79, 0, 70, "Section",ExpressionUUID->"68e50196-0e44-4c12-86de-cbb0ed6f76c0"],
+Cell[1173, 33, 91, 0, 70, "CodeText",ExpressionUUID->"18d8c2f3-a901-4187-8071-8955f4dab40c"],
+Cell[1267, 35, 192, 4, 70, "Code",ExpressionUUID->"5989daf0-74cd-4492-a49b-d6495f40b070",
  InitializationCell->True],
-Cell[1476, 41, 90, 0, 70, "Section",ExpressionUUID->"4a8ba636-629d-4dae-a53a-9864c8b33e59"],
-Cell[1569, 43, 93, 0, 70, "Item",ExpressionUUID->"aed14569-6345-48d4-8b74-e4cff2e90769"],
-Cell[1665, 45, 90, 0, 70, "Item",ExpressionUUID->"0f6991dd-666f-462b-a6f4-2aa25828e97a"],
-Cell[1758, 47, 92, 0, 70, "Section",ExpressionUUID->"12b964ef-c7c6-4943-9ed9-c455b11c1101"],
-Cell[1853, 49, 85, 0, 70, "Item",ExpressionUUID->"6e6e4a7b-d033-4a3a-b808-d1807c11cd73"],
-Cell[1941, 51, 85, 0, 70, "Item",ExpressionUUID->"962dcb2b-afd5-4289-a361-713cdf63d559"],
-Cell[2029, 53, 82, 0, 70, "Section",ExpressionUUID->"0105065f-be7b-4444-8323-496cac195167"],
-Cell[2114, 55, 123, 0, 70, "Item",ExpressionUUID->"100a09fd-a9a9-46ae-89c2-5aba1eb20f0b"],
-Cell[2240, 57, 106, 0, 70, "Section",ExpressionUUID->"94a1d823-4aba-46c1-9fdb-9a339264e62c"],
-Cell[2349, 59, 407, 6, 70, "Text",ExpressionUUID->"41efb387-8309-44fe-84c5-58b478ff7a93"],
-Cell[2759, 67, 84, 0, 70, "Section",ExpressionUUID->"bd22b379-61e0-47c3-baed-e1d0eba0ad03"],
-Cell[2846, 69, 241, 4, 70, "Item",ExpressionUUID->"429e7716-4b63-415b-a9cc-44f2d405367f"],
-Cell[3090, 75, 207, 3, 70, "Item",ExpressionUUID->"2708f3e1-c847-4024-8f3a-e54c92c26119"],
-Cell[3300, 80, 142, 2, 70, "Item",ExpressionUUID->"81e5d65c-3a58-4874-a1a2-8dce0298870d"],
-Cell[3445, 84, 189, 3, 70, "Item",ExpressionUUID->"8ac026d9-2afb-443f-9a73-47fb7f09f57d"]
+Cell[1462, 41, 90, 0, 70, "Section",ExpressionUUID->"4a8ba636-629d-4dae-a53a-9864c8b33e59"],
+Cell[1555, 43, 86, 0, 70, "Item",ExpressionUUID->"aed14569-6345-48d4-8b74-e4cff2e90769"],
+Cell[1644, 45, 83, 0, 70, "Item",ExpressionUUID->"0f6991dd-666f-462b-a6f4-2aa25828e97a"],
+Cell[1730, 47, 92, 0, 70, "Section",ExpressionUUID->"12b964ef-c7c6-4943-9ed9-c455b11c1101"],
+Cell[1825, 49, 85, 0, 70, "Item",ExpressionUUID->"6e6e4a7b-d033-4a3a-b808-d1807c11cd73"],
+Cell[1913, 51, 85, 0, 70, "Item",ExpressionUUID->"962dcb2b-afd5-4289-a361-713cdf63d559"],
+Cell[2001, 53, 98, 0, 70, "Section",ExpressionUUID->"be207a6e-738a-470f-974e-261de0cde3ba"],
+Cell[2102, 55, 244, 4, 70, "Text",ExpressionUUID->"c9995eee-2a02-4907-bf97-59fd6dcecf18"],
+Cell[2349, 61, 96, 0, 70, "CodeText",ExpressionUUID->"adbf92be-32c0-4d9d-bb43-2cf59fcf6cd9"],
+Cell[2448, 63, 1887, 48, 70, "Code",ExpressionUUID->"4a0d8bf2-5043-4bfc-ab00-0f188f4f1fcc",
+ InitializationCell->True],
+Cell[4338, 113, 167, 3, 70, "CodeText",ExpressionUUID->"ad78c9d6-42fb-4ce5-bea7-c78f00a50075"],
+Cell[4508, 118, 1470, 36, 70, "Input",ExpressionUUID->"1ea39e50-c4f1-4a3e-8bb7-ca1c5e436ad4"],
+Cell[5981, 156, 82, 0, 70, "Section",ExpressionUUID->"0105065f-be7b-4444-8323-496cac195167"],
+Cell[6066, 158, 123, 0, 70, "Item",ExpressionUUID->"100a09fd-a9a9-46ae-89c2-5aba1eb20f0b"],
+Cell[6192, 160, 106, 0, 70, "Section",ExpressionUUID->"94a1d823-4aba-46c1-9fdb-9a339264e62c"],
+Cell[6301, 162, 400, 6, 70, "Text",ExpressionUUID->"41efb387-8309-44fe-84c5-58b478ff7a93"],
+Cell[6704, 170, 84, 0, 70, "Section",ExpressionUUID->"bd22b379-61e0-47c3-baed-e1d0eba0ad03"],
+Cell[6791, 172, 241, 4, 70, "Item",ExpressionUUID->"429e7716-4b63-415b-a9cc-44f2d405367f"],
+Cell[7035, 178, 207, 3, 70, "Item",ExpressionUUID->"2708f3e1-c847-4024-8f3a-e54c92c26119"],
+Cell[7245, 183, 142, 2, 70, "Item",ExpressionUUID->"81e5d65c-3a58-4874-a1a2-8dce0298870d"],
+Cell[7390, 187, 189, 3, 70, "Item",ExpressionUUID->"8ac026d9-2afb-443f-9a73-47fb7f09f57d"]
 }
 ]
 *)

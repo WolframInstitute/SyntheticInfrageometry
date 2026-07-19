@@ -3,17 +3,17 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      9337,        182]
-NotebookOptionsPosition[      5469,        130]
-NotebookOutlinePosition[      5786,        144]
-CellTagsIndexPosition[      5743,        141]
+NotebookDataLength[     17343,        371]
+NotebookOptionsPosition[     12965,        313]
+NotebookOutlinePosition[     13282,        327]
+CellTagsIndexPosition[     13239,        324]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -100,6 +100,191 @@ Cell["\"Frechet\" \[LongDash] order-sensitive walk-coupling distance", "Item",Ex
 
 Cell["\"MeanFrechet\" \[LongDash] averaged Frechet", "Item",ExpressionUUID->"c03e8841-536e-456e-a029-b2d26abde0f1"],
 
+Cell["Examples on large graphs", "Section",ExpressionUUID->"ad7a5903-78f1-414f-8527-05143ad29cca"],
+
+Cell["\<\
+Selecting representatives from a geodesic bundle in path-space: the \
+path-space-central geodesic (thick coral) against a peripheral outlier \
+(purple), on a flat square tessellation, a three-dimensional grid interior, \
+and a Wolfram-model universe.\
+\>", "Text",ExpressionUUID->"f517986e-2da4-4331-9a46-b14fc97dbefa"],
+
+Cell["Define the three substrates.", "CodeText",ExpressionUUID->"0b68c408-c1af-4768-86cd-1118e1de1259"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+  "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"Needs", "[", "\"\<WolframInstitute`Infrageometry`\>\"", "]"}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"graphs", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"g", " ", "|->", " ", 
+      RowBox[{"With", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"h", " ", "=", " ", 
+          RowBox[{"Graph", "[", 
+           RowBox[{
+            RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+            RowBox[{"EdgeList", "[", "g", "]"}]}], "]"}]}], "}"}], ",", "\n", 
+        "     ", 
+        RowBox[{
+         RowBox[{"SeedRandom", "[", "1", "]"}], ";", "\n", "     ", 
+         RowBox[{"Graph", "[", 
+          RowBox[{"h", ",", " ", 
+           RowBox[{"VertexCoordinates", " ", "->", " ", 
+            RowBox[{"GraphEmbedding", "[", 
+             RowBox[{"h", ",", " ", "\"\<SpringElectricalEmbedding\>\""}], 
+             "]"}]}], ",", "\n", "       ", 
+           RowBox[{"EdgeStyle", " ", "->", " ", 
+            RowBox[{"Directive", "[", 
+             RowBox[{"StandardGray", ",", " ", 
+              RowBox[{"Opacity", "[", "0.15", "]"}]}], "]"}]}], ",", "\n", 
+           "       ", 
+           RowBox[{"VertexStyle", " ", "->", " ", 
+            RowBox[{"Directive", "[", 
+             RowBox[{"StandardGray", ",", " ", 
+              RowBox[{"Opacity", "[", "0.3", "]"}]}], "]"}]}]}], "]"}]}]}], 
+       "]"}]}], ")"}], " ", "/@", " ", 
+    RowBox[{"{", "\n", "   ", 
+     RowBox[{
+      RowBox[{"TessellationGraph", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"4", ",", " ", "4"}], "}"}], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{"20", ",", " ", "15"}], "}"}]}], "]"}], ",", "\n", "   ", 
+      RowBox[{"InteriorGraph", "[", 
+       RowBox[{"GridGraph", "[", 
+        RowBox[{"{", 
+         RowBox[{"14", ",", " ", "14", ",", " ", "14"}], "}"}], "]"}], "]"}], 
+      ",", "\n", "   ", 
+      RowBox[{"SimpleGraph", " ", "@", " ", 
+       RowBox[{"UndirectedGraph", " ", "@", " ", 
+        RowBox[{
+         RowBox[{"ResourceFunction", "[", "\"\<HypergraphToGraph\>\"", "]"}], 
+         "[", "\n", "     ", 
+         RowBox[{
+          RowBox[{"ResourceFunction", "[", "\"\<WolframModel\>\"", "]"}], "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"x", ",", " ", "y"}], "}"}], ",", " ", 
+              RowBox[{"{", 
+               RowBox[{"z", ",", " ", "y"}], "}"}]}], "}"}], " ", "->", " ", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"x", ",", " ", "y"}], "}"}], ",", " ", 
+              RowBox[{"{", 
+               RowBox[{"z", ",", " ", "w"}], "}"}], ",", " ", 
+              RowBox[{"{", 
+               RowBox[{"y", ",", " ", "w"}], "}"}], ",", " ", 
+              RowBox[{"{", 
+               RowBox[{"x", ",", " ", "w"}], "}"}]}], "}"}]}], ",", " ", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{"1", ",", " ", "1"}], "}"}], ",", " ", 
+             RowBox[{"{", 
+              RowBox[{"1", ",", " ", "1"}], "}"}]}], "}"}], ",", " ", "15", ",",
+            " ", "\"\<FinalState\>\""}], "]"}], "]"}]}]}]}], "}"}]}]}], 
+  ";"}]}], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"fc30a7fa-4999-4991-bf03-8756d5dcc30a"],
+
+Cell["\<\
+One capped bundle per substrate, with two SelectInfraPath pool choices on it.\
+\
+\>", "CodeText",ExpressionUUID->"b3b6e3fe-6e6d-4455-baec-42709886e034"],
+
+Cell[BoxData[
+ RowBox[{"Grid", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"MapThread", "[", "\n", "   ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"g", ",", " ", "d", ",", " ", "seed"}], "}"}], " ", "|->", 
+       "\n", "     ", 
+       RowBox[{"With", "[", "\n", "       ", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"a", " ", "=", " ", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"SeedRandom", "[", "seed", "]"}], ";", " ", 
+             RowBox[{"First", " ", "@", " ", 
+              RowBox[{"FindInfraPoint", "[", 
+               RowBox[{"g", ",", " ", 
+                RowBox[{"\"\<From\>\"", " ", "->", " ", "\"\<Center\>\""}]}], 
+               "]"}]}]}], ")"}]}], "}"}], ",", "\n", "       ", 
+         RowBox[{"{", 
+          RowBox[{"b", " ", "=", " ", 
+           RowBox[{"First", " ", "@", " ", 
+            RowBox[{"FindInfraPoint", "[", 
+             RowBox[{"g", ",", " ", 
+              RowBox[{"\"\<From\>\"", " ", "->", " ", 
+               RowBox[{"a", " ", "->", " ", "d"}]}]}], "]"}]}]}], "}"}], ",", 
+         "\n", "       ", 
+         RowBox[{"{", 
+          RowBox[{"bundle", " ", "=", " ", 
+           RowBox[{"FindInfraSegment", "[", 
+            RowBox[{"g", ",", " ", "a", ",", " ", "b", ",", " ", 
+             RowBox[{"UpTo", "[", "40", "]"}]}], "]"}]}], "}"}], ",", "\n", 
+         "       ", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"central", " ", "=", " ", 
+            RowBox[{"First", " ", "@", " ", 
+             RowBox[{"SelectInfraPath", "[", 
+              RowBox[{"g", ",", " ", "bundle", ",", " ", "1", ",", " ", 
+               RowBox[{"\"\<From\>\"", " ", "->", " ", "\"\<Center\>\""}]}], 
+              "]"}]}]}], ",", "\n", "        ", 
+           RowBox[{"outlier", " ", "=", " ", 
+            RowBox[{"First", " ", "@", " ", 
+             RowBox[{"SelectInfraPath", "[", 
+              RowBox[{"g", ",", " ", "bundle", ",", " ", "1", ",", " ", 
+               
+               RowBox[{"\"\<From\>\"", " ", "->", 
+                " ", "\"\<Periphery\>\""}]}], "]"}]}]}]}], "}"}], ",", "\n", 
+         "       ", 
+         RowBox[{"InfraSceneHighlight", "[", 
+          RowBox[{"g", ",", "\n", "         ", 
+           RowBox[{"{", 
+            RowBox[{"bundle", ",", " ", 
+             RowBox[{"central", " ", "->", " ", 
+              RowBox[{"Directive", "[", 
+               RowBox[{"$InfraSegmentColor", ",", " ", 
+                RowBox[{"AbsoluteThickness", "[", "6", "]"}]}], "]"}]}], ",", 
+             "\n", "          ", 
+             RowBox[{"outlier", " ", "->", " ", 
+              RowBox[{"Directive", "[", 
+               RowBox[{"StandardPurple", ",", " ", 
+                RowBox[{"AbsoluteThickness", "[", "6", "]"}]}], "]"}]}], ",", 
+             " ", "a", ",", " ", "b"}], "}"}], ",", "\n", "         ", 
+           RowBox[{"ImageSize", " ", "->", " ", "300"}]}], "]"}]}], "]"}]}], ",",
+       "\n", "   ", 
+      RowBox[{"{", 
+       RowBox[{"graphs", ",", " ", 
+        RowBox[{"{", 
+         RowBox[{"8", ",", " ", "6", ",", " ", "5"}], "}"}], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{"2", ",", " ", "3", ",", " ", "5"}], "}"}]}], "}"}]}], "]"}],
+     "}"}], ",", " ", 
+   RowBox[{"Spacings", " ", "->", " ", 
+    RowBox[{"{", 
+     RowBox[{"2", ",", " ", "2"}], "}"}]}]}], "]"}]], "Input",ExpressionUUID->\
+"9c88417b-630c-4476-b47b-fc94f30f55a4"],
+
 Cell["Tutorial", "Section",ExpressionUUID->"a545d28d-3f2a-45f7-afdd-e497bb5ffb61"],
 
 Cell["See PathSpaceTutorial for runnable examples.", "Item",ExpressionUUID->"30869aa1-fe19-47fd-933f-cc0ea3bd0a2f"],
@@ -126,7 +311,7 @@ Bridson and Haefliger, Metric Spaces of Non-Positive Curvature, Springer 1999 \
 (Hausdorff / Frechet metrics on path space)\
 \>", "Item",ExpressionUUID->"61012a6a-b204-405c-8508-10a5986531e9"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
@@ -143,45 +328,51 @@ CellTagsIndex->{}
 Notebook[{
 Cell[554, 20, 82, 0, 70, "Title",ExpressionUUID->"a35bded2-915b-4c27-abc8-457b38fae069"],
 Cell[639, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"7c0cc5c7-627b-43bd-a60a-1fb38f590064"],
-Cell[732, 24, 346, 5, 70, "Text",ExpressionUUID->"a49b041b-4b70-42f4-8a93-b2d3b5458f80"],
-Cell[1081, 31, 79, 0, 70, "Section",ExpressionUUID->"8a92ed7f-5661-4df7-9104-393babed461d"],
-Cell[1163, 33, 91, 0, 70, "CodeText",ExpressionUUID->"92311498-da15-4fb0-8d9e-14fd38dc419f"],
-Cell[1257, 35, 192, 4, 70, "Code",ExpressionUUID->"d114656b-7080-42fa-aa73-43e410670b14",
+Cell[732, 24, 351, 5, 70, "Text",ExpressionUUID->"a49b041b-4b70-42f4-8a93-b2d3b5458f80"],
+Cell[1086, 31, 79, 0, 70, "Section",ExpressionUUID->"8a92ed7f-5661-4df7-9104-393babed461d"],
+Cell[1168, 33, 91, 0, 70, "CodeText",ExpressionUUID->"92311498-da15-4fb0-8d9e-14fd38dc419f"],
+Cell[1262, 35, 192, 4, 70, "Code",ExpressionUUID->"d114656b-7080-42fa-aa73-43e410670b14",
  InitializationCell->True],
-Cell[1452, 41, 83, 0, 70, "Section",ExpressionUUID->"d805c12f-8c2f-455c-ab58-8d6dd8efd369"],
-Cell[1538, 43, 152, 2, 70, "Text",ExpressionUUID->"9382fbd2-b667-42cf-ac59-3307b6f8c4d8"],
-Cell[1693, 47, 81, 0, 70, "Item",ExpressionUUID->"982ba3dd-3d68-4c98-83e7-c0ea51a84e1e"],
-Cell[1777, 49, 82, 0, 70, "Item",ExpressionUUID->"63d00637-dee7-46d1-b275-f697d3e41c79"],
-Cell[1862, 51, 99, 0, 70, "Section",ExpressionUUID->"99b7ac7d-5057-49af-a5fa-4626c6cd982c"],
-Cell[1964, 53, 92, 0, 70, "Item",ExpressionUUID->"bebcebd2-7cd0-47bc-b756-97fee94f3ea9"],
-Cell[2059, 55, 93, 0, 70, "Item",ExpressionUUID->"762d1468-a403-46f3-9a2e-a9099fe8ca53"],
-Cell[2155, 57, 98, 0, 70, "Section",ExpressionUUID->"9f31f337-9a68-41fc-b574-66ef4b3ebbb6"],
-Cell[2256, 59, 84, 0, 70, "Item",ExpressionUUID->"1e2512af-db89-47fe-b68d-b462c0fa4d45"],
-Cell[2343, 61, 87, 0, 70, "Item",ExpressionUUID->"828e1d9e-3bf8-4f09-8b25-ff8b44e47973"],
-Cell[2433, 63, 83, 0, 70, "Item",ExpressionUUID->"dc522690-f930-4907-b984-c130c29f6ad4"],
-Cell[2519, 65, 105, 0, 70, "Section",ExpressionUUID->"7f6cca8e-1ef3-4533-8152-34b03ea4d10b"],
-Cell[2627, 67, 85, 0, 70, "Item",ExpressionUUID->"763893c6-36bc-4b50-a5c8-ed08614f6df0"],
-Cell[2715, 69, 91, 0, 70, "Item",ExpressionUUID->"ee91536a-6b4c-4583-bee6-c265b33026ad"],
-Cell[2809, 71, 97, 0, 70, "Item",ExpressionUUID->"907dd299-95de-445a-8b2d-ca13077b0464"],
-Cell[2909, 73, 85, 0, 70, "Item",ExpressionUUID->"afae3338-b860-499f-8f8d-9af7471ac2db"],
-Cell[2997, 75, 100, 0, 70, "Section",ExpressionUUID->"fe297f91-5af3-47d2-9605-e87b27200b5a"],
-Cell[3100, 77, 106, 0, 70, "Item",ExpressionUUID->"554807a4-802e-4206-9960-7d9c68ba91c8"],
-Cell[3209, 79, 163, 3, 70, "Item",ExpressionUUID->"6b47f11c-9d34-4bab-989b-8d56b05ecbfe"],
-Cell[3375, 84, 137, 1, 70, "Item",ExpressionUUID->"c644ee8e-27fa-417b-8450-7fb8b6092bdf"],
-Cell[3515, 87, 131, 0, 70, "Item",ExpressionUUID->"f343e491-091a-4469-971b-05a19f2321c5"],
-Cell[3649, 89, 140, 1, 70, "Item",ExpressionUUID->"6e14ae4f-49f7-4780-979b-43b6b6321172"],
-Cell[3792, 92, 150, 2, 70, "Item",ExpressionUUID->"86573fd7-0d84-452e-8b02-361b67b259e5"],
-Cell[3945, 96, 92, 0, 70, "Section",ExpressionUUID->"ae8e3b8c-1fed-4fa9-b1d9-1b980003446d"],
-Cell[4040, 98, 129, 0, 70, "Item",ExpressionUUID->"b7cf2d78-dc8d-4009-8fbe-19cc255d7bae"],
-Cell[4172, 100, 133, 0, 70, "Item",ExpressionUUID->"091606a8-360d-40d7-8225-24914e3e0a21"],
-Cell[4308, 102, 115, 0, 70, "Item",ExpressionUUID->"c03e8841-536e-456e-a029-b2d26abde0f1"],
-Cell[4426, 104, 82, 0, 70, "Section",ExpressionUUID->"a545d28d-3f2a-45f7-afdd-e497bb5ffb61"],
-Cell[4511, 106, 115, 0, 70, "Item",ExpressionUUID->"30869aa1-fe19-47fd-933f-cc0ea3bd0a2f"],
-Cell[4629, 108, 84, 0, 70, "Section",ExpressionUUID->"15ceca68-78f4-450e-a0b2-a2db51183924"],
-Cell[4716, 110, 169, 3, 70, "Item",ExpressionUUID->"0992eef4-8888-4676-bab5-3a079fb55cc4"],
-Cell[4888, 115, 171, 3, 70, "Item",ExpressionUUID->"6072648d-a7eb-43cd-9cef-ad5f3a9eb7f8"],
-Cell[5062, 120, 198, 3, 70, "Item",ExpressionUUID->"8cde7dc9-b875-49be-ad13-ee29748c8719"],
-Cell[5263, 125, 202, 3, 70, "Item",ExpressionUUID->"61012a6a-b204-405c-8508-10a5986531e9"]
+Cell[1457, 41, 83, 0, 70, "Section",ExpressionUUID->"d805c12f-8c2f-455c-ab58-8d6dd8efd369"],
+Cell[1543, 43, 157, 2, 70, "Text",ExpressionUUID->"9382fbd2-b667-42cf-ac59-3307b6f8c4d8"],
+Cell[1703, 47, 86, 0, 70, "Item",ExpressionUUID->"982ba3dd-3d68-4c98-83e7-c0ea51a84e1e"],
+Cell[1792, 49, 87, 0, 70, "Item",ExpressionUUID->"63d00637-dee7-46d1-b275-f697d3e41c79"],
+Cell[1882, 51, 99, 0, 70, "Section",ExpressionUUID->"99b7ac7d-5057-49af-a5fa-4626c6cd982c"],
+Cell[1984, 53, 87, 0, 70, "Item",ExpressionUUID->"bebcebd2-7cd0-47bc-b756-97fee94f3ea9"],
+Cell[2074, 55, 87, 0, 70, "Item",ExpressionUUID->"762d1468-a403-46f3-9a2e-a9099fe8ca53"],
+Cell[2164, 57, 98, 0, 70, "Section",ExpressionUUID->"9f31f337-9a68-41fc-b574-66ef4b3ebbb6"],
+Cell[2265, 59, 89, 0, 70, "Item",ExpressionUUID->"1e2512af-db89-47fe-b68d-b462c0fa4d45"],
+Cell[2357, 61, 83, 0, 70, "Item",ExpressionUUID->"dc522690-f930-4907-b984-c130c29f6ad4"],
+Cell[2443, 63, 105, 0, 70, "Section",ExpressionUUID->"7f6cca8e-1ef3-4533-8152-34b03ea4d10b"],
+Cell[2551, 65, 85, 0, 70, "Item",ExpressionUUID->"763893c6-36bc-4b50-a5c8-ed08614f6df0"],
+Cell[2639, 67, 91, 0, 70, "Item",ExpressionUUID->"ee91536a-6b4c-4583-bee6-c265b33026ad"],
+Cell[2733, 69, 97, 0, 70, "Item",ExpressionUUID->"907dd299-95de-445a-8b2d-ca13077b0464"],
+Cell[2833, 71, 85, 0, 70, "Item",ExpressionUUID->"afae3338-b860-499f-8f8d-9af7471ac2db"],
+Cell[2921, 73, 100, 0, 70, "Section",ExpressionUUID->"fe297f91-5af3-47d2-9605-e87b27200b5a"],
+Cell[3024, 75, 106, 0, 70, "Item",ExpressionUUID->"554807a4-802e-4206-9960-7d9c68ba91c8"],
+Cell[3133, 77, 163, 3, 70, "Item",ExpressionUUID->"6b47f11c-9d34-4bab-989b-8d56b05ecbfe"],
+Cell[3299, 82, 137, 1, 70, "Item",ExpressionUUID->"c644ee8e-27fa-417b-8450-7fb8b6092bdf"],
+Cell[3439, 85, 131, 0, 70, "Item",ExpressionUUID->"f343e491-091a-4469-971b-05a19f2321c5"],
+Cell[3573, 87, 140, 1, 70, "Item",ExpressionUUID->"6e14ae4f-49f7-4780-979b-43b6b6321172"],
+Cell[3716, 90, 155, 2, 70, "Item",ExpressionUUID->"86573fd7-0d84-452e-8b02-361b67b259e5"],
+Cell[3874, 94, 92, 0, 70, "Section",ExpressionUUID->"ae8e3b8c-1fed-4fa9-b1d9-1b980003446d"],
+Cell[3969, 96, 129, 0, 70, "Item",ExpressionUUID->"b7cf2d78-dc8d-4009-8fbe-19cc255d7bae"],
+Cell[4101, 98, 133, 0, 70, "Item",ExpressionUUID->"091606a8-360d-40d7-8225-24914e3e0a21"],
+Cell[4237, 100, 115, 0, 70, "Item",ExpressionUUID->"c03e8841-536e-456e-a029-b2d26abde0f1"],
+Cell[4355, 102, 98, 0, 70, "Section",ExpressionUUID->"ad7a5903-78f1-414f-8527-05143ad29cca"],
+Cell[4456, 104, 329, 5, 70, "Text",ExpressionUUID->"f517986e-2da4-4331-9a46-b14fc97dbefa"],
+Cell[4788, 111, 103, 0, 70, "CodeText",ExpressionUUID->"0b68c408-c1af-4768-86cd-1118e1de1259"],
+Cell[4894, 113, 3442, 87, 70, "Code",ExpressionUUID->"fc30a7fa-4999-4991-bf03-8756d5dcc30a",
+ InitializationCell->True],
+Cell[8339, 202, 162, 3, 70, "CodeText",ExpressionUUID->"b3b6e3fe-6e6d-4455-baec-42709886e034"],
+Cell[8504, 207, 3415, 78, 70, "Input",ExpressionUUID->"9c88417b-630c-4476-b47b-fc94f30f55a4"],
+Cell[11922, 287, 82, 0, 70, "Section",ExpressionUUID->"a545d28d-3f2a-45f7-afdd-e497bb5ffb61"],
+Cell[12007, 289, 115, 0, 70, "Item",ExpressionUUID->"30869aa1-fe19-47fd-933f-cc0ea3bd0a2f"],
+Cell[12125, 291, 84, 0, 70, "Section",ExpressionUUID->"15ceca68-78f4-450e-a0b2-a2db51183924"],
+Cell[12212, 293, 169, 3, 70, "Item",ExpressionUUID->"0992eef4-8888-4676-bab5-3a079fb55cc4"],
+Cell[12384, 298, 171, 3, 70, "Item",ExpressionUUID->"6072648d-a7eb-43cd-9cef-ad5f3a9eb7f8"],
+Cell[12558, 303, 198, 3, 70, "Item",ExpressionUUID->"8cde7dc9-b875-49be-ad13-ee29748c8719"],
+Cell[12759, 308, 202, 3, 70, "Item",ExpressionUUID->"61012a6a-b204-405c-8508-10a5986531e9"]
 }
 ]
 *)

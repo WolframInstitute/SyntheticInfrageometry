@@ -3,17 +3,17 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Wolfram 14.3' *)
+(* CreatedBy='Wolfram 15.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[      9702,        188]
-NotebookOptionsPosition[      5830,        136]
-NotebookOutlinePosition[      6147,        150]
-CellTagsIndexPosition[      6104,        147]
+NotebookDataLength[     17198,        364]
+NotebookOptionsPosition[     12725,        305]
+NotebookOutlinePosition[     13042,        319]
+CellTagsIndexPosition[     12999,        316]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -109,6 +109,175 @@ Cell["The 5-vertex ExtendInfraSegment form (A4 in finder shape)", "Item",Express
 
 Cell["FindInfraReflection (synthetic from B and =)", "Item",ExpressionUUID->"1f476adc-591e-4de4-9477-4e96c936d6bf"],
 
+Cell["Examples on large graphs", "Section",ExpressionUUID->"05fe94c9-7072-493f-973e-77e90c44f5ea"],
+
+Cell["\<\
+The Tarski betweenness interval between two points on three tessellated \
+surfaces: a fat diamond on the square lattice, a sparse parity-riddled set on \
+the honeycomb, and a thin sliver on the hyperbolic {3, 7} surface. Midpoints \
+of the geodesic bundle in red; the A4 segment-doubling witnesses (B(a, b, x) \
+with d(b, x) == d(a, b)) in purple.\
+\>", "Text",ExpressionUUID->"33544720-f922-4b4b-a00b-2377b42d83b5"],
+
+Cell["Define the three surfaces.", "CodeText",ExpressionUUID->"aec39024-36a8-496c-9b8b-b07f75d39738"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+  "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"Needs", "[", "\"\<WolframInstitute`Infrageometry`\>\"", "]"}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"graphs", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"g", " ", "|->", " ", 
+      RowBox[{"With", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"h", " ", "=", " ", 
+          RowBox[{"Graph", "[", 
+           RowBox[{
+            RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+            RowBox[{"EdgeList", "[", "g", "]"}]}], "]"}]}], "}"}], ",", "\n", 
+        "     ", 
+        RowBox[{
+         RowBox[{"SeedRandom", "[", "1", "]"}], ";", "\n", "     ", 
+         RowBox[{"Graph", "[", 
+          RowBox[{"h", ",", " ", 
+           RowBox[{"VertexCoordinates", " ", "->", " ", 
+            RowBox[{"GraphEmbedding", "[", 
+             RowBox[{"h", ",", " ", "\"\<SpringElectricalEmbedding\>\""}], 
+             "]"}]}], ",", "\n", "       ", 
+           RowBox[{"EdgeStyle", " ", "->", " ", 
+            RowBox[{"Directive", "[", 
+             RowBox[{"StandardGray", ",", " ", 
+              RowBox[{"Opacity", "[", "0.15", "]"}]}], "]"}]}], ",", "\n", 
+           "       ", 
+           RowBox[{"VertexStyle", " ", "->", " ", 
+            RowBox[{"Directive", "[", 
+             RowBox[{"StandardGray", ",", " ", 
+              RowBox[{"Opacity", "[", "0.3", "]"}]}], "]"}]}]}], "]"}]}]}], 
+       "]"}]}], ")"}], " ", "/@", " ", 
+    RowBox[{"{", "\n", "   ", 
+     RowBox[{
+      RowBox[{"TessellationGraph", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"4", ",", " ", "4"}], "}"}], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{"20", ",", " ", "15"}], "}"}]}], "]"}], ",", "\n", "   ", 
+      RowBox[{"TessellationGraph", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"6", ",", " ", "3"}], "}"}], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{"20", ",", " ", "15"}], "}"}]}], "]"}], ",", "\n", "   ", 
+      RowBox[{"TessellationGraph", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"3", ",", " ", "7"}], "}"}], ",", " ", "3"}], "]"}]}], 
+     "}"}]}]}], ";"}]}], "Code",
+ InitializationCell->
+  True,ExpressionUUID->"204c17d1-9600-4787-8858-a46f4dabf9a9"],
+
+Cell["\<\
+Interval, geodesic bundle, midpoints, and A4 doubling on each surface.\
+\>", "CodeText",ExpressionUUID->"f55b43ac-b4f5-44f2-bb80-b93d0f3b15e7"],
+
+Cell[BoxData[
+ RowBox[{"Grid", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"MapThread", "[", "\n", "   ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"g", ",", " ", "d", ",", " ", "seed"}], "}"}], " ", "|->", 
+       "\n", "     ", 
+       RowBox[{"With", "[", "\n", "       ", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"a", " ", "=", " ", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"SeedRandom", "[", "seed", "]"}], ";", " ", 
+             RowBox[{"First", " ", "@", " ", 
+              RowBox[{"FindInfraPoint", "[", 
+               RowBox[{"g", ",", " ", 
+                RowBox[{"\"\<From\>\"", " ", "->", " ", "\"\<Center\>\""}]}], 
+               "]"}]}]}], ")"}]}], "}"}], ",", "\n", "       ", 
+         RowBox[{"{", 
+          RowBox[{"b", " ", "=", " ", 
+           RowBox[{"First", " ", "@", " ", 
+            RowBox[{"FindInfraPoint", "[", 
+             RowBox[{"g", ",", " ", 
+              RowBox[{"\"\<From\>\"", " ", "->", " ", 
+               RowBox[{"a", " ", "->", " ", "d"}]}]}], "]"}]}]}], "}"}], ",", 
+         "\n", "       ", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"a0", " ", "=", " ", 
+            RowBox[{"a", "[", 
+             RowBox[{"[", 
+              RowBox[{"1", ",", " ", "1"}], "]"}], "]"}]}], ",", " ", 
+           RowBox[{"b0", " ", "=", " ", 
+            RowBox[{"b", "[", 
+             RowBox[{"[", 
+              RowBox[{"1", ",", " ", "1"}], "]"}], "]"}]}]}], "}"}], ",", 
+         "\n", "       ", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"interval", " ", "=", " ", 
+            RowBox[{"InfraSet", "[", 
+             RowBox[{"Select", "[", 
+              RowBox[{
+               RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+               RowBox[{"v", " ", "|->", " ", 
+                RowBox[{"BetweennessQ", "[", 
+                 RowBox[{"g", ",", " ", "a0", ",", " ", "v", ",", " ", "b0"}],
+                  "]"}]}]}], "]"}], "]"}]}], ",", "\n", "        ", 
+           RowBox[{"bundle", " ", "=", " ", 
+            RowBox[{"FindInfraSegment", "[", 
+             RowBox[{"g", ",", " ", "a0", ",", " ", "b0", ",", " ", 
+              RowBox[{"UpTo", "[", "40", "]"}]}], "]"}]}], ",", "\n", 
+           "        ", 
+           RowBox[{"doubled", " ", "=", " ", 
+            RowBox[{"InfraPoint", "[", 
+             RowBox[{"ExtendInfraSegment", "[", 
+              RowBox[{
+              "g", ",", " ", "a0", ",", " ", "b0", ",", " ", "a0", ",", " ", 
+               "b0", ",", " ", "All"}], "]"}], "]"}]}]}], "}"}], ",", "\n", 
+         "       ", 
+         RowBox[{"{", 
+          RowBox[{"mids", " ", "=", " ", 
+           RowBox[{"FindInfraMidpoint", "[", 
+            RowBox[{"g", ",", " ", 
+             RowBox[{"InfraSegment", "[", "bundle", "]"}]}], "]"}]}], "}"}], ",",
+          "\n", "       ", 
+         RowBox[{"InfraSceneHighlight", "[", 
+          RowBox[{"g", ",", "\n", "         ", 
+           RowBox[{"{", 
+            RowBox[{"interval", ",", " ", "bundle", ",", " ", 
+             RowBox[{"doubled", " ", "->", " ", "StandardPurple"}], ",", " ", 
+             "mids", ",", " ", "a", ",", " ", "b"}], "}"}], ",", "\n", 
+           "         ", 
+           RowBox[{"ImageSize", " ", "->", " ", "300"}]}], "]"}]}], "]"}]}], ",",
+       "\n", "   ", 
+      RowBox[{"{", 
+       RowBox[{"graphs", ",", " ", 
+        RowBox[{"{", 
+         RowBox[{"7", ",", " ", "7", ",", " ", "4"}], "}"}], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{"2", ",", " ", "3", ",", " ", "5"}], "}"}]}], "}"}]}], "]"}],
+     "}"}], ",", " ", 
+   RowBox[{"Spacings", " ", "->", " ", 
+    RowBox[{"{", 
+     RowBox[{"2", ",", " ", "2"}], "}"}]}]}], "]"}]], "Input",ExpressionUUID->\
+"45529605-6cff-480f-b00c-c2d75e34d1f3"],
+
 Cell["Tutorial", "Section",ExpressionUUID->"0ab9991e-e464-45a7-9c80-a47e1f856ac9"],
 
 Cell["See TarskiGeometryTutorial for runnable examples.", "Item",ExpressionUUID->"8a854cb0-6154-46de-b361-d889075c1386"],
@@ -134,7 +303,7 @@ Beeson, Foundations of Constructive Geometry: Euclid Book I, Mem. AMS \
 
 Cell["Mulder, The Interval Function of a Graph (graph betweenness)", "Item",ExpressionUUID->"1c469b65-d620-43c6-a683-ff412101a2a2"]
 },
-FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"d0c0adf3-5051-4eda-8478-4a233b99d813"
 ]
@@ -180,16 +349,23 @@ Cell[3914, 94, 83, 0, 70, "Item",ExpressionUUID->"d6ec48af-ccce-432a-b1f8-7df421
 Cell[4000, 96, 95, 0, 70, "Item",ExpressionUUID->"06d86aca-7090-4066-b39a-a2877b9a100e"],
 Cell[4098, 98, 124, 0, 70, "Section",ExpressionUUID->"188cb928-4c47-4f07-8bee-3806f2e07695"],
 Cell[4225, 100, 180, 3, 70, "Text",ExpressionUUID->"d95008e1-7b57-44fb-b823-a6a9fe50afd5"],
-Cell[4408, 105, 109, 0, 70, "Item",ExpressionUUID->"1cfa8729-a146-44fd-9999-fd2d0051c360"],
-Cell[4520, 107, 123, 0, 70, "Item",ExpressionUUID->"34bcf39d-a323-4361-bd8e-c4174e94610d"],
-Cell[4646, 109, 110, 0, 70, "Item",ExpressionUUID->"1f476adc-591e-4de4-9477-4e96c936d6bf"],
-Cell[4759, 111, 82, 0, 70, "Section",ExpressionUUID->"0ab9991e-e464-45a7-9c80-a47e1f856ac9"],
-Cell[4844, 113, 120, 0, 70, "Item",ExpressionUUID->"8a854cb0-6154-46de-b361-d889075c1386"],
-Cell[4967, 115, 84, 0, 70, "Section",ExpressionUUID->"760a595a-32b1-41f6-b7fb-b5acca46c222"],
-Cell[5054, 117, 292, 5, 70, "Item",ExpressionUUID->"f58de625-add1-4f7a-ae44-19e4b9222004"],
-Cell[5349, 124, 174, 3, 70, "Item",ExpressionUUID->"a4c61f6a-1c45-4b68-bc14-ee4ff3860cc1"],
-Cell[5526, 129, 166, 3, 70, "Item",ExpressionUUID->"b3374f12-e8f7-4adf-8f66-0776f5d9d521"],
-Cell[5695, 134, 131, 0, 70, "Item",ExpressionUUID->"1c469b65-d620-43c6-a683-ff412101a2a2"]
+Cell[4408, 105, 114, 0, 70, "Item",ExpressionUUID->"1cfa8729-a146-44fd-9999-fd2d0051c360"],
+Cell[4525, 107, 128, 0, 70, "Item",ExpressionUUID->"34bcf39d-a323-4361-bd8e-c4174e94610d"],
+Cell[4656, 109, 115, 0, 70, "Item",ExpressionUUID->"1f476adc-591e-4de4-9477-4e96c936d6bf"],
+Cell[4774, 111, 98, 0, 70, "Section",ExpressionUUID->"05fe94c9-7072-493f-973e-77e90c44f5ea"],
+Cell[4875, 113, 426, 6, 70, "Text",ExpressionUUID->"33544720-f922-4b4b-a00b-2377b42d83b5"],
+Cell[5304, 121, 101, 0, 70, "CodeText",ExpressionUUID->"aec39024-36a8-496c-9b8b-b07f75d39738"],
+Cell[5408, 123, 2303, 60, 70, "Code",ExpressionUUID->"204c17d1-9600-4787-8858-a46f4dabf9a9",
+ InitializationCell->True],
+Cell[7714, 185, 153, 2, 70, "CodeText",ExpressionUUID->"f55b43ac-b4f5-44f2-bb80-b93d0f3b15e7"],
+Cell[7870, 189, 3781, 89, 70, "Input",ExpressionUUID->"45529605-6cff-480f-b00c-c2d75e34d1f3"],
+Cell[11654, 280, 82, 0, 70, "Section",ExpressionUUID->"0ab9991e-e464-45a7-9c80-a47e1f856ac9"],
+Cell[11739, 282, 120, 0, 70, "Item",ExpressionUUID->"8a854cb0-6154-46de-b361-d889075c1386"],
+Cell[11862, 284, 84, 0, 70, "Section",ExpressionUUID->"760a595a-32b1-41f6-b7fb-b5acca46c222"],
+Cell[11949, 286, 292, 5, 70, "Item",ExpressionUUID->"f58de625-add1-4f7a-ae44-19e4b9222004"],
+Cell[12244, 293, 174, 3, 70, "Item",ExpressionUUID->"a4c61f6a-1c45-4b68-bc14-ee4ff3860cc1"],
+Cell[12421, 298, 166, 3, 70, "Item",ExpressionUUID->"b3374f12-e8f7-4adf-8f66-0776f5d9d521"],
+Cell[12590, 303, 131, 0, 70, "Item",ExpressionUUID->"1c469b65-d620-43c6-a683-ff412101a2a2"]
 }
 ]
 *)
