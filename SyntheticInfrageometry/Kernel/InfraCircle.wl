@@ -1,11 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[cycleToVertexSequence]
-PackageScope[findCyclesWithPruning]
-PackageScope[admissibleCircleSet]
-PackageScope[extractAdmissibleCycle]
-PackageScope[greedyFirstAdmissibleCycle]
-
 
 (* ===================== InfraCircle wrapper ===================== *)
 
@@ -88,30 +82,10 @@ FindInfraCircle[ graph_Graph, p_, r_,
     ], p, r ]
 
 
-cycleToVertexSequence[ cyc_List ] := First /@ cyc
-
-(* The findCyclesWithPruning / admissibleCircleSet / extractAdmissibleCycle /
-   greedyFirstAdmissibleCycle helpers below are no longer used by
-   FindInfraCircle (collapsed to a single length sweep in findCircleCore);
-   they remain because FindInfraEllipse still consumes them. *)
-
-(* Integer pruning caps FindCycle's enumeration; Infinity enumerates all;
-   Bernoulli subsamples post-enumeration. *)
-findCyclesWithPruning[ g_Graph, Infinity ]                  := FindCycle[ g, Infinity, All ]
-findCyclesWithPruning[ g_Graph, n_Integer /; n >= 1 ]       := FindCycle[ g, Infinity, n ]
-findCyclesWithPruning[ g_Graph, p_?NumericQ /; 0 < p < 1 ] :=
-  applyPruning[ FindCycle[ g, Infinity, All ], p ]
-
-
 admissibleCircleVerts[ localG_Graph, center_, radius_, properties_List ] :=
   With[ { tests = propertyPredicateCircle[ localG, center, radius, # ] & /@ properties },
     verts |-> AllTrue[ tests, # @ verts & ]
   ]
-
-admissibleCircleSet[ levelGraph_Graph, vertsTest_ ] :=
-  t |-> Length[ t ] >= 3 &&
-        AnyTrue[ FindCycle[ Subgraph[ levelGraph, t ], Infinity, All ],
-          cyc |-> vertsTest[ cycleToVertexSequence @ cyc ] ]
 
 
 (* Separating = deleting the cycle traps the center within { d <= rmax },
@@ -126,28 +100,6 @@ propertyPredicateCircle[ localG_Graph, center_, radius_, "Separating" ] :=
 
 propertyPredicateCircle[ _, _, _, other_ ] :=
   ( Message[ FindInfraCircle::badproperty, other ]; Throw[ $Failed ] )
-
-
-extractAdmissibleCycle[ localG_Graph, vertsTest_, t_List ] :=
-  SelectFirst[
-    cycleToVertexSequence /@ FindCycle[ Subgraph[ localG, t ], Length @ t, All ],
-    vertsTest, Missing[ ] ]
-
-(* Iterate FindCycle by length, returning the first admissible cycle.
-   On a connected level-surface subgraph the bound is VertexCount; the
-   loop short-circuits at the first hit and never enumerates longer
-   cycles. *)
-
-greedyFirstAdmissibleCycle[ levelGraph_Graph, vertsTest_ ] :=
-  Module[ { k = 3, kMax = VertexCount @ levelGraph, found = Missing[ ] },
-    While[ k <= kMax && MissingQ @ found,
-      found = SelectFirst[
-        cycleToVertexSequence /@ FindCycle[ levelGraph, { k }, All ],
-        vertsTest, Missing[ ] ];
-      k++
-    ];
-    If[ MissingQ @ found, { }, { found } ]
-  ]
 
 
 (* ===================== FindInfraCycle ===================== *)

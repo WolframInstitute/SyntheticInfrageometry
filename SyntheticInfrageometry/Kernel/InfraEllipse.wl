@@ -21,67 +21,59 @@ InfraEllipse[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraEllipse[
 (* ===================== FindInfraEllipse ===================== *)
 
 (* An ellipse for foci {p1, p2} at sum c is a simple cycle in the induced
-   subgraph on { v : cMin <= d(p1,v) + d(p2,v) <= cMax }.  Two orthogonal
-   axes matching FindInfraCircle:
-     Properties -- default {"Separating"} requires the cycle to
-       disconnect the near region {v : sum < cMin} from the far region
-       {v : sum > cMax} -- the topological condition that makes a level
-       cycle a genuine ellipse.  Empty {} returns any simple cycle in
-       the level surface (no separation).  "Connected" raises
-       ::badproperty (cycles are always connected).
-     Method     -- "Peel" (default; BFS peel-DAG on the level-set
-       vertices, cycle extraction from each minimal admissible leaf;
-       robust on sparse level sets where Exhaustive often finds no
-       cycle at all) | "Exhaustive" (FindCycle + filter + length sort,
-       accepts nested {"Exhaustive", "Pruning" -> spec}) | "Greedy"
-       (first admissible cycle by ascending length, one realisation). *)
+   subgraph on { v : cMin <= d(p1,v) + d(p2,v) <= cMax }.  Single axis
+   Properties, matching FindInfraCircle:
+     "Separating" -- the cycle disconnects the near region
+       {v : sum < cMin} from the far region {v : sum > cMax}; the
+       topological condition that makes a level cycle a genuine ellipse.
+     "Shortest"   -- only cycles tied at the minimum admissible length;
+       the length sweep stops at the first non-empty length class.
+   Default {"Separating", "Shortest"} returns the canonical infra-ellipse
+   (shortest separating cycle) and its ties.  Unknown property names
+   (including "Connected", since cycles are always connected) raise
+   ::badproperty.  Single length-by-length FindCycle sweep; no Method
+   axis. *)
 
-FindInfraEllipse::badmethod   = "Method `1` is not supported by FindInfraEllipse.";
 FindInfraEllipse::badproperty = "Property `1` is not supported by FindInfraEllipse.";
 
 Options[ FindInfraEllipse ] = {
-  Properties -> { "Separating" },
-  Method     -> "Peel"
+  Properties -> { "Separating", "Shortest" }
 };
 
 FindInfraEllipse[ graph_Graph, foci : { _, _ }, c_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   spreadFind[ InfraEllipse, count,
-    { foci0, c0 } |-> Module[ { properties, methodSpec, methodHead, pruning, range, verts, idx, dm, row1, row2,
-              levelSet, levelGraph },
+    { foci0, c0 } |-> Module[ { properties, unknown, range, verts, idx, dm, row1, row2,
+              levelGraph, vertsTest, tied, needed, k, kMax, batch, matching, accumulated },
       properties = OptionValue[ FindInfraEllipse, { opts }, Properties ];
-      methodSpec = OptionValue[ FindInfraEllipse, { opts }, Method ];
-      methodHead = methodName @ methodSpec;
-      pruning    = Replace[ methodSpec,
-                    { { _String, subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
-                      _ :> Infinity } ];
-      range      = Replace[ c0, d_?NumericQ :> { d, d } ];
-      verts      = VertexList[ graph ];
-      idx        = AssociationThread[ verts, Range @ Length @ verts ];
-      dm         = GraphDistanceMatrix[ graph ];
-      row1       = dm[[ idx @ foci0[[ 1 ]] ]];
-      row2       = dm[[ idx @ foci0[[ 2 ]] ]];
-      levelSet   = ellipticLevelSet[ verts, row1, row2, range ];
-      levelGraph = Subgraph[ graph, levelSet ];
       Catch[
-        With[ { vertsTest = admissibleEllipticCycleVerts[ graph, verts, row1, row2, range, properties ] },
-          Switch[ methodHead,
-            "Exhaustive",
-              SortBy[ Length ] @
-                Select[ cycleToVertexSequence /@ findCyclesWithPruning[ levelGraph, pruning ],
-                  And[ Length[ # ] >= 3, vertsTest[ # ] ] & ],
-            "Peel",
-              DeleteDuplicatesBy[ Sort ] @
-                SortBy[ Length ] @
-                DeleteMissing[
-                  extractAdmissibleCycle[ levelGraph, vertsTest, # ] & /@
-                    findAllMinimalAdmissible[ levelGraph, levelSet,
-                      admissibleCircleSet[ levelGraph, vertsTest ], pruning ] ],
-            "Greedy",
-              greedyFirstAdmissibleCycle[ levelGraph, vertsTest ],
-            _, Message[ FindInfraEllipse::badmethod, methodSpec ]; $Failed
-          ]
-        ]
+        unknown = Complement[ properties, { "Separating", "Shortest" } ];
+        If[ unknown =!= { },
+          Message[ FindInfraEllipse::badproperty, First @ unknown ]; Throw[ $Failed ] ];
+        range      = Replace[ c0, d_?NumericQ :> { d, d } ];
+        verts      = VertexList[ graph ];
+        idx        = AssociationThread[ verts, Range @ Length @ verts ];
+        dm         = GraphDistanceMatrix[ graph ];
+        row1       = dm[[ idx @ foci0[[ 1 ]] ]];
+        row2       = dm[[ idx @ foci0[[ 2 ]] ]];
+        levelGraph = Subgraph[ graph, ellipticLevelSet[ verts, row1, row2, range ] ];
+        vertsTest  = admissibleEllipticCycleVerts[ graph, verts, row1, row2, range,
+                       DeleteCases[ properties, "Shortest" ] ];
+        tied       = MemberQ[ properties, "Shortest" ];
+        needed     = Switch[ count, _Integer, count, UpTo[ _Integer ], First @ count, _, Infinity ];
+        kMax       = VertexCount[ levelGraph ];
+        accumulated = { };
+        k = 3;
+        While[ k <= kMax,
+          batch    = cycleToVertexSequence /@ FindCycle[ levelGraph, { k }, All ];
+          matching = Select[ batch, vertsTest ];
+          If[ matching =!= { },
+            accumulated = Join[ accumulated, matching ];
+            If[ tied || Length[ accumulated ] >= needed, Break[ ] ]
+          ];
+          k++
+        ];
+        accumulated
       ]
     ],
     Replace[ foci, InfraPoint[ { v_ } ] :> v, { 1 } ], c ]

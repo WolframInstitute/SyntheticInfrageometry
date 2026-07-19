@@ -1,6 +1,6 @@
 BeginTestSection["InfraEllipse"]
 
-(* ===== FindInfraEllipse: default Properties -> {"Separating"}, Method -> "Peel" =====
+(* ===== FindInfraEllipse: default Properties -> {"Separating", "Shortest"} =====
 
    Default returns the shortest separating cycle around both foci.  A
    separating cycle requires a non-empty near region {sum < cMin}, so c
@@ -91,6 +91,15 @@ VerificationTest[
   ],
   True,
   TestID -> "FindInfraEllipse-NoProperties-Grid4x4-sorted-by-length"
+]
+
+(* Default "Shortest": all returned ties share the minimum length *)
+VerificationTest[
+  Apply[ SameQ,
+    Length /@ (#[[ 1, 1 ]] & /@
+      FindInfraEllipse[ GridGraph[ { 7, 7 } ], { 25, 12 }, { 4, 8 }, All ]) ],
+  True,
+  TestID -> "FindInfraEllipse-default-Shortest-ties-equal-length"
 ]
 
 (* Empty level set -> $Failed for count=1 *)
