@@ -32,7 +32,7 @@ InfraPolygon[ reps_List ][ "Length" ] :=
 
 (* "Vertices" = corner vertices per realisation, as unary InfraPoints. *)
 InfraPolygon[ reps_List ][ "Vertices" ] :=
-  Map[ Function[ poly, InfraPoint[ { # } ] & /@ Most @ polylineToKnots[ poly ] ], reps ]
+  Map[ poly |-> ( InfraPoint[ { # } ] & /@ Most @ polylineToKnots[ poly ] ), reps ]
 
 
 (* ===================== FindInfraPolygon ===================== *)
@@ -99,8 +99,6 @@ InfraPolygonQ[ _Graph, _ ] := False
 FindInfraRegularPolygon::badproperty = "Property `1` is not supported by FindInfraRegularPolygon.";
 FindInfraRegularPolygon::badmethod   = "Method `1` is not supported by FindInfraRegularPolygon.";
 FindInfraRegularPolygon::badcount    = "Diagonal tuple `1` has length exceeding Floor[n/2] for n = `2`.";
-FindInfraRegularPolygon::badslot     = "Slot entry `1` is not Integer | {lo, hi} | Automatic.";
-FindInfraRegularPolygon::badfrom     = "\"From\" specification `1` is not All | v | v -> r_Integer.";
 
 Options[ FindInfraRegularPolygon ] = {
   Properties -> { },
@@ -120,7 +118,6 @@ FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
           Message[ FindInfraRegularPolygon::badproperty, First @ properties ]; Throw[ $Failed ] ];
         If[ Length[ As ] < 1 || Length[ As ] > Floor[ n / 2 ],
           Message[ FindInfraRegularPolygon::badcount, As, n ]; Throw[ $Failed ] ];
-        validateSlots @ As;
         methodHead = methodName @ methodSpec;
         If[ methodHead =!= "Exhaustive",
           Message[ FindInfraRegularPolygon::badmethod, methodSpec ]; Throw[ $Failed ] ];
@@ -174,8 +171,6 @@ parseFromSpec[ ( anchor_ -> r_Integer ) ] /; r >= 0 :=
   { normalizeAnchor @ anchor, r }
 parseFromSpec[ anchor_ ] /; ! MatchQ[ anchor, _Rule ] :=
   { normalizeAnchor @ anchor, All }
-parseFromSpec[ bad_ ] :=
-  ( Message[ FindInfraRegularPolygon::badfrom, bad ]; Throw[ $Failed ] )
 
 
 normalizeAnchor[ InfraPoint[ { v_ } ] ]                              := v
@@ -187,14 +182,6 @@ normalizeAnchor[ v_ ]                                                := v
 
 anchorContainedQ[ cyc_List, anchor_List ] := IntersectingQ[ cyc, anchor ]
 anchorContainedQ[ cyc_List, anchor_ ]     := MemberQ[ cyc, anchor ]
-
-
-validateSlots[ As_List ] :=
-  Scan[
-    Replace[ #,
-      { _Integer | { _Integer, _Integer } | Automatic :> Null,
-        bad_ :> ( Message[ FindInfraRegularPolygon::badslot, bad ]; Throw[ $Failed ] ) } ] &,
-    As ]
 
 
 (* Candidate-cycle source: integer/range slot 1 -> distance subgraph;
@@ -251,7 +238,7 @@ InfraRegularPolygonQ[ graph_Graph, cycle_List, As_List ] /; Length[ cycle ] >= 3
       With[ { idx = AssociationThread[ vs -> Range @ Length @ vs ] },
         DuplicateFreeQ[ open ] &&
         Length[ As ] >= 1 && Length[ As ] <= Floor[ n / 2 ] &&
-        validSlotShapesQ[ As ] &&
+        AllTrue[ As, MatchQ[ _Integer | { _Integer, _Integer } | Automatic ] ] &&
         AllTrue[ Range @ Length @ As,
           matchPolygonSlot[ #, As[[ # ]], open, dm, idx ] & ]
       ]
@@ -259,10 +246,6 @@ InfraRegularPolygonQ[ graph_Graph, cycle_List, As_List ] /; Length[ cycle ] >= 3
   ]
 
 InfraRegularPolygonQ[ _Graph, cycle_List, _List ] /; Length[ cycle ] < 3 := False
-
-
-validSlotShapesQ[ As_List ] :=
-  AllTrue[ As, MatchQ[ _Integer | { _Integer, _Integer } | Automatic ] ]
 
 
 (* ===================== Scene-DSL constructors ===================== *)

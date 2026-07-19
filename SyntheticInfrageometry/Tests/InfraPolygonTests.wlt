@@ -189,14 +189,6 @@ VerificationTest[
   TestID -> "FindInfraRegularPolygon-too-many-diagonals"
 ]
 
-VerificationTest[
-  FindInfraRegularPolygon[ CycleGraph[ 6 ], { "foo" }, 6 ],
-  $Failed,
-  { FindInfraRegularPolygon::badslot },
-  TestID -> "FindInfraRegularPolygon-badslot"
-]
-
-
 (* ===================== Slot grammar: Automatic ===================== *)
 
 (* GridGraph[{3, 3}] unit squares: sides 1, 2-diagonals constant 2.
@@ -297,13 +289,6 @@ VerificationTest[
   Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 -> 2 ] >= 4,
   True,
   TestID -> "FindInfraRegularPolygon-grid5-From-radius2-localized"
-]
-
-VerificationTest[
-  FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, "From" -> 13 -> "bar" ],
-  $Failed,
-  { FindInfraRegularPolygon::badfrom },
-  TestID -> "FindInfraRegularPolygon-badfrom"
 ]
 
 (* "From" accepts InfraPoint[{v}] wrapper, unwrapping to a bare vertex. *)
