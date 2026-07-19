@@ -91,9 +91,8 @@ ellipticNearFar[ verts_List, row1_List, row2_List, range_List ] :=
 admissibleEllipticShell[ graph_Graph, verts_List, row1_List, row2_List, range_List,
     properties_List ] :=
   With[ { nf = ellipticNearFar[ verts, row1, row2, range ] },
-    With[ { tests = propertyPredicateEllipticShell[ graph, nf[[ 1 ]], nf[[ 2 ]], # ] & /@ properties },
-      t |-> AllTrue[ tests, # @ t & ]
-    ]
+    { tests = propertyPredicateEllipticShell[ graph, nf[[ 1 ]], nf[[ 2 ]], # ] & /@ properties },
+    t |-> AllTrue[ tests, # @ t & ]
   ]
 
 
@@ -120,9 +119,8 @@ InfraEllipticShellQ[ graph_Graph, vs_List ] :=
     dm    = GraphDistanceMatrix[ graph ];
     AnyTrue[ Subsets[ verts, { 2 } ], fociPair |->
       With[ { sums = dm[[ idx @ fociPair[[ 1 ]] ]] + dm[[ idx @ fociPair[[ 2 ]] ]] },
-        With[ { c = sums[[ idx @ First @ vs ]] },
-          Sort[ vs ] === Sort @ Pick[ verts, Thread[ sums == c ] ]
-        ]
+        { c = sums[[ idx @ First @ vs ]] },
+        Sort[ vs ] === Sort @ Pick[ verts, Thread[ sums == c ] ]
       ]
     ]
   ]

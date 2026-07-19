@@ -52,25 +52,24 @@ FindInfraPath[ graph_Graph, p1_, p2_,
       Catch @ With[ {
           properties = OptionValue[ FindInfraPath, { opts }, Properties ],
           methodSpec = OptionValue[ FindInfraPath, { opts }, Method ] /. Automatic -> "Exhaustive" },
-        With[ { methodHead = methodName @ methodSpec,
-                pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
-                fastPathQ  = properties === { } },
-          Switch[ methodHead,
-            "Exhaustive",
-              If[ fastPathQ,
-                Replace[
-                  FindPath[ graph, q1, q2, kspec, count /. UpTo[ n_ ] :> n ],
-                  Except[ _List ] -> { } ],
-                Select[
-                  frontierSweep[ graph, q1, q2,
-                    makeCandidateFn[ graph, allNeighboursBaseFn,
-                      properties, FindInfraPath ],
-                    pruning, countLimit @ count ],
-                  walkLengthAdmissibleQ[ kspec ] ]
-              ],
-            _,
-              Message[ FindInfraPath::badmethod, methodSpec ]; $Failed
-          ]
+        { methodHead = methodName @ methodSpec,
+          pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
+          fastPathQ  = properties === { } },
+        Switch[ methodHead,
+          "Exhaustive",
+            If[ fastPathQ,
+              Replace[
+                FindPath[ graph, q1, q2, kspec, count /. UpTo[ n_ ] :> n ],
+                Except[ _List ] -> { } ],
+              Select[
+                frontierSweep[ graph, q1, q2,
+                  makeCandidateFn[ graph, allNeighboursBaseFn,
+                    properties, FindInfraPath ],
+                  pruning, countLimit @ count ],
+                walkLengthAdmissibleQ[ kspec ] ]
+            ],
+          _,
+            Message[ FindInfraPath::badmethod, methodSpec ]; $Failed
         ]
       ]
     ], p1, p2 ]
@@ -119,21 +118,20 @@ ExtendInfraPath[ graph_Graph, path_,
           methodSpec = OptionValue[ ExtendInfraPath, { opts }, Method ] /. Automatic -> "Exhaustive",
           direction  = OptionValue[ ExtendInfraPath, { opts }, "Direction" ],
           length     = OptionValue[ ExtendInfraPath, { opts }, "Length" ] },
-        With[ { methodHead = methodName @ methodSpec,
-                pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-          If[ methodHead =!= "Exhaustive",
-            Message[ ExtendInfraPath::badmethod, methodSpec ]; Throw[ $Failed ] ];
-          With[ { candidateFn = makeCandidateFn[ graph, allNeighboursBaseFn,
-                                  properties, ExtendInfraPath ],
-                  simpleQ     = MemberQ[ properties, "Simple" | { "Simple" } ] },
-            Switch[ direction,
-              "Forward",   extendOneSide[ graph, walk0, candidateFn, length, pruning ],
-              "Backward",  Reverse /@ extendOneSide[ graph, Reverse @ walk0,
-                             candidateFn, length, pruning ],
-              "BothSides", extendBothSidesSymmetric[ graph, walk0, candidateFn,
-                             length, pruning, simpleQ ],
-              _, Message[ ExtendInfraPath::baddirection, direction ]; Throw[ $Failed ]
-            ]
+        { methodHead = methodName @ methodSpec,
+          pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
+        If[ methodHead =!= "Exhaustive",
+          Message[ ExtendInfraPath::badmethod, methodSpec ]; Throw[ $Failed ] ];
+        With[ { candidateFn = makeCandidateFn[ graph, allNeighboursBaseFn,
+                                properties, ExtendInfraPath ],
+                simpleQ     = MemberQ[ properties, "Simple" | { "Simple" } ] },
+          Switch[ direction,
+            "Forward",   extendOneSide[ graph, walk0, candidateFn, length, pruning ],
+            "Backward",  Reverse /@ extendOneSide[ graph, Reverse @ walk0,
+                           candidateFn, length, pruning ],
+            "BothSides", extendBothSidesSymmetric[ graph, walk0, candidateFn,
+                           length, pruning, simpleQ ],
+            _, Message[ ExtendInfraPath::baddirection, direction ]; Throw[ $Failed ]
           ]
         ]
       ]

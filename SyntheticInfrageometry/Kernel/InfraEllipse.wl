@@ -82,9 +82,8 @@ FindInfraEllipse[ graph_Graph, foci : { _, _ }, c_,
 admissibleEllipticCycleVerts[ graph_Graph, verts_List, row1_List, row2_List, range_List,
     properties_List ] :=
   With[ { nf = ellipticNearFar[ verts, row1, row2, range ] },
-    With[ { tests = propertyPredicateEllipticCycle[ graph, nf[[ 1 ]], nf[[ 2 ]], # ] & /@ properties },
-      v |-> AllTrue[ tests, # @ v & ]
-    ]
+    { tests = propertyPredicateEllipticCycle[ graph, nf[[ 1 ]], nf[[ 2 ]], # ] & /@ properties },
+    v |-> AllTrue[ tests, # @ v & ]
   ]
 
 
@@ -103,13 +102,11 @@ propertyPredicateEllipticCycle[ _, _, _, other_ ] :=
 InfraEllipseQ[ graph_Graph, cycle_List ] /; Length[ cycle ] >= 3 :=
   With[ {
       closed = If[ First @ cycle === Last @ cycle, cycle, Append[ cycle, First @ cycle ] ] },
-    With[ {
-        verts = Most @ closed,
-        pairs = Partition[ closed, 2, 1 ] },
-      DuplicateFreeQ[ verts ] &&
-      AllTrue[ pairs, EdgeQ[ graph, UndirectedEdge @@ # ] & ] &&
-      InfraEllipticShellQ[ graph, verts ]
-    ]
+    { verts = Most @ closed,
+      pairs = Partition[ closed, 2, 1 ] },
+    DuplicateFreeQ[ verts ] &&
+    AllTrue[ pairs, EdgeQ[ graph, UndirectedEdge @@ # ] & ] &&
+    InfraEllipticShellQ[ graph, verts ]
   ]
 
 InfraEllipseQ[ _Graph, cycle_List ] /; Length[ cycle ] < 3 := False

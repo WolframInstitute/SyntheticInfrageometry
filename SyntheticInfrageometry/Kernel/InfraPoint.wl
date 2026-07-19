@@ -145,10 +145,9 @@ findPointPool[ graph_Graph, InfraPoint[ reps_List ] ] := reps
 findPointPool[ graph_Graph, ( origin_ -> spec_ ) ] :=
   With[ { anchors = infraSpread[ origin ],
           vertexIndex = AssociationThread[ VertexList[ graph ] -> Range @ VertexCount[ graph ] ] },
-    With[ { anchorDists = Association[ # -> GraphDistance[ graph, # ] & /@ anchors ] },
-      Select[ VertexList[ graph ],
-        v |-> AllTrue[ anchors, a |-> anchorDistMatchQ[ anchorDists[ a ], vertexIndex[ v ], spec ] ] ]
-    ]
+    { anchorDists = Association[ # -> GraphDistance[ graph, # ] & /@ anchors ] },
+    Select[ VertexList[ graph ],
+      v |-> AllTrue[ anchors, a |-> anchorDistMatchQ[ anchorDists[ a ], vertexIndex[ v ], spec ] ] ]
   ]
 
 findPointPool[ graph_Graph, v_ ] /; MemberQ[ VertexList[ graph ], v ] := { v }
@@ -319,9 +318,8 @@ FindInfraCommonPoint[ graph_Graph, lines_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
   With[ { vs = If[ Length[ lines ] == 0, {},
         Apply[ Intersection, linePointSet /@ lines ] ] },
-    With[ { capped = infraCap[ vs, count ] },
-      If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
-    ]
+    { capped = infraCap[ vs, count ] },
+    If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
   ]
 
 
@@ -442,11 +440,10 @@ pointPoolPositions[ _, _, "Periphery", subMatrix_ ] :=
 pointPoolPositions[ graph_Graph, vertices_List, ( anchor_ -> spec_ ), _ ] :=
   With[ { anchors = infraSpread[ anchor ],
           vertexIndex = AssociationThread[ VertexList[ graph ] -> Range @ VertexCount[ graph ] ] },
-    With[ { anchorDists = Association[ # -> GraphDistance[ graph, # ] & /@ anchors ] },
-      Flatten @ Position[ vertices,
-        v_ /; AllTrue[ anchors, a |-> anchorDistMatchQ[ anchorDists[ a ], vertexIndex[ v ], spec ] ],
-        { 1 }, Heads -> False ]
-    ]
+    { anchorDists = Association[ # -> GraphDistance[ graph, # ] & /@ anchors ] },
+    Flatten @ Position[ vertices,
+      v_ /; AllTrue[ anchors, a |-> anchorDistMatchQ[ anchorDists[ a ], vertexIndex[ v ], spec ] ],
+      { 1 }, Heads -> False ]
   ]
 
 pointPoolPositions[ _, vertices_List, InfraPoint[ reps_List ], _ ] :=

@@ -53,21 +53,19 @@ FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
   With[ { axisPaths = parseAxes @ axis,
           cmp = If[ OptionValue[ "Form" ] === "Surface", Equal, LessEqual ],
           method = OptionValue[ Method ] },
-    With[ { n = Length @ First @ axisPaths,
-            ext = extendAxisByOne[ graph, parseAxes @ axis ] },
-      With[ { radii = profileRadii[ profile, n ],
-              positions = First @ ext,
-              origRange = Last @ ext },
-        InfraObject[ Sort[ Union @@ MapThread[
-          Function[ { posVerts, r, i },
-            Select[ VertexList @ NeighborhoodGraph[ graph, posVerts, r ],
-              v |-> With[ { dists = Min[ GraphDistance[ graph, v, # ] & /@ # ] & /@ positions },
-                cmp[ dists[[ i ]], r ] && Switch[ method,
-                  "Voronoi",                dists[[ i ]] === Min @ dists,
-                  "PerpendicularBisector",  bisectorPasses[ dists, i, Length @ positions ] ] ] ] ],
-          { positions[[ origRange ]], radii, origRange } ] ] ]
-      ]
-    ]
+    { n = Length @ First @ axisPaths,
+      ext = extendAxisByOne[ graph, parseAxes @ axis ] },
+    { radii = profileRadii[ profile, n ],
+      positions = First @ ext,
+      origRange = Last @ ext },
+    InfraObject[ Sort[ Union @@ MapThread[
+      { posVerts, r, i } |->
+        Select[ VertexList @ NeighborhoodGraph[ graph, posVerts, r ],
+          v |-> With[ { dists = Min[ GraphDistance[ graph, v, # ] & /@ # ] & /@ positions },
+            cmp[ dists[[ i ]], r ] && Switch[ method,
+              "Voronoi",                dists[[ i ]] === Min @ dists,
+              "PerpendicularBisector",  bisectorPasses[ dists, i, Length @ positions ] ] ] ],
+      { positions[[ origRange ]], radii, origRange } ] ] ]
   ]
 
 
@@ -93,14 +91,13 @@ extendAxisByOne[ graph_Graph, axisPaths : { { _ }, ___ } ] :=
 extendAxisByOne[ graph_Graph, axisPaths_List ] :=
   With[ { n = Length @ First @ axisPaths,
           origPositions = DeleteDuplicates /@ Transpose @ axisPaths },
-    With[ { leftExt  = Union @@ ( oneStepExtensionLeft [ graph, # ] & /@ axisPaths ),
-            rightExt = Union @@ ( oneStepExtensionRight[ graph, # ] & /@ axisPaths ) },
-      Which[
-        leftExt === { } && rightExt === { },  { origPositions, Range @ n },
-        leftExt === { },                       { Append[ origPositions, rightExt ], Range @ n },
-        rightExt === { },                      { Prepend[ origPositions, leftExt  ], Range[ 2, n + 1 ] },
-        True,                                  { Join[ { leftExt }, origPositions, { rightExt } ], Range[ 2, n + 1 ] } ]
-    ]
+    { leftExt  = Union @@ ( oneStepExtensionLeft [ graph, # ] & /@ axisPaths ),
+      rightExt = Union @@ ( oneStepExtensionRight[ graph, # ] & /@ axisPaths ) },
+    Which[
+      leftExt === { } && rightExt === { },  { origPositions, Range @ n },
+      leftExt === { },                       { Append[ origPositions, rightExt ], Range @ n },
+      rightExt === { },                      { Prepend[ origPositions, leftExt  ], Range[ 2, n + 1 ] },
+      True,                                  { Join[ { leftExt }, origPositions, { rightExt } ], Range[ 2, n + 1 ] } ]
   ]
 
 

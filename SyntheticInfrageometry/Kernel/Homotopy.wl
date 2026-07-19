@@ -185,9 +185,8 @@ homotopyCore[ graph_Graph, walkA_List, walkB_List, inHead_, opts___ ] :=
       "Exhaustive",
         With[ { result = walkSpaceBFS[ graph, startW, rules, maxLen, maxMoves,
                   ( #1 === targetW & ), slides, canonicalize ] },
-          With[ { parent = result[[ 1 ]], found = result[[ 2 ]] },
-            If[ found === $NotFound, { }, { reconstructChain[ parent, targetW ] } ]
-          ]
+          { parent = result[[ 1 ]], found = result[[ 2 ]] },
+          If[ found === $NotFound, { }, { reconstructChain[ parent, targetW ] } ]
         ],
       "Greedy",
         With[ { chain = walkSpaceGreedyDFS[ graph, startW, targetW,
@@ -425,9 +424,8 @@ walkSpaceGreedyDFS[ graph_Graph, start_List, target_, scoreFn_, rules_Associatio
 
 hausdorffMove[ graph_Graph, walkA_List, walkB_List ] :=
   With[ { setA = DeleteDuplicates @ walkA, setB = DeleteDuplicates @ walkB },
-    With[ { dMat = Outer[ GraphDistance[ graph, #1, #2 ] &, setA, setB ] },
-      Max[ Min /@ dMat, Min /@ Transpose @ dMat ]
-    ]
+    { dMat = Outer[ GraphDistance[ graph, #1, #2 ] &, setA, setB ] },
+    Max[ Min /@ dMat, Min /@ Transpose @ dMat ]
   ]
 
 
@@ -582,9 +580,8 @@ loopRotations[ c_List ] :=
 
 minimalReached[ parent_Association ] :=
   With[ { walks = Keys[ parent ] },
-    With[ { minLen = Min[ Length /@ walks ] },
-      Select[ walks, Length[ # ] == minLen & ]
-    ]
+    { minLen = Min[ Length /@ walks ] },
+    Select[ walks, Length[ # ] == minLen & ]
   ]
 
 

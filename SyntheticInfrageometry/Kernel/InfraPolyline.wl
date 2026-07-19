@@ -25,7 +25,7 @@ InfraPolyline[ reps_List ][ "Length" ] :=
 
 (* "Knots" = list of knot vertices wrapped as unary InfraPoint, per realisation. *)
 InfraPolyline[ reps_List ][ "Knots" ] :=
-  Map[ Function[ poly, InfraPoint[ { # } ] & /@ polylineToKnots[ poly ] ], reps ]
+  Map[ poly |-> ( InfraPoint[ { # } ] & /@ polylineToKnots[ poly ] ), reps ]
 
 (* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
 InfraPolyline[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraPolyline[ reps ] ]

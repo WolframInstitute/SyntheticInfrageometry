@@ -63,18 +63,16 @@ FindInfraLine[ graph_Graph, p1_, p2_,
         Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
       With[ { methodHead = methodName @ methodSpec,
               pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-        With[ { middles = allGeodesics[ graph, q1, q2 ] },
-          With[ { ext = Union @ Flatten[
-                Switch[ methodHead,
-                  "Exhaustive",  findLineExtensions[ graph, #, pruning, direction ] & /@ middles,
-                  "Greedy",      findLineExtensionsGreedy[ graph, #, direction ]     & /@ middles,
-                  _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
-                ], 1 ] },
-            If[ maximality === "Diameter",
-              Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
-              ext ]
-          ]
-        ]
+        { middles = allGeodesics[ graph, q1, q2 ] },
+        { ext = Union @ Flatten[
+            Switch[ methodHead,
+              "Exhaustive",  findLineExtensions[ graph, #, pruning, direction ] & /@ middles,
+              "Greedy",      findLineExtensionsGreedy[ graph, #, direction ]     & /@ middles,
+              _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
+            ], 1 ] },
+        If[ maximality === "Diameter",
+          Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
+          ext ]
       ]
     ], p1, p2 ]
 
@@ -103,15 +101,14 @@ FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] 
         Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
       With[ { methodHead = methodName @ methodSpec,
               pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-        With[ { ext = Switch[ methodHead,
-              "Exhaustive",  findLineExtensions[ graph, segment, pruning, direction ],
-              "Greedy",      findLineExtensionsGreedy[ graph, segment, direction ],
-              _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
-            ] },
-          If[ maximality === "Diameter",
-            Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
-            ext ]
-        ]
+        { ext = Switch[ methodHead,
+            "Exhaustive",  findLineExtensions[ graph, segment, pruning, direction ],
+            "Greedy",      findLineExtensionsGreedy[ graph, segment, direction ],
+            _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
+          ] },
+        If[ maximality === "Diameter",
+          Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
+          ext ]
       ]
     ] },
     If[ core === $Failed, $Failed,
@@ -148,35 +145,32 @@ findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
     direction_String : "BothSides" ] :=
   With[ { p1 = First[ segment ], p2 = Last[ segment ],
           d  = GraphDistance[ graph, First[ segment ], Last[ segment ] ] },
-    With[ { extendBefore = If[ direction === "Forward", { p1 },
-              Select[ VertexList[ graph ],
-                c |-> admissible[ c ] && GraphDistance[ graph, c, p1 ] + d == GraphDistance[ graph, c, p2 ] ] ],
-            extendAfter  = If[ direction === "Backward", { p2 },
-              Select[ VertexList[ graph ],
-                c |-> admissible[ c ] && GraphDistance[ graph, c, p2 ] + d == GraphDistance[ graph, p1, c ] ] ] },
-      With[ { validPairs = Select[ Tuples[ { extendBefore, extendAfter } ],
-              pair |-> GraphDistance[ graph, pair[[1]], pair[[2]] ] ==
-                       GraphDistance[ graph, pair[[1]], p1 ] + d + GraphDistance[ graph, p2, pair[[2]] ] ] },
-        With[ { maxPairs = MaximalBy[ validPairs,
-                GraphDistance[ graph, #[[1]], p1 ] + GraphDistance[ graph, p2, #[[2]] ] & ] },
-          If[ maxPairs === { } || maxPairs === { { p1, p2 } }, { segment },
-            Flatten[
-              With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
-                With[ { db = GraphDistance[ graph, s, p1 ], da = GraphDistance[ graph, p2, e ] },
-                  With[ { bp = If[ db == 0, { {} },
-                                  Most /@ Select[
-                                    applyPruning[ FindPath[ graph, s, p1, { db }, All ], pruning ],
-                                    AllTrue[ #, admissible ] & ] ],
-                          ap = If[ da == 0, { {} },
-                                  Rest /@ Select[
-                                    applyPruning[ FindPath[ graph, p2, e, { da }, All ], pruning ],
-                                    AllTrue[ #, admissible ] & ] ] },
-                    Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ] ] ]
-              ] & /@ maxPairs,
-              1 ]
-          ]
-        ]
-      ]
+    { extendBefore = If[ direction === "Forward", { p1 },
+        Select[ VertexList[ graph ],
+          c |-> admissible[ c ] && GraphDistance[ graph, c, p1 ] + d == GraphDistance[ graph, c, p2 ] ] ],
+      extendAfter  = If[ direction === "Backward", { p2 },
+        Select[ VertexList[ graph ],
+          c |-> admissible[ c ] && GraphDistance[ graph, c, p2 ] + d == GraphDistance[ graph, p1, c ] ] ] },
+    { validPairs = Select[ Tuples[ { extendBefore, extendAfter } ],
+        pair |-> GraphDistance[ graph, pair[[1]], pair[[2]] ] ==
+                 GraphDistance[ graph, pair[[1]], p1 ] + d + GraphDistance[ graph, p2, pair[[2]] ] ] },
+    { maxPairs = MaximalBy[ validPairs,
+        GraphDistance[ graph, #[[1]], p1 ] + GraphDistance[ graph, p2, #[[2]] ] & ] },
+    If[ maxPairs === { } || maxPairs === { { p1, p2 } }, { segment },
+      Flatten[
+        With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
+          { db = GraphDistance[ graph, s, p1 ], da = GraphDistance[ graph, p2, e ] },
+          { bp = If[ db == 0, { {} },
+                  Most /@ Select[
+                    applyPruning[ FindPath[ graph, s, p1, { db }, All ], pruning ],
+                    AllTrue[ #, admissible ] & ] ],
+            ap = If[ da == 0, { {} },
+                  Rest /@ Select[
+                    applyPruning[ FindPath[ graph, p2, e, { da }, All ], pruning ],
+                    AllTrue[ #, admissible ] & ] ] },
+          Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ]
+        ] & /@ maxPairs,
+        1 ]
     ]
   ]
 
@@ -262,17 +256,14 @@ FindInfraParallel[ graph_Graph, line_, p_,
 
 findParallelExtensions[ graph_Graph, line_List, p_, pruning_ : Infinity ] :=
   With[ { lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ] },
-    With[ { r = lineDist[ p ] },
-      If[ r === Infinity, { },
-        With[ { admissible = c |-> lineDist[ c ] == r },
-          With[ { seeds = Select[ AdjacencyList[ graph, p ], admissible ] },
-            With[ { chains = Flatten[
-                    findLineExtensionsWith[ graph, { p, # }, pruning, admissible ] & /@ seeds,
-                    1 ] },
-              DeleteDuplicates @ Map[ canonicalLine, Select[ chains, Length[ # ] >= 2 & ] ]
-            ]
-          ]
-        ]
+    { r = lineDist[ p ] },
+    If[ r === Infinity, { },
+      With[ { admissible = c |-> lineDist[ c ] == r },
+        { seeds = Select[ AdjacencyList[ graph, p ], admissible ] },
+        { chains = Flatten[
+            findLineExtensionsWith[ graph, { p, # }, pruning, admissible ] & /@ seeds,
+            1 ] },
+        DeleteDuplicates @ Map[ canonicalLine, Select[ chains, Length[ # ] >= 2 & ] ]
       ]
     ]
   ]
@@ -280,14 +271,12 @@ findParallelExtensions[ graph_Graph, line_List, p_, pruning_ : Infinity ] :=
 
 findParallelExtensionsGreedy[ graph_Graph, line_List, p_ ] :=
   With[ { lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ] },
-    With[ { r = lineDist[ p ] },
-      If[ r === Infinity, { },
-        With[ { admissible = c |-> lineDist[ c ] == r },
-          With[ { seed = SelectFirst[ AdjacencyList[ graph, p ], admissible, Missing[] ] },
-            If[ MissingQ[ seed ], { { p } },
-              { greedyWalkDirection[ graph, { p, seed }, admissible, "BothSides" ] } ]
-          ]
-        ]
+    { r = lineDist[ p ] },
+    If[ r === Infinity, { },
+      With[ { admissible = c |-> lineDist[ c ] == r },
+        { seed = SelectFirst[ AdjacencyList[ graph, p ], admissible, Missing[] ] },
+        If[ MissingQ[ seed ], { { p } },
+          { greedyWalkDirection[ graph, { p, seed }, admissible, "BothSides" ] } ]
       ]
     ]
   ]
@@ -385,13 +374,12 @@ FindInfraPerpendicular[ graph_Graph, line_, point_,
     { line0, point0 } |-> With[ {
         spec   = OptionValue[ FindInfraPerpendicular, { opts }, Method   ],
         radius = OptionValue[ FindInfraPerpendicular, { opts }, "Radius" ] },
-      With[ { workGraph = If[ radius === All, graph, NeighborhoodGraph[ graph, point0, radius ] ] },
-        Switch[ methodName @ spec,
-          "Metric",     perpendicularByMetric[ workGraph, line0, point0 ],
-          "Projection" | "Coordinate" | "Arclength" | "Alexandrov",
-                        perpendicularByQ[ workGraph, graph, line0, point0, spec, radius ],
-          _,            Message[ FindInfraPerpendicular::badmethod, spec ]; $Failed
-        ]
+      { workGraph = If[ radius === All, graph, NeighborhoodGraph[ graph, point0, radius ] ] },
+      Switch[ methodName @ spec,
+        "Metric",     perpendicularByMetric[ workGraph, line0, point0 ],
+        "Projection" | "Coordinate" | "Arclength" | "Alexandrov",
+                      perpendicularByQ[ workGraph, graph, line0, point0, spec, radius ],
+        _,            Message[ FindInfraPerpendicular::badmethod, spec ]; $Failed
       ]
     ], line, point ]
 
@@ -404,7 +392,7 @@ FindInfraPerpendicular[ graph_Graph, line_, point_,
 
 perpendicularFeet[ workGraph_Graph, line_List, point_ ] :=
   With[ { localLine = Select[ line, MemberQ[ VertexList[ workGraph ], # ] & ] },
-  With[ { distances = GraphDistance[ workGraph, point, # ] & /@ localLine },
+    { distances = GraphDistance[ workGraph, point, # ] & /@ localLine },
     DeleteCases[ DeleteDuplicates @ Flatten[
       ( group |-> Map[
           pair |-> With[ { lo = Min @@ pair, hi = Max @@ pair },
@@ -412,7 +400,7 @@ perpendicularFeet[ workGraph_Graph, line_List, point_ ] :=
           Subsets[ group, { 2 } ] ]
       ) /@ Values @ GroupBy[ Range @ Length @ localLine, distances[[ # ]] & ],
       1 ], point ]
-  ] ]
+  ]
 
 perpendicularByMetric[ workGraph_Graph, line_List, point_ ] :=
   With[ { feet = perpendicularFeet[ workGraph, line, point ] },
@@ -529,21 +517,20 @@ Options[ InfraPerpendicularQ ] = {
 InfraPerpendicularQ[ graph_Graph, l1_, l2_, OptionsPattern[] ] :=
   With[ { seq1 = lineSequence[ l1 ], seq2 = lineSequence[ l2 ],
           mtd  = OptionValue[ Method ], radius = OptionValue[ "Radius" ] },
-    With[ { common = Intersection[ seq1, seq2 ],
-            mtdHead = methodName @ mtd, mtdOpts = methodOptions @ mtd },
-      Which[
-        Length[ common ] == 0, False,
-        mtdHead === "Projection",
-          With[ { equality = Lookup[ mtdOpts, "Equality", "Subset" ] },
-            AllTrue[ common, perpendicularAtProjection[ graph, seq1, seq2, #, equality, radius ] & ] ],
-        mtdHead === "Coordinate",
-          With[ { zeroTest = Lookup[ mtdOpts, "ZeroTest", "Mean" ] },
-            AllTrue[ common, perpendicularAtCoordinate[ graph, seq1, seq2, #, zeroTest, radius ] & ] ],
-        MemberQ[ { "Arclength", "Alexandrov" }, mtdHead ],
-          With[ { tol = Lookup[ mtdOpts, "Tolerance", 0 ] },
-            AllTrue[ common, perpendicularAtAngle[ graph, seq1, seq2, #, mtd, tol, radius ] & ] ],
-        True, Message[ InfraPerpendicularQ::badmethod, mtd ]; $Failed
-      ]
+    { common = Intersection[ seq1, seq2 ],
+      mtdHead = methodName @ mtd, mtdOpts = methodOptions @ mtd },
+    Which[
+      Length[ common ] == 0, False,
+      mtdHead === "Projection",
+        With[ { equality = Lookup[ mtdOpts, "Equality", "Subset" ] },
+          AllTrue[ common, perpendicularAtProjection[ graph, seq1, seq2, #, equality, radius ] & ] ],
+      mtdHead === "Coordinate",
+        With[ { zeroTest = Lookup[ mtdOpts, "ZeroTest", "Mean" ] },
+          AllTrue[ common, perpendicularAtCoordinate[ graph, seq1, seq2, #, zeroTest, radius ] & ] ],
+      MemberQ[ { "Arclength", "Alexandrov" }, mtdHead ],
+        With[ { tol = Lookup[ mtdOpts, "Tolerance", 0 ] },
+          AllTrue[ common, perpendicularAtAngle[ graph, seq1, seq2, #, mtd, tol, radius ] & ] ],
+      True, Message[ InfraPerpendicularQ::badmethod, mtd ]; $Failed
     ]
   ]
 

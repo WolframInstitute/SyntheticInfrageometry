@@ -68,14 +68,13 @@ WhiteheadW3Q[ graph_Graph ] :=
     AllTrue[ Tuples[ verts, 4 ],
       abcd |-> If[ Length @ DeleteDuplicates @ abcd < 4, True,
         With[ { A = abcd[[ 1 ]], B = abcd[[ 2 ]], C = abcd[[ 3 ]], D = abcd[[ 4 ]] },
-          With[ { abLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, A, B, All ],
-                  cdLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, C, D, All ] },
-            If[ ! AnyTrue[ Tuples[ { abLines, cdLines } ], IntersectingQ @@ # & ],
-              True,
-              With[ { acLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, A, C, All ],
-                      bdLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, B, D, All ] },
-                AnyTrue[ Tuples[ { acLines, bdLines } ], IntersectingQ @@ # & ]
-              ]
+          { abLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, A, B, All ],
+            cdLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, C, D, All ] },
+          If[ ! AnyTrue[ Tuples[ { abLines, cdLines } ], IntersectingQ @@ # & ],
+            True,
+            With[ { acLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, A, C, All ],
+                    bdLines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, B, D, All ] },
+              AnyTrue[ Tuples[ { acLines, bdLines } ], IntersectingQ @@ # & ]
             ]
           ]
         ]

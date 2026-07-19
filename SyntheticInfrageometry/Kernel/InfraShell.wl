@@ -112,11 +112,10 @@ FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
           walk |-> With[ {
               lo = Clip[ i - Floor[ ( k - 1 ) / 2 ], { 1, Length @ walk } ],
               hi = Clip[ i + Ceiling[ ( k - 1 ) / 2 ], { 1, Length @ walk } ] },
-            With[ { cols = Lookup[ vidx, walk[[ lo ;; hi ]] ] },
-              MapThread[
-                If[ SameQ @@ #2, { #1, First @ #2 }, Nothing ] &,
-                { vlist, dm[[ All, cols ]] } ]
-            ]
+            { cols = Lookup[ vidx, walk[[ lo ;; hi ]] ] },
+            MapThread[
+              If[ SameQ @@ #2, { #1, First @ #2 }, Nothing ] &,
+              { vlist, dm[[ All, cols ]] } ]
           ],
           walks ],
         1 ],
@@ -182,8 +181,8 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
     idx = AssociationThread[ VertexList[ graph ] -> Range @ VertexCount @ graph ];
     dsel = If[ distance === "Intrinsic",
                With[ { subg = Subgraph[ graph, vs ] },
-                 With[ { rows = Lookup[ AssociationThread[ VertexList[ subg ] -> Range @ VertexCount @ subg ], vs ] },
-                   GraphDistanceMatrix[ subg ][[ rows, rows ]] ] ],
+                 { rows = Lookup[ AssociationThread[ VertexList[ subg ] -> Range @ VertexCount @ subg ], vs ] },
+                 GraphDistanceMatrix[ subg ][[ rows, rows ]] ],
                dm[[ Lookup[ idx, vs ], Lookup[ idx, vs ] ]] ];
     chords = Switch[ maximality,
       "Diameter",
@@ -194,8 +193,8 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
         DeleteDuplicates[ Sort /@ Flatten[
           Table[
             With[ { row = ReplacePart[ dsel[[ i ]], i -> Infinity ] },
-              With[ { ecc = Max @ Select[ row, # =!= Infinity & ] },
-                { vs[[ i ]], # } & /@ Pick[ vs, Thread[ row == ecc ], True ] ] ],
+              { ecc = Max @ Select[ row, # =!= Infinity & ] },
+              { vs[[ i ]], # } & /@ Pick[ vs, Thread[ row == ecc ], True ] ],
             { i, Length[ vs ] } ], 1 ] ] ];
     kept = Select[ chords,
       With[ { d = dm[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] },

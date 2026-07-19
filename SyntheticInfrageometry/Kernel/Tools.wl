@@ -150,9 +150,8 @@ propertiesSubOpts[ { _String, opts___ } ]  := { opts }
 
 makeCandidateFn[ graph_Graph, baseFn_, properties_List, fnSym_ ] :=
   With[ { filters = propertyFilter[ graph, #, fnSym ] & /@ properties },
-    Function[ { g, path },
+    { g, path } |->
       Fold[ #2[ g, path, #1 ] &, baseFn[ g, path ], filters ]
-    ]
   ]
 
 
@@ -189,12 +188,11 @@ simpleFilter[ _Graph, path_, candidates_ ] :=
 
 (* "ShortestPath", "Window" -> k: strict d(path[[-k]], w) == k. *)
 shortestPathFilter[ _Graph, window_ ] :=
-  Function[ { g, path, candidates },
+  { g, path, candidates } |->
     With[ { k = If[ window === All || window === Infinity, Length[ path ],
                     Min[ window, Length[ path ] ] ] },
       Select[ candidates, GraphDistance[ g, path[[ -k ]], # ] == k & ]
     ]
-  ]
 
 
 (* "LongestPath", "Window" -> k, "Aggregation" -> Lex | Sum:
@@ -202,7 +200,7 @@ shortestPathFilter[ _Graph, window_ ] :=
 longestPathFilter[ graph_Graph, window_, aggregation_ ] :=
   With[ { vidx = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ],
           dmat = GraphDistanceMatrix[ graph ] },
-    Function[ { g, path, candidates },
+    { g, path, candidates } |->
       With[ { historyIdx = With[ { rev = vidx /@ Reverse @ Most[ path ] },
                 If[ window === All || window === Infinity, rev,
                     Take[ rev, UpTo[ window - 1 ] ] ] ] },
@@ -212,24 +210,21 @@ longestPathFilter[ graph_Graph, window_, aggregation_ ] :=
           True,                                      MaximalBy[ candidates, w |-> dmat[[ historyIdx, vidx[ w ] ]] ]
         ]
       ]
-    ]
   ]
 
 
 (* "EdgeMin", f: MinimalBy f[v, w] over candidates (v = Last @ path). *)
 edgeMinFilter[ f_ ] :=
-  Function[ { g, path, candidates },
+  { g, path, candidates } |->
     If[ candidates === { }, candidates,
       MinimalBy[ candidates, w |-> f[ Last @ path, w ] ] ]
-  ]
 
 
 (* "EdgeMax", f: MaximalBy f[v, w] over candidates. *)
 edgeMaxFilter[ f_ ] :=
-  Function[ { g, path, candidates },
+  { g, path, candidates } |->
     If[ candidates === { }, candidates,
       MaximalBy[ candidates, w |-> f[ Last @ path, w ] ] ]
-  ]
 
 
 (* ===================== Separating sets ===================== *)
@@ -240,11 +235,10 @@ edgeMaxFilter[ f_ ] :=
 
 SeparatingSetQ[ graph_Graph, vs_List, center_, radius_ ] :=
   With[ { rem = VertexDelete[ graph, vs ] },
-    With[ { centerComp = SelectFirst[ ConnectedComponents[ rem ], MemberQ[ #, center ] & ] },
-      centerComp =!= Missing[ "NotFound" ] &&
-      AllTrue[ centerComp, GraphDistance[ graph, center, # ] <= radius & ] &&
-      AllTrue[ Complement[ VertexList[ rem ], centerComp ], GraphDistance[ graph, center, # ] > radius & ]
-    ]
+    { centerComp = SelectFirst[ ConnectedComponents[ rem ], MemberQ[ #, center ] & ] },
+    centerComp =!= Missing[ "NotFound" ] &&
+    AllTrue[ centerComp, GraphDistance[ graph, center, # ] <= radius & ] &&
+    AllTrue[ Complement[ VertexList[ rem ], centerComp ], GraphDistance[ graph, center, # ] > radius & ]
   ]
 
 
@@ -326,7 +320,8 @@ PackageScope[columnInfraPoint]
 
 columnInfraPoint[ reps_List, i_Integer ] :=
   With[ { col = ( #[[ i ]] & ) /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] },
-    With[ { m = Counts @ col }, InfraPoint[ Keys @ m, Values @ m ] ] ]
+    { m = Counts @ col },
+    InfraPoint[ Keys @ m, Values @ m ] ]
 
 
 (* Enumerate every geodesic of a geodesic-DAG segment: all source -> sink

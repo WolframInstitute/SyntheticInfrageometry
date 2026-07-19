@@ -175,10 +175,9 @@ EmbeddingClosest[ graph_Graph, paths_List, { p1_, p2_ } ] /;
     paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraLine | InfraPath | InfraRay )[ { _ } ] ] ] :=
   With[ { coords = resolveEmbeddingCoords[ graph, Automatic ],
           vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
-    With[ { ep = Lookup[ vertexIndex, { p1, p2 } ] },
-      MinimalBy[ paths,
-        path |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, path ], ep ] ]
-    ]
+    { ep = Lookup[ vertexIndex, { p1, p2 } ] },
+    MinimalBy[ paths,
+      path |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, path ], ep ] ]
   ]
 
 EmbeddingClosest[ graph_Graph, ( head : InfraSegment | InfraLine | InfraPath | InfraRay )[ paths_List ], { p1_, p2_ } ] :=
@@ -203,10 +202,9 @@ EmbeddingClosest[ graph_Graph, cycles_List, { center_, radius_?NumericQ } ] /;
     cycles === { } || ! AllTrue[ cycles, MatchQ[ InfraCircle[ { _ } ] ] ] :=
   With[ { coords = resolveEmbeddingCoords[ graph, Automatic ],
           vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
-    With[ { centerIdx = vertexIndex[ center ] },
-      MinimalBy[ cycles,
-        cycle |-> EmbeddingCircleDistance[ coords, Lookup[ vertexIndex, cycle ], centerIdx, radius ] ]
-    ]
+    { centerIdx = vertexIndex[ center ] },
+    MinimalBy[ cycles,
+      cycle |-> EmbeddingCircleDistance[ coords, Lookup[ vertexIndex, cycle ], centerIdx, radius ] ]
   ]
 
 EmbeddingClosest[ graph_Graph, InfraCircle[ cycles_List ], { center_, radius_?NumericQ } ] :=
@@ -236,12 +234,11 @@ EmbeddingClosest[ graph_Graph, list_List, { center_, radius_?NumericQ } ] /;
 embeddingRankShellSets[ graph_Graph, sets_List, center_, radius_ ] :=
   With[ { coords = resolveEmbeddingCoords[ graph, Automatic ],
           vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
-    With[ { centerPt = coords[[ vertexIndex @ center ]] },
-      SortBy[ sets,
-        set |-> If[ set === { }, Infinity,
-          Max[ Abs[ EuclideanDistance[ centerPt, # ] - radius ] & /@
-                coords[[ Lookup[ vertexIndex, set ] ]] ] ] ]
-    ]
+    { centerPt = coords[[ vertexIndex @ center ]] },
+    SortBy[ sets,
+      set |-> If[ set === { }, Infinity,
+        Max[ Abs[ EuclideanDistance[ centerPt, # ] - radius ] & /@
+              coords[[ Lookup[ vertexIndex, set ] ]] ] ] ]
   ]
 
 
@@ -298,12 +295,11 @@ EmbeddingClosest[ graph_Graph, crv : ( _Line | _BSplineCurve | _BezierCurve ) ] 
 FindEmbeddingClosestPath[ graph_Graph, curve_ ] :=
   With[ { coords = resolveEmbeddingCoords[ graph, Automatic ],
           curvePts = embeddingCurvePoints[ curve ] },
-    With[ { anchors = First /@ Split[
+    { anchors = First /@ Split[
         Nearest[ coords -> VertexList[ graph ], curvePts ][[ All, 1 ]] ] },
-      InfraPath[ { Fold[
-        Join[ #1, Rest @ FindShortestPath[ graph, Last @ #1, #2 ] ] &,
-        { First @ anchors }, Rest @ anchors ] } ]
-    ]
+    InfraPath[ { Fold[
+      Join[ #1, Rest @ FindShortestPath[ graph, Last @ #1, #2 ] ] &,
+      { First @ anchors }, Rest @ anchors ] } ]
   ]
 
 
@@ -344,28 +340,26 @@ GeodesicSprayGraph[ g_Graph, pairs : { { _, _ } .. }, OptionsPattern[] ] :=
           directed  = OptionValue[ "Directed" ],
           vertexToIndex = AssociationThread[ VertexList[ g ], Range @ VertexCount[ g ] ],
           distMatrix = GraphDistanceMatrix[ g ] },
-    With[ { hausdorff = With[ { dm = distMatrix[[ #1, #2 ]] },
-              Max[ Max[ Min /@ dm ], Max[ Min /@ Transpose @ dm ] ] ] & },
-      With[ { selectedPaths = Which[
-              thickness === 0,
-                ( First @ FindPath[ g, #1, #2,
-                    { distMatrix[[ vertexToIndex[ #1 ], vertexToIndex[ #2 ] ]] }, 1 ] & ) @@@ pairs,
-              thickness === Infinity,
-                Flatten[ ( FindPath[ g, #1, #2,
-                    { distMatrix[[ vertexToIndex[ #1 ], vertexToIndex[ #2 ] ]] }, All ] & ) @@@ pairs, 1 ],
-              True,
-                Flatten[
-                  ( If[ # === { }, { },
-                      With[ { ref = vertexToIndex /@ First[ # ] },
-                        Select[ #, path |-> hausdorff[ vertexToIndex /@ path, ref ] <= thickness ] ]
-                    ] & ) /@
-                  ( ( FindPath[ g, #1, #2,
-                      { distMatrix[[ vertexToIndex[ #1 ], vertexToIndex[ #2 ] ]] }, All ] & ) @@@ pairs ),
-                  1 ]
-            ] },
-        GraphUnion @@ ( PathGraph[ #, DirectedEdges -> directed ] & /@ selectedPaths )
-      ]
-    ]
+    { hausdorff = With[ { dm = distMatrix[[ #1, #2 ]] },
+        Max[ Max[ Min /@ dm ], Max[ Min /@ Transpose @ dm ] ] ] & },
+    { selectedPaths = Which[
+        thickness === 0,
+          ( First @ FindPath[ g, #1, #2,
+              { distMatrix[[ vertexToIndex[ #1 ], vertexToIndex[ #2 ] ]] }, 1 ] & ) @@@ pairs,
+        thickness === Infinity,
+          Flatten[ ( FindPath[ g, #1, #2,
+              { distMatrix[[ vertexToIndex[ #1 ], vertexToIndex[ #2 ] ]] }, All ] & ) @@@ pairs, 1 ],
+        True,
+          Flatten[
+            ( If[ # === { }, { },
+                With[ { ref = vertexToIndex /@ First[ # ] },
+                  Select[ #, path |-> hausdorff[ vertexToIndex /@ path, ref ] <= thickness ] ]
+              ] & ) /@
+            ( ( FindPath[ g, #1, #2,
+                { distMatrix[[ vertexToIndex[ #1 ], vertexToIndex[ #2 ] ]] }, All ] & ) @@@ pairs ),
+            1 ]
+      ] },
+    GraphUnion @@ ( PathGraph[ #, DirectedEdges -> directed ] & /@ selectedPaths )
   ]
 
 
@@ -608,15 +602,13 @@ EmbeddingHausdorffDistance[ _List, path_List, { _, _ } ] /; Length[ path ] < 2 :
 
 EmbeddingCircleDistance[ coords_List, cycle_List, centerIdx_Integer, radius_ ] /; Length[ cycle ] >= 3 :=
   With[ { centerPt = coords[[ centerIdx ]], cyclePts = coords[[ cycle ]] },
-    With[ { nPts = Max[ 64, 4 * Length[ cycle ] ] },
-      With[ { circlePoints = Table[
-              centerPt + radius * { Cos[ t ], Sin[ t ] },
-              { t, 0, 2 Pi - 2 Pi / nPts, 2 Pi / nPts } ] },
-        RegionHausdorffDistance[
-          Line[ Append[ cyclePts, First[ cyclePts ] ] ],
-          Line[ Append[ circlePoints, First[ circlePoints ] ] ] ]
-      ]
-    ]
+    { nPts = Max[ 64, 4 * Length[ cycle ] ] },
+    { circlePoints = Table[
+        centerPt + radius * { Cos[ t ], Sin[ t ] },
+        { t, 0, 2 Pi - 2 Pi / nPts, 2 Pi / nPts } ] },
+    RegionHausdorffDistance[
+      Line[ Append[ cyclePts, First[ cyclePts ] ] ],
+      Line[ Append[ circlePoints, First[ circlePoints ] ] ] ]
   ]
 
 EmbeddingCircleDistance[ _List, cycle_List, _Integer, _ ] /; Length[ cycle ] < 3 := Infinity
@@ -653,15 +645,14 @@ EmbeddingCurveDistance[ coords_List, path_List, curvePts_List ] :=
 pathFilterPairwiseDistances[ graph_Graph, paths_List, baseDist_, cyclic_ ] :=
   With[ { distMatrix = GraphDistanceMatrix[ graph ],
           vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
-    With[ { pathDistance = If[ cyclic,
-              ( Min @ Table[ baseDist[ #1, RotateLeft[ #2, k ], #3 ], { k, 0, Length[ #2 ] - 1 } ] & ),
-              baseDist ] },
-      ( # + Transpose[ # ] ) & @ PadRight[
-        Table[
-          pathDistance[ distMatrix, Lookup[ vertexIndex, paths[[ i ]] ], Lookup[ vertexIndex, paths[[ j ]] ] ],
-          { i, Length[ paths ] }, { j, i - 1 } ],
-        { Length[ paths ], Length[ paths ] } ]
-    ]
+    { pathDistance = If[ cyclic,
+        ( Min @ Table[ baseDist[ #1, RotateLeft[ #2, k ], #3 ], { k, 0, Length[ #2 ] - 1 } ] & ),
+        baseDist ] },
+    ( # + Transpose[ # ] ) & @ PadRight[
+      Table[
+        pathDistance[ distMatrix, Lookup[ vertexIndex, paths[[ i ]] ], Lookup[ vertexIndex, paths[[ j ]] ] ],
+        { i, Length[ paths ] }, { j, i - 1 } ],
+      { Length[ paths ], Length[ paths ] } ]
   ]
 
 
@@ -775,14 +766,12 @@ poolPositions[ _, paths_List, _, _, _, _ ] := Range @ Length @ paths
 
 visitPoolPositions[ paths_List, cyclic_, agg_ ] :=
   With[ { edgeSeqs = infraRepEdges[ None, If[ cyclic, "Cycles", "Paths" ], # ] & /@ paths },
-    With[ { vCounts = Counts @ Catenate @ paths,
-            eCounts = Counts @ Catenate @ edgeSeqs },
-      With[ { scores = MapThread[
-            agg @ Join[ Lookup[ vCounts, #1, 0 ], Lookup[ eCounts, #2, 0 ] ] &,
-            { paths, edgeSeqs } ] },
-        Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ]
-      ]
-    ]
+    { vCounts = Counts @ Catenate @ paths,
+      eCounts = Counts @ Catenate @ edgeSeqs },
+    { scores = MapThread[
+        agg @ Join[ Lookup[ vCounts, #1, 0 ], Lookup[ eCounts, #2, 0 ] ] &,
+        { paths, edgeSeqs } ] },
+    Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ]
   ]
 
 
@@ -798,18 +787,16 @@ anchorDistancePool[ graph_Graph, paths_List, anchor_, spec_, baseDist_, cyclic_ 
     If[ anchors === { }, { },
       With[ { distMatrix = GraphDistanceMatrix[ graph ],
               vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
-        With[ { distFn = If[ cyclic,
-                  ( Min @ Table[ baseDist[ #1, RotateLeft[ #2, k ], #3 ], { k, 0, Length[ #2 ] - 1 } ] & ),
-                  baseDist ] },
-          With[ { anchorRows = Table[
-                  Map[ p |-> distFn[ distMatrix,
-                    Lookup[ vertexIndex, a ], Lookup[ vertexIndex, p ] ], paths ],
-                  { a, anchors } ] },
-            Select[ Range @ Length @ paths,
-              i |-> AllTrue[ Range @ Length @ anchors,
-                a |-> anchorMatchQ[ anchorRows[[ a, i ]], anchorRows[[ a ]], spec ] ] ]
-          ]
-        ]
+        { distFn = If[ cyclic,
+            ( Min @ Table[ baseDist[ #1, RotateLeft[ #2, k ], #3 ], { k, 0, Length[ #2 ] - 1 } ] & ),
+            baseDist ] },
+        { anchorRows = Table[
+            Map[ p |-> distFn[ distMatrix,
+              Lookup[ vertexIndex, a ], Lookup[ vertexIndex, p ] ], paths ],
+            { a, anchors } ] },
+        Select[ Range @ Length @ paths,
+          i |-> AllTrue[ Range @ Length @ anchors,
+            a |-> anchorMatchQ[ anchorRows[[ a, i ]], anchorRows[[ a ]], spec ] ] ]
       ]
     ]
   ]
@@ -862,30 +849,26 @@ resolveEmbeddingCoords[ _, coords_List ] := coords
 geodesicDAGNeighbors[ graph_Graph, u_, v_ ] :=
   With[ { du = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, u ] ],
           dv = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, v ] ] },
-    With[ { total = du[ v ] },
-      If[ total === Infinity, <||>,
-        With[ { dagVerts = Select[ VertexList[ graph ], du[ # ] + dv[ # ] == total & ] },
-          With[ { dagSet = AssociationThread[ dagVerts, True ] },
-            AssociationMap[
-              w |-> Select[ AdjacencyList[ graph, w ],
-                TrueQ[ dagSet[ # ] ] && du[ # ] == du[ w ] + 1 & ],
-              dagVerts ]
-          ]
-        ]
+    { total = du[ v ] },
+    If[ total === Infinity, <||>,
+      With[ { dagVerts = Select[ VertexList[ graph ], du[ # ] + dv[ # ] == total & ] },
+        { dagSet = AssociationThread[ dagVerts, True ] },
+        AssociationMap[
+          w |-> Select[ AdjacencyList[ graph, w ],
+            TrueQ[ dagSet[ # ] ] && du[ # ] == du[ w ] + 1 & ],
+          dagVerts ]
       ]
     ]
   ]
 
 geodesicDAGNeighbors[ graph_Graph, c_ ] :=
   With[ { dc = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, c ] ] },
-    With[ { dagVerts = Select[ VertexList[ graph ], dc[ # ] < Infinity & ] },
-      With[ { dagSet = AssociationThread[ dagVerts, True ] },
-        AssociationMap[
-          w |-> Select[ AdjacencyList[ graph, w ],
-            TrueQ[ dagSet[ # ] ] && dc[ # ] == dc[ w ] + 1 & ],
-          dagVerts ]
-      ]
-    ]
+    { dagVerts = Select[ VertexList[ graph ], dc[ # ] < Infinity & ] },
+    { dagSet = AssociationThread[ dagVerts, True ] },
+    AssociationMap[
+      w |-> Select[ AdjacencyList[ graph, w ],
+        TrueQ[ dagSet[ # ] ] && dc[ # ] == dc[ w ] + 1 & ],
+      dagVerts ]
   ]
 
 
@@ -895,16 +878,15 @@ geodesicDAGNeighbors[ graph_Graph, c_ ] :=
 
 geodesicSprayFromDistances[ g_Graph, dist_Association, depthSpec_, directed_ ] :=
   With[ { depth = Replace[ depthSpec, All -> Infinity ] },
-    With[ { dagVerts = Select[ VertexList[ g ], dist[ # ] < Infinity && dist[ # ] <= depth & ] },
-      Graph[ dagVerts,
-        Map[
-          e |-> With[ { u = e[[ 1 ]], v = e[[ 2 ]] },
-            Which[
-              ! directed && Abs[ dist[ u ] - dist[ v ] ] == 1, UndirectedEdge[ u, v ],
-              directed && dist[ v ] == dist[ u ] + 1, DirectedEdge[ u, v ],
-              directed && dist[ u ] == dist[ v ] + 1, DirectedEdge[ v, u ],
-              True, Nothing ] ],
-          EdgeList @ UndirectedGraph @ Subgraph[ g, dagVerts ] ]
-      ]
+    { dagVerts = Select[ VertexList[ g ], dist[ # ] < Infinity && dist[ # ] <= depth & ] },
+    Graph[ dagVerts,
+      Map[
+        e |-> With[ { u = e[[ 1 ]], v = e[[ 2 ]] },
+          Which[
+            ! directed && Abs[ dist[ u ] - dist[ v ] ] == 1, UndirectedEdge[ u, v ],
+            directed && dist[ v ] == dist[ u ] + 1, DirectedEdge[ u, v ],
+            directed && dist[ u ] == dist[ v ] + 1, DirectedEdge[ v, u ],
+            True, Nothing ] ],
+        EdgeList @ UndirectedGraph @ Subgraph[ g, dagVerts ] ]
     ]
   ]

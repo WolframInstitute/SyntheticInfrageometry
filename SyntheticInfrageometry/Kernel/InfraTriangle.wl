@@ -20,7 +20,7 @@ InfraTriangle[ reps_List ][ "Length" ] :=
     { 1 } ]
 
 InfraTriangle[ reps_List ][ "Vertices" ] :=
-  Map[ Function[ poly, InfraPoint[ { # } ] & /@ Most @ polylineToKnots[ poly ] ], reps ]
+  Map[ poly |-> ( InfraPoint[ { # } ] & /@ Most @ polylineToKnots[ poly ] ), reps ]
 
 (* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
 InfraTriangle[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraTriangle[ reps ] ]

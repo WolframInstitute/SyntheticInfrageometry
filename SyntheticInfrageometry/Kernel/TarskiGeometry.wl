@@ -27,8 +27,8 @@ EquidistanceQ[ graph_Graph, a_, b_, c_, d_ ] :=
 
 TarskiStructure[ graph_Graph ] := TarskiStructure[ graph ] =
   With[ { vs = VertexList[ graph ], dMat = GraphDistanceMatrix[ graph ] },
-    With[ { n = Length[ vs ], finite = Cases[ Flatten @ dMat, _Integer ] },
-      <|
+    { n = Length[ vs ], finite = Cases[ Flatten @ dMat, _Integer ] },
+    <|
         "Vertices"     -> vs,
         "VertexIndex"  -> AssociationThread[ vs, Range[ n ] ],
         "Distances"    -> dMat,
@@ -47,8 +47,7 @@ TarskiStructure[ graph_Graph ] := TarskiStructure[ graph ] =
           Subsets[ vs, { 2 } ],
           pair |-> GraphDistance[ graph, pair[[ 1 ]], pair[[ 2 ]] ] ],
         "Diameter"     -> If[ finite === { }, 0, Max @ finite ]
-      |>
-    ]
+    |>
   ]
 
 

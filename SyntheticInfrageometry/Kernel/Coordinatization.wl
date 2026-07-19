@@ -159,9 +159,8 @@ Options[ FindInfraSpanningAxes ] = {
 
 FindInfraSpanningAxes[ g_Graph, All, opts : OptionsPattern[] ] :=
   With[ { distMatrix = GraphDistanceMatrix[ g ] },
-    With[ { minLength = Replace[ OptionValue[ "MinLength" ], Automatic -> Max[ distMatrix ] ] },
-      orthogonalGreedy[ g, findLongestPaths[ g, All, Max[ distMatrix ] - minLength ], { opts } ]
-    ]
+    { minLength = Replace[ OptionValue[ "MinLength" ], Automatic -> Max[ distMatrix ] ] },
+    orthogonalGreedy[ g, findLongestPaths[ g, All, Max[ distMatrix ] - minLength ], { opts } ]
   ]
 
 FindInfraSpanningAxes[ g_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
@@ -216,16 +215,12 @@ axisLayerIndex[ g_Graph, axis_List, v_ ] :=
 
 axisLayerIndex[ g_Graph, dag_Graph, v_ ] :=
   With[ { verts = VertexList[ dag ] },
-    With[ { sources = Select[ verts, VertexInDegree[ dag, # ] == 0 & ] },
-      With[ { depth = u |-> Min[ GraphDistance[ dag, #, u ] & /@ sources ] },
-        With[ { layers = Table[ Select[ verts, depth[ # ] == k & ], { k, 0, Max[ depth /@ verts ] } ],
-                dists  = GraphDistance[ g, v, # ] & /@ verts },
-          With[ { proj = Pick[ verts, dists, Min @ dists ] },
-            Flatten @ Table[ Position[ layers, u ][[ All, 1 ]] - 1, { u, proj } ]
-          ]
-        ]
-      ]
-    ]
+    { sources = Select[ verts, VertexInDegree[ dag, # ] == 0 & ] },
+    { depth = u |-> Min[ GraphDistance[ dag, #, u ] & /@ sources ] },
+    { layers = Table[ Select[ verts, depth[ # ] == k & ], { k, 0, Max[ depth /@ verts ] } ],
+      dists  = GraphDistance[ g, v, # ] & /@ verts },
+    { proj = Pick[ verts, dists, Min @ dists ] },
+    Flatten @ Table[ Position[ layers, u ][[ All, 1 ]] - 1, { u, proj } ]
   ]
 
 
@@ -257,18 +252,17 @@ allHalfAxes[ dag_Graph, c_ ] :=
 enumerateAxes[ g_Graph, dag_Graph, c_, minLength_Integer ] :=
   With[ { dist = AssociationThread[ VertexList[ dag ], GraphDistance[ dag, c, # ] & /@ VertexList[ dag ] ],
           halvesByEnd = GroupBy[ allHalfAxes[ dag, c ], Last ] },
-    With[ { vertsAtDepth = Select[ VertexList[ dag ], dist[ # ] >= minLength & ] },
-      DeleteDuplicatesBy[
-        Catenate @ Map[
-          pair |-> Flatten[
-            Outer[
-              { hPos, hNeg } |-> Join[ Reverse @ hNeg, Rest @ hPos ],
-              halvesByEnd[ pair[[ 1 ]] ], halvesByEnd[ pair[[ 2 ]] ], 1 ], 1 ],
-          Select[ Subsets[ vertsAtDepth, { 2 } ],
-            pair |-> GraphDistance[ g, pair[[ 1 ]], pair[[ 2 ]] ] === dist[ pair[[ 1 ]] ] + dist[ pair[[ 2 ]] ] ]
-        ],
-        First @ Sort[ { #, Reverse @ # } ] &
-      ]
+    { vertsAtDepth = Select[ VertexList[ dag ], dist[ # ] >= minLength & ] },
+    DeleteDuplicatesBy[
+      Catenate @ Map[
+        pair |-> Flatten[
+          Outer[
+            { hPos, hNeg } |-> Join[ Reverse @ hNeg, Rest @ hPos ],
+            halvesByEnd[ pair[[ 1 ]] ], halvesByEnd[ pair[[ 2 ]] ], 1 ], 1 ],
+        Select[ Subsets[ vertsAtDepth, { 2 } ],
+          pair |-> GraphDistance[ g, pair[[ 1 ]], pair[[ 2 ]] ] === dist[ pair[[ 1 ]] ] + dist[ pair[[ 2 ]] ] ]
+      ],
+      First @ Sort[ { #, Reverse @ # } ] &
     ]
   ]
 
@@ -411,30 +405,24 @@ findOrthogonalFrameCore[ g_Graph, c_, axisLength_, count_, opts_List ] /; Member
             methodSpec = resolveSearchMethod[ opts ],
             sel = "SelectCoordinate" /. opts /. "SelectCoordinate" -> "Centered",
             axisMult = axisMultiplicityFn[ localG ] },
-      With[ { method = methodName @ methodSpec,
-              perpQ  = resolveFramePerpQ[ localG, c, sel, methodSpec ] },
-        With[ { sampleSize = If[ method === "Greedy", All,
-                    "BranchSampleSize" /. opts /. "BranchSampleSize" -> All ],
-                maxFrames  = If[ method === "Greedy" && IntegerQ @ count, count, Infinity ] },
-          With[ { frames = orthogonalFrameDFS[ localG, c, dag, axisCountSpec, minLength, sampleSize, maxFrames, sel, axisMult, perpQ ] },
-            If[ method === "Greedy", frames, SortBy[ frames, frameSortKey[ axisMult ] ] ]
-          ]
-        ]
-      ]
+      { method = methodName @ methodSpec,
+        perpQ  = resolveFramePerpQ[ localG, c, sel, methodSpec ] },
+      { sampleSize = If[ method === "Greedy", All,
+            "BranchSampleSize" /. opts /. "BranchSampleSize" -> All ],
+        maxFrames  = If[ method === "Greedy" && IntegerQ @ count, count, Infinity ] },
+      { frames = orthogonalFrameDFS[ localG, c, dag, axisCountSpec, minLength, sampleSize, maxFrames, sel, axisMult, perpQ ] },
+      If[ method === "Greedy", frames, SortBy[ frames, frameSortKey[ axisMult ] ] ]
     ]
   ]
 
 findOrthogonalFrameCore[ g_Graph, InfraPoint[ vs_List ], axisLength_, count_, opts_List ] :=
   With[ { method = methodName @ resolveSearchMethod[ opts ],
           axisMult = axisMultiplicityFn[ g ] },
-    With[ { perSource = Map[ findOrthogonalFrameCore[ g, #, axisLength, All, opts ] &, vs ] },
-      With[ { allFrames = DeleteDuplicatesBy[ Catenate @ perSource, canonicalFrame ] },
-        With[ { sortedFrames = If[ method === "Greedy", allFrames, SortBy[ allFrames, frameSortKey[ axisMult ] ] ],
-                maxFrames    = If[ count === All, Infinity, count ] },
-          Take[ sortedFrames, UpTo[ maxFrames ] ]
-        ]
-      ]
-    ]
+    { perSource = Map[ findOrthogonalFrameCore[ g, #, axisLength, All, opts ] &, vs ] },
+    { allFrames = DeleteDuplicatesBy[ Catenate @ perSource, canonicalFrame ] },
+    { sortedFrames = If[ method === "Greedy", allFrames, SortBy[ allFrames, frameSortKey[ axisMult ] ] ],
+      maxFrames    = If[ count === All, Infinity, count ] },
+    Take[ sortedFrames, UpTo[ maxFrames ] ]
   ]
 
 
@@ -445,24 +433,21 @@ wrapFrame[ frame_List ] := InfraSegment[ { # } ] & /@ frame
 
 findLongestPaths[ g_Graph, n_, epsilon_ : 0 ] :=
   With[ { distMatrix = GraphDistanceMatrix[ g ], vertices = VertexList[ g ] },
-    With[ { maxDist = Max[ distMatrix ] },
-      With[ { pairs = Select[
-              DeleteDuplicatesBy[ Position[ distMatrix, _?( # >= maxDist - epsilon & ) ], Sort ],
-              #[[ 1 ]] =!= #[[ 2 ]] & ] },
-        With[ { numPairs = Length[ pairs ] },
-          If[ numPairs == 0, { },
-            With[ { counts = If[ n === All,
-                  ConstantArray[ All, numPairs ],
-                  RandomSample @ Table[ Quotient[ n, numPairs ] + Boole[ i <= Mod[ n, numPairs ] ], { i, numPairs } ] ] },
-              Flatten[
-                Cases[
-                  Transpose[ { pairs, counts } ],
-                  { { i_, j_ }, cnt_ /; cnt =!= 0 } :>
-                    FindPath[ g, vertices[[ i ]], vertices[[ j ]], { distMatrix[[ i, j ]] }, cnt ] ],
-                1 ]
-            ]
-          ]
-        ]
+    { maxDist = Max[ distMatrix ] },
+    { pairs = Select[
+        DeleteDuplicatesBy[ Position[ distMatrix, _?( # >= maxDist - epsilon & ) ], Sort ],
+        #[[ 1 ]] =!= #[[ 2 ]] & ] },
+    { numPairs = Length[ pairs ] },
+    If[ numPairs == 0, { },
+      With[ { counts = If[ n === All,
+            ConstantArray[ All, numPairs ],
+            RandomSample @ Table[ Quotient[ n, numPairs ] + Boole[ i <= Mod[ n, numPairs ] ], { i, numPairs } ] ] },
+        Flatten[
+          Cases[
+            Transpose[ { pairs, counts } ],
+            { { i_, j_ }, cnt_ /; cnt =!= 0 } :>
+              FindPath[ g, vertices[[ i ]], vertices[[ j ]], { distMatrix[[ i, j ]] }, cnt ] ],
+          1 ]
       ]
     ]
   ]

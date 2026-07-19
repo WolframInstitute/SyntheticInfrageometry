@@ -140,7 +140,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
 
 geodesicDAGBaseFn[ graph_Graph, p1_, p2_ ] :=
   With[ { dagNbrs = geodesicDAGNeighbors[ graph, p1, p2 ] },
-    Function[ { g, path }, Lookup[ dagNbrs, Key @ Last @ path, { } ] ]
+    { g, path } |-> Lookup[ dagNbrs, Key @ Last @ path, { } ]
   ]
 
 
@@ -153,13 +153,11 @@ geodesicDAGBaseFn[ graph_Graph, p1_, p2_ ] :=
 ExtendInfraSegment[ graph_Graph, a_, b_, c_, d_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
   With[ { target = GraphDistance[ graph, c, d ] },
-    With[ { vs = If[ target === Infinity, { },
+    { vs = If[ target === Infinity, { },
         Select[ VertexList[ graph ],
           x |-> BetweennessQ[ graph, a, b, x ] && GraphDistance[ graph, b, x ] === target ] ] },
-      With[ { capped = infraCap[ vs, count ] },
-        If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
-      ]
-    ]
+    { capped = infraCap[ vs, count ] },
+    If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
   ]
 
 

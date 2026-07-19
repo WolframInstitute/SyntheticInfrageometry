@@ -64,17 +64,15 @@ FindInfraLinearCombination[ graph_Graph, o_, terms_List,
     spreadFind[ InfraPoint, count,
       Function[ Null,
         With[ { thisO = #1, thisUs = { ##2 } },
-          With[ { scaled = MapThread[ findInfraScale[ graph, thisO, #2, #1, scaleM ] &,
-                                       { lambdas, thisUs } ] },
-            If[ Length[ scaled ] == 0,
-              { thisO },
-              Fold[
-                Function[ { acc, next },
-                  DeleteDuplicates @ Flatten @ Outer[
-                    findInfraSum[ graph, thisO, #1, #2, sumM ] &, acc, next, 1 ]
-                ],
-                First @ scaled, Rest @ scaled
-              ]
+          { scaled = MapThread[ findInfraScale[ graph, thisO, #2, #1, scaleM ] &,
+                                { lambdas, thisUs } ] },
+          If[ Length[ scaled ] == 0,
+            { thisO },
+            Fold[
+              { acc, next } |->
+                DeleteDuplicates @ Flatten @ Outer[
+                  findInfraSum[ graph, thisO, #1, #2, sumM ] &, acc, next, 1 ],
+              First @ scaled, Rest @ scaled
             ]
           ]
         ]
@@ -109,10 +107,9 @@ InfraAngle[ graph_Graph, { q1_, p_, q2_ }, OptionsPattern[] ] :=
   Switch[ methodName @ OptionValue[ Method ],
     "Arclength",
       With[ { radius = Min[ GraphDistance[ graph, p, q1 ], GraphDistance[ graph, p, q2 ] ] },
-        With[ { rem = VertexDelete[ graph,
-                  Select[ VertexList[ graph ], GraphDistance[ graph, p, # ] < radius & ] ] },
-          GraphDistance[ rem, q1, q2 ] / radius
-        ]
+        { rem = VertexDelete[ graph,
+            Select[ VertexList[ graph ], GraphDistance[ graph, p, # ] < radius & ] ] },
+        GraphDistance[ rem, q1, q2 ] / radius
       ],
     "Alexandrov",
       With[ { k = Lookup[ methodOptions @ OptionValue[ Method ], "Curvature", 0 ] },
@@ -173,10 +170,9 @@ findInfraScale[ graph_Graph, o_, u_, lambda_, "Line" ] :=
         DeleteDuplicates @ Flatten @ ( ( line |->
           With[ { oIdx = First @ FirstPosition[ line, o, { 0 } ],
                   uIdx = First @ FirstPosition[ line, u, { 0 } ] },
-            With[ { targetIdx = oIdx + Round[ lambda ( uIdx - oIdx ) ] },
-              If[ oIdx > 0 && uIdx > 0 && 1 <= targetIdx <= Length[ line ],
-                { line[[ targetIdx ]] }, { } ]
-            ]
+            { targetIdx = oIdx + Round[ lambda ( uIdx - oIdx ) ] },
+            If[ oIdx > 0 && uIdx > 0 && 1 <= targetIdx <= Length[ line ],
+              { line[[ targetIdx ]] }, { } ]
           ] ) /@ lines )
       ]
     ]
@@ -226,12 +222,11 @@ findInfraSum[ graph_Graph, o_, u_, v_, "Metric" ] :=
 findInfraSum[ graph_Graph, o_, u_, v_, "Parallel" ] :=
   With[ { linesOV = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, o, v, All ],
           linesOU = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, o, u, All ] },
-    With[ { parallelsAtU = Flatten[
-              ( #[[ 1, 1 ]] & /@ FindInfraParallel[ graph, #, u, All ] ) & /@ linesOV, 1 ],
-            parallelsAtV = Flatten[
-              ( #[[ 1, 1 ]] & /@ FindInfraParallel[ graph, #, v, All ] ) & /@ linesOU, 1 ] },
-      DeleteDuplicates @ DeleteCases[
-        Flatten @ Outer[ Intersection, parallelsAtU, parallelsAtV, 1 ],
-        o | u | v ]
-    ]
+    { parallelsAtU = Flatten[
+        ( #[[ 1, 1 ]] & /@ FindInfraParallel[ graph, #, u, All ] ) & /@ linesOV, 1 ],
+      parallelsAtV = Flatten[
+        ( #[[ 1, 1 ]] & /@ FindInfraParallel[ graph, #, v, All ] ) & /@ linesOU, 1 ] },
+    DeleteDuplicates @ DeleteCases[
+      Flatten @ Outer[ Intersection, parallelsAtU, parallelsAtV, 1 ],
+      o | u | v ]
   ]

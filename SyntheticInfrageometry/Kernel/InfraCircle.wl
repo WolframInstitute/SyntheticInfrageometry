@@ -94,9 +94,9 @@ admissibleCircleVerts[ localG_Graph, center_, radius_, properties_List ] :=
    circle here differs from SeparatingSetQ, which FindInfraShell still uses). *)
 propertyPredicateCircle[ localG_Graph, center_, radius_, "Separating" ] :=
   verts |-> With[ { rem = VertexDelete[ localG, verts ] },
-    With[ { cc = SelectFirst[ ConnectedComponents[ rem ], MemberQ[ #, center ] & ] },
-      cc =!= Missing[ "NotFound" ] &&
-      AllTrue[ cc, GraphDistance[ localG, center, # ] <= radius & ] ] ]
+    { cc = SelectFirst[ ConnectedComponents[ rem ], MemberQ[ #, center ] & ] },
+    cc =!= Missing[ "NotFound" ] &&
+    AllTrue[ cc, GraphDistance[ localG, center, # ] <= radius & ] ]
 
 propertyPredicateCircle[ _, _, _, other_ ] :=
   ( Message[ FindInfraCircle::badproperty, other ]; Throw[ $Failed ] )
@@ -139,13 +139,11 @@ FindInfraCycle[ graph_Graph, { kMin_Integer, kMax_ },
 InfraCircleQ[ graph_Graph, cycle_List ] /; Length[ cycle ] >= 3 :=
   With[ {
       closed = If[ First @ cycle === Last @ cycle, cycle, Append[ cycle, First @ cycle ] ] },
-    With[ {
-        verts = Most @ closed,
-        pairs = Partition[ closed, 2, 1 ] },
-      DuplicateFreeQ[ verts ] &&
-      AllTrue[ pairs, EdgeQ[ graph, UndirectedEdge @@ # ] & ] &&
-      InfraShellQ[ graph, verts ]
-    ]
+    { verts = Most @ closed,
+      pairs = Partition[ closed, 2, 1 ] },
+    DuplicateFreeQ[ verts ] &&
+    AllTrue[ pairs, EdgeQ[ graph, UndirectedEdge @@ # ] & ] &&
+    InfraShellQ[ graph, verts ]
   ]
 
 InfraCircleQ[ _Graph, cycle_List ] /; Length[ cycle ] < 3 := False

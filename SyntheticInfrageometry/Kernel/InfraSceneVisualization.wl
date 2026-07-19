@@ -275,10 +275,10 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             numReps = If[ MatchQ[ reps, { _Graph } ], infraNumReps[ InfraSegment[ First @ reps ] ],
                           Max[ Length @ reps, 1 ] ],
             wts     = record[ "Weights" ] },
-          With[ { norm = If[ AssociationQ @ wts, Max @ Values @ wts, numReps ] },
-            AssociationMap[
-              v |-> { color, ( If[ AssociationQ @ wts, wts[ v ], counts[ v ] ] ) / norm, record },
-              Keys @ counts ] ] ],
+          { norm = If[ AssociationQ @ wts, Max @ Values @ wts, numReps ] },
+          AssociationMap[
+            v |-> { color, ( If[ AssociationQ @ wts, wts[ v ], counts[ v ] ] ) / norm, record },
+            Keys @ counts ] ],
         { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]] } ];
 
       eEntries = MapThread[
@@ -318,7 +318,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
        inside Style[edge/vertex, ...].  A *Range record value of None
        suppresses that channel; ranges are per-object. *)
     With[ { lerp = { spec, w } |-> If[ ListQ @ spec, spec[[ 1 ]] + ( spec[[ 2 ]] - spec[[ 1 ]] ) w, spec w ] },
-      With[ {
+      {
           (* All edge styling (colour, opacity, thickness) rides top-level EdgeStyle,
              never a Style[edge, ..] highlight spec: HighlightGraph gives a highlight
              Style priority over EdgeStyle AND drops AbsoluteThickness inside it, so an
@@ -326,42 +326,40 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
              three channels, so the count-driven thickness diffusion actually shows. *)
           edgeData = KeyValueMap[
             { e, cs } |-> With[ { ue = UndirectedEdge @@ e, last = Last @ cs },
-              With[ { color = last[[ 1 ]], w = last[[ 2 ]], rec = last[[ 3 ]] },
-                With[ {
-                    oList = If[ rec[ "OpacityRange" ] === None, { },
-                      { Opacity[ lerp[ rec[ "OpacityRange" ], w ] ] } ],
-                    tList = If[ rec[ "ThicknessRange" ] === None, { },
-                      { AbsoluteThickness[ lerp[ rec[ "ThicknessRange" ], w ] ] } ],
-                    eDirs = List @@ rec[ "EdgeDir" ] },
-                  <|
-                    "EdgeStyle" -> ( ue -> Directive[ color, Sequence @@ oList, Sequence @@ tList, Sequence @@ eDirs,
-                        Sequence @@ If[ rec[ "EdgeStyle" ] === None, { }, { rec[ "EdgeStyle" ] } ] ] ),
-                    "EdgeShapeFunction" -> If[ rec[ "EdgeShapeFunction" ] === None, Nothing,
-                      ue -> rec[ "EdgeShapeFunction" ] ]
-                  |> ] ] ],
+              { color = last[[ 1 ]], w = last[[ 2 ]], rec = last[[ 3 ]] },
+              { oList = If[ rec[ "OpacityRange" ] === None, { },
+                  { Opacity[ lerp[ rec[ "OpacityRange" ], w ] ] } ],
+                tList = If[ rec[ "ThicknessRange" ] === None, { },
+                  { AbsoluteThickness[ lerp[ rec[ "ThicknessRange" ], w ] ] } ],
+                eDirs = List @@ rec[ "EdgeDir" ] },
+              <|
+                "EdgeStyle" -> ( ue -> Directive[ color, Sequence @@ oList, Sequence @@ tList, Sequence @@ eDirs,
+                    Sequence @@ If[ rec[ "EdgeStyle" ] === None, { }, { rec[ "EdgeStyle" ] } ] ] ),
+                "EdgeShapeFunction" -> If[ rec[ "EdgeShapeFunction" ] === None, Nothing,
+                  ue -> rec[ "EdgeShapeFunction" ] ]
+              |> ],
             Merge[ eEntries, Identity ] ],
           vertexData = KeyValueMap[
             { v, cs } |-> With[ { last = Last @ cs },
-              With[ { color = last[[ 1 ]], w = last[[ 2 ]], rec = last[[ 3 ]] },
-                With[ {
-                    oList = If[ rec[ "OpacityRange" ] === None, { },
-                      { Opacity[ lerp[ rec[ "OpacityRange" ], w ] ] } ],
-                    vDirs = List @@ rec[ "VertexDir" ] },
-                  Which[
-                    rec[ "VertexShapeFunction" ] =!= None,
-                      <| "VSF" -> ( v -> rec[ "VertexShapeFunction" ] ) |>,
-                    (* a fixed AbsolutePointSize / PointSize in the vertex channel, or the
-                       count-scaled "PointSizeRange" diffusion, is rerouted to a top-level
-                       VertexShapeFunction since HighlightGraph drops point sizing in Style[] specs *)
-                    rec[ "PointSizeRange" ] =!= None || ! FreeQ[ vDirs, _AbsolutePointSize | _PointSize ],
-                      With[ { body = Flatten[ { color, oList,
-                          If[ rec[ "PointSizeRange" ] === None, { },
-                            { AbsolutePointSize[ lerp[ rec[ "PointSizeRange" ], w ] ] } ], vDirs } ] },
-                        <| "VSF" -> ( v -> ( Append[ body, Point[ #1 ] ] & ) ) |> ],
-                    True,
-                      <| "Style" -> Style[ v, Directive[ color, Sequence @@ oList, Sequence @@ vDirs ] ],
-                         "VSize" -> If[ rec[ "VertexSize" ] === None, Nothing, v -> rec[ "VertexSize" ] ] |>
-                  ] ] ] ],
+              { color = last[[ 1 ]], w = last[[ 2 ]], rec = last[[ 3 ]] },
+              { oList = If[ rec[ "OpacityRange" ] === None, { },
+                  { Opacity[ lerp[ rec[ "OpacityRange" ], w ] ] } ],
+                vDirs = List @@ rec[ "VertexDir" ] },
+              Which[
+                rec[ "VertexShapeFunction" ] =!= None,
+                  <| "VSF" -> ( v -> rec[ "VertexShapeFunction" ] ) |>,
+                (* a fixed AbsolutePointSize / PointSize in the vertex channel, or the
+                   count-scaled "PointSizeRange" diffusion, is rerouted to a top-level
+                   VertexShapeFunction since HighlightGraph drops point sizing in Style[] specs *)
+                rec[ "PointSizeRange" ] =!= None || ! FreeQ[ vDirs, _AbsolutePointSize | _PointSize ],
+                  With[ { body = Flatten[ { color, oList,
+                      If[ rec[ "PointSizeRange" ] === None, { },
+                        { AbsolutePointSize[ lerp[ rec[ "PointSizeRange" ], w ] ] } ], vDirs } ] },
+                    <| "VSF" -> ( v -> ( Append[ body, Point[ #1 ] ] & ) ) |> ],
+                True,
+                  <| "Style" -> Style[ v, Directive[ color, Sequence @@ oList, Sequence @@ vDirs ] ],
+                     "VSize" -> If[ rec[ "VertexSize" ] === None, Nothing, v -> rec[ "VertexSize" ] ] |>
+              ] ],
             Merge[ vEntries, Identity ] ] },
 
         HighlightGraph[ graph,
@@ -373,6 +371,5 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             VertexSize          -> DeleteCases[ Cases[ vertexData, kv_Association /; KeyExistsQ[ kv, "VSize" ] :> kv[ "VSize" ] ], Nothing ]
           }, _ -> { } ],
           FilterRules[ { opts }, Options @ HighlightGraph ] ]
-      ]
     ]
   ]
