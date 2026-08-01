@@ -55,4 +55,5 @@ Ready-made example substrates and ambient styles for the analyses: **[LLM-genera
 
 ## ⚖️ License
 
-MIT
+- **Code**: [MIT](https://opensource.org/license/mit)
+- **Research notebooks and ideas**: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
