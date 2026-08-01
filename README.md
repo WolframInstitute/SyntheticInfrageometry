@@ -46,14 +46,12 @@ Explore the paclet in the **[LLM-generated presentation notebook](https://www.wo
 
 Ready-made example substrates and ambient styles for the analyses: **[LLM-generated example-graphs notebook](https://www.wolframcloud.com/obj/hajek_pavel/ExampleGraphs.nb)** (runs on the Wolfram Cloud).
 
-## 📓 Research Notebooks
+## 📓 Research Notebooks — "Math from code"
 
-*Math from code.*
+> ⚠️ Versions default to **LLM**: generated directly from the codebase (via [ClaudePluginComputationalResearch](https://github.com/WolframInstitute/ClaudePluginComputationalResearch)), with no warranty of correctness. Humans are welcome to publish their own version alongside — list multiple versions comma-separated.
 
-> ⚠️ Default authorship is LLM. Notebooks in this table are written directly from the codebase by an LLM (via [ClaudePluginComputationalResearch](https://github.com/WolframInstitute/ClaudePluginComputationalResearch)) — hence there is no warranty of their correctness — unless the Author column names a person. Humans are welcome to publish their versions alongside the LLM one.
-
-| Notebook | Description | Link | Author |
-|----------|-------------|------|--------|
+| Notebook | Description | Versions |
+|----------|-------------|----------|
 
 ## ⚖️ License
 
