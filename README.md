@@ -48,10 +48,12 @@ Ready-made example substrates and ambient styles for the analyses: **[LLM-genera
 
 ## 📓 Research Notebooks
 
-> ⚠️ **LLM-generated theory from code.** These notebooks are written by an LLM directly from the repository using [ClaudePluginComputationalResearch](https://github.com/WolframInstitute/ClaudePluginComputationalResearch) as a demonstration of a new form of access to computational knowledge, where the source of truth lies in the code. They are **not revised by a human** by default.
+*Math from code.*
 
-| Notebook | Description | Link | Revision By |
-|----------|-------------|------|-------------|
+> ⚠️ Default authorship is LLM. Notebooks in this table are written directly from the codebase by an LLM (via [ClaudePluginComputationalResearch](https://github.com/WolframInstitute/ClaudePluginComputationalResearch)) — hence there is no warranty of their correctness — unless the Author column names a person. Humans are welcome to publish their versions alongside the LLM one.
+
+| Notebook | Description | Link | Author |
+|----------|-------------|------|--------|
 
 ## ⚖️ License
 
