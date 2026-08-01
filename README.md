@@ -48,7 +48,7 @@ Ready-made example substrates and ambient styles for the analyses: **[LLM-genera
 
 ## 📓 Research Notebooks — "Math from code"
 
-> ⚠️ Versions default to **LLM**: generated directly from the codebase (via [ClaudePluginComputationalResearch](https://github.com/WolframInstitute/ClaudePluginComputationalResearch)), with no warranty of correctness. Humans are welcome to publish their own version alongside — list multiple versions comma-separated.
+> ⚠️ Versions default to **LLM**: generated directly from the codebase (via [ClaudePluginComputationalResearch](https://github.com/WolframInstitute/ClaudePluginComputationalResearch)), with no warranty of correctness. Humans are welcome to publish their own version alongside.
 
 | Notebook | Description | Versions |
 |----------|-------------|----------|
