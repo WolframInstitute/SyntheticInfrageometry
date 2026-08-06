@@ -52,6 +52,7 @@ Ready-made example substrates and ambient styles for the analyses: **[LLM-genera
 
 | Notebook | Description | Versions |
 |----------|-------------|----------|
+| EmergentEuclid | Emergent Euclidean geometry on graphs: infra-Euclidean primitives, Tarski's axioms as decidable graph properties, locality of the Euclidean regime, and behavior under edge subdivision | [LLM, Claude Fable 5 (Wolfram Cloud)](https://www.wolframcloud.com/obj/hajek_pavel/SyntheticInfrageometry/EmergentEuclid.nb) |
 
 ## ⚖️ License
 
