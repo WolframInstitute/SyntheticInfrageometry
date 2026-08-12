@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     16875,        459]
-NotebookOptionsPosition[     11745,        352]
-NotebookOutlinePosition[     12850,        385]
-CellTagsIndexPosition[     12771,        380]
+NotebookDataLength[     38714,        997]
+NotebookOptionsPosition[     30910,        852]
+NotebookOutlinePosition[     32095,        887]
+CellTagsIndexPosition[     32016,        882]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -24,7 +24,7 @@ Cell["InfraParallelQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"db934c6c-7494-4711-9a00-b47730cbb248"],
+ Cell["   ", "ModInfo",ExpressionUUID->"39cc637c-3fdb-4a98-b169-5de90a4b72e8"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -35,34 +35,142 @@ Cell[TextData[{
     "PackageLink",
     BaseStyle->"InlineFormula"], "[", 
    RowBox[{
-    StyleBox["graph", "TI"], ",", " ", 
+    StyleBox["g", "TI"], ",", " ", 
     StyleBox["l1", "TI"], ",", " ", 
     StyleBox["l2", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "57742c39-6603-4f1b-96d6-a1169892dd8c"],
+  "50ff3627-259e-40d9-a348-a5127ffafce4"],
  "\[LineSeparator]",
- "tests whether two lines are parallel (constant distance).",
- "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"468e61bc-bff3-4274-af68-64fa494ece05"],
- Cell[BoxData[
-  RowBox[{
-   TemplateBox[{
-     Cell[
-      TextData["InfraParallelQ"]], 
-     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraParallelQ", 
-     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
-    "PackageLink",
-    BaseStyle->"InlineFormula"], "[", 
-   RowBox[{
-    StyleBox["graph", "TI"], ",", " ", 
-    StyleBox["l1", "TI"], ",", " ", 
-    StyleBox["l2", "TI"], ",", " ", 
-    StyleBox["threshold", "TI"]}], "]"}]], "InlineFormula",
+ "tests whether the two vertex sets are parallel: disjoint, and at constant \
+distance from each other.",
+ "\n"
+}], "Usage",ExpressionUUID->"64e88d01-2a46-4a8c-96b2-93ce1309a24b"],
+
+Cell[TextData[{
+ "Definition: ",
+ StyleBox["l1", "TI"],
+ " and ",
+ StyleBox["l2", "TI"],
+ " are parallel when they are disjoint and every vertex of ",
+ StyleBox["l2", "TI"],
+ " is at the same distance from the set ",
+ StyleBox["l1", "TI"],
+ "."
+}], "Notes",ExpressionUUID->"9a901b95-9cff-4c68-beef-c538dffc971d"],
+
+Cell["\<\
+Both conditions matter, and each corresponds to something classical. \
+Disjointness is Euclid's Definition 23, that parallel lines do not meet. \
+Constant distance is the level-set reading, which is the only thing a metric \
+can say without a notion of direction.\
+\>", "Notes",ExpressionUUID->"f0f921ea-70c4-4185-8746-37f31ed70e67"],
+
+Cell["Two consequences that catch people out.", "Notes",ExpressionUUID->"9277566e-932f-4280-9ba3-9101bff6d8bf"],
+
+Cell[TextData[{
+ StyleBox["A line is not parallel to itself.",
+  FontWeight->"Bold"],
+ " It meets itself everywhere, so disjointness fails and the answer is ",
+ Cell[BoxData["False"], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "c190a9ea-dceb-433c-8f66-ea1033e9892e"],
- "\[LineSeparator]",
- "allows distance variation up to threshold."
-}], "Usage",ExpressionUUID->"ba06e205-59d0-4617-a21e-bc3c92bf7752"]
+  "90373eb1-bbd2-4d0e-abca-c42a1baf0576"],
+ ". Parallelism here is not reflexive."
+}], "Notes",ExpressionUUID->"7e8df184-3f1f-419a-8698-374af9bf6b9d"],
+
+Cell[TextData[{
+ StyleBox["Sharing a single vertex is enough to fail.",
+  FontWeight->"Bold"],
+ " Two sets at otherwise constant distance return ",
+ Cell[BoxData["False"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "77c4af9e-96a8-4433-becf-a09c5cec78b8"],
+ " as soon as they touch."
+}], "Notes",ExpressionUUID->"a8037808-f188-4d5c-8278-c407d5e0fcd1"],
+
+Cell[TextData[{
+ "The predicate does not require its arguments to be lines. It tests two \
+vertex sets, so it accepts things that are not paths at all. Concentric \
+shells are the clearest case: the shell at radius 3 is parallel to the shell \
+at radius 2, at constant distance 1. If you need the arguments to be maximal \
+geodesics, test that separately with ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraLineQ"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraLineQ", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "2bc91e0b-ef62-4e7f-a8f5-231a47f3dfc1"],
+ "."
+}], "Notes",ExpressionUUID->"2345aff1-194b-4fdc-ad8d-6c4e2c6d556a"],
+
+Cell[TextData[{
+ "That is the difference from ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraParallel"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/FindInfraParallel", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "7c346e58-e213-4ee4-b98a-13ae5f756ea4"],
+ ", and it is a real one. The finder returns only ",
+ StyleBox["maximal geodesics", "TI"],
+ " at constant distance, and on a lattice it typically finds none. This \
+predicate can still return ",
+ Cell[BoxData["True"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "01f14d3f-3292-4ee3-9ef0-d559bbbac39d"],
+ " for sets at constant distance. A parallel can exist as a set while no \
+parallel exists as a line."
+}], "Notes",ExpressionUUID->"e5eacea5-c54c-4981-848c-87a5eabfd918"],
+
+Cell["Corresponding notions in the classical axiom systems:", "Notes",ExpressionUUID->"5bcf88eb-1a6f-4b7c-a3ea-a87cfe0127c5"],
+
+Cell[BoxData[GridBox[{
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "407b9b8c-6ea1-4741-90c8-9bac9752c781"], Cell["System", "TableText",
+     FontWeight->Bold,ExpressionUUID->"450055cc-867e-4bfb-9590-d63d4a6361f6"],
+     Cell["Name", "TableText",
+     FontWeight->Bold,ExpressionUUID->"ad83163e-535d-4382-9f4a-90bb7bdaac17"],
+     Cell["Statement", "TableText",
+     FontWeight->Bold,ExpressionUUID->"e9a94c7b-7a15-4c6a-8f0b-3d38adeb8cdb"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "363a1dff-9e03-4b87-a160-1a109b2457c6"], Cell[
+    "Euclid", "TableText",ExpressionUUID->
+     "0a020975-fe1f-41d6-8c27-87be4e5fc1ff"], Cell[
+    "Definition 23", "TableText",ExpressionUUID->
+     "05390b29-31dc-4c33-aa91-412bce0b53ee"], Cell["\<\
+Parallel lines are those in a plane which do not meet, however far produced.\
+\>", "TableText",ExpressionUUID->"e5c5dc7c-85d4-4c50-8e78-b34ca5303e76"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "484bedfb-f732-4ea8-b696-3a179cb4c432"], Cell[
+    "Euclid", "TableText",ExpressionUUID->
+     "aa7fb61b-10a7-44e6-b5cb-e2adde9edede"], Cell[
+    "Postulate 5", "TableText",ExpressionUUID->
+     "25cc924c-e3ea-450c-966d-1d1f1aa7b71c"], Cell[
+    "The parallel postulate.", "TableText",ExpressionUUID->
+     "39926f39-75f6-4cfc-9516-f57e882bd139"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "d08ca6a9-a559-44e4-b65e-998fedd1bd51"], Cell[
+    "Hilbert", "TableText",ExpressionUUID->
+     "0d341567-dea6-450f-b184-bee47267373e"], Cell[
+    "Group IV", "TableText",ExpressionUUID->
+     "095c1b35-6ce3-4f8a-bc08-a393eb4d384e"], Cell["\<\
+Playfair's axiom: exactly one parallel through a point off the line.\
+\>", "TableText",ExpressionUUID->"93ef0e1c-601c-4a83-87ad-731da03e6422"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "a2fadfeb-ffe9-44c1-b5c5-292b35ba85dc"], Cell[
+    "Tarski", "TableText",ExpressionUUID->
+     "433024f3-ef3f-4993-aa9f-7b4478f39b73"], Cell[
+    "A10", "TableText",ExpressionUUID->
+     "8466095a-150a-4633-89e6-8d6058c4703d"], Cell[
+    "Euclid's axiom, stated with betweenness and equidistance.", "TableText",
+     ExpressionUUID->"7ab01a64-3ffc-4dc5-a995-04a92d2a85e3"]}
+  }]], "3ColumnTableMod",ExpressionUUID->"9f36b154-cec2-4077-ace6-\
+c18bb0f4d982"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -84,45 +192,55 @@ Cell[TextData[{
 
 Cell[TextData[{
  Cell[BoxData[
-  TagBox[
-   FrameBox["\<\"XXXX\"\>"],
-   "FunctionPlaceholder"]], "InlineSeeAlsoFunction",
-  TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "04f1f4f6-42ff-41c1-be38-c72199e55033"],
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraParallel"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/FindInfraParallel", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "fe82bf83-97c5-41aa-8855-8a73526ee4a8"],
+ " \[FilledVerySmallSquare] ",
  Cell[BoxData[
-  RowBox[{
-  Cell[TextData[StyleBox[
-   " \[FilledVerySmallSquare] ", "InlineSeparator"]],ExpressionUUID->
-    "e52cc72c-b17b-4daf-ba13-e4031a732989"], 
-   DynamicModuleBox[{$CellContext`nbobj$$ = NotebookObject[
-     FrontEndObject[
-      LinkObject["i7bzb_shm", 209, 9]], 22], $CellContext`cellobj$$ = 
-    CellObject[6753]}, 
-    TemplateBox[{
-      GraphicsBox[{{
-         Thickness[0.06], 
-         StrokeForm[
-          Hue[0.4167, 0.406, 0.502]], 
-         CircleBox[{0, 0}]}, {
-         Thickness[0.06], 
-         StrokeForm[
-          Hue[0.4167, 0.406, 0.502]], 
-         LineBox[{{0, 0.62}, {0, -0.62}}]}, {
-         Thickness[0.06], 
-         StrokeForm[
-          Hue[0.4167, 0.406, 0.502]], 
-         LineBox[{{-0.62, 0}, {0.62, 0}}]}}, 
-       ImagePadding -> {{1., 1.}, {2.4, 1.}}, ImageSize -> 16, 
-       PlotRange -> {{-1.06, 1.06}, {-1.06, 1.06}}, 
-       BaselinePosition -> (Center -> 
-        Center)], $CellContext`nbobj$$, $CellContext`cellobj$$},
-     "InlineListingAddButton"],
-    Initialization:>($CellContext`nbobj$$ = 
-      EvaluationNotebook[]; $CellContext`cellobj$$ = EvaluationCell[])]}]], 
-  "InlineListingAddButton",ExpressionUUID->
-  "ac548b96-3ee5-484c-99df-e6462c430c8c"]
-}], "SeeAlso",
- CellID->173389911,ExpressionUUID->"a2765fad-d0fd-4f94-9539-78ed28f4fade"]
+  TemplateBox[{
+    Cell[
+     TextData["InfraPerpendicularQ"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraPerpendicularQ", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "a7b5b6fe-af06-4da7-9146-4436b5562b0e"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraLineQ"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraLineQ", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "8d8e439b-0be1-46e1-8f14-27690628c374"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraShell"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/FindInfraShell", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "de8fe113-1ce4-4e20-a5c9-3a537e18aab0"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraLine"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/FindInfraLine", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "8a1d6a65-71a3-496d-b513-8ff6c18c7774"]
+}], "SeeAlso",ExpressionUUID->"a6cbd12d-e999-4672-a158-bd435af10824"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -139,8 +257,20 @@ Cell[TextData[{
 }], "TechNotesSection",
  CellID->792424486,ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74"],
 
+Cell[CellGroupData[{
+
 Cell["Related Guides", "MoreAboutSection",
  CellID->38303248,ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5"],
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox["EuclideanGeometryGuide",
+  BaseStyle->"Link",
+  ButtonData->
+   "paclet:WolframInstitute/SyntheticInfrageometry/guide/\
+EuclideanGeometryGuide"]], \
+"InlineFormula",ExpressionUUID->"ee4bf6f2-4944-48a8-a107-a616b09c15bc"]], \
+"MoreAbout",ExpressionUUID->"30bcf987-5ced-4a64-8aec-5da6f6f2f572"]
+}, Open  ]],
 
 Cell[TextData[{
  "Related Links",
@@ -183,6 +313,8 @@ Cell[BoxData[{
  CellID->1969679695,ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502"]
 }, Open  ]],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
  InterpretationBox[GridBox[{
     {
@@ -196,6 +328,374 @@ Cell[BoxData[
    }],
   $Line = 0; Null]], "PrimaryExamplesSection",
  CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
+
+Cell["\<\
+A line is not parallel to itself, because parallels must not meet.\
+\>", "ExampleText",ExpressionUUID->"fbf1b5ca-7994-44d4-80db-39201be987e1"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", " ", "=", " ", 
+     RowBox[{"ExampleGraphData", "[", 
+      RowBox[{"\"\<Square\>\"", ",", " ", "\"\<Small\>\""}], "]"}]}], "}"}], ",",
+    "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"c", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"GraphCenter", "[", "g", "]"}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"far", " ", "=", " ", 
+     RowBox[{"SelectFirst", "[", 
+      RowBox[{
+       RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"GraphDistance", "[", 
+          RowBox[{"g", ",", " ", "c", ",", " ", "#"}], "]"}], " ", "==", " ", 
+         "4"}], " ", "&"}]}], "]"}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"line", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"First", " ", "@", " ", 
+       RowBox[{"FindInfraLine", "[", 
+        RowBox[{"g", ",", " ", "c", ",", " ", "far", ",", " ", "1"}], 
+        "]"}]}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"InfraParallelQ", "[", 
+    RowBox[{"g", ",", " ", "line", ",", " ", "line"}], "]"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[1]:= ",ExpressionUUID->"e9289914-8740-46b5-9cae-24bc4b2686a4"],
+
+Cell[BoxData["False"], "Output",
+ CellLabel->"Out[1]= ",ExpressionUUID->"323be6b5-9ca4-4427-b0ea-8f884b9d983e"]
+}, Open  ]],
+
+Cell["\<\
+Concentric shells are parallel. Each vertex of the outer one is at the same \
+distance from the inner one.\
+\>", "ExampleText",ExpressionUUID->"17be4701-7af8-41d6-ab69-df7ca9f0d5a6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", " ", "=", " ", 
+     RowBox[{"ExampleGraphData", "[", 
+      RowBox[{"\"\<Square\>\"", ",", " ", "\"\<Small\>\""}], "]"}]}], "}"}], ",",
+    "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"c", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"GraphCenter", "[", "g", "]"}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"s2", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"First", " ", "@", " ", 
+       RowBox[{"FindInfraShell", "[", 
+        RowBox[{"g", ",", " ", "c", ",", " ", "2"}], "]"}]}]}]}], "}"}], ",", 
+   "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"s3", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"First", " ", "@", " ", 
+       RowBox[{"FindInfraShell", "[", 
+        RowBox[{"g", ",", " ", "c", ",", " ", "3"}], "]"}]}]}]}], "}"}], ",", 
+   "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"s4", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"First", " ", "@", " ", 
+       RowBox[{"FindInfraShell", "[", 
+        RowBox[{"g", ",", " ", "c", ",", " ", "4"}], "]"}]}]}]}], "}"}], ",", 
+   "\n", "  ", 
+   RowBox[{"<|", 
+    RowBox[{
+     RowBox[{"\"\<shell 3 to shell 2\>\"", " ", "->", " ", 
+      RowBox[{"InfraParallelQ", "[", 
+       RowBox[{"g", ",", " ", "s2", ",", " ", "s3"}], "]"}]}], ",", "\n", 
+     "    ", 
+     RowBox[{"\"\<shell 4 to shell 2\>\"", " ", "->", " ", 
+      RowBox[{"InfraParallelQ", "[", 
+       RowBox[{"g", ",", " ", "s2", ",", " ", "s4"}], "]"}]}], ",", "\n", 
+     "    ", 
+     RowBox[{"\"\<distances 3 to 2\>\"", " ", "->", " ", 
+      RowBox[{"Union", " ", "@", " ", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"Min", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"GraphDistance", "[", 
+             RowBox[{"g", ",", " ", "v", ",", " ", "#"}], "]"}], " ", "&"}], 
+           " ", "/@", " ", "s2"}], "]"}], ",", " ", 
+         RowBox[{"{", 
+          RowBox[{"v", ",", " ", "s3"}], "}"}]}], "]"}]}]}], ",", "\n", 
+     "    ", 
+     RowBox[{"\"\<distances 4 to 2\>\"", " ", "->", " ", 
+      RowBox[{"Union", " ", "@", " ", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"Min", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"GraphDistance", "[", 
+             RowBox[{"g", ",", " ", "v", ",", " ", "#"}], "]"}], " ", "&"}], 
+           " ", "/@", " ", "s2"}], "]"}], ",", " ", 
+         RowBox[{"{", 
+          RowBox[{"v", ",", " ", "s4"}], "}"}]}], "]"}]}]}]}], "|>"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[2]:= ",ExpressionUUID->"8cc66d09-11cd-4f57-b812-85bfdafc17c8"],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{"\<\"shell 3 to shell 2\"\>", "\[Rule]", "True"}], ",", 
+   RowBox[{"\<\"shell 4 to shell 2\"\>", "\[Rule]", "True"}], ",", 
+   RowBox[{"\<\"distances 3 to 2\"\>", "\[Rule]", 
+    RowBox[{"{", "1", "}"}]}], ",", 
+   RowBox[{"\<\"distances 4 to 2\"\>", "\[Rule]", 
+    RowBox[{"{", "2", "}"}]}]}], "\[RightAssociation]"}]], "Output",
+ CellLabel->"Out[2]= ",ExpressionUUID->"be9ba9b3-6fbc-45c5-b79a-f8b02e5687a9"]
+}, Open  ]],
+
+Cell["\<\
+Neither shell is a line, which shows the predicate does not require one.\
+\>", "ExampleText",ExpressionUUID->"188ce84a-f810-4ef6-8abb-907e6b7adcab"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", " ", "=", " ", 
+     RowBox[{"ExampleGraphData", "[", 
+      RowBox[{"\"\<Square\>\"", ",", " ", "\"\<Small\>\""}], "]"}]}], "}"}], ",",
+    "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"c", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"GraphCenter", "[", "g", "]"}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"InfraLineQ", "[", 
+    RowBox[{"g", ",", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"First", " ", "@", " ", 
+       RowBox[{"FindInfraShell", "[", 
+        RowBox[{"g", ",", " ", "c", ",", " ", "3"}], "]"}]}]}]}], "]"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[3]:= ",ExpressionUUID->"daa50a52-1f23-4dc5-9612-cdfee7731b73"],
+
+Cell[BoxData["False"], "Output",
+ CellLabel->"Out[3]= ",ExpressionUUID->"f2c71fb5-b767-4d76-b932-c6504dbcf209"]
+}, Open  ]],
+
+Cell["\<\
+Two maximal geodesics chosen independently are generally not parallel, \
+because the distance between them varies along their length.\
+\>", "ExampleText",ExpressionUUID->"6e9f42fd-8183-4395-8ee0-e83d402309a0"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", " ", "=", " ", 
+     RowBox[{"ExampleGraphData", "[", 
+      RowBox[{"\"\<Square\>\"", ",", " ", "\"\<Small\>\""}], "]"}]}], "}"}], ",",
+    "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"c", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"GraphCenter", "[", "g", "]"}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"far", " ", "=", " ", 
+     RowBox[{"SelectFirst", "[", 
+      RowBox[{
+       RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"GraphDistance", "[", 
+          RowBox[{"g", ",", " ", "c", ",", " ", "#"}], "]"}], " ", "==", " ", 
+         "4"}], " ", "&"}]}], "]"}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"l1", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"First", " ", "@", " ", 
+       RowBox[{"FindInfraLine", "[", 
+        RowBox[{"g", ",", " ", "c", ",", " ", "far", ",", " ", "1"}], 
+        "]"}]}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"p", " ", "=", " ", 
+     RowBox[{"SelectFirst", "[", 
+      RowBox[{
+       RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"GraphDistance", "[", 
+           RowBox[{"g", ",", " ", "c", ",", " ", "#"}], "]"}], " ", "==", " ",
+           "2"}], " ", "&&", " ", 
+         RowBox[{"!", " ", 
+          RowBox[{"MemberQ", "[", 
+           RowBox[{"l1", ",", " ", "#"}], "]"}]}]}], " ", "&"}]}], "]"}]}], 
+    "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"l2", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"First", " ", "@", " ", 
+       RowBox[{"FindInfraLine", "[", 
+        RowBox[{"g", ",", " ", "p", ",", " ", 
+         RowBox[{"SelectFirst", "[", 
+          RowBox[{
+           RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"GraphDistance", "[", 
+              RowBox[{"g", ",", " ", "p", ",", " ", "#"}], "]"}], " ", "==", 
+             " ", "4"}], " ", "&"}]}], "]"}], ",", " ", "1"}], "]"}]}]}]}], 
+    "}"}], ",", "\n", "  ", 
+   RowBox[{"<|", 
+    RowBox[{
+     RowBox[{"\"\<parallel\>\"", " ", "->", " ", 
+      RowBox[{"InfraParallelQ", "[", 
+       RowBox[{"g", ",", " ", "l1", ",", " ", "l2"}], "]"}]}], ",", "\n", 
+     "    ", 
+     RowBox[{"\"\<distances from l2 to l1\>\"", " ", "->", " ", 
+      RowBox[{"Union", " ", "@", " ", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"Min", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"GraphDistance", "[", 
+             RowBox[{"g", ",", " ", "v", ",", " ", "#"}], "]"}], " ", "&"}], 
+           " ", "/@", " ", "l1"}], "]"}], ",", " ", 
+         RowBox[{"{", 
+          RowBox[{"v", ",", " ", "l2"}], "}"}]}], "]"}]}]}]}], "|>"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[4]:= ",ExpressionUUID->"fbfbc949-bdd6-49b4-916c-8ead470e2ae5"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"l1$", "::", "shdw"}], "MessageName"], 
+  RowBox[{":", " "}], 
+  RowBox[{"Symbol", " "}], 
+  TagBox["\<\"l1$\"\>",
+   HoldCompleteForm], 
+  RowBox[{" ", 
+   RowBox[{"appears", " ", "in", " ", "multiple", " ", "contexts", " "}]}], 
+  TagBox[
+   RowBox[{"{", 
+    RowBox[{"\<\"WolframInstitute`SyntheticInfrageometry`InfraLine`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`SyntheticInfrageometry`InfraScene`\
+PackagePrivate`\"\>"}], "}"}],
+   HoldCompleteForm], 
+  RowBox[{";", " ", 
+   RowBox[{"definitions", " ", "in", " ", "context", " "}]}], 
+  TagBox["\<\"WolframInstitute`SyntheticInfrageometry`InfraLine`\
+PackagePrivate`\"\>",
+   HoldCompleteForm], 
+  RowBox[{" ", 
+   RowBox[{
+   "may", " ", "shadow", " ", "or", " ", "be", " ", "shadowed", " ", "by", " ",
+     "other", " ", 
+    RowBox[{"definitions", "."}]}]}]}]], "Message", \
+"MSG",ExpressionUUID->"a7aa2334-c409-4b8f-ab6a-e42f116f8eda"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"p$", "::", "shdw"}], "MessageName"], 
+  RowBox[{":", " "}], 
+  RowBox[{"Symbol", " "}], 
+  TagBox["\<\"p$\"\>",
+   HoldCompleteForm], 
+  RowBox[{" ", 
+   RowBox[{"appears", " ", "in", " ", "multiple", " ", "contexts", " "}]}], 
+  TagBox[
+   RowBox[{"{", 
+    RowBox[{"\<\"WolframInstitute`SyntheticInfrageometry`AlexandrovGeometry`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`SyntheticInfrageometry`Coordinatization`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`SyntheticInfrageometry`Homotopy`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`SyntheticInfrageometry`InfraLineStructure`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`SyntheticInfrageometry`InfraPath`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`SyntheticInfrageometry`PathSpace`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`SyntheticInfrageometry`TarskiGeometry`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`Infrageometry`DifferentialForms`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`Infrageometry`ExampleGraphs`PackagePrivate`\"\
+\>", ",", "\<\"WolframInstitute`Infrageometry`Graph`PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`Infrageometry`Mesh`PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`Infrageometry`TessellationNeighborhood`\
+PackagePrivate`\"\>", ",", "\<\"Global`\"\>"}], "}"}],
+   HoldCompleteForm], 
+  RowBox[{";", " ", 
+   RowBox[{"definitions", " ", "in", " ", "context", " "}]}], 
+  TagBox["\<\"WolframInstitute`SyntheticInfrageometry`AlexandrovGeometry`\
+PackagePrivate`\"\>",
+   HoldCompleteForm], 
+  RowBox[{" ", 
+   RowBox[{
+   "may", " ", "shadow", " ", "or", " ", "be", " ", "shadowed", " ", "by", " ",
+     "other", " ", 
+    RowBox[{"definitions", "."}]}]}]}]], "Message", \
+"MSG",ExpressionUUID->"c568164b-c15d-4c52-86c4-1cabb511bb48"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"l2$", "::", "shdw"}], "MessageName"], 
+  RowBox[{":", " "}], 
+  RowBox[{"Symbol", " "}], 
+  TagBox["\<\"l2$\"\>",
+   HoldCompleteForm], 
+  RowBox[{" ", 
+   RowBox[{"appears", " ", "in", " ", "multiple", " ", "contexts", " "}]}], 
+  TagBox[
+   RowBox[{"{", 
+    RowBox[{"\<\"WolframInstitute`SyntheticInfrageometry`InfraLine`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`SyntheticInfrageometry`InfraScene`\
+PackagePrivate`\"\>"}], "}"}],
+   HoldCompleteForm], 
+  RowBox[{";", " ", 
+   RowBox[{"definitions", " ", "in", " ", "context", " "}]}], 
+  TagBox["\<\"WolframInstitute`SyntheticInfrageometry`InfraLine`\
+PackagePrivate`\"\>",
+   HoldCompleteForm], 
+  RowBox[{" ", 
+   RowBox[{
+   "may", " ", "shadow", " ", "or", " ", "be", " ", "shadowed", " ", "by", " ",
+     "other", " ", 
+    RowBox[{"definitions", "."}]}]}]}]], "Message", \
+"MSG",ExpressionUUID->"f8b80c1e-6908-458b-9003-618c92df75a3"],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{"\<\"parallel\"\>", "\[Rule]", "False"}], ",", 
+   RowBox[{"\<\"distances from l2 to l1\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", "1", ",", "2", ",", "3", ",", "4"}], "}"}]}]}], 
+  "\[RightAssociation]"}]], "Output",
+ CellLabel->"Out[4]= ",ExpressionUUID->"fbc0608f-9421-4161-b754-7474918f9db9"]
+}, Open  ]]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -321,7 +821,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraParallelQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"a3da8d02-162d-4d5f-aea6-ba3d4a6ae952"]
+ CellLabel->"URI",ExpressionUUID->"a580ebed-12e3-4f56-91b5-d597cab1f4dc"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -355,10 +855,12 @@ WindowMargins->{{5, Automatic}, {Automatic, 0}},
 TaggingRules->{
  "Metadata" -> {
    "title" -> "InfraParallelQ", "context" -> 
-    "WolframInstitute`SyntheticInfrageometry`", "keywords" -> {}, "summary" -> 
-    "", "paclet" -> "WolframInstitute/SyntheticInfrageometry", "uri" -> 
-    "WolframInstitute/SyntheticInfrageometry/ref/InfraParallelQ", "type" -> 
-    "Symbol", "index" -> True, "language" -> "en"}},
+    "WolframInstitute`SyntheticInfrageometry`", 
+    "keywords" -> {
+     "parallel", "constant distance", "level set", "Euclid Definition 23"}, 
+    "summary" -> "", "paclet" -> "WolframInstitute/SyntheticInfrageometry", 
+    "uri" -> "WolframInstitute/SyntheticInfrageometry/ref/InfraParallelQ", 
+    "type" -> "Symbol", "index" -> True, "language" -> "en"}},
 CreateCellID->True,
 CellContext->CellGroup,
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
@@ -372,14 +874,14 @@ ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
 (*CellTagsOutline
 CellTagsIndex->{
  "ExtendedExamples"->{
-  Cell[6576, 201, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+  Cell[25741, 701, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
    CellTags->"ExtendedExamples",
    CellID->533848431]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"ExtendedExamples", 12578, 373}
+ {"ExtendedExamples", 31822, 875}
  }
 *)
 (*NotebookFileOutline
@@ -387,77 +889,113 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 112, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[691, 25, 1474, 39, 70, "Usage",ExpressionUUID->"ba06e205-59d0-4617-a21e-bc3c92bf7752"]
+Cell[691, 25, 807, 21, 70, "Usage",ExpressionUUID->"64e88d01-2a46-4a8c-96b2-93ce1309a24b"],
+Cell[1501, 48, 312, 10, 70, "Notes",ExpressionUUID->"9a901b95-9cff-4c68-beef-c538dffc971d"],
+Cell[1816, 60, 343, 5, 70, "Notes",ExpressionUUID->"f0f921ea-70c4-4185-8746-37f31ed70e67"],
+Cell[2162, 67, 111, 0, 70, "Notes",ExpressionUUID->"9277566e-932f-4280-9ba3-9101bff6d8bf"],
+Cell[2276, 69, 394, 8, 70, "Notes",ExpressionUUID->"7e8df184-3f1f-419a-8698-374af9bf6b9d"],
+Cell[2673, 79, 369, 8, 70, "Notes",ExpressionUUID->"a8037808-f188-4d5c-8278-c407d5e0fcd1"],
+Cell[3045, 89, 767, 16, 70, "Notes",ExpressionUUID->"2345aff1-194b-4fdc-ad8d-6c4e2c6d556a"],
+Cell[3815, 107, 886, 20, 70, "Notes",ExpressionUUID->"e5eacea5-c54c-4981-848c-87a5eabfd918"],
+Cell[4704, 129, 125, 0, 70, "Notes",ExpressionUUID->"5bcf88eb-1a6f-4b7c-a3ea-a87cfe0127c5"],
+Cell[4832, 131, 2247, 41, 70, "3ColumnTableMod",ExpressionUUID->"9f36b154-cec2-4077-ace6-c18bb0f4d982"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2202, 69, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+Cell[7116, 177, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
  CellID->1559318232],
-Cell[2664, 84, 1543, 40, 70, "SeeAlso",ExpressionUUID->"a2765fad-d0fd-4f94-9539-78ed28f4fade",
- CellID->173389911]
+Cell[7578, 192, 1914, 50, 70, "SeeAlso",ExpressionUUID->"a6cbd12d-e999-4672-a158-bd435af10824"]
 }, Open  ]],
-Cell[4222, 127, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+Cell[9507, 245, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
  CellID->792424486],
-Cell[4660, 141, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+Cell[CellGroupData[{
+Cell[9967, 261, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
  CellID->38303248],
-Cell[4779, 144, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+Cell[10086, 264, 332, 7, 70, "MoreAbout",ExpressionUUID->"30bcf987-5ced-4a64-8aec-5da6f6f2f572"]
+}, Open  ]],
+Cell[10433, 274, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
  CellID->47113304],
 Cell[CellGroupData[{
-Cell[5275, 161, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+Cell[10929, 291, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
  CellID->1718580883],
-Cell[5809, 177, 285, 5, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+Cell[11463, 307, 285, 5, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
  CellID->1969679695]
 }, Open  ]],
-Cell[6109, 185, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
- CellID->880084151],
 Cell[CellGroupData[{
-Cell[6576, 201, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+Cell[11785, 317, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+ CellID->880084151],
+Cell[12230, 331, 152, 2, 70, "ExampleText",ExpressionUUID->"fbf1b5ca-7994-44d4-80db-39201be987e1"],
+Cell[CellGroupData[{
+Cell[12407, 337, 1267, 32, 70, "Input",ExpressionUUID->"e9289914-8740-46b5-9cae-24bc4b2686a4"],
+Cell[13677, 371, 111, 1, 70, "Output",ExpressionUUID->"323be6b5-9ca4-4427-b0ea-8f884b9d983e"]
+}, Open  ]],
+Cell[13803, 375, 192, 3, 70, "ExampleText",ExpressionUUID->"17be4701-7af8-41d6-ab69-df7ca9f0d5a6"],
+Cell[CellGroupData[{
+Cell[14020, 382, 2680, 69, 70, "Input",ExpressionUUID->"8cc66d09-11cd-4f57-b812-85bfdafc17c8"],
+Cell[16703, 453, 479, 9, 70, "Output",ExpressionUUID->"be9ba9b3-6fbc-45c5-b79a-f8b02e5687a9"]
+}, Open  ]],
+Cell[17197, 465, 158, 2, 70, "ExampleText",ExpressionUUID->"188ce84a-f810-4ef6-8abb-907e6b7adcab"],
+Cell[CellGroupData[{
+Cell[17380, 471, 759, 19, 70, "Input",ExpressionUUID->"daa50a52-1f23-4dc5-9612-cdfee7731b73"],
+Cell[18142, 492, 111, 1, 70, "Output",ExpressionUUID->"f2c71fb5-b767-4d76-b932-c6504dbcf209"]
+}, Open  ]],
+Cell[18268, 496, 219, 3, 70, "ExampleText",ExpressionUUID->"6e9f42fd-8183-4395-8ee0-e83d402309a0"],
+Cell[CellGroupData[{
+Cell[18512, 503, 2995, 78, 70, "Input",ExpressionUUID->"fbfbc949-bdd6-49b4-916c-8ead470e2ae5"],
+Cell[21510, 583, 957, 27, 70, "Message",ExpressionUUID->"a7aa2334-c409-4b8f-ab6a-e42f116f8eda"],
+Cell[22470, 612, 1879, 44, 70, "Message",ExpressionUUID->"c568164b-c15d-4c52-86c4-1cabb511bb48"],
+Cell[24352, 658, 957, 27, 70, "Message",ExpressionUUID->"f8b80c1e-6908-458b-9003-618c92df75a3"],
+Cell[25312, 687, 380, 8, 70, "Output",ExpressionUUID->"fbc0608f-9421-4161-b754-7474918f9db9"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[25741, 701, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
  CellTags->"ExtendedExamples",
  CellID->533848431],
-Cell[7066, 216, 242, 5, 70, "ExampleSection",ExpressionUUID->"6d08f999-4c69-4709-9b28-82906be6ee75",
+Cell[26231, 716, 242, 5, 70, "ExampleSection",ExpressionUUID->"6d08f999-4c69-4709-9b28-82906be6ee75",
  CellID->1293636265],
-Cell[7311, 223, 265, 5, 70, "ExampleSection",ExpressionUUID->"85bb6475-fccb-4f83-9c4c-95411a492aa7",
+Cell[26476, 723, 265, 5, 70, "ExampleSection",ExpressionUUID->"85bb6475-fccb-4f83-9c4c-95411a492aa7",
  CellID->1020263627],
-Cell[7579, 230, 244, 5, 70, "ExampleSection",ExpressionUUID->"3276b1d7-cf51-4f3b-970a-56b0e7c469f0",
+Cell[26744, 730, 244, 5, 70, "ExampleSection",ExpressionUUID->"3276b1d7-cf51-4f3b-970a-56b0e7c469f0",
  CellID->2061341341],
-Cell[7826, 237, 248, 5, 70, "ExampleSection",ExpressionUUID->"1cd6234d-1e3c-431d-9989-71f3025eee95",
+Cell[26991, 737, 248, 5, 70, "ExampleSection",ExpressionUUID->"1cd6234d-1e3c-431d-9989-71f3025eee95",
  CellID->258228157],
-Cell[8077, 244, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
+Cell[27242, 744, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
  CellID->2123667759],
-Cell[8339, 251, 252, 5, 70, "ExampleSection",ExpressionUUID->"9397dd0b-9de4-443a-9371-be2b75148f2f",
+Cell[27504, 751, 252, 5, 70, "ExampleSection",ExpressionUUID->"9397dd0b-9de4-443a-9371-be2b75148f2f",
  CellID->1305812373],
-Cell[8594, 258, 257, 5, 70, "ExampleSection",ExpressionUUID->"c5507407-1b71-491f-84b6-3f5747264ef7",
+Cell[27759, 758, 257, 5, 70, "ExampleSection",ExpressionUUID->"c5507407-1b71-491f-84b6-3f5747264ef7",
  CellID->1653164318],
-Cell[8854, 265, 249, 5, 70, "ExampleSection",ExpressionUUID->"ce9d5678-57c6-4712-bdd3-87904919f71e",
+Cell[28019, 765, 249, 5, 70, "ExampleSection",ExpressionUUID->"ce9d5678-57c6-4712-bdd3-87904919f71e",
  CellID->589267740]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[9140, 275, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+Cell[28305, 775, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
  CellID->311882160],
-Cell[9253, 278, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+Cell[28418, 778, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
  CellID->341476719],
 Cell[CellGroupData[{
-Cell[9754, 294, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+Cell[28919, 794, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
  CellID->1755438392],
-Cell[10242, 309, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+Cell[29407, 809, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
  CellID->686433507],
-Cell[10379, 313, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+Cell[29544, 813, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
  CellID->605800465],
-Cell[10549, 317, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+Cell[29714, 817, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10716, 321, 160, 2, 70, "Categorization",ExpressionUUID->"a3da8d02-162d-4d5f-aea6-ba3d4a6ae952"]
+Cell[29881, 821, 160, 2, 70, "Categorization",ExpressionUUID->"a580ebed-12e3-4f56-91b5-d597cab1f4dc"]
 }, Closed]],
-Cell[10891, 326, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+Cell[30056, 826, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],
 Cell[CellGroupData[{
-Cell[11026, 331, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+Cell[30191, 831, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
  CellID->1872225408],
-Cell[11149, 334, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+Cell[30314, 834, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
  CellID->1562036412],
-Cell[11301, 338, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+Cell[30466, 838, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
  CellID->158391909],
-Cell[11441, 342, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+Cell[30606, 842, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
  CellID->1360575930],
-Cell[11580, 346, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+Cell[30745, 846, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
  CellID->793782254]
 }, Closed]]
 }, Open  ]]
