@@ -52,13 +52,13 @@ VerificationTest[
 
 VerificationTest[
   FindInfraHomotopyRepresentative[PathGraph[Range[5]], InfraPath[{{1, 2, 3, 2, 3, 4}}]],
-  {InfraPath[{{1, 2, 3, 4}}]},
+  InfraPath[{{1, 2, 3, 4}}],
   TestID -> "Representative-spur-collapse"
 ]
 
 VerificationTest[
   FindInfraHomotopyRepresentative[CompleteGraph[3], InfraPath[{{1, 2, 3}}], "NullHomotopicCycles" -> {2, 3}],
-  {InfraPath[{{1, 3}}]},
+  InfraPath[{{1, 3}}],
   TestID -> "Representative-triangle-shortcut"
 ]
 
@@ -117,10 +117,10 @@ VerificationTest[
 
 VerificationTest[
   Module[{grid23 = GridGraph[{2, 3}], paths},
-    paths = FindInfraSegment[grid23, 1, 6, All]["Paths"];
+    paths = FindInfraSegment[grid23, 1, 6, All]["Realizations"];
     Length @ FindInfraHomotopy[grid23,
       InfraPath[paths], InfraPath[paths], All,
-      "NullHomotopicCycles" -> {3, 4}]
+      "NullHomotopicCycles" -> {3, 4}]["Realizations"]
   ],
   9,
   TestID -> "FindInfraHomotopy-cartesian-3x3-pairs"
@@ -128,7 +128,7 @@ VerificationTest[
 
 VerificationTest[
   Module[{grid23 = GridGraph[{2, 3}], paths},
-    paths = FindInfraSegment[grid23, 1, 6, All]["Paths"];
+    paths = FindInfraSegment[grid23, 1, 6, All]["Realizations"];
     HomotopicQ[grid23,
       InfraPath[paths], InfraPath[paths],
       "NullHomotopicCycles" -> {3, 4}]
@@ -137,12 +137,12 @@ VerificationTest[
   TestID -> "HomotopicQ-multi-AllTrue-conjunction"
 ]
 
-(* ===== Wrapper shape: Find* returns List of unary InfraHomotopy ===== *)
+(* ===== Wrapper shape: Find* returns one InfraHomotopy carrying all chains ===== *)
 
 VerificationTest[
   MatchQ[
     FindInfraHomotopy[CompleteGraph[3], InfraPath[{{1, 2, 3}}], InfraPath[{{1, 3}}], "NullHomotopicCycles" -> {3}],
-    { InfraHomotopy[{ _List }] }
+    InfraHomotopy[{ _List }]
   ],
   True,
   TestID -> "Find-returns-list-of-unary-wrappers"
@@ -153,7 +153,7 @@ VerificationTest[
 VerificationTest[
   Length @ FindInfraHomotopy[CompleteGraph[3],
     InfraLoop[{{1, 2, 3, 1}}], InfraLoop[{{1}}],
-    "NullHomotopicCycles" -> {3}],
+    "NullHomotopicCycles" -> {3}]["Realizations"],
   1,
   TestID -> "Null-homotopy-triangle-loop"
 ]
@@ -182,7 +182,7 @@ VerificationTest[
 
 VerificationTest[
   FindInfraHomotopyRepresentative[PathGraph[Range[5]], InfraPath[{{1, 2, 2, 3}}]],
-  {InfraPath[{{1, 2, 3}}]},
+  InfraPath[{{1, 2, 3}}],
   TestID -> "Representative-consecutive-duplicate-default"
 ]
 
@@ -202,19 +202,19 @@ VerificationTest[
 
 VerificationTest[
   FindInfraHomotopyRepresentative[CompleteGraph[3], InfraPath[{{1, 2, 3}}]],
-  {InfraPath[{{1, 3}}]},
+  InfraPath[{{1, 3}}],
   TestID -> "Representative-K3-triangle-to-edge"
 ]
 
 VerificationTest[
   FindInfraHomotopyRepresentative[PathGraph[Range[5]], InfraPath[{{1, 2, 3, 2, 3}}]],
-  {InfraPath[{{1, 2, 3}}]},
+  InfraPath[{{1, 2, 3}}],
   TestID -> "Representative-spur-reduction"
 ]
 
 VerificationTest[
-  Sort @ FindInfraHomotopyRepresentative[CycleGraph[4], InfraPath[{{1, 2, 3}}], All, "NullHomotopicCycles" -> {4}],
-  Sort @ {InfraPath[{{1, 2, 3}}], InfraPath[{{1, 4, 3}}]},
+  Sort @ FindInfraHomotopyRepresentative[CycleGraph[4], InfraPath[{{1, 2, 3}}], All, "NullHomotopicCycles" -> {4}]["Realizations"],
+  Sort @ {{1, 2, 3}, {1, 4, 3}},
   TestID -> "Representative-C4-two-minimal-forms-with-4-cycle"
 ]
 
@@ -222,12 +222,12 @@ VerificationTest[
 
 VerificationTest[
   FindInfraHomotopyRepresentativeHomotopy[CompleteGraph[3], InfraPath[{{1, 2, 3}}]],
-  {InfraHomotopy[{{{1, 2, 3}, {1, 3}}}]},
+  InfraHomotopy[{{{1, 2, 3}, {1, 3}}}],
   TestID -> "RepresentativeHomotopy-K3-triangle-chain"
 ]
 
 VerificationTest[
-  With[{chain = First @ First @ First @ FindInfraHomotopyRepresentativeHomotopy[PathGraph[Range[5]], InfraPath[{{1, 2, 3, 2, 3}}]]},
+  With[{chain = First @ First @ FindInfraHomotopyRepresentativeHomotopy[PathGraph[Range[5]], InfraPath[{{1, 2, 3, 2, 3}}]]},
     {First[chain], Last[chain]}],
   {{1, 2, 3, 2, 3}, {1, 2, 3}},
   TestID -> "RepresentativeHomotopy-spur-endpoints"
@@ -236,13 +236,13 @@ VerificationTest[
 (* ===== FindInfraHomotopy Method dispatch ===== *)
 
 VerificationTest[
-  Length @ FindInfraHomotopy[CompleteGraph[3], InfraPath[{{1, 2, 3}}], InfraPath[{{1, 3}}], 1, Method -> "Exhaustive", "NullHomotopicCycles" -> {3}],
+  Length @ FindInfraHomotopy[CompleteGraph[3], InfraPath[{{1, 2, 3}}], InfraPath[{{1, 3}}], 1, Method -> "Exhaustive", "NullHomotopicCycles" -> {3}]["Realizations"],
   1,
   TestID -> "FindInfraHomotopy-Exhaustive-triangle"
 ]
 
 VerificationTest[
-  Length @ FindInfraHomotopy[CompleteGraph[3], InfraPath[{{1, 2, 3}}], InfraPath[{{1, 3}}], 1, Method -> "Greedy", "NullHomotopicCycles" -> {3}],
+  Length @ FindInfraHomotopy[CompleteGraph[3], InfraPath[{{1, 2, 3}}], InfraPath[{{1, 3}}], 1, Method -> "Greedy", "NullHomotopicCycles" -> {3}]["Realizations"],
   1,
   TestID -> "FindInfraHomotopy-Greedy-triangle"
 ]
@@ -274,7 +274,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  HomotopyMoveTypes[First @ FindInfraHomotopy[CompleteGraph[3], InfraPath[{{1, 2, 3}}], InfraPath[{{1, 3}}], "NullHomotopicCycles" -> {3}]],
+  HomotopyMoveTypes[FindInfraHomotopy[CompleteGraph[3], InfraPath[{{1, 2, 3}}], InfraPath[{{1, 3}}], "NullHomotopicCycles" -> {3}]["Realizations"][[1]]],
   {"Contract"},
   TestID -> "HomotopyMoveTypes-from-FindInfraHomotopy"
 ]
@@ -333,7 +333,7 @@ VerificationTest[
 
 VerificationTest[
   FindInfraHomotopyRepresentative[PathGraph[Range[5]], InfraPath[{{1, 2, 3, 4, 5}}], "FreeHomotopy" -> True],
-  {InfraPath[{{1}}]},
+  InfraPath[{{1}, {2}, {3}, {4}, {5}}],
   TestID -> "FreeHomotopy-path-collapse-to-vertex"
 ]
 
@@ -369,7 +369,7 @@ VerificationTest[
 
 VerificationTest[
   FindInfraHomotopyRepresentative[CycleGraph[4], InfraCircle[{{1, 2, 3, 4}}], "NullHomotopicCycles" -> {4}],
-  {InfraString[{{1}}]},
+  InfraString[{{1}, {2}, {3}, {4}}],
   TestID -> "InfraCircle-coerces-to-InfraString"
 ]
 

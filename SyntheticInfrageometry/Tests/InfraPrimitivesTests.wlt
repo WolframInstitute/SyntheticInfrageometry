@@ -87,9 +87,10 @@ VerificationTest[
 ]
 
 VerificationTest[
-  First @ InfraPoint[ { a, b }, { 2, 1 } ],
-  { a, b },
-  TestID -> "InfraPoint-First-bypasses-weight-Part"
+  { First @ InfraPoint[ { a, b }, { 2, 1 } ], First @ InfraPoint[ { a, b } ],
+    InfraPoint[ { a, b }, { 2, 1 } ][ "Support" ] },
+  { <| a -> 2, b -> 1 |>, { a, b }, { a, b } },
+  TestID -> "InfraPoint-First-is-the-stored-argument"
 ]
 
 
@@ -129,13 +130,13 @@ VerificationTest[
 (* ===================== FindInfraCycle ===================== *)
 
 VerificationTest[
-  Head @ First @ FindInfraCycle[ CycleGraph[ 4 ], 1 ],
+  Head @ FindInfraCycle[ CycleGraph[ 4 ], 1 ],
   InfraCircle,
   TestID -> "FindInfraCycle-returns-InfraCircle"
 ]
 
 VerificationTest[
-  Length @ FindInfraCycle[ CycleGraph[ 4 ], All ],
+  Length @ FindInfraCycle[ CycleGraph[ 4 ], All ][ "Realizations" ],
   1,
   TestID -> "FindInfraCycle-CycleGraph4-one-cycle"
 ]
@@ -147,7 +148,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Length @ First @ First @ First @ FindInfraCycle[ GridGraph[ { 3, 3 } ], { 4 }, 1 ],
+  Length @ First @ First @ FindInfraCycle[ GridGraph[ { 3, 3 } ], { 4 }, 1 ],
   4,
   TestID -> "FindInfraCycle-length4-on-grid"
 ]

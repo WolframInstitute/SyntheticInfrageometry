@@ -30,10 +30,10 @@ InfraScalarProduct[ graph_Graph, o_, u_, v_, OptionsPattern[] ] :=
         ]
       ],
     "Parallelogram",
-      With[ { plus  = #[[ 1, 1 ]] & /@ FindInfraLinearCombination[
-                graph, o, { { 1, u }, {  1, v } }, All, "ScaleMethod" -> "Line" ],
-              minus = #[[ 1, 1 ]] & /@ FindInfraLinearCombination[
-                graph, o, { { 1, u }, { -1, v } }, All, "ScaleMethod" -> "Line" ] },
+      With[ { plus  = FindInfraLinearCombination[
+                graph, o, { { 1, u }, {  1, v } }, All, "ScaleMethod" -> "Line" ][ "Realizations" ],
+              minus = FindInfraLinearCombination[
+                graph, o, { { 1, u }, { -1, v } }, All, "ScaleMethod" -> "Line" ][ "Realizations" ] },
         If[ plus === { } || minus === { }, $Failed,
           With[ { vals = DeleteDuplicates @ Flatten @ Outer[
                 ( GraphDistance[ graph, o, #1 ]^2 - GraphDistance[ graph, o, #2 ]^2 ) / 4 &,
@@ -58,7 +58,7 @@ Options[ FindInfraLinearCombination ] = {
 };
 
 FindInfraLinearCombination[ graph_Graph, o_, terms_List,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   With[ { lambdas = terms[[ All, 1 ]], us = terms[[ All, 2 ]],
           scaleM = OptionValue[ "ScaleMethod" ], sumM = OptionValue[ "SumMethod" ] },
     spreadFind[ InfraPoint, count,
@@ -166,7 +166,7 @@ findInfraScale[ graph_Graph, o_, u_, 1, "Line" ] := { u }
 findInfraScale[ graph_Graph, o_, u_, lambda_, "Line" ] :=
   With[ { r = GraphDistance[ graph, o, u ] },
     If[ r === Infinity, { },
-      With[ { lines = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, o, u, All ] },
+      With[ { lines = FindInfraLine[ graph, o, u, All ][ "Realizations" ] },
         DeleteDuplicates @ Flatten @ ( ( line |->
           With[ { oIdx = First @ FirstPosition[ line, o, { 0 } ],
                   uIdx = First @ FirstPosition[ line, u, { 0 } ] },
@@ -220,12 +220,12 @@ findInfraSum[ graph_Graph, o_, u_, v_, "Metric" ] :=
   ]
 
 findInfraSum[ graph_Graph, o_, u_, v_, "Parallel" ] :=
-  With[ { linesOV = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, o, v, All ],
-          linesOU = #[[ 1, 1 ]] & /@ FindInfraLine[ graph, o, u, All ] },
+  With[ { linesOV = FindInfraLine[ graph, o, v, All ][ "Realizations" ],
+          linesOU = FindInfraLine[ graph, o, u, All ][ "Realizations" ] },
     { parallelsAtU = Flatten[
-        ( #[[ 1, 1 ]] & /@ FindInfraParallel[ graph, #, u, All ] ) & /@ linesOV, 1 ],
+        ( FindInfraParallel[ graph, #, u, All ][ "Realizations" ] ) & /@ linesOV, 1 ],
       parallelsAtV = Flatten[
-        ( #[[ 1, 1 ]] & /@ FindInfraParallel[ graph, #, v, All ] ) & /@ linesOU, 1 ] },
+        ( FindInfraParallel[ graph, #, v, All ][ "Realizations" ] ) & /@ linesOU, 1 ] },
     DeleteDuplicates @ DeleteCases[
       Flatten @ Outer[ Intersection, parallelsAtU, parallelsAtV, 1 ],
       o | u | v ]

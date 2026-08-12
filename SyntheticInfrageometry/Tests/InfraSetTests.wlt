@@ -156,7 +156,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ {5, 5} ] },
     Sort @ FindInfraEquidistantSet[ g, {1, 25} ][ "Vertices" ] ===
-      Sort @ FindInfraBisectingHyperplane[ g, 1, 25, {0, 0}, All ][[ 1, 1, 1 ]] ],
+      Sort @ FindInfraBisectingHyperplane[ g, 1, 25, {0, 0}, All ][[ 1, 1 ]] ],
   True,
   TestID -> "FindInfraEquidistantSet-n2-equals-bisector"
 ]

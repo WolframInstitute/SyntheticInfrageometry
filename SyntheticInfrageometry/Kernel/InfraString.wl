@@ -12,18 +12,14 @@ PackageScope[canonicalString]
    around vertex repetition).  Orientation is preserved -- no reversal
    quotient.  Equality of strings is SameQ on canonical forms. *)
 
-InfraString[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraString[ _List ] ] ] :=
-  InfraString[ Flatten[ reps /. InfraString[ xs_List ] :> xs, 1 ] ]
+(* Set canonicalisation and the shared accessors come from
+   defineInfraBundleRules (Tools.wl); rotation-equal realisations reach the
+   same canonical form and collapse there. *)
 
 InfraString[ reps_List ] /;
     AnyTrue[ reps, w |-> MatchQ[ w, _List ] && w =!= canonicalString[ w ] ] :=
-  InfraString[ DeleteDuplicates[ canonicalString /@ reps ] ]
+  InfraString[ canonicalString /@ reps ]
 
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraString[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraString[ reps ] ]
-InfraString[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraString[ reps ] ]
-InfraString[ reps_List ][ "Measure" ] := InfraMeasure[ InfraString[ reps ] ]
-InfraString[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraString[ reps ], Method -> "Probability" ]
 (* Canonical form: lex-least cyclic rotation of Most[closeWalk[walk]].
    For a single-vertex degenerate string {v} the canonical form is {v}. *)
 

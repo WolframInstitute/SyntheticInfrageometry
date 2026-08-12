@@ -14,9 +14,10 @@ InfraSet[ vs_List ] /; MemberQ[ vs, _InfraSet ] :=
 
 (* InfraPoint is special: each realisation IS a vertex (possibly a list vertex
    label like {i,j}), so the first argument is already the vertex list -- no
-   flattening needed. The trailing ___ absorbs the optional weight list of the
-   canonical weighted form InfraPoint[vs, weights]. *)
-InfraSet[ InfraPoint[ vs_List, ___ ] ] :=
+   flattening needed.  A measured InfraPoint contributes its support -- a set
+   discards the measure. *)
+InfraSet[ InfraPoint[ m_Association ] ] := InfraSet[ Sort @ Keys @ m ]
+InfraSet[ InfraPoint[ vs_List ] ] :=
   InfraSet[ Sort @ DeleteDuplicates @ vs ]
 
 (* All other Infra* container wrappers have realisations that are vertex-lists

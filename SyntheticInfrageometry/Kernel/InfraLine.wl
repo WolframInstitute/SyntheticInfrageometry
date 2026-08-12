@@ -14,18 +14,13 @@ PackageScope[allCanonicalLines]
 
 (* ===================== InfraLine wrapper ===================== *)
 
-InfraLine[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraLine[ _List ] ] ] :=
-  InfraLine[ Flatten[ reps /. InfraLine[ xs_List ] :> xs, 1 ] ]
+(* set canonicalisation, ["Realizations"] / ["First"] and the occupation-measure
+   accessors come from defineInfraBundleRules (Tools.wl). *)
 
 (* "Length" = list of edge counts, one per realisation: |line| - 1. *)
 InfraLine[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraLine[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraLine[ reps ] ]
-InfraLine[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraLine[ reps ] ]
-InfraLine[ reps_List ][ "Measure" ] := InfraMeasure[ InfraLine[ reps ] ]
-InfraLine[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraLine[ reps ], Method -> "Probability" ]
-(* line[[i]] = weighted InfraPoint of the i-th position across realisations
+(* line[[i]] = the measured InfraPoint of the i-th position across realisations
    (mass = multiplicity).  First/Last and multi-index Part bypass this. *)
 InfraLine /: Part[ InfraLine[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]
 
@@ -48,9 +43,12 @@ Options[ FindInfraLine ] = {
   "Direction"  -> "BothSides"
 };
 
+(* the ! ListQ guard disambiguates from the segment overload below, but a graph may have
+   list-valued vertices (TessellationGraph labels its torus {i, j}), and excluding those made
+   FindInfraLine return unevaluated on them; admit a list that is genuinely a vertex *)
 FindInfraLine[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
-    ! ListQ[ p1 ] && Head[ p1 ] =!= InfraSegment :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] /;
+    ( ! ListQ[ p1 ] || VertexQ[ graph, p1 ] ) && Head[ p1 ] =!= InfraSegment :=
   spreadFind[ InfraLine, count,
     { q1, q2 } |-> Catch @ With[ {
         properties = OptionValue[ FindInfraLine, { opts }, Properties ],
@@ -81,15 +79,15 @@ FindInfraLine[ graph_Graph, p1_, p2_,
    middle and extended jointly via findLineExtensions. *)
 
 FindInfraLine[ graph_Graph, InfraSegment[ dag_Graph ],
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  FindInfraLine[ graph, First @ dagGeodesics[ dag ], count, opts ]
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
+  FindInfraLine[ graph, First @ dagGeodesics[ dag, 1 ], count, opts ]
 
 FindInfraLine[ graph_Graph, InfraSegment[{ walk_List, ___ }],
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   FindInfraLine[ graph, walk, count, opts ]
 
-FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] | All ) : 1,
-    opts : OptionsPattern[] ] /; Length[ segment ] >= 2 :=
+FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] | All ) : All,
+    opts : OptionsPattern[] ] /; Length[ segment ] >= 2 && ! VertexQ[ graph, segment ] :=
   With[ { core = Catch @ With[ {
         properties = OptionValue[ FindInfraLine, { opts }, Properties ],
         methodSpec = OptionValue[ FindInfraLine, { opts }, Method ] /. Automatic -> "Exhaustive",
@@ -111,11 +109,7 @@ FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] 
           ext ]
       ]
     ] },
-    If[ core === $Failed, $Failed,
-      With[ { capped = infraCap[ core, count ] },
-        If[ capped === $Failed, $Failed, InfraLine[ { # } ] & /@ capped ]
-      ]
-    ]
+    If[ core === $Failed, $Failed, bundleTake[ InfraLine, core, count ] ]
   ]
 
 
@@ -231,7 +225,7 @@ Options[ FindInfraParallel ] = {
 };
 
 FindInfraParallel[ graph_Graph, line_, p_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   spreadFind[ InfraLine, count,
     { line0, p0 } |-> Catch @ With[ {
         properties = OptionValue[ FindInfraParallel, { opts }, Properties ],
@@ -369,7 +363,7 @@ Options[ FindInfraPerpendicular ] = {
 };
 
 FindInfraPerpendicular[ graph_Graph, line_, point_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   spreadFind[ InfraLine, count,
     { line0, point0 } |-> With[ {
         spec   = OptionValue[ FindInfraPerpendicular, { opts }, Method   ],
@@ -433,14 +427,13 @@ perpendicularByQ[ workGraph_Graph, graph_Graph, line_, point_, spec_, radius_ ] 
 (* Canonical maximal geodesics through every vertex in verts. *)
 
 FindInfraCommonLine[ graph_Graph, verts_List,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   With[ { uverts = DeleteDuplicates @ Catenate[ infraVertexSet /@ verts ] },
     { common = If[ Length[ uverts ] < 2, { },
         DeleteDuplicates @ Select[
-          canonicalLine[ #[[ 1, 1 ]] ] & /@ FindInfraLine[ graph, First @ uverts, uverts[[ 2 ]], All ],
+          canonicalLine /@ FindInfraLine[ graph, First @ uverts, uverts[[ 2 ]], All ][ "Realizations" ],
           line |-> SubsetQ[ line, uverts ] ] ] },
-    { capped = infraCap[ common, count ] },
-    If[ capped === $Failed, $Failed, InfraLine[ { # } ] & /@ capped ]
+    bundleTake[ InfraLine, common, count ]
   ]
 
 
@@ -615,7 +608,7 @@ perpendicularAtCoordinate[ g_Graph, seq1_List, seq2_List, p_, zeroTest_, radius_
     i2     = FirstPosition[ s2, p, { 0 }, { 1 }, Heads -> False ][[ 1 ]];
     If[ i1 == 0 || i2 == 0, Return[ False, Module ] ];
     signedCoord[ seq_, pIdx_, v_ ] :=
-      With[ { feet = #[[ 1, 1 ]] & /@ FindClosestInfraPoint[ localG, seq, v, All ] },
+      With[ { feet = FindClosestInfraPoint[ localG, seq, v, All ][ "Realizations" ] },
         Mean[ ( FirstPosition[ seq, #, { 0 }, { 1 }, Heads -> False ][[ 1 ]] - pIdx ) & /@ feet ]
       ];
     c12 = signedCoord[ s1, i1, # ] & /@ DeleteCases[ s2, p ];
@@ -644,7 +637,7 @@ perpendicularAtCoordinate[ g_Graph, seq1_List, seq2_List, p_, zeroTest_, radius_
 
 PencilDirections[ graph_Graph, origin_ ] :=
   DeleteDuplicates @ Map[ canonicalLine, Flatten[
-    Map[ #[[ 1, 1 ]] &, FindInfraLine[ graph, origin, #, All ] ] & /@
+    FindInfraLine[ graph, origin, #, All ][ "Realizations" ] & /@
       DeleteCases[ VertexList[ graph ], origin ],
     1 ] ]
 
@@ -713,7 +706,7 @@ canonicalLine[ line_List ] := First @ Sort @ { line, Reverse[ line ] }
 
 allCanonicalLines[ graph_Graph ] :=
   DeleteDuplicates @ Flatten[
-    canonicalLine[ #[[ 1, 1 ]] ] & /@ FindInfraLine[ graph, #[[ 1 ]], #[[ 2 ]], All ] & /@
+    canonicalLine /@ FindInfraLine[ graph, #[[ 1 ]], #[[ 2 ]], All ][ "Realizations" ] & /@
       Subsets[ VertexList[ graph ], { 2 } ],
     1
   ]
@@ -733,8 +726,8 @@ dispatchConstruction[ graph_Graph, InfraLine[ p1_, p2_, opts___Rule ] ] /;
   MemberQ[ VertexList @ graph, p1 ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindInfraLine[ graph, p1, p2, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindInfraLine ] ] ],
+      FindInfraLine[ graph, p1, p2, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraLine ] ] ][ "Realizations" ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]

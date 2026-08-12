@@ -6,19 +6,11 @@ PackageImport["WolframInstitute`Infrageometry`"]
 (* ===================== InfraBall wrapper ===================== *)
 
 (* InfraBall[{ball}] is the unary form; InfraBall[{ball1, ..., ballk}] is the
-   multi-realisation form.  Only auto-flatten on nested wrappers. *)
-
-InfraBall[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraBall[ _List ] ] ] :=
-  InfraBall[ Flatten[ reps /. InfraBall[ xs_List ] :> xs, 1 ] ]
+   multi-realisation form.  Set canonicalisation and the shared accessors
+   come from defineInfraBundleRules (Tools.wl). *)
 
 (* "Volume" = vertex count per realisation. *)
 InfraBall[ reps_List ][ "Volume" ] := Length /@ reps
-
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraBall[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraBall[ reps ] ]
-InfraBall[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraBall[ reps ] ]
-InfraBall[ reps_List ][ "Measure" ] := InfraMeasure[ InfraBall[ reps ] ]
-InfraBall[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraBall[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraBall ===================== *)
 
 (* The closed metric ball B_r(c) = { v : d(c, v) <= r }, returned as
@@ -26,7 +18,8 @@ InfraBall[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraBall[ reps 
    of unary InfraPoint wrappers) spreads into one realisation per center. *)
 
 FindInfraBall[ graph_Graph, c_, r_ ] :=
-  InfraBall[ ( center |-> Select[ VertexList[ graph ], GraphDistance[ graph, center, # ] <= r & ] ) /@ infraSpread[ c ] ]
+  InfraBall[ ( center |-> Select[ VertexList[ graph ], GraphDistance[ graph, center, # ] <= r & ] ) /@
+    infraSpread[ c ] ]
 
 
 (* ===================== InfraBallQ ===================== *)
@@ -66,5 +59,5 @@ BallHullQ[ graph_Graph, s_ ] :=
 
 dispatchConstruction[ graph_Graph, InfraBall[ center_, r_ ] ] :=
   applySelectOption[ graph,
-    #[[ 1, 1 ]] & /@ FindInfraBall[ graph, center, r ],
+    FindInfraBall[ graph, center, r ][ "Realizations" ],
     None, False, <| "Center" -> center, "Radius" -> r |> ]

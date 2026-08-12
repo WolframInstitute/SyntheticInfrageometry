@@ -5,20 +5,14 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* InfraLoop[{walk}] is the unary form; InfraLoop[{w1, ..., wk}] is the
    multi-realisation form.  Each realisation is a closed vertex sequence
-   with First === Last (open walks are auto-closed by appending First). *)
-
-InfraLoop[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraLoop[ _List ] ] ] :=
-  InfraLoop[ Flatten[ reps /. InfraLoop[ xs_List ] :> xs, 1 ] ]
+   with First === Last (open walks are auto-closed by appending First).
+   Set canonicalisation and the shared accessors come from
+   defineInfraBundleRules (Tools.wl). *)
 
 InfraLoop[ reps_List ] /;
     AnyTrue[ reps, w |-> MatchQ[ w, _List ] && Length[ w ] >= 2 && First @ w =!= Last @ w ] :=
   InfraLoop[ closeWalk /@ reps ]
 
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraLoop[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraLoop[ reps ] ]
-InfraLoop[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraLoop[ reps ] ]
-InfraLoop[ reps_List ][ "Measure" ] := InfraMeasure[ InfraLoop[ reps ] ]
-InfraLoop[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraLoop[ reps ], Method -> "Probability" ]
 (* ===================== Scene-DSL constructor ===================== *)
 
 (* InfraLoop[v1, v2, ..., vk] is the literal closed walk with the given

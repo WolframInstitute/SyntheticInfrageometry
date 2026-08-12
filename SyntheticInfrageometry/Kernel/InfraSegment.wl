@@ -8,22 +8,22 @@ PackageScope[geodesicDAGBaseFn]
 
 (* ===================== InfraSegment wrapper ===================== *)
 
-InfraSegment[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraSegment[ _List ] ] ] :=
-  InfraSegment[ Flatten[ reps /. InfraSegment[ xs_List ] :> xs, 1 ] ]
+(* set canonicalisation, ["Realizations"] / ["First"] and the occupation-measure
+   accessors come from defineInfraBundleRules (Tools.wl).  The bundle carries no
+   masses; a measure appears only where a projection creates an InfraPoint. *)
 
 (* "Length" = list of edge counts, one per realisation: |path| - 1. *)
 InfraSegment[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* source / sink InfraPoints: the distinct first / last vertices across realisations *)
+(* source / sink InfraPoints: the distinct first / last vertices across
+   realisations.  Deduplicated, not a measure -- every geodesic of one family
+   shares its endpoints, so the multiplicity would only restate the family size.
+   For the position-i occupation measure use seg[[i]] (and InfraPath, whose walks
+   really can end anywhere, keeps its endpoint multiplicity). *)
 InfraSegment[ reps_List ][ "Start" ] := InfraPoint[ DeleteDuplicates[ First /@ reps ] ]
 InfraSegment[ reps_List ][ "End" ]   := InfraPoint[ DeleteDuplicates[ Last /@ reps ] ]
 
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraSegment[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraSegment[ reps ] ]
-InfraSegment[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraSegment[ reps ] ]
-InfraSegment[ reps_List ][ "Measure" ] := InfraMeasure[ InfraSegment[ reps ] ]
-InfraSegment[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSegment[ reps ], Method -> "Probability" ]
-(* seg[[i]] = weighted InfraPoint of the i-th position across realisations
+(* seg[[i]] = the measured InfraPoint of the i-th position across realisations
    (mass = multiplicity).  First/Last and multi-index Part bypass this. *)
 InfraSegment /: Part[ InfraSegment[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]
 
@@ -47,13 +47,22 @@ InfraSegment[ dag_Graph ][ "OccupationCount" ]    := GeodesicOccupation[ dag ]
 InfraSegment[ dag_Graph ][ "OccupationMeasure" ]  := InfraMeasure[ InfraSegment[ dag ] ]
 InfraSegment[ dag_Graph ][ "Measure" ]            := InfraMeasure[ InfraSegment[ dag ] ]
 InfraSegment[ dag_Graph ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSegment[ dag ], Method -> "Probability" ]
-InfraSegment[ dag_Graph ][ "Realizations" ]               := InfraSegment[ dagGeodesics[ dag ] ]
-InfraSegment[ dag_Graph ][ "Realizations", spec_ ]        := InfraSegment[ infraCap[ dagGeodesics[ dag ], spec ] ]
+InfraSegment[ dag_Graph ][ "Realizations" ]               := dagGeodesics[ dag ]
+(* lazy: the bounded DFS stops at spec geodesics, never enumerating the family *)
+InfraSegment[ dag_Graph ][ "Realizations", spec_ ]        := infraCap[ dagGeodesics[ dag, spec ], spec ]
 InfraSegment[ dag_Graph ][ "Paths" ]                      := dagGeodesics[ dag ]
-(* source / sink InfraPoints: the in-degree-0 / out-degree-0 DAG vertices *)
+(* seg[[i]] read off the DAG: column i = layer i - 1 (the DAG is layer-aligned),
+   mass = geodesic occupation -- exact, no enumeration.  ["Start"] / ["End"] are
+   the first / last column, so a single-pair family gives a delta of mass = the
+   family size. *)
+InfraSegment /: Part[ InfraSegment[ dag_Graph ], i_Integer ] :=
+  With[ { layers = dagLayers[ dag ] },
+    { len = Max[ 0, Values @ layers ] },
+    { vs = Keys @ Select[ layers, # === If[ i > 0, i - 1, len + 1 + i ] & ] },
+    InfraPoint @ KeyTake[ GeodesicOccupation[ dag ], vs ] ]
+
 InfraSegment[ dag_Graph ][ "Start" ] := InfraPoint[ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ]
 InfraSegment[ dag_Graph ][ "End" ]   := InfraPoint[ Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] ]
-InfraSegment /: Part[ InfraSegment[ dag_Graph ], i_Integer ] := columnInfraPoint[ dagGeodesics[ dag ], i ]
 
 
 (* ===================== FindInfraSegment ===================== *)
@@ -71,25 +80,28 @@ Options[ FindInfraSegment ] = {
   Method     -> "Exhaustive"
 };
 
-(* No extra conditions (empty Properties, Exhaustive, both endpoints a single
-   vertex -- bare or a one-realisation InfraPoint[{v}]) -> the compact geodesic-DAG
-   form.  An explicit finite count, any Properties filter, Greedy, or genuinely
-   multi-realisation InfraPoint endpoints -> the enumerated path form (the calling
-   triple over spreadFind).  A multi-source / multi-sink union of geodesic intervals
-   is not acyclic in general (opposite orientations from different sources), so only
-   the single-vertex case collapses to one DAG. *)
+(* No extra conditions (empty Properties, Exhaustive, no explicit count) ->
+   the compact geodesic-DAG form: one GeodesicIntervalGraph atom per endpoint
+   pair, the atoms held as a set (a lone atom collapses to the bare
+   InfraSegment[dag]).  An explicit count, any Properties filter, or Greedy ->
+   the enumerated path form (the calling triple over spreadFind).  A multi-source
+   / multi-sink union of geodesic intervals is not acyclic in general (opposite
+   orientations from different sources), so multi-endpoint families stay a set
+   of per-pair atoms rather than one DAG. *)
+
+(* a lone atom collapses to the bare DAG form *)
+InfraSegment[ { dag_Graph } ] := InfraSegment[ dag ]
 
 FindInfraSegment[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : Automatic, opts : OptionsPattern[] ] :=
-  With[ { ends = ( If[ VertexQ[ graph, # ], #, Replace[ #, { InfraPoint[ { u_ } ] :> u, _ :> $Failed } ] ] & ) /@ { p1, p2 } },
-    If[ ( count === Automatic || count === All ) &&
-        OptionValue[ FindInfraSegment, { opts }, Properties ] === { } &&
-        methodName[ OptionValue[ FindInfraSegment, { opts }, Method ] /. Automatic -> "Exhaustive" ] === "Exhaustive" &&
-        FreeQ[ ends, $Failed ],
-      InfraSegment[ GeodesicIntervalGraph[ graph, ends[[ 1 ]], ends[[ 2 ]] ] ],
-      With[ { n = count /. Automatic -> 1 },
-        spreadFind[ InfraSegment, n, findSegmentCore[ graph, ##, n, opts ] &, p1, p2 ] ]
-    ]
+  If[ count === Automatic &&
+      OptionValue[ FindInfraSegment, { opts }, Properties ] === { } &&
+      methodName[ OptionValue[ FindInfraSegment, { opts }, Method ] /. Automatic -> "Exhaustive" ] === "Exhaustive",
+    InfraSegment[ DeleteDuplicates[ GeodesicIntervalGraph[ graph, #[[ 1 ]], #[[ 2 ]] ] & /@
+      Select[ Tuples[ infraSpread /@ { p1, p2 } ],
+        #[[ 1 ]] =!= #[[ 2 ]] && VertexQ[ graph, #[[ 1 ]] ] && VertexQ[ graph, #[[ 2 ]] ] & ] ] ],
+    spreadFind[ InfraSegment, count /. Automatic -> All,
+      findSegmentCore[ graph, ##, count /. Automatic -> All, opts ] &, p1, p2 ]
   ]
 
 
@@ -151,13 +163,12 @@ geodesicDAGBaseFn[ graph_Graph, p1_, p2_ ] :=
    subsumed by FindInfraLine[g, seg] and ExtendInfraPath[g, seg, All, ...]. *)
 
 ExtendInfraSegment[ graph_Graph, a_, b_, c_, d_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   With[ { target = GraphDistance[ graph, c, d ] },
     { vs = If[ target === Infinity, { },
         Select[ VertexList[ graph ],
           x |-> BetweennessQ[ graph, a, b, x ] && GraphDistance[ graph, b, x ] === target ] ] },
-    { capped = infraCap[ vs, count ] },
-    If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
+    bundleTake[ InfraPoint, vs, count ]
   ]
 
 

@@ -3,7 +3,7 @@ BeginTestSection["PathSpace"]
 (* ===== Sublist invariants under default n = All ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     SubsetQ[ paths, SelectInfraPath[ g, paths, All, "From" -> "Center" ] ]
   ],
   True,
@@ -11,7 +11,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     SubsetQ[ paths, SelectInfraPath[ g, paths, All, "From" -> "Periphery" ] ]
   ],
   True,
@@ -26,7 +26,7 @@ VerificationTest[
     ( SelectInfraPath[ g, FindInfraSegment[ g, 1, 25 ], All, "From" -> "MostVisited" ]
         /. InfraSegment[ r_List ] :> Sort[ Sort /@ r ] )
     ===
-    ( SelectInfraPath[ g, FindInfraSegment[ g, 1, 25 ][ "Realizations" ], All, "From" -> "MostVisited" ]
+    ( SelectInfraPath[ g, InfraSegment[ FindInfraSegment[ g, 1, 25 ][ "Realizations" ] ], All, "From" -> "MostVisited" ]
         /. InfraSegment[ r_List ] :> Sort[ Sort /@ r ] )
   ],
   True,
@@ -34,7 +34,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     SubsetQ[ paths, EmbeddingClosest[ g, paths, { 1, 9 } ] ]
   ],
   True,
@@ -44,7 +44,7 @@ VerificationTest[
 (* Arbitrary-curve reference: a bare list of >= 3 plane points picks the
    best-approximating bundle element (a sublist of the input). *)
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     SubsetQ[ paths, EmbeddingClosest[ g, paths, { { 0, 0 }, { 1, 1 }, { 2, 2 } } ] ]
   ],
   True,
@@ -53,7 +53,7 @@ VerificationTest[
 
 (* Curve reference preserves the wrapper head (Line curve, InfraPath bundle). *)
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], bare = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], bare = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     Head @ EmbeddingClosest[ g, InfraPath[ bare ], Line[ { { 0, 0 }, { 1, 1 }, { 2, 2 } } ] ]
   ],
   InfraPath,
@@ -77,7 +77,7 @@ VerificationTest[
 (* ===== Count contract: strict n, UpTo, All ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     Length @ SelectInfraPath[ g, paths, 1, "From" -> "Center" ]
   ],
   1,
@@ -85,7 +85,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     Length @ SelectInfraPath[ g, paths, UpTo[ 3 ], "From" -> "Center" ] <= 3
   ],
   True,
@@ -93,7 +93,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     SelectInfraPath[ g, paths, 99 ]
   ],
   $Failed,
@@ -115,7 +115,7 @@ VerificationTest[
 (* ===== Default count = 1, matches FindInfraPoint ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     Length @ SelectInfraPath[ g, paths ]
   ],
   1,
@@ -125,7 +125,7 @@ VerificationTest[
 (* ===== Operator form ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ] },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ] },
     SubsetQ[ paths, SelectInfraPath[ g, All, "From" -> "Center" ][ paths ] ]
   ],
   True,
@@ -133,7 +133,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     SelectInfraPath[ g, paths, All, "From" -> "Center", "Metric" -> "Hausdorff" ] ===
       ( SelectInfraPath[ g, All, "From" -> "Center", "Metric" -> "Hausdorff" ][ paths ] )
   ],
@@ -144,7 +144,7 @@ VerificationTest[
 (* ===== Wrapper passthrough ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], list = InfraSegment[ { # } ] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ] },
+  With[ { g = GridGraph[ { 3, 3 } ], list = InfraSegment[ { # } ] & /@ FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ] },
     MatchQ[ SelectInfraPath[ g, list, All, "From" -> "Center" ], { InfraSegment[ { _ } ] .. } ]
   ],
   True,
@@ -152,7 +152,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ], list = FindInfraCircle[ GridGraph[ { 4, 4 } ], 6, { 1, 2 }, All ] },
+  With[ { g = GridGraph[ { 4, 4 } ], list = InfraCircle[ { # } ] & /@ FindInfraCircle[ GridGraph[ { 4, 4 } ], 6, { 1, 2 }, All ][ "Realizations" ] },
     MatchQ[ SelectInfraCycle[ g, list, All, "From" -> "Center" ], { InfraCircle[ { _ } ] .. } ]
   ],
   True,
@@ -205,7 +205,7 @@ VerificationTest[
 (* ===== Metric option carries through ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     Length[ paths ] > 1 &&
       AllTrue[ { "Hausdorff", "Frechet", "MeanFrechet" },
         m |-> SubsetQ[ paths, SelectInfraPath[ g, paths, All, "From" -> "Center", "Metric" -> m ] ] ]
@@ -217,7 +217,7 @@ VerificationTest[
 (* ===== MostVisited pool ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     SubsetQ[ paths, SelectInfraPath[ g, paths, All, "From" -> "MostVisited" ] ]
   ],
   True,
@@ -225,7 +225,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     Length @ SelectInfraPath[ g, paths, All, "From" -> "MostVisited" ] >= 1
   ],
   True,
@@ -241,7 +241,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ], cycles = (#[[ 1, 1 ]] & /@ FindInfraCircle[ GridGraph[ { 4, 4 } ], 6, { 1, 2 }, All ]) },
+  With[ { g = GridGraph[ { 4, 4 } ], cycles = FindInfraCircle[ GridGraph[ { 4, 4 } ], 6, { 1, 2 }, All ][ "Realizations" ] },
     SubsetQ[ cycles, SelectInfraCycle[ g, cycles, All, "From" -> "MostVisited" ] ]
   ],
   True,
@@ -251,7 +251,7 @@ VerificationTest[
 (* ===== Bottleneck pool: max-min bundle occupation of vertices + edges ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 3, 3 } ], paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
     With[ { vC = Counts @ Catenate @ paths,
             eC = Counts @ Catenate @ ( Sort /@ Partition[ #, 2, 1 ] & /@ paths ) },
       With[ { scores = Min @ Join[ Lookup[ vC, #, 0 ], Lookup[ eC, Sort /@ Partition[ #, 2, 1 ], 0 ] ] & /@ paths },
@@ -267,7 +267,7 @@ VerificationTest[
 (* ===== Distance constraint: Max k-clique in path-space ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ], paths = (FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 4, 4 } ], paths = (FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ][ "Realizations" ]) },
     Length @ SelectInfraPath[ g, paths, 2, "Distance" -> "Max" ]
   ],
   2,
@@ -275,7 +275,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ], paths = (FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 4, 4 } ], paths = (FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ][ "Realizations" ]) },
     SubsetQ[ paths, SelectInfraPath[ g, paths, UpTo[ 3 ], "Distance" -> "Max" ] ]
   ],
   True,
@@ -285,7 +285,7 @@ VerificationTest[
 (* ===== "From" anchor -> spec ===== *)
 
 VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ], paths = (FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ][ "Paths" ]) },
+  With[ { g = GridGraph[ { 4, 4 } ], paths = (FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16, All ][ "Realizations" ]) },
     With[ { ref = First @ paths,
             others = SelectInfraPath[ g, paths, All, "From" -> ( First @ paths -> "Max" ) ] },
       SubsetQ[ paths, others ]
@@ -395,7 +395,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]),
+          paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]),
           degSumScore = path |-> Total[
             ( VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 1 ]] ] +
               VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 2 ]] ] & ) /@
@@ -421,7 +421,7 @@ VerificationTest[
 
 VerificationTest[
   Module[ { g = GridGraph[ { 3, 3 } ], paths, scoreFn, scores, picked },
-    paths = FindInfraSegment[ g, 1, 9, All ][ "Paths" ];
+    paths = FindInfraSegment[ g, 1, 9, All ][ "Realizations" ];
     scoreFn = path |-> Total[
       ( VertexDegree[ g, #[[ 1 ]] ] + VertexDegree[ g, #[[ 2 ]] ] & ) /@
         Partition[ path, 2, 1 ] ];
@@ -435,7 +435,7 @@ VerificationTest[
 
 VerificationTest[
   Module[ { g = GridGraph[ { 3, 3 } ], paths, scoreFn, scores, picked },
-    paths = FindInfraSegment[ g, 1, 9, All ][ "Paths" ];
+    paths = FindInfraSegment[ g, 1, 9, All ][ "Realizations" ];
     scoreFn = path |-> Total[
       ( VertexDegree[ g, #[[ 1 ]] ] + VertexDegree[ g, #[[ 2 ]] ] & ) /@
         Partition[ path, 2, 1 ] ];
@@ -449,7 +449,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]),
+          paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]),
           degSumScore = path |-> Total[
             ( VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 1 ]] ] +
               VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 2 ]] ] & ) /@
@@ -462,7 +462,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ],
-          paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Paths" ]),
+          paths = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]),
           degSumScore = path |-> Total[
             ( VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 1 ]] ] +
               VertexDegree[ GridGraph[ { 3, 3 } ], #[[ 2 ]] ] & ) /@

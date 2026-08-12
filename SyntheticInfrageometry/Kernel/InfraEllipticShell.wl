@@ -7,20 +7,11 @@ PackageScope[ellipticNearFar]
 (* ===================== InfraEllipticShell wrapper ===================== *)
 
 (* InfraEllipticShell[{set}] is the unary form; InfraEllipticShell[{set1, ..., setk}] is the
-   multi-realisation form.  Only auto-flatten on nested wrappers. *)
+   multi-realisation form.  Set canonicalisation and the shared accessors
+   come from defineInfraBundleRules (Tools.wl). *)
 
-InfraEllipticShell[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraEllipticShell[ _List ] ] ] :=
-  InfraEllipticShell[ Flatten[ reps /. InfraEllipticShell[ xs_List ] :> xs, 1 ] ]
-
-InfraEllipticShell[ reps_List ][ "Realizations" ] := reps
 (* "Volume" = vertex count per realisation. *)
-InfraEllipticShell[ reps_List ][ "Volume" ]       := Length /@ reps
-InfraEllipticShell[ reps_List ][ "First" ]        := First @ reps
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraEllipticShell[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraEllipticShell[ reps ] ]
-InfraEllipticShell[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraEllipticShell[ reps ] ]
-InfraEllipticShell[ reps_List ][ "Measure" ] := InfraMeasure[ InfraEllipticShell[ reps ] ]
-InfraEllipticShell[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraEllipticShell[ reps ], Method -> "Probability" ]
+InfraEllipticShell[ reps_List ][ "Volume" ] := Length /@ reps
 (* ===================== FindInfraEllipticShell ===================== *)
 
 (* Elliptic shell for foci {p1, p2} at sum c: level set
@@ -41,7 +32,7 @@ Options[ FindInfraEllipticShell ] = {
 };
 
 FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   spreadFind[ InfraEllipticShell, count,
     { foci0, c0 } |-> Module[ { properties, methodSpec, methodHead, pruning, range, verts, idx, dm, row1, row2,
               levelSet, admissible },

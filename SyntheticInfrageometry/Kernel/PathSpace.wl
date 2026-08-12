@@ -494,7 +494,7 @@ forwardEndpoints[ w_List ]                          := { First @ w, Last @ w }
 
 (* the reference geodesic DeformationSize is measured against *)
 referenceWalk[ g_, InfraSegment[ rs_List, ___ ], _, _ ] := First[ rs ]
-referenceWalk[ g_, InfraSegment[ dag_Graph ], _, _ ]    := First @ dagGeodesics[ dag ]
+referenceWalk[ g_, InfraSegment[ dag_Graph ], _, _ ]    := First @ dagGeodesics[ dag, 1 ]
 referenceWalk[ g_, InfraPath[ rs_List, ___ ], _, _ ]    := First[ rs ]
 referenceWalk[ g_, w_List, src_, tgt_ ] := If[ Length[ w ] >= 3, w, FindShortestPath[ g, src, tgt ] ]
 

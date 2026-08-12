@@ -10,7 +10,7 @@ BeginTestSection["InfraEllipse"]
 
 VerificationTest[
   With[ { g = GridGraph[ { 7, 7 } ] },
-    With[ { cyc = First @ First @ First @ FindInfraEllipse[ g, { 25, 12 }, { 4, 8 } ] },
+    With[ { cyc = First @ First @ FindInfraEllipse[ g, { 25, 12 }, { 4, 8 } ] },
       Length[ cyc ] >= 4 &&
       AllTrue[ Partition[ Append[ cyc, First @ cyc ], 2, 1 ],
         EdgeQ[ g, UndirectedEdge @@ # ] & ]
@@ -25,7 +25,7 @@ VerificationTest[
   With[ {
       g = GridGraph[ { 7, 7 } ],
       dm = GraphDistanceMatrix @ GridGraph[ { 7, 7 } ] },
-    With[ { cyc = First @ First @ First @ FindInfraEllipse[ g, { 25, 12 }, { 4, 8 } ] },
+    With[ { cyc = First @ First @ FindInfraEllipse[ g, { 25, 12 }, { 4, 8 } ] },
       AllTrue[ cyc, 4 <= dm[[ 25, # ]] + dm[[ 12, # ]] <= 8 & ]
     ]
   ],
@@ -38,7 +38,7 @@ VerificationTest[
   With[ {
       g = GridGraph[ { 7, 7 } ],
       dm = GraphDistanceMatrix @ GridGraph[ { 7, 7 } ] },
-    With[ { cyc = First @ First @ First @ FindInfraEllipse[ g, { 25, 12 }, { 4, 8 } ] },
+    With[ { cyc = First @ First @ FindInfraEllipse[ g, { 25, 12 }, { 4, 8 } ] },
       With[ {
           near = Select[ VertexList @ g, dm[[ 25, # ]] + dm[[ 12, # ]] < 4 & ],
           far  = Select[ VertexList @ g, dm[[ 25, # ]] + dm[[ 12, # ]] > 8 & ] },
@@ -53,7 +53,7 @@ VerificationTest[
 
 (* Properties -> {} reverts to "any simple cycle in level set" *)
 VerificationTest[
-  Length @ First @ First @ First @
+  Length @ First @ First @
     FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, Properties -> { } ],
   4,
   TestID -> "FindInfraEllipse-NoProperties-Grid4x4-shortest-cycle-length-4"
@@ -62,7 +62,7 @@ VerificationTest[
 VerificationTest[
   SubsetQ[
     { 2, 3, 6, 7, 10, 11, 14, 15 },
-    First @ First @ First @
+    First @ First @
       FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, Properties -> { } ]
   ],
   True,
@@ -72,8 +72,8 @@ VerificationTest[
 (* All cycles returned with All are within the level set *)
 VerificationTest[
   AllTrue[
-    #[[ 1, 1 ]] & /@ FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, All,
-      Properties -> { } ],
+    FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, All,
+      Properties -> { } ][ "Realizations" ],
     SubsetQ[ { 2, 3, 6, 7, 10, 11, 14, 15 }, # ] &
   ],
   True,
@@ -83,10 +83,10 @@ VerificationTest[
 (* Cycles sorted by length ascending *)
 VerificationTest[
   With[ {
-      shortest = Length @ First @ First @ First @
+      shortest = Length @ First @ First @
         FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, Properties -> { } ],
-      allLengths = Length /@ (#[[ 1, 1 ]] & /@
-        FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, All, Properties -> { } ]) },
+      allLengths = Length /@
+        FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, All, Properties -> { } ][ "Realizations" ] },
     shortest <= Min @ allLengths
   ],
   True,
@@ -96,22 +96,22 @@ VerificationTest[
 (* Default "Shortest": all returned ties share the minimum length *)
 VerificationTest[
   Apply[ SameQ,
-    Length /@ (#[[ 1, 1 ]] & /@
-      FindInfraEllipse[ GridGraph[ { 7, 7 } ], { 25, 12 }, { 4, 8 }, All ]) ],
+    Length /@
+      FindInfraEllipse[ GridGraph[ { 7, 7 } ], { 25, 12 }, { 4, 8 }, All ][ "Realizations" ] ],
   True,
   TestID -> "FindInfraEllipse-default-Shortest-ties-equal-length"
 ]
 
 (* Empty level set -> $Failed for count=1 *)
 VerificationTest[
-  FindInfraEllipse[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 100 ],
+  FindInfraEllipse[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 100, 1 ],
   $Failed,
   TestID -> "FindInfraEllipse-empty-level-set"
 ]
 
 (* Level set with no cycle (path, not a cycle) -> $Failed for count=1 *)
 VerificationTest[
-  FindInfraEllipse[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2 ],
+  FindInfraEllipse[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2, 1 ],
   $Failed,
   TestID -> "FindInfraEllipse-PathGraph-no-cycle-in-level-set"
 ]
@@ -134,7 +134,7 @@ VerificationTest[
 
 (* A 4-cycle in the inner strip of GridGraph[{4,4}] is an ellipse *)
 VerificationTest[
-  With[ { cycle = First @ First @ First @
+  With[ { cycle = First @ First @
       FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, Properties -> { } ] },
     InfraEllipseQ[ GridGraph[ { 4, 4 } ], cycle ]
   ],

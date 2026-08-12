@@ -20,6 +20,16 @@ PackageScope[walkModeFor]
 InfraHomotopy[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraHomotopy[ _List ] ] ] :=
   InfraHomotopy[ Flatten[ reps /. InfraHomotopy[ xs_List ] :> xs, 1 ] ]
 
+(* shared bundle accessors (InfraHomotopy is not a geometric bundle head, so
+   it is not in $infraBundleHeads; the accessor contract still applies) *)
+InfraHomotopy[ inner_InfraHomotopy ]                    := inner
+InfraHomotopy[ reps_List ][ "Realizations" ]   := reps
+InfraHomotopy[ reps_List ][ "First" ]          := First @ reps
+InfraHomotopy[ reps_List ][ "Weights" ]                 := ConstantArray[ 1, Length @ reps ]
+InfraHomotopy[ reps_List, ws_List ][ "Weights" ]        := ws
+InfraHomotopy[ reps_List ][ "Mass" ]                    := Length @ reps
+InfraHomotopy[ reps_List, ws_List ][ "Mass" ]           := Total @ ws
+
 
 (* ===================== Shared options ===================== *)
 
@@ -78,7 +88,7 @@ FindInfraHomotopyRepresentative::wrap = "First argument must be wrapped in Infra
 Options[ FindInfraHomotopyRepresentative ] = $infraHomotopyOptions;
 
 FindInfraHomotopyRepresentative[ graph_Graph, obj_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   With[ { inHead = Head[ obj ], outHead = representativeHeadFor @ Head[ obj ] },
     If[ outHead === $Failed,
       Message[ FindInfraHomotopyRepresentative::wrap, inHead ]; $Failed,
@@ -106,7 +116,7 @@ FindInfraHomotopyRepresentativeHomotopy::wrap =
 Options[ FindInfraHomotopyRepresentativeHomotopy ] = $infraHomotopyOptions;
 
 FindInfraHomotopyRepresentativeHomotopy[ graph_Graph, obj_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   With[ { inHead = Head[ obj ], outHead = representativeHeadFor @ Head[ obj ] },
     If[ outHead === $Failed,
       Message[ FindInfraHomotopyRepresentativeHomotopy::wrap, inHead ]; $Failed,
@@ -134,7 +144,7 @@ FindInfraHomotopy::badmethod = "Method `1` is not supported by FindInfraHomotopy
 Options[ FindInfraHomotopy ] = $infraHomotopyOptions;
 
 FindInfraHomotopy[ graph_Graph, a_, b_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   Module[ { aHead = Head[ a ], bHead = Head[ b ], inHead },
     inHead = unifyHomotopyHeads[ aHead, bHead ];
     If[ inHead === $Failed,

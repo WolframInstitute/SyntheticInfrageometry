@@ -5,7 +5,7 @@ BeginTestSection["EuclideanPostulates"]
 VerificationTest[
   With[{g = PetersenGraph[]},
     With[{pt = FindInfraPoint[g]},
-      Length @ pt == 1 && SubsetQ[VertexList[g], (#[[ 1, 1 ]] & /@ pt)]
+      Head[pt] === InfraPoint && Sort[pt["Realizations"]] === Sort[VertexList[g]]
     ]
   ],
   True,
@@ -174,7 +174,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  MatchQ[ FindInfraPoint[ PetersenGraph[] ], { InfraPoint[ { _ } ] .. } ],
+  MatchQ[ FindInfraPoint[ PetersenGraph[], 3 ], { InfraPoint[ { _ } ] .. } ],
   True,
   TestID -> "FindInfraPoint-returns-list-of-unary-InfraPoint"
 ]
@@ -204,7 +204,7 @@ VerificationTest[
   With[{g = PathGraph[Range[5]]},
     FindInfraSegment[g, 1, 5]["Realizations"]
   ],
-  InfraSegment[{{1, 2, 3, 4, 5}}],
+  {{1, 2, 3, 4, 5}},
   TestID -> "FindInfraSegment-unique-path"
 ]
 
@@ -220,7 +220,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = (FindInfraSegment[g, 1, 9, All]["Paths"])},
+    With[{segs = FindInfraSegment[g, 1, 9, All]["Realizations"]},
       AllTrue[segs, Length[#] == 5 &]
     ]
   ],
@@ -230,7 +230,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = (SelectInfraPath[g, FindInfraSegment[g, 1, 9, All]["Paths"],All, "From" -> "Center", "Metric" -> "Frechet"])},
+    With[{segs = (SelectInfraPath[g, FindInfraSegment[g, 1, 9, All]["Realizations"],All, "From" -> "Center", "Metric" -> "Frechet"])},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
@@ -240,7 +240,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = EmbeddingClosest[g, FindInfraSegment[g, 1, 9, All]["Paths"], {1, 9}]},
+    With[{segs = EmbeddingClosest[g, FindInfraSegment[g, 1, 9, All]["Realizations"], {1, 9}]},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
@@ -249,14 +249,14 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraSegment @ FindInfraSegment[PathGraph[Range[5]], 1, 1, UpTo[1]],
+  FindInfraSegment[PathGraph[Range[5]], 1, 1, UpTo[1]],
   InfraSegment[{}],
   TestID -> "FindInfraSegment-same-point-empty"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = (SelectInfraPath[g, FindInfraSegment[g, 1, 9, All]["Paths"],All, "From" -> "Center", "Metric" -> "Hausdorff"])},
+    With[{segs = (SelectInfraPath[g, FindInfraSegment[g, 1, 9, All]["Realizations"],All, "From" -> "Center", "Metric" -> "Hausdorff"])},
       Length[segs] >= 1
     ]
   ],
@@ -266,7 +266,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = (SelectInfraPath[g, FindInfraSegment[g, 1, 9, All]["Paths"],All, "From" -> "Periphery"])},
+    With[{segs = (SelectInfraPath[g, FindInfraSegment[g, 1, 9, All]["Realizations"],All, "From" -> "Periphery"])},
       Length[segs] >= 1
     ]
   ],
@@ -277,7 +277,7 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
     With[{segs = EmbeddingClosest[g, {1, 9}] @ SelectInfraPath[g, All, "From" -> "Center"] @
-        (FindInfraSegment[g, 1, 9, All]["Paths"])},
+        (FindInfraSegment[g, 1, 9, All]["Realizations"])},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
@@ -287,7 +287,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = (#[[ 1, 1 ]] & /@ FindInfraSegment[g, 1, 9, UpTo[2]])},
+    With[{segs = FindInfraSegment[g, 1, 9, UpTo[2]]["Realizations"]},
       Length[segs] <= 2 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
@@ -318,19 +318,19 @@ VerificationTest[
   TestID -> "FindInfraSegment-dag-measure-matches-enumeration"
 ]
 
-(* Realizations bridges back to the explicit path form, capped by the calling triple *)
+(* Realizations bridges back to the explicit bare path list, capped by the calling triple *)
 VerificationTest[
   With[{s = FindInfraSegment[GridGraph[{3, 3}], 1, 9]},
-    {Length[First[s["Realizations"]]], Length[First[s["Realizations", UpTo[3]]]]}
+    {Length[s["Realizations"]], Length[s["Realizations", UpTo[3]]]}
   ],
   {6, 3},
   TestID -> "FindInfraSegment-dag-realizations-bridge"
 ]
 
-(* an explicit finite count keeps the enumerated path form (list of unary wrappers) *)
+(* an explicit finite count returns one wrapper carrying exactly n realisations *)
 VerificationTest[
   With[{r = FindInfraSegment[GridGraph[{3, 3}], 1, 9, 3]},
-    MatchQ[r, {InfraSegment[{_}] ..}] && Length[r] == 3
+    MatchQ[r, InfraSegment[{_, _, _}]] && Length[r["Realizations"]] == 3
   ],
   True,
   TestID -> "FindInfraSegment-explicit-count-enumerates"
@@ -366,7 +366,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    With[{paths = #[[1, 1]] & /@ FindInfraSegment[g, 1, 9, All, Properties -> {{"EdgeMin", degSum}}]},
+    With[{paths = FindInfraSegment[g, 1, 9, All, Properties -> {{"EdgeMin", degSum}}]["Realizations"]},
       Length[paths] >= 1 &&
         AllTrue[paths, Length[#] - 1 == GraphDistance[g, 1, 9] &]
     ]
@@ -378,8 +378,8 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
     SubsetQ[
-      Sort @ (FindInfraSegment[g, 1, 9, All]["Paths"]),
-      Sort @ (#[[1, 1]] & /@ FindInfraSegment[g, 1, 9, All, Properties -> {{"EdgeMin", degSum}}])
+      Sort @ FindInfraSegment[g, 1, 9, All]["Realizations"],
+      Sort @ FindInfraSegment[g, 1, 9, All, Properties -> {{"EdgeMin", degSum}}]["Realizations"]
     ]
   ],
   True,
@@ -391,7 +391,7 @@ VerificationTest[
     BlockRandom[
       Length @ FindInfraSegment[g, 1, 16, All,
         Properties -> {{"EdgeMin", degSum}},
-        Method -> {"Exhaustive", "Pruning" -> 1}] <= 1,
+        Method -> {"Exhaustive", "Pruning" -> 1}]["Realizations"] <= 1,
       RandomSeeding -> 42
     ]
   ],
@@ -401,7 +401,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    Length @ FindInfraSegment[g, 1, 9, UpTo[2], Properties -> {{"EdgeMin", degSum}}]
+    Length @ FindInfraSegment[g, 1, 9, UpTo[2], Properties -> {{"EdgeMin", degSum}}]["Realizations"]
   ],
   _Integer?(# <= 2 &),
   SameTest -> MatchQ,
@@ -414,8 +414,8 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
     SubsetQ[
-      Sort @ (FindInfraSegment[g, 1, 9, All]["Paths"]),
-      Sort @ (#[[1, 1]] & /@ FindInfraSegment[g, 1, 9, All, Properties -> {{"LongestPath", "Window" -> 2}}])
+      Sort @ FindInfraSegment[g, 1, 9, All]["Realizations"],
+      Sort @ FindInfraSegment[g, 1, 9, All, Properties -> {{"LongestPath", "Window" -> 2}}]["Realizations"]
     ]
   ],
   True,
@@ -426,7 +426,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Length @ FindInfraSegment[g, 1, 9, 1, Method -> "Greedy"]
+    Length @ FindInfraSegment[g, 1, 9, 1, Method -> "Greedy"]["Realizations"]
   ],
   1,
   TestID -> "FindInfraSegment-Greedy-default-properties"
@@ -453,7 +453,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{walks = #[[1, 1]] & /@ FindInfraPath[g, 1, 9, {4}, All, Properties -> {"Simple"}]},
+    With[{walks = FindInfraPath[g, 1, 9, {4}, All, Properties -> {"Simple"}]["Realizations"]},
       Length[walks] >= 1 && AllTrue[walks, DuplicateFreeQ]
     ]
   ],
@@ -466,9 +466,9 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Sort @ (#[[1, 1]] & /@ FindInfraPath[g, 1, 9, Infinity, All,
-        Properties -> {"Simple", {"ShortestPath", "Window" -> Infinity}}]) ===
-      Sort @ (FindInfraSegment[g, 1, 9, All]["Paths"])
+    Sort @ FindInfraPath[g, 1, 9, Infinity, All,
+        Properties -> {"Simple", {"ShortestPath", "Window" -> Infinity}}]["Realizations"] ===
+      Sort @ FindInfraSegment[g, 1, 9, All]["Realizations"]
   ],
   True,
   TestID -> "FindInfraPath-ShortestPath-WindowInf-equals-geodesics"
@@ -476,8 +476,8 @@ VerificationTest[
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ (#[[1, 1]] & /@ FindInfraPath[g, 1, 4, Infinity, All,
-        Properties -> {"Simple", {"ShortestPath", "Window" -> 2}}])
+    Sort @ FindInfraPath[g, 1, 4, Infinity, All,
+        Properties -> {"Simple", {"ShortestPath", "Window" -> 2}}]["Realizations"]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
   TestID -> "FindInfraPath-ShortestPath-Window2-cycle-geodesics"
@@ -487,8 +487,8 @@ VerificationTest[
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ (#[[1, 1]] & /@ FindInfraPath[g, 1, 4, Infinity, All,
-        Properties -> {"Simple", {"LongestPath", "Window" -> 2}}])
+    Sort @ FindInfraPath[g, 1, 4, Infinity, All,
+        Properties -> {"Simple", {"LongestPath", "Window" -> 2}}]["Realizations"]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
   TestID -> "FindInfraPath-LongestPath-Window2-cycle-symmetric"
@@ -496,8 +496,8 @@ VerificationTest[
 
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
-    Sort @ (#[[1, 1]] & /@ FindInfraPath[g, 1, 3, Infinity, All,
-        Properties -> {"Simple", {"LongestPath", "Window" -> 2}}])
+    Sort @ FindInfraPath[g, 1, 3, Infinity, All,
+        Properties -> {"Simple", {"LongestPath", "Window" -> 2}}]["Realizations"]
   ],
   Sort[{{1, 2, 3}, {1, 4, 3}}],
   TestID -> "FindInfraPath-LongestPath-Window2-strict-between"
@@ -508,7 +508,7 @@ VerificationTest[
     BlockRandom[
       Length @ FindInfraPath[g, 1, 16, Infinity, All,
         Properties -> {"Simple", {"LongestPath", "Window" -> 2}},
-        Method -> {"Exhaustive", "Pruning" -> 1}] == 1,
+        Method -> {"Exhaustive", "Pruning" -> 1}]["Realizations"] == 1,
       RandomSeeding -> 42
     ]
   ],
@@ -520,8 +520,8 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    With[{walks = #[[1, 1]] & /@ FindInfraPath[g, 1, 9, {4}, All,
-            Properties -> {"Simple", {"EdgeMin", degSum}}]},
+    With[{walks = FindInfraPath[g, 1, 9, {4}, All,
+            Properties -> {"Simple", {"EdgeMin", degSum}}]["Realizations"]},
       AllTrue[walks, DuplicateFreeQ]
     ]
   ],
@@ -532,7 +532,7 @@ VerificationTest[
 (* ===== FindInfraLine ===== *)
 
 VerificationTest[
-  InfraLine @ With[{g = PathGraph[Range[5]]},
+  With[{g = PathGraph[Range[5]]},
     FindInfraLine[g, 2, 4]
   ],
   InfraLine[{{1, 2, 3, 4, 5}}],
@@ -541,14 +541,14 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    Length @ First @ First @ First @ FindInfraLine[g, 2, 4]
+    Length @ First @ FindInfraLine[g, 2, 4]["Realizations"]
   ],
   5,
   TestID -> "FindInfraLine-extends-to-full-path"
 ]
 
 VerificationTest[
-  InfraLine @ With[{g = PathGraph[Range[5]]},
+  With[{g = PathGraph[Range[5]]},
     FindInfraLine[g, 1, 5]
   ],
   InfraLine[{{1, 2, 3, 4, 5}}],
@@ -557,7 +557,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{exts = Take[(#[[ 1, 1 ]] & /@ SelectInfraPath[g, FindInfraLine[g, 5, 6, All], All, "From" -> "Center"]), UpTo[3]]},
+    With[{exts = Take[SelectInfraPath[g, FindInfraLine[g, 5, 6, All]["Realizations"], All, "From" -> "Center"], UpTo[3]]},
       Length[exts] >= 1 && AllTrue[exts, Length[#] > 2 &]
     ]
   ],
@@ -567,14 +567,14 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    Length @ FindInfraLine[g, 2, 4, UpTo[5]] >= 1
+    Length @ FindInfraLine[g, 2, 4, UpTo[5]]["Realizations"] >= 1
   ],
   True,
   TestID -> "FindInfraLine-upto-soft"
 ]
 
 VerificationTest[
-  InfraLine @ With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
+  With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
     FindInfraLine[g, 1, 3, All, "Maximality" -> "Extension"]
   ],
   InfraLine[{{1, 2, 3}}],
@@ -582,7 +582,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraLine @ With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
+  With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
     FindInfraLine[g, 1, 3, All, "Maximality" -> "Diameter"]
   ],
   InfraLine[{}],
@@ -590,7 +590,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraLine @ With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
+  With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
     FindInfraLine[g, 1, 5, All, "Maximality" -> "Diameter"]
   ],
   InfraLine[{{1, 2, 4, 5}}],
@@ -603,7 +603,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    Sort @ First @ First @ First @ FindInfraShell[g, 3, 2]
+    Sort @ First @ FindInfraShell[g, 3, 2]["Realizations"]
   ],
   {1, 5},
   TestID -> "FindInfraShell-default-equidistant"
@@ -622,7 +622,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    Length @ FindInfraShell[g, 1, 2, All]
+    Length @ FindInfraShell[g, 1, 2, All]["Realizations"]
   ],
   1,
   TestID -> "FindInfraShell-default-single-result"
@@ -632,7 +632,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{shells = (#[[ 1, 1 ]] & /@ FindInfraShell[g, 6, {1, 2}, All, Properties -> {"Separating", "Connected"}])},
+    With[{shells = FindInfraShell[g, 6, {1, 2}, All, Properties -> {"Separating", "Connected"}]["Realizations"]},
       Length[shells] >= 1 &&
       AllTrue[shells, vs |-> AllTrue[vs, v |-> 1 <= GraphDistance[g, 6, v] <= 2]] &&
       AllTrue[shells, vs |-> ConnectedGraphQ[Subgraph[g, vs]]]
@@ -644,7 +644,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{shells = (#[[ 1, 1 ]] & /@ FindInfraShell[g, 6, {1, 2}, All, Properties -> {"Separating", "Connected"}])},
+    With[{shells = FindInfraShell[g, 6, {1, 2}, All, Properties -> {"Separating", "Connected"}]["Realizations"]},
       AllTrue[shells, vs |-> AllTrue[shells,
         other |-> other === vs || ! (Length[other] < Length[vs] && SubsetQ[vs, other])
       ]]
@@ -661,7 +661,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{shells = (#[[ 1, 1 ]] & /@ FindInfraShell[g, 6, {1, 2}, All, Properties -> {"Separating"}])},
+    With[{shells = FindInfraShell[g, 6, {1, 2}, All, Properties -> {"Separating"}]["Realizations"]},
       Length[shells] >= 1 &&
       AllTrue[shells, vs |-> AllTrue[vs, v |-> 1 <= GraphDistance[g, 6, v] <= 2]]
     ]
@@ -674,7 +674,7 @@ VerificationTest[
 
 VerificationTest[
   Length @ FindInfraShell[GridGraph[{4, 4}], 6, {1, 2}, All,
-    Properties -> {"Separating", "Connected"}, Method -> "Greedy"],
+    Properties -> {"Separating", "Connected"}, Method -> "Greedy"]["Realizations"],
   1,
   TestID -> "FindInfraShell-Greedy-single-realisation"
 ]
@@ -690,7 +690,7 @@ VerificationTest[
 
 VerificationTest[
   Length @ FindInfraShell[GridGraph[{4, 4}], 6, {1, 2}, All,
-    Properties -> {"Separating"}, Method -> {"Exhaustive", "Pruning" -> 1}] >= 1,
+    Properties -> {"Separating"}, Method -> {"Exhaustive", "Pruning" -> 1}]["Realizations"] >= 1,
   True,
   TestID -> "FindInfraShell-Pruning-bounded-runs"
 ]
@@ -708,38 +708,39 @@ VerificationTest[
 
 (* On K5 with window {1, 2, 3} every other vertex is at distance 1 from
    each window-vertex, so vertices 4 and 5 are both osculating centers
-   with radius 1; expect two unary shells. *)
+   with radius 1; expect one shell wrapper with two realisations. *)
 
 VerificationTest[
   With[{result = FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3, All]},
-    Length[result] === 2 &&
-    AllTrue[result, MatchQ[#, InfraShell[{_List}]] &] &&
-    Sort[Sort /@ (#[[ 1, 1 ]] & /@ result)] === Sort[{Sort[{1, 2, 3, 5}], Sort[{1, 2, 3, 4}]}]
+    Head[result] === InfraShell &&
+    Length[result["Realizations"]] === 2 &&
+    Sort[Sort /@ result["Realizations"]] === Sort[{Sort[{1, 2, 3, 5}], Sort[{1, 2, 3, 4}]}]
   ],
   True,
   TestID -> "FindInfraOsculatingShell-K5-two-osculating-centers"
 ]
 
-(* Default count = 1 picks the smallest-radius shell.  Both centers
-   here have r = 1; tie-break by center index picks center 4. *)
+(* Realisations are sorted by ascending radius, so the first one is the
+   smallest-radius shell.  Both centers here have r = 1; tie-break by
+   center index puts center 4 first. *)
 
 VerificationTest[
-  Sort @ First @ First @ First @ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3],
+  Sort @ First @ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3]["Realizations"],
   Sort[{1, 2, 3, 5}],
   TestID -> "FindInfraOsculatingShell-K5-default-smallest-radius"
 ]
 
 (* PathGraph: window {3, 4, 5} has no integer vertex equidistant from
-   all three.  count = All -> {}; count = 1 -> $Failed. *)
+   all three.  count = All -> InfraShell[{}]; exact count 1 -> $Failed. *)
 
 VerificationTest[
   FindInfraOsculatingShell[PathGraph[Range[7]], Range[7], 4, 3, All],
-  {},
+  InfraShell[{}],
   TestID -> "FindInfraOsculatingShell-PathGraph-no-centers-All"
 ]
 
 VerificationTest[
-  FindInfraOsculatingShell[PathGraph[Range[7]], Range[7], 4, 3],
+  FindInfraOsculatingShell[PathGraph[Range[7]], Range[7], 4, 3, 1],
   $Failed,
   TestID -> "FindInfraOsculatingShell-PathGraph-no-centers-default-fails"
 ]
@@ -756,7 +757,7 @@ VerificationTest[
 
 VerificationTest[
   Length @ FindInfraOsculatingShell[CompleteGraph[5],
-    InfraPath[{{1, 2, 3}, {1, 4, 5}}], 2, 3, All],
+    InfraPath[{{1, 2, 3}, {1, 4, 5}}], 2, 3, All]["Realizations"],
   4,
   TestID -> "FindInfraOsculatingShell-multi-realisation-union"
 ]
@@ -764,7 +765,7 @@ VerificationTest[
 (* UpTo[n] caps below the available count. *)
 
 VerificationTest[
-  Length @ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3, UpTo[1]],
+  Length @ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3, UpTo[1]]["Realizations"],
   1,
   TestID -> "FindInfraOsculatingShell-UpTo-caps"
 ]
@@ -782,7 +783,7 @@ VerificationTest[
    vertex. *)
 
 VerificationTest[
-  Length @ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 1, All],
+  Length @ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 1, All]["Realizations"],
   VertexCount[CompleteGraph[5]],
   TestID -> "FindInfraOsculatingShell-k1-every-vertex"
 ]
@@ -792,7 +793,7 @@ VerificationTest[
    (size 4 each). *)
 
 VerificationTest[
-  Length[#[[ 1, 1 ]]] & /@ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 1, All],
+  Length /@ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 1, All]["Realizations"],
   {1, 4, 4, 4, 4},
   TestID -> "FindInfraOsculatingShell-sorted-by-radius"
 ]
@@ -803,7 +804,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = #[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All]},
+    With[{circles = FindInfraCircle[g, 6, {1, 2}, All]["Realizations"]},
       Length[circles] >= 1 && AllTrue[circles, Length[#] >= 3 &]
     ]
   ],
@@ -813,7 +814,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PetersenGraph[]},
-    Length @ FindInfraCircle[g, 1, {1, 2}, All] >= 1
+    Length @ FindInfraCircle[g, 1, {1, 2}, All]["Realizations"] >= 1
   ],
   True,
   TestID -> "FindInfraCircle-all-cycles"
@@ -832,12 +833,12 @@ VerificationTest[
   TestID -> "FindInfraCircle-default-tied-shortest"
 ]
 
-(* count = 1 default returns the shortest cycle. *)
+(* the no-count canonical bundle lists a shortest cycle first. *)
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{shortest = First @ First @ First @ FindInfraCircle[g, 6, {1, 2}],
-          allLengths = Length /@ (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All])},
+    With[{shortest = First @ FindInfraCircle[g, 6, {1, 2}]["Realizations"],
+          allLengths = Length /@ FindInfraCircle[g, 6, {1, 2}, All]["Realizations"]},
       Length[shortest] == Min[allLengths]
     ]
   ],
@@ -913,7 +914,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = SelectInfraCycle[g, (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]), All, "From" -> "MaxLength"]},
+    With[{circles = SelectInfraCycle[g, FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]["Realizations"], All, "From" -> "MaxLength"]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
@@ -923,7 +924,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = SelectInfraCycle[g, (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]), All, "From" -> "MinLength"]},
+    With[{circles = SelectInfraCycle[g, FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]["Realizations"], All, "From" -> "MinLength"]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
@@ -934,31 +935,31 @@ VerificationTest[
 (* ===== FindInfraParallel ===== *)
 
 VerificationTest[
-  InfraLine @ FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All],
+  FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All],
   InfraLine[{{5, 6, 7, 8}}],
   TestID -> "FindInfraParallel-GridGraph-row-from-row"
 ]
 
 VerificationTest[
-  InfraLine @ FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 6, All],
+  FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 6, All],
   InfraLine[{{5, 6, 7, 8}}],
   TestID -> "FindInfraParallel-GridGraph-row-interior-vertex"
 ]
 
 VerificationTest[
-  InfraLine @ FindInfraParallel[PathGraph[Range[5]], {1, 2, 3, 4, 5}, 3, All],
+  FindInfraParallel[PathGraph[Range[5]], {1, 2, 3, 4, 5}, 3, All],
   InfraLine[{{1, 2, 3, 4, 5}}],
   TestID -> "FindInfraParallel-self-on-line"
 ]
 
 VerificationTest[
-  InfraLine @ FindInfraParallel[Graph[{1, 2, 3, 4}, {1 <-> 2, 3 <-> 4}], {1, 2}, 3, All],
+  FindInfraParallel[Graph[{1, 2, 3, 4}, {1 <-> 2, 3 <-> 4}], {1, 2}, 3, All],
   InfraLine[{}],
   TestID -> "FindInfraParallel-disconnected-empty"
 ]
 
 VerificationTest[
-  InfraLine @ FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, 1],
+  FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, 1],
   InfraLine[{{5, 6, 7, 8}}],
   TestID -> "FindInfraParallel-strict-1"
 ]
@@ -970,14 +971,14 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraLine @ FindInfraParallel[CycleGraph[8], {1, 2, 3}, 6, All],
+  FindInfraParallel[CycleGraph[8], {1, 2, 3}, 6, All],
   InfraLine[{}],
   TestID -> "FindInfraParallel-CycleGraph-no-parallel"
 ]
 
 VerificationTest[
   InfraParallelQ[GridGraph[{4, 4}], {1, 2, 3, 4},
-    First @ First @ First @ FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5]],
+    First @ FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5]["Realizations"]],
   True,
   TestID -> "FindInfraParallel-output-passes-InfraParallelQ"
 ]
@@ -1013,7 +1014,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Length @ First @ EmbeddingClosest[ g,
-      InfraCircle[ #[[ 1, 1 ]] & /@ FindInfraCircle[ g, 6, { 1, 2 }, All, Properties -> { "Separating" } ] ],
+      FindInfraCircle[ g, 6, { 1, 2 }, All, Properties -> { "Separating" } ],
       { 6, 1.5 } ] >= 1
   ],
   True,
@@ -1055,8 +1056,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { seg = First @ FindInfraSegment[ g, 1, 6, All ][ "Paths" ] },
-      With[ { lines = (#[[ 1, 1 ]] & /@ FindInfraLine[ g, seg, All ]) },
+    With[ { seg = First @ FindInfraSegment[ g, 1, 6, All ][ "Realizations" ] },
+      With[ { lines = FindInfraLine[ g, seg, All ][ "Realizations" ] },
         ListQ[ lines ] && AllTrue[ lines,
           lst |-> Length[ lst ] >= Length[ seg ] && MemberQ[ Partition[ lst, Length @ seg, 1 ], seg ] ]
       ]
@@ -1068,9 +1069,9 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { seg = First @ FindInfraSegment[ g, 1, 6, All ][ "Paths" ] },
-      Sort @ (#[[ 1, 1 ]] & /@ FindInfraLine[ g, seg, All ]) ===
-        Sort @ Select[ (#[[ 1, 1 ]] & /@ FindInfraLine[ g, 1, 6, All ]),
+    With[ { seg = First @ FindInfraSegment[ g, 1, 6, All ][ "Realizations" ] },
+      Sort @ FindInfraLine[ g, seg, All ][ "Realizations" ] ===
+        Sort @ Select[ FindInfraLine[ g, 1, 6, All ][ "Realizations" ],
           lst |-> Length[ lst ] >= Length[ seg ] && MemberQ[ Partition[ lst, Length @ seg, 1 ], seg ] ]
     ]
   ],
@@ -1080,7 +1081,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph[ Range[ 5 ] ] },
-    InfraLine @ FindInfraLine[ g, { 2, 3 }, 1 ] === InfraLine[ { { 1, 2, 3, 4, 5 } } ]
+    FindInfraLine[ g, { 2, 3 }, 1 ] === InfraLine[ { { 1, 2, 3, 4, 5 } } ]
   ],
   True,
   TestID -> "FindInfraLine-segment-PathGraph-recovers-full-path"
@@ -1098,7 +1099,7 @@ VerificationTest[
 (* Forward-only extension of {3, 4} on PathGraph[7]: left end pinned at 3,
    right end extended to 7. *)
 VerificationTest[
-  InfraLine @ FindInfraLine[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 1,
+  FindInfraLine[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 1,
     "Direction" -> "Forward" ],
   InfraLine[ { { 3, 4, 5, 6, 7 } } ],
   TestID -> "FindInfraLine-segment-Direction-Forward"
@@ -1107,7 +1108,7 @@ VerificationTest[
 (* Backward-only extension of {3, 4} on PathGraph[7]: right end pinned at 4,
    left end extended to 1. *)
 VerificationTest[
-  InfraLine @ FindInfraLine[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 1,
+  FindInfraLine[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 1,
     "Direction" -> "Backward" ],
   InfraLine[ { { 1, 2, 3, 4 } } ],
   TestID -> "FindInfraLine-segment-Direction-Backward"
@@ -1125,8 +1126,8 @@ VerificationTest[
 (* Forward on the two-point form: p1 fixed as line start. *)
 VerificationTest[
   AllTrue[
-    #[[ 1, 1 ]] & /@ FindInfraLine[ PathGraph[ Range[ 7 ] ], 3, 4, All,
-      "Direction" -> "Forward" ],
+    FindInfraLine[ PathGraph[ Range[ 7 ] ], 3, 4, All,
+      "Direction" -> "Forward" ][ "Realizations" ],
     line |-> First[ line ] === 3 ],
   True,
   TestID -> "FindInfraLine-two-point-Direction-Forward-starts-at-p1"
@@ -1149,7 +1150,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph[ Range[ 5 ] ] },
-    InfraPoint @ ExtendInfraSegment[ g, 1, 2, 1, 2, All ]
+    ExtendInfraSegment[ g, 1, 2, 1, 2, All ]
   ],
   InfraPoint[ { 3 } ],
   TestID -> "ExtendInfraSegment-A4-PathGraph"
@@ -1175,8 +1176,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 10, 10 } ], p = 45 },
-    Sort[ Sort /@ (#[[ 1, 1 ]] & /@ FindInfraCircle[ g, p, { 1, 2 }, All ]) ] ===
-      Sort[ Sort /@ (#[[ 1, 1 ]] & /@ FindInfraCircle[ NeighborhoodGraph[ g, p, 4 ], p, { 1, 2 }, All ]) ]
+    Sort[ Sort /@ FindInfraCircle[ g, p, { 1, 2 }, All ][ "Realizations" ] ] ===
+      Sort[ Sort /@ FindInfraCircle[ NeighborhoodGraph[ g, p, 4 ], p, { 1, 2 }, All ][ "Realizations" ] ]
   ],
   True,
   TestID -> "FindInfraCircle-locality-Metric"

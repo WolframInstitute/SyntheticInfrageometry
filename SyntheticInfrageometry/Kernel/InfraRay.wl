@@ -4,19 +4,11 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* ===================== InfraRay wrapper ===================== *)
 
 (* InfraRay[{ray}] is the unary form; InfraRay[{ray1, ..., rayk}] is the
-   multi-realisation form.  Only auto-flatten on nested wrappers. *)
-
-InfraRay[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraRay[ _List ] ] ] :=
-  InfraRay[ Flatten[ reps /. InfraRay[ xs_List ] :> xs, 1 ] ]
+   multi-realisation form.  Set canonicalisation and the shared accessors
+   come from defineInfraBundleRules (Tools.wl). *)
 
 (* "Length" = list of edge counts, one per realisation: |ray| - 1. *)
 InfraRay[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
-
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraRay[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraRay[ reps ] ]
-InfraRay[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraRay[ reps ] ]
-InfraRay[ reps_List ][ "Measure" ] := InfraMeasure[ InfraRay[ reps ] ]
-InfraRay[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraRay[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraRay ===================== *)
 
 (* A ray from origin in v's direction is a pointed half of a maximal
@@ -27,7 +19,7 @@ InfraRay[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraRay[ reps ],
    representatives in the graph (e.g. antipodes on an even cycle).      *)
 
 FindInfraRay[ graph_Graph, origin_, v_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   spreadFind[ InfraRay, count,
     { origin0, v0 } |-> DeleteDuplicates @ Map[
       line |->
@@ -39,7 +31,7 @@ FindInfraRay[ graph_Graph, origin_, v_,
             True,                   Reverse[ line[[ 1 ;; oIdx ]] ]
           ]
         ],
-      #[[ 1, 1 ]] & /@ FindInfraLine[ graph, origin0, v0, All ]
+      FindInfraLine[ graph, origin0, v0, All ][ "Realizations" ]
     ], origin, v ]
 
 
@@ -48,7 +40,7 @@ FindInfraRay[ graph_Graph, origin_, v_,
 dispatchConstruction[ graph_Graph, InfraRay[ origin_, v_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindInfraRay[ graph, origin, v, All ],
+      FindInfraRay[ graph, origin, v, All ][ "Realizations" ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { origin, v } |> ],
     extractBranches[ { opts } ] ]

@@ -5,8 +5,8 @@ PackageScope[allNeighboursBaseFn]
 
 (* ===================== InfraPath wrapper ===================== *)
 
-InfraPath[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPath[ _List ] ] ] :=
-  InfraPath[ Flatten[ reps /. InfraPath[ xs_List ] :> xs, 1 ] ]
+(* set canonicalisation, ["Realizations"] / ["First"] and the occupation-measure
+   accessors come from defineInfraBundleRules (Tools.wl). *)
 
 (* InfraPath[p1, p2, ..., pk] with InfraPoint args (or singleton lists thereof,
    as returned by FindInfraPoint) builds the wrapper from the Cartesian product
@@ -20,14 +20,8 @@ InfraPath[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 (* endpoint InfraPoints, multiplicity kept: the end-vertex multiset is the
    occupation measure of where the walks terminate (unlike InfraSegment, whose
    endpoints are deduplicated geodesic ends). *)
-InfraPath[ reps_List ][ "Start" ] := InfraPoint[ First /@ reps ]
-InfraPath[ reps_List ][ "End" ]   := InfraPoint[ Last /@ reps ]
-
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraPath[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraPath[ reps ] ]
-InfraPath[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraPath[ reps ] ]
-InfraPath[ reps_List ][ "Measure" ] := InfraMeasure[ InfraPath[ reps ] ]
-InfraPath[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPath[ reps ], Method -> "Probability" ]
+InfraPath[ reps_List ][ "Start" ] := columnInfraPoint[ reps, 1 ]
+InfraPath[ reps_List ][ "End" ]   := columnInfraPoint[ reps, -1 ]
 (* ===================== FindInfraPath ===================== *)
 
 (* A walk from p1 to p2 (not necessarily simple, not necessarily geodesic).
@@ -46,7 +40,7 @@ Options[ FindInfraPath ] = {
 
 FindInfraPath[ graph_Graph, p1_, p2_,
     kspec : ( _Integer | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   spreadFind[ InfraPath, count,
     { q1, q2 } |-> If[ q1 === q2, { },
       Catch @ With[ {
@@ -110,7 +104,7 @@ Options[ ExtendInfraPath ] = {
 };
 
 ExtendInfraPath[ graph_Graph, path_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   spreadFind[ InfraPath, count,
     walk0 |-> If[ Length[ walk0 ] < 1, { walk0 },
       Catch @ With[ {

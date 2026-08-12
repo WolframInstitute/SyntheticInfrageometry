@@ -25,28 +25,28 @@ VerificationTest[
 
 VerificationTest[
   With[ { res = FindInfraTriangle[ GridGraph[ { 4, 4 } ], { 1, 4, 13 } ] },
-    Head /@ res === { InfraTriangle } &&
-    Length[ ( First @ res )[ "Sides" ][[ 1 ]] ] == 3
+    Head[ res ] === InfraTriangle &&
+    Length[ res[ "Sides" ][[ 1 ]] ] == 3
   ],
   True,
   TestID -> "FindInfraTriangle-grid-basic"
 ]
 
 VerificationTest[
-  Length @ FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 } ],
+  Length @ FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, 1 ][ "Realizations" ],
   1,
   TestID -> "FindInfraTriangle-default-one"
 ]
 
 (* Cartesian product over the 6 geodesics of the diagonal side 9 -> 1. *)
 VerificationTest[
-  Length @ FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ],
+  Length @ FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ][ "Realizations" ],
   6,
   TestID -> "FindInfraTriangle-cartesian"
 ]
 
 VerificationTest[
-  AllTrue[ FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ],
+  AllTrue[ FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ][ "Realizations" ],
     InfraTriangleQ[ GridGraph[ { 3, 3 } ], # ] & ],
   True,
   TestID -> "FindInfraTriangle-all-valid"
@@ -54,7 +54,7 @@ VerificationTest[
 
 (* InfraTriangleQ rejects a four-sided chain. *)
 VerificationTest[
-  InfraTriangleQ[ GridGraph[ { 4, 4 } ], First @ FindInfraPolygon[ GridGraph[ { 4, 4 } ], { 1, 4, 16, 13 } ] ],
+  InfraTriangleQ[ GridGraph[ { 4, 4 } ], FindInfraPolygon[ GridGraph[ { 4, 4 } ], { 1, 4, 16, 13 } ][ "Realizations" ][[ 1 ]] ],
   False,
   TestID -> "InfraTriangleQ-square-False"
 ]

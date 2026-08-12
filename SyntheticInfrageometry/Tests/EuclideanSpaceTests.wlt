@@ -83,13 +83,13 @@ VerificationTest[
 (* ===== FindInfraLinearCombination scaling: "Metric" ===== *)
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[PathGraph[Range[10]], 1, {{2, 3}}],
+  FindInfraLinearCombination[PathGraph[Range[10]], 1, {{2, 3}}],
   InfraPoint[{5}],
   TestID -> "FindInfraLinearCombination-scale-metric-integer"
 ]
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[PathGraph[Range[10]], 1, {{1.7, 3}}, All, "ScaleMethod" -> "Metric"],
+  FindInfraLinearCombination[PathGraph[Range[10]], 1, {{1.7, 3}}, All, "ScaleMethod" -> "Metric"],
   InfraPoint[{}],
   TestID -> "FindInfraLinearCombination-scale-metric-real-empty"
 ]
@@ -97,13 +97,13 @@ VerificationTest[
 (* ===== FindInfraLinearCombination scaling: "Line" ===== *)
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[PathGraph[Range[10]], 1, {{1.7, 3}}, "ScaleMethod" -> "Line"],
+  FindInfraLinearCombination[PathGraph[Range[10]], 1, {{1.7, 3}}, "ScaleMethod" -> "Line"],
   InfraPoint[{4}],
   TestID -> "FindInfraLinearCombination-scale-line-real"
 ]
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[PathGraph[Range[10]], 1, {{2, 3}}, "ScaleMethod" -> "Line"],
+  FindInfraLinearCombination[PathGraph[Range[10]], 1, {{2, 3}}, "ScaleMethod" -> "Line"],
   InfraPoint[{5}],
   TestID -> "FindInfraLinearCombination-scale-line-integer"
 ]
@@ -111,13 +111,13 @@ VerificationTest[
 (* ===== FindInfraLinearCombination scaling: "Midpoint" ===== *)
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[PathGraph[Range[9]], 1, {{1/2, 5}}, "ScaleMethod" -> "Midpoint"],
+  FindInfraLinearCombination[PathGraph[Range[9]], 1, {{1/2, 5}}, "ScaleMethod" -> "Midpoint"],
   InfraPoint[{3}],
   TestID -> "FindInfraLinearCombination-scale-midpoint-half"
 ]
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[PathGraph[Range[9]], 1, {{1/4, 5}}, "ScaleMethod" -> "Midpoint"],
+  FindInfraLinearCombination[PathGraph[Range[9]], 1, {{1/4, 5}}, "ScaleMethod" -> "Midpoint"],
   InfraPoint[{2}],
   TestID -> "FindInfraLinearCombination-scale-midpoint-quarter"
 ]
@@ -125,13 +125,13 @@ VerificationTest[
 (* ===== FindInfraLinearCombination scaling: Automatic dispatch ===== *)
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[PathGraph[Range[9]], 1, {{1/2, 5}}],
+  FindInfraLinearCombination[PathGraph[Range[9]], 1, {{1/2, 5}}],
   InfraPoint[{3}],
   TestID -> "FindInfraLinearCombination-scale-auto-dyadic"
 ]
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[PathGraph[Range[10]], 1, {{2, 3}}],
+  FindInfraLinearCombination[PathGraph[Range[10]], 1, {{2, 3}}],
   InfraPoint[{5}],
   TestID -> "FindInfraLinearCombination-scale-auto-integer"
 ]
@@ -139,22 +139,22 @@ VerificationTest[
 (* ===== FindInfraLinearCombination sum: "Metric" ===== *)
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[GridGraph[{4, 4}], 1, {{1, 2}, {1, 5}}],
+  FindInfraLinearCombination[GridGraph[{4, 4}], 1, {{1, 2}, {1, 5}}],
   InfraPoint[{6}],
   TestID -> "FindInfraLinearCombination-sum-metric-grid-parallelogram"
 ]
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[CycleGraph[4], 1, {{1, 2}, {1, 4}}],
+  FindInfraLinearCombination[CycleGraph[4], 1, {{1, 2}, {1, 4}}],
   InfraPoint[{3}],
   TestID -> "FindInfraLinearCombination-sum-metric-C4-antipode"
 ]
 
 VerificationTest[
-  Sort @ (#[[ 1, 1 ]] & /@ FindInfraLinearCombination[
+  Sort @ FindInfraLinearCombination[
     Graph[{1 <-> 2, 1 <-> 3, 2 <-> 4, 2 <-> 5, 3 <-> 6, 3 <-> 7}],
     1, {{1, 2}, {1, 3}}, All
-  ]),
+  ][ "Realizations" ],
   {},
   TestID -> "FindInfraLinearCombination-sum-tree-no-parallelogram"
 ]
@@ -163,7 +163,7 @@ VerificationTest[
 
 VerificationTest[
   MemberQ[
-    (#[[ 1, 1 ]] & /@ FindInfraLinearCombination[GridGraph[{4, 4}], 1, {{1, 2}, {1, 5}}, All, "SumMethod" -> "Parallel"]),
+    FindInfraLinearCombination[GridGraph[{4, 4}], 1, {{1, 2}, {1, 5}}, All, "SumMethod" -> "Parallel"][ "Realizations" ],
     6
   ],
   True,
@@ -173,19 +173,19 @@ VerificationTest[
 (* ===== FindInfraLinearCombination composition / edge cases ===== *)
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[PathGraph[Range[10]], 5, {{-1, 8}}],
+  FindInfraLinearCombination[PathGraph[Range[10]], 5, {{-1, 8}}],
   InfraPoint[{2}],
   TestID -> "FindInfraLinearCombination-reflection-by-minus-one"
 ]
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[PathGraph[Range[5]], 3, {}],
+  FindInfraLinearCombination[PathGraph[Range[5]], 3, {}],
   InfraPoint[{3}],
   TestID -> "FindInfraLinearCombination-empty-terms"
 ]
 
 VerificationTest[
-  InfraPoint @ FindInfraLinearCombination[PathGraph[Range[5]], 3, {{0, 5}}],
+  FindInfraLinearCombination[PathGraph[Range[5]], 3, {{0, 5}}],
   InfraPoint[{3}],
   TestID -> "FindInfraLinearCombination-zero-coefficient"
 ]

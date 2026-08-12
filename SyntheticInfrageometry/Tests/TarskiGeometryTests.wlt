@@ -287,7 +287,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  ExtendInfraSegment[PathGraph[Range[5]], 1, 2, 1, 5],
+  ExtendInfraSegment[PathGraph[Range[5]], 1, 2, 1, 5, 1],
   $Failed,
   TestID -> "ExtendInfraSegment-Tarski-PathGraph-strict-fails"
 ]
@@ -299,7 +299,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Length @ ExtendInfraSegment[CycleGraph[6], 1, 2, 1, 2, All] >= 1,
+  Length @ ExtendInfraSegment[CycleGraph[6], 1, 2, 1, 2, All][ "Realizations" ] >= 1,
   True,
   TestID -> "ExtendInfraSegment-Tarski-CycleGraph-has-extension"
 ]
@@ -325,19 +325,19 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindInfraReflection[PathGraph[Range[5]], 1, 4],
+  FindInfraReflection[PathGraph[Range[5]], 1, 4, 1],
   $Failed,
   TestID -> "FindInfraReflection-PathGraph-no-room-strict-fails"
 ]
 
 VerificationTest[
-  MemberQ[(#[[ 1, 1 ]] & /@ FindInfraReflection[CycleGraph[6], 1, 2, All]), 3],
+  MemberQ[FindInfraReflection[CycleGraph[6], 1, 2, All][ "Realizations" ], 3],
   True,
   TestID -> "FindInfraReflection-CycleGraph6-includes-3"
 ]
 
 VerificationTest[
-  Length @ FindInfraReflection[HypercubeGraph[3], 1, 2, All] >= 2,
+  Length @ FindInfraReflection[HypercubeGraph[3], 1, 2, All][ "Realizations" ] >= 2,
   True,
   TestID -> "FindInfraReflection-HypercubeGraph-multi-valued"
 ]
@@ -385,9 +385,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 10, 10 } ], x = 23, a = 25 },
-    Sort @ (#[[ 1, 1 ]] & /@ FindInfraReflection[ g, x, a, All ]) ===
-      Sort @ (#[[ 1, 1 ]] & /@
-        FindInfraReflection[ NeighborhoodGraph[ g, a, 2 GraphDistance[ g, a, x ] ], x, a, All ])
+    Sort @ FindInfraReflection[ g, x, a, All ][ "Realizations" ] ===
+      Sort @ FindInfraReflection[ NeighborhoodGraph[ g, a, 2 GraphDistance[ g, a, x ] ], x, a, All ][ "Realizations" ]
   ],
   True,
   TestID -> "FindInfraReflection-locality"

@@ -4,19 +4,11 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* ===================== InfraPlane wrapper ===================== *)
 
 (* InfraPlane[{set}] is the unary form; InfraPlane[{set1, ..., setk}] is the
-   multi-realisation form.  Only auto-flatten on nested wrappers. *)
-
-InfraPlane[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPlane[ _List ] ] ] :=
-  InfraPlane[ Flatten[ reps /. InfraPlane[ xs_List ] :> xs, 1 ] ]
+   multi-realisation form.  Set canonicalisation and the shared accessors
+   come from defineInfraBundleRules (Tools.wl). *)
 
 (* "Volume" = vertex count per realisation. *)
 InfraPlane[ reps_List ][ "Volume" ] := Length /@ reps
-
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraPlane[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraPlane[ reps ] ]
-InfraPlane[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraPlane[ reps ] ]
-InfraPlane[ reps_List ][ "Measure" ] := InfraMeasure[ InfraPlane[ reps ] ]
-InfraPlane[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPlane[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraBisectingHyperplane ===================== *)
 
 (* A bisecting hyperplane between p1 and p2 is a vertex subset of the
@@ -46,12 +38,12 @@ Options[ FindInfraBisectingHyperplane ] = {
 };
 
 FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   FindInfraBisectingHyperplane[ graph, p1, p2, { 0, 0 }, count, opts ]
 
 FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
     window : { _Integer, _Integer },
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   spreadFind[ InfraPlane, count,
     { q1, q2 } |-> Module[ { properties, methodSpec, methodHead, pruning, bisector, aux, admissible },
       properties = OptionValue[ FindInfraBisectingHyperplane, { opts }, Properties ];
@@ -113,7 +105,7 @@ dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_,
     window : { _Integer, _Integer }, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindInfraBisectingHyperplane[ graph, p1, p2, window, All, Properties -> { "Separating" } ],
+      FindInfraBisectingHyperplane[ graph, p1, p2, window, All, Properties -> { "Separating" } ][ "Realizations" ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]

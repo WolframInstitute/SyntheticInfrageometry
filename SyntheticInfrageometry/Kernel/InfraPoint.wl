@@ -8,56 +8,74 @@ PackageScope[selectFromPointSpace]
 
 (* ===================== InfraPoint wrapper ===================== *)
 
-(* InfraPoint[{v1, ...}] is the unweighted form (each vertex mass 1).
-   InfraPoint[{v1, ...}, {w1, ...}] carries explicit per-vertex mass.  The
-   canonical form has a duplicate-free support with positive masses; masses
-   add on aggregation (a commutative monoid), and the all-ones weighted form
-   collapses back to the bare 1-arg form. *)
+(* InfraPoint is the ONLY measured wrapper, and this is why: its realisations
+   ARE vertices, so the marginal onto vertices is the object itself -- nothing
+   is lost, and a deduplicated point bundle therefore cannot express density.
+   For every other head the vertex marginal is a strictly lossy projection
+   (see InfraMeasure), so those heads stay plain SETS of realisations.
+
+   InfraPoint[{v1, ...}]          -- unweighted: a candidate set in
+                                     superposition, no density claim.
+   InfraPoint[<|v -> m, ...|>]    -- measured: the measure on vertices, stored
+                                     as the association it is.
+   InfraPoint[{v1, ...}, {m1, ...}] is input sugar for the association (parallel
+   lists at the call site); duplicate vertices sum.  The all-ones measure
+   collapses back to the bare support.
+
+   Measured points are CONSTRUCTED at a projection, not propagated: seg[[i]],
+   ["Start"] / ["End"], FindInfraMidpoint, FindInfraShellCenter, ... *)
+
+(* idempotency: re-wrapping a wrapper is the identity *)
+InfraPoint[ inner_InfraPoint ] := inner
+
+InfraPoint[ verts_List, masses_List ] :=
+  InfraPoint[ Merge[ Thread[ verts -> masses ], Total ] ]
+
+InfraPoint[ m_Association ] /; Values[ m ] === ConstantArray[ 1, Length @ m ] :=
+  InfraPoint[ Keys @ m ]
 
 InfraPoint[ reps_List ] /; ! FreeQ[ reps, _InfraPoint ] :=
-  mergeInfraPoints @ Replace[ reps, {
-      InfraPoint[ vs_List, ws_List ] :> Thread[ vs -> ws ],
-      InfraPoint[ vs_List ]          :> Thread[ vs -> 1 ],
-      v_                             :> { v -> 1 } }, { 1 } ]
+  InfraPoint @ Merge[ Catenate @ Replace[ reps, {
+      InfraPoint[ m_Association ] :> Normal @ m,
+      InfraPoint[ vs_List ]       :> Thread[ vs -> 1 ],
+      v_                          :> { v -> 1 } }, { 1 } ], Total ]
 
+(* repetition in a bare support is read as mass -- the measure is the object *)
 InfraPoint[ reps_List ] /; FreeQ[ reps, _InfraPoint ] && ! DuplicateFreeQ[ reps ] :=
-  With[ { m = Counts @ reps }, InfraPoint[ Keys @ m, Values @ m ] ]
+  InfraPoint @ Counts @ reps
 
-InfraPoint[ verts_List, weights_List ] /; ! DuplicateFreeQ[ verts ] :=
-  With[ { m = Merge[ Thread[ verts -> weights ], Total ] }, InfraPoint[ Keys @ m, Values @ m ] ]
-
-InfraPoint[ verts_List, weights_List ] /;
-    DuplicateFreeQ[ verts ] && weights === ConstantArray[ 1, Length @ verts ] :=
-  InfraPoint[ verts ]
-
-mergeInfraPoints[ pairs_List ] :=
-  With[ { m = Merge[ Flatten[ pairs, 1 ], Total ] }, InfraPoint[ Keys @ m, Values @ m ] ]
-
-InfraPoint[ verts_List ][ "Support" ]               := verts
-InfraPoint[ verts_List, _List ][ "Support" ]        := verts
-InfraPoint[ verts_List ][ "Weights" ]               := ConstantArray[ 1, Length @ verts ]
-InfraPoint[ verts_List, weights_List ][ "Weights" ] := weights
-InfraPoint[ verts_List ][ "Mass" ]                  := Length @ verts
-InfraPoint[ verts_List, weights_List ][ "Mass" ]    := Total @ weights
-InfraPoint[ verts_List, ___ ][ "First" ]            := First @ verts
+InfraPoint[ verts_List ][ "Support" ]        := verts
+InfraPoint[ m_Association ][ "Support" ]     := Keys @ m
+(* alias: the support is the realisation list of a point bundle *)
+InfraPoint[ verts_List ][ "Realizations" ]    := verts
+InfraPoint[ m_Association ][ "Realizations" ] := Keys @ m
+InfraPoint[ verts_List ][ "Weights" ]        := ConstantArray[ 1, Length @ verts ]
+InfraPoint[ m_Association ][ "Weights" ]     := Values @ m
+InfraPoint[ verts_List ][ "Mass" ]           := Length @ verts
+InfraPoint[ m_Association ][ "Mass" ]        := Total @ m
+InfraPoint[ verts_List ][ "First" ]          := First @ verts
+InfraPoint[ m_Association ][ "First" ]       := First @ Keys @ m
 
 (* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraPoint[ verts_List, w___ ][ "OccupationCount" ] := infraVertexMultiset[ InfraPoint[ verts, w ] ]
-InfraPoint[ verts_List, w___ ][ "OccupationMeasure" ] := InfraMeasure[ InfraPoint[ verts, w ] ]
-InfraPoint[ verts_List, w___ ][ "Measure" ] := InfraMeasure[ InfraPoint[ verts, w ] ]
-InfraPoint[ verts_List, w___ ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPoint[ verts, w ], Method -> "Probability" ]
+InfraPoint[ p : _List | _Association ][ "OccupationCount" ] := infraVertexMultiset[ InfraPoint[ p ] ]
+InfraPoint[ p : _List | _Association ][ "OccupationMeasure" ] := InfraMeasure[ InfraPoint[ p ] ]
+InfraPoint[ p : _List | _Association ][ "Measure" ] := InfraMeasure[ InfraPoint[ p ] ]
+InfraPoint[ p : _List | _Association ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPoint[ p ], Method -> "Probability" ]
 
 (* synthetic-invariant accessors (Infrageometry primitives over the support, one result
    per support vertex; the graph is passed in since the wrapper holds no graph).  Extra
    args forward verbatim -- e.g. p["BallVolumes", g, {0, R}], p["Dimension", g, {1, 5}].
-   The dimension / curvature readouts project the Ball* keys of VolumeGrowthObservables. *)
-InfraPoint[ verts_List, ___ ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, verts, rest ]
-InfraPoint[ verts_List, ___ ][ "ShellAreas", g_, rest___ ]             := ShellAreas[ g, verts, rest ]
-InfraPoint[ verts_List, ___ ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients /@ BallVolumes[ g, verts, rest ]
-InfraPoint[ verts_List, ___ ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, verts, rest ]
-InfraPoint[ verts_List, ___ ][ "Dimension", g_, rest___ ]              := ( #[ "BallDimension" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
-InfraPoint[ verts_List, ___ ][ "ScalarCurvature", g_, rest___ ]        := ( #[ "BallScalarCurvature" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
-InfraPoint[ verts_List, ___ ][ "CurvatureByRadius", g_, rest___ ]      := ( #[ "BallCurvatureByRadius" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
+   The dimension / curvature readouts project the Ball* keys of VolumeGrowthObservables.
+   The invariants are properties of the support; the measure does not enter. *)
+InfraPoint[ m_Association ][ key_String, rest__ ] := InfraPoint[ Keys @ m ][ key, rest ]
+
+InfraPoint[ verts_List ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, verts, rest ]
+InfraPoint[ verts_List ][ "ShellAreas", g_, rest___ ]             := ShellAreas[ g, verts, rest ]
+InfraPoint[ verts_List ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients /@ BallVolumes[ g, verts, rest ]
+InfraPoint[ verts_List ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, verts, rest ]
+InfraPoint[ verts_List ][ "Dimension", g_, rest___ ]              := ( #[ "BallDimension" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
+InfraPoint[ verts_List ][ "ScalarCurvature", g_, rest___ ]        := ( #[ "BallScalarCurvature" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
+InfraPoint[ verts_List ][ "CurvatureByRadius", g_, rest___ ]      := ( #[ "BallCurvatureByRadius" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
 
 (* the same invariants the other way round: the Infrageometry primitives accept an
    InfraPoint directly (via its support), so BallVolumes[g, p] == p["BallVolumes", g]. *)
@@ -118,9 +136,13 @@ FindInfraPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
 FindInfraPoint[ graph_Graph, All, opts : OptionsPattern[] ] :=
   FindInfraPoint[ graph, UpTo[ VertexCount[ graph ] ], opts ]
 
-FindInfraPoint[ graph_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
+FindInfraPoint[ graph_Graph, n_Integer, opts : OptionsPattern[] ] :=
   With[ { result = FindInfraPoint[ graph, UpTo[ n ], opts ] },
     If[ Length[ result ] < n, $Failed, result ] ]
+
+(* no count: THE canonical point -- the whole candidate pool in superposition *)
+FindInfraPoint[ graph_Graph, opts : OptionsPattern[] ] :=
+  InfraPoint[ findPointPool[ graph, OptionValue[ "From" ] ] ]
 
 
 (* "From" option dispatch -- vertex pool to draw points from. *)
@@ -188,18 +210,33 @@ mostEquidistantSubset[ cliques_List, distMatrix_, pool_List, n_Integer ] :=
 
 Options[ FindInfraMidpoint ] = { Method -> "Metric", "Tolerance" -> 0 };
 
+(* occupation of the central index band of one realisation slot, vertex -> mass:
+   a walk contributes 1 per band vertex; a geodesic-DAG atom reads the band off
+   its layers (position i = layer i - 1) weighted by geodesic occupation --
+   exact, no enumeration.  Shared by FindInfraMidpoint (frac = 1/2) and
+   FindInfraGoldenSection (frac = 1/phi). *)
+
+indexBandMasses[ frac_, tol_ ][ dag_Graph ] :=
+  With[ { layers = dagLayers[ dag ] },
+    If[ Length @ layers === 0, <||>,
+      With[ { occ = GeodesicOccupation[ dag ], len = Max[ 0, Values @ layers ] },
+        { offs = Abs[ # - frac * len ] & /@ layers },
+        KeyTake[ occ, Keys @ Select[ offs, # <= Min[ Values @ offs ] + tol & ] ] ] ] ]
+
+indexBandMasses[ frac_, tol_ ][ walk_List ] :=
+  With[ { offsets = Abs[ Range[ Length @ walk ] - ( 1 + frac ( Length @ walk - 1 ) ) ] },
+    Counts @ Pick[ walk, Thread[ offsets <= Min[ offsets ] + tol ], True ] ]
+
 FindInfraMidpoint[ graph_Graph, InfraSegment[ dag_Graph ], opts : OptionsPattern[] ] :=
-  FindInfraMidpoint[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ]
+  If[ methodName @ OptionValue[ FindInfraMidpoint, { opts }, Method ] === "Metric",
+    InfraPoint @ indexBandMasses[ 1/2, OptionValue[ FindInfraMidpoint, { opts }, "Tolerance" ] ][ dag ],
+    FindInfraMidpoint[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ] ]
 
 FindInfraMidpoint[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        InfraPoint[ DeleteDuplicates @ Flatten[
-          Map[
-            walk |-> With[ { offsets = Abs[ Range[ Length[ walk ] ] - ( Length[ walk ] + 1 ) / 2 ] },
-              Pick[ walk, Thread[ offsets <= Min[ offsets ] + tol ], True ] ],
-            First[ seg ] ], 1 ] ],
+        InfraPoint @ Merge[ indexBandMasses[ 1/2, tol ] /@ First @ seg, Total ],
       "Embedding",
         (* closest vertex to the coord-space midpoint of the endpoints; pool
            "ShortestPaths" = vertices of the supplied walks, "AllPaths" = all *)
@@ -219,8 +256,7 @@ FindInfraMidpoint[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Length[ 
   FindInfraMidpoint[ graph, InfraSegment[ { walk } ], opts ]
 
 FindInfraMidpoint[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
-  FindInfraMidpoint[ graph,
-    InfraSegment[ segReps @ FindInfraSegment[ graph, p1, p2, All ] ], opts ]
+  FindInfraMidpoint[ graph, FindInfraSegment[ graph, p1, p2 ], opts ]
 
 
 (* ===================== FindInfraGoldenSection ===================== *)
@@ -235,18 +271,16 @@ FindInfraMidpoint[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
 Options[ FindInfraGoldenSection ] = { Method -> "Metric", "Tolerance" -> 0 };
 
 FindInfraGoldenSection[ graph_Graph, InfraSegment[ dag_Graph ], opts : OptionsPattern[] ] :=
-  FindInfraGoldenSection[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ]
+  If[ methodName @ OptionValue[ FindInfraGoldenSection, { opts }, Method ] === "Metric",
+    InfraPoint @ indexBandMasses[ N[ 1 / GoldenRatio ],
+      OptionValue[ FindInfraGoldenSection, { opts }, "Tolerance" ] ][ dag ],
+    FindInfraGoldenSection[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ] ]
 
 FindInfraGoldenSection[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        InfraPoint[ DeleteDuplicates @ Flatten[
-          Map[
-            walk |-> With[ { offsets =
-                  Abs[ Range[ Length[ walk ] ] - N[ 1 + ( Length[ walk ] - 1 ) / GoldenRatio ] ] },
-              Pick[ walk, Thread[ offsets <= Min[ offsets ] + tol ], True ] ],
-            First[ seg ] ], 1 ] ],
+        InfraPoint @ Merge[ indexBandMasses[ N[ 1 / GoldenRatio ], tol ] /@ First @ seg, Total ],
       "Embedding",
         (* closest vertex to the coord-space golden point p1 + (p2 - p1)/phi;
            pool as in FindInfraMidpoint *)
@@ -267,8 +301,7 @@ FindInfraGoldenSection[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Len
   FindInfraGoldenSection[ graph, InfraSegment[ { walk } ], opts ]
 
 FindInfraGoldenSection[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
-  FindInfraGoldenSection[ graph,
-    InfraSegment[ segReps @ FindInfraSegment[ graph, p1, p2, All ] ], opts ]
+  FindInfraGoldenSection[ graph, FindInfraSegment[ graph, p1, p2 ], opts ]
 
 
 (* ===================== FindInfraReflection ===================== *)
@@ -277,7 +310,7 @@ FindInfraGoldenSection[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
    On a graph this is the geodesic continuation of x past a at the same distance. *)
 
 FindInfraReflection[ graph_Graph, x_, a_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   spreadFind[ InfraPoint, count,
     { x0, a0 } |-> With[ { r = GraphDistance[ graph, a0, x0 ] },
       If[ r === Infinity, {},
@@ -297,7 +330,7 @@ FindInfraReflection[ graph_Graph, x_, a_,
 Options[ CompleteInfraEquilateralTriangle ] = { Method -> "Metric" };
 
 CompleteInfraEquilateralTriangle[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   spreadFind[ InfraPoint, count,
     { q1, q2 } |-> With[ { r = GraphDistance[ graph, q1, q2 ] },
       If[ r === Infinity, {},
@@ -315,11 +348,10 @@ CompleteInfraEquilateralTriangle[ graph_Graph, p1_, p2_,
    InfraSegment / InfraPath / InfraRay -- unwrap via linePointSet (Tools.wl). *)
 
 FindInfraCommonPoint[ graph_Graph, lines_List,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   With[ { vs = If[ Length[ lines ] == 0, {},
         Apply[ Intersection, linePointSet /@ lines ] ] },
-    { capped = infraCap[ vs, count ] },
-    If[ capped === $Failed, $Failed, InfraPoint[ { # } ] & /@ capped ]
+    bundleTake[ InfraPoint, vs, count ]
   ]
 
 
@@ -330,7 +362,7 @@ FindInfraCommonPoint[ graph_Graph, lines_List,
    foot (midpoints of equidistant pairs); this is the closest-vertex test. *)
 
 FindClosestInfraPoint[ graph_Graph, line_, point_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   spreadFind[ InfraPoint, count,
     { line0, point0 } |-> MinimalBy[ line0, GraphDistance[ graph, point0, # ] & ], line, point ]
 

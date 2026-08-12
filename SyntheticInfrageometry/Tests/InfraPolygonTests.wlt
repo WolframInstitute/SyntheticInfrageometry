@@ -37,20 +37,20 @@ VerificationTest[
 
 VerificationTest[
   With[ { res = FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6 ] },
-    Head /@ res === { InfraPolygon } && Length[ ( First @ res )[[ 1, 1 ]] ] == 6
+    Head[ res ] === InfraPolygon && Length[ res[ "Realizations" ][[ 1 ]] ] == 6
   ],
   True,
   TestID -> "FindInfraRegularPolygon-cycle6-equilateral"
 ]
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6, All ],
+  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6, All ][ "Realizations" ],
   1,
   TestID -> "FindInfraRegularPolygon-cycle6-count-All"
 ]
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6, UpTo[ 5 ] ],
+  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6, UpTo[ 5 ] ][ "Realizations" ],
   1,
   TestID -> "FindInfraRegularPolygon-cycle6-count-UpTo"
 ]
@@ -62,7 +62,7 @@ VerificationTest[
    2-diagonals at distance 2, 3-diagonals (antipodes) at distance 3. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1, 2, 3 }, 6, All ],
+  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1, 2, 3 }, 6, All ][ "Realizations" ],
   1,
   TestID -> "FindInfraRegularPolygon-cycle6-full-profile"
 ]
@@ -71,7 +71,7 @@ VerificationTest[
    (max distance is 3); strict count returns $Failed. *)
 
 VerificationTest[
-  FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1, 5 }, 6 ],
+  FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1, 5 }, 6, 1 ],
   $Failed,
   TestID -> "FindInfraRegularPolygon-cycle6-impossible-diagonal"
 ]
@@ -82,7 +82,7 @@ VerificationTest[
 (* Unit squares in a 3x3 grid: 4 of them. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1 }, 4, All ],
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1 }, 4, All ][ "Realizations" ],
   4,
   TestID -> "FindInfraRegularPolygon-grid3x3-unit-squares"
 ]
@@ -91,7 +91,7 @@ VerificationTest[
 (* ===================== PetersenGraph: 12 pentagons ===================== *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { 1 }, 5, All ],
+  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { 1 }, 5, All ][ "Realizations" ],
   12,
   TestID -> "FindInfraRegularPolygon-petersen-12-pentagons"
 ]
@@ -100,14 +100,14 @@ VerificationTest[
 (* ===================== No 4-cycles in a path graph ===================== *)
 
 VerificationTest[
-  FindInfraRegularPolygon[ PathGraph[ Range[ 5 ] ], { 1 }, 4 ],
+  FindInfraRegularPolygon[ PathGraph[ Range[ 5 ] ], { 1 }, 4, 1 ],
   $Failed,
   TestID -> "FindInfraRegularPolygon-pathgraph-no-4-cycle"
 ]
 
 VerificationTest[
   FindInfraRegularPolygon[ PathGraph[ Range[ 5 ] ], { 1 }, 4, All ],
-  { },
+  InfraPolygon[ { } ],
   TestID -> "FindInfraRegularPolygon-pathgraph-no-4-cycle-All"
 ]
 
@@ -118,7 +118,7 @@ VerificationTest[
    No 3-cycles or longer cycles, so {2}, n = 3 returns $Failed. *)
 
 VerificationTest[
-  FindInfraRegularPolygon[ PathGraph[ Range[ 5 ] ], { 2 }, 3 ],
+  FindInfraRegularPolygon[ PathGraph[ Range[ 5 ] ], { 2 }, 3, 1 ],
   $Failed,
   TestID -> "FindInfraRegularPolygon-pathgraph-distance2-no-triangle"
 ]
@@ -127,7 +127,7 @@ VerificationTest[
    ({1,3,5,7} and {2,4,6,8}), so 2 square cycles. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ CycleGraph[ 8 ], { 2 }, 4, All ],
+  Length @ FindInfraRegularPolygon[ CycleGraph[ 8 ], { 2 }, 4, All ][ "Realizations" ],
   2,
   TestID -> "FindInfraRegularPolygon-cycle8-distance2-squares"
 ]
@@ -196,19 +196,19 @@ VerificationTest[
    both find them; {1, {3, 3}} finds none. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, Automatic }, 4, All ],
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, Automatic }, 4, All ][ "Realizations" ],
   4,
   TestID -> "FindInfraRegularPolygon-grid-Automatic-2diagonal"
 ]
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, { 2, 2 } }, 4, All ],
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, { 2, 2 } }, 4, All ][ "Realizations" ],
   4,
   TestID -> "FindInfraRegularPolygon-grid-range-2diagonal"
 ]
 
 VerificationTest[
-  FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, { 3, 3 } }, 4 ],
+  FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, { 3, 3 } }, 4, 1 ],
   $Failed,
   TestID -> "FindInfraRegularPolygon-grid-range-2diagonal-impossible"
 ]
@@ -217,7 +217,7 @@ VerificationTest[
    distance-1 5-cycles, so {Automatic} finds the same 12 as {1}. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { Automatic }, 5, All ],
+  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { Automatic }, 5, All ][ "Realizations" ],
   12,
   TestID -> "FindInfraRegularPolygon-petersen-Automatic-equilateral"
 ]
@@ -226,7 +226,7 @@ VerificationTest[
    every 2-diagonal in a 5-cycle is at distance 2, so all 12 pass. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { Automatic, Automatic }, 5, All ],
+  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { Automatic, Automatic }, 5, All ][ "Realizations" ],
   12,
   TestID -> "FindInfraRegularPolygon-petersen-Automatic-pair"
 ]
@@ -263,13 +263,13 @@ VerificationTest[
    {12, 13, 18, 17}, {13, 14, 19, 18}. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All ],
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All ][ "Realizations" ],
   16,
   TestID -> "FindInfraRegularPolygon-grid5-default-From-All"
 ]
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 ],
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 ][ "Realizations" ],
   4,
   TestID -> "FindInfraRegularPolygon-grid5-From-center-membership"
 ]
@@ -279,14 +279,14 @@ VerificationTest[
 
 VerificationTest[
   FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 -> 1 ],
-  { },
+  InfraPolygon[ { } ],
   TestID -> "FindInfraRegularPolygon-grid5-From-radius1-empty"
 ]
 
 (* "From" -> v -> 2: N_2(13) is large enough for unit squares around 13 to fit. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 -> 2 ] >= 4,
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 -> 2 ][ "Realizations" ] >= 4,
   True,
   TestID -> "FindInfraRegularPolygon-grid5-From-radius2-localized"
 ]
@@ -331,7 +331,7 @@ VerificationTest[
 
 VerificationTest[
   Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
-    "From" -> InfraPoint[ { 1, 25 } ] ],
+    "From" -> InfraPoint[ { 1, 25 } ] ][ "Realizations" ],
   2,
   TestID -> "FindInfraRegularPolygon-From-InfraPoint-multi-membership"
 ]
@@ -341,17 +341,17 @@ VerificationTest[
 
 VerificationTest[
   With[ { res = FindInfraPolygon[ GridGraph[ { 4, 4 } ], { 1, 4, 16, 13 } ] },
-    Head /@ res === { InfraPolygon } &&
-    Length[ ( First @ res )[ "Sides" ][[ 1 ]] ] == 4 &&
-    ( First @ res )[ "Length" ] === { 12 }
+    Head[ res ] === InfraPolygon &&
+    Length[ res[ "Sides" ][[ 1 ]] ] == 4 &&
+    res[ "Length" ] === { 12 }
   ],
   True,
   TestID -> "FindInfraPolygon-grid4x4-square"
 ]
 
-(* Default count = 1 returns a single polygon. *)
+(* Count 1 returns a wrapper with a single realisation. *)
 VerificationTest[
-  Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 } ],
+  Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, 1 ][ "Realizations" ],
   1,
   TestID -> "FindInfraPolygon-default-one"
 ]
@@ -359,13 +359,13 @@ VerificationTest[
 (* All enumerates the Cartesian product of per-side geodesics; the diagonal
    side 9 -> 1 of GridGraph[{3,3}] has 6 geodesics, the other two are unique. *)
 VerificationTest[
-  Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ],
+  Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ][ "Realizations" ],
   6,
   TestID -> "FindInfraPolygon-grid3x3-cartesian"
 ]
 
 VerificationTest[
-  AllTrue[ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ],
+  AllTrue[ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ][ "Realizations" ],
     InfraPolygonQ[ GridGraph[ { 3, 3 } ], # ] & ],
   True,
   TestID -> "FindInfraPolygon-all-valid"
@@ -383,7 +383,7 @@ VerificationTest[
    valid InfraPolygon. *)
 VerificationTest[
   With[ { res = FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6 ] },
-    InfraPolygonQ[ CycleGraph[ 6 ], First @ res ]
+    InfraPolygonQ[ CycleGraph[ 6 ], res[ "Realizations" ][[ 1 ]] ]
   ],
   True,
   TestID -> "FindInfraRegularPolygon-segment-sides-valid"

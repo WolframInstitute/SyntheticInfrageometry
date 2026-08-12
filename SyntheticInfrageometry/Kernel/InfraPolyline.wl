@@ -13,8 +13,8 @@ PackageScope[polylineToKnots]
    for consecutive legs.  InfraPolyline[{poly1, ..., polyk}] is the multi-
    realisation form.  Only auto-flatten on nested wrappers. *)
 
-InfraPolyline[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPolyline[ _List ] ] ] :=
-  InfraPolyline[ Flatten[ reps /. InfraPolyline[ xs_List ] :> xs, 1 ] ]
+(* Set canonicalisation and the shared accessors come from
+   defineInfraBundleRules (Tools.wl). *)
 
 (* "Length" = sum of leg edge counts per realisation; empty polyline = 0. *)
 InfraPolyline[ reps_List ][ "Length" ] :=
@@ -26,12 +26,6 @@ InfraPolyline[ reps_List ][ "Length" ] :=
 (* "Knots" = list of knot vertices wrapped as unary InfraPoint, per realisation. *)
 InfraPolyline[ reps_List ][ "Knots" ] :=
   Map[ poly |-> ( InfraPoint[ { # } ] & /@ polylineToKnots[ poly ] ), reps ]
-
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraPolyline[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraPolyline[ reps ] ]
-InfraPolyline[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraPolyline[ reps ] ]
-InfraPolyline[ reps_List ][ "Measure" ] := InfraMeasure[ InfraPolyline[ reps ] ]
-InfraPolyline[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPolyline[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraPolylineSubdivision ===================== *)
 
 (* Greedy chunking of a walk into the fewest geodesic InfraSegments whose

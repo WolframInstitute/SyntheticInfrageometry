@@ -4,20 +4,12 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* ===================== InfraCircle wrapper ===================== *)
 
 (* InfraCircle[{cycle}] is the unary form; InfraCircle[{cycle1, ..., cyclek}]
-   is the multi-realisation form.  Only auto-flatten on nested wrappers. *)
-
-InfraCircle[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraCircle[ _List ] ] ] :=
-  InfraCircle[ Flatten[ reps /. InfraCircle[ xs_List ] :> xs, 1 ] ]
+   is the multi-realisation form.  Set canonicalisation and the shared accessors
+   come from defineInfraBundleRules (Tools.wl). *)
 
 (* "Length" = circumference per realisation: k for a k-vertex open cycle
    (wrap-around edge implicit, so #edges == #vertices). *)
 InfraCircle[ reps_List ][ "Length" ] := Length /@ reps
-
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraCircle[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraCircle[ reps ] ]
-InfraCircle[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraCircle[ reps ] ]
-InfraCircle[ reps_List ][ "Measure" ] := InfraMeasure[ InfraCircle[ reps ] ]
-InfraCircle[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraCircle[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraCircle ===================== *)
 
 (* A circle of radius r around c is a simple cycle in the level-surface
@@ -45,7 +37,7 @@ Options[ FindInfraCircle ] = {
 };
 
 FindInfraCircle[ graph_Graph, p_, r_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   spreadFind[ InfraCircle, count,
     { p0, r0 } |-> Module[ { properties, unknown, range, localG, levelSet, radius, levelGraph,
               vertsTest, tied, needed, k, kMax, batch, matching, accumulated },
@@ -108,25 +100,20 @@ propertyPredicateCircle[ _, _, _, other_ ] :=
    InfraCircle wrappers for direct use with NullHomotopicQ /
    FindInfraHomotopy.  Sorted by length ascending. *)
 
-FindInfraCycle[ graph_Graph, n : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
+FindInfraCycle[ graph_Graph, n : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   FindInfraCycle[ graph, { 1, VertexCount[ graph ] }, n ]
 
 FindInfraCycle[ graph_Graph, { k_Integer },
-    n : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
-  infraCap[
-    InfraCircle[ { # } ] & /@ (cycleToVertexSequence /@ FindCycle[ graph, { k }, All ]),
-    n
-  ]
+    n : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
+  With[ { cycles = cycleToVertexSequence /@ FindCycle[ graph, { k }, All ] },
+    bundleTake[ InfraCircle, cycles, n ] ]
 
 FindInfraCycle[ graph_Graph, { kMin_Integer, kMax_ },
-    n : ( _Integer | UpTo[ _Integer ] | All ) : 1 ] :=
-  With[ { maxK = Min[ kMax, VertexCount[ graph ] ] },
-    infraCap[
-      InfraCircle[ { # } ] & /@ SortBy[ Length ] @
-        Flatten[ cycleToVertexSequence /@ FindCycle[ graph, { # }, All ] & /@ Range[ kMin, maxK ], 1 ],
-      n
-    ]
-  ]
+    n : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
+  With[ { cycles = SortBy[ Length ] @ Flatten[
+        cycleToVertexSequence /@ FindCycle[ graph, { # }, All ] & /@
+          Range[ kMin, Min[ kMax, VertexCount[ graph ] ] ], 1 ] },
+    bundleTake[ InfraCircle, cycles, n ] ]
 
 
 (* ===================== InfraCircleQ ===================== *)
@@ -154,7 +141,7 @@ InfraCircleQ[ _Graph, cycle_List ] /; Length[ cycle ] < 3 := False
 dispatchConstruction[ graph_Graph, InfraCircle[ center_, r_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindInfraCircle[ graph, center, r, All ],
+      FindInfraCircle[ graph, center, r, All ][ "Realizations" ],
       "Select" /. { opts } /. "Select" -> None,
       True, <| "Center" -> center,
                "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],

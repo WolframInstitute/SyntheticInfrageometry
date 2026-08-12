@@ -3,6 +3,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageImport["WolframInstitute`Infrageometry`"]
 
 PackageScope[dagGeodesics]
+PackageScope[dagLayers]
 PackageScope[segReps]
 PackageScope[SeparatingSetQ]
 PackageScope[findAllMinimalAdmissible]
@@ -18,7 +19,14 @@ PackageScope[applyPruning]
 PackageScope[infraSpread]
 PackageScope[infraCap]
 PackageScope[spreadFind]
+PackageScope[bundleTake]
+PackageScope[$infraBundleHeads]
+PackageScope[defineInfraBundleRules]
 PackageScope[infraVertexMultiset]
+PackageScope[infraEdgeMultiset]
+PackageScope[atomVertexMasses]
+PackageScope[atomEdgeMasses]
+PackageScope[atomFamilySize]
 PackageScope[infraRepType]
 PackageScope[infraRepSeqs]
 PackageScope[infraRepVerts]
@@ -293,39 +301,83 @@ findAllMinimalAdmissible[ graph_Graph, set_List, admissible_, pruning_ ] :=
 
 (* ===================== Multi-realisation wrapper helpers ===================== *)
 
-(* Find* functions return a List of unary wrappers InfraX[{r}]; the multi-
-   realisation wrapper InfraX[{r1, ..., rk}] is constructed by wrapping such
-   a list, with the auto-flatten rule in each per-primitive file collapsing
-   the result. *)
+(* A multi-object is a SET of realisations: InfraX[{r1, ..., rk}], canonical
+   iff duplicate-free.  Realisations are alternative witnesses of one
+   construction -- all equally admissible -- so no invariant distinguishes
+   them and there is no mass channel here.  The vertex / edge measure of a
+   bundle is a lossy PROJECTION off it (InfraMeasure), never stored state;
+   the one head whose projection is lossless, and hence the one head that
+   carries a measure, is InfraPoint (see InfraPoint.wl).
+
+   A realisation slot holds either an explicit realisation or a compact atom
+   (a geodesic-DAG Graph, InfraSegment only) standing for its whole family. *)
+
+(* the bundle heads whose first argument is a realisation list; the single
+   source of truth for the canonicalisation rules and measure dispatch. *)
+$infraBundleHeads = InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString |
+  InfraShell | InfraBall | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse |
+  InfraPolygon | InfraTriangle | InfraRay | InfraPolyline;
+
+
+(* Set canonicalisation + shared accessors for one bundle head.  The
+   AllTrue[.., ListQ || GraphQ] realisation guard keeps scene-language forms
+   (bare-vertex arguments, e.g. InfraShell[c, r]) inert; on graphs whose
+   vertices are themselves lists a scene form is indistinguishable from a
+   bundle (pre-existing fragility of the single-List-arg convention). *)
+
+defineInfraBundleRules[ head_Symbol ] := (
+  (* idempotency: re-wrapping a wrapper is the identity (the old
+     "wrap the Find* output to collapse" idiom stays valid) *)
+  head[ inner_head ] := inner;
+  head[ reps_List ] /; AnyTrue[ reps, MatchQ[ head[ _List ] ] ] :=
+    head[ Flatten[ reps /. head[ xs_List ] :> xs, 1 ] ];
+  head[ reps_List ] /; AllTrue[ reps, ListQ[ # ] || GraphQ[ # ] & ] && ! DuplicateFreeQ[ reps ] :=
+    head[ DeleteDuplicates @ reps ];
+  head[ reps_List ][ "Realizations" ] := reps;
+  head[ reps_List ][ "First" ]        := First @ reps;
+  (* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v);
+     ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+  head[ reps_List ][ "OccupationCount" ]    := infraVertexMultiset[ head[ reps ] ];
+  head[ reps_List ][ "OccupationMeasure" ]  := InfraMeasure[ head[ reps ] ];
+  head[ reps_List ][ "Measure" ]            := InfraMeasure[ head[ reps ] ];
+  head[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ head[ reps ], Method -> "Probability" ];
+)
+
+Scan[ defineInfraBundleRules,
+  List @@ $infraBundleHeads ]
 
 
 (* Adapt an anchor for one slot of a Cartesian product: a multi-realisation
-   wrapper or a List of unary wrappers spreads into its bare realisations;
-   anything else becomes a singleton. *)
+   wrapper or a List of unary wrappers spreads into its bare realisations
+   (an InfraPoint spreads over its support -- the measure is not an anchor
+   property, it is reconstructed at the projection); anything else becomes a
+   singleton. *)
 
-infraSpread[ InfraPoint[ verts_List, _List ] ] := verts
-infraSpread[ ( InfraPoint | InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraPolygon | InfraTriangle | InfraRay | InfraPolyline )[ reps_List ] ] := reps
-infraSpread[ list_List ] /; AllTrue[ list,
-    MatchQ[ ( InfraPoint | InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse | InfraPolygon | InfraTriangle | InfraRay | InfraPolyline )[ { _ } ] ] ] :=
-  #[[ 1, 1 ]] & /@ list
+With[ { heads = InfraPoint | $infraBundleHeads },
+  infraSpread[ InfraPoint[ m_Association ] ] := Keys @ m;
+  infraSpread[ heads[ reps_List ] ] := reps;
+  infraSpread[ list_List ] /; AllTrue[ list, MatchQ[ heads[ { _ } ] ] ] :=
+    #[[ 1, 1 ]] & /@ list
+]
 infraSpread[ other_ ] := { other }
 
 
 (* Project a bundle of vertex-sequence realisations onto position i: the
-   weighted InfraPoint whose support is the i-th vertices (only realisations
-   long enough contribute) and whose masses are their multiplicities.  i may
-   be negative (counted from the end). *)
+   measured InfraPoint whose support is the i-th vertices (only realisations
+   long enough contribute) and whose masses are their multiplicities -- one of
+   the projections at which a measure is constructed.  i may be negative
+   (counted from the end). *)
 
 PackageScope[columnInfraPoint]
 
 columnInfraPoint[ reps_List, i_Integer ] :=
-  With[ { col = ( #[[ i ]] & ) /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] },
-    { m = Counts @ col },
-    InfraPoint[ Keys @ m, Values @ m ] ]
+  InfraPoint @ Counts[ ( #[[ i ]] & ) /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] ]
 
 
 (* Enumerate every geodesic of a geodesic-DAG segment: all source -> sink
-   directed paths (the one exponential step, materialised on demand). *)
+   directed paths (the one exponential step, materialised on demand).
+   dagGeodesics[dag, limit] is the lazy form: a DFS that stops as soon as
+   `limit` geodesics are collected -- never the whole family. *)
 
 dagGeodesics[ dag_Graph ] := Which[
   VertexCount[ dag ] == 0, { },
@@ -336,6 +388,32 @@ dagGeodesics[ dag_Graph ] := Which[
       DeleteDuplicates @ Catenate @ Catenate @
         Table[ FindPath[ dag, s, t, Infinity, All ], { s, srcs }, { t, snks } ] ] ]
 
+dagGeodesics[ dag_Graph, All | Infinity ] := dagGeodesics[ dag ]
+dagGeodesics[ dag_Graph, limit_ ] := Which[
+  VertexCount[ dag ] == 0, { },
+  EdgeCount[ dag ] == 0,   Take[ List /@ VertexList[ dag ], UpTo[ countLimit @ limit ] ],
+  True,
+    (* bounded DFS with early Throw -- a built-in cannot stop mid-enumeration *)
+    Module[ { out = GroupBy[ List @@@ EdgeList[ dag ], First -> Last ],
+              cap = countLimit @ limit, acc = { }, go },
+      go[ path_ ] := With[ { nexts = Lookup[ out, Key @ Last @ path, { } ] },
+        If[ nexts === { },
+          ( AppendTo[ acc, path ]; If[ Length @ acc >= cap, Throw[ acc, dagGeodesics ] ] ),
+          Scan[ go[ Append[ path, # ] ] &, nexts ] ] ];
+      Catch[
+        Scan[ go[ { # } ] &,
+          Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ];
+        acc, dagGeodesics ] ] ]
+
+
+(* layer map of a geodesic interval DAG: v -> d(source, v); the DAG is
+   layer-aligned, so position i along every geodesic is layer i - 1. *)
+
+dagLayers[ dag_Graph ] :=
+  If[ VertexCount[ dag ] == 0, <||>,
+    With[ { s = First @ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] },
+      AssociationThread[ VertexList[ dag ], GraphDistance[ dag, s ] ] ] ]
+
 
 
 
@@ -345,7 +423,8 @@ dagGeodesics[ dag_Graph ] := Which[
    call when handed the DAG form. *)
 
 segReps[ InfraSegment[ dag_Graph ] ]        := dagGeodesics[ dag ]
-segReps[ InfraSegment[ reps_List, ___ ] ]   := reps
+segReps[ InfraSegment[ reps_List, ___ ] ]   :=
+  Catenate[ If[ GraphQ[ # ], dagGeodesics[ # ], { # } ] & /@ reps ]
 segReps[ ws : { ___InfraSegment } ]         := Catenate[ segReps /@ ws ]
 
 
@@ -371,38 +450,67 @@ infraCap[ _List, _Integer ]                             := $Failed
 
 
 (* Dispatch shell for source/endpoint anchors: spread each anchor, run the
-   single-pair core over the Cartesian product, union-deduplicate, cap, wrap. *)
+   single-tuple core over the Cartesian product, union-deduplicate (the result
+   is a set of alternatives), and apply the n | UpTo[n] | All count contract.
+   Returns ONE wrapper. *)
 
 spreadFind[ wrapHead_, count_, core_, anchors__ ] :=
   With[ { results = core @@@ Tuples[ infraSpread /@ { anchors } ] },
     If[ MemberQ[ results, $Failed ], $Failed,
-      With[ { capped = infraCap[ DeleteDuplicates @ Flatten[ results, 1 ], count ] },
-        If[ capped === $Failed, $Failed, wrapHead[ { # } ] & /@ capped ]
-      ]
-    ]
-  ]
+      bundleTake[ wrapHead, DeleteDuplicates @ Flatten[ results, 1 ], count ] ] ]
 
 
-(* Diffusion-diagram extractor: the vertex -> total-occurrence Association
-   used by InfraEqualQ.  Mirrors the per-head normalization of repVerts
-   inside InfraSceneVisualization.wl: realisations of point-shaped wrappers
-   are bare vertices; path / set / cycle wrappers carry vertex lists per
-   realisation; InfraPolyline realisations are leg-chains flattened via
-   polylineToVertexSeqs; InfraObject / InfraSet hold one bare vertex set. *)
+(* the count contract on a realisation set: strict n fails on under-supply. *)
 
-infraVertexMultiset[ InfraPoint[ verts_List, weights_List ] ] :=
-  AssociationThread[ verts -> weights ]
-infraVertexMultiset[ InfraPoint[ reps_List ] ] :=
-  Counts @ reps
-infraVertexMultiset[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay |
-                       InfraShell | InfraEllipticShell | InfraBall | InfraPlane |
-                       InfraCircle | InfraEllipse )[ reps_List ] ] :=
-  Counts @ Catenate @ reps
-infraVertexMultiset[ InfraSegment[ dag_Graph ] ] := GeodesicOccupation[ dag ]
-infraVertexMultiset[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] :=
-  Counts @ Catenate @ polylineToVertexSeqs[ reps ]
-infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] :=
-  Counts @ vs
+bundleTake[ head_, reps_, All ]               := head[ reps ]
+bundleTake[ head_, reps_, UpTo[ n_Integer ] ] := head[ Take[ reps, UpTo @ n ] ]
+bundleTake[ head_, reps_, n_Integer ]         :=
+  If[ Length @ reps < n, $Failed, head[ Take[ reps, n ] ] ]
+
+
+(* Vertex marginal of a wrapper: the raw occupation count c(v) = total
+   appearances across realisations, the association InfraMeasure normalises
+   and InfraEqualQ compares.  For an InfraPoint this is the object itself --
+   the measure IS the point; for every other head it is a lossy projection.
+   Realisation slots dispatch through atomVertexMasses so a compact
+   geodesic-DAG atom contributes its whole family's occupation (by DP, no
+   enumeration) exactly as the enumerated family would. *)
+
+infraVertexMultiset[ InfraPoint[ m_Association ] ] := m
+infraVertexMultiset[ InfraPoint[ reps_List ] ]     := Counts @ reps
+infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] := Counts @ vs
+infraVertexMultiset[ InfraSegment[ dag_Graph ] ]   := GeodesicOccupation[ dag ]
+With[ { heads = $infraBundleHeads },
+  infraVertexMultiset[ obj : ( head : heads )[ _List ] ] :=
+    Merge[ atomVertexMasses[ infraRepType @ head ] /@ infraRepSeqs @ obj, Total ]
+]
+
+
+(* one realisation slot's contribution: a Graph atom stands for its whole
+   geodesic family (occupation by the Brandes DP), anything else for itself.
+   familySize is the atom's realisation count -- the normalisation divisor
+   contribution of that slot. *)
+
+atomVertexMasses[ _ ][ dag_Graph ] := GeodesicOccupation[ dag ]
+atomVertexMasses[ type_ ][ rep_ ]  := Counts[ infraRepVerts[ type, rep ] ]
+
+atomEdgeMasses[ _ ][ _ ][ dag_Graph ] := KeyMap[ Sort[ List @@ # ] &, GeodesicEdgeOccupation[ dag ] ]
+atomEdgeMasses[ g_ ][ type_ ][ rep_ ] := Counts[ infraRepEdges[ g, type, rep ] ]
+
+atomFamilySize[ dag_Graph ] :=
+  With[ { occ = GeodesicOccupation[ dag ] }, If[ Length @ occ === 0, 1, Max @ Values @ occ ] ]
+atomFamilySize[ _ ] := 1
+
+
+(* Edge marginal, keyed by sorted vertex pair {a, b}: the raw count of
+   appearances across realisations, a Graph atom contributing its whole
+   family's per-edge occupation.  The graph is needed only for Sets-type
+   realisations (induced-subgraph edges). *)
+
+infraEdgeMultiset[ _, InfraSegment[ dag_Graph ] ] :=
+  KeyMap[ Sort[ List @@ # ] &, GeodesicEdgeOccupation[ dag ] ]
+infraEdgeMultiset[ g_, obj_ ] :=
+  Merge[ atomEdgeMasses[ g ][ infraRepType @ Head @ obj ] /@ infraRepSeqs @ obj, Total ]
 
 
 (* ===================== Visit measure ===================== *)
@@ -428,8 +536,7 @@ InfraMeasure[ obj_, opts:OptionsPattern[] ] :=
 visitMeasure[ g_, obj_, on_, method_ ] :=
   With[ { vm = infraVertexMultiset[ obj ],
           em = If[ on === "Vertices", <||>,
-                   KeyMap[ UndirectedEdge @@ # &, Counts @ Catenate[
-                     infraRepEdges[ g, infraRepType @ Head @ obj, # ] & /@ infraRepSeqs @ obj ] ] ] },
+                   KeyMap[ UndirectedEdge @@ # &, infraEdgeMultiset[ g, obj ] ] ] },
     Switch[ on,
       "Vertices", normalizeMeasure[ method, vm, obj ],
       "Edges",    normalizeMeasure[ method, em, obj ],
@@ -467,8 +574,9 @@ infraRepType[ InfraSet ]           = "Sets";
    bundle repVerts / repEdges consume after the polyline / set transforms. *)
 
 infraRepSeqs[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] := polylineToVertexSeqs @ reps
-infraRepSeqs[ ( InfraObject | InfraSet )[ vs_List ] ]                         := { vs }
-infraRepSeqs[ head_[ reps_List, ___ ] ]                                       := reps
+infraRepSeqs[ ( InfraObject | InfraSet )[ vs_List ] ]                        := { vs }
+infraRepSeqs[ InfraPoint[ m_Association ] ]                                  := Keys @ m
+infraRepSeqs[ head_[ reps_List, ___ ] ]                                      := reps
 
 (* per-type vertex / edge extraction from one canonical realisation -- the
    single source of truth shared with InfraSceneHighlight's repVerts / repEdges
@@ -479,14 +587,16 @@ infraRepSeqs[ head_[ reps_List, ___ ] ]                                       :=
 infraRepVerts[ "Points", rep_ ] := { rep }
 infraRepVerts[ _, rep_ ]        := rep
 
-(* normalization divisor N = number of realisations.  A weighted InfraPoint
-   stores one vertex per realisation as multiplicities, so N = Total[weights];
-   InfraObject / InfraSet hold a single set, so N = 1. *)
+(* normalization divisor N = the number of realisations the marginal was
+   summed over.  A measured InfraPoint stores one vertex per realisation as
+   multiplicities, so N = its total mass; a bundle sums the family size of each
+   realisation slot (1 for an explicit realisation, the whole geodesic count
+   for a compact DAG atom); InfraObject / InfraSet hold a single set, N = 1. *)
 
-infraNumReps[ InfraPoint[ _List, weights_List ] ] := Max[ Total @ weights, 1 ]
+infraNumReps[ InfraPoint[ m_Association ] ]         := If[ Length @ m === 0, 1, Total @ m ]
 infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
-infraNumReps[ InfraSegment[ dag_Graph ] ]          := With[ { occ = GeodesicOccupation[ dag ] }, If[ Length @ occ === 0, 1, Max[ Values @ occ ] ] ]
-infraNumReps[ head_[ reps_List, ___ ] ]            := Max[ Length @ reps, 1 ]
+infraNumReps[ InfraSegment[ dag_Graph ] ]           := atomFamilySize[ dag ]
+infraNumReps[ head_[ reps_List, ___ ] ]             := Max[ Total[ atomFamilySize /@ reps ], 1 ]
 
 (* per-type edge extraction, keyed by sorted lists {a, b}.  Sets-type edges are
    the induced subgraph, hence the graph dependency.  InfraMeasure remaps the

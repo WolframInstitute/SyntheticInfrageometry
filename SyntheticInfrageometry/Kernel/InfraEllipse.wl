@@ -4,20 +4,11 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* ===================== InfraEllipse wrapper ===================== *)
 
 (* InfraEllipse[{cycle}] is the unary form; InfraEllipse[{cycle1, ..., cyclek}] is the
-   multi-realisation form.  Only auto-flatten on nested wrappers. *)
+   multi-realisation form.  Set canonicalisation and the shared accessors
+   come from defineInfraBundleRules (Tools.wl). *)
 
-InfraEllipse[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraEllipse[ _List ] ] ] :=
-  InfraEllipse[ Flatten[ reps /. InfraEllipse[ xs_List ] :> xs, 1 ] ]
-
-InfraEllipse[ reps_List ][ "Realizations" ] := reps
 (* "Length" = circumference per realisation (#edges == #vertices for an open cycle). *)
-InfraEllipse[ reps_List ][ "Length" ]       := Length /@ reps
-InfraEllipse[ reps_List ][ "First" ]        := First @ reps
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraEllipse[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraEllipse[ reps ] ]
-InfraEllipse[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraEllipse[ reps ] ]
-InfraEllipse[ reps_List ][ "Measure" ] := InfraMeasure[ InfraEllipse[ reps ] ]
-InfraEllipse[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraEllipse[ reps ], Method -> "Probability" ]
+InfraEllipse[ reps_List ][ "Length" ] := Length /@ reps
 (* ===================== FindInfraEllipse ===================== *)
 
 (* An ellipse for foci {p1, p2} at sum c is a simple cycle in the induced
@@ -41,7 +32,7 @@ Options[ FindInfraEllipse ] = {
 };
 
 FindInfraEllipse[ graph_Graph, foci : { _, _ }, c_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   spreadFind[ InfraEllipse, count,
     { foci0, c0 } |-> Module[ { properties, unknown, range, verts, idx, dm, row1, row2,
               levelGraph, vertsTest, tied, needed, k, kMax, batch, matching, accumulated },

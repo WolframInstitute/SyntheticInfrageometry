@@ -6,19 +6,19 @@ BeginTestSection["InfraEllipticShell"]
    d(1,v)+d(3,v) = 2,2,2,4,6 for v=1..5 *)
 
 VerificationTest[
-  Sort @ First @ First @ First @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2 ],
+  Sort @ First @ First @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2 ],
   { 1, 2, 3 },
   TestID -> "FindInfraEllipticShell-PathGraph-c2-metric-interval"
 ]
 
 VerificationTest[
-  First @ First @ First @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 4 ],
+  First @ First @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 4 ],
   { 4 },
   TestID -> "FindInfraEllipticShell-PathGraph-c4-singleton"
 ]
 
 VerificationTest[
-  First @ First @ First @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 6 ],
+  First @ First @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 6 ],
   { 5 },
   TestID -> "FindInfraEllipticShell-PathGraph-c6-endpoint"
 ]
@@ -26,7 +26,7 @@ VerificationTest[
 (* ===== Range form {cMin, cMax} ===== *)
 
 VerificationTest[
-  Sort @ First @ First @ First @
+  Sort @ First @ First @
     FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, { 4, 6 } ],
   { 4, 5 },
   TestID -> "FindInfraEllipticShell-PathGraph-range-c4-c6"
@@ -38,7 +38,7 @@ VerificationTest[
    d(2,v)+d(15,v) = 4 for vertices in the 2-column inner strip *)
 
 VerificationTest[
-  Sort @ First @ First @ First @
+  Sort @ First @ First @
     FindInfraEllipticShell[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4 ],
   Sort[ { 2, 3, 6, 7, 10, 11, 14, 15 } ],
   TestID -> "FindInfraEllipticShell-Grid4x4-inner-strip"
@@ -47,7 +47,7 @@ VerificationTest[
 (* ===== Count forms ===== *)
 
 VerificationTest[
-  Length @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2, All ] >= 1,
+  Length @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2, All ][ "Realizations" ] >= 1,
   True,
   TestID -> "FindInfraEllipticShell-PathGraph-All-nonempty"
 ]
@@ -55,7 +55,7 @@ VerificationTest[
 (* Properties empty → Method ignored, returns single level set *)
 VerificationTest[
   Length @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2, All,
-    Properties -> { } ],
+    Properties -> { } ][ "Realizations" ],
   1,
   TestID -> "FindInfraEllipticShell-empty-properties-one-realisation"
 ]

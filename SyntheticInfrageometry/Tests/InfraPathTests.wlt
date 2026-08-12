@@ -18,47 +18,47 @@ VerificationTest[
 
 VerificationTest[
   FindInfraPath[ PathGraph[ Range[ 5 ] ], 1, 5 ],
-  { InfraPath[ { { 1, 2, 3, 4, 5 } } ] },
+  InfraPath[ { { 1, 2, 3, 4, 5 } } ],
   TestID -> "FindInfraPath-default-single-path"
 ]
 
 VerificationTest[
-  Length @ FindInfraPath[ GridGraph[ { 3, 3 } ], 1, 9, 4, All ],
+  Length @ FindInfraPath[ GridGraph[ { 3, 3 } ], 1, 9, 4, All ][ "Realizations" ],
   Length @ FindPath[ GridGraph[ { 3, 3 } ], 1, 9, 4, All ],
   TestID -> "FindInfraPath-All-matches-Wolfram-FindPath"
 ]
 
 VerificationTest[
-  AllTrue[
+  MatchQ[
     FindInfraPath[ GridGraph[ { 3, 3 } ], 1, 9, 4, All ],
-    MatchQ[ InfraPath[ { _List } ] ] ],
+    InfraPath[ { __List } ] ],
   True,
   TestID -> "FindInfraPath-output-shape"
 ]
 
 VerificationTest[
   AllTrue[
-    FindInfraPath[ GridGraph[ { 3, 3 } ], 1, 9, 4, All ],
-    p |-> InfraPathQ[ GridGraph[ { 3, 3 } ], First @ p[[ 1 ]] ] ],
+    FindInfraPath[ GridGraph[ { 3, 3 } ], 1, 9, 4, All ][ "Realizations" ],
+    p |-> InfraPathQ[ GridGraph[ { 3, 3 } ], p ] ],
   True,
   TestID -> "FindInfraPath-all-paths-pass-InfraPathQ"
 ]
 
 VerificationTest[
   FindInfraPath[ PathGraph[ Range[ 5 ] ], 1, 5, { 4 }, 1 ],
-  { InfraPath[ { { 1, 2, 3, 4, 5 } } ] },
+  InfraPath[ { { 1, 2, 3, 4, 5 } } ],
   TestID -> "FindInfraPath-exact-length-spec"
 ]
 
 VerificationTest[
-  Length @ FindInfraPath[ GridGraph[ { 3, 3 } ], 1, 9, { 4, 6 }, All ],
+  Length @ FindInfraPath[ GridGraph[ { 3, 3 } ], 1, 9, { 4, 6 }, All ][ "Realizations" ],
   Length @ FindPath[ GridGraph[ { 3, 3 } ], 1, 9, { 4, 6 }, All ],
   TestID -> "FindInfraPath-range-length-spec"
 ]
 
 VerificationTest[
   FindInfraPath[ PathGraph[ Range[ 5 ] ], 1, 5, Infinity, UpTo[ 10 ] ],
-  { InfraPath[ { { 1, 2, 3, 4, 5 } } ] },
+  InfraPath[ { { 1, 2, 3, 4, 5 } } ],
   TestID -> "FindInfraPath-UpTo-no-failure"
 ]
 
@@ -70,15 +70,15 @@ VerificationTest[
 
 VerificationTest[
   FindInfraPath[ PathGraph[ Range[ 5 ] ], 3, 3 ],
-  $Failed,
+  InfraPath[ { } ],
   TestID -> "FindInfraPath-degenerate-same-endpoints"
 ]
 
 (* ===================== Multi-anchor spread ===================== *)
 
 VerificationTest[
-  Sort[ #[[ 1, 1, { 1, -1 } ]] & /@
-    FindInfraPath[ PathGraph[ Range[ 5 ] ], InfraPoint[ { 1, 2 } ], 5, Infinity, All ] ],
+  Sort[ #[[ { 1, -1 } ]] & /@
+    FindInfraPath[ PathGraph[ Range[ 5 ] ], InfraPoint[ { 1, 2 } ], 5, Infinity, All ][ "Realizations" ] ],
   Sort[ { { 1, 5 }, { 2, 5 } } ],
   TestID -> "FindInfraPath-multi-source-spread"
 ]
@@ -89,7 +89,7 @@ VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
     "Direction" -> "Forward", "Length" -> 1,
     Properties -> {"Simple", "ShortestPath"} ],
-  { InfraPath[ { { 3, 4, 5 } } ] },
+  InfraPath[ { { 3, 4, 5 } } ],
   TestID -> "ExtendInfraPath-PathGraph-forward"
 ]
 
@@ -97,23 +97,21 @@ VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
     "Direction" -> "Backward", "Length" -> 2,
     Properties -> {"Simple", "ShortestPath"} ],
-  { InfraPath[ { { 1, 2, 3, 4 } } ] },
+  InfraPath[ { { 1, 2, 3, 4 } } ],
   TestID -> "ExtendInfraPath-PathGraph-backward"
 ]
 
 VerificationTest[
-  Sort[ First @ #[[ 1 ]] & /@
-    ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3 }, All,
-      Properties -> {"Simple", "ShortestPath"} ] ],
+  Sort @ ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3 }, All,
+      Properties -> {"Simple", "ShortestPath"} ][ "Realizations" ],
   Sort[ { { 1, 2, 3, 4, 5 }, { 5, 4, 3, 2, 1 } } ],
   TestID -> "ExtendInfraPath-PathGraph-both-automatic"
 ]
 
 VerificationTest[
-  Sort[ First @ #[[ 1 ]] & /@
-    ExtendInfraPath[ CycleGraph[ 6 ], { 1 }, All,
+  Sort @ ExtendInfraPath[ CycleGraph[ 6 ], { 1 }, All,
       "Direction" -> "Forward", "Length" -> 2,
-      Properties -> {"Simple", {"LongestPath", "Aggregation" -> "Sum"}} ] ],
+      Properties -> {"Simple", {"LongestPath", "Aggregation" -> "Sum"}} ][ "Realizations" ],
   Sort[ { { 1, 2, 3 }, { 1, 6, 5 } } ],
   TestID -> "ExtendInfraPath-CycleGraph-LongestPath-sum"
 ]
@@ -121,37 +119,36 @@ VerificationTest[
 VerificationTest[
   AllTrue[
     ExtendInfraPath[ GridGraph[ { 3, 3 } ], { 1 }, All,
-      "Direction" -> "Forward", "Length" -> 3, Properties -> { "Simple" } ],
-    p |-> InfraPathQ[ GridGraph[ { 3, 3 } ], First @ p[[ 1 ]] ] ],
+      "Direction" -> "Forward", "Length" -> 3, Properties -> { "Simple" } ][ "Realizations" ],
+    p |-> InfraPathQ[ GridGraph[ { 3, 3 } ], p ] ],
   True,
   TestID -> "ExtendInfraPath-all-extensions-pass-InfraPathQ"
 ]
 
 VerificationTest[
-  AllTrue[
+  MatchQ[
     ExtendInfraPath[ GridGraph[ { 3, 3 } ], { 1 }, All,
       "Direction" -> "BothSides", "Length" -> 2 ],
-    MatchQ[ InfraPath[ { _List } ] ] ],
+    InfraPath[ { __List } ] ],
   True,
   TestID -> "ExtendInfraPath-output-shape"
 ]
 
 VerificationTest[
-  Length @ First @ First @
+  Length @
     ExtendInfraPath[ PathGraph[ Range[ 7 ] ], { 4, 5 }, 1,
       "Direction" -> "Forward", "Length" -> 2,
-      Properties -> {"Simple", "ShortestPath"} ][[ 1 ]],
+      Properties -> {"Simple", "ShortestPath"} ][ "Realizations" ][[ 1 ]],
   4,
   TestID -> "ExtendInfraPath-Length-truncation"
 ]
 
 (* Multi-realisation input: each realisation is extended *)
 VerificationTest[
-  Sort[ First @ #[[ 1 ]] & /@
-    ExtendInfraPath[ PathGraph[ Range[ 7 ] ],
+  Sort @ ExtendInfraPath[ PathGraph[ Range[ 7 ] ],
       InfraPath[ { { 3 }, { 5 } } ], All,
       "Direction" -> "Forward", "Length" -> 1,
-      Properties -> {"Simple", "ShortestPath"} ] ],
+      Properties -> {"Simple", "ShortestPath"} ][ "Realizations" ],
   Sort[ { { 3, 2 }, { 3, 4 }, { 5, 4 }, { 5, 6 } } ],
   TestID -> "ExtendInfraPath-multi-realisation"
 ]
@@ -161,14 +158,14 @@ VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 4, 5 }, 1,
     "Direction" -> "Forward", "Length" -> 5,
     Properties -> {"Simple", "ShortestPath"} ],
-  { InfraPath[ { { 4, 5 } } ] },
+  InfraPath[ { { 4, 5 } } ],
   TestID -> "ExtendInfraPath-dead-end-freeze"
 ]
 
 VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 1,
     Properties -> {"Simple", "ShortestPath"} ],
-  { InfraPath[ { { 1, 2, 3, 4, 5 } } ] },
+  InfraPath[ { { 1, 2, 3, 4, 5 } } ],
   TestID -> "ExtendInfraPath-BothSides-extends-segment-to-line"
 ]
 
@@ -180,7 +177,7 @@ VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
     "Length" -> 1, "Direction" -> "BothSides",
     Properties -> {"Simple", "ShortestPath"} ],
-  { InfraPath[ { { 2, 3, 4, 5 } } ] },
+  InfraPath[ { { 2, 3, 4, 5 } } ],
   TestID -> "ExtendInfraPath-BothSides-symmetric-one-step"
 ]
 
@@ -192,7 +189,7 @@ VerificationTest[
   ExtendInfraPath[ PathGraph[ Range[ 5 ] ], { 4, 5 }, 1,
     "Length" -> 5, "Direction" -> "BothSides",
     Properties -> {"Simple", "ShortestPath"} ],
-  { InfraPath[ { { 1, 2, 3, 4, 5 } } ] },
+  InfraPath[ { { 1, 2, 3, 4, 5 } } ],
   TestID -> "ExtendInfraPath-BothSides-asymmetric-tail"
 ]
 

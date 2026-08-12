@@ -92,7 +92,7 @@ ShellViewer[ g_Graph ] :=
       seed;
       With[ {
           shells = If[ r < 1, {},
-            #[[ 1, 1 ]] & /@ Take[ FindInfraShell[ g, p, r, All, Properties -> properties ], UpTo[ n ] ] ] },
+            Take[ FindInfraShell[ g, p, r, All, Properties -> properties ][ "Realizations" ], UpTo[ n ] ] ] },
         EventHandler[
           HighlightGraph[
             InfraSceneHighlight[ g, { InfraShell[ shells ] -> $InfraShellColor } ],
@@ -129,7 +129,7 @@ CircleViewer[ g_Graph ] :=
       With[ {
           circles = If[ r < 1, {},
             Take[
-              applySelectOption[ g, #[[ 1, 1 ]] & /@ FindInfraCircle[ g, p, r, All ],
+              applySelectOption[ g, FindInfraCircle[ g, p, r, All ][ "Realizations" ],
                 sel, True, <| "Center" -> p, "Radius" -> r |> ],
               UpTo[ n ] ] ] },
         EventHandler[

@@ -12,17 +12,12 @@ PackageScope[findPolygonCore]
    the last side returns to the first corner).  InfraPolygon[{poly1, ..., polyk}]
    is the multi-realisation form.  Auto-flatten on nested wrappers. *)
 
-InfraPolygon[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraPolygon[ _List ] ] ] :=
-  InfraPolygon[ Flatten[ reps /. InfraPolygon[ xs_List ] :> xs, 1 ] ]
+(* Set canonicalisation and the shared accessors come from
+   defineInfraBundleRules (Tools.wl). *)
 
 (* "Sides" = the InfraSegment legs per realisation. *)
 InfraPolygon[ reps_List ][ "Sides" ] := reps
 
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraPolygon[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraPolygon[ reps ] ]
-InfraPolygon[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraPolygon[ reps ] ]
-InfraPolygon[ reps_List ][ "Measure" ] := InfraMeasure[ InfraPolygon[ reps ] ]
-InfraPolygon[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPolygon[ reps ], Method -> "Probability" ]
 (* "Length" = per-realisation perimeter edge count (sum of leg edge counts). *)
 InfraPolygon[ reps_List ][ "Length" ] :=
   Replace[ reps,
@@ -45,9 +40,9 @@ InfraPolygon[ reps_List ][ "Vertices" ] :=
 Options[ FindInfraPolygon ] = { Properties -> { }, Method -> "Exhaustive" };
 
 FindInfraPolygon[ graph_Graph, vertices_List /; Length[ vertices ] >= 3,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   With[ { core = findPolygonCore[ graph, vertices, count, opts ] },
-    If[ core === $Failed, $Failed, InfraPolygon[ { # } ] & /@ core ]
+    If[ core === $Failed, $Failed, InfraPolygon[ core ] ]
   ]
 
 
@@ -107,7 +102,7 @@ Options[ FindInfraRegularPolygon ] = {
 };
 
 FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   With[ { core = Module[ { properties, methodSpec, dm, idx, vs, candidates, pruning, methodHead,
               fromSpec, anchor, radius, workGraph, workVs, workDm },
       properties = OptionValue[ FindInfraRegularPolygon, { opts }, Properties ];
@@ -145,10 +140,9 @@ FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
         If[ capped === $Failed, $Failed,
           (* promote each closed corner cycle to a closed chain of geodesic
              InfraSegment sides (first shortest path per side) *)
-          Map[
-            cyc |-> InfraPolygon[ {
-              MapThread[ { a, b } |-> InfraSegment[ { FindShortestPath[ graph, a, b ] } ],
-                { cyc, RotateLeft @ cyc } ] } ],
+          InfraPolygon @ Map[
+            cyc |-> MapThread[ { a, b } |-> InfraSegment[ { FindShortestPath[ graph, a, b ] } ],
+              { cyc, RotateLeft @ cyc } ],
             capped ] ]
       ]
     ]
@@ -256,14 +250,14 @@ InfraRegularPolygonQ[ _Graph, cycle_List, _List ] /; Length[ cycle ] < 3 := Fals
 dispatchConstruction[ graph_Graph, InfraPolygon[ As_List, n_Integer, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindInfraRegularPolygon[ graph, As, n, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindInfraRegularPolygon ] ] ],
+      FindInfraRegularPolygon[ graph, As, n, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraRegularPolygon ] ] ][ "Realizations" ],
       "Select" /. { opts } /. "Select" -> None,
       True, <||> ],
     extractBranches[ { opts } ] ]
 
 dispatchConstruction[ graph_Graph, InfraPolygon[ verts_List, opts___Rule ] ] :=
   capBranches[
-    #[[ 1, 1 ]] & /@ FindInfraPolygon[ graph, verts, All,
-      Sequence @@ FilterRules[ { opts }, Options[ FindInfraPolygon ] ] ],
+    FindInfraPolygon[ graph, verts, All,
+      Sequence @@ FilterRules[ { opts }, Options[ FindInfraPolygon ] ] ][ "Realizations" ],
     extractBranches[ { opts } ] ]

@@ -180,7 +180,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    FindInfraShellCenter[g, First @ FindInfraShell[g, 13, 2]] ===
+    FindInfraShellCenter[g, FindInfraShell[g, 13, 2]] ===
       FindInfraShellCenter[g, Select[VertexList[g], GraphDistance[g, 13, #] == 2 &]]
   ],
   True,
@@ -439,7 +439,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    AllTrue[(#[[ 1, 1 ]] & /@ FindInfraBisectingHyperplane[g, 1, 5, All]), h |-> SeparatesQ[g, h, 1, 5]]
+    AllTrue[FindInfraBisectingHyperplane[g, 1, 5, All]["Realizations"], h |-> SeparatesQ[g, h, 1, 5]]
   ],
   True,
   TestID -> "SeparatesQ-bisecting-hyperplane-path"

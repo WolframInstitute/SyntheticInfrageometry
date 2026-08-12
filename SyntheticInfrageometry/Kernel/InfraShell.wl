@@ -4,19 +4,11 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* ===================== InfraShell wrapper ===================== *)
 
 (* InfraShell[{set}] is the unary form; InfraShell[{set1, ..., setk}] is the
-   multi-realisation form.  Only auto-flatten on nested wrappers. *)
-
-InfraShell[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraShell[ _List ] ] ] :=
-  InfraShell[ Flatten[ reps /. InfraShell[ xs_List ] :> xs, 1 ] ]
+   multi-realisation form.  Set canonicalisation and the shared accessors
+   come from defineInfraBundleRules (Tools.wl). *)
 
 (* "Volume" = vertex count per realisation. *)
 InfraShell[ reps_List ][ "Volume" ] := Length /@ reps
-
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraShell[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraShell[ reps ] ]
-InfraShell[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraShell[ reps ] ]
-InfraShell[ reps_List ][ "Measure" ] := InfraMeasure[ InfraShell[ reps ] ]
-InfraShell[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraShell[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraShell ===================== *)
 
 (* A shell of radius r around c is a vertex subset of the level surface
@@ -42,7 +34,7 @@ Options[ FindInfraShell ] = {
 };
 
 FindInfraShell[ graph_Graph, p_, r_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   spreadFind[ InfraShell, count,
     { p0, r0 } |-> Module[ { properties, methodSpec, methodHead, pruning, range, localG, levelSet, radius, admissible },
       properties = OptionValue[ FindInfraShell, { opts }, Properties ];
@@ -100,7 +92,7 @@ propertyPredicateShell[ _, _, _, other_ ] :=
 Options[ FindInfraOsculatingShell ] = Options[ FindInfraShell ];
 
 FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ ] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[ ] ] :=
   Module[ { walks, vlist, vidx, dm, pairs, sets, capped },
     walks = infraSpread @ If[ ListQ @ path, InfraPath[ { path } ], path ];
     vlist = VertexList @ graph;
@@ -121,10 +113,9 @@ FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
         1 ],
       { Last, First } ];
     sets = Flatten[
-      ( ( #[[ 1, 1 ]] & ) /@ FindInfraShell[ graph, #[[ 1 ]], #[[ 2 ]], All, opts ] & ) /@ pairs,
+      ( FindInfraShell[ graph, #[[ 1 ]], #[[ 2 ]], All, opts ][ "Realizations" ] & ) /@ pairs,
       1 ];
-    capped = infraCap[ sets, count ];
-    If[ capped === $Failed, $Failed, InfraShell[ { # } ] & /@ capped ]
+    bundleTake[ InfraShell, sets, count ]
   ]
 
 
@@ -256,8 +247,8 @@ SeparatesQ[ graph_Graph, vs_List, u_, v_ ] :=
 dispatchConstruction[ graph_Graph, InfraShell[ center_, r_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      #[[ 1, 1 ]] & /@ FindInfraShell[ graph, center, r, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindInfraShell ] ] ],
+      FindInfraShell[ graph, center, r, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraShell ] ] ][ "Realizations" ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Center" -> center,
                 "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],

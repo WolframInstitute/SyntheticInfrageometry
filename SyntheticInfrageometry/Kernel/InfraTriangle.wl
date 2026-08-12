@@ -8,8 +8,8 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
    is the multi-realisation form.  Same storage shape as InfraPolygon, restricted
    to three sides.  Auto-flatten on nested wrappers. *)
 
-InfraTriangle[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraTriangle[ _List ] ] ] :=
-  InfraTriangle[ Flatten[ reps /. InfraTriangle[ xs_List ] :> xs, 1 ] ]
+(* Set canonicalisation and the shared accessors come from
+   defineInfraBundleRules (Tools.wl). *)
 
 InfraTriangle[ reps_List ][ "Sides" ] := reps
 
@@ -21,12 +21,6 @@ InfraTriangle[ reps_List ][ "Length" ] :=
 
 InfraTriangle[ reps_List ][ "Vertices" ] :=
   Map[ poly |-> ( InfraPoint[ { # } ] & /@ Most @ polylineToKnots[ poly ] ), reps ]
-
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraTriangle[ reps_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraTriangle[ reps ] ]
-InfraTriangle[ reps_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraTriangle[ reps ] ]
-InfraTriangle[ reps_List ][ "Measure" ] := InfraMeasure[ InfraTriangle[ reps ] ]
-InfraTriangle[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraTriangle[ reps ], Method -> "Probability" ]
 (* ===================== FindInfraTriangle ===================== *)
 
 (* Triangle through corners a, b, c: the n = 3 case of FindInfraPolygon. *)
@@ -34,9 +28,9 @@ InfraTriangle[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraTriangl
 Options[ FindInfraTriangle ] = { Properties -> { }, Method -> "Exhaustive" };
 
 FindInfraTriangle[ graph_Graph, vertices_List /; Length[ vertices ] === 3,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   With[ { core = findPolygonCore[ graph, vertices, count, opts ] },
-    If[ core === $Failed, $Failed, InfraTriangle[ { # } ] & /@ core ]
+    If[ core === $Failed, $Failed, InfraTriangle[ core ] ]
   ]
 
 
@@ -55,6 +49,6 @@ InfraTriangleQ[ _Graph, _ ] := False
 
 dispatchConstruction[ graph_Graph, InfraTriangle[ verts_List, opts___Rule ] ] :=
   capBranches[
-    #[[ 1, 1 ]] & /@ FindInfraTriangle[ graph, verts, All,
-      Sequence @@ FilterRules[ { opts }, Options[ FindInfraTriangle ] ] ],
+    FindInfraTriangle[ graph, verts, All,
+      Sequence @@ FilterRules[ { opts }, Options[ FindInfraTriangle ] ] ][ "Realizations" ],
     extractBranches[ { opts } ] ]
