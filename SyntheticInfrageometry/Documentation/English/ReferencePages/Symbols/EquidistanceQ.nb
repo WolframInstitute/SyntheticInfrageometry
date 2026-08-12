@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     16228,        442]
-NotebookOptionsPosition[     11104,        335]
-NotebookOutlinePosition[     12207,        368]
-CellTagsIndexPosition[     12128,        363]
+NotebookDataLength[     29780,        782]
+NotebookOptionsPosition[     22965,        649]
+NotebookOutlinePosition[     24141,        684]
+CellTagsIndexPosition[     24062,        679]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -24,7 +24,7 @@ Cell["EquidistanceQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"552a7bb3-dafa-405b-a34f-5dcf66257f90"],
+ Cell["   ", "ModInfo",ExpressionUUID->"e1f4018a-dc47-4f8c-99df-5e8a42548476"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -35,17 +35,161 @@ Cell[TextData[{
     "PackageLink",
     BaseStyle->"InlineFormula"], "[", 
    RowBox[{
-    StyleBox["graph", "TI"], ",", " ", 
+    StyleBox["g", "TI"], ",", " ", 
     StyleBox["a", "TI"], ",", " ", 
     StyleBox["b", "TI"], ",", " ", 
     StyleBox["c", "TI"], ",", " ", 
     StyleBox["d", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "08c53c8a-17d8-4b1f-a65c-c1d86bf4aabe"],
+  "2caef6d7-520b-4a79-bbf7-f4a2a74f7cc6"],
  "\[LineSeparator]",
- "tests Tarski's equidistance ab == cd: d(a, b) == d(c, d).",
+ "tests Tarski's equidistance ",
+ Cell[BoxData[
+  RowBox[{
+   StyleBox["a", "TI"], 
+   StyleBox["b", "TI"], "\[Congruent]", 
+   StyleBox["c", "TI"], 
+   StyleBox["d", "TI"]}]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "cdf97e25-1ea9-41e1-b5d3-2e89968b6cb3"],
+ ": whether ",
+ Cell[BoxData[
+  RowBox[{
+   StyleBox["d", "TI"], 
+   StyleBox["(",
+    SpanMaxSize->1], 
+   RowBox[{
+    StyleBox["a", "TI"], ",", 
+    StyleBox["b", "TI"]}], 
+   StyleBox[")",
+    SpanMaxSize->1], "=", 
+   StyleBox["d", "TI"], 
+   StyleBox["(",
+    SpanMaxSize->1], 
+   RowBox[{
+    StyleBox["c", "TI"], ",", 
+    StyleBox["d", "TI"]}], 
+   StyleBox[")",
+    SpanMaxSize->1]}]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "249a3640-ec61-4869-820b-f7c83c72ab39"],
+ " in ",
+ StyleBox["g", "TI"],
+ ".",
  "\n"
-}], "Usage",ExpressionUUID->"6e63202f-866c-4b94-aea8-4a34cb69b46b"]
+}], "Usage",ExpressionUUID->"26f197d1-4e37-424d-895f-4dbd4063a367"],
+
+Cell[TextData[{
+ "Equidistance is the second primitive of Tarski's axiomatization, alongside \
+betweenness (",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["BetweennessQ"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/BetweennessQ", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "1bfe5b6f-da4b-48b1-badc-2341b71a53c8"],
+ "). It is a ",
+ StyleBox["four-place",
+  FontWeight->"Bold"],
+ " relation on vertices \[LongDash] it compares two segments rather than \
+describing one \[LongDash] and it is what does the work of congruence: Tarski \
+has no separate congruence primitive, no motions, and no ruler."
+}], "Notes",ExpressionUUID->"b72641d8-b2df-441a-977d-5e84205a8929"],
+
+Cell[TextData[{
+ "On a graph it reduces to equality of graph distances, so it is cheap. What \
+is not cheap, and not automatic, is that the axioms governing it hold: ",
+ Cell[BoxData["TarskiCongruenceReflexivityQ"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "418a22b3-4e25-41ab-a540-efc07d7f2d98"],
+ ", ",
+ Cell[BoxData["TarskiCongruenceTransitivityQ"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "88c50470-e1ce-4a3e-9b9a-abf6a6a57dc0"],
+ " and ",
+ Cell[BoxData["TarskiCongruenceIdentityQ"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "37a8c3f1-9250-4755-804d-03cc16f491cc"],
+ " test the three that concern equidistance alone, and ",
+ Cell[BoxData["TarskiAxiomQ"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "07306e7b-7050-4d2c-848e-b11c5a722ee1"],
+ " runs the whole dashboard."
+}], "Notes",ExpressionUUID->"be174b52-8a2f-4740-9c06-8433ced94b05"],
+
+Cell[TextData[{
+ "Because the graph metric takes only integer values, the equidistance \
+classes are coarse: every pair at distance ",
+ StyleBox["k", "TI"],
+ " is congruent to every other. ",
+ Cell[BoxData["TarskiEquidistanceClasses"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "a82eb74c-4c50-42c0-a9b9-2e502804c5e1"],
+ " returns that partition. This is the sharpest way in which a graph is not a \
+Euclidean plane \[LongDash] there are only ",
+ Cell[BoxData[
+  RowBox[{
+   StyleBox["diam",
+    FontSlant->"Plain"], 
+   StyleBox["(",
+    SpanMaxSize->1], 
+   StyleBox["g", "TI"], 
+   StyleBox[")",
+    SpanMaxSize->1]}]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "7127eb2a-484a-492d-ba87-14a3b7b585fd"],
+ " congruence classes of segments, so congruence carries far less information \
+than it does classically."
+}], "Notes",ExpressionUUID->"d2efb863-1033-4326-8fa1-d5c4ff16456b"],
+
+Cell["Corresponding notions in the classical axiom systems:", "Notes",ExpressionUUID->"8655e858-12b3-4e1d-bcfb-750fc03eba05"],
+
+Cell[BoxData[GridBox[{
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "048e3ea9-fb56-45a5-91fa-3f953308807e"], Cell["System", "TableText",
+     FontWeight->Bold,ExpressionUUID->"b1649fee-2259-48e6-b378-631b0a6aa13d"],
+     Cell["Name", "TableText",
+     FontWeight->Bold,ExpressionUUID->"4cb44cc8-a1b7-49f2-be03-0c7fa1a31160"],
+     Cell["Statement", "TableText",
+     FontWeight->Bold,ExpressionUUID->"4a35a279-dfdc-4f97-a7ae-83b7c8d225f7"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "84762544-a4f9-4ff8-bdd7-aef004bcc699"], Cell[
+    "Tarski", "TableText",ExpressionUUID->
+     "8784ba41-9747-4ebe-a0b6-cd3e79f70faa"], Cell[
+    "ab congruent to cd, primitive", "TableText",ExpressionUUID->
+     "37b83aa9-f9a0-4410-a670-d08fc2c923de"], Cell["\<\
+One of the two primitive relations, together with betweenness.\
+\>", "TableText",ExpressionUUID->"8d18d220-7f46-4f50-9a53-7230f5e337bb"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "b3a64364-b0ec-4d96-9f06-a5c6cf4d810e"], Cell[
+    "Hilbert", "TableText",ExpressionUUID->
+     "e968b1b6-a6a3-4a20-8723-cc75ed3cb51e"], Cell[
+    "Group III, III.1 to III.5", "TableText",ExpressionUUID->
+     "d78993ab-8e06-4443-96f3-f154750a457d"], Cell[
+    "Segment and angle congruence, taken as primitive.", "TableText",
+     ExpressionUUID->"423ad446-dd02-4ffb-9246-3188d8682e29"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "e871104e-e1c4-4186-8e28-d7fd7f0d9ef5"], Cell[
+    "Euclid", "TableText",ExpressionUUID->
+     "7984f093-7461-43a0-a290-d3a03e8997ad"], Cell[
+    "Common Notion 4", "TableText",ExpressionUUID->
+     "53fe74df-0834-4e6d-a89e-30b4c1cc366c"], Cell["\<\
+Things coinciding with one another are equal \[LongDash] superposition, never \
+postulated as a relation.\
+\>", "TableText",ExpressionUUID->"d8522e3b-9daa-4ecf-afde-8e6bf570805b"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "eb5325bd-00e8-45c1-ac2a-0cdca69d3206"], Cell[
+    "Birkhoff", "TableText",ExpressionUUID->
+     "5f588179-45e1-41be-9b35-ddf89326b153"], Cell[
+    "Ruler postulate", "TableText",ExpressionUUID->
+     "cd166237-ae3f-4e87-a7c3-31e5c7e9779c"], Cell[
+    "Congruence is equality of ruler-coordinate differences.", "TableText",
+     ExpressionUUID->"575922c3-64cb-44db-8518-6623e7582a33"]}
+  }]], "3ColumnTableMod",ExpressionUUID->"1fc85d93-c8e2-46e9-b55d-\
+745aee104c43"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -67,45 +211,57 @@ Cell[TextData[{
 
 Cell[TextData[{
  Cell[BoxData[
-  TagBox[
-   FrameBox["\<\"XXXX\"\>"],
-   "FunctionPlaceholder"]], "InlineSeeAlsoFunction",
-  TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "04f1f4f6-42ff-41c1-be38-c72199e55033"],
+  TemplateBox[{
+    Cell[
+     TextData["BetweennessQ"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/BetweennessQ", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "ecdeeecb-a23a-4833-949e-5e047d2c9eb2"],
+ " \[FilledVerySmallSquare] ",
  Cell[BoxData[
-  RowBox[{
-  Cell[TextData[StyleBox[
-   " \[FilledVerySmallSquare] ", "InlineSeparator"]],ExpressionUUID->
-    "e52cc72c-b17b-4daf-ba13-e4031a732989"], 
-   DynamicModuleBox[{$CellContext`nbobj$$ = NotebookObject[
-     FrontEndObject[
-      LinkObject["i7bzb_shm", 209, 9]], 22], $CellContext`cellobj$$ = 
-    CellObject[6753]}, 
-    TemplateBox[{
-      GraphicsBox[{{
-         Thickness[0.06], 
-         StrokeForm[
-          Hue[0.4167, 0.406, 0.502]], 
-         CircleBox[{0, 0}]}, {
-         Thickness[0.06], 
-         StrokeForm[
-          Hue[0.4167, 0.406, 0.502]], 
-         LineBox[{{0, 0.62}, {0, -0.62}}]}, {
-         Thickness[0.06], 
-         StrokeForm[
-          Hue[0.4167, 0.406, 0.502]], 
-         LineBox[{{-0.62, 0}, {0.62, 0}}]}}, 
-       ImagePadding -> {{1., 1.}, {2.4, 1.}}, ImageSize -> 16, 
-       PlotRange -> {{-1.06, 1.06}, {-1.06, 1.06}}, 
-       BaselinePosition -> (Center -> 
-        Center)], $CellContext`nbobj$$, $CellContext`cellobj$$},
-     "InlineListingAddButton"],
-    Initialization:>($CellContext`nbobj$$ = 
-      EvaluationNotebook[]; $CellContext`cellobj$$ = EvaluationCell[])]}]], 
-  "InlineListingAddButton",ExpressionUUID->
-  "ac548b96-3ee5-484c-99df-e6462c430c8c"]
-}], "SeeAlso",
- CellID->173389911,ExpressionUUID->"a2765fad-d0fd-4f94-9539-78ed28f4fade"]
+  TemplateBox[{
+    Cell[
+     TextData["TarskiStructure"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/TarskiStructure", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "15534e21-659d-4b41-82da-43225499031a"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TarskiEquidistanceClasses"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/\
+TarskiEquidistanceClasses", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "04441045-51c0-413d-bfc0-c31d7c5e45dd"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraBisectingHyperplane"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/\
+FindInfraBisectingHyperplane", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "035c3110-c18b-44f0-9233-318ff7f8603a"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TarskiAxiomQ"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/TarskiAxiomQ", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "3fc13609-4cd5-410b-8578-010bc9e3d943"]
+}], "SeeAlso",ExpressionUUID->"e648fb64-46dc-4696-8544-bbd98da325aa"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -122,8 +278,19 @@ Cell[TextData[{
 }], "TechNotesSection",
  CellID->792424486,ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74"],
 
+Cell[CellGroupData[{
+
 Cell["Related Guides", "MoreAboutSection",
  CellID->38303248,ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5"],
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox["TarskiGeometryGuide",
+  BaseStyle->"Link",
+  ButtonData->
+   "paclet:WolframInstitute/SyntheticInfrageometry/guide/TarskiGeometryGuide"]\
+], "InlineFormula",ExpressionUUID->"1f2839b5-012a-41c6-ab23-51eebf8f957f"]], \
+"MoreAbout",ExpressionUUID->"ff11014c-b936-46f4-baf1-06f737cd9204"]
+}, Open  ]],
 
 Cell[TextData[{
  "Related Links",
@@ -166,6 +333,8 @@ Cell[BoxData[{
  CellID->1969679695,ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502"]
 }, Open  ]],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
  InterpretationBox[GridBox[{
     {
@@ -179,6 +348,151 @@ Cell[BoxData[
    }],
   $Line = 0; Null]], "PrimaryExamplesSection",
  CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
+
+Cell["\<\
+Equidistance is symmetric in each pair and reflexive, so a segment is \
+congruent to itself read either way.\
+\>", "ExampleText",ExpressionUUID->"58ec8981-693b-4ec8-9755-46791ebf6d73"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", " ", "=", " ", 
+     RowBox[{"ExampleGraphData", "[", 
+      RowBox[{"\"\<Square\>\"", ",", " ", "\"\<Medium\>\""}], "]"}]}], "}"}], 
+   ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"a", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"GraphCenter", "[", "g", "]"}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"b", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"Sort", " ", "@", " ", 
+       RowBox[{"Select", "[", 
+        RowBox[{
+         RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"GraphDistance", "[", 
+            RowBox[{"g", ",", " ", "a", ",", " ", "#"}], "]"}], " ", "==", 
+           " ", "5"}], " ", "&"}]}], "]"}]}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"EquidistanceQ", "[", 
+      RowBox[{
+      "g", ",", " ", "a", ",", " ", "b", ",", " ", "a", ",", " ", "b"}], 
+      "]"}], ",", " ", 
+     RowBox[{"EquidistanceQ", "[", 
+      RowBox[{
+      "g", ",", " ", "a", ",", " ", "b", ",", " ", "b", ",", " ", "a"}], 
+      "]"}]}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[1]:= ",ExpressionUUID->"72de168a-6d0a-4a0d-ba88-c5379c5c8864"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"True", ",", "True"}], "}"}]], "Output",
+ CellLabel->"Out[1]= ",ExpressionUUID->"936292d5-1d46-4128-ba80-7f8ce88f0e36"]
+}, Open  ]],
+
+Cell["\<\
+The congruence classes are the distance classes, so their number is the \
+diameter rather than a continuum \[LongDash] on each substrate every pair at \
+a given distance is congruent to every other.\
+\>", "ExampleText",ExpressionUUID->"b0bd1285-3383-4951-a459-f19e24af2423"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Association", " ", "@", " ", 
+  RowBox[{"Table", "[", "\n", "   ", 
+   RowBox[{
+    RowBox[{"name", " ", "->", " ", 
+     RowBox[{"With", "[", "\n", "     ", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"g", " ", "=", " ", 
+         RowBox[{"ExampleGraphData", "[", 
+          RowBox[{"name", ",", " ", "\"\<Medium\>\""}], "]"}]}], "}"}], ",", 
+       "\n", "     ", 
+       RowBox[{"{", 
+        RowBox[{"c", " ", "=", " ", 
+         RowBox[{"First", " ", "@", " ", 
+          RowBox[{"GraphCenter", "[", "g", "]"}]}]}], "}"}], ",", "\n", 
+       "     ", 
+       RowBox[{"Length", " ", "@", " ", 
+        RowBox[{"Union", " ", "@", " ", 
+         RowBox[{"GraphDistance", "[", 
+          RowBox[{"g", ",", " ", "c"}], "]"}]}]}]}], "]"}]}], ",", "\n", 
+    "   ", 
+    RowBox[{"{", 
+     RowBox[{"name", ",", " ", 
+      RowBox[{"{", 
+       RowBox[{"\"\<Plane\>\"", ",", " ", "\"\<Square\>\"", ",", 
+        " ", "\"\<Hexagonal\>\""}], "}"}]}], "}"}]}], "]"}]}]], "Input",
+ CellLabel->"In[2]:= ",ExpressionUUID->"73923019-0274-47d9-9485-3f508cbab920"],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{"\<\"Plane\"\>", "\[Rule]", "9"}], ",", 
+   RowBox[{"\<\"Square\"\>", "\[Rule]", "10"}], ",", 
+   RowBox[{"\<\"Hexagonal\"\>", "\[Rule]", "10"}]}], 
+  "\[RightAssociation]"}]], "Output",
+ CellLabel->"Out[2]= ",ExpressionUUID->"16690207-8793-420b-afe9-68ae6b39f34f"]
+}, Open  ]],
+
+Cell["\<\
+Every vertex of the perpendicular bisector is, by definition, equidistant \
+from the two points it bisects.\
+\>", "ExampleText",ExpressionUUID->"ee661d76-e001-40b5-b9a7-8be17215e9a1"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", " ", "=", " ", 
+     RowBox[{"ExampleGraphData", "[", 
+      RowBox[{"\"\<Square\>\"", ",", " ", "\"\<Medium\>\""}], "]"}]}], "}"}], 
+   ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"a", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"GraphCenter", "[", "g", "]"}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"b", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"Sort", " ", "@", " ", 
+       RowBox[{"Select", "[", 
+        RowBox[{
+         RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"GraphDistance", "[", 
+            RowBox[{"g", ",", " ", "a", ",", " ", "#"}], "]"}], " ", "==", 
+           " ", "6"}], " ", "&"}]}], "]"}]}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"AllTrue", "[", 
+    RowBox[{
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"First", " ", "@", " ", 
+       RowBox[{"FindInfraBisectingHyperplane", "[", 
+        RowBox[{"g", ",", " ", "a", ",", " ", "b"}], "]"}]}]}], ",", " ", 
+     RowBox[{
+      RowBox[{"EquidistanceQ", "[", 
+       RowBox[{
+       "g", ",", " ", "a", ",", " ", "#", ",", " ", "b", ",", " ", "#"}], 
+       "]"}], " ", "&"}]}], "]"}]}], "]"}]], "Input",
+ CellLabel->"In[3]:= ",ExpressionUUID->"ffa0a69b-6dcc-4011-9c18-783c9a438960"],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[3]= ",ExpressionUUID->"11ba3b51-6177-4e18-8f5d-b17154cf9370"]
+}, Open  ]]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -304,7 +618,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/EquidistanceQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"1a246f1f-6a47-4dd9-9eef-74b32807d0ff"]
+ CellLabel->"URI",ExpressionUUID->"49407e67-e36e-457c-a9c6-7e571b418ae6"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -338,10 +652,12 @@ WindowMargins->{{5, Automatic}, {Automatic, 0}},
 TaggingRules->{
  "Metadata" -> {
    "title" -> "EquidistanceQ", "context" -> 
-    "WolframInstitute`SyntheticInfrageometry`", "keywords" -> {}, "summary" -> 
-    "", "paclet" -> "WolframInstitute/SyntheticInfrageometry", "uri" -> 
-    "WolframInstitute/SyntheticInfrageometry/ref/EquidistanceQ", "type" -> 
-    "Symbol", "index" -> True, "language" -> "en"}},
+    "WolframInstitute`SyntheticInfrageometry`", 
+    "keywords" -> {
+     "equidistance", "congruence", "Tarski", "four-place relation"}, 
+    "summary" -> "", "paclet" -> "WolframInstitute/SyntheticInfrageometry", 
+    "uri" -> "WolframInstitute/SyntheticInfrageometry/ref/EquidistanceQ", 
+    "type" -> "Symbol", "index" -> True, "language" -> "en"}},
 CreateCellID->True,
 CellContext->CellGroup,
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
@@ -355,14 +671,14 @@ ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
 (*CellTagsOutline
 CellTagsIndex->{
  "ExtendedExamples"->{
-  Cell[5936, 184, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+  Cell[17797, 498, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
    CellTags->"ExtendedExamples",
    CellID->533848431]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"ExtendedExamples", 11935, 356}
+ {"ExtendedExamples", 23868, 672}
  }
 *)
 (*NotebookFileOutline
@@ -370,77 +686,101 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 111, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[690, 25, 835, 22, 70, "Usage",ExpressionUUID->"6e63202f-866c-4b94-aea8-4a34cb69b46b"]
+Cell[690, 25, 1585, 54, 70, "Usage",ExpressionUUID->"26f197d1-4e37-424d-895f-4dbd4063a367"],
+Cell[2278, 81, 797, 18, 70, "Notes",ExpressionUUID->"b72641d8-b2df-441a-977d-5e84205a8929"],
+Cell[3078, 101, 923, 19, 70, "Notes",ExpressionUUID->"be174b52-8a2f-4740-9c06-8433ced94b05"],
+Cell[4004, 122, 919, 23, 70, "Notes",ExpressionUUID->"d2efb863-1033-4326-8fa1-d5c4ff16456b"],
+Cell[4926, 147, 125, 0, 70, "Notes",ExpressionUUID->"8655e858-12b3-4e1d-bcfb-750fc03eba05"],
+Cell[5054, 149, 2345, 42, 70, "3ColumnTableMod",ExpressionUUID->"1fc85d93-c8e2-46e9-b55d-745aee104c43"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1562, 52, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+Cell[7436, 196, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
  CellID->1559318232],
-Cell[2024, 67, 1543, 40, 70, "SeeAlso",ExpressionUUID->"a2765fad-d0fd-4f94-9539-78ed28f4fade",
- CellID->173389911]
+Cell[7898, 211, 1956, 52, 70, "SeeAlso",ExpressionUUID->"e648fb64-46dc-4696-8544-bbd98da325aa"]
 }, Open  ]],
-Cell[3582, 110, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+Cell[9869, 266, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
  CellID->792424486],
-Cell[4020, 124, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+Cell[CellGroupData[{
+Cell[10329, 282, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
  CellID->38303248],
-Cell[4139, 127, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+Cell[10448, 285, 324, 6, 70, "MoreAbout",ExpressionUUID->"ff11014c-b936-46f4-baf1-06f737cd9204"]
+}, Open  ]],
+Cell[10787, 294, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
  CellID->47113304],
 Cell[CellGroupData[{
-Cell[4635, 144, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+Cell[11283, 311, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
  CellID->1718580883],
-Cell[5169, 160, 285, 5, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+Cell[11817, 327, 285, 5, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
  CellID->1969679695]
 }, Open  ]],
-Cell[5469, 168, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
- CellID->880084151],
 Cell[CellGroupData[{
-Cell[5936, 184, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+Cell[12139, 337, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+ CellID->880084151],
+Cell[12584, 351, 194, 3, 70, "ExampleText",ExpressionUUID->"58ec8981-693b-4ec8-9755-46791ebf6d73"],
+Cell[CellGroupData[{
+Cell[12803, 358, 1298, 34, 70, "Input",ExpressionUUID->"72de168a-6d0a-4a0d-ba88-c5379c5c8864"],
+Cell[14104, 394, 158, 3, 70, "Output",ExpressionUUID->"936292d5-1d46-4128-ba80-7f8ce88f0e36"]
+}, Open  ]],
+Cell[14277, 400, 284, 4, 70, "ExampleText",ExpressionUUID->"b0bd1285-3383-4951-a459-f19e24af2423"],
+Cell[CellGroupData[{
+Cell[14586, 408, 1085, 27, 70, "Input",ExpressionUUID->"73923019-0274-47d9-9485-3f508cbab920"],
+Cell[15674, 437, 333, 7, 70, "Output",ExpressionUUID->"16690207-8793-420b-afe9-68ae6b39f34f"]
+}, Open  ]],
+Cell[16022, 447, 193, 3, 70, "ExampleText",ExpressionUUID->"ee661d76-e001-40b5-b9a7-8be17215e9a1"],
+Cell[CellGroupData[{
+Cell[16240, 454, 1395, 35, 70, "Input",ExpressionUUID->"ffa0a69b-6dcc-4011-9c18-783c9a438960"],
+Cell[17638, 491, 110, 1, 70, "Output",ExpressionUUID->"11ba3b51-6177-4e18-8f5d-b17154cf9370"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17797, 498, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
  CellTags->"ExtendedExamples",
  CellID->533848431],
-Cell[6426, 199, 242, 5, 70, "ExampleSection",ExpressionUUID->"6d08f999-4c69-4709-9b28-82906be6ee75",
+Cell[18287, 513, 242, 5, 70, "ExampleSection",ExpressionUUID->"6d08f999-4c69-4709-9b28-82906be6ee75",
  CellID->1293636265],
-Cell[6671, 206, 265, 5, 70, "ExampleSection",ExpressionUUID->"85bb6475-fccb-4f83-9c4c-95411a492aa7",
+Cell[18532, 520, 265, 5, 70, "ExampleSection",ExpressionUUID->"85bb6475-fccb-4f83-9c4c-95411a492aa7",
  CellID->1020263627],
-Cell[6939, 213, 244, 5, 70, "ExampleSection",ExpressionUUID->"3276b1d7-cf51-4f3b-970a-56b0e7c469f0",
+Cell[18800, 527, 244, 5, 70, "ExampleSection",ExpressionUUID->"3276b1d7-cf51-4f3b-970a-56b0e7c469f0",
  CellID->2061341341],
-Cell[7186, 220, 248, 5, 70, "ExampleSection",ExpressionUUID->"1cd6234d-1e3c-431d-9989-71f3025eee95",
+Cell[19047, 534, 248, 5, 70, "ExampleSection",ExpressionUUID->"1cd6234d-1e3c-431d-9989-71f3025eee95",
  CellID->258228157],
-Cell[7437, 227, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
+Cell[19298, 541, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
  CellID->2123667759],
-Cell[7699, 234, 252, 5, 70, "ExampleSection",ExpressionUUID->"9397dd0b-9de4-443a-9371-be2b75148f2f",
+Cell[19560, 548, 252, 5, 70, "ExampleSection",ExpressionUUID->"9397dd0b-9de4-443a-9371-be2b75148f2f",
  CellID->1305812373],
-Cell[7954, 241, 257, 5, 70, "ExampleSection",ExpressionUUID->"c5507407-1b71-491f-84b6-3f5747264ef7",
+Cell[19815, 555, 257, 5, 70, "ExampleSection",ExpressionUUID->"c5507407-1b71-491f-84b6-3f5747264ef7",
  CellID->1653164318],
-Cell[8214, 248, 249, 5, 70, "ExampleSection",ExpressionUUID->"ce9d5678-57c6-4712-bdd3-87904919f71e",
+Cell[20075, 562, 249, 5, 70, "ExampleSection",ExpressionUUID->"ce9d5678-57c6-4712-bdd3-87904919f71e",
  CellID->589267740]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[8500, 258, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+Cell[20361, 572, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
  CellID->311882160],
-Cell[8613, 261, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+Cell[20474, 575, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
  CellID->341476719],
 Cell[CellGroupData[{
-Cell[9114, 277, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+Cell[20975, 591, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
  CellID->1755438392],
-Cell[9602, 292, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+Cell[21463, 606, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
  CellID->686433507],
-Cell[9739, 296, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+Cell[21600, 610, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
  CellID->605800465],
-Cell[9909, 300, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+Cell[21770, 614, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10076, 304, 159, 2, 70, "Categorization",ExpressionUUID->"1a246f1f-6a47-4dd9-9eef-74b32807d0ff"]
+Cell[21937, 618, 159, 2, 70, "Categorization",ExpressionUUID->"49407e67-e36e-457c-a9c6-7e571b418ae6"]
 }, Closed]],
-Cell[10250, 309, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+Cell[22111, 623, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],
 Cell[CellGroupData[{
-Cell[10385, 314, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+Cell[22246, 628, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
  CellID->1872225408],
-Cell[10508, 317, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+Cell[22369, 631, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
  CellID->1562036412],
-Cell[10660, 321, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+Cell[22521, 635, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
  CellID->158391909],
-Cell[10800, 325, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+Cell[22661, 639, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
  CellID->1360575930],
-Cell[10939, 329, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+Cell[22800, 643, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
  CellID->793782254]
 }, Closed]]
 }, Open  ]]
