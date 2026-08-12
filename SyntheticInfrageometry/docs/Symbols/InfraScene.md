@@ -30,6 +30,8 @@ Two practical notes. Solving is done step by step, and `FindInfraScene[scene, g,
 
 **A construction can stall.** Euclid never postulated that the two circles of I.1 actually meet, and on a graph they need not. The same construction that succeeds on a triangulated mesh has no solution on a square grid, because there the two circles share no vertex. That is the continuity assumption Euclid left unstated, showing up as an empty result.
 
+**Bind every construction to a name.** An operand of [InfraIntersection]() must be a name bound by an earlier step, not an inline constructor. Writing `InfraIntersection[cA, InfraCircle[b, {4, 5}]]` fails, because the inline constructor is never dispatched and reaches the set operation with its own head intact. Give the circle its own step and refer to it by name, as below.
+
 ## Basic Examples
 
 The opening of Euclid I.10: two points, a circle about each, and the vertices where the circles meet. On the discretized plane this succeeds.
