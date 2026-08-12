@@ -10,6 +10,9 @@ PackageExport[$InfraCircleColor]
 PackageExport[$InfraRayColor]
 PackageExport[$InfraObjectColor]
 PackageExport[$InfraTopologyColor]
+PackageExport[$InfraPalette]
+PackageScope[$infraColors]
+PackageScope[$infraHeadColors]
 PackageScope[$InfraSceneHighlightPalette]
 PackageScope[$InfraOpacityRange]
 PackageScope[$InfraEdgeThickness]
@@ -18,17 +21,60 @@ PackageScope[parseHighlightStyle]
 PackageScope[normalizeHighlightSpec]
 
 
-$InfraPointColor   = RGBColor[ 0.95, 0.08, 0.08 ];
-$InfraSegmentColor = RGBColor[ 0.92, 0.45, 0.30 ];
-$InfraLineColor    = RGBColor[ 0.78, 0.35, 0.22 ];
-$InfraShellColor   = RGBColor[ 0.30, 0.70, 0.50 ];
-$InfraBallColor    = RGBColor[ 0.55, 0.80, 0.65 ];
-$InfraPlaneColor   = RGBColor[ 0.55, 0.45, 0.80 ];
-$InfraCircleColor  = RGBColor[ 0.20, 0.55, 0.65 ];
-$InfraRayColor     = RGBColor[ 0.95, 0.65, 0.45 ];
-$InfraPathColor    = RGBColor[ 0.85, 0.62, 0.32 ];
-$InfraObjectColor   = RGBColor[ 0.55, 0.70, 0.85 ];
-$InfraTopologyColor = RGBColor[ 0.85, 0.55, 0.75 ];
+(* ===================== Palette ===================== *)
+
+(* $infraColors is the one place an object colour is written down.  The $Infra*Color symbols and the
+   head -> colour dispatch inside InfraSceneHighlight both read from it, and $InfraPalette exposes it
+   as a Dataset.  It is a literal rather than a shipped asset on purpose: $InfraPointColor must not
+   depend on file I/O at load time. *)
+
+$infraColors = <|
+  "Point"    -> RGBColor[ 0.95, 0.08, 0.08 ],
+  "Segment"  -> RGBColor[ 0.92, 0.45, 0.30 ],
+  "Line"     -> RGBColor[ 0.78, 0.35, 0.22 ],
+  "Shell"    -> RGBColor[ 0.30, 0.70, 0.50 ],
+  "Ball"     -> RGBColor[ 0.55, 0.80, 0.65 ],
+  "Plane"    -> RGBColor[ 0.55, 0.45, 0.80 ],
+  "Circle"   -> RGBColor[ 0.20, 0.55, 0.65 ],
+  "Ray"      -> RGBColor[ 0.95, 0.65, 0.45 ],
+  "Path"     -> RGBColor[ 0.85, 0.62, 0.32 ],
+  "Object"   -> RGBColor[ 0.55, 0.70, 0.85 ],
+  "Topology" -> RGBColor[ 0.85, 0.55, 0.75 ]
+|>;
+
+(* which colour each wrapper head is drawn in; several wrappers deliberately share one *)
+$infraHeadColors = <|
+  InfraPoint -> "Point",
+  InfraSegment -> "Segment", InfraPolyline -> "Segment",
+  InfraLine -> "Line",
+  InfraPath -> "Path", InfraLoop -> "Path", InfraString -> "Path",
+  InfraShell -> "Shell", InfraEllipticShell -> "Shell", InfraSet -> "Shell",
+  InfraBall -> "Ball",
+  InfraPlane -> "Plane",
+  InfraCircle -> "Circle", InfraEllipse -> "Circle", InfraPolygon -> "Circle", InfraTriangle -> "Circle",
+  InfraRay -> "Ray",
+  InfraObject -> "Object"
+|>;
+
+$InfraPointColor    = $infraColors[ "Point" ];
+$InfraSegmentColor  = $infraColors[ "Segment" ];
+$InfraLineColor     = $infraColors[ "Line" ];
+$InfraShellColor    = $infraColors[ "Shell" ];
+$InfraBallColor     = $infraColors[ "Ball" ];
+$InfraPlaneColor    = $infraColors[ "Plane" ];
+$InfraCircleColor   = $infraColors[ "Circle" ];
+$InfraRayColor      = $infraColors[ "Ray" ];
+$InfraPathColor     = $infraColors[ "Path" ];
+$InfraObjectColor   = $infraColors[ "Object" ];
+$InfraTopologyColor = $infraColors[ "Topology" ];
+
+$InfraPalette := Dataset @ KeyValueMap[
+  { name, color } |-> <|
+    "Primitive" -> name,
+    "Color" -> color,
+    "Symbol" -> "$Infra" <> name <> "Color",
+    "Heads" -> Keys @ Select[ $infraHeadColors, # === name & ] |>,
+  $infraColors ]
 
 $InfraOpacityRange  = { 0.40, 1.0 };
 $InfraEdgeThickness = 9.0;
@@ -176,32 +222,19 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
       "PointSizeRange" -> OptionValue[ "PointSizeRange" ] |>;
     defaultRecord = parseHighlightStyle[ Automatic, ranges ];
 
+    (* Each triple carries the original wrapper as a fifth element so the
+       density computation can read its measure (infraVertexMultiset /
+       infraEdgeMultiset / infraNumReps) uniformly across bundle, weighted,
+       and DAG forms; None for non-Infra highlight objects. *)
     triples = MapIndexed[
       { item, idx } |-> With[ {
           obj    = If[ MatchQ[ item, _Rule ], First @ item, item ],
           record = parseHighlightStyle[ If[ MatchQ[ item, _Rule ], Last @ item, Automatic ], ranges ] },
+        Append[ If[ MatchQ[ Head @ obj, InfraPoint | InfraObject | InfraSet | $infraBundleHeads ], obj, None ] ] @
         Replace[
-          { obj, Switch[ Head @ obj,
-              InfraPoint,    $InfraPointColor,
-              InfraSegment,  $InfraSegmentColor,
-              InfraLine,     $InfraLineColor,
-              InfraPath,     $InfraPathColor,
-              InfraLoop,     $InfraPathColor,
-              InfraString,   $InfraPathColor,
-              InfraShell,         $InfraShellColor,
-              InfraBall,          $InfraBallColor,
-              InfraEllipticShell, $InfraShellColor,
-              InfraPlane,         $InfraPlaneColor,
-              InfraCircle,        $InfraCircleColor,
-              InfraEllipse,       $InfraCircleColor,
-              InfraPolygon,       $InfraCircleColor,
-              InfraTriangle,      $InfraCircleColor,
-              InfraRay,           $InfraRayColor,
-              InfraObject,        $InfraObjectColor,
-              InfraPolyline,      $InfraSegmentColor,
-              InfraSet,           $InfraShellColor,
-              _,             $InfraSceneHighlightPalette[[
-                               1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ],
+          { obj, Lookup[ $infraColors, Lookup[ $infraHeadColors, Head @ obj, None ],
+              $InfraSceneHighlightPalette[[
+                1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ],
             record },
           {
             { InfraPoint   [ b_List, w_List ], c_, u_ } :> { b, c, "Points",
@@ -234,23 +267,23 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
        the path so the subdivision is visible.  *)
     knotTriples = Cases[ objects,
       ( InfraPolyline[ b_List ] | ( InfraPolyline[ b_List ] -> _ ) ) :>
-        { polylineToKnotVertices[ b ], $InfraPointColor, "PointSet", defaultRecord } ];
+        { polylineToKnotVertices[ b ], $InfraPointColor, "PointSet", defaultRecord, None } ];
 
     (* Polygon / triangle items emit their corner vertices as points, so the
        defining corners stand out from the geodesic sides. *)
     knotTriples = Join[ knotTriples, Cases[ objects,
       ( ( InfraPolygon | InfraTriangle )[ b_List ] |
         ( ( InfraPolygon | InfraTriangle )[ b_List ] -> _ ) ) :>
-        { Map[ Most @ polylineToKnots[ # ] &, b ], $InfraPointColor, "PointSet", defaultRecord } ] ];
+        { Map[ Most @ polylineToKnots[ # ] &, b ], $InfraPointColor, "PointSet", defaultRecord, None } ] ];
 
     triples = Join[ triples, knotTriples ];
 
     (* Resolve the Automatic point-size default per object type: point-shaped
        objects distribute the base measure, everything else stays off. *)
     triples = Apply[
-      { reps, color, type, record } |-> { reps, color, type,
+      { reps, color, type, record, obj } |-> { reps, color, type,
         Append[ record, "PointSizeRange" -> Replace[ record[ "PointSizeRange" ],
-          Automatic :> If[ MatchQ[ type, "Points" | "PointSet" ], $InfraPointSize, None ] ] ] },
+          Automatic :> If[ MatchQ[ type, "Points" | "PointSet" ], $InfraPointSize, None ] ] ], obj },
       triples, { 1 } ];
 
     (* repVerts / repEdges share the per-type dispatch with InfraMeasure via
@@ -269,46 +302,28 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
         ] },
 
       vEntries = MapThread[
-        { reps, color, type, record } |-> With[ {
-            counts  = If[ MatchQ[ reps, { _Graph } ], infraVertexMultiset[ InfraSegment[ First @ reps ] ],
+        { reps, color, type, record, obj } |-> With[ {
+            counts  = If[ obj =!= None, infraVertexMultiset[ obj ],
                           Counts @ Catenate[ repVerts[ type, # ] & /@ reps ] ],
-            numReps = If[ MatchQ[ reps, { _Graph } ], infraNumReps[ InfraSegment[ First @ reps ] ],
-                          Max[ Length @ reps, 1 ] ],
+            numReps = If[ obj =!= None, infraNumReps[ obj ], Max[ Length @ reps, 1 ] ],
             wts     = record[ "Weights" ] },
           { norm = If[ AssociationQ @ wts, Max @ Values @ wts, numReps ] },
           AssociationMap[
             v |-> { color, ( If[ AssociationQ @ wts, wts[ v ], counts[ v ] ] ) / norm, record },
             Keys @ counts ] ],
-        { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]] } ];
+        { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]], triples[[ All, 5 ]] } ];
 
       eEntries = MapThread[
-        (* DAG segments: edge occupation {a, b} -> (#source->a)(#b->sink), the
-           number of geodesics through the edge, by topological-order DP (no
-           enumeration; companion to the vertex-occupation GeodesicOccupation) *)
-        { reps, color, type, record } |-> With[ {
-            counts  = If[ MatchQ[ reps, { _Graph } ],
-                          With[ { dag = First @ reps }, { edges = List @@@ EdgeList[ dag ] },
-                            If[ edges === { }, <||>,
-                              Module[ { topo = TopologicalSort @ dag, srcs, snks, succ, pred, fwd, bwd },
-                                srcs = Select[ topo, VertexInDegree[ dag, # ] == 0 & ];
-                                snks = Select[ topo, VertexOutDegree[ dag, # ] == 0 & ];
-                                succ = GroupBy[ edges, First -> Last ];
-                                pred = GroupBy[ edges, Last -> First ];
-                                fwd = AssociationThread[ srcs -> 1 ];
-                                Do[ fwd[ w ] = Total @ Lookup[ fwd, Lookup[ pred, w, { } ], 0 ],
-                                    { w, DeleteCases[ topo, Alternatives @@ srcs ] } ];
-                                bwd = AssociationThread[ snks -> 1 ];
-                                Do[ bwd[ w ] = Total @ Lookup[ bwd, Lookup[ succ, w, { } ], 0 ],
-                                    { w, Reverse @ DeleteCases[ topo, Alternatives @@ snks ] } ];
-                                Association[ ( Sort[ # ] -> fwd[ #[[ 1 ]] ] bwd[ #[[ 2 ]] ] ) & /@ edges ]
-                              ] ] ],
+        (* DAG segments read their edge occupation off Infrageometry's
+           GeodesicEdgeOccupation via infraEdgeMultiset -- no enumeration *)
+        { reps, color, type, record, obj } |-> With[ {
+            counts  = If[ obj =!= None, infraEdgeMultiset[ graph, obj ],
                           Counts @ Catenate[ repEdges[ type, # ] & /@ reps ] ],
-            numReps = If[ MatchQ[ reps, { _Graph } ], infraNumReps[ InfraSegment[ First @ reps ] ],
-                          Max[ Length @ reps, 1 ] ] },
+            numReps = If[ obj =!= None, infraNumReps[ obj ], Max[ Length @ reps, 1 ] ] },
           AssociationMap[
             e |-> { color, counts[ e ] / numReps, record },
             Keys @ counts ] ],
-        { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]] } ];
+        { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]], triples[[ All, 5 ]] } ];
     ];
 
     (* Colour + opacity ride per-element Style[] highlight specs (the channel
