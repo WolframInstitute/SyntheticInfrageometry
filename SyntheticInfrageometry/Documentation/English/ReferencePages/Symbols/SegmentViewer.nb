@@ -24,7 +24,7 @@ Cell["SegmentViewer", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"33dbd4da-db38-46b1-a910-2fd590110de5"],
+ Cell["   ", "ModInfo",ExpressionUUID->"f710a4aa-09e8-4bca-9d70-b7c231021f6e"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -36,11 +36,11 @@ Cell[TextData[{
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["g", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "5a9a2e25-5dc5-418e-a556-7d4661d9febc"],
+  "b0f59945-d549-41c8-aad7-91010918236f"],
  "\[LineSeparator]",
  "is an interactive viewer for exploring geodesic segments in graph g.",
  "\n"
-}], "Usage",ExpressionUUID->"cbd3713e-62f5-4d43-9875-af068bc23881"]
+}], "Usage",ExpressionUUID->"3b3d2587-1404-4dc3-bb12-c5d70f41099b"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -299,7 +299,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/SegmentViewer", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"444d0846-09f3-4d21-8c1a-192b39091aeb"]
+ CellLabel->"URI",ExpressionUUID->"ebb1a8a9-5bc4-45ef-bfbd-1478a4bd6555"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -365,7 +365,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 111, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[690, 25, 683, 17, 70, "Usage",ExpressionUUID->"cbd3713e-62f5-4d43-9875-af068bc23881"]
+Cell[690, 25, 683, 17, 70, "Usage",ExpressionUUID->"3b3d2587-1404-4dc3-bb12-c5d70f41099b"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1410, 47, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -422,7 +422,7 @@ Cell[9587, 291, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9757, 295, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9924, 299, 159, 2, 70, "Categorization",ExpressionUUID->"444d0846-09f3-4d21-8c1a-192b39091aeb"]
+Cell[9924, 299, 159, 2, 70, "Categorization",ExpressionUUID->"ebb1a8a9-5bc4-45ef-bfbd-1478a4bd6555"]
 }, Closed]],
 Cell[10098, 304, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

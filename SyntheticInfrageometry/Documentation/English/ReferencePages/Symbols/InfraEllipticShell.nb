@@ -24,7 +24,7 @@ Cell["InfraEllipticShell", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"b66524a3-3ebe-4451-8b8f-4fe59932d8ac"],
+ Cell["   ", "ModInfo",ExpressionUUID->"14c2e35d-167d-4d79-8bf2-3a6af46d4827"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,17 +37,17 @@ Cell[TextData[{
    RowBox[{"{", 
     StyleBox["set", "TI"], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "d8bcc06a-f6f6-43e6-af9d-b678b7b939a8"],
+  "932904dc-42d6-47c3-b082-4840ee366b83"],
  "\[LineSeparator]",
  "is the unary form (one elliptic-shell vertex set); \
 InfraEllipticShell[{set1, \[Ellipsis], setk}] is the multi-realisation \
 form.",
  "\n"
-}], "Usage",ExpressionUUID->"28ab3239-dbb8-4e38-b64a-4f48dc259857"],
+}], "Usage",ExpressionUUID->"398f17e7-7248-416a-b161-808b68972751"],
 
 Cell["\<\
 Find* returns one wrapper carrying the requested realisations.\
-\>", "Notes",ExpressionUUID->"d8f2d5c4-23ab-4b9b-9729-e2bc324f6a3a"]
+\>", "Notes",ExpressionUUID->"38145b37-24e1-4b23-a69b-18896296a0e5"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -307,7 +307,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/InfraEllipticShell\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"70417f23-d21a-49a5-8f6a-53f27d1e3ef4"]
+ CellLabel->"URI",ExpressionUUID->"21b98464-d3c4-4f0a-b448-4cd8f4c080cc"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -373,8 +373,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 116, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[695, 25, 783, 20, 70, "Usage",ExpressionUUID->"28ab3239-dbb8-4e38-b64a-4f48dc259857"],
-Cell[1481, 47, 142, 2, 70, "Notes",ExpressionUUID->"d8f2d5c4-23ab-4b9b-9729-e2bc324f6a3a"]
+Cell[695, 25, 783, 20, 70, "Usage",ExpressionUUID->"398f17e7-7248-416a-b161-808b68972751"],
+Cell[1481, 47, 142, 2, 70, "Notes",ExpressionUUID->"38145b37-24e1-4b23-a69b-18896296a0e5"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1660, 54, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -431,7 +431,7 @@ Cell[9837, 298, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10007, 302, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10174, 306, 170, 3, 70, "Categorization",ExpressionUUID->"70417f23-d21a-49a5-8f6a-53f27d1e3ef4"]
+Cell[10174, 306, 170, 3, 70, "Categorization",ExpressionUUID->"21b98464-d3c4-4f0a-b448-4cd8f4c080cc"]
 }, Closed]],
 Cell[10359, 312, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

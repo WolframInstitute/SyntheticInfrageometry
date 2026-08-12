@@ -15,4 +15,8 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/InfraMeasure
 
 ## Details & Options
 
-Options "On" ("Vertices" (default), "Edges", "Both") and Method ("Occupation" (default) divides by numReps, the membership measure in [0,1]; "Probability" divides by total appearances, the distribution summing to 1).
+Options:
+
+| Option | Values |
+|---|---|
+| `"On"` | "Vertices" (default), "Edges", "Both" -- and Method ("Occupation" (default) divides by numReps, the membership measure in [0,1]; "Probability" divides by total appearances, the distribution summing to 1) |

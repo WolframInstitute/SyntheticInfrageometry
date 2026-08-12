@@ -24,7 +24,7 @@ Cell["InfraPath", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"107b7c5d-7ac7-4bbc-a4a1-e3c730c0f2b3"],
+ Cell["   ", "ModInfo",ExpressionUUID->"3ed82087-2b94-432e-8d41-997eab77677a"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,26 +37,26 @@ Cell[TextData[{
    RowBox[{"{", 
     StyleBox["walk", "TI"], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "301e1022-6b61-4a2e-995f-dcc3c43a994c"],
+  "94a185b6-c832-46a3-8cb2-80e0f2488684"],
  "\[LineSeparator]",
  "is the unary form (one walk, possibly non-simple); InfraPath[{walk1, \
 \[Ellipsis], walkk}] is the multi-realisation form.",
  "\n"
-}], "Usage",ExpressionUUID->"e0c86088-9e13-4306-8c5f-b289d0138790"],
+}], "Usage",ExpressionUUID->"1cccff0d-564e-4e25-a957-6f323a30d866"],
 
 Cell["\<\
 FindInfraPath finders return one InfraPath wrapper carrying the requested \
 realisations.\
-\>", "Notes",ExpressionUUID->"3334994c-e11b-422c-a604-b6400b3a6a34"],
+\>", "Notes",ExpressionUUID->"71b1adf4-0845-45b0-b5ce-a11539bb292b"],
 
 Cell["\<\
 Inside InfraScene, InfraPath[p1, p2, \[Ellipsis], pk] is the step-wise \
 scene-DSL constructor: every length-(k-1) walk {v1, \[Ellipsis], vk} with vi \
 in pi and each consecutive pair (vi, v_{i+1}) a graph edge (non-simple chains \
 kept).\
-\>", "Notes",ExpressionUUID->"89f9b1ad-6200-4343-9a04-256d7f5a528c"],
+\>", "Notes",ExpressionUUID->"76c8f002-4b3d-422f-b617-a0acfd165d3c"],
 
-Cell["Rendered like InfraSegment (sequential-edge semantics).", "Notes",ExpressionUUID->"9a6961c1-21c9-4275-ba27-e6b3ab91c5cb"]
+Cell["Rendered like InfraSegment (sequential-edge semantics).", "Notes",ExpressionUUID->"5296137f-7339-4e19-bef0-f7e4291ea247"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -314,7 +314,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
  CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraPath", "Categorization",
- CellLabel->"URI",ExpressionUUID->"5f6f1a3e-79d9-4747-a619-fdaff09c6a34"]
+ CellLabel->"URI",ExpressionUUID->"a4cb7bf6-88df-408f-bd11-8b778e925dcf"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -380,10 +380,10 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 107, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[686, 25, 757, 19, 70, "Usage",ExpressionUUID->"e0c86088-9e13-4306-8c5f-b289d0138790"],
-Cell[1446, 46, 169, 3, 70, "Notes",ExpressionUUID->"3334994c-e11b-422c-a604-b6400b3a6a34"],
-Cell[1618, 51, 318, 5, 70, "Notes",ExpressionUUID->"89f9b1ad-6200-4343-9a04-256d7f5a528c"],
-Cell[1939, 58, 127, 0, 70, "Notes",ExpressionUUID->"9a6961c1-21c9-4275-ba27-e6b3ab91c5cb"]
+Cell[686, 25, 757, 19, 70, "Usage",ExpressionUUID->"1cccff0d-564e-4e25-a957-6f323a30d866"],
+Cell[1446, 46, 169, 3, 70, "Notes",ExpressionUUID->"71b1adf4-0845-45b0-b5ce-a11539bb292b"],
+Cell[1618, 51, 318, 5, 70, "Notes",ExpressionUUID->"76c8f002-4b3d-422f-b617-a0acfd165d3c"],
+Cell[1939, 58, 127, 0, 70, "Notes",ExpressionUUID->"5296137f-7339-4e19-bef0-f7e4291ea247"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2103, 63, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -440,7 +440,7 @@ Cell[10280, 307, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10450, 311, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10617, 315, 153, 1, 70, "Categorization",ExpressionUUID->"5f6f1a3e-79d9-4747-a619-fdaff09c6a34"]
+Cell[10617, 315, 153, 1, 70, "Categorization",ExpressionUUID->"a4cb7bf6-88df-408f-bd11-8b778e925dcf"]
 }, Closed]],
 Cell[10785, 319, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

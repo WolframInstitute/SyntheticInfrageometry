@@ -24,7 +24,7 @@ Cell["TotalAbsoluteCurvature", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"0fc61522-6e1c-4123-8728-1b3b61cc4871"],
+ Cell["   ", "ModInfo",ExpressionUUID->"0e805ec9-6aae-461c-9f7e-19979e9bcc09"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,12 +39,12 @@ TotalAbsoluteCurvature",
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["path", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "4e18fa0b-272f-4896-b9bc-d998738acd66"],
+  "89d14d06-9907-4d85-95f6-1b438b1c65c7"],
  "\[LineSeparator]",
  "returns Total @ Abs @ TurningAngles[graph, path], the discrete analogue of \
 the Fenchel-side integral of |kappa|.",
  "\n"
-}], "Usage",ExpressionUUID->"0c9c6ab6-8161-447c-a7d8-f19eb5698c48"]
+}], "Usage",ExpressionUUID->"74727718-dfc5-49f2-9bee-4cada28a8340"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -304,7 +304,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/TotalAbsoluteCurvature\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"448ca803-1cf6-439d-b1b2-acc170d84b72"]
+ CellLabel->"URI",ExpressionUUID->"689a065b-e047-46d0-860a-a68bdc493ee1"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -370,7 +370,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 120, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[699, 25, 807, 21, 70, "Usage",ExpressionUUID->"0c9c6ab6-8161-447c-a7d8-f19eb5698c48"]
+Cell[699, 25, 807, 21, 70, "Usage",ExpressionUUID->"74727718-dfc5-49f2-9bee-4cada28a8340"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1543, 51, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -427,7 +427,7 @@ Cell[9720, 295, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9890, 299, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10057, 303, 174, 3, 70, "Categorization",ExpressionUUID->"448ca803-1cf6-439d-b1b2-acc170d84b72"]
+Cell[10057, 303, 174, 3, 70, "Categorization",ExpressionUUID->"689a065b-e047-46d0-860a-a68bdc493ee1"]
 }, Closed]],
 Cell[10246, 309, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

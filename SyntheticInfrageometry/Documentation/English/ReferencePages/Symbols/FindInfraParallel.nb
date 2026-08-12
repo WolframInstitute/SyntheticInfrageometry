@@ -24,7 +24,7 @@ Cell["FindInfraParallel", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"17d34358-740a-4a5b-87a6-22ac1f962064"],
+ Cell["   ", "ModInfo",ExpressionUUID->"58999765-d416-4971-9f01-aac4a6397560"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,14 +39,14 @@ Cell[TextData[{
     StyleBox["line", "TI"], ",", " ", 
     StyleBox["p", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "9add6854-1066-4149-ac3d-2a2075beeb65"],
+  "624fc445-bf6f-4d18-a378-138ce2d5fb80"],
  "\[LineSeparator]",
  "returns unary InfraLine[{line}] wrappers for parallels through p (constant \
 distance to line); n / UpTo[n] / All controls multiplicity.",
  "\n"
-}], "Usage",ExpressionUUID->"58219fbf-f8f7-41d3-9385-0a5d54ccc9ea"],
+}], "Usage",ExpressionUUID->"206df3e9-9615-440c-874c-bd93c1dd8262"],
 
-Cell["Options Properties, Method.", "Notes",ExpressionUUID->"31ce11cc-ede6-4301-8544-e8d0dce259f9"]
+Cell["Options Properties, Method.", "Notes",ExpressionUUID->"13fbbddb-50c1-4d2f-8083-0e6f233ffe01"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -306,7 +306,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindInfraParallel\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"7d3958f2-8895-45a4-ac4f-3bc225e1fdbb"]
+ CellLabel->"URI",ExpressionUUID->"db371080-d408-4939-9f92-da39a5fee475"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -372,8 +372,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 115, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[694, 25, 853, 21, 70, "Usage",ExpressionUUID->"58219fbf-f8f7-41d3-9385-0a5d54ccc9ea"],
-Cell[1550, 48, 99, 0, 70, "Notes",ExpressionUUID->"31ce11cc-ede6-4301-8544-e8d0dce259f9"]
+Cell[694, 25, 853, 21, 70, "Usage",ExpressionUUID->"206df3e9-9615-440c-874c-bd93c1dd8262"],
+Cell[1550, 48, 99, 0, 70, "Notes",ExpressionUUID->"13fbbddb-50c1-4d2f-8083-0e6f233ffe01"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1686, 53, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -430,7 +430,7 @@ Cell[9863, 297, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10033, 301, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10200, 305, 169, 3, 70, "Categorization",ExpressionUUID->"7d3958f2-8895-45a4-ac4f-3bc225e1fdbb"]
+Cell[10200, 305, 169, 3, 70, "Categorization",ExpressionUUID->"db371080-d408-4939-9f92-da39a5fee475"]
 }, Closed]],
 Cell[10384, 311, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

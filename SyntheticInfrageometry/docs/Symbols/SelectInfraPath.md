@@ -17,4 +17,11 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/SelectInfraPath
 
 Operator form SelectInfraPath[graph, n, opts][paths].
 
-Options "From" (All (default), "Center", "Periphery", "MostVisited", "Bottleneck", "MinLength", "MaxLength", anchor -> spec, {"Min" | "Max", scoreFn}), "Distance", "Metric" ("Hausdorff" (default), "Frechet", "MeanFrechet"), "MaxCliques".
+Options:
+
+| Option | Values |
+|---|---|
+| `"From"` | All (default), "Center", "Periphery", "MostVisited", "Bottleneck", "MinLength", "MaxLength", anchor -> spec, {"Min" \| "Max", scoreFn} |
+| `"Distance"` | -- |
+| `"Metric"` | "Hausdorff" (default), "Frechet", "MeanFrechet" |
+| `"MaxCliques"` | -- |

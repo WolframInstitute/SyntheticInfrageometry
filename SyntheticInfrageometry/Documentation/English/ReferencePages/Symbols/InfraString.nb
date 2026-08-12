@@ -24,7 +24,7 @@ Cell["InfraString", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"4c26b785-2815-4662-be46-beb3d8b2d90e"],
+ Cell["   ", "ModInfo",ExpressionUUID->"a550563c-c90a-4f19-ab2f-592655dc68cf"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,30 +37,30 @@ Cell[TextData[{
    RowBox[{"{", 
     StyleBox["walk", "TI"], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "b6444fd1-fef4-4a4e-aa1b-3ce767a72dc5"],
+  "ff034038-f29e-471d-9438-7d88ad44cab7"],
  "\[LineSeparator]",
  "is the unary form (one closed walk modulo cyclic rotation); \
 InfraString[{walk1, \[Ellipsis], walkk}] is the multi-realisation form.",
  "\n"
-}], "Usage",ExpressionUUID->"ae84b933-5118-4528-8902-99d117b4158f"],
+}], "Usage",ExpressionUUID->"82cfd66d-fc3c-407b-91cd-7966d2c2ec75"],
 
 Cell["\<\
 Each realisation is stored as the lex-least cyclic rotation of \
 Most[closeWalk[walk]] (the open canonical form, without the wrap-around \
 vertex repetition); orientation is preserved.\
-\>", "Notes",ExpressionUUID->"e2b2009e-1a2b-478f-bec5-0adfcb818440"],
+\>", "Notes",ExpressionUUID->"0e96ff6e-d22e-4051-b5c8-ca3ce3226bf5"],
 
-Cell["Equality between strings is SameQ on canonical forms.", "Notes",ExpressionUUID->"532e0cdb-0fd8-46c0-ada4-11623211084b"],
+Cell["Equality between strings is SameQ on canonical forms.", "Notes",ExpressionUUID->"d938ba87-9b60-47d6-a89e-be520eae698c"],
 
 Cell["\<\
 Inside InfraScene, InfraString[v1, v2, \[Ellipsis], vk] is the scene-DSL \
 constructor (auto-closes and canonicalises).\
-\>", "Notes",ExpressionUUID->"59c6edf0-7738-406b-91bc-da7748c21989"],
+\>", "Notes",ExpressionUUID->"4a739ea7-067f-4ea9-8006-7226bf7efaf1"],
 
 Cell["\<\
 Used by the polymorphic homotopy finders as the free-loop wrapper (no base \
 point; cyclic rotations are identified).\
-\>", "Notes",ExpressionUUID->"50df7044-b78c-4a5e-b6c9-9ea291a5f122"]
+\>", "Notes",ExpressionUUID->"1217c718-ec92-4b29-9aab-d705e027b941"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -319,7 +319,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraString", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"b0581f0b-ae59-454d-be85-3355b4bee8ec"]
+ CellLabel->"URI",ExpressionUUID->"a66c0b4e-3413-474c-9533-4fce360dd0ff"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -385,11 +385,11 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 109, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[688, 25, 772, 19, 70, "Usage",ExpressionUUID->"ae84b933-5118-4528-8902-99d117b4158f"],
-Cell[1463, 46, 264, 4, 70, "Notes",ExpressionUUID->"e2b2009e-1a2b-478f-bec5-0adfcb818440"],
-Cell[1730, 52, 125, 0, 70, "Notes",ExpressionUUID->"532e0cdb-0fd8-46c0-ada4-11623211084b"],
-Cell[1858, 54, 199, 3, 70, "Notes",ExpressionUUID->"59c6edf0-7738-406b-91bc-da7748c21989"],
-Cell[2060, 59, 197, 3, 70, "Notes",ExpressionUUID->"50df7044-b78c-4a5e-b6c9-9ea291a5f122"]
+Cell[688, 25, 772, 19, 70, "Usage",ExpressionUUID->"82cfd66d-fc3c-407b-91cd-7966d2c2ec75"],
+Cell[1463, 46, 264, 4, 70, "Notes",ExpressionUUID->"0e96ff6e-d22e-4051-b5c8-ca3ce3226bf5"],
+Cell[1730, 52, 125, 0, 70, "Notes",ExpressionUUID->"d938ba87-9b60-47d6-a89e-be520eae698c"],
+Cell[1858, 54, 199, 3, 70, "Notes",ExpressionUUID->"4a739ea7-067f-4ea9-8006-7226bf7efaf1"],
+Cell[2060, 59, 197, 3, 70, "Notes",ExpressionUUID->"1217c718-ec92-4b29-9aab-d705e027b941"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2294, 67, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -446,7 +446,7 @@ Cell[10471, 311, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10641, 315, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10808, 319, 157, 2, 70, "Categorization",ExpressionUUID->"b0581f0b-ae59-454d-be85-3355b4bee8ec"]
+Cell[10808, 319, 157, 2, 70, "Categorization",ExpressionUUID->"a66c0b4e-3413-474c-9533-4fce360dd0ff"]
 }, Closed]],
 Cell[10980, 324, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

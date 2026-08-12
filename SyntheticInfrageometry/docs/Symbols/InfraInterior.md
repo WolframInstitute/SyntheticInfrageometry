@@ -13,4 +13,8 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/InfraInterior
 
 ## Details & Options
 
-Option Method ("Combinatorial" (default), s minus its inner boundary via GraphInterior; {"Alexandrov", "Radius" -> r}, the topological interior in the closed-r-ball topology, default r = 1).
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "Combinatorial" (default), s minus its inner boundary via GraphInterior; {"Alexandrov", "Radius" -> r}, the topological interior in the closed-r-ball topology, default r = 1 |

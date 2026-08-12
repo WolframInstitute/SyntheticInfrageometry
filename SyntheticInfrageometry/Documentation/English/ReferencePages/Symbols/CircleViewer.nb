@@ -24,7 +24,7 @@ Cell["CircleViewer", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"640bb072-45af-4b1c-979f-c2c886604264"],
+ Cell["   ", "ModInfo",ExpressionUUID->"ca7cf344-7c1d-423b-93e5-81fe91f2b422"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -36,11 +36,11 @@ Cell[TextData[{
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["g", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "5b262141-f2fe-4244-8a05-b49cb0e69739"],
+  "51d2f21a-ef42-49bb-9a0a-1debcabe3852"],
  "\[LineSeparator]",
  "is an interactive viewer for exploring separating cycles in graph g.",
  "\n"
-}], "Usage",ExpressionUUID->"9a420005-1a59-40ef-9aea-40ce2abecf16"]
+}], "Usage",ExpressionUUID->"abf20e33-2779-4565-a3ea-b9cc38251281"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -299,7 +299,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/CircleViewer", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"fdc56056-de73-4550-9d64-6d49569c197f"]
+ CellLabel->"URI",ExpressionUUID->"16521bd5-566f-47e0-af92-71da9e297eba"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -365,7 +365,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 110, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[689, 25, 681, 17, 70, "Usage",ExpressionUUID->"9a420005-1a59-40ef-9aea-40ce2abecf16"]
+Cell[689, 25, 681, 17, 70, "Usage",ExpressionUUID->"abf20e33-2779-4565-a3ea-b9cc38251281"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1407, 47, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -422,7 +422,7 @@ Cell[9584, 291, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9754, 295, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9921, 299, 158, 2, 70, "Categorization",ExpressionUUID->"fdc56056-de73-4550-9d64-6d49569c197f"]
+Cell[9921, 299, 158, 2, 70, "Categorization",ExpressionUUID->"16521bd5-566f-47e0-af92-71da9e297eba"]
 }, Closed]],
 Cell[10094, 304, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

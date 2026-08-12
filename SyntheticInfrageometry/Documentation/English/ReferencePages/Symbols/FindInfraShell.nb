@@ -24,7 +24,7 @@ Cell["FindInfraShell", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"91ff4d6e-fb45-453e-a754-a9f92884fd8c"],
+ Cell["   ", "ModInfo",ExpressionUUID->"9199875c-31f1-44c8-8fe0-1942614f9361"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,7 +39,7 @@ Cell[TextData[{
     StyleBox["c", "TI"], ",", " ", 
     StyleBox["r", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "dbd6c8e5-8f4c-4043-a567-e585b382ecc5"],
+  "30f20e7c-28b3-44a0-a3ad-66984108dca1"],
  "\[LineSeparator]",
  "gives the metric shell ",
  Cell[BoxData[
@@ -57,7 +57,7 @@ Cell[TextData[{
      SpanMaxSize->1], "=", 
     StyleBox["r", "TI"], "}"}]}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "03d42138-7512-49e7-b34d-2e56111cb129"],
+  "8492146b-d805-4977-8197-a77e9b9eca35"],
  " around ",
  StyleBox["c", "TI"],
  " as an ",
@@ -69,7 +69,7 @@ Cell[TextData[{
     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "2a05f38e-9eb2-4a8d-9888-318f479e222b"],
+  "fc9064ca-126c-49bf-aa71-0cb37dd79f68"],
  " wrapper. ",
  StyleBox["r", "TI"],
  " may be a band ",
@@ -77,10 +77,10 @@ Cell[TextData[{
   RowBox[{"{", 
    RowBox[{"rmin", ",", " ", "rmax"}], "}"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "100290bd-fa6d-40c9-96f3-9d2eb4b78c5e"],
+  "ad0cdecc-22ba-4fb2-be0b-9500905a63b5"],
  ".",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"932e15f5-0994-4cc6-b712-6a4a4a8a6181"],
+ Cell["   ", "ModInfo",ExpressionUUID->"104f87be-fd14-4be9-995d-7d03ad25f0be"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -96,27 +96,27 @@ Cell[TextData[{
     StyleBox["r", "TI"], ",", " ", 
     StyleBox["n", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "6806c862-a91d-41ac-a84a-18216bf5b190"],
+  "6dd59a75-aac0-4923-8303-8d31a54f280c"],
  "\[LineSeparator]",
  "gives exactly ",
  StyleBox["n", "TI"],
  " realisations or ",
  Cell[BoxData["$Failed"], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "ecb9533e-ae4a-4349-b151-abf25c0745f4"],
+  "3632cc8e-8daf-4a85-9426-cab0bca53d64"],
  "; ",
  Cell[BoxData[
   RowBox[{"UpTo", "[", "n", "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "68e9f146-4fc1-4a6b-913d-d8ca362a1f5e"],
+  "3209f240-8346-45c3-9847-6cf4a9ef9442"],
  " up to ",
  StyleBox["n", "TI"],
  "; ",
  Cell[BoxData["All"], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "f86dfac1-59d9-4e0f-bf1e-77c0fc7b8c79"],
+  "ad6eec04-f34c-477c-8af5-7343e9e60188"],
  " (the default) all of them."
-}], "Usage",ExpressionUUID->"32ee00c8-029a-4817-9d63-cc5168cf5a29"],
+}], "Usage",ExpressionUUID->"d98d15ad-0144-4c2f-af36-243058c1e789"],
 
 Cell[TextData[{
  "The shell of radius ",
@@ -139,12 +139,12 @@ Cell[TextData[{
      SpanMaxSize->1], "=", 
     StyleBox["r", "TI"], "}"}]}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "3e62c39d-13bc-4521-9883-6e88b72c7d2d"],
+  "5bad8109-b7b2-42d7-aa3c-831554877dc2"],
  " \[LongDash] the sphere of the graph metric, as a vertex ",
  StyleBox["set",
   FontWeight->"Bold"],
  "."
-}], "Notes",ExpressionUUID->"4f631d35-3a5f-4641-971e-05cb3742874c"],
+}], "Notes",ExpressionUUID->"d51c90fb-f9d2-400f-89ab-fddd371fddd4"],
 
 Cell[TextData[{
  "It is the discrete analogue of a sphere, not of a circle: it is \
@@ -158,9 +158,9 @@ non-adjacent, so it carries no cycle. The cyclic object is ",
     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "27207222-146a-4426-a6ab-fc0e01f94095"],
+  "9fddaf18-5a32-42f7-a391-bf9ba4fdab28"],
  ", which needs a thickened band for exactly that reason."
-}], "Notes",ExpressionUUID->"2279fb82-8ab5-46f3-8007-4eda8dbd5582"],
+}], "Notes",ExpressionUUID->"cbea3c0b-9814-4fe3-8245-3ae3f7a512c6"],
 
 Cell[TextData[{
  "The shell is the substrate of the volume-growth invariants. Its cardinality \
@@ -171,86 +171,86 @@ as a function of ",
   FontWeight->"Bold"],
  ", which is the statement that the dimension is 2. The slope is a property \
 of the tiling: 4 per step on the square grid, 3 on the hexagonal."
-}], "Notes",ExpressionUUID->"b3d21ccd-5ef8-4b1d-afc6-a6cc9f785b1a"],
+}], "Notes",ExpressionUUID->"2319db95-a283-422b-9f98-66089e978da6"],
 
 Cell[TextData[{
  "Option ",
  Cell[BoxData["Properties"], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "09709a78-e70c-4ad7-82d3-52272b11d0d5"],
+  "4de0f12c-f6e6-4524-8f3e-6e885dab9578"],
  " takes ",
  Cell[BoxData[
   RowBox[{"{", "}"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "8e143d32-6ce3-4b1a-8b7d-9fea11a14713"],
+  "d1daaa80-480f-4aef-a68a-3d60df280dda"],
  " (default; the whole level set as one realisation), ",
  Cell[BoxData[
   RowBox[{"{", "\"\<Separating\>\"", "}"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "cdeab2e3-90fd-4021-88cc-705e66075044"],
+  "b359f857-45ca-4f3b-9a3a-c0ece37b1775"],
  " (inclusion-minimal subsets separating the centre from beyond), or ",
  Cell[BoxData[
   RowBox[{"{", 
    RowBox[{"\"\<Separating\>\"", ",", " ", "\"\<Connected\>\""}], "}"}]], 
   "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "f14e16e0-58bf-4d2e-a3be-0a02a99977c6"],
+  "6809e397-4f08-4deb-92ee-81c0c428e564"],
  ". Option ",
  Cell[BoxData["Method"], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "77662a69-2c81-496f-8564-ed51a4551cc7"],
+  "4f97aca2-8115-4f06-b677-4275af71f54d"],
  " takes ",
  Cell[BoxData["\"\<Exhaustive\>\""], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "cfabf2e6-f65f-4474-bb95-6e0acb12c928"],
+  "6fbbb62f-670a-40b6-b01a-0aceae99967d"],
  " (default) or ",
  Cell[BoxData["\"\<Greedy\>\""], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "b6833f12-fb52-4d47-b3ae-2f7dd84e98ea"],
+  "86d8a912-28a8-4c6b-ae02-01d78b2fb592"],
  ". The ",
  Cell[BoxData[
   RowBox[{"[", "\"\<Volume\>\"", "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "1b05772c-060f-44a0-80ac-52f27803d4b0"],
+  "026503e7-1716-470a-9175-945e5aef3df1"],
  " accessor gives the per-realisation vertex count as a list."
-}], "Notes",ExpressionUUID->"845d25dc-8fdd-4838-8271-42f54e26119c"],
+}], "Notes",ExpressionUUID->"a3fee808-0ab7-45ba-96da-c05f8b2504a5"],
 
-Cell["Corresponding notions in the classical axiom systems:", "Notes",ExpressionUUID->"06cf51f2-3bd3-41f2-9e25-e64898cb3c02"],
+Cell["Corresponding notions in the classical axiom systems:", "Notes",ExpressionUUID->"6351044e-b144-48d1-8e9a-1cd74ad00d0b"],
 
 Cell[BoxData[GridBox[{
    {Cell["      ", "ModInfo",ExpressionUUID->
-     "0e627402-91fe-4420-a7ee-c995036a42f8"], Cell["System", "TableText",
-     FontWeight->Bold,ExpressionUUID->"fd8cc173-6537-4e2b-a18c-de1ad7bbe13a"],
+     "bc3f10cc-41e4-4cc5-882e-94f3fd9636e5"], Cell["System", "TableText",
+     FontWeight->Bold,ExpressionUUID->"dd23c032-deb8-43b2-85b2-d3d73243b507"],
      Cell["Name", "TableText",
-     FontWeight->Bold,ExpressionUUID->"09229220-fc6b-4010-a8db-372a70e1c617"],
+     FontWeight->Bold,ExpressionUUID->"72dec61f-9963-43a4-9def-f247cdc18daf"],
      Cell["Statement", "TableText",
-     FontWeight->Bold,ExpressionUUID->"cb8ed695-7672-411e-9779-91bf7e3ff950"]},
+     FontWeight->Bold,ExpressionUUID->"fbfb4ea4-10c0-45f1-ac49-34fd4a2a6449"]},
    {Cell["      ", "ModInfo",ExpressionUUID->
-     "a026df35-441c-400b-bf09-5b49a35f3145"], Cell[
+     "a46c2bee-8b2e-479f-bd77-771ec93ece70"], Cell[
     "Euclid", "TableText",ExpressionUUID->
-     "6f03f09a-1f2c-4dee-9adc-0954d331ed0b"], Cell[
+     "a70d1dac-5274-4889-8cf1-348f95aa040f"], Cell[
     "Postulate 3", "TableText",ExpressionUUID->
-     "42fd6688-1490-477e-a0ee-344bf8985aaa"], Cell["\<\
+     "e9960a2f-2788-4d26-aad1-3a620bb26761"], Cell["\<\
 To draw a circle with any center and radius; the shell is its locus of points.\
-\>", "TableText",ExpressionUUID->"9ce82b19-cfdc-4e60-8261-0ecd40700a3b"]},
+\>", "TableText",ExpressionUUID->"f7ae0574-c717-417f-b585-289a1fa9bb8f"]},
    {Cell["      ", "ModInfo",ExpressionUUID->
-     "cb6b4857-416a-4632-ba76-f38d250f82b2"], Cell[
+     "18c738cf-6aa5-4db4-a932-94d1f85cd5a4"], Cell[
     "Tarski", "TableText",ExpressionUUID->
-     "9b14cb53-dcd9-4731-a33f-2fe89f6d042f"], Cell[
+     "8041ae0f-0112-4640-86e1-d50c74d25f3a"], Cell[
     "Equidistance", "TableText",ExpressionUUID->
-     "90d1d38c-999d-48ec-85e5-0451d88ca2c6"], Cell["\<\
+     "ea957542-0fcf-4e52-a52a-c2d512ade141"], Cell["\<\
 The set equidistant from a centre, from the four-place congruence relation.\
-\>", "TableText",ExpressionUUID->"aea7cbbd-ba0d-45bc-ba8a-da52d8091484"]},
+\>", "TableText",ExpressionUUID->"b551a872-28b9-447a-86bf-b5991e13380a"]},
    {Cell["      ", "ModInfo",ExpressionUUID->
-     "b1143035-6af5-4e59-adef-b5c92ad24c68"], Cell[
+     "d8fa492c-c78f-465e-9b45-c2a307ab1a7f"], Cell[
     "Hilbert", "TableText",ExpressionUUID->
-     "9922ade0-3c8e-4aba-9c8e-051ee72ecb43"], Cell[
+     "c362c586-3c5a-4803-9ca8-8954da2088c4"], Cell[
     "(defined)", "TableText",ExpressionUUID->
-     "77c08762-f937-4094-97fa-efe20a596147"], Cell[
+     "7b1b5a65-4d42-4d0d-8be4-50fc76a60d8e"], Cell[
     "Not primitive; defined through segment congruence.", "TableText",
-     ExpressionUUID->"23224b34-840b-412c-87a0-5b47056d4825"]}
-  }]], "3ColumnTableMod",ExpressionUUID->"2f5e8b47-b56b-46b1-910d-\
-c98dadeb4eee"]
+     ExpressionUUID->"769532e2-8591-44df-b1a9-9288399ecf4c"]}
+  }]], "3ColumnTableMod",ExpressionUUID->"7d88d392-4c37-4ece-b999-\
+a74ad73e3b8b"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -279,7 +279,7 @@ Cell[TextData[{
     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "90880da9-d7cc-494a-9d48-84d3f36a5122"],
+  "d2b52398-93e7-4a20-bcb8-239347265730"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
   TemplateBox[{
@@ -289,7 +289,7 @@ Cell[TextData[{
     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "9595f71b-65de-46d9-8082-abb9b1baf3fa"],
+  "77349b17-3111-415e-972b-ccc86dd10f07"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
   TemplateBox[{
@@ -299,7 +299,7 @@ Cell[TextData[{
     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "6a5e801e-0df2-44eb-8174-459a089d40f6"],
+  "d0542099-e702-4ffe-9664-9448ea6819da"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
   TemplateBox[{
@@ -309,7 +309,7 @@ Cell[TextData[{
     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "7effbbd4-a83b-4ea3-9be8-1a8d3de6e970"],
+  "4cf46c16-783c-4c7a-a977-0887566ccaac"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
   TemplateBox[{
@@ -319,8 +319,8 @@ Cell[TextData[{
     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "710a7776-855e-4393-b0ba-7afac6cd2db1"]
-}], "SeeAlso",ExpressionUUID->"a9cbd832-0f0e-4830-9838-aaf5eaab3cd9"]
+  "79b16459-b4a7-468e-9aec-28cf9f48f108"]
+}], "SeeAlso",ExpressionUUID->"25588b52-4771-4a53-ba1d-d1ab7679874c"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -348,8 +348,8 @@ Cell[TextData[Cell[BoxData[
   ButtonData->
    "paclet:WolframInstitute/SyntheticInfrageometry/guide/\
 EuclideanGeometryGuide"]], \
-"InlineFormula",ExpressionUUID->"b2a2fcb0-65f6-4a1d-baa1-afbac3907191"]], \
-"MoreAbout",ExpressionUUID->"7e7f95d5-55ed-4471-9fe3-e8d4faaa17f2"]
+"InlineFormula",ExpressionUUID->"5e95f810-44c7-4a5a-b3dd-6f55ca9b27c3"]], \
+"MoreAbout",ExpressionUUID->"a9cbad57-0b1b-4e7f-bdeb-92bd7b6b4ca2"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -413,7 +413,7 @@ Cell["\<\
 Shell cardinality against radius. On both lattices the growth is exactly \
 linear \[LongDash] 4r on the square grid, 3r on the hexagonal \[LongDash] \
 which is the intrinsic statement that these substrates are two-dimensional.\
-\>", "ExampleText",ExpressionUUID->"adf1e779-fee1-4dfb-9426-79b280879b99"],
+\>", "ExampleText",ExpressionUUID->"cb190e41-a69d-4c4e-b1fb-edac634ac8f3"],
 
 Cell[CellGroupData[{
 
@@ -449,7 +449,7 @@ Cell[BoxData[
       RowBox[{"{", 
        RowBox[{"\"\<Plane\>\"", ",", " ", "\"\<Square\>\"", ",", 
         " ", "\"\<Hexagonal\>\""}], "}"}]}], "}"}]}], "]"}]}]], "Input",
- CellLabel->"In[1]:= ",ExpressionUUID->"60eadea7-df20-4fca-b9d5-f56072f1284d"],
+ CellLabel->"In[1]:= ",ExpressionUUID->"8a889ebd-229c-4a58-a4f1-f05ea7ad0106"],
 
 Cell[BoxData[
  RowBox[{"\[LeftAssociation]", 
@@ -466,13 +466,13 @@ Cell[BoxData[
     RowBox[{"{", 
      RowBox[{"1", ",", "3", ",", "6", ",", "9", ",", "12", ",", "15"}], 
      "}"}]}]}], "\[RightAssociation]"}]], "Output",
- CellLabel->"Out[1]= ",ExpressionUUID->"d6a61f39-da69-44cb-8654-ef96a7b7d2c6"]
+ CellLabel->"Out[1]= ",ExpressionUUID->"40be819e-e55a-4be0-913f-fbbb3fb65194"]
 }, Open  ]],
 
 Cell["\<\
 The successive shells around the centre of the square grid: nested rings, \
 each of 4r vertices, and none of them carrying a cycle.\
-\>", "ExampleText",ExpressionUUID->"81fd8fe9-7bb6-4371-a1b3-92a19ca6b584"],
+\>", "ExampleText",ExpressionUUID->"8260e437-73aa-43ba-9b9f-64d8c9068ff0"],
 
 Cell[CellGroupData[{
 
@@ -516,7 +516,7 @@ Cell[BoxData[
       "\n", "    ", 
      RowBox[{"ImageSize", " ", "->", " ", "340"}]}], "]"}]}], "]"}]], "Input",\
 
- CellLabel->"In[2]:= ",ExpressionUUID->"7c170fe0-c509-4621-9b54-592346ed864a"],
+ CellLabel->"In[2]:= ",ExpressionUUID->"18ac7cbd-1019-4919-8d56-17ca7457b5b5"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -1135,7 +1135,7 @@ ft/52X/UfOD7pFu9ibrVm6hbvQm71JuoW72JutWbqNt+0v3Rjf8HTNgiWw==
   FormatType->TraditionalForm,
   FrameTicks->None,
   ImageSize->340]], "Output",
- CellLabel->"Out[2]= ",ExpressionUUID->"313dc5bf-d084-4707-848b-9b8b4e428f47"]
+ CellLabel->"Out[2]= ",ExpressionUUID->"6a5cc44a-ad83-4e71-a78d-5244be9d145b"]
 }, Open  ]]
 }, Open  ]],
 
@@ -1196,7 +1196,7 @@ Cell[BoxData[
 Cell["\<\
 The ball is the union of the shells up to its radius, so the volumes are the \
 partial sums of the areas.\
-\>", "ExampleText",ExpressionUUID->"5abf5dda-2102-4788-ac13-ae72c7e8d397"],
+\>", "ExampleText",ExpressionUUID->"129916af-11c9-4381-b85a-491d05f4f8a1"],
 
 Cell[CellGroupData[{
 
@@ -1239,10 +1239,10 @@ Cell[BoxData[
    RowBox[{
     RowBox[{"Accumulate", "[", "areas", "]"}], " ", "===", " ", "volumes"}]}],
    "]"}]], "Input",
- CellLabel->"In[1]:= ",ExpressionUUID->"ac917719-a1f7-472a-8947-3c9ccaeeace7"],
+ CellLabel->"In[1]:= ",ExpressionUUID->"e7ee9fa6-5c89-4071-9a7c-dc83e6fcff54"],
 
 Cell[BoxData["True"], "Output",
- CellLabel->"Out[1]= ",ExpressionUUID->"dbfe8c3e-c284-4277-9f6c-ea3c9ba7af83"]
+ CellLabel->"Out[1]= ",ExpressionUUID->"1afd20d3-7915-4d49-8770-01829ff6ca0d"]
 }, Open  ]]
 }, Open  ]],
 
@@ -1318,7 +1318,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/FindInfraShell", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"3104f0b0-5f9a-498e-9d77-a59def450954"]
+ CellLabel->"URI",ExpressionUUID->"3d2e8370-c748-486d-b9d2-13b7c2c9abfb"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -1386,25 +1386,25 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 112, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[691, 25, 2960, 93, 70, "Usage",ExpressionUUID->"32ee00c8-029a-4817-9d63-cc5168cf5a29"],
-Cell[3654, 120, 693, 26, 70, "Notes",ExpressionUUID->"4f631d35-3a5f-4641-971e-05cb3742874c"],
-Cell[4350, 148, 683, 14, 70, "Notes",ExpressionUUID->"2279fb82-8ab5-46f3-8007-4eda8dbd5582"],
-Cell[5036, 164, 461, 9, 70, "Notes",ExpressionUUID->"b3d21ccd-5ef8-4b1d-afc6-a6cc9f785b1a"],
-Cell[5500, 175, 1565, 40, 70, "Notes",ExpressionUUID->"845d25dc-8fdd-4838-8271-42f54e26119c"],
-Cell[7068, 217, 125, 0, 70, "Notes",ExpressionUUID->"06cf51f2-3bd3-41f2-9e25-e64898cb3c02"],
-Cell[7196, 219, 1857, 33, 70, "3ColumnTableMod",ExpressionUUID->"2f5e8b47-b56b-46b1-910d-c98dadeb4eee"]
+Cell[691, 25, 2960, 93, 70, "Usage",ExpressionUUID->"d98d15ad-0144-4c2f-af36-243058c1e789"],
+Cell[3654, 120, 693, 26, 70, "Notes",ExpressionUUID->"d51c90fb-f9d2-400f-89ab-fddd371fddd4"],
+Cell[4350, 148, 683, 14, 70, "Notes",ExpressionUUID->"cbea3c0b-9814-4fe3-8245-3ae3f7a512c6"],
+Cell[5036, 164, 461, 9, 70, "Notes",ExpressionUUID->"2319db95-a283-422b-9f98-66089e978da6"],
+Cell[5500, 175, 1565, 40, 70, "Notes",ExpressionUUID->"a3fee808-0ab7-45ba-96da-c05f8b2504a5"],
+Cell[7068, 217, 125, 0, 70, "Notes",ExpressionUUID->"6351044e-b144-48d1-8e9a-1cd74ad00d0b"],
+Cell[7196, 219, 1857, 33, 70, "3ColumnTableMod",ExpressionUUID->"7d88d392-4c37-4ece-b999-a74ad73e3b8b"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[9090, 257, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
  CellID->1559318232],
-Cell[9552, 272, 1886, 50, 70, "SeeAlso",ExpressionUUID->"a9cbd832-0f0e-4830-9838-aaf5eaab3cd9"]
+Cell[9552, 272, 1886, 50, 70, "SeeAlso",ExpressionUUID->"25588b52-4771-4a53-ba1d-d1ab7679874c"]
 }, Open  ]],
 Cell[11453, 325, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
  CellID->792424486],
 Cell[CellGroupData[{
 Cell[11913, 341, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
  CellID->38303248],
-Cell[12032, 344, 332, 7, 70, "MoreAbout",ExpressionUUID->"7e7f95d5-55ed-4471-9fe3-e8d4faaa17f2"]
+Cell[12032, 344, 332, 7, 70, "MoreAbout",ExpressionUUID->"a9cbad57-0b1b-4e7f-bdeb-92bd7b6b4ca2"]
 }, Open  ]],
 Cell[12379, 354, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
  CellID->47113304],
@@ -1417,15 +1417,15 @@ Cell[13409, 387, 285, 5, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-5
 Cell[CellGroupData[{
 Cell[13731, 397, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
  CellID->880084151],
-Cell[14176, 411, 312, 4, 70, "ExampleText",ExpressionUUID->"adf1e779-fee1-4dfb-9426-79b280879b99"],
+Cell[14176, 411, 312, 4, 70, "ExampleText",ExpressionUUID->"cb190e41-a69d-4c4e-b1fb-edac634ac8f3"],
 Cell[CellGroupData[{
-Cell[14513, 419, 1278, 32, 70, "Input",ExpressionUUID->"60eadea7-df20-4fca-b9d5-f56072f1284d"],
-Cell[15794, 453, 628, 15, 70, "Output",ExpressionUUID->"d6a61f39-da69-44cb-8654-ef96a7b7d2c6"]
+Cell[14513, 419, 1278, 32, 70, "Input",ExpressionUUID->"8a889ebd-229c-4a58-a4f1-f05ea7ad0106"],
+Cell[15794, 453, 628, 15, 70, "Output",ExpressionUUID->"40be819e-e55a-4be0-913f-fbbb3fb65194"]
 }, Open  ]],
-Cell[16437, 471, 217, 3, 70, "ExampleText",ExpressionUUID->"81fd8fe9-7bb6-4371-a1b3-92a19ca6b584"],
+Cell[16437, 471, 217, 3, 70, "ExampleText",ExpressionUUID->"8260e437-73aa-43ba-9b9f-64d8c9068ff0"],
 Cell[CellGroupData[{
-Cell[16679, 478, 1556, 40, 70, "Input",ExpressionUUID->"7c170fe0-c509-4621-9b54-592346ed864a"],
-Cell[18238, 520, 28031, 617, 70, "Output",ExpressionUUID->"313dc5bf-d084-4707-848b-9b8b4e428f47"]
+Cell[16679, 478, 1556, 40, 70, "Input",ExpressionUUID->"18ac7cbd-1019-4919-8d56-17ca7457b5b5"],
+Cell[18238, 520, 28031, 617, 70, "Output",ExpressionUUID->"6a5cc44a-ad83-4e71-a78d-5244be9d145b"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
@@ -1443,10 +1443,10 @@ Cell[47568, 1179, 248, 5, 70, "ExampleSection",ExpressionUUID->"1cd6234d-1e3c-43
 Cell[CellGroupData[{
 Cell[47841, 1188, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
  CellID->2123667759],
-Cell[48103, 1195, 191, 3, 70, "ExampleText",ExpressionUUID->"5abf5dda-2102-4788-ac13-ae72c7e8d397"],
+Cell[48103, 1195, 191, 3, 70, "ExampleText",ExpressionUUID->"129916af-11c9-4381-b85a-491d05f4f8a1"],
 Cell[CellGroupData[{
-Cell[48319, 1202, 1468, 39, 70, "Input",ExpressionUUID->"ac917719-a1f7-472a-8947-3c9ccaeeace7"],
-Cell[49790, 1243, 110, 1, 70, "Output",ExpressionUUID->"dbfe8c3e-c284-4277-9f6c-ea3c9ba7af83"]
+Cell[48319, 1202, 1468, 39, 70, "Input",ExpressionUUID->"e7ee9fa6-5c89-4071-9a7c-dc83e6fcff54"],
+Cell[49790, 1243, 110, 1, 70, "Output",ExpressionUUID->"1afd20d3-7915-4d49-8770-01829ff6ca0d"]
 }, Open  ]]
 }, Open  ]],
 Cell[49927, 1248, 252, 5, 70, "ExampleSection",ExpressionUUID->"9397dd0b-9de4-443a-9371-be2b75148f2f",
@@ -1470,7 +1470,7 @@ Cell[51967, 1310, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-44
  CellID->605800465],
 Cell[52137, 1314, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[52304, 1318, 160, 2, 70, "Categorization",ExpressionUUID->"3104f0b0-5f9a-498e-9d77-a59def450954"]
+Cell[52304, 1318, 160, 2, 70, "Categorization",ExpressionUUID->"3d2e8370-c748-486d-b9d2-13b7c2c9abfb"]
 }, Closed]],
 Cell[52479, 1323, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -24,7 +24,7 @@ Cell["HomotopicQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"663acc1b-7262-4f91-b761-8082ff496eef"],
+ Cell["   ", "ModInfo",ExpressionUUID->"e894a5c4-2d4c-4e03-99ec-6b29d230f851"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,19 +39,19 @@ Cell[TextData[{
     StyleBox["a", "TI"], ",", " ", 
     StyleBox["b", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "72cdc59a-548a-41a8-848d-43a434e945e0"],
+  "4d8bb06b-e1ec-46a8-8f31-5d252b2384f2"],
  "\[LineSeparator]",
  "tests whether a and b are in the same homotopy class. a and b must share a \
 wrapper head (InfraPath / InfraLoop / InfraString; InfraCircle coerces to \
 InfraString).",
  "\n"
-}], "Usage",ExpressionUUID->"f73d056b-5ccf-4d65-86bb-2957f2da1292"],
+}], "Usage",ExpressionUUID->"20b5a053-0f35-4ae9-b28f-d7f256694602"],
 
-Cell["Inherits FindInfraHomotopy options.", "Notes",ExpressionUUID->"df32361c-b756-4d56-af1c-ca33f354c540"],
+Cell["Inherits FindInfraHomotopy options.", "Notes",ExpressionUUID->"8371edc2-3a93-4e35-9015-32a69f2f9ef4"],
 
 Cell["\<\
 Spreads over multi-realisation inputs as a Cartesian-AllTrue conjunction.\
-\>", "Notes",ExpressionUUID->"8446a0a2-f709-45fc-b11d-ba949737fb8d"]
+\>", "Notes",ExpressionUUID->"e24e610f-9c25-4160-9e55-ee53fc4ed1c2"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -310,7 +310,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/HomotopicQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"30b44b92-029e-4b50-a8e2-aba872fc631d"]
+ CellLabel->"URI",ExpressionUUID->"bca2a8e5-4bac-44c1-96a0-d5ec0b665175"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -376,9 +376,9 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 108, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[687, 25, 866, 22, 70, "Usage",ExpressionUUID->"f73d056b-5ccf-4d65-86bb-2957f2da1292"],
-Cell[1556, 49, 107, 0, 70, "Notes",ExpressionUUID->"df32361c-b756-4d56-af1c-ca33f354c540"],
-Cell[1666, 51, 153, 2, 70, "Notes",ExpressionUUID->"8446a0a2-f709-45fc-b11d-ba949737fb8d"]
+Cell[687, 25, 866, 22, 70, "Usage",ExpressionUUID->"20b5a053-0f35-4ae9-b28f-d7f256694602"],
+Cell[1556, 49, 107, 0, 70, "Notes",ExpressionUUID->"8371edc2-3a93-4e35-9015-32a69f2f9ef4"],
+Cell[1666, 51, 153, 2, 70, "Notes",ExpressionUUID->"e24e610f-9c25-4160-9e55-ee53fc4ed1c2"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1856, 58, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -435,7 +435,7 @@ Cell[10033, 302, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10203, 306, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10370, 310, 156, 2, 70, "Categorization",ExpressionUUID->"30b44b92-029e-4b50-a8e2-aba872fc631d"]
+Cell[10370, 310, 156, 2, 70, "Categorization",ExpressionUUID->"bca2a8e5-4bac-44c1-96a0-d5ec0b665175"]
 }, Closed]],
 Cell[10541, 315, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

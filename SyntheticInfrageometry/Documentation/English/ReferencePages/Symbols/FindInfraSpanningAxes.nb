@@ -24,7 +24,7 @@ Cell["FindInfraSpanningAxes", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"003168cb-778b-49cc-af3a-3a26759a4ff1"],
+ Cell["   ", "ModInfo",ExpressionUUID->"d91bea45-435d-4c78-a8ac-2733ed5a7dae"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,22 +39,22 @@ FindInfraSpanningAxes",
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["n", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "677d79d4-fdb9-4f6b-bf0b-41764d9244fc"],
+  "bf55d722-c389-407f-b671-36b51f4851f5"],
  "\[LineSeparator]",
  "returns n mutually well-separated longest geodesics across graph (greedy, \
 no fixed center) or $Failed; UpTo[n] returns up to n; All returns every axis \
 above the separation threshold.",
  "\n"
-}], "Usage",ExpressionUUID->"a99d4aef-12be-47de-991f-875a052b38dd"],
+}], "Usage",ExpressionUUID->"3d1a4f0e-1ed2-4790-baa6-29b6df806d39"],
 
 Cell["\<\
 For axes through a fixed center vertex use FindInfraOrthogonalFrame.\
-\>", "Notes",ExpressionUUID->"57a999fe-fdd3-425b-94e1-1792e6422a94"],
+\>", "Notes",ExpressionUUID->"b25871f3-cc67-483c-8212-135655ff4016"],
 
 Cell["\<\
 Options: \"AxisDistance\" (\"MinEndpoint\" | \"Hausdorff\" | \"Separation\"), \
 \"MinLength\", \"MinSeparation\", \"AxisThickness\", \"RandomPick\".\
-\>", "Notes",ExpressionUUID->"9a20d1b7-6a73-4f30-a1c6-a739bc3d36d1"]
+\>", "Notes",ExpressionUUID->"2bc02f71-5cdc-4623-b99a-0f3555ea4cff"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -314,7 +314,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindInfraSpanningAxes\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"6ffe6c02-8480-4cf4-b429-fc0538a1bc74"]
+ CellLabel->"URI",ExpressionUUID->"e3b1ef92-2ff0-407c-84c9-7be945656a55"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -380,9 +380,9 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 119, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[698, 25, 874, 22, 70, "Usage",ExpressionUUID->"a99d4aef-12be-47de-991f-875a052b38dd"],
-Cell[1575, 49, 148, 2, 70, "Notes",ExpressionUUID->"57a999fe-fdd3-425b-94e1-1792e6422a94"],
-Cell[1726, 53, 228, 3, 70, "Notes",ExpressionUUID->"9a20d1b7-6a73-4f30-a1c6-a739bc3d36d1"]
+Cell[698, 25, 874, 22, 70, "Usage",ExpressionUUID->"3d1a4f0e-1ed2-4790-baa6-29b6df806d39"],
+Cell[1575, 49, 148, 2, 70, "Notes",ExpressionUUID->"b25871f3-cc67-483c-8212-135655ff4016"],
+Cell[1726, 53, 228, 3, 70, "Notes",ExpressionUUID->"2bc02f71-5cdc-4623-b99a-0f3555ea4cff"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1991, 61, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -439,7 +439,7 @@ Cell[10168, 305, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10338, 309, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10505, 313, 173, 3, 70, "Categorization",ExpressionUUID->"6ffe6c02-8480-4cf4-b429-fc0538a1bc74"]
+Cell[10505, 313, 173, 3, 70, "Categorization",ExpressionUUID->"e3b1ef92-2ff0-407c-84c9-7be945656a55"]
 }, Closed]],
 Cell[10693, 319, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

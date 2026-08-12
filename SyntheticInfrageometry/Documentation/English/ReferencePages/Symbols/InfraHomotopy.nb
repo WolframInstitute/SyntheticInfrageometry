@@ -24,7 +24,7 @@ Cell["InfraHomotopy", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"ae28438f-e882-414a-a3f0-f70329bda62e"],
+ Cell["   ", "ModInfo",ExpressionUUID->"9cadaca3-7eee-4ec0-bfe9-017277a9b9bb"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,12 +37,12 @@ Cell[TextData[{
    RowBox[{"{", 
     StyleBox["chain", "TI"], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "fcefef75-1d06-4c24-9d19-4809531a39e3"],
+  "20284eb1-6fe2-4069-a7f8-e26396c6de0c"],
  "\[LineSeparator]",
  "is the unary form: one homotopy chain {p0, p1, \[Ellipsis], pk} of \
 intermediate walks produced by k elementary moves from p0 to pk.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"918f9c29-b76b-46d7-8020-1add0ad50ae1"],
+ Cell["   ", "ModInfo",ExpressionUUID->"65fcfc14-a705-4eb6-a52a-5d4c54a1588a"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -57,15 +57,15 @@ intermediate walks produced by k elementary moves from p0 to pk.",
      StyleBox["chain1", "TI"], ",", " ", "...", ",", " ", 
      StyleBox["chaink", "TI"]}], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "e9d789b8-4dcd-4994-a0ca-cb22d26042c9"],
+  "28d9ffcd-5b28-46a6-9c21-22551681cf51"],
  "\[LineSeparator]",
  "is the multi-realisation form."
-}], "Usage",ExpressionUUID->"ba2c2a75-5997-4189-8bb4-e12e4cc10549"],
+}], "Usage",ExpressionUUID->"8131c6d5-5703-4b02-8ff6-d07b0b7fc3be"],
 
 Cell["\<\
 Find* finders return one InfraHomotopy wrapper carrying the requested chains.\
 \
-\>", "Notes",ExpressionUUID->"d5da0c2b-820f-4f78-9c23-68ac30c76d7f"]
+\>", "Notes",ExpressionUUID->"81e76782-6b5a-4ad2-a20d-046de90573c6"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -324,7 +324,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraHomotopy", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"9d52345b-01f9-40e1-b874-ec9c6afe637f"]
+ CellLabel->"URI",ExpressionUUID->"0bfa340d-9b26-478e-bc8d-0fa4a4d03fce"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -390,8 +390,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 111, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[690, 25, 1438, 37, 70, "Usage",ExpressionUUID->"ba2c2a75-5997-4189-8bb4-e12e4cc10549"],
-Cell[2131, 64, 159, 3, 70, "Notes",ExpressionUUID->"d5da0c2b-820f-4f78-9c23-68ac30c76d7f"]
+Cell[690, 25, 1438, 37, 70, "Usage",ExpressionUUID->"8131c6d5-5703-4b02-8ff6-d07b0b7fc3be"],
+Cell[2131, 64, 159, 3, 70, "Notes",ExpressionUUID->"81e76782-6b5a-4ad2-a20d-046de90573c6"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2327, 72, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -448,7 +448,7 @@ Cell[10504, 316, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10674, 320, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10841, 324, 159, 2, 70, "Categorization",ExpressionUUID->"9d52345b-01f9-40e1-b874-ec9c6afe637f"]
+Cell[10841, 324, 159, 2, 70, "Categorization",ExpressionUUID->"0bfa340d-9b26-478e-bc8d-0fa4a4d03fce"]
 }, Closed]],
 Cell[11015, 329, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

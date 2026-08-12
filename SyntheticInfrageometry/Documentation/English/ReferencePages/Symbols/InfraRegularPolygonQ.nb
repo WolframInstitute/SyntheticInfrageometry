@@ -24,7 +24,7 @@ Cell["InfraRegularPolygonQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"1109a7ed-e1c2-42cc-be1f-b5702e2404bd"],
+ Cell["   ", "ModInfo",ExpressionUUID->"50eaa185-e17c-413c-bf71-2bc852d2022c"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,15 +39,15 @@ InfraRegularPolygonQ",
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["cycle", "TI"], ",", " ", "As"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "9a6e0547-e86a-49ca-bff4-de474edba674"],
+  "9b67e39f-5476-4751-9229-f918f7a4f219"],
  "\[LineSeparator]",
  "tests whether the cycle is a regular n-gon w.r.t. the metric tuple As, with \
 the same slot grammar as FindInfraRegularPolygon (Integer | {lo, hi} | \
 Automatic per slot).",
  "\n"
-}], "Usage",ExpressionUUID->"0e0a5d81-568a-4524-97fc-9842057714f1"],
+}], "Usage",ExpressionUUID->"41704347-f58d-45b3-8142-26f0bda30d82"],
 
-Cell["Accepts open and closed input.", "Notes",ExpressionUUID->"c4c47f4b-65c2-4588-a857-3a8256e7f684"]
+Cell["Accepts open and closed input.", "Notes",ExpressionUUID->"7ed58af1-6215-4244-ab5d-7ff9d166bc00"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -307,7 +307,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/InfraRegularPolygonQ\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"d14050d4-23ad-44f2-bc25-2b296b85c294"]
+ CellLabel->"URI",ExpressionUUID->"5b13d299-f602-4d34-8ac2-9406f43c5a2e"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -373,8 +373,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 118, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[697, 25, 877, 22, 70, "Usage",ExpressionUUID->"0e0a5d81-568a-4524-97fc-9842057714f1"],
-Cell[1577, 49, 102, 0, 70, "Notes",ExpressionUUID->"c4c47f4b-65c2-4588-a857-3a8256e7f684"]
+Cell[697, 25, 877, 22, 70, "Usage",ExpressionUUID->"41704347-f58d-45b3-8142-26f0bda30d82"],
+Cell[1577, 49, 102, 0, 70, "Notes",ExpressionUUID->"7ed58af1-6215-4244-ab5d-7ff9d166bc00"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1716, 54, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -431,7 +431,7 @@ Cell[9893, 298, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10063, 302, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10230, 306, 172, 3, 70, "Categorization",ExpressionUUID->"d14050d4-23ad-44f2-bc25-2b296b85c294"]
+Cell[10230, 306, 172, 3, 70, "Categorization",ExpressionUUID->"5b13d299-f602-4d34-8ac2-9406f43c5a2e"]
 }, Closed]],
 Cell[10417, 312, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

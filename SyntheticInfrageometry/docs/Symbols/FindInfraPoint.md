@@ -15,4 +15,10 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraPoint
 
 ## Details & Options
 
-Options "From" ("Random" (default), "Center", "Periphery", anchor -> spec), "Distance" (d, {dMin, dMax}, "Max", "Spread"), "MaxCliques".
+Options:
+
+| Option | Values |
+|---|---|
+| `"From"` | "Random" (default), "Center", "Periphery", anchor -> spec |
+| `"Distance"` | d, {dMin, dMax}, "Max", "Spread" |
+| `"MaxCliques"` | -- |

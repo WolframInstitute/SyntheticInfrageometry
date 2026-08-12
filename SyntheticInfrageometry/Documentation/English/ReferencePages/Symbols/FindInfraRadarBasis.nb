@@ -27,7 +27,7 @@ Cell[TextData[{
  "FindInfraRadarBasis is deprecated; use FindResolvingSet (Infrageometry \
 paclet).",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"19e0faf0-9fc7-490c-a62e-2fde465c74fe"],
+ Cell["   ", "ModInfo",ExpressionUUID->"514d1d1b-5eae-49b6-9e15-0496e02cddd4"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -42,10 +42,10 @@ paclet).",
     StyleBox["n", "TI"], ",", " ", 
     StyleBox["m", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "ade4c855-fc04-414a-85df-503a7da1b294"],
+  "8f8797b3-f886-47f7-a12f-1d7911994de6"],
  "\[LineSeparator]",
  "returns up to n resolving sets by ascending size."
-}], "Usage",ExpressionUUID->"607445e0-8cc0-4ca9-bebe-4315aa8267a1"]
+}], "Usage",ExpressionUUID->"4eb361c6-ec89-4bf8-9818-e161ef79deb4"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -305,7 +305,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindInfraRadarBasis\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"426c4f42-6bf5-4734-a433-40640ab1568e"]
+ CellLabel->"URI",ExpressionUUID->"a4a68752-8c30-4c1c-a38c-f990f4706f7f"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -371,7 +371,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 117, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[696, 25, 853, 22, 70, "Usage",ExpressionUUID->"607445e0-8cc0-4ca9-bebe-4315aa8267a1"]
+Cell[696, 25, 853, 22, 70, "Usage",ExpressionUUID->"4eb361c6-ec89-4bf8-9818-e161ef79deb4"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1586, 52, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -428,7 +428,7 @@ Cell[9763, 296, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9933, 300, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10100, 304, 171, 3, 70, "Categorization",ExpressionUUID->"426c4f42-6bf5-4734-a433-40640ab1568e"]
+Cell[10100, 304, 171, 3, 70, "Categorization",ExpressionUUID->"a4a68752-8c30-4c1c-a38c-f990f4706f7f"]
 }, Closed]],
 Cell[10286, 310, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

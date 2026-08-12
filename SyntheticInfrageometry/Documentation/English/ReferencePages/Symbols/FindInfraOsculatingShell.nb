@@ -24,7 +24,7 @@ Cell["FindInfraOsculatingShell", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"8761d94d-fd00-42be-8c5c-9c51a5e50fd1"],
+ Cell["   ", "ModInfo",ExpressionUUID->"42b24905-6c34-4f53-85be-4cb0c4b04467"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -41,15 +41,15 @@ FindInfraOsculatingShell",
     StyleBox["i", "TI"], ",", " ", 
     StyleBox["k", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "53cf01b6-f013-41a4-9ba7-6eaeccb8c64d"],
+  "02d3882d-e985-4c8e-a8ab-1dee7734851d"],
  "\[LineSeparator]",
  "returns shells whose level set contains the k-vertex window centered on \
 path[[i]], one per osculating center, sorted by ascending radius; n / UpTo[n] \
 / All controls multiplicity.",
  "\n"
-}], "Usage",ExpressionUUID->"6037aac4-7eb3-4043-9a2e-2cd777066df9"],
+}], "Usage",ExpressionUUID->"a940e8a4-10ef-48f7-8267-996eb12014cc"],
 
-Cell["Forwards Properties / Method to FindInfraShell.", "Notes",ExpressionUUID->"20cb4343-8000-4fad-b8b5-a90bc468a79e"]
+Cell["Forwards Properties / Method to FindInfraShell.", "Notes",ExpressionUUID->"a83e6e0d-c27d-4784-b547-fe3f601aa22e"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -309,7 +309,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindInfraOsculatingShell\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"7cf5d178-c9e7-4956-ad0a-f3f0cf4ac18d"]
+ CellLabel->"URI",ExpressionUUID->"e4863ed3-6045-4969-a52f-aa25c237d29f"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -375,8 +375,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 122, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[701, 25, 951, 24, 70, "Usage",ExpressionUUID->"6037aac4-7eb3-4043-9a2e-2cd777066df9"],
-Cell[1655, 51, 119, 0, 70, "Notes",ExpressionUUID->"20cb4343-8000-4fad-b8b5-a90bc468a79e"]
+Cell[701, 25, 951, 24, 70, "Usage",ExpressionUUID->"a940e8a4-10ef-48f7-8267-996eb12014cc"],
+Cell[1655, 51, 119, 0, 70, "Notes",ExpressionUUID->"a83e6e0d-c27d-4784-b547-fe3f601aa22e"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1811, 56, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -433,7 +433,7 @@ Cell[9988, 300, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10158, 304, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10325, 308, 176, 3, 70, "Categorization",ExpressionUUID->"7cf5d178-c9e7-4956-ad0a-f3f0cf4ac18d"]
+Cell[10325, 308, 176, 3, 70, "Categorization",ExpressionUUID->"e4863ed3-6045-4969-a52f-aa25c237d29f"]
 }, Closed]],
 Cell[10516, 314, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

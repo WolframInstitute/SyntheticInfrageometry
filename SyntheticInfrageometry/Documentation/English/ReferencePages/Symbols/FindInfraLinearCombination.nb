@@ -24,7 +24,7 @@ Cell["FindInfraLinearCombination", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"47608f29-39ce-4293-9bbe-c2a13f38e483"],
+ Cell["   ", "ModInfo",ExpressionUUID->"98b6ce9c-cf92-42bb-96a3-735b9fba7457"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -50,23 +50,23 @@ FindInfraLinearCombination",
         StyleBox["u2", "TI"]}], "}"}], ",", " ", "..."}], "}"}]}], "]"}]], 
   "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "5b9ff292-a5aa-40bb-842a-195e23d293d7"],
+  "e732805b-79d0-41a9-8deb-04e4648ee8a7"],
  "\[LineSeparator]",
  "returns InfraPoint[{v1, \[Ellipsis]}], the multi-valued vertex realisation \
 of sum_i lambda_i u_i with base point o, computed as \
 scaled-then-pairwise-summed left-to-right.",
  "\n"
-}], "Usage",ExpressionUUID->"bec90bd0-5fa3-437b-8427-f1ab9bbe98af"],
+}], "Usage",ExpressionUUID->"20da5c70-3293-42a7-8c52-6e8c7cc164d4"],
 
 Cell["\<\
 Options: \"ScaleMethod\" (Automatic (default), \"Metric\", \"Line\", \
 \"Midpoint\"); \"SumMethod\" (\"Metric\" (default), \"Parallel\").\
-\>", "Notes",ExpressionUUID->"703b7806-1475-4679-9c3f-3dcd003ff27e"],
+\>", "Notes",ExpressionUUID->"cf01fbbb-99d8-46bc-887c-81f2131b0f51"],
 
 Cell["\<\
 The count argument n / UpTo[n] / All (default) picks realisations, exact n \
 failing with $Failed.\
-\>", "Notes",ExpressionUUID->"16778ad2-800b-4e05-83c3-10c9a48368b0"]
+\>", "Notes",ExpressionUUID->"9f7794cc-f44a-4c28-8a44-73fb295886fc"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -326,7 +326,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindInfraLinearCombination\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"c2036856-932b-44f1-96ba-3fb23ecde019"]
+ CellLabel->"URI",ExpressionUUID->"2d91c711-789e-491a-82a7-baa730bef04d"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -392,9 +392,9 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 124, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[703, 25, 1197, 33, 70, "Usage",ExpressionUUID->"bec90bd0-5fa3-437b-8427-f1ab9bbe98af"],
-Cell[1903, 60, 217, 3, 70, "Notes",ExpressionUUID->"703b7806-1475-4679-9c3f-3dcd003ff27e"],
-Cell[2123, 65, 178, 3, 70, "Notes",ExpressionUUID->"16778ad2-800b-4e05-83c3-10c9a48368b0"]
+Cell[703, 25, 1197, 33, 70, "Usage",ExpressionUUID->"20da5c70-3293-42a7-8c52-6e8c7cc164d4"],
+Cell[1903, 60, 217, 3, 70, "Notes",ExpressionUUID->"cf01fbbb-99d8-46bc-887c-81f2131b0f51"],
+Cell[2123, 65, 178, 3, 70, "Notes",ExpressionUUID->"9f7794cc-f44a-4c28-8a44-73fb295886fc"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2338, 73, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -451,7 +451,7 @@ Cell[10515, 317, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10685, 321, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10852, 325, 178, 3, 70, "Categorization",ExpressionUUID->"c2036856-932b-44f1-96ba-3fb23ecde019"]
+Cell[10852, 325, 178, 3, 70, "Categorization",ExpressionUUID->"2d91c711-789e-491a-82a7-baa730bef04d"]
 }, Closed]],
 Cell[11045, 331, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

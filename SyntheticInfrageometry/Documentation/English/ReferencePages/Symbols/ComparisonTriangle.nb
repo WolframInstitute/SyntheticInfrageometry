@@ -24,7 +24,7 @@ Cell["ComparisonTriangle", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"de8253d8-e6e8-40e1-a963-64fde7c42fa7"],
+ Cell["   ", "ModInfo",ExpressionUUID->"5ad7eabc-632f-43ab-8ede-fe3ef7f022b6"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,12 +39,12 @@ Cell[TextData[{
     StyleBox["b", "TI"], ",", " ", 
     StyleBox["c", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "39f961fb-579e-4b8d-8c82-498d840a3bc0"],
+  "e418ba6b-9fb5-4820-ab64-ad4453065edc"],
  "\[LineSeparator]",
  "returns the Wolfram Triangle in R^2 with side lengths {a, b, c} (a opposite \
 p, b opposite q, c opposite r).",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"e2b09123-e517-4ed4-9c91-2122e3c47c28"],
+ Cell["   ", "ModInfo",ExpressionUUID->"2fce91ac-518d-4d5c-bf19-3705eb893eec"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -61,12 +61,12 @@ p, b opposite q, c opposite r).",
     RowBox[{"\"\<Curvature\>\"", " ", "->", " ", 
      StyleBox["k", "TI"]}]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "bf9171f5-b44f-4271-9454-91103732fdff"],
+  "09f54ddf-1d7c-45c0-b713-0f634b855c2e"],
  "\[LineSeparator]",
  "for k != 0 returns InfraComparisonTriangle[<|\"Sides\" -> \[Ellipsis], \
 \"Curvature\" -> k, \"Angles\" -> {alpha_p, alpha_q, alpha_r}|>] in M_k^2.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"b40d27bc-a736-4733-9718-63a166ec7f99"],
+ Cell["   ", "ModInfo",ExpressionUUID->"21c8e668-fe06-46c2-a02d-5a55f1d92e2d"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -84,10 +84,10 @@ p, b opposite q, c opposite r).",
     RowBox[{"\"\<Curvature\>\"", " ", "->", " ", 
      StyleBox["k", "TI"]}]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "38a77421-1a6c-453f-b63d-46442dcfdb33"],
+  "85849407-b96e-4faa-9282-935eae5fc270"],
  "\[LineSeparator]",
  "reads the side lengths from the graph."
-}], "Usage",ExpressionUUID->"732abef7-f55f-4b5b-b6fa-c70df7b770e8"]
+}], "Usage",ExpressionUUID->"3ea61628-98ab-4e20-a44a-268b2a8fbca3"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -347,7 +347,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/ComparisonTriangle\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"2b7afd54-410a-48d5-8a9a-97ac69a40010"]
+ CellLabel->"URI",ExpressionUUID->"6b8c9ab6-2778-4d4c-a777-cf38aba20306"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -413,7 +413,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 116, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[695, 25, 2477, 64, 70, "Usage",ExpressionUUID->"732abef7-f55f-4b5b-b6fa-c70df7b770e8"]
+Cell[695, 25, 2477, 64, 70, "Usage",ExpressionUUID->"3ea61628-98ab-4e20-a44a-268b2a8fbca3"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[3209, 94, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -470,7 +470,7 @@ Cell[11386, 338, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[11556, 342, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[11723, 346, 170, 3, 70, "Categorization",ExpressionUUID->"2b7afd54-410a-48d5-8a9a-97ac69a40010"]
+Cell[11723, 346, 170, 3, 70, "Categorization",ExpressionUUID->"6b8c9ab6-2778-4d4c-a777-cf38aba20306"]
 }, Closed]],
 Cell[11908, 352, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

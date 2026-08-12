@@ -24,7 +24,7 @@ Cell["GeodesicSprayGraph", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"149f5d58-0c6e-42be-99fc-9bcbbd977ef6"],
+ Cell["   ", "ModInfo",ExpressionUUID->"a6b1ada4-fd6c-488a-860b-ac80bf8418d4"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,12 +38,12 @@ Cell[TextData[{
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["c", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "13c40c5b-de32-4692-bf67-2af29378b189"],
+  "d01729eb-247e-4555-8109-f2b98dbd150b"],
  "\[LineSeparator]",
  "returns the BFS DAG rooted at c: a directed graph with edge u -> v whenever \
 d(c, v) = d(c, u) + 1 and u-v is an edge of graph.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"061b30d4-e819-4daa-82fe-ea8d91693733"],
+ Cell["   ", "ModInfo",ExpressionUUID->"70116e7b-9bd8-414f-939c-3752d532b3c7"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -61,11 +61,11 @@ d(c, v) = d(c, u) + 1 and u-v is an edge of graph.",
        StyleBox["c1", "TI"], ",", " ", "...", ",", " ", 
        StyleBox["ck", "TI"]}], "}"}], "]"}]}]}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "a0cfbf1a-eb80-4681-9c0e-aa390cb893da"],
+  "6b769234-6df6-4caf-b6d3-a604e1f28028"],
  "\[LineSeparator]",
  "] uses multi-source BFS.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"e8bb5e53-c36e-403b-9ae0-aa8b025c8f3e"],
+ Cell["   ", "ModInfo",ExpressionUUID->"8665a595-5d21-4a1a-914a-7532cf3a555c"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -79,21 +79,21 @@ d(c, v) = d(c, u) + 1 and u-v is an edge of graph.",
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["pairs", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "bd09a1ee-d982-42ed-a45f-f4eafbbe365d"],
+  "8aa31bfb-bea0-4e98-a290-106ee89eb5c1"],
  "\[LineSeparator]",
  "returns the union of geodesics between the listed vertex pairs."
-}], "Usage",ExpressionUUID->"73a84421-cc86-4860-802d-9ae4a93b2c1a"],
+}], "Usage",ExpressionUUID->"83e19dbb-5902-4b8f-9104-00c4dff2ba8b"],
 
 Cell["\<\
 Options: \"AxisLength\" (truncate the source-spray DAG at depth k; default \
 All), \"PathThickness\" (per-pair Hausdorff threshold; 0 keeps one geodesic \
 per pair, Infinity keeps all), \"Directed\".\
-\>", "Notes",ExpressionUUID->"5cfa24e0-eb7a-416e-99dd-f55ebd0a8218"],
+\>", "Notes",ExpressionUUID->"dc444db2-227f-4bb5-998f-a10523e6bf1f"],
 
 Cell["\<\
 Sinks are peripheral vertices reachable from c; directed paths c -> sink are \
 exactly the maximal geodesics from c.\
-\>", "Notes",ExpressionUUID->"631b5202-a1ae-4fb2-a930-cc61a1b4252c"]
+\>", "Notes",ExpressionUUID->"c6e1f682-092a-468f-8757-910a5a708850"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -353,7 +353,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/GeodesicSprayGraph\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"c868e2ab-0197-43b5-a269-0f4f056296b4"]
+ CellLabel->"URI",ExpressionUUID->"2ff606de-9663-451c-b280-8584e32cc797"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -419,9 +419,9 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 116, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[695, 25, 2226, 59, 70, "Usage",ExpressionUUID->"73a84421-cc86-4860-802d-9ae4a93b2c1a"],
-Cell[2924, 86, 279, 4, 70, "Notes",ExpressionUUID->"5cfa24e0-eb7a-416e-99dd-f55ebd0a8218"],
-Cell[3206, 92, 196, 3, 70, "Notes",ExpressionUUID->"631b5202-a1ae-4fb2-a930-cc61a1b4252c"]
+Cell[695, 25, 2226, 59, 70, "Usage",ExpressionUUID->"83e19dbb-5902-4b8f-9104-00c4dff2ba8b"],
+Cell[2924, 86, 279, 4, 70, "Notes",ExpressionUUID->"dc444db2-227f-4bb5-998f-a10523e6bf1f"],
+Cell[3206, 92, 196, 3, 70, "Notes",ExpressionUUID->"c6e1f682-092a-468f-8757-910a5a708850"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[3439, 100, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -478,7 +478,7 @@ Cell[11616, 344, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[11786, 348, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[11953, 352, 170, 3, 70, "Categorization",ExpressionUUID->"c868e2ab-0197-43b5-a269-0f4f056296b4"]
+Cell[11953, 352, 170, 3, 70, "Categorization",ExpressionUUID->"2ff606de-9663-451c-b280-8584e32cc797"]
 }, Closed]],
 Cell[12138, 358, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

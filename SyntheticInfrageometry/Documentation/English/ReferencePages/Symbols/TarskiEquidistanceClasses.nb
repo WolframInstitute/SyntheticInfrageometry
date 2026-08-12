@@ -24,7 +24,7 @@ Cell["TarskiEquidistanceClasses", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"46d4e2a8-c819-40d9-9f79-dbcab181b1f8"],
+ Cell["   ", "ModInfo",ExpressionUUID->"1d2160d6-eceb-4fba-bc47-3a74812f5086"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,11 +37,11 @@ TarskiEquidistanceClasses",
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "4881df78-5ffa-4c99-b2a0-d9dfd8552f1e"],
+  "35e5dff2-d318-4ef1-9329-0006f86dcd0c"],
  "\[LineSeparator]",
  "returns the partition of unordered vertex pairs by distance value.",
  "\n"
-}], "Usage",ExpressionUUID->"4f4af43e-f4de-476d-b611-5ccc2bda5e38"]
+}], "Usage",ExpressionUUID->"b96af6a6-f4f4-48f6-95c5-209c71f1fb21"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -301,7 +301,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/TarskiEquidistanceClasses\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"37a3ff9d-5aef-4bfe-a5b5-28d510a1bf80"]
+ CellLabel->"URI",ExpressionUUID->"c31fa17b-3f75-40ef-8ab6-9e414bdd3e7e"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -367,7 +367,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 123, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[702, 25, 711, 18, 70, "Usage",ExpressionUUID->"4f4af43e-f4de-476d-b611-5ccc2bda5e38"]
+Cell[702, 25, 711, 18, 70, "Usage",ExpressionUUID->"b96af6a6-f4f4-48f6-95c5-209c71f1fb21"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1450, 48, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -424,7 +424,7 @@ Cell[9627, 292, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9797, 296, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9964, 300, 177, 3, 70, "Categorization",ExpressionUUID->"37a3ff9d-5aef-4bfe-a5b5-28d510a1bf80"]
+Cell[9964, 300, 177, 3, 70, "Categorization",ExpressionUUID->"c31fa17b-3f75-40ef-8ab6-9e414bdd3e7e"]
 }, Closed]],
 Cell[10156, 306, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

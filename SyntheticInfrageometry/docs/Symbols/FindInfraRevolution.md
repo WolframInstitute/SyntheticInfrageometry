@@ -13,4 +13,9 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraRevolution
 
 ## Details & Options
 
-Options "Form" ("Solid" (default), "Surface"), Method ("Voronoi" (default), "PerpendicularBisector", "Balls").
+Options:
+
+| Option | Values |
+|---|---|
+| `"Form"` | "Solid" (default), "Surface" |
+| `Method` | "Voronoi" (default), "PerpendicularBisector", "Balls" |

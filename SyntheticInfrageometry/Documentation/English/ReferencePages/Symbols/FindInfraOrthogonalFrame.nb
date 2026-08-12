@@ -24,7 +24,7 @@ Cell["FindInfraOrthogonalFrame", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"8c7c3437-644c-4fab-9bc5-199a52dc1ab6"],
+ Cell["   ", "ModInfo",ExpressionUUID->"4d23287c-00f9-4b14-a83b-c0a6455887b7"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -40,19 +40,19 @@ FindInfraOrthogonalFrame",
     StyleBox["c", "TI"], ",", " ", 
     StyleBox["axisLength", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "ef46a783-1d2c-48f7-b116-a1e1342fc782"],
+  "ca97987b-50d3-4926-83a2-d70914a64328"],
  "\[LineSeparator]",
  "returns one frame of mutually perpendicular InfraSegment axes through c \
 (axisLength = All | n | UpTo[n] | {min, max}); a trailing n / UpTo[n] / All \
 controls the frame count.",
  "\n"
-}], "Usage",ExpressionUUID->"883071b0-b198-4668-9177-2b6eb5e1f8d9"],
+}], "Usage",ExpressionUUID->"7d51fae5-83c9-4f80-891a-0179dbb259af"],
 
-Cell["For the no-centre form use FindInfraSpanningAxes.", "Notes",ExpressionUUID->"a2e3b175-63f6-4eb6-bfaa-b51690b296ce"],
+Cell["For the no-centre form use FindInfraSpanningAxes.", "Notes",ExpressionUUID->"9f436c69-9eaa-4011-bdfe-6d4a2f24e4e6"],
 
 Cell["\<\
 Options Method, \"AxisCount\", \"BranchSampleSize\", \"SelectCoordinate\".\
-\>", "Notes",ExpressionUUID->"c1995f9b-9d16-45ee-8d3f-8a2ca9742c6f"]
+\>", "Notes",ExpressionUUID->"85509a12-380e-4e70-8bd4-eef4274a8ad2"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -312,7 +312,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindInfraOrthogonalFrame\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"ecb61d0a-b27b-4140-86f5-e712217eba77"]
+ CellLabel->"URI",ExpressionUUID->"b7fec1af-8574-4f89-8d46-fe37cb5ac941"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -378,9 +378,9 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 122, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[701, 25, 916, 23, 70, "Usage",ExpressionUUID->"883071b0-b198-4668-9177-2b6eb5e1f8d9"],
-Cell[1620, 50, 121, 0, 70, "Notes",ExpressionUUID->"a2e3b175-63f6-4eb6-bfaa-b51690b296ce"],
-Cell[1744, 52, 154, 2, 70, "Notes",ExpressionUUID->"c1995f9b-9d16-45ee-8d3f-8a2ca9742c6f"]
+Cell[701, 25, 916, 23, 70, "Usage",ExpressionUUID->"7d51fae5-83c9-4f80-891a-0179dbb259af"],
+Cell[1620, 50, 121, 0, 70, "Notes",ExpressionUUID->"9f436c69-9eaa-4011-bdfe-6d4a2f24e4e6"],
+Cell[1744, 52, 154, 2, 70, "Notes",ExpressionUUID->"85509a12-380e-4e70-8bd4-eef4274a8ad2"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1935, 59, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -437,7 +437,7 @@ Cell[10112, 303, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10282, 307, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10449, 311, 176, 3, 70, "Categorization",ExpressionUUID->"ecb61d0a-b27b-4140-86f5-e712217eba77"]
+Cell[10449, 311, 176, 3, 70, "Categorization",ExpressionUUID->"b7fec1af-8574-4f89-8d46-fe37cb5ac941"]
 }, Closed]],
 Cell[10640, 317, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

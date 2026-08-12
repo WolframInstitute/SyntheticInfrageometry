@@ -24,7 +24,7 @@ Cell["InfraLineStructure", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"d4e4f3bf-0d69-4049-930f-f4b067dd4657"],
+ Cell["   ", "ModInfo",ExpressionUUID->"da63da00-cb6a-41e0-ae8c-6dfb2fb1431d"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,12 +39,12 @@ Cell[TextData[{
      StyleBox["line1", "TI"], ",", " ", "...", ",", " ", 
      StyleBox["linek", "TI"]}], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "9a6c44cd-7d8a-49d1-a6a7-63e4c41b48f6"],
+  "5d538c93-a097-42d5-8007-a83ad9b3f7be"],
  "\[LineSeparator]",
  "is a consistent geodesic path system, stored as its maximal lines (the \
 structure's realisations).",
  "\n"
-}], "Usage",ExpressionUUID->"c503c489-6f39-4391-a551-3e1887a8823c"],
+}], "Usage",ExpressionUUID->"09948a91-710d-45e1-bd1d-068640098920"],
 
 Cell["\<\
 Accessors: [\"Lines\"] / [\"Realizations\"] the maximal lines, [\"First\"] / \
@@ -52,7 +52,7 @@ Accessors: [\"Lines\"] / [\"Realizations\"] the maximal lines, [\"First\"] / \
 association <|{u,v} -> P(u,v)|>, [\"Incidence\"] the transpose <|v -> {line \
 numbers}|>, [\"Coordinates\"] <|v -> {{line, offset}}|> (offset = edges from \
 the line start), and [\"Path\", u, v] recovers P(u,v) oriented u -> v.\
-\>", "Notes",ExpressionUUID->"b2be5a4d-4908-4553-8a80-016551d3c898"]
+\>", "Notes",ExpressionUUID->"c8300736-5bb5-4f3e-aea7-550f54a41b44"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -312,7 +312,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/InfraLineStructure\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"fe45dee5-0433-4a8c-a185-1d1775019800"]
+ CellLabel->"URI",ExpressionUUID->"a2945d85-c4dd-486f-a8f7-b388873c0b36"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -378,8 +378,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 116, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[695, 25, 827, 21, 70, "Usage",ExpressionUUID->"c503c489-6f39-4391-a551-3e1887a8823c"],
-Cell[1525, 48, 464, 6, 70, "Notes",ExpressionUUID->"b2be5a4d-4908-4553-8a80-016551d3c898"]
+Cell[695, 25, 827, 21, 70, "Usage",ExpressionUUID->"09948a91-710d-45e1-bd1d-068640098920"],
+Cell[1525, 48, 464, 6, 70, "Notes",ExpressionUUID->"c8300736-5bb5-4f3e-aea7-550f54a41b44"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2026, 59, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -436,7 +436,7 @@ Cell[10203, 303, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10373, 307, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10540, 311, 170, 3, 70, "Categorization",ExpressionUUID->"fe45dee5-0433-4a8c-a185-1d1775019800"]
+Cell[10540, 311, 170, 3, 70, "Categorization",ExpressionUUID->"a2945d85-c4dd-486f-a8f7-b388873c0b36"]
 }, Closed]],
 Cell[10725, 317, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

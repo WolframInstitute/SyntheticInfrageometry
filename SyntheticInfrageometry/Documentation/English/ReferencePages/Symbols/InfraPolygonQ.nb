@@ -24,7 +24,7 @@ Cell["InfraPolygonQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"4cb28446-f38d-423f-acf1-9cb122848efe"],
+ Cell["   ", "ModInfo",ExpressionUUID->"f96bcd36-15e2-4a5b-99bf-15e8ad606e38"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,17 +38,17 @@ Cell[TextData[{
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["poly", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "6bc4a230-e76c-4060-8f4a-c008e12aff79"],
+  "2ea402bc-2b94-45e1-97f4-4b05f0a26e68"],
  "\[LineSeparator]",
  "tests whether poly is a closed chain of geodesic InfraSegment sides (every \
 leg a geodesic, consecutive legs sharing endpoints cyclically).",
  "\n"
-}], "Usage",ExpressionUUID->"9513cfb3-9855-427b-91b2-807c00c68f37"],
+}], "Usage",ExpressionUUID->"90389154-caae-4638-b4b4-55604d9433fd"],
 
 Cell["\<\
 Accepts an InfraPolygon wrapper or a bare leg list {seg1, \[Ellipsis], segn}.\
 \
-\>", "Notes",ExpressionUUID->"1752cabe-bd3b-4920-aabf-e624878e8f03"]
+\>", "Notes",ExpressionUUID->"a3d36827-006a-43d2-a008-437e282046b9"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -307,7 +307,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraPolygonQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"5f95f106-2a1f-4bd8-b330-e8af9acb9329"]
+ CellLabel->"URI",ExpressionUUID->"e5ffad81-3247-412f-b829-8aed02b2a79a"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -373,8 +373,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 111, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[690, 25, 813, 20, 70, "Usage",ExpressionUUID->"9513cfb3-9855-427b-91b2-807c00c68f37"],
-Cell[1506, 47, 159, 3, 70, "Notes",ExpressionUUID->"1752cabe-bd3b-4920-aabf-e624878e8f03"]
+Cell[690, 25, 813, 20, 70, "Usage",ExpressionUUID->"90389154-caae-4638-b4b4-55604d9433fd"],
+Cell[1506, 47, 159, 3, 70, "Notes",ExpressionUUID->"a3d36827-006a-43d2-a008-437e282046b9"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1702, 55, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -431,7 +431,7 @@ Cell[9879, 299, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10049, 303, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10216, 307, 159, 2, 70, "Categorization",ExpressionUUID->"5f95f106-2a1f-4bd8-b330-e8af9acb9329"]
+Cell[10216, 307, 159, 2, 70, "Categorization",ExpressionUUID->"e5ffad81-3247-412f-b829-8aed02b2a79a"]
 }, Closed]],
 Cell[10390, 312, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

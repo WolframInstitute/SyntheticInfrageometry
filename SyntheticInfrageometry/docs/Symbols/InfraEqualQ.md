@@ -13,6 +13,10 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/InfraEqualQ
 
 ## Details & Options
 
-Option Method ("Diffuse" (default; |A cap B| > |A delta B|, equivalently weighted Jaccard > 1/2) | "Overlap" (at least one common vertex) | "Set" (vertex sets identical) | "Multiset" (diffusion diagrams identical)).
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "Diffuse" (default; \|A cap B\| > \|A delta B\|, equivalently weighted Jaccard > 1/2) \| "Overlap" (at least one common vertex) \| "Set" (vertex sets identical) \| "Multiset" (diffusion diagrams identical) |
 
 Returns False on head mismatch.

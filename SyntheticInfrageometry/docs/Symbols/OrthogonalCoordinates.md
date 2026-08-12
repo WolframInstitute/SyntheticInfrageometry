@@ -13,4 +13,8 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/OrthogonalCoordinates
 
 ## Details & Options
 
-Option "SelectCoordinate" ("Centered" (default) and other projection-tie reducers).
+Options:
+
+| Option | Values |
+|---|---|
+| `"SelectCoordinate"` | "Centered" (default) and other projection-tie reducers |

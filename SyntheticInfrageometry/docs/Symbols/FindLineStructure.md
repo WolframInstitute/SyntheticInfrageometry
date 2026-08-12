@@ -13,6 +13,10 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindLineStructure
 
 ## Details & Options
 
-Option Method ("Lexicographic" (default; exact 1 + 2^(-rank) weighting, edges ranked by sorted endpoints) | {"Random", seed} | "Resistance" | "Weight" -> w) supplies the edge ranking that breaks geodesic ties; every method yields a consistent system.
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "Lexicographic" (default; exact 1 + 2^(-rank) weighting, edges ranked by sorted endpoints) \| {"Random", seed} \| "Resistance" \| "Weight" -> w -- supplies the edge ranking that breaks geodesic ties; every method yields a consistent system |
 
 See InfraLineStructure for accessors.

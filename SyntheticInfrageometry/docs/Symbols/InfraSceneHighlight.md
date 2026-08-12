@@ -13,6 +13,12 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/InfraSceneHighlight
 
 ## Details & Options
 
-Options "OpacityRange", "ThicknessRange", "PointSizeRange" (each None | scalar base measure | {min, max} envelope).
+Options:
+
+| Option | Values |
+|---|---|
+| `"OpacityRange"` | -- |
+| `"ThicknessRange"` | -- |
+| `"PointSizeRange"` | each None \| scalar base measure \| {min, max} envelope |
 
 Per-object style overrides via entry -> color | Directive | {opts}.

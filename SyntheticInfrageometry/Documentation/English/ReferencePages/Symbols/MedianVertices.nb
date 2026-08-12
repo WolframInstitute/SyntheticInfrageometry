@@ -24,7 +24,7 @@ Cell["MedianVertices", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"11bbe1c3-5f50-4295-af5a-1f8af735a259"],
+ Cell["   ", "ModInfo",ExpressionUUID->"18e39dd4-13b9-42f3-90cb-3d2d53f4f7ae"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,15 +38,15 @@ Cell[TextData[{
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["vs", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "a8965cd0-1927-4a4c-b4e9-0600cd3fc22f"],
+  "7a2247c4-1ef1-44d7-98bf-9e906ea84a12"],
  "\[LineSeparator]",
  "returns the vertices minimising the sum of distances to vs.",
  "\n"
-}], "Usage",ExpressionUUID->"6ecbd80a-1903-4c91-a8de-f0e5e6ca3f83"],
+}], "Usage",ExpressionUUID->"46737e6b-5f2e-4ded-b1de-077f51a1cb9b"],
 
 Cell["\<\
 A graph is a median graph iff every triple has a unique median.\
-\>", "Notes",ExpressionUUID->"d9597507-b5b8-42a6-82c2-c80a63328d33"]
+\>", "Notes",ExpressionUUID->"1832af4a-1264-4470-9a64-ed672ec553a8"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -305,7 +305,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/MedianVertices", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"9d34d709-5b9e-4781-8cc1-7ac0d4c6157d"]
+ CellLabel->"URI",ExpressionUUID->"08c8830b-575d-41ca-b335-009843ef602b"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -371,8 +371,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 112, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[691, 25, 732, 19, 70, "Usage",ExpressionUUID->"6ecbd80a-1903-4c91-a8de-f0e5e6ca3f83"],
-Cell[1426, 46, 143, 2, 70, "Notes",ExpressionUUID->"d9597507-b5b8-42a6-82c2-c80a63328d33"]
+Cell[691, 25, 732, 19, 70, "Usage",ExpressionUUID->"46737e6b-5f2e-4ded-b1de-077f51a1cb9b"],
+Cell[1426, 46, 143, 2, 70, "Notes",ExpressionUUID->"1832af4a-1264-4470-9a64-ed672ec553a8"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1606, 53, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -429,7 +429,7 @@ Cell[9783, 297, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9953, 301, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10120, 305, 160, 2, 70, "Categorization",ExpressionUUID->"9d34d709-5b9e-4781-8cc1-7ac0d4c6157d"]
+Cell[10120, 305, 160, 2, 70, "Categorization",ExpressionUUID->"08c8830b-575d-41ca-b335-009843ef602b"]
 }, Closed]],
 Cell[10295, 310, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -24,7 +24,7 @@ Cell["TurningNumber", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"dacf7bfd-6054-40d6-a5ad-ebfcd70bc661"],
+ Cell["   ", "ModInfo",ExpressionUUID->"01e95858-375e-4bfb-a5f9-4808db32c7db"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,12 +38,12 @@ Cell[TextData[{
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["cycle", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "9d5fc89f-b3ca-4e91-9b92-d7ed6dc23fca"],
+  "16889e7d-06cb-46a2-be5b-42468607eb29"],
  "\[LineSeparator]",
  "returns TotalCurvature[graph, cycle] / (2 Pi); integer in the smooth planar \
 case, a real-valued empirical quantity on graphs.",
  "\n"
-}], "Usage",ExpressionUUID->"35bc5f52-90a4-4dee-a760-9e2b16aba704"]
+}], "Usage",ExpressionUUID->"51fad722-7441-40dc-8246-dc4548d713ed"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -302,7 +302,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/TurningNumber", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"5fa4986d-376d-4d8d-ad9a-458fa6f16b11"]
+ CellLabel->"URI",ExpressionUUID->"e291c21a-f713-4577-957f-01394b8c3ba2"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -368,7 +368,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 111, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[690, 25, 801, 20, 70, "Usage",ExpressionUUID->"35bc5f52-90a4-4dee-a760-9e2b16aba704"]
+Cell[690, 25, 801, 20, 70, "Usage",ExpressionUUID->"51fad722-7441-40dc-8246-dc4548d713ed"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1528, 50, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -425,7 +425,7 @@ Cell[9705, 294, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9875, 298, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10042, 302, 159, 2, 70, "Categorization",ExpressionUUID->"5fa4986d-376d-4d8d-ad9a-458fa6f16b11"]
+Cell[10042, 302, 159, 2, 70, "Categorization",ExpressionUUID->"e291c21a-f713-4577-957f-01394b8c3ba2"]
 }, Closed]],
 Cell[10216, 307, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

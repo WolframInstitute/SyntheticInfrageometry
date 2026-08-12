@@ -24,7 +24,7 @@ Cell["FindInfraEquidistantSet", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"ff628a41-cc41-47e8-816e-7b38895d3e7c"],
+ Cell["   ", "ModInfo",ExpressionUUID->"c9a195b9-3aff-45fb-b234-334ec996ed3c"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -42,12 +42,12 @@ FindInfraEquidistantSet",
       StyleBox["p1", "TI"], ",", " ", "...", ",", " ", 
       StyleBox["pn", "TI"]}], "}"}]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "c5ab2f9c-874a-43e9-a217-d6d264137077"],
+  "dd2abbcc-d8b3-4244-96e2-37df3cc37973"],
  "\[LineSeparator]",
  "returns the equidistant set {v : d(p1, v) == \[Ellipsis] == d(pn, v)} as an \
 InfraSet, the intersection of the n-1 consecutive perpendicular bisectors.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"6578566d-4f39-42f2-8fd4-dd8b11da6f84"],
+ Cell["   ", "ModInfo",ExpressionUUID->"6dc34b82-342a-429b-881c-c6c249c62b11"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -69,11 +69,11 @@ FindInfraEquidistantSet",
       StyleBox["lo", "TI"], ",", " ", 
       StyleBox["hi", "TI"]}], "}"}]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "7e390847-d932-414a-b3f2-428607581b2c"],
+  "61c2d512-d19a-4216-bc29-cc5f51081c66"],
  "\[LineSeparator]",
  "thickens each consecutive bisector to the slab lo <= d(p_i, v) - d(p_{i+1}, \
 v) <= hi."
-}], "Usage",ExpressionUUID->"acc89ac0-f299-4dbf-9701-80bc900c3cad"]
+}], "Usage",ExpressionUUID->"51b1a2d4-2ccd-45ac-81f6-21a783976e7f"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -333,7 +333,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindInfraEquidistantSet\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"eec4e82e-050a-48b1-8fef-3141309574de"]
+ CellLabel->"URI",ExpressionUUID->"3fddeed8-9a07-4c99-b54e-3de7eb575629"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -399,7 +399,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 121, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[700, 25, 1853, 50, 70, "Usage",ExpressionUUID->"acc89ac0-f299-4dbf-9701-80bc900c3cad"]
+Cell[700, 25, 1853, 50, 70, "Usage",ExpressionUUID->"51b1a2d4-2ccd-45ac-81f6-21a783976e7f"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2590, 80, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -456,7 +456,7 @@ Cell[10767, 324, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10937, 328, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[11104, 332, 175, 3, 70, "Categorization",ExpressionUUID->"eec4e82e-050a-48b1-8fef-3141309574de"]
+Cell[11104, 332, 175, 3, 70, "Categorization",ExpressionUUID->"3fddeed8-9a07-4c99-b54e-3de7eb575629"]
 }, Closed]],
 Cell[11294, 338, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

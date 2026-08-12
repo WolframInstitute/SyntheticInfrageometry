@@ -24,7 +24,7 @@ Cell["InfraComparisonTriangle", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"4282626e-95db-4f08-ba4e-23cb37d7e43a"],
+ Cell["   ", "ModInfo",ExpressionUUID->"fb0f8169-d59f-485b-a98f-fc5817a309ae"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,14 +37,14 @@ InfraComparisonTriangle",
     BaseStyle->"InlineFormula"], "[", 
    RowBox[{"<|", "...", "|>"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "3f96ecd8-74c3-479b-8c78-440958b8167a"],
+  "8c05adda-ca46-4c2d-9337-1b1789236dee"],
  "\[LineSeparator]",
  "is the wrapper head for non-Euclidean comparison triangles returned by \
 ComparisonTriangle.",
  "\n"
-}], "Usage",ExpressionUUID->"8287a82b-7eee-4063-b01b-0e4e2e5435fa"],
+}], "Usage",ExpressionUUID->"c0ff213c-1d4b-4c84-86a1-8bd6dce2eccf"],
 
-Cell["Accessors: [\"Sides\"], [\"Curvature\"], [\"Angles\"].", "Notes",ExpressionUUID->"5909d52a-81e4-4a84-89c7-03bf51bf7f94"]
+Cell["Accessors: [\"Sides\"], [\"Curvature\"], [\"Angles\"].", "Notes",ExpressionUUID->"b44fa81c-b1cf-4a8f-a748-e818ad36d0cc"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -304,7 +304,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/InfraComparisonTriangle\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"7f455a2d-fc6d-4651-aff4-757e23db1665"]
+ CellLabel->"URI",ExpressionUUID->"b3cff41d-8dbd-4bfb-9d81-d6d96db3af21"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -370,8 +370,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 121, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[700, 25, 737, 19, 70, "Usage",ExpressionUUID->"8287a82b-7eee-4063-b01b-0e4e2e5435fa"],
-Cell[1440, 46, 126, 0, 70, "Notes",ExpressionUUID->"5909d52a-81e4-4a84-89c7-03bf51bf7f94"]
+Cell[700, 25, 737, 19, 70, "Usage",ExpressionUUID->"c0ff213c-1d4b-4c84-86a1-8bd6dce2eccf"],
+Cell[1440, 46, 126, 0, 70, "Notes",ExpressionUUID->"b44fa81c-b1cf-4a8f-a748-e818ad36d0cc"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1603, 51, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -428,7 +428,7 @@ Cell[9780, 295, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9950, 299, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10117, 303, 175, 3, 70, "Categorization",ExpressionUUID->"7f455a2d-fc6d-4651-aff4-757e23db1665"]
+Cell[10117, 303, 175, 3, 70, "Categorization",ExpressionUUID->"b3cff41d-8dbd-4bfb-9d81-d6d96db3af21"]
 }, Closed]],
 Cell[10307, 309, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

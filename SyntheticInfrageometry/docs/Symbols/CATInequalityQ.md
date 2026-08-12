@@ -13,6 +13,10 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/CATInequalityQ
 
 ## Details & Options
 
-Option Method ("ApexSide" (default) -- d(apex, x) <= d_k_bar(apex', x') for every interior vertex x on the side opposite to each apex; "TwoRays" -- d(x, y) <= d_k_bar(x', y') for every cross-ray pair (x, y) on the two rays emanating from each apex).
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "ApexSide" (default) -- d(apex, x) <= d_k_bar(apex', x') for every interior vertex x on the side opposite to each apex; "TwoRays" -- d(x, y) <= d_k_bar(x', y') for every cross-ray pair (x, y) on the two rays emanating from each apex |
 
 Returns Indeterminate when k > 0 and the triangle perimeter exceeds 2 Pi / Sqrt[k].

@@ -24,7 +24,7 @@ Cell["InfraBall", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"93a1cc9e-a766-404e-b5ae-e5dd3ce2b179"],
+ Cell["   ", "ModInfo",ExpressionUUID->"f183c0d3-345e-42f3-a730-406e598dab47"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,22 +37,22 @@ Cell[TextData[{
    RowBox[{"{", 
     StyleBox["ball", "TI"], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "bd34bc85-7dbc-4fbc-9c92-2daf6a77714a"],
+  "768855bd-ef19-45d4-a35b-1bb4d00e50c2"],
  "\[LineSeparator]",
  "is the unary form (one closed metric ball vertex set); InfraBall[{ball1, \
 \[Ellipsis], ballk}] is the multi-realisation form.",
  "\n"
-}], "Usage",ExpressionUUID->"50bbcb3c-cf86-477d-b447-f97cefa2afcf"],
+}], "Usage",ExpressionUUID->"9ef9ece7-6017-4cb3-9a84-02ddd9e7dc8a"],
 
 Cell["\<\
 Scene-language constructor InfraBall[center, radius] is used inside \
 InfraScene.\
-\>", "Notes",ExpressionUUID->"7ee10d62-73ae-41a9-8ee9-294a3f160475"],
+\>", "Notes",ExpressionUUID->"4739508d-9de2-4187-a383-d38ad341c669"],
 
 Cell["\<\
 The multi form is consumed by InfraSceneHighlight (induced-subgraph \
 semantics).\
-\>", "Notes",ExpressionUUID->"414dcf52-5442-486f-aa6c-88eb86e3a5fe"]
+\>", "Notes",ExpressionUUID->"d4b63e26-8ac3-42c5-a37c-0513af6fa83e"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -310,7 +310,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
  CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraBall", "Categorization",
- CellLabel->"URI",ExpressionUUID->"b617f247-0089-47a7-97a5-5865ee8362a3"]
+ CellLabel->"URI",ExpressionUUID->"8b534cfa-941b-4f0e-9d4c-a59ce587dc05"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -376,9 +376,9 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 107, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[686, 25, 761, 19, 70, "Usage",ExpressionUUID->"50bbcb3c-cf86-477d-b447-f97cefa2afcf"],
-Cell[1450, 46, 161, 3, 70, "Notes",ExpressionUUID->"7ee10d62-73ae-41a9-8ee9-294a3f160475"],
-Cell[1614, 51, 161, 3, 70, "Notes",ExpressionUUID->"414dcf52-5442-486f-aa6c-88eb86e3a5fe"]
+Cell[686, 25, 761, 19, 70, "Usage",ExpressionUUID->"9ef9ece7-6017-4cb3-9a84-02ddd9e7dc8a"],
+Cell[1450, 46, 161, 3, 70, "Notes",ExpressionUUID->"4739508d-9de2-4187-a383-d38ad341c669"],
+Cell[1614, 51, 161, 3, 70, "Notes",ExpressionUUID->"d4b63e26-8ac3-42c5-a37c-0513af6fa83e"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1812, 59, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -435,7 +435,7 @@ Cell[9989, 303, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10159, 307, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10326, 311, 153, 1, 70, "Categorization",ExpressionUUID->"b617f247-0089-47a7-97a5-5865ee8362a3"]
+Cell[10326, 311, 153, 1, 70, "Categorization",ExpressionUUID->"8b534cfa-941b-4f0e-9d4c-a59ce587dc05"]
 }, Closed]],
 Cell[10494, 315, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

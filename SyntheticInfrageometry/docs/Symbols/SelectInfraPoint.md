@@ -17,4 +17,8 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/SelectInfraPoint
 
 Operator form SelectInfraPoint[graph, n, opts][vertices].
 
-Options mirror FindInfraPoint ("From", "Distance", "MaxCliques"); the bundle may be a vertex list or any set-like Infra* wrapper.
+Options:
+
+| Option | Values |
+|---|---|
+| `mirror FindInfraPoint` | "From", "Distance", "MaxCliques" -- ; the bundle may be a vertex list or any set-like Infra* wrapper |

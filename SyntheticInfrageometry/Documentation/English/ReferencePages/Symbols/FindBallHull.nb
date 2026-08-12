@@ -24,7 +24,7 @@ Cell["FindBallHull", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"e0e4d0ac-179e-4a69-b687-c41e821218f0"],
+ Cell["   ", "ModInfo",ExpressionUUID->"8d582828-6c6f-4171-974b-a1ccb1681ce7"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,16 +37,16 @@ Cell[TextData[{
    RowBox[{
     StyleBox["graph", "TI"], ",", " ", "S"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "e6559f7a-e194-4bf7-b77b-9e85fa4236db"],
+  "802c8950-03d6-49f1-8808-95150e3f63fb"],
  "\[LineSeparator]",
  "returns the ball hull of S as an InfraSet: the intersection of all closed \
 balls containing S, the smallest ball-convex (Mazur) superset.",
  "\n"
-}], "Usage",ExpressionUUID->"1a519409-cb12-46f1-a798-26453faa740b"],
+}], "Usage",ExpressionUUID->"fa0f5cb0-b7d4-48c4-a7f9-e3780d355c37"],
 
 Cell["\<\
 S is any Infra* object, a list of them, or a bare vertex list.\
-\>", "Notes",ExpressionUUID->"d2c3869a-423f-4fb0-af09-4f27ae3d8d88"]
+\>", "Notes",ExpressionUUID->"5c25c661-f2e8-48f3-a183-99946cf14ce6"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -305,7 +305,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/FindBallHull", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"e5a24eb8-5d26-4c74-aaff-021f36e2cd89"]
+ CellLabel->"URI",ExpressionUUID->"54b9adbe-cd4a-475c-9f78-91fd1bf3359b"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -371,8 +371,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 110, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[689, 25, 785, 19, 70, "Usage",ExpressionUUID->"1a519409-cb12-46f1-a798-26453faa740b"],
-Cell[1477, 46, 142, 2, 70, "Notes",ExpressionUUID->"d2c3869a-423f-4fb0-af09-4f27ae3d8d88"]
+Cell[689, 25, 785, 19, 70, "Usage",ExpressionUUID->"fa0f5cb0-b7d4-48c4-a7f9-e3780d355c37"],
+Cell[1477, 46, 142, 2, 70, "Notes",ExpressionUUID->"5c25c661-f2e8-48f3-a183-99946cf14ce6"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1656, 53, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -429,7 +429,7 @@ Cell[9833, 297, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10003, 301, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10170, 305, 158, 2, 70, "Categorization",ExpressionUUID->"e5a24eb8-5d26-4c74-aaff-021f36e2cd89"]
+Cell[10170, 305, 158, 2, 70, "Categorization",ExpressionUUID->"54b9adbe-cd4a-475c-9f78-91fd1bf3359b"]
 }, Closed]],
 Cell[10343, 310, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -24,7 +24,7 @@ Cell["InfraSegmentQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"1f06215b-f0ba-4510-bbd6-a04a23892bbf"],
+ Cell["   ", "ModInfo",ExpressionUUID->"e4f46951-7d77-4de9-9409-462510d3e769"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,11 +38,11 @@ Cell[TextData[{
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["segment", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "2e4c9d7c-c78b-4ad3-a991-53172045d200"],
+  "b9437ae3-6ec8-4a8d-98d6-b1cfa59a97cf"],
  "\[LineSeparator]",
  "tests whether segment is a geodesic path.",
  "\n"
-}], "Usage",ExpressionUUID->"237f7927-824a-4ddd-91ec-b98c2e858136"]
+}], "Usage",ExpressionUUID->"b2e9da35-8730-439b-b1eb-4b2172f95249"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -301,7 +301,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraSegmentQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"1f9c6087-98ba-431b-8228-3d36c349b03a"]
+ CellLabel->"URI",ExpressionUUID->"0dda1ea3-3f17-42b2-a87f-17fd0ce27b86"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -367,7 +367,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 111, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[690, 25, 717, 19, 70, "Usage",ExpressionUUID->"237f7927-824a-4ddd-91ec-b98c2e858136"]
+Cell[690, 25, 717, 19, 70, "Usage",ExpressionUUID->"b2e9da35-8730-439b-b1eb-4b2172f95249"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1444, 49, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -424,7 +424,7 @@ Cell[9621, 293, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9791, 297, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9958, 301, 159, 2, 70, "Categorization",ExpressionUUID->"1f9c6087-98ba-431b-8228-3d36c349b03a"]
+Cell[9958, 301, 159, 2, 70, "Categorization",ExpressionUUID->"0dda1ea3-3f17-42b2-a87f-17fd0ce27b86"]
 }, Closed]],
 Cell[10132, 306, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

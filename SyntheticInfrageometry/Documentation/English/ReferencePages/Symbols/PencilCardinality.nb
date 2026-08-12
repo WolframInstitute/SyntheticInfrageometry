@@ -24,7 +24,7 @@ Cell["PencilCardinality", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"23ef159a-2425-4d9e-82c8-f0f78c0a54b9"],
+ Cell["   ", "ModInfo",ExpressionUUID->"ba74e405-aa6d-477a-b019-20ef565804f2"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,11 +39,11 @@ Cell[TextData[{
     ButtonBox["O",
      BaseStyle->"Link"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "c5e3fa06-0035-45f2-b3f0-0a150a4f1c36"],
+  "2261d7b8-8ac0-497a-849e-b1e51030b08b"],
  "\[LineSeparator]",
  "returns the number of distinct direction classes at O.",
  "\n"
-}], "Usage",ExpressionUUID->"d2ccfed1-df24-4088-b42c-6c4a6f895b75"]
+}], "Usage",ExpressionUUID->"c23442a3-44ef-434b-afaa-835dbbf55882"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -303,7 +303,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/PencilCardinality\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"e81491eb-bc64-4212-804c-f030c916aed8"]
+ CellLabel->"URI",ExpressionUUID->"08ea706f-3331-419a-9b0a-f5e4a6b8675c"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -369,7 +369,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 115, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[694, 25, 751, 20, 70, "Usage",ExpressionUUID->"d2ccfed1-df24-4088-b42c-6c4a6f895b75"]
+Cell[694, 25, 751, 20, 70, "Usage",ExpressionUUID->"c23442a3-44ef-434b-afaa-835dbbf55882"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1482, 50, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -426,7 +426,7 @@ Cell[9659, 294, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9829, 298, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9996, 302, 169, 3, 70, "Categorization",ExpressionUUID->"e81491eb-bc64-4212-804c-f030c916aed8"]
+Cell[9996, 302, 169, 3, 70, "Categorization",ExpressionUUID->"08ea706f-3331-419a-9b0a-f5e4a6b8675c"]
 }, Closed]],
 Cell[10180, 308, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

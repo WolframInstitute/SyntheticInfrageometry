@@ -13,4 +13,11 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/ExtendInfraPath
 
 ## Details & Options
 
-Options Properties (as FindInfraPath), Method, "Length" (step budget), "Direction" ("BothSides" (default), "Forward", "Backward").
+Options:
+
+| Option | Values |
+|---|---|
+| `Properties` | as FindInfraPath |
+| `Method` | -- |
+| `"Length"` | step budget |
+| `"Direction"` | "BothSides" (default), "Forward", "Backward" |

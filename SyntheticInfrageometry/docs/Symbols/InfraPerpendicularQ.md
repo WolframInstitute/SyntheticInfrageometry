@@ -13,4 +13,9 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/InfraPerpendicularQ
 
 ## Details & Options
 
-Options Method ("Projection" (default), "Coordinate", "Arclength", "Alexandrov"; per-method sub-options live inside the spec), "Radius".
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "Projection" (default), "Coordinate", "Arclength", "Alexandrov"; per-method sub-options live inside the spec |
+| `"Radius"` | -- |

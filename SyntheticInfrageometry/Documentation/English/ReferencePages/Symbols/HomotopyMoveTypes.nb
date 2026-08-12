@@ -24,7 +24,7 @@ Cell["HomotopyMoveTypes", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"830bf878-5bac-4bc1-b90e-f97e3aa3291d"],
+ Cell["   ", "ModInfo",ExpressionUUID->"23e697fe-9b02-45ec-8781-d34275b96644"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -36,11 +36,11 @@ Cell[TextData[{
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["chain", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "9f572705-cf5a-4550-aa0b-737e7c961734"],
+  "4c7db732-ea34-486c-8e6e-cacf5a8b6692"],
  "\[LineSeparator]",
  "applies HomotopyMoveType to each consecutive pair in chain.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"8736cef4-9204-46a3-8e4f-a444fc1aa116"],
+ Cell["   ", "ModInfo",ExpressionUUID->"7833a077-4b63-438a-b9cb-7dfd33986620"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -54,11 +54,11 @@ Cell[TextData[{
     RowBox[{"{", 
      StyleBox["chain", "TI"], "}"}], "]"}]}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "4210b253-e9bb-4f40-a717-c73bbb9f91c4"],
+  "452bfc77-fdc3-48c3-855c-66fb08785677"],
  "\[LineSeparator]",
  "] returns the labels for the unary wrapper; \
 HomotopyMoveTypes[InfraHomotopy[reps]] returns one label list per realisation."
-}], "Usage",ExpressionUUID->"c0a13ef6-5dcf-4515-aa30-d70e389dabba"]
+}], "Usage",ExpressionUUID->"41749105-d66f-4271-ace1-d1d6dfdd51d9"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -318,7 +318,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/HomotopyMoveTypes\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"82e43517-906c-42cb-bd9b-d33c1e6df237"]
+ CellLabel->"URI",ExpressionUUID->"bab4fb43-c09f-4323-9946-f05f7605f68c"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -384,7 +384,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 115, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[694, 25, 1411, 35, 70, "Usage",ExpressionUUID->"c0a13ef6-5dcf-4515-aa30-d70e389dabba"]
+Cell[694, 25, 1411, 35, 70, "Usage",ExpressionUUID->"41749105-d66f-4271-ace1-d1d6dfdd51d9"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2142, 65, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -441,7 +441,7 @@ Cell[10319, 309, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10489, 313, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10656, 317, 169, 3, 70, "Categorization",ExpressionUUID->"82e43517-906c-42cb-bd9b-d33c1e6df237"]
+Cell[10656, 317, 169, 3, 70, "Categorization",ExpressionUUID->"bab4fb43-c09f-4323-9946-f05f7605f68c"]
 }, Closed]],
 Cell[10840, 323, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

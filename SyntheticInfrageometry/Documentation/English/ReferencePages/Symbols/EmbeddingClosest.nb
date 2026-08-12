@@ -24,7 +24,7 @@ Cell["EmbeddingClosest", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"2982a1ca-ea2b-490b-9daf-366bcd4b1ace"],
+ Cell["   ", "ModInfo",ExpressionUUID->"43661238-15ac-4a17-89d9-236272e826f6"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,17 +39,17 @@ Cell[TextData[{
     StyleBox["bundle", "TI"], ",", " ", 
     StyleBox["ref", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "6013eb2a-d293-4782-8850-767ca002d167"],
+  "40527d05-ca89-4d29-b4ef-f2aa05d56371"],
  "\[LineSeparator]",
  "keeps the bundle elements whose drawing under GraphEmbedding is \
 Hausdorff-closest to the Euclidean reference: ref = {p1, p2} (segment), \
 {center, radius} (circle), or a curve / point list.",
  "\n"
-}], "Usage",ExpressionUUID->"e661b9ca-0673-44e8-a580-90586e2e10ca"],
+}], "Usage",ExpressionUUID->"7a462fd0-b5e2-41e1-9a2c-65931551eae9"],
 
 Cell["\<\
 Wrappers are preserved; operator form EmbeddingClosest[graph, ref][bundle].\
-\>", "Notes",ExpressionUUID->"622352f6-593b-4913-8d9b-bc0518b6fd89"]
+\>", "Notes",ExpressionUUID->"5a9eb877-e23b-41f9-bf2c-6590a34bffe3"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -308,7 +308,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/EmbeddingClosest", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"e40d7b90-531b-4924-879b-203a5ecd62ca"]
+ CellLabel->"URI",ExpressionUUID->"147c9304-8f42-4f05-bc5e-00bba2aae7c6"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -374,8 +374,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 114, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[693, 25, 910, 22, 70, "Usage",ExpressionUUID->"e661b9ca-0673-44e8-a580-90586e2e10ca"],
-Cell[1606, 49, 155, 2, 70, "Notes",ExpressionUUID->"622352f6-593b-4913-8d9b-bc0518b6fd89"]
+Cell[693, 25, 910, 22, 70, "Usage",ExpressionUUID->"7a462fd0-b5e2-41e1-9a2c-65931551eae9"],
+Cell[1606, 49, 155, 2, 70, "Notes",ExpressionUUID->"5a9eb877-e23b-41f9-bf2c-6590a34bffe3"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1798, 56, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -432,7 +432,7 @@ Cell[9975, 300, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10145, 304, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10312, 308, 162, 2, 70, "Categorization",ExpressionUUID->"e40d7b90-531b-4924-879b-203a5ecd62ca"]
+Cell[10312, 308, 162, 2, 70, "Categorization",ExpressionUUID->"147c9304-8f42-4f05-bc5e-00bba2aae7c6"]
 }, Closed]],
 Cell[10489, 313, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -24,7 +24,7 @@ Cell["EnumerateGraphs", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"7a23960c-db79-4fa1-b4ad-934eed431448"],
+ Cell["   ", "ModInfo",ExpressionUUID->"2c66aa7a-38df-43da-af42-f896346f1acb"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,11 +38,11 @@ Cell[TextData[{
     StyleBox["n", "TI"], ",", " ", 
     StyleBox["predQ", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "84309ad3-4aa9-414a-a90c-0e45371e8ae7"],
+  "2960cc16-dc96-4aa0-bc20-1e8c0e066a4d"],
  "\[LineSeparator]",
  "returns all connected n-vertex graphs from GraphData satisfying predQ.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"b0bfd71d-7881-44ef-9426-6aa92c2300cd"],
+ Cell["   ", "ModInfo",ExpressionUUID->"e77d30d3-9095-4430-bbff-08beb329ac87"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -57,14 +57,14 @@ Cell[TextData[{
     StyleBox["predQ", "TI"], ",", " ", 
     StyleBox["k", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "7376e7d6-8488-4b84-98f6-2e0ecdce04e9"],
+  "66a9f394-668d-4241-9f61-cf429d57ce69"],
  "\[LineSeparator]",
  "returns exactly k or $Failed; UpTo[k] returns up to k; All returns all."
-}], "Usage",ExpressionUUID->"c3388cc5-ce7d-474c-a872-91a600d06164"],
+}], "Usage",ExpressionUUID->"015cd1f7-0a4d-4bea-a4ea-e417ba4980f3"],
 
 Cell["\<\
 Option: \"From\" (override the default GraphData generator with a list).\
-\>", "Notes",ExpressionUUID->"b2fc854c-cbf1-47ec-a7b2-b076b5ca28cc"]
+\>", "Notes",ExpressionUUID->"5406fec9-57d5-4513-83ee-328b4addef3d"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -323,7 +323,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/EnumerateGraphs", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"e5d464fb-5512-4566-9120-b56e4a24ea0a"]
+ CellLabel->"URI",ExpressionUUID->"1e452bf9-228b-42d1-a376-d6bacf45247d"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -389,8 +389,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 113, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[692, 25, 1436, 37, 70, "Usage",ExpressionUUID->"c3388cc5-ce7d-474c-a872-91a600d06164"],
-Cell[2131, 64, 152, 2, 70, "Notes",ExpressionUUID->"b2fc854c-cbf1-47ec-a7b2-b076b5ca28cc"]
+Cell[692, 25, 1436, 37, 70, "Usage",ExpressionUUID->"015cd1f7-0a4d-4bea-a4ea-e417ba4980f3"],
+Cell[2131, 64, 152, 2, 70, "Notes",ExpressionUUID->"5406fec9-57d5-4513-83ee-328b4addef3d"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2320, 71, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -447,7 +447,7 @@ Cell[10497, 315, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10667, 319, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10834, 323, 161, 2, 70, "Categorization",ExpressionUUID->"e5d464fb-5512-4566-9120-b56e4a24ea0a"]
+Cell[10834, 323, 161, 2, 70, "Categorization",ExpressionUUID->"1e452bf9-228b-42d1-a376-d6bacf45247d"]
 }, Closed]],
 Cell[11010, 328, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

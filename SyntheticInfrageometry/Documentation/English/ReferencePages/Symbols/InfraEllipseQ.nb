@@ -24,7 +24,7 @@ Cell["InfraEllipseQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"a0e3e980-9adf-4bb5-a57f-588dd2939612"],
+ Cell["   ", "ModInfo",ExpressionUUID->"decdb18d-4049-4c1e-8456-bf929b9e4378"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,14 +38,14 @@ Cell[TextData[{
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["cycle", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "35ce0a13-c164-488d-aa58-45552c7748e3"],
+  "1b7846e8-8b80-4368-a912-62fd312485ff"],
  "\[LineSeparator]",
  "tests whether the vertex sequence cycle is a metric ellipse (cyclic edge \
 chain whose vertex set is an elliptic shell).",
  "\n"
-}], "Usage",ExpressionUUID->"c8a50e28-dcfd-4869-b3f5-edcc5ee5c750"],
+}], "Usage",ExpressionUUID->"d6523092-75cf-4bc5-8d10-7cc30ea31ee9"],
 
-Cell["Accepts both open and closed input.", "Notes",ExpressionUUID->"37682345-0c31-4515-8614-40f503b3f097"]
+Cell["Accepts both open and closed input.", "Notes",ExpressionUUID->"a2a35452-6b36-4517-9e14-91d2e7ba053e"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -304,7 +304,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraEllipseQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"f29086f7-876e-4094-96d2-a50ee8458b6f"]
+ CellLabel->"URI",ExpressionUUID->"39019e1e-dd81-4787-95fb-a48355245d45"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -370,8 +370,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 111, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[690, 25, 794, 20, 70, "Usage",ExpressionUUID->"c8a50e28-dcfd-4869-b3f5-edcc5ee5c750"],
-Cell[1487, 47, 107, 0, 70, "Notes",ExpressionUUID->"37682345-0c31-4515-8614-40f503b3f097"]
+Cell[690, 25, 794, 20, 70, "Usage",ExpressionUUID->"d6523092-75cf-4bc5-8d10-7cc30ea31ee9"],
+Cell[1487, 47, 107, 0, 70, "Notes",ExpressionUUID->"a2a35452-6b36-4517-9e14-91d2e7ba053e"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1631, 52, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -428,7 +428,7 @@ Cell[9808, 296, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9978, 300, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10145, 304, 159, 2, 70, "Categorization",ExpressionUUID->"f29086f7-876e-4094-96d2-a50ee8458b6f"]
+Cell[10145, 304, 159, 2, 70, "Categorization",ExpressionUUID->"39019e1e-dd81-4787-95fb-a48355245d45"]
 }, Closed]],
 Cell[10319, 309, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

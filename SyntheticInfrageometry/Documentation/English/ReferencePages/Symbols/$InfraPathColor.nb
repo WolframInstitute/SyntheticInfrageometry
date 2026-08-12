@@ -26,7 +26,7 @@ Cell["$InfraPathColor", "ObjectName",
 Cell["\<\
 Default highlight color for InfraPath, InfraLoop and InfraString objects.
 \
-\>", "Usage",ExpressionUUID->"e24a4309-f4df-4439-a896-1efb53b6283f"]
+\>", "Usage",ExpressionUUID->"7b3b9f9c-ab80-45f9-967c-fa8083fe4698"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -285,7 +285,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/$InfraPathColor", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"f4d005f3-5e73-4018-a16e-3b594778d9e5"]
+ CellLabel->"URI",ExpressionUUID->"de89ea49-f694-437a-8444-8a284fa76f01"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -351,7 +351,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 113, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[692, 25, 154, 3, 70, "Usage",ExpressionUUID->"e24a4309-f4df-4439-a896-1efb53b6283f"]
+Cell[692, 25, 154, 3, 70, "Usage",ExpressionUUID->"7b3b9f9c-ab80-45f9-967c-fa8083fe4698"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[883, 33, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -408,7 +408,7 @@ Cell[9060, 277, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9230, 281, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9397, 285, 161, 2, 70, "Categorization",ExpressionUUID->"f4d005f3-5e73-4018-a16e-3b594778d9e5"]
+Cell[9397, 285, 161, 2, 70, "Categorization",ExpressionUUID->"de89ea49-f694-437a-8444-8a284fa76f01"]
 }, Closed]],
 Cell[9573, 290, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -13,4 +13,9 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/InfraVolume
 
 ## Details & Options
 
-Options "Volume" ("Hausdorff" (default; |s| minus its boundary), "Counting", "Boundary"), Method ("Combinatorial" (default), {"Alexandrov", "Radius" -> r}).
+Options:
+
+| Option | Values |
+|---|---|
+| `"Volume"` | "Hausdorff" (default; \|s\| minus its boundary), "Counting", "Boundary" |
+| `Method` | "Combinatorial" (default), {"Alexandrov", "Radius" -> r} |

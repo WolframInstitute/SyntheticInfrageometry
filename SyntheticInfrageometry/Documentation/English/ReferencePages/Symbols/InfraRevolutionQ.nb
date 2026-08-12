@@ -24,7 +24,7 @@ Cell["InfraRevolutionQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"30ba8ed2-6af1-4b16-a01e-380799eb2ae0"],
+ Cell["   ", "ModInfo",ExpressionUUID->"ddfd52fc-8702-46f5-af4e-c5f4eeb589d0"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -40,14 +40,14 @@ Cell[TextData[{
     StyleBox["axis", "TI"], ",", " ", 
     StyleBox["profile", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "8d0c9e67-bfe7-454f-b8fd-3202a0735277"],
+  "b08200a3-f455-4ca0-8166-f9012cf2fe4e"],
  "\[LineSeparator]",
  "tests whether vs equals the rotational vertex set around axis with the \
 given radius profile.",
  "\n"
-}], "Usage",ExpressionUUID->"22db20f4-73c2-4e54-aabb-64146a6df925"],
+}], "Usage",ExpressionUUID->"38d104a4-b422-4a93-8b3a-14e38a7e6a98"],
 
-Cell["Option \"Form\" matches FindInfraRevolution.", "Notes",ExpressionUUID->"2c2a8f5d-fad5-456a-b732-cdee9ccdd2b3"]
+Cell["Option \"Form\" matches FindInfraRevolution.", "Notes",ExpressionUUID->"8e99aa35-14f9-4e8a-9f92-a904c2518d6c"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -306,7 +306,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraRevolutionQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"4c8540cb-08e7-48be-8b14-5b028dac2b56"]
+ CellLabel->"URI",ExpressionUUID->"20c79c17-fcfd-4d54-bd3d-cb93429dc481"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -372,8 +372,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 114, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[693, 25, 852, 22, 70, "Usage",ExpressionUUID->"22db20f4-73c2-4e54-aabb-64146a6df925"],
-Cell[1548, 49, 116, 0, 70, "Notes",ExpressionUUID->"2c2a8f5d-fad5-456a-b732-cdee9ccdd2b3"]
+Cell[693, 25, 852, 22, 70, "Usage",ExpressionUUID->"38d104a4-b422-4a93-8b3a-14e38a7e6a98"],
+Cell[1548, 49, 116, 0, 70, "Notes",ExpressionUUID->"8e99aa35-14f9-4e8a-9f92-a904c2518d6c"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1701, 54, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -430,7 +430,7 @@ Cell[9878, 298, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10048, 302, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10215, 306, 162, 2, 70, "Categorization",ExpressionUUID->"4c8540cb-08e7-48be-8b14-5b028dac2b56"]
+Cell[10215, 306, 162, 2, 70, "Categorization",ExpressionUUID->"20c79c17-fcfd-4d54-bd3d-cb93429dc481"]
 }, Closed]],
 Cell[10392, 311, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

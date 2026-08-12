@@ -24,7 +24,7 @@ Cell["FindEmbeddingClosestPath", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"bb5b03a7-e82b-4dd6-9808-0be5f76f0626"],
+ Cell["   ", "ModInfo",ExpressionUUID->"7835e0c2-e16f-41da-be0d-19c20a46469f"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,7 +39,7 @@ FindEmbeddingClosestPath",
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["curve", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "8e68cc09-d8c5-4a75-a77b-16bcd312f261"],
+  "25bc1802-ea0c-4955-a8c1-c1e011d060c9"],
  "\[LineSeparator]",
  "snaps an arbitrary embedded curve to a graph walk and returns \
 InfraPath[{walk}] tracing it: each sampled curve point is mapped to its \
@@ -48,13 +48,13 @@ and successive anchors are joined by geodesics. curve is a Line / \
 BSplineCurve / BezierCurve or a list of plane points in the embedding's \
 coordinates.",
  "\n"
-}], "Usage",ExpressionUUID->"9a6e2846-1edd-45c0-97c2-394f8439a501"],
+}], "Usage",ExpressionUUID->"717f30cc-1e37-44ad-9e9c-f891c0b73bee"],
 
 Cell["\<\
 Unlike EmbeddingClosest (which selects from a supplied bundle), this \
 constructs the path, so it works for shapes with no enumerable bundle \
 (spirals, figure-eights).\
-\>", "Notes",ExpressionUUID->"0dae54b8-fbfb-4fa6-8aa0-af421e6e02fe"]
+\>", "Notes",ExpressionUUID->"4981059e-7ab0-4a8f-ad08-91661aefe3e7"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -314,7 +314,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindEmbeddingClosestPath\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"c8b2b75d-23c9-4f91-84cf-07fd86879440"]
+ CellLabel->"URI",ExpressionUUID->"9f512ea4-4c06-4bfe-a11e-303f1123d7b0"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -380,8 +380,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 122, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[701, 25, 1067, 25, 70, "Usage",ExpressionUUID->"9a6e2846-1edd-45c0-97c2-394f8439a501"],
-Cell[1771, 52, 248, 4, 70, "Notes",ExpressionUUID->"0dae54b8-fbfb-4fa6-8aa0-af421e6e02fe"]
+Cell[701, 25, 1067, 25, 70, "Usage",ExpressionUUID->"717f30cc-1e37-44ad-9e9c-f891c0b73bee"],
+Cell[1771, 52, 248, 4, 70, "Notes",ExpressionUUID->"4981059e-7ab0-4a8f-ad08-91661aefe3e7"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2056, 61, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -438,7 +438,7 @@ Cell[10233, 305, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10403, 309, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10570, 313, 176, 3, 70, "Categorization",ExpressionUUID->"c8b2b75d-23c9-4f91-84cf-07fd86879440"]
+Cell[10570, 313, 176, 3, 70, "Categorization",ExpressionUUID->"9f512ea4-4c06-4bfe-a11e-303f1123d7b0"]
 }, Closed]],
 Cell[10761, 319, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

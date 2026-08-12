@@ -19,4 +19,8 @@ Corners accept bare vertices or unary InfraPoint.
 
 Default count = 1 (first geodesic per side).
 
-Options Properties / Method forward to the side geodesics (see FindInfraSegment).
+Options:
+
+| Option | Values |
+|---|---|
+| `Properties / Method forward to the side geodesics` | see FindInfraSegment |

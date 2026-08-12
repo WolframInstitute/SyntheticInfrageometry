@@ -24,7 +24,7 @@ Cell["InfraRay", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"1cb0e800-0b53-4967-8be8-c5964a981526"],
+ Cell["   ", "ModInfo",ExpressionUUID->"e454f1a9-10c3-4232-b2e0-729ec98bbcb8"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,23 +37,23 @@ Cell[TextData[{
    RowBox[{"{", 
     StyleBox["ray", "TI"], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "555baf1c-ab54-42ed-aacc-b05ede31f529"],
+  "5b028499-a5ab-4d44-bd38-e59ec4183857"],
  "\[LineSeparator]",
  "is the unary form (one pointed half-line from a base vertex O); \
 InfraRay[{ray1, \[Ellipsis], rayk}] is the multi-realisation form.",
  "\n"
-}], "Usage",ExpressionUUID->"c6bdcb5c-a0b2-4ff3-a8ab-9d1dd7f969af"],
+}], "Usage",ExpressionUUID->"459cf67d-a78d-41be-96a0-575720e581bf"],
 
-Cell["Consumed by InfraSceneHighlight (sequential-edge semantics).", "Notes",ExpressionUUID->"26ad0004-0181-4c19-b044-025cf34ee5c0"],
+Cell["Consumed by InfraSceneHighlight (sequential-edge semantics).", "Notes",ExpressionUUID->"177720a4-1e72-4faf-8fdf-3e7417054dd5"],
 
 Cell["\<\
 Each ray is a vertex sequence {O, \[Ellipsis], w} with w an inextensible \
 endpoint.\
-\>", "Notes",ExpressionUUID->"e66aae21-e327-4131-bcaf-a6e68035e965"],
+\>", "Notes",ExpressionUUID->"b9e14301-ade6-4635-8af2-5c53e5e959ea"],
 
 Cell["\<\
 Find* returns one wrapper carrying the requested realisations.\
-\>", "Notes",ExpressionUUID->"7e92ba3c-7171-4418-8974-c70a58c3bace"]
+\>", "Notes",ExpressionUUID->"a407bfe0-5873-4fe5-8a2a-4711171fc026"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -311,7 +311,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
  CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraRay", "Categorization",
- CellLabel->"URI",ExpressionUUID->"9e6d09d2-3cbd-45bd-80f6-4bf3484e0d4a"]
+ CellLabel->"URI",ExpressionUUID->"0438d8a5-d54e-4f43-aa28-209e68085845"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -377,10 +377,10 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 106, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[685, 25, 764, 19, 70, "Usage",ExpressionUUID->"c6bdcb5c-a0b2-4ff3-a8ab-9d1dd7f969af"],
-Cell[1452, 46, 132, 0, 70, "Notes",ExpressionUUID->"26ad0004-0181-4c19-b044-025cf34ee5c0"],
-Cell[1587, 48, 164, 3, 70, "Notes",ExpressionUUID->"e66aae21-e327-4131-bcaf-a6e68035e965"],
-Cell[1754, 53, 142, 2, 70, "Notes",ExpressionUUID->"7e92ba3c-7171-4418-8974-c70a58c3bace"]
+Cell[685, 25, 764, 19, 70, "Usage",ExpressionUUID->"459cf67d-a78d-41be-96a0-575720e581bf"],
+Cell[1452, 46, 132, 0, 70, "Notes",ExpressionUUID->"177720a4-1e72-4faf-8fdf-3e7417054dd5"],
+Cell[1587, 48, 164, 3, 70, "Notes",ExpressionUUID->"b9e14301-ade6-4635-8af2-5c53e5e959ea"],
+Cell[1754, 53, 142, 2, 70, "Notes",ExpressionUUID->"a407bfe0-5873-4fe5-8a2a-4711171fc026"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1933, 60, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -437,7 +437,7 @@ Cell[10110, 304, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10280, 308, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10447, 312, 152, 1, 70, "Categorization",ExpressionUUID->"9e6d09d2-3cbd-45bd-80f6-4bf3484e0d4a"]
+Cell[10447, 312, 152, 1, 70, "Categorization",ExpressionUUID->"0438d8a5-d54e-4f43-aa28-209e68085845"]
 }, Closed]],
 Cell[10614, 316, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

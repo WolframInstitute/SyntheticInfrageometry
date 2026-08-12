@@ -13,4 +13,8 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/InfraBoundary
 
 ## Details & Options
 
-Option Method ("Combinatorial" (default), the inner vertex boundary via GraphBoundary; {"Alexandrov", "Radius" -> r}, the two-sided cl(s)\int(s) in the closed-r-ball topology, default r = 1).
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "Combinatorial" (default), the inner vertex boundary via GraphBoundary; {"Alexandrov", "Radius" -> r}, the two-sided cl(s)\int(s) in the closed-r-ball topology, default r = 1 |

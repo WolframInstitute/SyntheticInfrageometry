@@ -24,7 +24,7 @@ Cell["InfraParallelQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"bf9855ec-ea4f-4aeb-97ca-5442386bf335"],
+ Cell["   ", "ModInfo",ExpressionUUID->"db934c6c-7494-4711-9a00-b47730cbb248"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,11 +39,11 @@ Cell[TextData[{
     StyleBox["l1", "TI"], ",", " ", 
     StyleBox["l2", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "aab2f3b1-8c12-41bc-ab67-49514d8873ad"],
+  "57742c39-6603-4f1b-96d6-a1169892dd8c"],
  "\[LineSeparator]",
  "tests whether two lines are parallel (constant distance).",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"92754b64-c8a6-4b50-ad54-c8a49fff5349"],
+ Cell["   ", "ModInfo",ExpressionUUID->"468e61bc-bff3-4274-af68-64fa494ece05"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -59,10 +59,10 @@ Cell[TextData[{
     StyleBox["l2", "TI"], ",", " ", 
     StyleBox["threshold", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "11a89f4e-73f0-422b-b50a-888e01ba8bdc"],
+  "c190a9ea-dceb-433c-8f66-ea1033e9892e"],
  "\[LineSeparator]",
  "allows distance variation up to threshold."
-}], "Usage",ExpressionUUID->"47ca8290-1798-44ca-a914-336e2d84147f"]
+}], "Usage",ExpressionUUID->"ba06e205-59d0-4617-a21e-bc3c92bf7752"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -321,7 +321,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraParallelQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"9a7b5291-997a-4af5-9330-6b9a52b122a3"]
+ CellLabel->"URI",ExpressionUUID->"a3da8d02-162d-4d5f-aea6-ba3d4a6ae952"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -387,7 +387,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 112, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[691, 25, 1474, 39, 70, "Usage",ExpressionUUID->"47ca8290-1798-44ca-a914-336e2d84147f"]
+Cell[691, 25, 1474, 39, 70, "Usage",ExpressionUUID->"ba06e205-59d0-4617-a21e-bc3c92bf7752"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2202, 69, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -444,7 +444,7 @@ Cell[10379, 313, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10549, 317, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10716, 321, 160, 2, 70, "Categorization",ExpressionUUID->"9a7b5291-997a-4af5-9330-6b9a52b122a3"]
+Cell[10716, 321, 160, 2, 70, "Categorization",ExpressionUUID->"a3da8d02-162d-4d5f-aea6-ba3d4a6ae952"]
 }, Closed]],
 Cell[10891, 326, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

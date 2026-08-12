@@ -24,7 +24,7 @@ Cell["TarskiUpperDimensionQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"f9fc1370-7d3b-4aa3-9b3a-c091ad6858e7"],
+ Cell["   ", "ModInfo",ExpressionUUID->"4395079f-55f5-4e67-a567-189baeb82550"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,14 +37,14 @@ TarskiUpperDimensionQ",
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "7d61799f-6df2-456f-996f-54523e4c914d"],
+  "220de746-23ab-4342-b972-5d73dd407c09"],
  "\[LineSeparator]",
  "tests Tarski axiom A9 (three points equidistant from two distinct points \
 are collinear).",
  "\n"
-}], "Usage",ExpressionUUID->"bcc296ca-853b-4700-a500-a2eaafbe97e8"],
+}], "Usage",ExpressionUUID->"4dd6c53a-d927-48de-a316-7dcbc0507c50"],
 
-Cell["False on graphs of effective dimension >= 3.", "Notes",ExpressionUUID->"95409661-014b-487e-98c8-f9cca3b0769e"]
+Cell["False on graphs of effective dimension >= 3.", "Notes",ExpressionUUID->"91bf21a1-f6a3-4b7b-a465-911dec02dfc1"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -304,7 +304,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/TarskiUpperDimensionQ\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"1e289e31-987c-4e91-9ae0-f461345aa6b7"]
+ CellLabel->"URI",ExpressionUUID->"3741f96f-3488-4cf8-9a12-20686832453c"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -370,8 +370,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 119, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[698, 25, 727, 19, 70, "Usage",ExpressionUUID->"bcc296ca-853b-4700-a500-a2eaafbe97e8"],
-Cell[1428, 46, 116, 0, 70, "Notes",ExpressionUUID->"95409661-014b-487e-98c8-f9cca3b0769e"]
+Cell[698, 25, 727, 19, 70, "Usage",ExpressionUUID->"4dd6c53a-d927-48de-a316-7dcbc0507c50"],
+Cell[1428, 46, 116, 0, 70, "Notes",ExpressionUUID->"91bf21a1-f6a3-4b7b-a465-911dec02dfc1"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1581, 51, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -428,7 +428,7 @@ Cell[9758, 295, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9928, 299, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10095, 303, 173, 3, 70, "Categorization",ExpressionUUID->"1e289e31-987c-4e91-9ae0-f461345aa6b7"]
+Cell[10095, 303, 173, 3, 70, "Categorization",ExpressionUUID->"3741f96f-3488-4cf8-9a12-20686832453c"]
 }, Closed]],
 Cell[10283, 309, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

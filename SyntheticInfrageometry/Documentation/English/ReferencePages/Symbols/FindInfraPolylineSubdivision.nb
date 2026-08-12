@@ -24,7 +24,7 @@ Cell["FindInfraPolylineSubdivision", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"da28a4e0-f272-46b3-b0bb-ffb2652844d3"],
+ Cell["   ", "ModInfo",ExpressionUUID->"a24b5bf4-dc21-4b9d-a7d5-bf6176021ee3"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,18 +39,18 @@ FindInfraPolylineSubdivision",
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["path", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "adf43fe0-a0e6-4fc8-970b-4e93b7c036b9"],
+  "70a185d7-5c45-45c7-8b94-82da6b6a13ad"],
  "\[LineSeparator]",
  "returns {InfraPolyline[{{seg1, \[Ellipsis], segk}}]} where the legs are the \
 fewest geodesic InfraSegments whose knots are path-vertices and each leg is a \
 shortest path since the previous knot.",
  "\n"
-}], "Usage",ExpressionUUID->"04b5b95b-85e7-47e7-b375-0dc46e155894"],
+}], "Usage",ExpressionUUID->"11dfcfe7-fade-43d6-95f4-b81e8776b4b6"],
 
 Cell["\<\
 Option: \"MaxLength\" (Infinity (default) | numeric L) caps every leg's \
 graph-length at L.\
-\>", "Notes",ExpressionUUID->"c21492b9-bd44-49eb-808d-cf644ae8e563"]
+\>", "Notes",ExpressionUUID->"7ff317f3-d39b-4aaa-bc99-9a973c32c6d5"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -310,7 +310,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindInfraPolylineSubdivision\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"4d568666-9351-4598-b54a-9c60f0f68c92"]
+ CellLabel->"URI",ExpressionUUID->"f0edc0ed-9df7-4938-9e68-6fc0d1354822"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -377,8 +377,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 126, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[705, 25, 901, 22, 70, "Usage",ExpressionUUID->"04b5b95b-85e7-47e7-b375-0dc46e155894"],
-Cell[1609, 49, 172, 3, 70, "Notes",ExpressionUUID->"c21492b9-bd44-49eb-808d-cf644ae8e563"]
+Cell[705, 25, 901, 22, 70, "Usage",ExpressionUUID->"11dfcfe7-fade-43d6-95f4-b81e8776b4b6"],
+Cell[1609, 49, 172, 3, 70, "Notes",ExpressionUUID->"7ff317f3-d39b-4aaa-bc99-9a973c32c6d5"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1818, 57, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -435,7 +435,7 @@ Cell[9995, 301, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10165, 305, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10332, 309, 180, 3, 70, "Categorization",ExpressionUUID->"4d568666-9351-4598-b54a-9c60f0f68c92"]
+Cell[10332, 309, 180, 3, 70, "Categorization",ExpressionUUID->"f0edc0ed-9df7-4938-9e68-6fc0d1354822"]
 }, Closed]],
 Cell[10527, 315, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

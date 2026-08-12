@@ -13,6 +13,10 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindSegmentHull
 
 ## Details & Options
 
-Option "LineStructure" (None (default), or an InfraLineStructure / list of lines) closes under the chosen-geodesic stretch on that fixed family instead of all geodesics.
+Options:
+
+| Option | Values |
+|---|---|
+| `"LineStructure"` | None (default), or an InfraLineStructure / list of lines -- closes under the chosen-geodesic stretch on that fixed family instead of all geodesics |
 
 S is any Infra* object, a list of them, or a bare vertex list.

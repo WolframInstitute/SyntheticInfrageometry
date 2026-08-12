@@ -24,7 +24,7 @@ Cell["InfraShellQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"c2835d6e-eb7f-4a2e-a76e-076299665bc1"],
+ Cell["   ", "ModInfo",ExpressionUUID->"d3c04a47-48f4-42a3-9429-d6bbf1390ef9"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,13 +38,13 @@ Cell[TextData[{
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["vertexSet", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "81950fd9-8b09-4154-bab1-b4e7eb20b2e2"],
+  "60c50d37-bf9a-43ab-97ae-3e773bc1caee"],
  "\[LineSeparator]",
  "tests whether vertexSet is a metric shell, i.e. some vertex c is \
 equidistant from all of vertexSet at a common radius r and vertexSet equals \
 the level set { v : d(c, v) == r }.",
  "\n"
-}], "Usage",ExpressionUUID->"bce489bb-5580-4577-a87f-fe3cb758817e"]
+}], "Usage",ExpressionUUID->"4cfdd269-4763-42d7-a2ed-3e8ae1fec3c2"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -303,7 +303,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraShellQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"ed554d2f-fcd3-47b6-af84-f770c7c87286"]
+ CellLabel->"URI",ExpressionUUID->"efffd808-acef-482c-b507-654de2869691"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -369,7 +369,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 109, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[688, 25, 854, 21, 70, "Usage",ExpressionUUID->"bce489bb-5580-4577-a87f-fe3cb758817e"]
+Cell[688, 25, 854, 21, 70, "Usage",ExpressionUUID->"4cfdd269-4763-42d7-a2ed-3e8ae1fec3c2"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1579, 51, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -426,7 +426,7 @@ Cell[9756, 295, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9926, 299, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10093, 303, 157, 2, 70, "Categorization",ExpressionUUID->"ed554d2f-fcd3-47b6-af84-f770c7c87286"]
+Cell[10093, 303, 157, 2, 70, "Categorization",ExpressionUUID->"efffd808-acef-482c-b507-654de2869691"]
 }, Closed]],
 Cell[10265, 308, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

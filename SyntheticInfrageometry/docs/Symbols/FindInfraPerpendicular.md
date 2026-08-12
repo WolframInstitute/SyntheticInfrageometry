@@ -13,4 +13,9 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraPerpendicular
 
 ## Details & Options
 
-Options Method ("Metric" (default; Euclid I.12 foot), "Projection", "Coordinate", "Arclength", "Alexandrov"; sub-options inside the spec forward to InfraPerpendicularQ), "Radius".
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "Metric" (default; Euclid I.12 foot), "Projection", "Coordinate", "Arclength", "Alexandrov"; sub-options inside the spec forward to InfraPerpendicularQ |
+| `"Radius"` | -- |

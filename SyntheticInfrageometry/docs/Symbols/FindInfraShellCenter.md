@@ -13,4 +13,8 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraShellCenter
 
 ## Details & Options
 
-Option Method ("MaximalChordsBisectors" (default; sub-options "Maximality", "Distance", "Parity") | "EquidistantPoints").
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "MaximalChordsBisectors" (default; sub-options "Maximality", "Distance", "Parity") \| "EquidistantPoints" |

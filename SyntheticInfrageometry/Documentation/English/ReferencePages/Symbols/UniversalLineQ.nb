@@ -24,7 +24,7 @@ Cell["UniversalLineQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"25c71c6b-f3f9-4d9d-a9d8-459e7393bbd2"],
+ Cell["   ", "ModInfo",ExpressionUUID->"b7539480-68be-4131-8e6e-66c78a4c5fc3"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -36,12 +36,12 @@ Cell[TextData[{
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "6d896d3b-bb6d-443d-8048-0618ce3c0bff"],
+  "9c8af1f5-fe06-4140-b1ec-68031905d9ca"],
  "\[LineSeparator]",
  "returns True if some pair of vertices spans a line filling a whole \
 connected component (Chen-Chvatal).",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"51b53f42-7d7a-48f3-a2de-8e8b608512bc"],
+ Cell["   ", "ModInfo",ExpressionUUID->"9f865825-173d-4eaf-9d14-ff7d8600d9a5"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -58,10 +58,10 @@ connected component (Chen-Chvatal).",
       StyleBox["u", "TI"], ",", " ", 
       StyleBox["v", "TI"]}], "}"}]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "4d109fa8-382b-4671-95a4-b2d38241a236"],
+  "85cfb5ed-0491-4536-98cd-ba0eeb9fd36d"],
  "\[LineSeparator]",
  "tests the single line through u, v."
-}], "Usage",ExpressionUUID->"849c97a2-083a-498b-b2fe-e04978aa72ec"]
+}], "Usage",ExpressionUUID->"15aaff54-8386-4439-883a-9ff791000a2a"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -320,7 +320,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/UniversalLineQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"f1e9a055-1b79-4778-bed1-a4df17392c08"]
+ CellLabel->"URI",ExpressionUUID->"18e6305f-d13a-4097-9fc1-c3be55ed0655"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -386,7 +386,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 112, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[691, 25, 1424, 38, 70, "Usage",ExpressionUUID->"849c97a2-083a-498b-b2fe-e04978aa72ec"]
+Cell[691, 25, 1424, 38, 70, "Usage",ExpressionUUID->"15aaff54-8386-4439-883a-9ff791000a2a"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2152, 68, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -443,7 +443,7 @@ Cell[10329, 312, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10499, 316, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10666, 320, 160, 2, 70, "Categorization",ExpressionUUID->"f1e9a055-1b79-4778-bed1-a4df17392c08"]
+Cell[10666, 320, 160, 2, 70, "Categorization",ExpressionUUID->"18e6305f-d13a-4097-9fc1-c3be55ed0655"]
 }, Closed]],
 Cell[10841, 325, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

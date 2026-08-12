@@ -24,7 +24,7 @@ Cell["InfraBallQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"90168be7-0a0c-4be8-b48d-4c21db2a7995"],
+ Cell["   ", "ModInfo",ExpressionUUID->"fd810f3d-4e8b-45eb-821f-205998819354"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,12 +38,12 @@ Cell[TextData[{
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["vertexSet", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "aee06f19-be83-4851-81b3-af28a0e34cf6"],
+  "80740482-a2fa-4b90-8135-59ae5dd48d74"],
  "\[LineSeparator]",
  "tests whether vertexSet is a closed metric ball, i.e. equals { v : d(c, v) \
 <= r } for some center c in vertexSet and some radius r.",
  "\n"
-}], "Usage",ExpressionUUID->"de531531-267c-4529-b7ab-edb31b126e73"]
+}], "Usage",ExpressionUUID->"6639d289-113b-49f5-8613-828e0b3dcff9"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -302,7 +302,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraBallQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"02f31124-28a8-405f-ae6e-53cb5bdc99e8"]
+ CellLabel->"URI",ExpressionUUID->"1c855860-4e88-427e-b94c-85efc792209b"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -368,7 +368,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 108, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[687, 25, 805, 20, 70, "Usage",ExpressionUUID->"de531531-267c-4529-b7ab-edb31b126e73"]
+Cell[687, 25, 805, 20, 70, "Usage",ExpressionUUID->"6639d289-113b-49f5-8613-828e0b3dcff9"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1529, 50, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -425,7 +425,7 @@ Cell[9706, 294, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9876, 298, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10043, 302, 156, 2, 70, "Categorization",ExpressionUUID->"02f31124-28a8-405f-ae6e-53cb5bdc99e8"]
+Cell[10043, 302, 156, 2, 70, "Categorization",ExpressionUUID->"1c855860-4e88-427e-b94c-85efc792209b"]
 }, Closed]],
 Cell[10214, 307, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

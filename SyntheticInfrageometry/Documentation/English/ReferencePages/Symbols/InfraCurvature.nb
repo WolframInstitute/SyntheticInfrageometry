@@ -24,7 +24,7 @@ Cell["InfraCurvature", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"b7ffb92c-2b14-4bd1-8583-138b7fe2754a"],
+ Cell["   ", "ModInfo",ExpressionUUID->"83bf27f5-37ec-4f70-8c93-9b62369e0f0a"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,13 +38,13 @@ Cell[TextData[{
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["v", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "00581409-c3df-47b6-95e6-da0d6a355bcb"],
+  "e5754e8a-8047-4f64-bd69-6456817733f9"],
  "\[LineSeparator]",
  "returns the local Alexandrov upper-curvature bound at v: L^2 times the \
 supremum of per-triangle CAT bounds over all triangles whose three vertices \
 sit inside B_L(v), with L = GraphDiameter[graph] by default.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"f5bd284d-db20-409e-8600-0e613c89ee58"],
+ Cell["   ", "ModInfo",ExpressionUUID->"7bc0ddb3-ce14-4f88-8e9a-e4e26c4e0e7f"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -56,15 +56,15 @@ sit inside B_L(v), with L = GraphDiameter[graph] by default.",
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "ec944382-b393-4116-a0f8-c6bb1be2fa0e"],
+  "e11d8aaa-edd9-42c3-a308-502d6eda4fdc"],
  "\[LineSeparator]",
  "returns an Association[v -> kappa_v] over all vertices."
-}], "Usage",ExpressionUUID->"ac0d6a24-a5c5-49a6-90d3-90856c45239e"],
+}], "Usage",ExpressionUUID->"ff93e885-7b6a-4725-9a04-1701c338f52c"],
 
 Cell["\<\
 Option: \"Radius\" (Automatic | Integer L) selects the ball radius; reported \
 curvature is rescaled by L^2 to match the (edge / L)^-2 unit convention.\
-\>", "Notes",ExpressionUUID->"630bfe4d-0724-42d3-9484-082c53a587bb"]
+\>", "Notes",ExpressionUUID->"cc48292c-7826-41bf-b2cc-390039dbed92"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -323,7 +323,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraCurvature", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"75d15c76-f21d-4f9f-8dae-bf5c3a44199f"]
+ CellLabel->"URI",ExpressionUUID->"c26443ad-9f57-4cc8-87d5-20da0a06b18a"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -389,8 +389,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 112, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[691, 25, 1470, 36, 70, "Usage",ExpressionUUID->"ac0d6a24-a5c5-49a6-90d3-90856c45239e"],
-Cell[2164, 63, 231, 3, 70, "Notes",ExpressionUUID->"630bfe4d-0724-42d3-9484-082c53a587bb"]
+Cell[691, 25, 1470, 36, 70, "Usage",ExpressionUUID->"ff93e885-7b6a-4725-9a04-1701c338f52c"],
+Cell[2164, 63, 231, 3, 70, "Notes",ExpressionUUID->"cc48292c-7826-41bf-b2cc-390039dbed92"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2432, 71, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -447,7 +447,7 @@ Cell[10609, 315, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10779, 319, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10946, 323, 160, 2, 70, "Categorization",ExpressionUUID->"75d15c76-f21d-4f9f-8dae-bf5c3a44199f"]
+Cell[10946, 323, 160, 2, 70, "Categorization",ExpressionUUID->"c26443ad-9f57-4cc8-87d5-20da0a06b18a"]
 }, Closed]],
 Cell[11121, 328, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

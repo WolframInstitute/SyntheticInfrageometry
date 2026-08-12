@@ -24,7 +24,7 @@ Cell["TarskiBetweennessIdentityQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"b4f8f3f7-d22e-48c4-a006-087cfc88360f"],
+ Cell["   ", "ModInfo",ExpressionUUID->"23f86176-4575-4aa5-93f0-e7679844c0b3"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,13 +37,13 @@ TarskiBetweennessIdentityQ",
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "5e6eb332-1fc5-4e09-866c-a272bcc0a4c8"],
+  "03636671-414e-4bb3-abe3-aa5c38976f7b"],
  "\[LineSeparator]",
  "tests Tarski axiom A6 (B(a, b, a) implies a == b).",
  "\n"
-}], "Usage",ExpressionUUID->"da572024-8e0c-4246-8898-7d787c45df24"],
+}], "Usage",ExpressionUUID->"cb42f785-e3f4-421e-b4c3-2fbf01921fc9"],
 
-Cell["Always True on connected simple graphs.", "Notes",ExpressionUUID->"954288b7-e88f-47fe-99ac-1d41bf35a290"]
+Cell["Always True on connected simple graphs.", "Notes",ExpressionUUID->"c556edf0-f835-4f70-87eb-6993be00f36e"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -303,7 +303,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/TarskiBetweennessIdentityQ\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"7668b7e6-2759-4603-8de8-6bbf586d47fa"]
+ CellLabel->"URI",ExpressionUUID->"619e9d1b-0e6c-406a-b42c-73f5188b2d38"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -369,8 +369,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 124, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[703, 25, 697, 18, 70, "Usage",ExpressionUUID->"da572024-8e0c-4246-8898-7d787c45df24"],
-Cell[1403, 45, 111, 0, 70, "Notes",ExpressionUUID->"954288b7-e88f-47fe-99ac-1d41bf35a290"]
+Cell[703, 25, 697, 18, 70, "Usage",ExpressionUUID->"cb42f785-e3f4-421e-b4c3-2fbf01921fc9"],
+Cell[1403, 45, 111, 0, 70, "Notes",ExpressionUUID->"c556edf0-f835-4f70-87eb-6993be00f36e"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1551, 50, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -427,7 +427,7 @@ Cell[9728, 294, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9898, 298, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10065, 302, 178, 3, 70, "Categorization",ExpressionUUID->"7668b7e6-2759-4603-8de8-6bbf586d47fa"]
+Cell[10065, 302, 178, 3, 70, "Categorization",ExpressionUUID->"619e9d1b-0e6c-406a-b42c-73f5188b2d38"]
 }, Closed]],
 Cell[10258, 308, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

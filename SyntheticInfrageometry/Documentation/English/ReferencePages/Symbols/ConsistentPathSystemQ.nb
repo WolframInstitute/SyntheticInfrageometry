@@ -24,7 +24,7 @@ Cell["ConsistentPathSystemQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"70f1d5d9-72f7-46ac-91c2-36de599fa669"],
+ Cell["   ", "ModInfo",ExpressionUUID->"21dd51f3-b82e-450c-b538-00df06549d3e"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,13 +39,13 @@ ConsistentPathSystemQ",
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["obj", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "5a10e286-06bd-4844-b6dc-bff88f5fcd76"],
+  "5000826e-02fe-4196-8420-ae936fb26142"],
  "\[LineSeparator]",
  "tests whether a geodesic path system is subpath-closed (Cizma-Linial \
 consistent). obj is an InfraLineStructure, a list of lines, or an association \
 <|{u,v} -> path|>.",
  "\n"
-}], "Usage",ExpressionUUID->"4fffcb87-fade-478d-8f53-b904746f5eae"]
+}], "Usage",ExpressionUUID->"87dba8bc-6138-4a7b-a308-f7b07f98184c"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -305,7 +305,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/ConsistentPathSystemQ\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"bb86a499-4d60-47e3-ba82-6859a811c21b"]
+ CellLabel->"URI",ExpressionUUID->"43f42371-c959-41ec-a583-97da50a0b111"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -371,7 +371,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 119, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[698, 25, 859, 22, 70, "Usage",ExpressionUUID->"4fffcb87-fade-478d-8f53-b904746f5eae"]
+Cell[698, 25, 859, 22, 70, "Usage",ExpressionUUID->"87dba8bc-6138-4a7b-a308-f7b07f98184c"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1594, 52, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -428,7 +428,7 @@ Cell[9771, 296, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9941, 300, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10108, 304, 173, 3, 70, "Categorization",ExpressionUUID->"bb86a499-4d60-47e3-ba82-6859a811c21b"]
+Cell[10108, 304, 173, 3, 70, "Categorization",ExpressionUUID->"43f42371-c959-41ec-a583-97da50a0b111"]
 }, Closed]],
 Cell[10296, 310, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

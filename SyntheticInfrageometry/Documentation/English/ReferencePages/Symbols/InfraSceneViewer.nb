@@ -24,7 +24,7 @@ Cell["InfraSceneViewer", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"8e576086-7e24-4601-a126-2b613d870a1d"],
+ Cell["   ", "ModInfo",ExpressionUUID->"2d1054b4-cbc5-403b-9fe3-5c9ddf31cccd"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,23 +38,23 @@ Cell[TextData[{
     StyleBox["scene", "TI"], ",", " ", 
     StyleBox["graph", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "1aca10b5-c92e-4aa5-a3ff-e5fd18e84cf2"],
+  "fda0211c-8bcd-4869-bcda-dfc49d9d88a2"],
  "\[LineSeparator]",
  "is an interactive visualisation of an InfraScene on a graph; an optional \
 third Association of pre-fixed bindings is supported.",
  "\n"
-}], "Usage",ExpressionUUID->"a9c37158-f215-4705-a1a0-f0748a58e951"],
+}], "Usage",ExpressionUUID->"d01cf613-f4f1-459d-afab-a68a8ab45b65"],
 
 Cell["\<\
 Controls: step arrows with a label menu, a per-step hide toggle (eye), \
 \"Branch\"/\"Diffuse\" mode setter, branch arrows, and a \"Fixed\" checkbox \
 locking the current branch as the initial bindings of later steps.\
-\>", "Notes",ExpressionUUID->"0a5c77dc-bc1e-479a-8476-304d7fbb6ab8"],
+\>", "Notes",ExpressionUUID->"1d251b44-5f1c-40e1-8938-431a4839d9b9"],
 
 Cell["\<\
 Rendering options (\"OpacityRange\", \"ThicknessRange\", \"PointSizeRange\", \
 ImageSize) forward to InfraSceneHighlight.\
-\>", "Notes",ExpressionUUID->"bb699eb2-cd46-44fe-bc17-3050bde5cb9c"]
+\>", "Notes",ExpressionUUID->"5d11547a-4b7b-4dbf-8782-c570778eb7ee"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -313,7 +313,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraSceneViewer", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"758c349d-04d8-4422-b14f-e921930f7a13"]
+ CellLabel->"URI",ExpressionUUID->"02a96c2e-18f9-4595-8f90-dd2e28f69168"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -379,9 +379,9 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 114, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[693, 25, 808, 20, 70, "Usage",ExpressionUUID->"a9c37158-f215-4705-a1a0-f0748a58e951"],
-Cell[1504, 47, 297, 4, 70, "Notes",ExpressionUUID->"0a5c77dc-bc1e-479a-8476-304d7fbb6ab8"],
-Cell[1804, 53, 201, 3, 70, "Notes",ExpressionUUID->"bb699eb2-cd46-44fe-bc17-3050bde5cb9c"]
+Cell[693, 25, 808, 20, 70, "Usage",ExpressionUUID->"d01cf613-f4f1-459d-afab-a68a8ab45b65"],
+Cell[1504, 47, 297, 4, 70, "Notes",ExpressionUUID->"1d251b44-5f1c-40e1-8938-431a4839d9b9"],
+Cell[1804, 53, 201, 3, 70, "Notes",ExpressionUUID->"5d11547a-4b7b-4dbf-8782-c570778eb7ee"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2042, 61, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -438,7 +438,7 @@ Cell[10219, 305, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10389, 309, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10556, 313, 162, 2, 70, "Categorization",ExpressionUUID->"758c349d-04d8-4422-b14f-e921930f7a13"]
+Cell[10556, 313, 162, 2, 70, "Categorization",ExpressionUUID->"02a96c2e-18f9-4595-8f90-dd2e28f69168"]
 }, Closed]],
 Cell[10733, 318, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

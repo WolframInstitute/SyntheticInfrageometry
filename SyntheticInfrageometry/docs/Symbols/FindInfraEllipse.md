@@ -15,4 +15,8 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraEllipse
 
 ## Details & Options
 
-Option Properties (default {"Separating", "Shortest"}).
+Options:
+
+| Option | Values |
+|---|---|
+| `Properties` | default {"Separating", "Shortest"} |

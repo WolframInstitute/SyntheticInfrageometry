@@ -13,4 +13,9 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraPath
 
 ## Details & Options
 
-Options Properties ("Simple", "ShortestPath", "LongestPath", {"EdgeMin", f}, {"EdgeMax", f}), Method ("Exhaustive").
+Options:
+
+| Option | Values |
+|---|---|
+| `Properties` | "Simple", "ShortestPath", "LongestPath", {"EdgeMin", f}, {"EdgeMax", f} |
+| `Method` | "Exhaustive" |

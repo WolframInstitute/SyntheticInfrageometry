@@ -24,7 +24,7 @@ Cell["SameDirectionQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"a476d185-d301-4689-95d8-acb8f2606f14"],
+ Cell["   ", "ModInfo",ExpressionUUID->"b32c2513-af22-4272-91f9-d1b68a8d75f7"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -41,12 +41,12 @@ Cell[TextData[{
     StyleBox["v", "TI"], ",", " ", 
     StyleBox["w", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "abdbac79-4121-4c21-9f9b-e517df4f62d8"],
+  "fcc18177-091c-49dd-bb0c-410aa3a8637c"],
  "\[LineSeparator]",
  "tests whether v and w lie in the same direction at O (some maximal geodesic \
 through O contains both).",
  "\n"
-}], "Usage",ExpressionUUID->"380888b1-3164-4459-b04a-063b165af70e"]
+}], "Usage",ExpressionUUID->"948904fd-a0c6-4d95-b4e4-3b598dc080b4"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -305,7 +305,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/SameDirectionQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"ab44151a-f6ca-47a8-83f5-d15f843a00be"]
+ CellLabel->"URI",ExpressionUUID->"3d43fba0-15db-4ae8-be6e-b56c05bcdc92"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -371,7 +371,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 112, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[691, 25, 866, 23, 70, "Usage",ExpressionUUID->"380888b1-3164-4459-b04a-063b165af70e"]
+Cell[691, 25, 866, 23, 70, "Usage",ExpressionUUID->"948904fd-a0c6-4d95-b4e4-3b598dc080b4"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1594, 53, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -428,7 +428,7 @@ Cell[9771, 297, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9941, 301, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10108, 305, 160, 2, 70, "Categorization",ExpressionUUID->"ab44151a-f6ca-47a8-83f5-d15f843a00be"]
+Cell[10108, 305, 160, 2, 70, "Categorization",ExpressionUUID->"3d43fba0-15db-4ae8-be6e-b56c05bcdc92"]
 }, Closed]],
 Cell[10283, 310, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

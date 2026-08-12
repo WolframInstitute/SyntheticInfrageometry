@@ -24,7 +24,7 @@ Cell["InfraPoint", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"a0b2b49a-033b-4f2a-a3b5-487281740548"],
+ Cell["   ", "ModInfo",ExpressionUUID->"080e5a8a-2632-4b90-980d-cfb349c86217"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,11 +39,11 @@ Cell[TextData[{
      StyleBox["v1", "TI"], ",", " ", "...", ",", " ", 
      StyleBox["vk", "TI"]}], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "99b50d6c-31fb-4224-a97f-a92d106e8b1e"],
+  "386ec83c-e90d-4553-af0a-424d760cb9a4"],
  "\[LineSeparator]",
  "is the multi-realisation point -- a candidate set in superposition.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"d6e95777-4e94-4ebe-ba21-fdd8e171e36d"],
+ Cell["   ", "ModInfo",ExpressionUUID->"55ca625c-f674-484c-aa98-2b7b7a3a47e7"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -60,13 +60,13 @@ Cell[TextData[{
       StyleBox["m", "TI"]}], ",", " ", "..."}], "|>"}], "]"}]], 
   "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "565220b8-9a5a-4dad-abf6-747d9c05740e"],
+  "4ff75307-f344-4b9f-9a0a-a38de83fa72d"],
  "\[LineSeparator]",
  "is the measured form: the measure on vertices, stored as the association it \
 is (InfraPoint is the only measured wrapper, since its realisations are \
 vertices and so its vertex marginal is lossless).",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"daf43339-ee3e-4332-b57b-4bc08780dc0e"],
+ Cell["   ", "ModInfo",ExpressionUUID->"4d071661-7056-49a3-94ee-fb0b21d87afd"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -85,27 +85,27 @@ vertices and so its vertex marginal is lossless).",
       StyleBox["m1", "TI"], ",", " ", "..."}], "}"}]}], "]"}]], 
   "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "d8318cf5-9afa-40e0-b50c-5c30b5d49e8a"],
+  "46ccef86-557f-4365-b8a3-7858abe6488e"],
  "\[LineSeparator]",
  "is input sugar for the association; repeated vertices sum and an all-ones \
 measure collapses to the bare support."
-}], "Usage",ExpressionUUID->"a22a7c91-4e3c-42f4-9cee-210324676747"],
+}], "Usage",ExpressionUUID->"c229d93e-1b73-4693-a687-4c217048b373"],
 
 Cell["\<\
 Accessors [\"Support\"], [\"Weights\"], [\"Mass\"], [\"First\"], plus \
 graph-keyed synthetic invariants ([\"BallVolumes\", g], [\"Dimension\", g], \
 \[Ellipsis]) which read the support only.\
-\>", "Notes",ExpressionUUID->"807f6813-b14d-4d6a-9d96-d48e758cdaa0"],
+\>", "Notes",ExpressionUUID->"6d957d33-8232-49c7-9044-1b0071baf703"],
 
 Cell["\<\
 Measured points are constructed at projections -- seg[[i]], \
 FindInfraMidpoint, FindInfraShellCenter.\
-\>", "Notes",ExpressionUUID->"8eddf43a-cc3b-4497-8746-f1e7fc29fcf1"],
+\>", "Notes",ExpressionUUID->"d5a74941-e335-4915-8026-cbaf65e5bd88"],
 
 Cell["\<\
 Scene-language constructors InfraPoint[] / InfraPoint[\"Center\"] / \
 InfraPoint[origin, dist] are used inside InfraScene.\
-\>", "Notes",ExpressionUUID->"b485bf8e-893d-41be-a809-82738ba6d43f"]
+\>", "Notes",ExpressionUUID->"c88ddc3f-d2f4-49c6-b881-40046bc36ea0"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -364,7 +364,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraPoint", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"107b176e-1335-4bdf-96f7-3ac56edb2a88"]
+ CellLabel->"URI",ExpressionUUID->"5ca46a4a-c79f-422e-9d6e-2981d2482df2"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -430,10 +430,10 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 108, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[687, 25, 2435, 66, 70, "Usage",ExpressionUUID->"a22a7c91-4e3c-42f4-9cee-210324676747"],
-Cell[3125, 93, 271, 4, 70, "Notes",ExpressionUUID->"807f6813-b14d-4d6a-9d96-d48e758cdaa0"],
-Cell[3399, 99, 182, 3, 70, "Notes",ExpressionUUID->"8eddf43a-cc3b-4497-8746-f1e7fc29fcf1"],
-Cell[3584, 104, 202, 3, 70, "Notes",ExpressionUUID->"b485bf8e-893d-41be-a809-82738ba6d43f"]
+Cell[687, 25, 2435, 66, 70, "Usage",ExpressionUUID->"c229d93e-1b73-4693-a687-4c217048b373"],
+Cell[3125, 93, 271, 4, 70, "Notes",ExpressionUUID->"6d957d33-8232-49c7-9044-1b0071baf703"],
+Cell[3399, 99, 182, 3, 70, "Notes",ExpressionUUID->"d5a74941-e335-4915-8026-cbaf65e5bd88"],
+Cell[3584, 104, 202, 3, 70, "Notes",ExpressionUUID->"c88ddc3f-d2f4-49c6-b881-40046bc36ea0"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[3823, 112, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -490,7 +490,7 @@ Cell[12000, 356, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[12170, 360, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[12337, 364, 156, 2, 70, "Categorization",ExpressionUUID->"107b176e-1335-4bdf-96f7-3ac56edb2a88"]
+Cell[12337, 364, 156, 2, 70, "Categorization",ExpressionUUID->"5ca46a4a-c79f-422e-9d6e-2981d2482df2"]
 }, Closed]],
 Cell[12508, 369, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

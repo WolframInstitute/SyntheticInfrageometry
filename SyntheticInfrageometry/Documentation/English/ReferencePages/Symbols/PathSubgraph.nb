@@ -24,7 +24,7 @@ Cell["PathSubgraph", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"1c350943-caa7-4139-9f1d-28ec725d81ba"],
+ Cell["   ", "ModInfo",ExpressionUUID->"842da601-168e-4155-bb97-5656d2cfe6f9"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,11 +39,11 @@ Cell[TextData[{
     StyleBox["u", "TI"], ",", " ", 
     StyleBox["v", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "45d31fe1-0cfb-4bcb-b3ee-494137148cd9"],
+  "4ac1c206-2689-4404-a4e5-46515e9aa8f8"],
  "\[LineSeparator]",
  "returns the union of all shortest u-v paths.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"2f3649a9-1669-41fb-bced-df89949b58ec"],
+ Cell["   ", "ModInfo",ExpressionUUID->"2e353de0-d816-43ca-be3d-e07fb63cdfe9"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -59,13 +59,13 @@ Cell[TextData[{
     StyleBox["v", "TI"], ",", " ", 
     StyleBox["k", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "301bf735-1bd6-40aa-95c4-f60fa3957413"],
+  "de1149bf-6d3c-4ff2-b82b-788206a528a6"],
  "\[LineSeparator]",
  "(or UpTo[k]) caps path length; PathSubgraph[graph, u, v, All] returns the \
 full simple-path subgraph."
-}], "Usage",ExpressionUUID->"0b56c6c5-f1e4-473f-9346-4e2c58f49efb"],
+}], "Usage",ExpressionUUID->"aee0bf41-be6c-4144-b1f3-b34609971a4b"],
 
-Cell["Option: \"Directed\".", "Notes",ExpressionUUID->"115a955f-6406-4a36-bbb0-850a5daf9128"]
+Cell["Option: \"Directed\".", "Notes",ExpressionUUID->"58cab787-6bfc-43c3-8265-a1e424b7a029"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -324,7 +324,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/PathSubgraph", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"880cee96-db92-4e9d-9eca-8eef64ab5719"]
+ CellLabel->"URI",ExpressionUUID->"8f157a9f-2bcb-4624-80f5-79d6d90900ac"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -390,8 +390,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 110, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[689, 25, 1501, 40, 70, "Usage",ExpressionUUID->"0b56c6c5-f1e4-473f-9346-4e2c58f49efb"],
-Cell[2193, 67, 93, 0, 70, "Notes",ExpressionUUID->"115a955f-6406-4a36-bbb0-850a5daf9128"]
+Cell[689, 25, 1501, 40, 70, "Usage",ExpressionUUID->"aee0bf41-be6c-4144-b1f3-b34609971a4b"],
+Cell[2193, 67, 93, 0, 70, "Notes",ExpressionUUID->"58cab787-6bfc-43c3-8265-a1e424b7a029"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2323, 72, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -448,7 +448,7 @@ Cell[10500, 316, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10670, 320, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10837, 324, 158, 2, 70, "Categorization",ExpressionUUID->"880cee96-db92-4e9d-9eca-8eef64ab5719"]
+Cell[10837, 324, 158, 2, 70, "Categorization",ExpressionUUID->"8f157a9f-2bcb-4624-80f5-79d6d90900ac"]
 }, Closed]],
 Cell[11010, 329, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

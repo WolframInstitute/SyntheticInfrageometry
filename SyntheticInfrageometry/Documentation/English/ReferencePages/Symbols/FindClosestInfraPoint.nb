@@ -24,7 +24,7 @@ Cell["FindClosestInfraPoint", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"0db4c0f6-cc10-485a-8a91-d31c6f90e0d2"],
+ Cell["   ", "ModInfo",ExpressionUUID->"c9e610ce-fd88-4407-81ed-4c033233eb89"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -40,13 +40,13 @@ FindClosestInfraPoint",
     StyleBox["line", "TI"], ",", " ", 
     StyleBox["point", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "2d1633cc-4665-48b3-9d23-ecc7cd2252bc"],
+  "397dd314-cd3e-46e1-8aac-dcc276f7fc70"],
  "\[LineSeparator]",
  "returns unary InfraPoint[{v}] wrappers for the vertices on line at minimum \
 graph distance from point; n / UpTo[n] / All controls multiplicity. line is a \
 vertex sequence or path-shaped wrapper; point a vertex or InfraPoint.",
  "\n"
-}], "Usage",ExpressionUUID->"feb7e3e7-05cf-4fe9-8d4a-6b0630e3ce06"]
+}], "Usage",ExpressionUUID->"561d974f-6935-4b99-aa3c-408a529e0987"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -306,7 +306,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindClosestInfraPoint\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"b6223a9c-64da-42b9-938a-974e16bd6f64"]
+ CellLabel->"URI",ExpressionUUID->"0394b4f5-2079-4444-9267-5d617b0d7ffc"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -372,7 +372,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 119, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[698, 25, 957, 23, 70, "Usage",ExpressionUUID->"feb7e3e7-05cf-4fe9-8d4a-6b0630e3ce06"]
+Cell[698, 25, 957, 23, 70, "Usage",ExpressionUUID->"561d974f-6935-4b99-aa3c-408a529e0987"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1692, 53, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -429,7 +429,7 @@ Cell[9869, 297, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10039, 301, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10206, 305, 173, 3, 70, "Categorization",ExpressionUUID->"b6223a9c-64da-42b9-938a-974e16bd6f64"]
+Cell[10206, 305, 173, 3, 70, "Categorization",ExpressionUUID->"0394b4f5-2079-4444-9267-5d617b0d7ffc"]
 }, Closed]],
 Cell[10394, 311, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

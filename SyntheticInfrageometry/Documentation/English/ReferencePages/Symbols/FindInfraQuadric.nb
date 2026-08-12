@@ -24,7 +24,7 @@ Cell["FindInfraQuadric", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"7fe2afea-3682-45cf-bd47-9b30206a5423"],
+ Cell["   ", "ModInfo",ExpressionUUID->"b3e91226-a26b-4dfa-ab87-5dad4d40a959"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -42,12 +42,12 @@ Cell[TextData[{
       StyleBox["pk", "TI"]}], "}"}], ",", " ", 
     StyleBox["c", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "85c3c087-4832-45c5-9832-4e4d3ec93433"],
+  "976907e2-adec-4cbd-9d63-8cb3b2588209"],
  "\[LineSeparator]",
  "returns InfraObject[{ v : sum_i d(p_i, v) <= c }], the solid ellipsoid \
 interior with foci p_i.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"7432c1e5-15f4-4b6b-b0cb-d677a0a9ccf9"],
+ Cell["   ", "ModInfo",ExpressionUUID->"a5341902-5f76-4a94-a3bb-098c39527c9d"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -65,11 +65,11 @@ interior with foci p_i.",
       StyleBox["cMin", "TI"], ",", " ", 
       StyleBox["cMax", "TI"]}], "}"}]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "edda5012-844a-4e90-a2b9-de7cf91dc351"],
+  "0abba07b-7550-4d04-8c75-f16e5e2378ee"],
  "\[LineSeparator]",
  "returns the band { v : cMin <= sum_i d(p_i, v) <= cMax }.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"a311ad71-624b-4ea2-a46e-3ab6c243524a"],
+ Cell["   ", "ModInfo",ExpressionUUID->"39a34309-cc01-4a78-ab5c-42da8403e05b"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -85,17 +85,17 @@ interior with foci p_i.",
     StyleBox["c", "TI"], ",", " ", 
     StyleBox["weights", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "44054204-c690-4062-89e8-d498d36fad2a"],
+  "edb5b5a2-28c9-482a-be85-a93af0557d1b"],
  "\[LineSeparator]",
  "uses the weighted signed-distance sum sum_i w_i d(p_i, v); weights {1, -1} \
 give a hyperboloid (one branch via scalar c, two-sided via symmetric band \
 {-c, c})."
-}], "Usage",ExpressionUUID->"a992641d-9a3a-47bd-9d74-3813d6ea41f1"],
+}], "Usage",ExpressionUUID->"cdb07b6c-cdbd-44c2-88cf-5732e2b61a1f"],
 
 Cell["\<\
 Foci accept bare vertices or InfraPoint wrappers (multi-realisation reduced \
 to first).\
-\>", "Notes",ExpressionUUID->"40278876-bfb6-4780-aa2a-11266877bb5c"]
+\>", "Notes",ExpressionUUID->"1745080c-5b42-4024-8e06-ee6c4f8f0419"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -354,7 +354,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/FindInfraQuadric", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"12d36311-829a-4351-9b25-bd3e98011430"]
+ CellLabel->"URI",ExpressionUUID->"8a185107-5e47-4daf-8790-939a74bd646a"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -420,8 +420,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 114, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[693, 25, 2515, 67, 70, "Usage",ExpressionUUID->"a992641d-9a3a-47bd-9d74-3813d6ea41f1"],
-Cell[3211, 94, 168, 3, 70, "Notes",ExpressionUUID->"40278876-bfb6-4780-aa2a-11266877bb5c"]
+Cell[693, 25, 2515, 67, 70, "Usage",ExpressionUUID->"cdb07b6c-cdbd-44c2-88cf-5732e2b61a1f"],
+Cell[3211, 94, 168, 3, 70, "Notes",ExpressionUUID->"1745080c-5b42-4024-8e06-ee6c4f8f0419"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[3416, 102, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -478,7 +478,7 @@ Cell[11593, 346, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[11763, 350, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[11930, 354, 162, 2, 70, "Categorization",ExpressionUUID->"12d36311-829a-4351-9b25-bd3e98011430"]
+Cell[11930, 354, 162, 2, 70, "Categorization",ExpressionUUID->"8a185107-5e47-4daf-8790-939a74bd646a"]
 }, Closed]],
 Cell[12107, 359, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -24,7 +24,7 @@ Cell["InfraSegment", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"5439ad28-7946-4289-b78a-6995a89d9b76"],
+ Cell["   ", "ModInfo",ExpressionUUID->"5acbb4db-4e67-425c-8207-e6a4f017083e"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,14 +39,14 @@ Cell[TextData[{
      StyleBox["path1", "TI"], ",", " ", "...", ",", " ", 
      StyleBox["pathk", "TI"]}], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "9103d5b7-b439-4f22-836a-e4ac842a5666"],
+  "f204a0c3-315d-4a98-ad2a-3548dc0013fb"],
  "\[LineSeparator]",
  "is the multi-realisation geodesic bundle -- a set of alternative geodesics, \
 carrying no masses; seg[[i]] is the measured InfraPoint of the i-th position \
 across realisations (mass = multiplicity), which is where a measure gets \
 constructed.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"809c6ae2-c178-4a1f-9912-31a949739d07"],
+ Cell["   ", "ModInfo",ExpressionUUID->"a4091ef6-e574-4680-99de-0f27430b39ab"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -58,16 +58,16 @@ constructed.",
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["dag_Graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "6ae08b78-4014-4d7a-b8bd-960b80b3ca72"],
+  "663d5775-e3ff-405f-9a3b-8cd66a124d30"],
  "\[LineSeparator]",
  "is the geodesic-DAG form with accessors [\"Graph\"], [\"Vertices\"], \
 [\"Length\"], [\"Multiplicity\"], [\"Start\"] / [\"End\"], [\"Measure\"], and \
 [\"Realizations\", n | UpTo[n] | All] to enumerate."
-}], "Usage",ExpressionUUID->"34b5b246-6807-474f-827c-c7f5b8952a44"],
+}], "Usage",ExpressionUUID->"d7939264-84a5-49a7-8910-1ea18d20b27d"],
 
 Cell["\<\
 Scene-language constructor InfraSegment[p, q] is used inside InfraScene.\
-\>", "Notes",ExpressionUUID->"8fae9fde-f7cd-4177-bfc6-912def9ed916"]
+\>", "Notes",ExpressionUUID->"93296fac-2e27-48c6-b29a-3680c74f6f6b"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -326,7 +326,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraSegment", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"d6aebb24-eea3-4d36-84c6-89b6afb582ce"]
+ CellLabel->"URI",ExpressionUUID->"be9d5802-75ac-405b-a5a5-02b03bb9986e"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -392,8 +392,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 110, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[689, 25, 1694, 40, 70, "Usage",ExpressionUUID->"34b5b246-6807-474f-827c-c7f5b8952a44"],
-Cell[2386, 67, 152, 2, 70, "Notes",ExpressionUUID->"8fae9fde-f7cd-4177-bfc6-912def9ed916"]
+Cell[689, 25, 1694, 40, 70, "Usage",ExpressionUUID->"d7939264-84a5-49a7-8910-1ea18d20b27d"],
+Cell[2386, 67, 152, 2, 70, "Notes",ExpressionUUID->"93296fac-2e27-48c6-b29a-3680c74f6f6b"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2575, 74, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -450,7 +450,7 @@ Cell[10752, 318, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10922, 322, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[11089, 326, 158, 2, 70, "Categorization",ExpressionUUID->"d6aebb24-eea3-4d36-84c6-89b6afb582ce"]
+Cell[11089, 326, 158, 2, 70, "Categorization",ExpressionUUID->"be9d5802-75ac-405b-a5a5-02b03bb9986e"]
 }, Closed]],
 Cell[11262, 331, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -24,7 +24,7 @@ Cell["InfraScene", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"d8a55f26-fbf0-4d5b-87fe-68028a7eabf7"],
+ Cell["   ", "ModInfo",ExpressionUUID->"4c780d64-d0c5-4132-8b51-3dad0741147c"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,17 +38,17 @@ Cell[TextData[{
     StyleBox["objects", "TI"], ",", " ", 
     StyleBox["hypotheses", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "102a225c-cf95-4b2e-9040-c2426d37b2ba"],
+  "86c52cc2-3ec4-44ff-8553-5f0486fc2e77"],
  "\[LineSeparator]",
  "constructs a scene descriptor from symbolic objects and \
 construction/assertion hypotheses.",
  "\n"
-}], "Usage",ExpressionUUID->"a178d370-bd2b-4b17-8f3a-3594c51e3e0f"],
+}], "Usage",ExpressionUUID->"67bb927d-3f92-4fb6-9761-e94c4b58bae7"],
 
 Cell["\<\
 Properties: scene[\"Steps\"], [\"Constructions\"], [\"Assertions\"], \
 [\"DependencyGraph\"].\
-\>", "Notes",ExpressionUUID->"0bfc82e6-a265-48f7-b41f-cca1eb67218c"]
+\>", "Notes",ExpressionUUID->"c2133e91-2563-45e1-a821-0b506fc5f2fb"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -307,7 +307,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraScene", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"ff2a789e-5667-423a-9c55-50e505d80b61"]
+ CellLabel->"URI",ExpressionUUID->"b01ae412-262e-4bf4-bd1e-97c0264e7d1b"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -373,8 +373,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 108, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[687, 25, 767, 20, 70, "Usage",ExpressionUUID->"a178d370-bd2b-4b17-8f3a-3594c51e3e0f"],
-Cell[1457, 47, 173, 3, 70, "Notes",ExpressionUUID->"0bfc82e6-a265-48f7-b41f-cca1eb67218c"]
+Cell[687, 25, 767, 20, 70, "Usage",ExpressionUUID->"67bb927d-3f92-4fb6-9761-e94c4b58bae7"],
+Cell[1457, 47, 173, 3, 70, "Notes",ExpressionUUID->"c2133e91-2563-45e1-a821-0b506fc5f2fb"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1667, 55, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -431,7 +431,7 @@ Cell[9844, 299, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10014, 303, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10181, 307, 156, 2, 70, "Categorization",ExpressionUUID->"ff2a789e-5667-423a-9c55-50e505d80b61"]
+Cell[10181, 307, 156, 2, 70, "Categorization",ExpressionUUID->"b01ae412-262e-4bf4-bd1e-97c0264e7d1b"]
 }, Closed]],
 Cell[10352, 312, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

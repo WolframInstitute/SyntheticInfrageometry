@@ -24,7 +24,7 @@ Cell["ProjectivePlaneGraphQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"d29db4ca-e43b-4674-8b5a-cfa18258d3c4"],
+ Cell["   ", "ModInfo",ExpressionUUID->"d4acd80a-3536-4944-af22-e3b7d18f994f"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,12 +37,12 @@ ProjectivePlaneGraphQ",
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "03808172-9fc3-49e6-99fe-3f9f9bf0567d"],
+  "bd240695-9a44-450b-a7b6-658ed22150af"],
  "\[LineSeparator]",
  "tests whether graph is a synthetic projective plane: W1 && W2 && W3 with \
 non-degeneracy.",
  "\n"
-}], "Usage",ExpressionUUID->"c1cb614b-7950-4892-b7b2-338800447a60"]
+}], "Usage",ExpressionUUID->"4cbd45a1-b272-432a-acb2-5e8eb6128bce"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -302,7 +302,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/ProjectivePlaneGraphQ\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"35f5c286-fbd7-406c-b684-bc3b12577309"]
+ CellLabel->"URI",ExpressionUUID->"f789efaf-be92-4a51-b1fa-a15ed7b81316"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -368,7 +368,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 119, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[698, 25, 727, 19, 70, "Usage",ExpressionUUID->"c1cb614b-7950-4892-b7b2-338800447a60"]
+Cell[698, 25, 727, 19, 70, "Usage",ExpressionUUID->"4cbd45a1-b272-432a-acb2-5e8eb6128bce"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1462, 49, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -425,7 +425,7 @@ Cell[9639, 293, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9809, 297, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9976, 301, 173, 3, 70, "Categorization",ExpressionUUID->"35f5c286-fbd7-406c-b684-bc3b12577309"]
+Cell[9976, 301, 173, 3, 70, "Categorization",ExpressionUUID->"f789efaf-be92-4a51-b1fa-a15ed7b81316"]
 }, Closed]],
 Cell[10164, 307, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -24,7 +24,7 @@ Cell["InfraPlane", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"8fcb5a76-dbe2-41f8-ade0-f7cc1aadcce9"],
+ Cell["   ", "ModInfo",ExpressionUUID->"e0f21288-f9ac-4db1-9a0c-404f94c4b1ec"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,21 +37,21 @@ Cell[TextData[{
    RowBox[{"{", 
     StyleBox["set", "TI"], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "4e3abdc3-0de2-4b82-a028-b101ceca60aa"],
+  "4942ed53-522a-4a06-a679-ac7017243368"],
  "\[LineSeparator]",
  "is the unary form (one bisecting hyperplane); InfraPlane[{set1, \
 \[Ellipsis], setk}] is the multi-realisation form.",
  "\n"
-}], "Usage",ExpressionUUID->"7db15567-b9fc-4bf0-b93a-dcd4d3e5d0fa"],
+}], "Usage",ExpressionUUID->"671efc79-f3f1-46ad-ac74-bd2a4f8081a8"],
 
 Cell["\<\
 Find* returns one wrapper carrying the requested realisations.\
-\>", "Notes",ExpressionUUID->"a4711596-f9ac-4098-b308-8100a80e3e79"],
+\>", "Notes",ExpressionUUID->"ded7cd6f-1276-45a4-bdc0-d5e02b12c8d7"],
 
 Cell["\<\
 Scene-language constructors InfraPlane[p1, p2] and InfraPlane[p1, p2, {lo, \
 hi}] are used inside InfraScene.\
-\>", "Notes",ExpressionUUID->"3b217d9d-6329-4e10-9f86-a9058f87573e"]
+\>", "Notes",ExpressionUUID->"ada49c4c-fa04-42db-9c69-395dfc423468"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -310,7 +310,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraPlane", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"e2df88b7-c411-4f11-99b1-fad30f52b2c4"]
+ CellLabel->"URI",ExpressionUUID->"b9ae9e89-9441-471b-82ae-416f869658ea"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -376,9 +376,9 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 108, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[687, 25, 752, 19, 70, "Usage",ExpressionUUID->"7db15567-b9fc-4bf0-b93a-dcd4d3e5d0fa"],
-Cell[1442, 46, 142, 2, 70, "Notes",ExpressionUUID->"a4711596-f9ac-4098-b308-8100a80e3e79"],
-Cell[1587, 50, 189, 3, 70, "Notes",ExpressionUUID->"3b217d9d-6329-4e10-9f86-a9058f87573e"]
+Cell[687, 25, 752, 19, 70, "Usage",ExpressionUUID->"671efc79-f3f1-46ad-ac74-bd2a4f8081a8"],
+Cell[1442, 46, 142, 2, 70, "Notes",ExpressionUUID->"ded7cd6f-1276-45a4-bdc0-d5e02b12c8d7"],
+Cell[1587, 50, 189, 3, 70, "Notes",ExpressionUUID->"ada49c4c-fa04-42db-9c69-395dfc423468"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1813, 58, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -435,7 +435,7 @@ Cell[9990, 302, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10160, 306, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10327, 310, 156, 2, 70, "Categorization",ExpressionUUID->"e2df88b7-c411-4f11-99b1-fad30f52b2c4"]
+Cell[10327, 310, 156, 2, 70, "Categorization",ExpressionUUID->"b9ae9e89-9441-471b-82ae-416f869658ea"]
 }, Closed]],
 Cell[10498, 315, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -24,7 +24,7 @@ Cell["TurningAngles", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"2082e83d-e3d3-40ad-9270-c6f1b41f65d4"],
+ Cell["   ", "ModInfo",ExpressionUUID->"71fde148-2c8e-4eac-be29-ef3c0e049e8d"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,14 +38,14 @@ Cell[TextData[{
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["path", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "6f637bc7-d379-49c9-915d-a70f828f2880"],
+  "653b5da5-0358-426c-bc63-e34054c4bf11"],
  "\[LineSeparator]",
  "returns the list of discrete exterior angles Pi - InfraAngle[graph, \
 {v_{i-1}, v_i, v_{i+1}}] at each interior vertex of the polygonal curve path \
 = {v_1, \[Ellipsis], v_k}; closed cycles (First[path] == Last[path]) include \
 the wrap-around triple.",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"ab6f8f87-f934-4655-84b7-0c467f8eebd9"],
+ Cell["   ", "ModInfo",ExpressionUUID->"6ef7faea-7d26-451b-8f13-17503492738e"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -59,12 +59,12 @@ the wrap-around triple.",
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["polyline", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "41c02624-12ec-41c5-8c58-9abcbe7b45fe"],
+  "cc652795-40e7-4bfc-8d1a-c8e8c77e635c"],
  "\[LineSeparator]",
  "returns the list of turning angles at the knot vertices of an InfraPolyline \
 (one list per realisation); geodesic-interior vertices contribute no turning \
 by construction."
-}], "Usage",ExpressionUUID->"9bd3c50d-9584-467f-a057-a6914335bd78"]
+}], "Usage",ExpressionUUID->"54ea4900-6df2-414e-b1f4-94fa1c205a2b"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -323,7 +323,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/TurningAngles", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"be2a6f6f-b863-4897-bc26-009270aa12e9"]
+ CellLabel->"URI",ExpressionUUID->"9b5970c5-9978-4410-850c-d33365823c96"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -389,7 +389,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 111, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[690, 25, 1685, 41, 70, "Usage",ExpressionUUID->"9bd3c50d-9584-467f-a057-a6914335bd78"]
+Cell[690, 25, 1685, 41, 70, "Usage",ExpressionUUID->"54ea4900-6df2-414e-b1f4-94fa1c205a2b"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[2412, 71, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -446,7 +446,7 @@ Cell[10589, 315, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10759, 319, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10926, 323, 159, 2, 70, "Categorization",ExpressionUUID->"be2a6f6f-b863-4897-bc26-009270aa12e9"]
+Cell[10926, 323, 159, 2, 70, "Categorization",ExpressionUUID->"9b5970c5-9978-4410-850c-d33365823c96"]
 }, Closed]],
 Cell[11100, 328, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

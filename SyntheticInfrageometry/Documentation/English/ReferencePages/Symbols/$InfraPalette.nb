@@ -28,12 +28,12 @@ $InfraPalette is a Dataset of the default object colors, one row per \
 primitive with the color, the symbol naming it, and the wrapper heads drawn \
 in it.
 \
-\>", "Usage",ExpressionUUID->"039c1870-ddca-45db-8bf4-e4662e20e071"],
+\>", "Usage",ExpressionUUID->"8a37957c-46e9-477b-a6c1-7a47c905a404"],
 
 Cell["\<\
 It is the source the $Infra*Color symbols and InfraSceneHighlight's \
 head-to-color dispatch both read from.\
-\>", "Notes",ExpressionUUID->"12448b83-d7b0-4aa9-8aef-a7957a75d673"]
+\>", "Notes",ExpressionUUID->"6e0caecf-49b5-42c5-a7cd-ad6688117109"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -292,7 +292,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/$InfraPalette", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"a1095e77-b3f3-4056-84df-cb0be205cf4c"]
+ CellLabel->"URI",ExpressionUUID->"49bd58a4-ac5b-45a1-8548-166264e4ce1c"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -358,8 +358,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 111, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[690, 25, 236, 5, 70, "Usage",ExpressionUUID->"039c1870-ddca-45db-8bf4-e4662e20e071"],
-Cell[929, 32, 188, 3, 70, "Notes",ExpressionUUID->"12448b83-d7b0-4aa9-8aef-a7957a75d673"]
+Cell[690, 25, 236, 5, 70, "Usage",ExpressionUUID->"8a37957c-46e9-477b-a6c1-7a47c905a404"],
+Cell[929, 32, 188, 3, 70, "Notes",ExpressionUUID->"6e0caecf-49b5-42c5-a7cd-ad6688117109"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1154, 40, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -416,7 +416,7 @@ Cell[9331, 284, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9501, 288, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9668, 292, 159, 2, 70, "Categorization",ExpressionUUID->"a1095e77-b3f3-4056-84df-cb0be205cf4c"]
+Cell[9668, 292, 159, 2, 70, "Categorization",ExpressionUUID->"49bd58a4-ac5b-45a1-8548-166264e4ce1c"]
 }, Closed]],
 Cell[9842, 297, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

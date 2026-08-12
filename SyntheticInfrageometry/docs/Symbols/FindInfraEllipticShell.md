@@ -15,4 +15,9 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraEllipticShell
 
 ## Details & Options
 
-Options Properties ("Separating", "Connected"), Method ("Exhaustive" (default), "Greedy").
+Options:
+
+| Option | Values |
+|---|---|
+| `Properties` | "Separating", "Connected" |
+| `Method` | "Exhaustive" (default), "Greedy" |

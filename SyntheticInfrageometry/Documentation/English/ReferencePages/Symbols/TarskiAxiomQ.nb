@@ -24,7 +24,7 @@ Cell["TarskiAxiomQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"e3d207ea-5f2a-487e-a5ef-bb64169bf088"],
+ Cell["   ", "ModInfo",ExpressionUUID->"8fcfdedf-841b-45c7-a34e-fb83b884f194"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -36,12 +36,12 @@ Cell[TextData[{
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "bc2f7a8b-a78b-4a0c-bca2-1069cf14d75d"],
+  "9555e674-ff75-4a59-98df-f2ec59692e64"],
  "\[LineSeparator]",
  "returns an Association with the per-axiom result for all eleven Tarski*Q \
 predicates.",
  "\n"
-}], "Usage",ExpressionUUID->"c3d4db72-3e0a-45c0-8a38-23fc91b2ecbd"]
+}], "Usage",ExpressionUUID->"bf53ff63-9350-41d3-a4f3-922f5a421e2d"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -300,7 +300,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/TarskiAxiomQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"cd6001a4-0174-48ed-80ea-e17427f1386a"]
+ CellLabel->"URI",ExpressionUUID->"2471d868-79d6-434c-b4af-9170d8fb685c"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -366,7 +366,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 110, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[689, 25, 703, 18, 70, "Usage",ExpressionUUID->"c3d4db72-3e0a-45c0-8a38-23fc91b2ecbd"]
+Cell[689, 25, 703, 18, 70, "Usage",ExpressionUUID->"bf53ff63-9350-41d3-a4f3-922f5a421e2d"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1429, 48, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -423,7 +423,7 @@ Cell[9606, 292, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9776, 296, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9943, 300, 158, 2, 70, "Categorization",ExpressionUUID->"cd6001a4-0174-48ed-80ea-e17427f1386a"]
+Cell[9943, 300, 158, 2, 70, "Categorization",ExpressionUUID->"2471d868-79d6-434c-b4af-9170d8fb685c"]
 }, Closed]],
 Cell[10116, 305, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -24,7 +24,7 @@ Cell["FindAdvancingInfraFront", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"15adf8dc-4a34-4caf-a5f1-0965659eaa1c"],
+ Cell["   ", "ModInfo",ExpressionUUID->"d8c683cc-5aff-4f0a-86a6-e399b04a0208"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -40,14 +40,14 @@ FindAdvancingInfraFront",
     StyleBox["origin", "TI"], ",", " ", 
     StyleBox["steps", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "1f46fa9a-ec09-4c7e-801d-efa55fd01186"],
+  "ea9d951c-58f0-4a7c-a194-c633eceeba5c"],
  "\[LineSeparator]",
  "returns the foliation { InfraSet[S_0], \[Ellipsis], InfraSet[S_steps] } of \
 a bouncing wavefront: each front vertex steps one geodesic step outward from \
 the previous front and reflects inward where there is no outward neighbour, \
 so the front never empties. origin is a vertex or InfraPoint multi-source.",
  "\n"
-}], "Usage",ExpressionUUID->"023ab972-c108-45f6-b36e-e687537384e5"]
+}], "Usage",ExpressionUUID->"68dea1ee-eff1-4115-9480-4dd53a2764ce"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -307,7 +307,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindAdvancingInfraFront\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"70683345-77da-4585-b616-65a9f6261f68"]
+ CellLabel->"URI",ExpressionUUID->"817200e9-46ce-4610-94b5-414a25233508"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -373,7 +373,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 121, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[700, 25, 1045, 24, 70, "Usage",ExpressionUUID->"023ab972-c108-45f6-b36e-e687537384e5"]
+Cell[700, 25, 1045, 24, 70, "Usage",ExpressionUUID->"68dea1ee-eff1-4115-9480-4dd53a2764ce"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1782, 54, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -430,7 +430,7 @@ Cell[9959, 298, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10129, 302, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10296, 306, 175, 3, 70, "Categorization",ExpressionUUID->"70683345-77da-4585-b616-65a9f6261f68"]
+Cell[10296, 306, 175, 3, 70, "Categorization",ExpressionUUID->"817200e9-46ce-4610-94b5-414a25233508"]
 }, Closed]],
 Cell[10486, 312, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

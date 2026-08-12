@@ -24,7 +24,7 @@ Cell["FindTarskiCounterexample", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"d1c530fb-d8a5-464e-a800-3e637f12dac2"],
+ Cell["   ", "ModInfo",ExpressionUUID->"fa5f1316-0fec-4cff-9d89-1bf2803bd1ab"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,18 +39,18 @@ FindTarskiCounterexample",
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["predQ", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "ecfadca9-6946-4b6c-a01b-7e2ceba01e55"],
+  "4e94f097-4601-49cf-8c75-90cd543ce18f"],
  "\[LineSeparator]",
  "returns one vertex tuple witnessing the failure of the Tarski axiom \
 predicate predQ, or $Failed.",
  "\n"
-}], "Usage",ExpressionUUID->"0fac931a-9f49-44f5-bc0d-ac2342fd83d7"],
+}], "Usage",ExpressionUUID->"08a2cf1f-b69e-451a-aefc-7277ffe5af37"],
 
 Cell["\<\
 Returns $Failed for always-True axioms and TarskiContinuityQ.\
-\>", "Notes",ExpressionUUID->"6577aee6-3923-42fc-bcde-50f74f85c143"],
+\>", "Notes",ExpressionUUID->"523291fc-3227-45ba-8146-e00c1a21accb"],
 
-Cell["With n / UpTo[n] / All caps witness count.", "Notes",ExpressionUUID->"c2dd83fe-c47d-48df-ab10-c8f775fc2a5d"]
+Cell["With n / UpTo[n] / All caps witness count.", "Notes",ExpressionUUID->"af9a7b9c-c620-4cd0-abb7-0b876a0496b9"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -310,7 +310,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindTarskiCounterexample\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"dd9b3df8-b222-472e-8456-58923a0babef"]
+ CellLabel->"URI",ExpressionUUID->"04b70b5c-7316-407f-9591-dbfeff799040"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -376,9 +376,9 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 122, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[701, 25, 796, 21, 70, "Usage",ExpressionUUID->"0fac931a-9f49-44f5-bc0d-ac2342fd83d7"],
-Cell[1500, 48, 141, 2, 70, "Notes",ExpressionUUID->"6577aee6-3923-42fc-bcde-50f74f85c143"],
-Cell[1644, 52, 114, 0, 70, "Notes",ExpressionUUID->"c2dd83fe-c47d-48df-ab10-c8f775fc2a5d"]
+Cell[701, 25, 796, 21, 70, "Usage",ExpressionUUID->"08a2cf1f-b69e-451a-aefc-7277ffe5af37"],
+Cell[1500, 48, 141, 2, 70, "Notes",ExpressionUUID->"523291fc-3227-45ba-8146-e00c1a21accb"],
+Cell[1644, 52, 114, 0, 70, "Notes",ExpressionUUID->"af9a7b9c-c620-4cd0-abb7-0b876a0496b9"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1795, 57, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -435,7 +435,7 @@ Cell[9972, 301, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10142, 305, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10309, 309, 176, 3, 70, "Categorization",ExpressionUUID->"dd9b3df8-b222-472e-8456-58923a0babef"]
+Cell[10309, 309, 176, 3, 70, "Categorization",ExpressionUUID->"04b70b5c-7316-407f-9591-dbfeff799040"]
 }, Closed]],
 Cell[10500, 315, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

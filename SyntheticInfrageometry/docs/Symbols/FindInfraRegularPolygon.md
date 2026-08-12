@@ -13,4 +13,10 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraRegularPolygon
 
 ## Details & Options
 
-Options Properties ({}), Method ("Exhaustive"), "From" (All (default), v, v -> r).
+Options:
+
+| Option | Values |
+|---|---|
+| `Properties` | {} |
+| `Method` | "Exhaustive" |
+| `"From"` | All (default), v, v -> r |

@@ -24,7 +24,7 @@ Cell["FindInfraHomotopyRepresentativeHomotopy", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"8d448edd-1a3f-4961-ad40-b40aad44ec25"],
+ Cell["   ", "ModInfo",ExpressionUUID->"70e99546-d505-4bd7-8786-73797341cdc6"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,14 +39,14 @@ FindInfraHomotopyRepresentativeHomotopy",
     StyleBox["graph", "TI"], ",", " ", 
     StyleBox["obj", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "6e16a4d9-1eff-498d-aa38-2d615ccdc1d2"],
+  "ad4c0bf8-07b6-4a61-a68b-1a6cea5d4420"],
  "\[LineSeparator]",
  "returns {InfraHomotopy[{chain}]} for a reduction chain of elementary moves \
 ending at a representative; n / UpTo[n] / All controls multiplicity.",
  "\n"
-}], "Usage",ExpressionUUID->"2a06d74a-6cde-4e7b-8a25-651947cd3c53"],
+}], "Usage",ExpressionUUID->"0b99d3de-a21b-4834-8228-6610060e800e"],
 
-Cell["Options as FindInfraHomotopyRepresentative.", "Notes",ExpressionUUID->"4d1199a0-e1dc-4987-aefa-04e90e7e6951"]
+Cell["Options as FindInfraHomotopyRepresentative.", "Notes",ExpressionUUID->"3f3bacde-9761-4e25-a250-2df74bf7bc51"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -307,7 +307,7 @@ Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/\
 FindInfraHomotopyRepresentativeHomotopy\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"cb1637d2-0790-4068-a354-1edcc0651420"]
+ CellLabel->"URI",ExpressionUUID->"c6349e7f-ae02-4206-88d2-77aee9dc9cee"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -374,8 +374,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 137, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[716, 25, 871, 21, 70, "Usage",ExpressionUUID->"2a06d74a-6cde-4e7b-8a25-651947cd3c53"],
-Cell[1590, 48, 115, 0, 70, "Notes",ExpressionUUID->"4d1199a0-e1dc-4987-aefa-04e90e7e6951"]
+Cell[716, 25, 871, 21, 70, "Usage",ExpressionUUID->"0b99d3de-a21b-4834-8228-6610060e800e"],
+Cell[1590, 48, 115, 0, 70, "Notes",ExpressionUUID->"3f3bacde-9761-4e25-a250-2df74bf7bc51"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1742, 53, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -432,7 +432,7 @@ Cell[9919, 297, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10089, 301, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10256, 305, 193, 4, 70, "Categorization",ExpressionUUID->"cb1637d2-0790-4068-a354-1edcc0651420"]
+Cell[10256, 305, 193, 4, 70, "Categorization",ExpressionUUID->"c6349e7f-ae02-4206-88d2-77aee9dc9cee"]
 }, Closed]],
 Cell[10464, 312, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

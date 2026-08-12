@@ -24,7 +24,7 @@ Cell["FindInfraCylinder", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"8c710bd4-4739-4699-9376-c3c646c23926"],
+ Cell["   ", "ModInfo",ExpressionUUID->"94b5ec2c-77f8-47e4-b4f2-e7ca607d7e9e"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,20 +39,20 @@ Cell[TextData[{
     StyleBox["axis", "TI"], ",", " ", 
     StyleBox["r", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "5343901d-4ce7-4a19-926b-77deaa23dc17"],
+  "ef517e23-623b-4720-8619-64cc6933e754"],
  "\[LineSeparator]",
  "returns InfraObject[set] for the constant-radius rotational set around \
 axis.",
  "\n"
-}], "Usage",ExpressionUUID->"ddbc41be-4066-4850-84fc-9b00009653ed"],
+}], "Usage",ExpressionUUID->"a9eb149c-2fac-4375-b89d-fb8e68428614"],
 
 Cell["\<\
 Defaults to Method -> \"Balls\" (the r-neighborhood of the axis, i.e. all v \
 with d(v, c) <= r for some axis vertex c); pass Method -> \"Voronoi\" for the \
 flat-capped variant.\
-\>", "Notes",ExpressionUUID->"b4e21611-9b47-41cc-8587-d8482a86d62d"],
+\>", "Notes",ExpressionUUID->"9e629ea4-59c2-4fba-8ad9-4f7d7bb0f06a"],
 
-Cell["Inherits remaining FindInfraRevolution options.", "Notes",ExpressionUUID->"2639e0f0-43f8-449c-95af-e866cc2eba7e"]
+Cell["Inherits remaining FindInfraRevolution options.", "Notes",ExpressionUUID->"8fd33213-375d-415e-85c3-4f09c6a57b71"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -312,7 +312,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/FindInfraCylinder\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"c45ab4c9-f8db-41e2-af2b-7276029e3244"]
+ CellLabel->"URI",ExpressionUUID->"6b941611-f0f6-49cd-bfa4-5501e01b87d2"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -378,9 +378,9 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 115, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[694, 25, 795, 21, 70, "Usage",ExpressionUUID->"ddbc41be-4066-4850-84fc-9b00009653ed"],
-Cell[1492, 48, 258, 4, 70, "Notes",ExpressionUUID->"b4e21611-9b47-41cc-8587-d8482a86d62d"],
-Cell[1753, 54, 119, 0, 70, "Notes",ExpressionUUID->"2639e0f0-43f8-449c-95af-e866cc2eba7e"]
+Cell[694, 25, 795, 21, 70, "Usage",ExpressionUUID->"a9eb149c-2fac-4375-b89d-fb8e68428614"],
+Cell[1492, 48, 258, 4, 70, "Notes",ExpressionUUID->"9e629ea4-59c2-4fba-8ad9-4f7d7bb0f06a"],
+Cell[1753, 54, 119, 0, 70, "Notes",ExpressionUUID->"8fd33213-375d-415e-85c3-4f09c6a57b71"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1909, 59, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -437,7 +437,7 @@ Cell[10086, 303, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10256, 307, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10423, 311, 169, 3, 70, "Categorization",ExpressionUUID->"c45ab4c9-f8db-41e2-af2b-7276029e3244"]
+Cell[10423, 311, 169, 3, 70, "Categorization",ExpressionUUID->"6b941611-f0f6-49cd-bfa4-5501e01b87d2"]
 }, Closed]],
 Cell[10607, 317, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -13,4 +13,8 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/InfraScalarProduct
 
 ## Details & Options
 
-Option Method ("Alexandrov" (default; the k = 0 polar form), {"Alexandrov", "Curvature" -> k}, "Parallelogram").
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "Alexandrov" (default; the k = 0 polar form), {"Alexandrov", "Curvature" -> k}, "Parallelogram" |

@@ -24,7 +24,7 @@ Cell["InfraPlaneQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"64c26940-62f8-4fc5-8b11-f8587768f2d0"],
+ Cell["   ", "ModInfo",ExpressionUUID->"253680d2-c490-47c7-bd47-2b6c4516fa68"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -39,12 +39,12 @@ Cell[TextData[{
     StyleBox["p1", "TI"], ",", " ", 
     StyleBox["p2", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "b312e3ee-acf0-4869-bfb0-b7bf6e42f552"],
+  "4dcf6d8f-005a-4502-a2d4-4f448744d618"],
  "\[LineSeparator]",
  "asserts inside InfraScene that h is a valid bisecting hyperplane between p1 \
 and p2.",
  "\n"
-}], "Usage",ExpressionUUID->"8c720864-8e76-4317-bd54-2e0cda75e65a"]
+}], "Usage",ExpressionUUID->"1b829935-7826-452a-a5c9-da116da428ec"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -303,7 +303,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraPlaneQ", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"150e3a0b-eea7-427a-9b26-b76ced5a945c"]
+ CellLabel->"URI",ExpressionUUID->"72bd970c-01dd-4b07-ae84-4b1ad4c2d0b8"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -369,7 +369,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 109, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[688, 25, 785, 21, 70, "Usage",ExpressionUUID->"8c720864-8e76-4317-bd54-2e0cda75e65a"]
+Cell[688, 25, 785, 21, 70, "Usage",ExpressionUUID->"1b829935-7826-452a-a5c9-da116da428ec"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1510, 51, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -426,7 +426,7 @@ Cell[9687, 295, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9857, 299, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10024, 303, 157, 2, 70, "Categorization",ExpressionUUID->"150e3a0b-eea7-427a-9b26-b76ced5a945c"]
+Cell[10024, 303, 157, 2, 70, "Categorization",ExpressionUUID->"72bd970c-01dd-4b07-ae84-4b1ad4c2d0b8"]
 }, Closed]],
 Cell[10196, 308, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

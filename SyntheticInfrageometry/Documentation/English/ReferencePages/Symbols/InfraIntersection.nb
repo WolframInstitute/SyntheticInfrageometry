@@ -24,7 +24,7 @@ Cell["InfraIntersection", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"be54be7e-d58f-41b1-8f11-dbeb5c3172e8"],
+ Cell["   ", "ModInfo",ExpressionUUID->"973db6bb-7f4a-47e1-b736-45fe5f3e86d5"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,12 +38,12 @@ Cell[TextData[{
     StyleBox["obj1", "TI"], ",", " ", 
     StyleBox["obj2", "TI"], ",", " ", "..."}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "d9703c9c-88d6-427e-a7e9-fffce03179f3"],
+  "ec7e6c44-be0b-4e6d-b744-b4b53846a3e6"],
  "\[LineSeparator]",
  "returns the vertex-set intersection of the given Infra* objects as an \
 InfraSet; inside InfraScene hypotheses it stays inert until bindings resolve.",
  "\n"
-}], "Usage",ExpressionUUID->"00984ab7-4d9a-4fcc-ac2f-94da501dda51"]
+}], "Usage",ExpressionUUID->"9e79a6f4-827f-4867-a702-36e3cf70adb8"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -303,7 +303,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/InfraIntersection\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"2cfc194e-e10c-44c7-a894-39e9cecbd75d"]
+ CellLabel->"URI",ExpressionUUID->"635cc0cb-76d9-4f11-b854-e4aff778eeb7"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -369,7 +369,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 115, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[694, 25, 846, 20, 70, "Usage",ExpressionUUID->"00984ab7-4d9a-4fcc-ac2f-94da501dda51"]
+Cell[694, 25, 846, 20, 70, "Usage",ExpressionUUID->"9e79a6f4-827f-4867-a702-36e3cf70adb8"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1577, 50, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -426,7 +426,7 @@ Cell[9754, 294, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9924, 298, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10091, 302, 169, 3, 70, "Categorization",ExpressionUUID->"2cfc194e-e10c-44c7-a894-39e9cecbd75d"]
+Cell[10091, 302, 169, 3, 70, "Categorization",ExpressionUUID->"635cc0cb-76d9-4f11-b854-e4aff778eeb7"]
 }, Closed]],
 Cell[10275, 308, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

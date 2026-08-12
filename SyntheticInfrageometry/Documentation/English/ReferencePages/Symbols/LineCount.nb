@@ -24,7 +24,7 @@ Cell["LineCount", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"ccc2921a-921d-42cb-8757-db059665010c"],
+ Cell["   ", "ModInfo",ExpressionUUID->"8bfa79e5-0f6e-4fa9-9fb6-746a8d994ae3"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -36,11 +36,11 @@ Cell[TextData[{
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "0cf7819e-47dd-45d7-80ce-a1f3de16b71c"],
+  "97a22e05-cb7f-44ba-8bcc-b468af1eed5c"],
  "\[LineSeparator]",
  "returns the number of distinct canonical maximal geodesics in graph.",
  "\n"
-}], "Usage",ExpressionUUID->"353de513-6302-42e0-9dc5-7aa6cb60d9a2"]
+}], "Usage",ExpressionUUID->"bb35628c-18eb-4353-863e-aad236ba4c5e"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -298,7 +298,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
  CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/LineCount", "Categorization",
- CellLabel->"URI",ExpressionUUID->"e5a42099-397f-4e58-931e-5c7129ae04f6"]
+ CellLabel->"URI",ExpressionUUID->"4e0df80f-5a72-4a33-9cdf-8059bbbf3da0"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -364,7 +364,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 107, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[686, 25, 679, 17, 70, "Usage",ExpressionUUID->"353de513-6302-42e0-9dc5-7aa6cb60d9a2"]
+Cell[686, 25, 679, 17, 70, "Usage",ExpressionUUID->"bb35628c-18eb-4353-863e-aad236ba4c5e"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1402, 47, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -421,7 +421,7 @@ Cell[9579, 291, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9749, 295, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9916, 299, 153, 1, 70, "Categorization",ExpressionUUID->"e5a42099-397f-4e58-931e-5c7129ae04f6"]
+Cell[9916, 299, 153, 1, 70, "Categorization",ExpressionUUID->"4e0df80f-5a72-4a33-9cdf-8059bbbf3da0"]
 }, Closed]],
 Cell[10084, 303, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

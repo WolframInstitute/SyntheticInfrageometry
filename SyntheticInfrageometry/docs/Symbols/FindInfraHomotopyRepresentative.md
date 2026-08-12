@@ -13,4 +13,12 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraHomotopyRepresentative
 
 ## Details & Options
 
-Options Method ("Exhaustive" (default), "Greedy"), "FreeHomotopy", "NullHomotopicCycles", "MaxLength", "MaxMoves".
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "Exhaustive" (default), "Greedy" |
+| `"FreeHomotopy"` | -- |
+| `"NullHomotopicCycles"` | -- |
+| `"MaxLength"` | -- |
+| `"MaxMoves"` | -- |

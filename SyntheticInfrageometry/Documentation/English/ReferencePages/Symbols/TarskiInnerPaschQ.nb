@@ -24,7 +24,7 @@ Cell["TarskiInnerPaschQ", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"69576298-df4d-48f2-bf03-1ceb18e09f21"],
+ Cell["   ", "ModInfo",ExpressionUUID->"d1404809-30e2-470e-aebb-6e4fd7c54063"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -36,15 +36,15 @@ Cell[TextData[{
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "d1288eca-e1ee-4d91-bddb-c155a2e76063"],
+  "df23bf1c-f26f-4501-a19f-4b66e3edb3cf"],
  "\[LineSeparator]",
  "tests Tarski axiom A7 (Inner Pasch).",
  "\n"
-}], "Usage",ExpressionUUID->"e0a703b0-1d32-4205-9e9f-b0e93e3b685b"],
+}], "Usage",ExpressionUUID->"c311b5ec-dd72-41a6-8c87-56d031faed14"],
 
 Cell["\<\
 Holds on median graphs; fails on cycles >= 5 and on Petersen.\
-\>", "Notes",ExpressionUUID->"f18ae915-cdb2-4740-b1c9-df8c870ae2b9"]
+\>", "Notes",ExpressionUUID->"3ad92b8a-88d5-4ef0-a087-32bd3dea49ea"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -304,7 +304,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/TarskiInnerPaschQ\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"f57670a4-12f2-4fda-ab5f-83294d5f1022"]
+ CellLabel->"URI",ExpressionUUID->"8a381493-4d74-4ae1-b2ea-47b51dd022af"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -370,8 +370,8 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 115, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[694, 25, 663, 17, 70, "Usage",ExpressionUUID->"e0a703b0-1d32-4205-9e9f-b0e93e3b685b"],
-Cell[1360, 44, 141, 2, 70, "Notes",ExpressionUUID->"f18ae915-cdb2-4740-b1c9-df8c870ae2b9"]
+Cell[694, 25, 663, 17, 70, "Usage",ExpressionUUID->"c311b5ec-dd72-41a6-8c87-56d031faed14"],
+Cell[1360, 44, 141, 2, 70, "Notes",ExpressionUUID->"3ad92b8a-88d5-4ef0-a087-32bd3dea49ea"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1538, 51, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -428,7 +428,7 @@ Cell[9715, 295, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9885, 299, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10052, 303, 169, 3, 70, "Categorization",ExpressionUUID->"f57670a4-12f2-4fda-ab5f-83294d5f1022"]
+Cell[10052, 303, 169, 3, 70, "Categorization",ExpressionUUID->"8a381493-4d74-4ae1-b2ea-47b51dd022af"]
 }, Closed]],
 Cell[10236, 309, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

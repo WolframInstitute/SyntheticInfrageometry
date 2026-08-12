@@ -26,7 +26,7 @@ Cell["$InfraTopologyColor", "ObjectName",
 Cell["\<\
 Default highlight color for topology overlays.
 \
-\>", "Usage",ExpressionUUID->"213356e4-763f-45d7-80da-c44199c7818d"]
+\>", "Usage",ExpressionUUID->"a14b170d-a166-4708-847d-6c46cf9a5793"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -286,7 +286,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/$InfraTopologyColor\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"ecccafbc-0e4e-4a05-b879-158155c4b6fe"]
+ CellLabel->"URI",ExpressionUUID->"7b3aecfe-8183-478e-b600-ec6ad6f99ef5"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -352,7 +352,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 117, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[696, 25, 127, 3, 70, "Usage",ExpressionUUID->"213356e4-763f-45d7-80da-c44199c7818d"]
+Cell[696, 25, 127, 3, 70, "Usage",ExpressionUUID->"a14b170d-a166-4708-847d-6c46cf9a5793"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[860, 33, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -409,7 +409,7 @@ Cell[9037, 277, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9207, 281, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9374, 285, 171, 3, 70, "Categorization",ExpressionUUID->"ecccafbc-0e4e-4a05-b879-158155c4b6fe"]
+Cell[9374, 285, 171, 3, 70, "Categorization",ExpressionUUID->"7b3aecfe-8183-478e-b600-ec6ad6f99ef5"]
 }, Closed]],
 Cell[9560, 291, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

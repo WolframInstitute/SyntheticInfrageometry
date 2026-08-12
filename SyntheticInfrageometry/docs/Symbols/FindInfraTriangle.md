@@ -15,4 +15,8 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraTriangle
 
 ## Details & Options
 
-Options Properties / Method forward to the side geodesics (see FindInfraSegment).
+Options:
+
+| Option | Values |
+|---|---|
+| `Properties / Method forward to the side geodesics` | see FindInfraSegment |

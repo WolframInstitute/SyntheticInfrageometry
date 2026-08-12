@@ -24,7 +24,7 @@ Cell["InfraPolygon", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"d49e947f-9615-4153-a9ac-8a73ba7f80e8"],
+ Cell["   ", "ModInfo",ExpressionUUID->"f05558ae-8a87-4e97-8a75-186ceb5fba33"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,23 +37,23 @@ Cell[TextData[{
    RowBox[{"{", 
     StyleBox["poly", "TI"], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "46727294-b741-4d09-b3f0-fdc11de515e3"],
+  "80271ea1-0b1d-4635-861a-95ab73aded8b"],
  "\[LineSeparator]",
  "is the unary form, where poly = {seg1, \[Ellipsis], segn} is a closed chain \
 of unary InfraSegment sides; InfraPolygon[{poly1, \[Ellipsis], polyk}] is the \
 multi-realisation form.",
  "\n"
-}], "Usage",ExpressionUUID->"1b074cfd-c834-42ad-8304-908f0154a1ac"],
+}], "Usage",ExpressionUUID->"f0a2be9b-f20e-4552-b1e0-6f9be9542301"],
 
 Cell["\<\
 Accessors [\"Sides\"] (the InfraSegment legs per realisation), [\"Length\"] \
 (perimeter edge count per realisation), [\"Vertices\"] (corner vertices as \
 unary InfraPoints).\
-\>", "Notes",ExpressionUUID->"d26cfc37-9be3-4464-82de-038f8094d4b0"],
+\>", "Notes",ExpressionUUID->"f84d2b06-ad05-4891-a7c0-0831d226eb9c"],
 
 Cell["\<\
 Find* returns one wrapper carrying the requested realisations.\
-\>", "Notes",ExpressionUUID->"7c7c919f-d71b-42d5-a32a-ea0e7268b143"]
+\>", "Notes",ExpressionUUID->"e7049fca-dc93-485e-a02c-7016929875d4"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -312,7 +312,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraPolygon", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"3084e508-3d64-49e2-99dc-3f33a50e85de"]
+ CellLabel->"URI",ExpressionUUID->"eb361750-58db-41a2-92b4-309a04061fd7"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -378,9 +378,9 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 110, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[689, 25, 822, 20, 70, "Usage",ExpressionUUID->"1b074cfd-c834-42ad-8304-908f0154a1ac"],
-Cell[1514, 47, 254, 4, 70, "Notes",ExpressionUUID->"d26cfc37-9be3-4464-82de-038f8094d4b0"],
-Cell[1771, 53, 142, 2, 70, "Notes",ExpressionUUID->"7c7c919f-d71b-42d5-a32a-ea0e7268b143"]
+Cell[689, 25, 822, 20, 70, "Usage",ExpressionUUID->"f0a2be9b-f20e-4552-b1e0-6f9be9542301"],
+Cell[1514, 47, 254, 4, 70, "Notes",ExpressionUUID->"f84d2b06-ad05-4891-a7c0-0831d226eb9c"],
+Cell[1771, 53, 142, 2, 70, "Notes",ExpressionUUID->"e7049fca-dc93-485e-a02c-7016929875d4"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1950, 60, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -437,7 +437,7 @@ Cell[10127, 304, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-442
  CellID->605800465],
 Cell[10297, 308, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10464, 312, 158, 2, 70, "Categorization",ExpressionUUID->"3084e508-3d64-49e2-99dc-3f33a50e85de"]
+Cell[10464, 312, 158, 2, 70, "Categorization",ExpressionUUID->"eb361750-58db-41a2-92b4-309a04061fd7"]
 }, Closed]],
 Cell[10637, 317, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

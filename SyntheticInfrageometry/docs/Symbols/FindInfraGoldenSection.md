@@ -15,4 +15,9 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraGoldenSection
 
 ## Details & Options
 
-Options Method ("Metric" (default), "Embedding"), "Tolerance".
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "Metric" (default), "Embedding" |
+| `"Tolerance"` | -- |

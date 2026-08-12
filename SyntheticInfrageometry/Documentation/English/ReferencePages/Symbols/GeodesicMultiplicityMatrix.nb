@@ -24,7 +24,7 @@ Cell["GeodesicMultiplicityMatrix", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"e5209ab3-300d-47d1-a6b3-8fbadf07c2d3"],
+ Cell["   ", "ModInfo",ExpressionUUID->"111f9c0f-e23e-41b2-8e73-9f26b9e01363"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -37,12 +37,12 @@ GeodesicMultiplicityMatrix",
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "a793f96d-c00e-49e3-a115-a594d27bc2ee"],
+  "931919b0-dec9-4d70-9a6b-fb2d6cee5261"],
  "\[LineSeparator]",
  "returns {D, M} where D is the distance matrix and M[i, j] is the number of \
 geodesics from vertex i to vertex j.",
  "\n"
-}], "Usage",ExpressionUUID->"9110b410-34b5-4b22-8d5e-5de6a1f45737"]
+}], "Usage",ExpressionUUID->"a1427a89-047c-4926-a0ca-b8614cad7760"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -302,7 +302,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 Cell["\<\
 WolframInstitute/SyntheticInfrageometry/ref/GeodesicMultiplicityMatrix\
 \>", "Categorization",
- CellLabel->"URI",ExpressionUUID->"712da61e-cf46-4ce2-8e28-b5e5b3469e0d"]
+ CellLabel->"URI",ExpressionUUID->"fdd0a716-eee6-4d46-ab47-f1bcb9f6f690"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -368,7 +368,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 124, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[703, 25, 760, 19, 70, "Usage",ExpressionUUID->"9110b410-34b5-4b22-8d5e-5de6a1f45737"]
+Cell[703, 25, 760, 19, 70, "Usage",ExpressionUUID->"a1427a89-047c-4926-a0ca-b8614cad7760"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1500, 49, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -425,7 +425,7 @@ Cell[9677, 293, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9847, 297, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10014, 301, 178, 3, 70, "Categorization",ExpressionUUID->"712da61e-cf46-4ce2-8e28-b5e5b3469e0d"]
+Cell[10014, 301, 178, 3, 70, "Categorization",ExpressionUUID->"fdd0a716-eee6-4d46-ab47-f1bcb9f6f690"]
 }, Closed]],
 Cell[10207, 307, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

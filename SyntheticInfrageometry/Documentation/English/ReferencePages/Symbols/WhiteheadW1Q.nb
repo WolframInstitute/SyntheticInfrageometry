@@ -24,7 +24,7 @@ Cell["WhiteheadW1Q", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"6ad32a94-164c-492e-a769-1ce4d2247556"],
+ Cell["   ", "ModInfo",ExpressionUUID->"a5be3c28-dc83-4107-aba1-9348f2e411b9"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -36,11 +36,11 @@ Cell[TextData[{
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["graph", "TI"], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "c6543724-0436-45e1-9ca1-3062a822eb3c"],
+  "f1244510-85b1-46f2-b6cc-18cd3fdf7936"],
  "\[LineSeparator]",
  "tests Whitehead axiom W1: every line has at least three vertices.",
  "\n"
-}], "Usage",ExpressionUUID->"8b613dab-3567-4b84-b108-c53d37b0eecd"]
+}], "Usage",ExpressionUUID->"e32fe0a5-5974-4b79-8b8e-142461cd861c"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -299,7 +299,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/WhiteheadW1Q", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"13534f8a-6062-4ebf-b1e4-6553bcfdf4c0"]
+ CellLabel->"URI",ExpressionUUID->"12be4727-3131-47e0-8626-55cdc02d9539"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -365,7 +365,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 110, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[689, 25, 682, 17, 70, "Usage",ExpressionUUID->"8b613dab-3567-4b84-b108-c53d37b0eecd"]
+Cell[689, 25, 682, 17, 70, "Usage",ExpressionUUID->"e32fe0a5-5974-4b79-8b8e-142461cd861c"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1408, 47, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -422,7 +422,7 @@ Cell[9585, 291, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[9755, 295, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9922, 299, 158, 2, 70, "Categorization",ExpressionUUID->"13534f8a-6062-4ebf-b1e4-6553bcfdf4c0"]
+Cell[9922, 299, 158, 2, 70, "Categorization",ExpressionUUID->"12be4727-3131-47e0-8626-55cdc02d9539"]
 }, Closed]],
 Cell[10095, 304, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

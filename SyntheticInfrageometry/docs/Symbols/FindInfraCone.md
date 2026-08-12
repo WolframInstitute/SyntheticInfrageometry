@@ -13,4 +13,8 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraCone
 
 ## Details & Options
 
-Option "Apex" (First (default) | Last) flips the apex end; inherits remaining options from FindInfraRevolution.
+Options:
+
+| Option | Values |
+|---|---|
+| `"Apex"` | First (default) \| Last -- flips the apex end; inherits remaining options from FindInfraRevolution |

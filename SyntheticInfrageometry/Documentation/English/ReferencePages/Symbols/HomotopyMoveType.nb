@@ -24,7 +24,7 @@ Cell["HomotopyMoveType", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"c09224a1-a4d5-4245-b303-357510ef4d6b"],
+ Cell["   ", "ModInfo",ExpressionUUID->"3667edee-1334-406a-a71b-2bedb2c03de5"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -38,14 +38,14 @@ Cell[TextData[{
     StyleBox["walk1", "TI"], ",", " ", 
     StyleBox["walk2", "TI"]}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "34093a90-4216-49e8-a239-15daa5b69ab8"],
+  "cf038fd4-a5c3-417e-8f37-8bd9c12967c7"],
  "\[LineSeparator]",
  "classifies the elementary move walk1 -> walk2 as \"Contract\" (walk \
 shortens), \"Extend\" (walk lengthens), or \"Lateral\" (walks have the same \
 length; only possible for moves that swap arcs of equal length on an \
 even-length null-homotopic cycle).",
  "\n"
-}], "Usage",ExpressionUUID->"49698135-b160-4cc7-8368-997614361580"]
+}], "Usage",ExpressionUUID->"f2d7db74-c08f-461b-91a0-2df50ae0c0a7"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -304,7 +304,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/HomotopyMoveType", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"b21c6644-de24-4a58-9119-56165d99318c"]
+ CellLabel->"URI",ExpressionUUID->"6956eeb3-e297-45a5-9b59-fc64197805aa"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -370,7 +370,7 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 114, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[693, 25, 933, 22, 70, "Usage",ExpressionUUID->"49698135-b160-4cc7-8368-997614361580"]
+Cell[693, 25, 933, 22, 70, "Usage",ExpressionUUID->"f2d7db74-c08f-461b-91a0-2df50ae0c0a7"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[1663, 52, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
@@ -427,7 +427,7 @@ Cell[9840, 296, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427
  CellID->605800465],
 Cell[10010, 300, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10177, 304, 162, 2, 70, "Categorization",ExpressionUUID->"b21c6644-de24-4a58-9119-56165d99318c"]
+Cell[10177, 304, 162, 2, 70, "Categorization",ExpressionUUID->"6956eeb3-e297-45a5-9b59-fc64197805aa"]
 }, Closed]],
 Cell[10354, 309, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],

@@ -13,4 +13,8 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/InfraAngle
 
 ## Details & Options
 
-Option Method ("Arclength" (default; boundary arclength outside the ball, divided by the radius), "Alexandrov", {"Alexandrov", "Curvature" -> k}).
+Options:
+
+| Option | Values |
+|---|---|
+| `Method` | "Arclength" (default; boundary arclength outside the ball, divided by the radius), "Alexandrov", {"Alexandrov", "Curvature" -> k} |
