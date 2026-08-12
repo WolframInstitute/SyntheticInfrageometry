@@ -89,5 +89,5 @@ With[
   {g = ExampleGraphData["Hexagonal", "Large"]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
-  AllTrue[FindInfraMidpoint[g, a, b]["Realizations"], BetweennessQ[g, {a, #, b}] &]]
+  AllTrue[FindInfraMidpoint[g, a, b]["Realizations"], BetweennessQ[g, a, #, b] &]]
 ```
