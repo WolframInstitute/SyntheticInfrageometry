@@ -52,15 +52,29 @@ FindInfraPath[ graph_Graph, p1_, p2_,
         Switch[ methodHead,
           "Exhaustive",
             If[ fastPathQ,
-              Replace[
-                FindPath[ graph, q1, q2, kspec, count /. UpTo[ n_ ] :> n ],
-                Except[ _List ] -> { } ],
-              Select[
-                frontierSweep[ graph, q1, q2,
-                  makeCandidateFn[ graph, allNeighboursBaseFn,
-                    properties, FindInfraPath ],
-                  pruning, countLimit @ count ],
-                walkLengthAdmissibleQ[ kspec ] ]
+              If[ kspec === Infinity && countLimit[ count ] === 1,
+                (* one length-unconstrained walk: FindPath's DFS can wander for minutes
+                   on mesh-like graphs, and a geodesic is a walk -- the canonical witness *)
+                With[ { path = FindShortestPath[ graph, q1, q2 ] },
+                  If[ path === { }, { }, { path } ] ],
+                Replace[
+                  FindPath[ graph, q1, q2, kspec, count /. UpTo[ n_ ] :> n ],
+                  Except[ _List ] -> { } ] ],
+              (* kspec bounds the sweep depth, not just a post-filter: with revisits
+                 allowed the walk space is infinite past kmax.  Early stop on count is
+                 sound only when kspec has no lower bound -- the BFS completes short
+                 walks first, and those would fill the quota yet fail the filter. *)
+              With[ { kmax = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
+                      candidateFn = makeCandidateFn[ graph, allNeighboursBaseFn,
+                        properties, FindInfraPath ] },
+                Select[
+                  frontierSweep[ graph, q1, q2,
+                    { g, path } |-> If[ Length[ path ] - 1 >= kmax, { },
+                      candidateFn[ g, path ] ],
+                    pruning,
+                    If[ MatchQ[ kspec, { _Integer } | { _Integer, _Integer } ],
+                      Infinity, countLimit @ count ] ],
+                  walkLengthAdmissibleQ[ kspec ] ] ]
             ],
           _,
             Message[ FindInfraPath::badmethod, methodSpec ]; $Failed
@@ -76,10 +90,11 @@ allNeighboursBaseFn[ g_Graph, path_List ] := AdjacencyList[ g, Last @ path ]
 
 
 (* walkLengthAdmissibleQ[kspec]: predicate on a vertex sequence checking it
-   has length compatible with kspec.  Path length = number of edges = Length - 1. *)
+   has length compatible with kspec.  Path length = number of edges = Length - 1.
+   Bare k means at most k (the FindPath convention); {k} means exactly k. *)
 
 walkLengthAdmissibleQ[ Infinity ]                 := True &
-walkLengthAdmissibleQ[ k_Integer ]                := Length[ # ] - 1 == k &
+walkLengthAdmissibleQ[ k_Integer ]                := Length[ # ] - 1 <= k &
 walkLengthAdmissibleQ[ { k_Integer } ]            := Length[ # ] - 1 == k &
 walkLengthAdmissibleQ[ { kmin_Integer, kmax_Integer } ] :=
   kmin <= Length[ # ] - 1 <= kmax &

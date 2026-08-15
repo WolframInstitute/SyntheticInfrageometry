@@ -85,9 +85,9 @@ takeUpTo[ list_, n_Integer ]    := Take[ list, UpTo[ n ] ]
 
 (* Every geodesic from u to v as a vertex sequence. *)
 
-allGeodesics[ graph_Graph, u_, v_ ] :=
+allGeodesics[ graph_Graph, u_, v_, count_ : All ] :=
   With[ { d = GraphDistance[ graph, u, v ] },
-    If[ d === Infinity, { }, FindPath[ graph, u, v, { d }, All ] ]
+    If[ d === Infinity, { }, FindPath[ graph, u, v, { d }, count ] ]
   ]
 
 

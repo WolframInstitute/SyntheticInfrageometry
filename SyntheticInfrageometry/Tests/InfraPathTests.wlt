@@ -264,4 +264,40 @@ VerificationTest[
   TestID -> "InfraPath-endpoint-accessors-keep-multiplicity"
 ]
 
+(* kspec bounds the walk-space sweep itself: with revisits allowed the walk space
+   is infinite past kmax, so a property-path enumeration must terminate. *)
+VerificationTest[
+  With[ { walks = FindInfraPath[ CycleGraph[ 6 ], 1, 4, { 5 }, All,
+      Properties -> { { "EdgeMax", 1 & } } ][ "Realizations" ] },
+    walks =!= { } && AllTrue[ walks,
+      w |-> Length[ w ] - 1 == 5 && First[ w ] == 1 && Last[ w ] == 4 &&
+        AllTrue[ Partition[ w, 2, 1 ], Apply[ EdgeQ[ CycleGraph[ 6 ], UndirectedEdge[ #1, #2 ] ] & ] ] ]
+  ],
+  True,
+  TestID -> "FindInfraPath-property-sweep-depth-bounded"
+]
+
+(* one length-unconstrained walk is the canonical witness: a geodesic *)
+VerificationTest[
+  FindInfraPath[ GridGraph[ { 4, 4 } ], 1, 16, Infinity, 1 ][ "Length" ],
+  { GraphDistance[ GridGraph[ { 4, 4 } ], 1, 16 ] },
+  TestID -> "FindInfraPath-Infinity-count1-geodesic"
+]
+
+(* bare k means at most k on both the fast path and the property path *)
+VerificationTest[
+  Sort @ FindInfraPath[ GridGraph[ { 3, 3 } ], 1, 9, 4, All,
+    Properties -> { "Simple" } ][ "Realizations" ],
+  Sort @ FindInfraPath[ GridGraph[ { 3, 3 } ], 1, 9, 4, All ][ "Realizations" ],
+  TestID -> "FindInfraPath-bare-k-at-most-both-paths"
+]
+
+(* a lower length bound must not be starved by the early-stop count *)
+VerificationTest[
+  Length @ FindInfraPath[ GridGraph[ { 3, 3 } ], 1, 9, { 6 }, 2,
+    Properties -> { "Simple" } ][ "Realizations" ],
+  2,
+  TestID -> "FindInfraPath-exact-length-strict-count"
+]
+
 EndTestSection[]

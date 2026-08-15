@@ -1183,4 +1183,34 @@ VerificationTest[
   TestID -> "FindInfraCircle-locality-Metric"
 ]
 
+
+(* a capped line query returns members of the full family (the cap prunes the
+   enumeration, never invents realisations) *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    With[ { family = FindInfraLine[ g, 1, 9, All ][ "Realizations" ] },
+      MemberQ[ family, FindInfraLine[ g, 1, 9, 1 ][ "First" ] ] &&
+        SubsetQ[ family, FindInfraLine[ g, 1, 9, UpTo[ 3 ] ][ "Realizations" ] ] ]
+  ],
+  True,
+  TestID -> "FindInfraLine-cap-subset-of-family"
+]
+
+(* strict count on an abundant family *)
+VerificationTest[
+  Length @ FindInfraLine[ GridGraph[ { 3, 3 } ], 1, 9, 3 ][ "Realizations" ],
+  3,
+  TestID -> "FindInfraLine-strict-count-exact"
+]
+
+(* "Diameter" maximality post-filters the whole family, cap or not *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    With[ { line = FindInfraLine[ g, 1, 9, 1, "Maximality" -> "Diameter" ][ "First" ] },
+      Length[ line ] - 1 == GraphDiameter[ g ] ]
+  ],
+  True,
+  TestID -> "FindInfraLine-Diameter-maximality-with-count"
+]
+
 EndTestSection[]

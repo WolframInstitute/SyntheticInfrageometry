@@ -1,5 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
+PackageImport["WolframInstitute`Infrageometry`"]
+
 PackageScope[findLineExtensions]
 PackageScope[findLineExtensionsWith]
 PackageScope[findLineExtensionsGreedy]
@@ -61,10 +63,18 @@ FindInfraLine[ graph_Graph, p1_, p2_,
         Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
       With[ { methodHead = methodName @ methodSpec,
               pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-        { middles = allGeodesics[ graph, q1, q2 ] },
+        (* a line meets q1, q2 once each, so it contains exactly one q1-q2 geodesic as a
+           contiguous sub-sequence: distinct middles give distinct lines and each middle
+           yields at least one, so capping middles and per-middle extensions at count is
+           exact for the strict-n contract (single-anchor calls; a multi-anchor spread
+           can still dedup across tuples).  "Diameter" post-filters, so it must see the
+           whole family. *)
+        { cap = If[ maximality === "Diameter", Infinity, countLimit @ count ] },
+        { middles = allGeodesics[ graph, q1, q2, cap /. Infinity -> All ] },
         { ext = Union @ Flatten[
             Switch[ methodHead,
-              "Exhaustive",  findLineExtensions[ graph, #, pruning, direction ] & /@ middles,
+              "Exhaustive",  findLineExtensions[ graph, #, pruning, direction,
+                               cap ] & /@ middles,
               "Greedy",      findLineExtensionsGreedy[ graph, #, direction ]     & /@ middles,
               _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
             ], 1 ] },
@@ -99,8 +109,10 @@ FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] 
         Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
       With[ { methodHead = methodName @ methodSpec,
               pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
+        (* "Diameter" post-filters, so it must see the whole family *)
+        { cap = If[ maximality === "Diameter", Infinity, countLimit @ count ] },
         { ext = Switch[ methodHead,
-            "Exhaustive",  findLineExtensions[ graph, segment, pruning, direction ],
+            "Exhaustive",  findLineExtensions[ graph, segment, pruning, direction, cap ],
             "Greedy",      findLineExtensionsGreedy[ graph, segment, direction ],
             _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
           ] },
@@ -127,46 +139,70 @@ FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] 
    under "BothSides" to per-step symmetric stepping (only intermediate
    enumeration differs). *)
 
-findLineExtensions[ graph_Graph, segment_List, pruning_ : Infinity, direction_String : "BothSides" ] :=
-  findLineExtensionsWith[ graph, segment, pruning, True &, direction ]
+findLineExtensions[ graph_Graph, segment_List, pruning_ : Infinity, direction_String : "BothSides",
+    cap : ( _Integer | Infinity ) : Infinity ] :=
+  findLineExtensionsWith[ graph, segment, pruning, True &, direction, cap ]
 
 
 findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
-    direction_String : "BothSides" ] /; Length[ segment ] < 2 :=
+    direction_String : "BothSides", cap : ( _Integer | Infinity ) : Infinity ] /;
+    Length[ segment ] < 2 :=
   { segment }
 
 findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
-    direction_String : "BothSides" ] :=
-  With[ { p1 = First[ segment ], p2 = Last[ segment ],
-          d  = GraphDistance[ graph, First[ segment ], Last[ segment ] ] },
+    direction_String : "BothSides", cap : ( _Integer | Infinity ) : Infinity ] :=
+  With[ { p1 = First[ segment ], p2 = Last[ segment ], verts = VertexList[ graph ] },
+    (* one compiled all-pairs matrix instead of one BFS per GraphDistance call: the
+       pair enumeration below is quadratic in the extension sets, and per-pair
+       GraphDistance re-ran a fresh BFS each time (minutes on ~1000-vertex meshes) *)
+    { dm = GraphDistanceMatrix[ graph ],
+      vidx = AssociationThread[ verts, Range @ Length @ verts ] },
+    { d1 = dm[[ vidx[ p1 ] ]], d2 = dm[[ vidx[ p2 ] ]] },
+    { d = d1[[ vidx[ p2 ] ]] },
     { extendBefore = If[ direction === "Forward", { p1 },
-        Select[ VertexList[ graph ],
-          c |-> admissible[ c ] && GraphDistance[ graph, c, p1 ] + d == GraphDistance[ graph, c, p2 ] ] ],
+        Select[ verts, c |-> admissible[ c ] && d1[[ vidx[ c ] ]] + d == d2[[ vidx[ c ] ]] ] ],
       extendAfter  = If[ direction === "Backward", { p2 },
-        Select[ VertexList[ graph ],
-          c |-> admissible[ c ] && GraphDistance[ graph, c, p2 ] + d == GraphDistance[ graph, p1, c ] ] ] },
+        Select[ verts, c |-> admissible[ c ] && d2[[ vidx[ c ] ]] + d == d1[[ vidx[ c ] ]] ] ] },
     { validPairs = Select[ Tuples[ { extendBefore, extendAfter } ],
-        pair |-> GraphDistance[ graph, pair[[1]], pair[[2]] ] ==
-                 GraphDistance[ graph, pair[[1]], p1 ] + d + GraphDistance[ graph, p2, pair[[2]] ] ] },
-    { maxPairs = MaximalBy[ validPairs,
-        GraphDistance[ graph, #[[1]], p1 ] + GraphDistance[ graph, p2, #[[2]] ] & ] },
+        pair |-> dm[[ vidx[ pair[[ 1 ]] ], vidx[ pair[[ 2 ]] ] ]] ==
+                 d1[[ vidx[ pair[[ 1 ]] ] ]] + d + d2[[ vidx[ pair[[ 2 ]] ] ]] ] },
+    (* each max pair yields at least one line, so a finite cap may truncate the tied
+       pairs and flow into the geodesic enumeration; the capped call path
+       (FindInfraLine) always has trivial admissibility, so the post-filter cannot
+       starve a capped FindPath *)
+    { maxPairs = With[ { tied = MaximalBy[ validPairs,
+          d1[[ vidx[ #[[ 1 ]] ] ]] + d2[[ vidx[ #[[ 2 ]] ] ]] & ] },
+        If[ cap === Infinity, tied, Take[ tied, UpTo[ cap ] ] ] ],
+      fpCount = If[ cap === Infinity, All, cap ] },
     If[ maxPairs === { } || maxPairs === { { p1, p2 } }, { segment },
-      Flatten[
-        With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
-          { db = GraphDistance[ graph, s, p1 ], da = GraphDistance[ graph, p2, e ] },
-          { bp = If[ db == 0, { {} },
-                  Most /@ Select[
-                    applyPruning[ FindPath[ graph, s, p1, { db }, All ], pruning ],
-                    AllTrue[ #, admissible ] & ] ],
-            ap = If[ da == 0, { {} },
-                  Rest /@ Select[
-                    applyPruning[ FindPath[ graph, p2, e, { da }, All ], pruning ],
-                    AllTrue[ #, admissible ] & ] ] },
-          Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ]
-        ] & /@ maxPairs,
-        1 ]
+      With[ { lines = Flatten[
+          With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
+            { db = d1[[ vidx[ s ] ]], da = d2[[ vidx[ e ] ]] },
+            { bp = If[ db == 0, { {} },
+                    Most /@ Select[
+                      applyPruning[ cappedGeodesics[ graph, s, p1, db, fpCount ], pruning ],
+                      AllTrue[ #, admissible ] & ] ],
+              ap = If[ da == 0, { {} },
+                    Rest /@ Select[
+                      applyPruning[ cappedGeodesics[ graph, p2, e, da, fpCount ], pruning ],
+                      AllTrue[ #, admissible ] & ] ] },
+            Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ]
+          ] & /@ maxPairs,
+          1 ] },
+        If[ cap === Infinity, lines, Take[ lines, UpTo[ cap ] ] ] ]
     ]
   ]
+
+
+(* geodesic family u -> v of known length len: FindPath for the whole family, the
+   geodesic-DAG lazy DFS when capped -- FindPath's exact-length DFS can wander for
+   seconds per call even when asked for a handful of paths. *)
+
+cappedGeodesics[ graph_Graph, u_, v_, len_, All ] :=
+  FindPath[ graph, u, v, { len }, All ]
+
+cappedGeodesics[ graph_Graph, u_, v_, len_, n_Integer ] :=
+  dagGeodesics[ GeodesicIntervalGraph[ graph, u, v ], n ]
 
 
 (* Greedy maximal geodesic extension: walk vertex-by-vertex outward from each
