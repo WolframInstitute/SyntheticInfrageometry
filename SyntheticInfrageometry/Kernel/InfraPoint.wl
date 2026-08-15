@@ -28,6 +28,20 @@ PackageScope[selectFromPointSpace]
 (* idempotency: re-wrapping a wrapper is the identity *)
 InfraPoint[ inner_InfraPoint ] := inner
 
+(* vertex marginal: any other Infra object coerces directly to the point of its
+   occupation counts -- InfraPoint[FindInfraBall[g, c, r]] is the ball's vertices,
+   no InfraSet detour.  A set-like wrapper carries all-ones masses, which collapse
+   to the bare support; a multi-realisation bundle keeps its multiplicities, which
+   is exactly the projection InfraMeasure reads (and where a measure is meant to be
+   constructed).  InfraSet is the set-valued twin of this coercion.
+
+   The head test is a run-time condition, not a pattern built from
+   $infraBundleHeads: the alternatives would be frozen at definition time, and
+   Tools.wl need not have assigned them when this file is read. *)
+InfraPoint[ obj_ ] /;
+    Length[ obj ] === 1 && MatchQ[ Head @ obj, $infraBundleHeads | InfraObject | InfraSet ] :=
+  InfraPoint @ infraVertexMultiset @ obj
+
 InfraPoint[ verts_List, masses_List ] :=
   InfraPoint[ Merge[ Thread[ verts -> masses ], Total ] ]
 

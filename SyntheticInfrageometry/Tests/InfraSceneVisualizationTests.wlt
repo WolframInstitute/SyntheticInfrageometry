@@ -308,16 +308,17 @@ VerificationTest[
   TestID -> "InfraSceneHighlight-scalar-thickness-crisp-full-measure"
 ]
 
-(* Default point sizing: a fuzzy InfraPoint distributes $InfraPointSize over
-   its candidate vertices (two candidates -> half the base size each), a
-   crisp one gets the full base size. *)
+(* Default point sizing: a fuzzy InfraPoint distributes the base point measure
+   over its candidate vertices (two candidates -> half each), a crisp one gets
+   the whole measure.  Stated as the ratio, so the palette may retune the base. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ {
-        fuzzy = Options @ InfraSceneHighlight[ g, { InfraPoint[ { 1, 6 } ] } ],
-        crisp = Options @ InfraSceneHighlight[ g, { InfraPoint[ { 1 } ] } ] },
-      ! FreeQ[ fuzzy, AbsolutePointSize[ 7 ] ] &&
-      ! FreeQ[ crisp, AbsolutePointSize[ 14 ] ]
+        fuzzy = Cases[ Options @ InfraSceneHighlight[ g, { InfraPoint[ { 1, 6 } ] } ],
+          AbsolutePointSize[ s_ ] :> s, Infinity ],
+        crisp = Cases[ Options @ InfraSceneHighlight[ g, { InfraPoint[ { 1 } ] } ],
+          AbsolutePointSize[ s_ ] :> s, Infinity ] },
+      crisp =!= { } && Max[ fuzzy ] == Max[ crisp ] / 2
     ]
   ],
   True,

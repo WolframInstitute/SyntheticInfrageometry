@@ -243,4 +243,47 @@ VerificationTest[
   TestID -> "FindAdvancingInfraFront-multi-source-seed"
 ]
 
+
+(* ===== InfraPoint coerces any Infra object to its vertex marginal ===== *)
+
+(* a set-like wrapper: all-ones masses collapse to the bare support, so the
+   coercion agrees with the InfraSet route and needs no repackaging *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    With[ { ball = FindInfraBall[ g, 13, 2 ] },
+      InfraPoint[ ball ] === InfraPoint[ InfraSet[ ball ][ "Vertices" ] ] &&
+        InfraPoint[ ball ][ "Weights" ] === ConstantArray[ 1, Length @ InfraSet[ ball ][ "Vertices" ] ] ]
+  ],
+  True,
+  TestID -> "InfraPoint-coerces-InfraBall-to-support"
+]
+
+(* a multi-realisation bundle keeps the occupation multiplicities *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = FindInfraSegment[ g, 1, 16, All ] },
+      InfraPoint[ seg ][ "OccupationCount" ] === seg[ "OccupationCount" ] ]
+  ],
+  True,
+  TestID -> "InfraPoint-coerces-bundle-to-occupation-measure"
+]
+
+(* the coerced point is a legal anchor and re-wrapping is the identity *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    With[ { p = InfraPoint[ FindInfraShell[ g, 13, { 2, 2 } ] ] },
+      InfraPoint[ p ] === p &&
+        Head @ FindInfraSegment[ g, p, 13, All ] === InfraSegment ]
+  ],
+  True,
+  TestID -> "InfraPoint-coercion-idempotent-and-spreads"
+]
+
+(* scene-language constructors keep their meaning: only single-argument wrappers coerce *)
+VerificationTest[
+  { Head @ InfraShell[ 3, 2 ], Head @ InfraPoint[ 7 ], Head @ InfraPoint[ { 3, 4 } ] },
+  { InfraShell, InfraPoint, InfraPoint },
+  TestID -> "InfraPoint-coercion-leaves-scene-forms-alone"
+]
+
 EndTestSection[]

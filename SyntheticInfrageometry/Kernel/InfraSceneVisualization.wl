@@ -78,7 +78,9 @@ $InfraPalette := Dataset @ KeyValueMap[
 
 $InfraOpacityRange  = { 0.40, 1.0 };
 $InfraEdgeThickness = 9.0;
-$InfraPointSize     = 14;
+(* a marked point reads as a dot on the substrate, not a blob covering its neighbours:
+   at 14 a single-realisation point swallowed several mesh cells on a Medium plane *)
+$InfraPointSize     = 6;
 
 $InfraSceneHighlightPalette := Join[
   { $InfraSegmentColor, $InfraShellColor, $InfraCircleColor, $InfraPointColor, $InfraRayColor },
