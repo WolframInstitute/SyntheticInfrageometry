@@ -876,8 +876,11 @@ geodesicDAGNeighbors[ graph_Graph, c_ ] :=
    directed -> True, each edge points outward from the source (along increasing
    distance); when False, undirected edges are emitted. *)
 
+(* the spray keeps the base graph's embedding, so its figures and every
+   NeighborhoodGraph carved out of it stay aligned with the substrate *)
 geodesicSprayFromDistances[ g_Graph, dist_Association, depthSpec_, directed_ ] :=
-  With[ { depth = Replace[ depthSpec, All -> Infinity ] },
+  With[ { depth = Replace[ depthSpec, All -> Infinity ],
+          coords = AssociationThread[ VertexList[ g ], GraphEmbedding[ g ] ] },
     { dagVerts = Select[ VertexList[ g ], dist[ # ] < Infinity && dist[ # ] <= depth & ] },
     Graph[ dagVerts,
       Map[
@@ -887,6 +890,7 @@ geodesicSprayFromDistances[ g_Graph, dist_Association, depthSpec_, directed_ ] :
             directed && dist[ v ] == dist[ u ] + 1, DirectedEdge[ u, v ],
             directed && dist[ u ] == dist[ v ] + 1, DirectedEdge[ v, u ],
             True, Nothing ] ],
-        EdgeList @ UndirectedGraph @ Subgraph[ g, dagVerts ] ]
+        EdgeList @ UndirectedGraph @ Subgraph[ g, dagVerts ] ],
+      VertexCoordinates -> Lookup[ coords, dagVerts ]
     ]
   ]

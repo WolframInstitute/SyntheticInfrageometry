@@ -665,4 +665,30 @@ VerificationTest[
   TestID -> "FindForwardDeformation-spec-order-decides-driver"
 ]
 
+
+(* the spray carries the base graph's embedding, so figures carved out of it
+   stay aligned with the substrate *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { spray = GeodesicSprayGraph[ g, 1 ] },
+      Sort @ Cases[ Options[ spray, VertexCoordinates ], _ -> vc_ :> Length @ vc ] =!= { } &&
+        VertexList[ spray ] === VertexList[ g ] ]
+  ],
+  True,
+  TestID -> "GeodesicSprayGraph-keeps-base-coordinates"
+]
+
+(* FindInfraCommonPoint accepts the compact geodesic-DAG segment form *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    With[ { s1 = FindInfraSegment[ g, 1, 9 ], s2 = FindInfraSegment[ g, 3, 7 ] },
+      Sort @ FindInfraCommonPoint[ g, { s1, s2 } ][ "Support" ] ===
+        Sort @ Intersection[
+          Union @@ FindInfraSegment[ g, 1, 9, All ][ "Realizations" ],
+          Union @@ FindInfraSegment[ g, 3, 7, All ][ "Realizations" ] ] ]
+  ],
+  True,
+  TestID -> "FindInfraCommonPoint-accepts-DAG-segments"
+]
+
 EndTestSection[]

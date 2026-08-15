@@ -616,5 +616,8 @@ infraRepEdges[ g_, "Sets", rep_ ] :=
 (* Vertex-set view of a line-like input (FindInfraCommonPoint, InfraPerpendicularQ).
    Bare list = vertex sequence; line wrappers unwrap to the union of realisations. *)
 
-linePointSet[ ( InfraLine | InfraSegment | InfraPath | InfraRay )[ reps_List ] ] := Union @@ reps
+(* a realisation slot may be a compact geodesic-DAG atom standing for its family *)
+linePointSet[ ( InfraLine | InfraSegment | InfraPath | InfraRay )[ reps_List ] ] :=
+  Union @@ Replace[ reps, d_Graph :> VertexList[ d ], { 1 } ]
+linePointSet[ InfraSegment[ dag_Graph ] ] := VertexList[ dag ]
 linePointSet[ line_List ] := line
