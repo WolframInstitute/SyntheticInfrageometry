@@ -692,4 +692,14 @@ VerificationTest[
   TestID -> "FindInfraCommonPoint-accepts-DAG-segments"
 ]
 
+(* an InfraPoint atom is the natural single source of a spray; an atom list
+   and an InfraSet are the multi-source forms *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    { GeodesicSprayGraph[ g, InfraPoint[ 1 ] ] === GeodesicSprayGraph[ g, 1 ],
+      GeodesicSprayGraph[ g, { InfraPoint[ 1 ], InfraPoint[ 4 ] } ] === GeodesicSprayGraph[ g, InfraSet[ { 1, 4 } ] ] } ],
+  { True, True },
+  TestID -> "GeodesicSprayGraph-accepts-point-atoms"
+]
+
 EndTestSection[]

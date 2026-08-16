@@ -251,6 +251,9 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                -- a sharp mesopoint draws full size, a spread one fades. *)
             { InfraMesoPoint[ m_Association ], c_, u_ } :> { Keys @ m, c, "Points", u },
             { InfraPoint   [ v_ ], c_, u_ } :> { { v }, c, "Points", u },
+            (* a plain List of atoms is what the point finders return -- it must
+               flow into the scene with no glue, exactly like a wrapper does *)
+            { list : { __InfraPoint }, c_, u_ } :> { #[[ 1 ]] & /@ list, c, "Points", u },
             { InfraSegment [ dag_Graph ], c_, u_ } :> { { dag }, c, "Paths" , u },
             { InfraSegment [ b : { __Graph } ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
@@ -270,6 +273,9 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             { InfraObject  [ b_List ], c_, u_ } :> { { b }, c, "Sets", u },
             { InfraPolyline[ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Paths", u },
             { InfraSet      [ b_List ], c_, u_ } :> { { b }, c, "Sets", u },
+            (* a bare vertex is a legal highlight object: wrap it as a
+               one-vertex point rather than letting it reach repVerts unlisted *)
+            { b_, c_, u_ } /; MemberQ[ VertexList @ graph, b ] :> { { b }, c, "Points", u },
             { b_, c_, u_ }                      :> { b, c, Automatic, u }
           } ] ],
       objects ];

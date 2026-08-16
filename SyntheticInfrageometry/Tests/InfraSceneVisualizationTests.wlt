@@ -351,3 +351,26 @@ VerificationTest[
   True,
   TestID -> "InfraSceneHighlight-symbolic-vertexsize-stays-graphcoord"
 ]
+
+
+(* ===== point-layer highlight objects ===== *)
+
+(* the point finders return a plain List of atoms; it must flow into the scene
+   with no glue, and distribute the point-size measure like any bundle *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    { Cases[ Options @ InfraSceneHighlight[ g, { { InfraPoint[3], InfraPoint[9] } -> Red } ],
+        AbsolutePointSize[ s_ ] :> s, Infinity ],
+      Cases[ Options @ InfraSceneHighlight[ g, { InfraPoint[3] } ],
+        AbsolutePointSize[ s_ ] :> s, Infinity ] } ],
+  { { 3, 3 }, { 6 } },
+  TestID -> "InfraSceneHighlight-atom-list-distributes-size"
+]
+
+(* a bare vertex is a legal highlight object *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Cases[ Options @ InfraSceneHighlight[ g, { 7 -> Red } ], AbsolutePointSize[ s_ ] :> s, Infinity ] ],
+  { 6 },
+  TestID -> "InfraSceneHighlight-bare-vertex"
+]

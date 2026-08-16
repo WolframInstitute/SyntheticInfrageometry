@@ -329,6 +329,14 @@ GeodesicSprayGraph[ g_Graph, c_, OptionsPattern[] ] /; MemberQ[ VertexList[ g ],
   geodesicSprayFromDistances[ g, AssociationThread[ VertexList[ g ], GraphDistance[ g, c ] ],
     OptionValue[ "AxisLength" ], OptionValue[ "Directed" ] ]
 
+(* an InfraPoint atom is the natural single source; an InfraSet or a list of
+   atoms is the multi-source form *)
+GeodesicSprayGraph[ g_Graph, InfraPoint[ v_ ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], v ] :=
+  GeodesicSprayGraph[ g, v, opts ]
+
+GeodesicSprayGraph[ g_Graph, list : { __InfraPoint }, opts : OptionsPattern[] ] :=
+  GeodesicSprayGraph[ g, InfraSet[ #[[ 1 ]] & /@ list ], opts ]
+
 GeodesicSprayGraph[ g_Graph, InfraSet[ vs_List ], OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   geodesicSprayFromDistances[ g,
     AssociationThread[ VertexList[ g ],
