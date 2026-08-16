@@ -17,6 +17,7 @@ PackageScope[$InfraSceneHighlightPalette]
 PackageScope[$InfraOpacityRange]
 PackageScope[$InfraEdgeThickness]
 PackageScope[$InfraPointSize]
+PackageScope[$InfraSceneImageSize]
 PackageScope[parseHighlightStyle]
 PackageScope[normalizeHighlightSpec]
 
@@ -81,6 +82,11 @@ $InfraEdgeThickness = 9.0;
 (* a marked point reads as a dot on the substrate, not a blob covering its neighbours:
    at 14 a single-realisation point swallowed several mesh cells on a Medium plane *)
 $InfraPointSize     = 6;
+
+(* the house figure size, so a scene never carries a magic pixel number: a bare scene
+   renders at $InfraSceneImageSize, and a multi-panel GraphicsRow / GraphicsGrid sets
+   its own symbolic size while its panels inherit this one. *)
+$InfraSceneImageSize = Medium;
 
 $InfraSceneHighlightPalette := Join[
   { $InfraSegmentColor, $InfraShellColor, $InfraCircleColor, $InfraPointColor, $InfraRayColor },
@@ -196,7 +202,8 @@ Options[ InfraSceneHighlight ] = Join[
   {
     "OpacityRange"   :> $InfraOpacityRange,
     "ThicknessRange" :> $InfraEdgeThickness,
-    "PointSizeRange" -> Automatic
+    "PointSizeRange" -> Automatic,
+    ImageSize        :> $InfraSceneImageSize
   },
   Options[ HighlightGraph ]
 ];
@@ -388,6 +395,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             VertexShapeFunction -> Cases[ vertexData, kv_Association /; KeyExistsQ[ kv, "VSF" ] :> kv[ "VSF" ] ],
             VertexSize          -> DeleteCases[ Cases[ vertexData, kv_Association /; KeyExistsQ[ kv, "VSize" ] :> kv[ "VSize" ] ], Nothing ]
           }, _ -> { } ],
-          FilterRules[ { opts }, Options @ HighlightGraph ] ]
+          FilterRules[ { opts }, Options @ HighlightGraph ],
+          ImageSize -> OptionValue[ ImageSize ] ]
     ]
   ]
