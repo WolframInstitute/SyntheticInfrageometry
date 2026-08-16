@@ -109,6 +109,13 @@ VerificationTest[
 ]
 
 VerificationTest[
+  Sort @ ExtendInfraPath[ CycleGraph[ 6 ], FindInfraSegment[ CycleGraph[ 6 ], 1, 4 ], All,
+      "Length" -> 0, Properties -> {"Simple", "ShortestPath"} ][ "Realizations" ],
+  Sort[ { { 1, 2, 3, 4 }, { 1, 6, 5, 4 } } ],
+  TestID -> "ExtendInfraPath-DAG-segment-spread"
+]
+
+VerificationTest[
   Sort @ ExtendInfraPath[ CycleGraph[ 6 ], { 1 }, All,
       "Direction" -> "Forward", "Length" -> 2,
       Properties -> {"Simple", {"LongestPath", "Aggregation" -> "Sum"}} ][ "Realizations" ],

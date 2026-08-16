@@ -359,6 +359,7 @@ With[ { heads = InfraPoint | $infraBundleHeads },
   infraSpread[ list_List ] /; AllTrue[ list, MatchQ[ heads[ { _ } ] ] ] :=
     #[[ 1, 1 ]] & /@ list
 ]
+infraSpread[ InfraSegment[ dag_Graph ] ] := dagGeodesics[ dag ]
 infraSpread[ other_ ] := { other }
 
 
