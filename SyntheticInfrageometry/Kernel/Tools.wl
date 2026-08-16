@@ -333,14 +333,14 @@ defineInfraBundleRules[ head_Symbol ] := (
     head[ Flatten[ reps /. head[ xs_List ] :> xs, 1 ] ];
   head[ reps_List ] /; AllTrue[ reps, ListQ[ # ] || GraphQ[ # ] & ] && ! DuplicateFreeQ[ reps ] :=
     head[ DeleteDuplicates @ reps ];
-  head[ reps_List ][ "Realizations" ] := reps;
-  head[ reps_List ][ "First" ]        := First @ reps;
+  head[ reps : Except[ { __Graph }, _List ] ][ "Realizations" ] := reps;
+  head[ reps : Except[ { __Graph }, _List ] ][ "First" ]        := First @ reps;
   (* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v);
      ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-  head[ reps_List ][ "OccupationCount" ]    := infraVertexMultiset[ head[ reps ] ];
-  head[ reps_List ][ "OccupationMeasure" ]  := InfraMeasure[ head[ reps ] ];
-  head[ reps_List ][ "Measure" ]            := InfraMeasure[ head[ reps ] ];
-  head[ reps_List ][ "ProbabilityMeasure" ] := InfraMeasure[ head[ reps ], Method -> "Probability" ];
+  head[ reps : Except[ { __Graph }, _List ] ][ "OccupationCount" ]    := infraVertexMultiset[ head[ reps ] ];
+  head[ reps : Except[ { __Graph }, _List ] ][ "OccupationMeasure" ]  := InfraMeasure[ head[ reps ] ];
+  head[ reps : Except[ { __Graph }, _List ] ][ "Measure" ]            := InfraMeasure[ head[ reps ] ];
+  head[ reps : Except[ { __Graph }, _List ] ][ "ProbabilityMeasure" ] := InfraMeasure[ head[ reps ], Method -> "Probability" ];
 )
 
 Scan[ defineInfraBundleRules,
@@ -360,6 +360,7 @@ With[ { heads = InfraPoint | $infraBundleHeads },
     #[[ 1, 1 ]] & /@ list
 ]
 infraSpread[ InfraSegment[ dag_Graph ] ] := dagGeodesics[ dag ]
+infraSpread[ InfraSegment[ dags : { _Graph, __Graph } ] ] := Join @@ ( dagGeodesics /@ dags )
 infraSpread[ other_ ] := { other }
 
 

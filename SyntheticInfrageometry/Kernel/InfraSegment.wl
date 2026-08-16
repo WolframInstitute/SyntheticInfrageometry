@@ -12,16 +12,17 @@ PackageScope[geodesicDAGBaseFn]
    accessors come from defineInfraBundleRules (Tools.wl).  The bundle carries no
    masses; a measure appears only where a projection creates an InfraPoint. *)
 
-(* "Length" = list of edge counts, one per realisation: |path| - 1. *)
-InfraSegment[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
+(* "Length" = list of edge counts, one per realisation: |path| - 1.  The walk-list
+   patterns below exclude a DAG-atom list, which delegates to its expansion instead. *)
+InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
 (* source / sink InfraPoints: the distinct first / last vertices across
    realisations.  Deduplicated, not a measure -- every geodesic of one family
    shares its endpoints, so the multiplicity would only restate the family size.
    For the position-i occupation measure use seg[[i]] (and InfraPath, whose walks
    really can end anywhere, keeps its endpoint multiplicity). *)
-InfraSegment[ reps_List ][ "Start" ] := InfraPoint[ DeleteDuplicates[ First /@ reps ] ]
-InfraSegment[ reps_List ][ "End" ]   := InfraPoint[ DeleteDuplicates[ Last /@ reps ] ]
+InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Start" ] := InfraPoint[ DeleteDuplicates[ First /@ reps ] ]
+InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "End" ]   := InfraPoint[ DeleteDuplicates[ Last /@ reps ] ]
 
 (* seg[[i]] = the measured InfraPoint of the i-th position across realisations
    (mass = multiplicity).  First/Last and multi-index Part bypass this. *)
@@ -91,6 +92,11 @@ Options[ FindInfraSegment ] = {
 
 (* a lone atom collapses to the bare DAG form *)
 InfraSegment[ { dag_Graph } ] := InfraSegment[ dag ]
+
+(* a multi-pair family stays a set of DAG atoms; accessors read it as the union of
+   their geodesics, so the atoms stay lazy until something actually asks for walks *)
+InfraSegment[ dags : { _Graph, __Graph } ][ args___ ] :=
+  InfraSegment[ Join @@ ( dagGeodesics /@ dags ) ][ args ]
 
 FindInfraSegment[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : Automatic, opts : OptionsPattern[] ] :=
