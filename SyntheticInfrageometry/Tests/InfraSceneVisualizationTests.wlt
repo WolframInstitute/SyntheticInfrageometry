@@ -312,17 +312,17 @@ VerificationTest[
    over its candidate vertices (two candidates -> half each), a crisp one gets
    the whole measure.  Stated as the ratio, so the palette may retune the base. *)
 VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ {
-        fuzzy = Cases[ Options @ InfraSceneHighlight[ g, { InfraMesoPoint[ InfraSet[ { 1, 6 } ] ] } ],
-          AbsolutePointSize[ s_ ] :> s, Infinity ],
-        crisp = Cases[ Options @ InfraSceneHighlight[ g, { InfraPoint[1] } ],
-          AbsolutePointSize[ s_ ] :> s, Infinity ] },
-      crisp =!= { } && Max[ fuzzy ] == Max[ crisp ] / 2
-    ]
-  ],
-  True,
-  TestID -> "InfraSceneHighlight-fuzzy-point-distributes-size"
+  With[ { g = GridGraph[ { 7, 7 } ] },
+    { (* a UNIFORM mesopoint (here a ball) is uniformly bright: its diffuseness
+         is its extent, not a per-vertex fade *)
+      Union @ Cases[ Options @ InfraSceneHighlight[ g, { InfraMesoPoint[ FindInfraBall[ g, 25, 2 ] ] } ],
+        AbsolutePointSize[ s_ ] :> s, Infinity ],
+      (* a NON-uniform mesopoint draws its heaviest vertex full and the rest smaller *)
+      With[ { sizes = Cases[ Options @ InfraSceneHighlight[ g, { FindInfraMidpoint[ g, 1, 49 ] } ],
+                AbsolutePointSize[ s_ ] :> s, Infinity ] },
+        { Max @ sizes, Max @ sizes > Min @ sizes } ] } ],
+  { { 6 }, { 6, True } },
+  TestID -> "InfraSceneHighlight-mesopoint-relative-mass"
 ]
 
 (* The Automatic point-size default stays off for non-point objects: a set

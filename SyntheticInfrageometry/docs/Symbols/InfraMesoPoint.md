@@ -47,9 +47,11 @@ Accessors:
 | `["Weights"]` | the raw counts |
 | `["Mass"]` | the total of the weights |
 | `["Entropy"]` | Shannon entropy of the normalised measure; `0` iff the mesopoint is sharp |
-| `["Measure"]`, `["ProbabilityMeasure"]`, `["OccupationCount"]` | the normalised forms |
+| `["Measure"]` | mass over the heaviest mass — membership in [0,1], what the renderer draws |
+| `["ProbabilityMeasure"]` | mass over total mass — the distribution summing to 1 |
+| `["OccupationCount"]` | the raw masses |
 
-In [InfraSceneHighlight]() a mesopoint renders diffusely: mass over total mass, so a sharp mesopoint draws full size and a spread one fades.
+In [InfraSceneHighlight]() a mesopoint renders diffusely by **relative** mass: each vertex is drawn at its mass over the heaviest mass, so the modal vertex is full and lighter ones fade. A uniform mesopoint — a ball, for instance — is therefore uniformly bright; its diffuseness is its extent, not a per-vertex fade.
 
 ## Basic Examples
 

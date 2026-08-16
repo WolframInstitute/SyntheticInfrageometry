@@ -73,11 +73,14 @@ VerificationTest[
   TestID -> "InfraMeasure-both-shape"
 ]
 
-(* weighted InfraPoint: measure is the weight-normalised probability distribution *)
+(* a mesopoint has two distinct normalisations: the default "Occupation" is
+   membership relative to the heaviest mass (max 1, what the renderer draws),
+   "Probability" is the distribution summing to 1 *)
 VerificationTest[
-  Total @ Values @ InfraMeasure[ InfraMesoPoint[<|1 -> 3, 2 -> 1|>] ],
-  1,
-  TestID -> "InfraMeasure-weighted-point-sums-to-one"
+  { Max @ Values @ InfraMeasure[ InfraMesoPoint[<|1 -> 3, 2 -> 1|>] ],
+    Total @ Values @ InfraMeasure[ InfraMesoPoint[<|1 -> 3, 2 -> 1|>], Method -> "Probability" ] },
+  { 1, 1 },
+  TestID -> "InfraMeasure-mesopoint-two-normalisations"
 ]
 
 (* the ["Measure"] accessor delegates to the engine, across all wrapper shapes *)
@@ -156,7 +159,9 @@ VerificationTest[
 VerificationTest[
   With[ { p = InfraMesoPoint[ <| 1 -> 3, 2 -> 1 |> ] },
     { p[ "Support" ], p[ "Weights" ], p[ "Mass" ], p[ "OccupationCount" ], p[ "Measure" ] } ],
-  { InfraSet[ { 1, 2 } ], { 3, 1 }, 4, <| 1 -> 3, 2 -> 1 |>, <| 1 -> 3/4, 2 -> 1/4 |> },
+  (* ["Measure"] is membership relative to the heaviest mass;
+     ["ProbabilityMeasure"] is the distribution summing to 1 *)
+  { InfraSet[ { 1, 2 } ], { 3, 1 }, 4, <| 1 -> 3, 2 -> 1 |>, <| 1 -> 1, 2 -> 1/3 |> },
   TestID -> "InfraMesoPoint-measure-accessors"
 ]
 

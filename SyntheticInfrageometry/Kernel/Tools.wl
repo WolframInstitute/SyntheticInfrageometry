@@ -609,7 +609,13 @@ infraRepVerts[ _, rep_ ]        := rep
    for a compact DAG atom); InfraObject / InfraSet hold a single set, N = 1. *)
 
 infraNumReps[ InfraPoint[ _ ] ]                     := 1
-infraNumReps[ InfraMesoPoint[ m_Association ] ]      := If[ Length @ m === 0, 1, Total @ m ]
+(* a mesopoint normalises by its HEAVIEST mass, not its total: the measure
+   channel encodes RELATIVE mass within the object, so the modal vertex draws
+   full and lighter ones fade.  Normalising by the total would make every
+   measure fainter as its support grows -- a uniform ball of n vertices would
+   render at 1/n and vanish.  This is also what makes ["Measure"] (membership
+   in [0,1]) genuinely different from ["ProbabilityMeasure"] (sums to 1). *)
+infraNumReps[ InfraMesoPoint[ m_Association ] ]      := If[ Length @ m === 0, 1, Max @ m ]
 infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
 infraNumReps[ InfraSegment[ dag_Graph ] ]           := atomFamilySize[ dag ]
 infraNumReps[ head_[ reps_List, ___ ] ]             := Max[ Total[ atomFamilySize /@ reps ], 1 ]
