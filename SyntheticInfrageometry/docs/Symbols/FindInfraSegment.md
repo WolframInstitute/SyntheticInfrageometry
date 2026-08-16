@@ -50,7 +50,7 @@ Row[Table[
      {segs = FindInfraSegment[g, a, b, All]},
      Labeled[
        InfraSceneHighlight[g,
-         {segs -> $InfraSegmentColor, InfraPoint[{a, b}] -> $InfraPointColor},
+         {segs -> $InfraSegmentColor, InfraSet[{a, b}] -> $InfraPointColor},
          "PointSizeRange" -> 15,
          VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
          ImageSize -> 250],

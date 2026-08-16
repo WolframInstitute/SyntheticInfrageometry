@@ -56,7 +56,7 @@ Row[Table[
      Labeled[
        InfraSceneHighlight[g,
          {FindInfraRay[g, a, b, UpTo[3]] -> $InfraRayColor,
-          InfraPoint[{a}] -> $InfraPointColor},
+          InfraPoint[a] -> $InfraPointColor},
          "PointSizeRange" -> 15,
          VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
          ImageSize -> 250],

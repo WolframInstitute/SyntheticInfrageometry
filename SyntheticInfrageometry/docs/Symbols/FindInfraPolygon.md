@@ -15,7 +15,7 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraPolygon
 
 ## Details & Options
 
-Corners accept bare vertices or unary InfraPoint.
+Corners accept bare vertices or InfraPoint atoms.
 
 Default count = 1 (first geodesic per side).
 

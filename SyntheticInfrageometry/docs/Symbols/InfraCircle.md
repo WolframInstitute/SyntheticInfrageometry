@@ -55,7 +55,7 @@ With[
   {g = Graph[ExampleGraphData["Square", "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
   {c = First @ GraphCenter[g]},
   InfraSceneHighlight[g,
-    {FindInfraCircle[g, c, {4, 5}] -> $InfraCircleColor, InfraPoint[{c}] -> $InfraPointColor},
+    {FindInfraCircle[g, c, {4, 5}] -> $InfraCircleColor, InfraPoint[c] -> $InfraPointColor},
     "PointSizeRange" -> 15,
     VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
     ImageSize -> 340]]

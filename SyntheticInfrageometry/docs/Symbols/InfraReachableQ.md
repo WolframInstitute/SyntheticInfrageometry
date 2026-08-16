@@ -13,4 +13,4 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/InfraReachableQ
 
 ## Details & Options
 
-Accepts InfraPoint[{...}], a bare vertex, or a list of vertices.
+Accepts InfraPoint[...], a bare vertex, or a list of vertices.

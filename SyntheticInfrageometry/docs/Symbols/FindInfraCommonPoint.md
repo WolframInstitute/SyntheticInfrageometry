@@ -9,7 +9,7 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraCommonPoint
 
 ## Usage
 
-`FindInfraCommonPoint[graph, lines]` returns InfraPoint[{v1, v2, ...}] of the vertices on every listed line.
+`FindInfraCommonPoint[graph, lines]` returns InfraSet[{v1, v2, ...}] of the vertices on every listed line.
 
 ## Details & Options
 

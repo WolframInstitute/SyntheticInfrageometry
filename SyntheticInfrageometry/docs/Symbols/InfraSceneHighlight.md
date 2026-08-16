@@ -54,7 +54,7 @@ With[
   InfraSceneHighlight[g,
     {FindInfraSegment[g, a, b, All] -> $InfraSegmentColor,
      FindInfraMidpoint[g, a, b] -> $InfraCircleColor,
-     InfraPoint[{a, b}] -> $InfraPointColor},
+     InfraSet[{a, b}] -> $InfraPointColor},
     "PointSizeRange" -> 18,
     VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
     ImageSize -> 380]]

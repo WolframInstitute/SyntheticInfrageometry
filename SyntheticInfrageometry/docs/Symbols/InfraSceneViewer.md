@@ -69,14 +69,14 @@ With[
   {p2 = SelectFirst[VertexList[g], GraphDistance[g, p1, #] == 8 &]},
   Row[{
     Labeled[
-      InfraSceneHighlight[g, {InfraPoint[{p1, p2}] -> $InfraPointColor},
+      InfraSceneHighlight[g, {InfraSet[{p1, p2}] -> $InfraPointColor},
         "PointSizeRange" -> 18,
         VertexShapeFunction -> ({AbsolutePointSize[2], Point[#]} &), ImageSize -> 250],
       Text["points a and b"]],
     Labeled[
       InfraSceneHighlight[g,
         {FindInfraCircle[g, p1, {4, 5}] -> $InfraCircleColor,
-         InfraPoint[{p1, p2}] -> $InfraPointColor},
+         InfraSet[{p1, p2}] -> $InfraPointColor},
         "PointSizeRange" -> 18,
         VertexShapeFunction -> ({AbsolutePointSize[2], Point[#]} &), ImageSize -> 250],
       Text["circle around a"]]}]]

@@ -58,7 +58,7 @@ With[
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   InfraSceneHighlight[g,
     {FindInfraBisectingHyperplane[g, a, b] -> $InfraPlaneColor,
-     InfraPoint[{a, b}] -> $InfraPointColor},
+     InfraSet[{a, b}] -> $InfraPointColor},
     "PointSizeRange" -> 15,
     VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
     ImageSize -> 340]]

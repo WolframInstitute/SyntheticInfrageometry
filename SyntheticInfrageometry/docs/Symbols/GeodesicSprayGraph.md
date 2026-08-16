@@ -11,7 +11,7 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/GeodesicSprayGraph
 
 `GeodesicSprayGraph[graph, c]` returns the BFS DAG rooted at c: a directed graph with edge u -> v whenever d(c, v) = d(c, u) + 1 and u-v is an edge of graph.
 
-`GeodesicSprayGraph[graph, InfraPoint[{c1, ..., ck}]`] uses multi-source BFS.
+`GeodesicSprayGraph[graph, InfraSet[{c1, ..., ck}]`] uses multi-source BFS.
 
 `GeodesicSprayGraph[graph, pairs]` returns the union of geodesics between the listed vertex pairs.
 

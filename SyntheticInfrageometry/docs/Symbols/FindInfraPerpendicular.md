@@ -79,7 +79,7 @@ With[
   InfraSceneHighlight[g,
     {InfraLine[{line}] -> $InfraLineColor,
      FindInfraPerpendicular[g, line, p, UpTo[3], "Radius" -> 3] -> $InfraCircleColor,
-     InfraPoint[{p}] -> $InfraPointColor},
+     InfraPoint[p] -> $InfraPointColor},
     "PointSizeRange" -> 16,
     VertexShapeFunction -> ({AbsolutePointSize[3], Point[#]} &),
     ImageSize -> 340]]

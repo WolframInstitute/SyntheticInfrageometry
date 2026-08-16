@@ -13,6 +13,6 @@ URI: WolframInstitute/SyntheticInfrageometry/ref/InfraPolygon
 
 ## Details & Options
 
-Accessors ["Sides"] (the InfraSegment legs per realisation), ["Length"] (perimeter edge count per realisation), ["Vertices"] (corner vertices as unary InfraPoints).
+Accessors ["Sides"] (the InfraSegment legs per realisation), ["Length"] (perimeter edge count per realisation), ["Vertices"] (corner vertices as InfraPoint atoms).
 
 Find* returns one wrapper carrying the requested realisations.

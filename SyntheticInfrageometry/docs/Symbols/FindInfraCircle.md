@@ -69,7 +69,7 @@ Row[Table[
      Labeled[
        InfraSceneHighlight[g,
          {FindInfraCircle[g, c, Last[spec]] -> $InfraCircleColor,
-          InfraPoint[{c}] -> $InfraPointColor},
+          InfraPoint[c] -> $InfraPointColor},
          "PointSizeRange" -> 15,
          VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
          ImageSize -> 250],

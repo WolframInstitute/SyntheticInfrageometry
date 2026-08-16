@@ -5,29 +5,28 @@ Context: WolframInstitute`SyntheticInfrageometry`
 ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraPoint
-Keywords: [point, candidate pool, superposition, centre, periphery]
-SeeAlso: [InfraPoint, SelectInfraPoint, FindInfraMidpoint, FindClosestInfraPoint, InfraSet]
+Keywords: [point, atom, candidate pool, centre, periphery]
+SeeAlso: [InfraPoint, InfraSet, InfraMesoPoint, SelectInfraPoint, FindInfraMidpoint, FindClosestInfraPoint]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 
 ## Usage
 
-<code>[FindInfraPoint]()[*g*]</code> gives the canonical point of *g*: every vertex, as one [InfraPoint]().
+<code>[FindInfraPoint]()[*g*]</code> gives one point of *g*, as an [InfraPoint]() atom.
 
-<code>[FindInfraPoint]()[*g*, *n*]</code> gives *n* mutually constrained points, as a list of *n* wrappers. Exactly *n* or `$Failed`; `UpTo[n]` gives up to *n*; `All` gives every vertex.
+<code>[FindInfraPoint]()[*g*, *n*]</code> gives *n* points, as a list of *n* atoms. Exactly *n* or `$Failed`; `UpTo[n]` gives up to *n*; `All` gives every vertex of the pool.
 
 ## Details & Options
 
-Definition: with no condition imposed, a point of *g* is the whole vertex set, held as one candidate family.
+Definition: a point of *g* drawn from the `"From"` candidate pool.
 
-That is the honest answer to "give me a point". It is a starting object, not a placeholder. Constraints then narrow it.
+The count always means **how many points you get**; the `"Distance"` option constrains **which** ones. With a distance condition the returned list is therefore one mutually-constrained tuple — three points pairwise at maximum distance is a joint condition, and a plain list of atoms states it without ambiguity.
 
-The two forms return different shapes, on purpose.
+The whole pool as a *region* is a coercion, not a return value:
 
-- One point is **one wrapper** with many realisations.
-- *n* points is a **list of n wrappers**.
-
-The list is needed because the points constrain each other. Three points pairwise at maximum distance is a joint condition. One wrapper could not say which realisations go together.
+```wl
+InfraSet @ FindInfraPoint[g, All]
+```
 
 Options:
 
@@ -39,7 +38,9 @@ Options:
 
 `"Center"` and `"Periphery"` are meant in the graph-eccentricity sense. `"Distance"` imposes a mutual-distance condition on a tuple.
 
-To narrow a bundle you already hold, use `SelectInfraPoint`. It takes the same `"From"` and `"Distance"` vocabulary on a supplied vertex set.
+To narrow a bundle you already hold, use [SelectInfraPoint](). It takes the same `"From"` and `"Distance"` vocabulary on a supplied vertex set.
+
+The draw is random: seed with `SeedRandom` before the first call if you need a reproducible figure.
 
 Corresponding notions in the classical axiom systems:
 
@@ -52,13 +53,12 @@ Corresponding notions in the classical axiom systems:
 
 ## Basic Examples
 
-With no condition, the point is the whole vertex set.
+One point is an atom; the calling triple gives a list of them.
 
 ```wl
 With[
   {g = ExampleGraphData["Square", "Medium"]},
-  {p = FindInfraPoint[g]},
-  <|"realisations" -> Length @ p["Realizations"], "vertices in graph" -> VertexCount[g]|>]
+  {FindInfraPoint[g], Length @ FindInfraPoint[g, All], VertexCount[g]}]
 ```
 
 `"From"` selects the metrically special vertices. Here the centre is one vertex and the periphery is many.
@@ -66,8 +66,8 @@ With[
 ```wl
 With[
   {g = ExampleGraphData["Square", "Medium"]},
-  <|"centre" -> FindInfraPoint[g, "From" -> "Center"]["Realizations"],
-    "periphery count" -> Length @ FindInfraPoint[g, "From" -> "Periphery"]["Realizations"]|>]
+  <|"centre" -> FindInfraPoint[g, All, "From" -> "Center"],
+    "periphery count" -> Length @ FindInfraPoint[g, All, "From" -> "Periphery"]|>]
 ```
 
 Centre and periphery drawn together. The periphery of a patch is its rim.
@@ -76,18 +76,18 @@ Centre and periphery drawn together. The periphery of a patch is its rim.
 With[
   {g = Graph[ExampleGraphData["Square", "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
   InfraSceneHighlight[g,
-    {FindInfraPoint[g, "From" -> "Periphery"] -> $InfraShellColor,
-     FindInfraPoint[g, "From" -> "Center"] -> $InfraPointColor},
+    {InfraSet @ FindInfraPoint[g, All, "From" -> "Periphery"] -> $InfraShellColor,
+     InfraSet @ FindInfraPoint[g, All, "From" -> "Center"] -> $InfraPointColor},
     "PointSizeRange" -> 16,
     VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
     ImageSize -> 340]]
 ```
 
-A tuple of three mutually most-distant points comes back as three wrappers.
+A tuple of three mutually most-distant points comes back as three atoms.
 
 ```wl
 With[
   {g = ExampleGraphData["Square", "Medium"]},
   {t = FindInfraPoint[g, 3, "Distance" -> "Max"]},
-  <|"shape" -> Head[t], "count" -> Length[t], "each" -> (First @ #["Realizations"] & /@ t)|>]
+  <|"count" -> Length[t], "vertices" -> (#["Vertex"] & /@ t)|>]
 ```
