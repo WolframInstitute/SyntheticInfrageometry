@@ -25,14 +25,8 @@ PointViewer[ g_Graph, sym_: None ] :=
   With[ { diam = GraphDiameter[ g ] },
     Manipulate[
       seed;
-      (* unconstrained points are alternatives (FindInfraPoint); a separation
-         constraint makes them one jointly-constrained tuple (FindInfraSimplex) *)
-      With[ { pts = If[ separation === "None",
-          FindInfraPoint[ g, UpTo[ n ], "From" -> from ],
-          Replace[
-            FindInfraSimplex[ g, n, UpTo[ 1 ], "From" -> from, "MaxCliques" -> 100,
-              "Distance" -> If[ separation === "Max", "Max", distRange ] ],
-            { { cfg_ } :> cfg, _ :> { } } ] ] },
+      With[ { pts = FindInfraPoint[ g, UpTo[ n ], "From" -> from, "MaxCliques" -> 100,
+          "Distance" -> Switch[ separation, "None", None, "Max", "Max", "Range", distRange ] ] },
         If[ sym =!= None, sym = pts ];
         InfraSceneHighlight[ g, { pts -> $InfraPointColor }, ImageSize -> 600 ] ],
       Grid[ {

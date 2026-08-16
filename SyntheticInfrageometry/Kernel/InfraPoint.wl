@@ -63,50 +63,25 @@ InfraPoint /: VolumeGrowthObservables[ g_, p_InfraPoint, rest___ ] := VolumeGrow
 
 (* ===================== FindInfraPoint ===================== *)
 
-(* A point of the substrate, drawn from the "From" candidate pool.  The
+(* Points of the substrate, drawn from the "From" candidate pool.  The
    count-less form returns ONE InfraPoint atom; the calling triple returns a
-   plain List of atoms (the FindClique / FindInstance shape).  The pool as a
-   region is InfraSet @ FindInfraPoint[g, All]; a tuple of mutually constrained
-   points is FindInfraSimplex. *)
+   plain List of atoms (the FindClique / FindInstance shape).  The count is
+   always "how many points" -- "Distance" constrains WHICH points, making the
+   returned list one mutually-constrained tuple: r fixes the mutual distance
+   exactly, {dMin, dMax} a range, "Max" maximises the minimum pairwise gap,
+   "Spread" breaks the "Max" ties toward the most equidistant set (minimal
+   variance of pairwise distances).  The pool as a region is
+   InfraSet @ FindInfraPoint[g, All]. *)
 
-Options[ FindInfraPoint ] = { "From" -> "Random" };
+Options[ FindInfraPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
 
 FindInfraPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  InfraPoint /@ RandomSample[ findPointPool[ graph, OptionValue[ "From" ] ], UpTo[ n ] ]
-
-FindInfraPoint[ graph_Graph, All, opts : OptionsPattern[] ] :=
-  InfraPoint /@ findPointPool[ graph, OptionValue[ "From" ] ]
-
-FindInfraPoint[ graph_Graph, n_Integer, opts : OptionsPattern[] ] :=
-  With[ { result = FindInfraPoint[ graph, UpTo[ n ], opts ] },
-    If[ Length[ result ] < n, $Failed, result ] ]
-
-(* no count: one point *)
-FindInfraPoint[ graph_Graph, opts : OptionsPattern[] ] :=
-  InfraPoint @ RandomChoice @ findPointPool[ graph, OptionValue[ "From" ] ]
-
-
-(* ===================== FindInfraSimplex ===================== *)
-
-(* An infra-simplex: n vertices at prescribed mutual distances -- a clique in
-   the distance-r graph, the complete-graph sibling of FindInfraRegularPolygon
-   (which prescribes cyclic diagonals) and the general case of
-   CompleteInfraEquilateralTriangle.  Each configuration is a List of n
-   InfraPoint atoms; the count argument picks CONFIGURATIONS (FindClique's k),
-   not points.  "Distance" -> r fixes the mutual distance exactly, {dMin, dMax}
-   a range, "Max" maximises the minimum pairwise gap, "Spread" breaks the "Max"
-   ties toward the most equidistant set (minimal variance of pairwise
-   distances).  "From" restricts the candidate pool. *)
-
-Options[ FindInfraSimplex ] = { "From" -> "Random", "Distance" -> "Max", "MaxCliques" -> All };
-
-FindInfraSimplex[ graph_Graph, n_Integer,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   Module[ { pool = findPointPool[ graph, OptionValue[ "From" ] ],
             dist = OptionValue[ "Distance" ],
             maxCl = OptionValue[ "MaxCliques" ],
-            distMatrix, finiteMax, cliques, configs },
-    configs = If[ Length[ pool ] < n, { },
+            distMatrix, finiteMax, cliques },
+    InfraPoint /@ If[ n == 1 || dist === None,
+      RandomSample[ pool, UpTo[ n ] ],
       With[ { vertexIndex = Lookup[ AssociationThread[ VertexList @ graph, Range @ VertexCount @ graph ], pool ] },
         distMatrix = GraphDistanceMatrix[ graph ][[ vertexIndex, vertexIndex ]];
         finiteMax = Max @ Select[ Flatten @ distMatrix, # < Infinity & ];
@@ -122,34 +97,32 @@ FindInfraSimplex[ graph_Graph, n_Integer,
               { d, Reverse @ DeleteCases[ Union @@ distMatrix, 0 | _?( # > finiteMax & ) ] } ];
             Which[
               cliques === { }, { },
-              dist === "Spread", equidistanceOrderedSubsets[ cliques, distMatrix, pool, n ],
-              True, DeleteDuplicates[ Sort /@ Catenate[ Subsets[ #, { n } ] & /@ cliques ] ] ],
+              dist === "Spread", mostEquidistantSubset[ cliques, distMatrix, pool, n ],
+              True, RandomSample[ RandomChoice @ cliques, UpTo[ n ] ] ],
             With[ { range = Replace[ dist,
                     { d_?NumericQ :> { d, d },
                       { dMin_, dMax_ } :> { dMin, dMax /. Infinity -> finiteMax } } ] },
               cliques = FindClique[
                 AdjacencyGraph[ pool, UnitStep[ distMatrix - range[[ 1 ]] ] * UnitStep[ range[[ 2 ]] - distMatrix ] * mask ],
-                { n, Length @ pool }, maxCl ];
-              If[ cliques === { }, { },
-                DeleteDuplicates[ Sort /@ Catenate[ Subsets[ #, { n } ] & /@ cliques ] ] ]
+                { Min[ n, Length @ pool ], Length @ pool }, maxCl ];
+              If[ cliques === { }, { }, RandomSample[ RandomChoice @ cliques, UpTo[ n ] ] ]
             ]
           ]
         ]
       ]
-    ];
-    Replace[ infraCap[ configs, count ], cs_List :> Map[ InfraPoint, cs, { 2 } ] ]
+    ]
   ]
 
-(* the n-subsets of the maximal-gap cliques, most equidistant first (minimal
-   variance of pairwise distances); for n < 3 every pair is trivially
-   equidistant, so the found order stands *)
-equidistanceOrderedSubsets[ cliques_List, distMatrix_, pool_List, n_Integer ] :=
-  With[ { idx = AssociationThread[ pool -> Range @ Length @ pool ],
-          subsets = DeleteDuplicates[ Sort /@ Catenate[ Subsets[ #, { n } ] & /@ cliques ] ] },
-    If[ n < 3, subsets,
-      SortBy[ subsets,
-        s |-> Variance[ distMatrix[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] & /@ Subsets[ s, { 2 } ] ] ] ]
-  ]
+FindInfraPoint[ graph_Graph, All, opts : OptionsPattern[] ] :=
+  FindInfraPoint[ graph, UpTo[ VertexCount[ graph ] ], opts ]
+
+FindInfraPoint[ graph_Graph, n_Integer, opts : OptionsPattern[] ] :=
+  With[ { result = FindInfraPoint[ graph, UpTo[ n ], opts ] },
+    If[ Length[ result ] < n, $Failed, result ] ]
+
+(* no count: one point *)
+FindInfraPoint[ graph_Graph, opts : OptionsPattern[] ] :=
+  InfraPoint @ RandomChoice @ findPointPool[ graph, OptionValue[ "From" ] ]
 
 
 (* "From" option dispatch -- vertex pool to draw points from. *)

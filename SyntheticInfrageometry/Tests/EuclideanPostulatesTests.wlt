@@ -69,27 +69,27 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{pts = (#["Vertex"] & /@ First @ FindInfraSimplex[g, 2, 1, "Distance" -> 4])},
+    With[{pts = (#["Vertex"] & /@ FindInfraPoint[g, 2, "Distance" -> 4])},
       Length[pts] == 2 && GraphDistance[g, pts[[1]], pts[[2]]] >= 4
     ]
   ],
   True,
-  TestID -> "FindInfraSimplex-with-distance-constraint"
+  TestID -> "FindInfraPoint-with-distance-constraint"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{6, 6}]},
-    With[{vs = #["Vertex"] & /@ First @ FindInfraSimplex[g, 4, 1, "Distance" -> "Max"]},
+    With[{vs = #["Vertex"] & /@ FindInfraPoint[g, 4, "Distance" -> "Max"]},
       Min[GraphDistance[g, #[[1]], #[[2]]] & /@ Subsets[vs, {2}]] == 5
     ]
   ],
   True,
-  TestID -> "FindInfraSimplex-Max-maximizes-minimum-gap"
+  TestID -> "FindInfraPoint-Max-maximizes-minimum-gap"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{6, 6}]},
-    With[{spread = #["Vertex"] & /@ First @ FindInfraSimplex[g, 4, 1, "Distance" -> "Spread"],
+    With[{spread = #["Vertex"] & /@ FindInfraPoint[g, 4, "Distance" -> "Spread"],
           corners = {1, 6, 31, 36}},
       With[{spreadDists = GraphDistance[g, #[[1]], #[[2]]] & /@ Subsets[spread, {2}],
             cornerDists = GraphDistance[g, #[[1]], #[[2]]] & /@ Subsets[corners, {2}]},
@@ -98,7 +98,7 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindInfraSimplex-Spread-minimizes-variance-at-optimal-gap"
+  TestID -> "FindInfraPoint-Spread-minimizes-variance-at-optimal-gap"
 ]
 
 VerificationTest[
@@ -113,12 +113,12 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{pts = (#["Vertex"] & /@ First @ FindInfraSimplex[g, 2, 1, "From" -> {1, 2, 3, 4, 5}, "Distance" -> 4])},
+    With[{pts = (#["Vertex"] & /@ FindInfraPoint[g, 2, "From" -> {1, 2, 3, 4, 5}, "Distance" -> 4])},
       Length[pts] == 2 && GraphDistance[g, pts[[1]], pts[[2]]] >= 4
     ]
   ],
   True,
-  TestID -> "FindInfraSimplex-vertex-list-with-distance"
+  TestID -> "FindInfraPoint-vertex-list-with-distance"
 ]
 
 VerificationTest[
@@ -136,7 +136,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindInfraSimplex[PathGraph[Range[3]], 3, 1, "Distance" -> 5],
+  FindInfraPoint[PathGraph[Range[3]], 3, "Distance" -> 5],
   $Failed,
   TestID -> "FindInfraPoint-exact-fails-impossible-distance"
 ]
