@@ -75,14 +75,14 @@ VerificationTest[
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ],
-    { InfraPoint[ { 1 } ], InfraPoint[ { 3 } ] }, 2 ],
+    { InfraPoint[1], InfraPoint[3] }, 2 ],
   InfraObject[ { 1, 2, 3 } ],
   TestID -> "FindInfraQuadric-PathGraph-InfraPoint-foci"
 ]
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ],
-    { InfraPoint[ { 1, 4 } ], 3 }, 2 ],
+    { InfraSet[ { 1, 4 } ], 3 }, 2 ],
   InfraObject[ { 1, 2, 3 } ],
   TestID -> "FindInfraQuadric-PathGraph-multirealisation-first-only"
 ]

@@ -67,7 +67,7 @@ FindInfraEllipse[ graph_Graph, foci : { _, _ }, c_,
         accumulated
       ]
     ],
-    Replace[ foci, InfraPoint[ { v_ } ] :> v, { 1 } ], c ]
+    Replace[ foci, InfraPoint[ v_ ] :> v, { 1 } ], c ]
 
 
 admissibleEllipticCycleVerts[ graph_Graph, verts_List, row1_List, row2_List, range_List,

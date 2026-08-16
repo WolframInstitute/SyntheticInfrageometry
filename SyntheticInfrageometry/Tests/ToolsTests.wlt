@@ -75,7 +75,7 @@ VerificationTest[
 
 (* weighted InfraPoint: measure is the weight-normalised probability distribution *)
 VerificationTest[
-  Total @ Values @ InfraMeasure[ InfraPoint[ { 1, 2 }, { 3, 1 } ] ],
+  Total @ Values @ InfraMeasure[ InfraMesoPoint[<|1 -> 3, 2 -> 1|>] ],
   1,
   TestID -> "InfraMeasure-weighted-point-sums-to-one"
 ]
@@ -86,7 +86,7 @@ VerificationTest[
     { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
       InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ],
       InfraCircle[ { { 1, 2, 3 } } ],
-      InfraPoint[ { 1, 2 }, { 3, 1 } ],
+      InfraMesoPoint[<|1 -> 3, 2 -> 1|>],
       InfraSet[ { 1, 2, 3 } ] },
     w |-> w[ "Measure" ] === InfraMeasure[ w ] ],
   True,
@@ -107,7 +107,7 @@ VerificationTest[
     { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
       InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ],
       InfraCircle[ { { 1, 2, 3 } } ],
-      InfraPoint[ { 1, 2 }, { 3, 1 } ],
+      InfraMesoPoint[<|1 -> 3, 2 -> 1|>],
       InfraSet[ { 1, 2, 3 } ] },
     w |-> And[
       w[ "OccupationMeasure" ] === w[ "Measure" ],
@@ -138,26 +138,26 @@ VerificationTest[
   TestID -> "Bundle-has-no-mass-channel"
 ]
 
-(* InfraPoint IS its own measure: the canonical measured form is the
-   association, repetition reads as mass, all-ones collapses to the support,
-   and parallel lists are input sugar *)
+(* the measure layer is InfraMesoPoint: the canonical form is the association,
+   repetition in an atom list reads as mass, parallel lists are input sugar,
+   and the all-ones measure STAYS a measure (layers never cross silently) *)
 VerificationTest[
-  { InfraPoint[ { 1, 1, 2 } ],
-    InfraPoint[ { 1, 2 }, { 3, 1 } ],
-    InfraPoint[ { 1, 2 }, { 1, 1 } ],
-    InfraPoint[ <| 1 -> 1, 2 -> 1 |> ] },
-  { InfraPoint[ <| 1 -> 2, 2 -> 1 |> ],
-    InfraPoint[ <| 1 -> 3, 2 -> 1 |> ],
-    InfraPoint[ { 1, 2 } ],
-    InfraPoint[ { 1, 2 } ] },
-  TestID -> "InfraPoint-measured-form-is-an-association"
+  { InfraMesoPoint[ { InfraPoint[1], InfraPoint[1], InfraPoint[2] } ],
+    InfraMesoPoint[ { 1, 2 }, { 3, 1 } ],
+    InfraMesoPoint[ InfraSet[ { 1, 2 } ] ],
+    InfraSet[ { 1, 1, 2 } ] },
+  { InfraMesoPoint[ <| 1 -> 2, 2 -> 1 |> ],
+    InfraMesoPoint[ <| 1 -> 3, 2 -> 1 |> ],
+    InfraMesoPoint[ <| 1 -> 1, 2 -> 1 |> ],
+    InfraSet[ { 1, 2 } ] },
+  TestID -> "measure-layer-is-InfraMesoPoint"
 ]
 
 VerificationTest[
-  With[ { p = InfraPoint[ <| 1 -> 3, 2 -> 1 |> ] },
+  With[ { p = InfraMesoPoint[ <| 1 -> 3, 2 -> 1 |> ] },
     { p[ "Support" ], p[ "Weights" ], p[ "Mass" ], p[ "OccupationCount" ], p[ "Measure" ] } ],
-  { { 1, 2 }, { 3, 1 }, 4, <| 1 -> 3, 2 -> 1 |>, <| 1 -> 3/4, 2 -> 1/4 |> },
-  TestID -> "InfraPoint-measure-accessors"
+  { InfraSet[ { 1, 2 } ], { 3, 1 }, 4, <| 1 -> 3, 2 -> 1 |>, <| 1 -> 3/4, 2 -> 1/4 |> },
+  TestID -> "InfraMesoPoint-measure-accessors"
 ]
 
 (* the measure is CONSTRUCTED at a projection off a bundle, never carried by
@@ -177,8 +177,8 @@ VerificationTest[
    so the family (and its measure) is the same weighted or not *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraPoint[ { 1, 3 }, { 2, 1 } ], 9 ] ===
-    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraPoint[ { 1, 3 } ], 9 ] ],
+    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraMesoPoint[<|1 -> 2, 3 -> 1|>], 9 ] ===
+    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraSet[ { 1, 3 } ], 9 ] ],
   True,
   TestID -> "Anchor-masses-do-not-propagate"
 ]
@@ -187,7 +187,7 @@ VerificationTest[
 
 (* the compact multi-atom set and the enumerated bundle carry the same measure *)
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], p = InfraPoint[ { 1, 3 } ] },
+  With[ { g = GridGraph[ { 3, 3 } ], p = InfraSet[ { 1, 3 } ] },
     KeySort @ InfraMeasure[ FindInfraSegment[ g, p, 9 ] ] ===
     KeySort @ InfraMeasure[ FindInfraSegment[ g, p, 9, All ] ] ],
   True,
@@ -198,7 +198,7 @@ VerificationTest[
    occupation is the sum, normalised by the summed family sizes *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    KeySort @ FindInfraSegment[ g, InfraPoint[ { 1, 3 } ], 9 ][ "OccupationCount" ] ===
+    KeySort @ FindInfraSegment[ g, InfraSet[ { 1, 3 } ], 9 ][ "OccupationCount" ] ===
     KeySort @ Merge[ { FindInfraSegment[ g, 1, 9 ][ "OccupationCount" ],
                        FindInfraSegment[ g, 3, 9 ][ "OccupationCount" ] }, Total ] ],
   True,

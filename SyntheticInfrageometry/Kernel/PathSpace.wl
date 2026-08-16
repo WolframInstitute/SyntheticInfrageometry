@@ -309,7 +309,7 @@ FindEmbeddingClosestPath[ graph_Graph, curve_ ] :=
      [g, c]              -- BFS DAG of all geodesics from c: directed graph on
                             vertices reachable from c, with edge u -> v whenever
                             d(c, v) = d(c, u) + 1 and u-v is a g-edge.
-     [g, InfraPoint[vs]] -- multi-source spray: same DAG with d_c replaced by
+     [g, InfraSet[vs]] -- multi-source spray: same DAG with d_c replaced by
                             min_i d(ci, v).
      [g, pairs]          -- union of geodesics between the listed vertex pairs;
                             "PathThickness" controls per-pair selection.
@@ -329,7 +329,7 @@ GeodesicSprayGraph[ g_Graph, c_, OptionsPattern[] ] /; MemberQ[ VertexList[ g ],
   geodesicSprayFromDistances[ g, AssociationThread[ VertexList[ g ], GraphDistance[ g, c ] ],
     OptionValue[ "AxisLength" ], OptionValue[ "Directed" ] ]
 
-GeodesicSprayGraph[ g_Graph, InfraPoint[ vs_List ], OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+GeodesicSprayGraph[ g_Graph, InfraSet[ vs_List ], OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   geodesicSprayFromDistances[ g,
     AssociationThread[ VertexList[ g ],
       Min /@ Transpose[ GraphDistance[ g, # ] & /@ vs ] ],

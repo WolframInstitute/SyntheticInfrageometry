@@ -5,7 +5,7 @@ BeginTestSection["EuclideanPostulates"]
 VerificationTest[
   With[{g = PetersenGraph[]},
     With[{pt = FindInfraPoint[g]},
-      Head[pt] === InfraPoint && Sort[pt["Realizations"]] === Sort[VertexList[g]]
+      Head[pt] === InfraPoint && MemberQ[VertexList[g], pt["Vertex"]]
     ]
   ],
   True,
@@ -15,7 +15,7 @@ VerificationTest[
 VerificationTest[
   With[{g = PetersenGraph[]},
     With[{pts = FindInfraPoint[g, 3]},
-      Length @ pts == 3 && DuplicateFreeQ[(#[[ 1, 1 ]] & /@ pts)] && SubsetQ[VertexList[g], (#[[ 1, 1 ]] & /@ pts)]
+      Length @ pts == 3 && DuplicateFreeQ[(#["Vertex"] & /@ pts)] && SubsetQ[VertexList[g], (#["Vertex"] & /@ pts)]
     ]
   ],
   True,
@@ -24,7 +24,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    SubsetQ[GraphCenter[g], (#[[ 1, 1 ]] & /@ FindInfraPoint[g, 1, "From" -> "Center"])]
+    SubsetQ[GraphCenter[g], (#["Vertex"] & /@ FindInfraPoint[g, 1, "From" -> "Center"])]
   ],
   True,
   TestID -> "FindInfraPoint-from-center"
@@ -32,7 +32,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    SubsetQ[GraphPeriphery[g], (#[[ 1, 1 ]] & /@ FindInfraPoint[g, 1, "From" -> "Periphery"])]
+    SubsetQ[GraphPeriphery[g], (#["Vertex"] & /@ FindInfraPoint[g, 1, "From" -> "Periphery"])]
   ],
   True,
   TestID -> "FindInfraPoint-from-periphery"
@@ -41,8 +41,8 @@ VerificationTest[
 (* {"Center", 0} runs zero iterations -- identical pool to plain "Center". *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    Sort[#[[ 1, 1 ]] & /@ FindInfraPoint[g, All, "From" -> {"Center", 0}]] ===
-      Sort[#[[ 1, 1 ]] & /@ FindInfraPoint[g, All, "From" -> "Center"]]
+    Sort[#["Vertex"] & /@ FindInfraPoint[g, All, "From" -> {"Center", 0}]] ===
+      Sort[#["Vertex"] & /@ FindInfraPoint[g, All, "From" -> "Center"]]
   ],
   True,
   TestID -> "FindInfraPoint-iterated-center-cap0-equals-center"
@@ -52,7 +52,7 @@ VerificationTest[
    iterated (uncapped) pool is the center of that fixed point -- a subset of the graph. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    SubsetQ[VertexList[g], #[[ 1, 1 ]] & /@ FindInfraPoint[g, All, "From" -> {"Center", Infinity}]]
+    SubsetQ[VertexList[g], #["Vertex"] & /@ FindInfraPoint[g, All, "From" -> {"Center", Infinity}]]
   ],
   True,
   TestID -> "FindInfraPoint-iterated-center-stabilizes-in-graph"
@@ -61,7 +61,7 @@ VerificationTest[
 (* A disconnected input is already a shattered region: the pool is its whole vertex set. *)
 VerificationTest[
   With[{g = GraphDisjointUnion[PathGraph[{1, 2, 3}], PathGraph[{4, 5, 6}]]},
-    Sort[#[[ 1, 1 ]] & /@ FindInfraPoint[g, All, "From" -> {"Center", Infinity}]] === VertexList[g]
+    Sort[#["Vertex"] & /@ FindInfraPoint[g, All, "From" -> {"Center", Infinity}]] === VertexList[g]
   ],
   True,
   TestID -> "FindInfraPoint-iterated-center-disconnected-region"
@@ -69,27 +69,27 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{pts = (#[[ 1, 1 ]] & /@ FindInfraPoint[g, 2, "Distance" -> 4])},
+    With[{pts = (#["Vertex"] & /@ First @ FindInfraSimplex[g, 2, 1, "Distance" -> 4])},
       Length[pts] == 2 && GraphDistance[g, pts[[1]], pts[[2]]] >= 4
     ]
   ],
   True,
-  TestID -> "FindInfraPoint-with-distance-constraint"
+  TestID -> "FindInfraSimplex-with-distance-constraint"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{6, 6}]},
-    With[{vs = #[[ 1, 1 ]] & /@ FindInfraPoint[g, 4, "Distance" -> "Max"]},
+    With[{vs = #["Vertex"] & /@ First @ FindInfraSimplex[g, 4, 1, "Distance" -> "Max"]},
       Min[GraphDistance[g, #[[1]], #[[2]]] & /@ Subsets[vs, {2}]] == 5
     ]
   ],
   True,
-  TestID -> "FindInfraPoint-Max-maximizes-minimum-gap"
+  TestID -> "FindInfraSimplex-Max-maximizes-minimum-gap"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{6, 6}]},
-    With[{spread = #[[ 1, 1 ]] & /@ FindInfraPoint[g, 4, "Distance" -> "Spread"],
+    With[{spread = #["Vertex"] & /@ First @ FindInfraSimplex[g, 4, 1, "Distance" -> "Spread"],
           corners = {1, 6, 31, 36}},
       With[{spreadDists = GraphDistance[g, #[[1]], #[[2]]] & /@ Subsets[spread, {2}],
             cornerDists = GraphDistance[g, #[[1]], #[[2]]] & /@ Subsets[corners, {2}]},
@@ -98,13 +98,13 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "FindInfraPoint-Spread-minimizes-variance-at-optimal-gap"
+  TestID -> "FindInfraSimplex-Spread-minimizes-variance-at-optimal-gap"
 ]
 
 VerificationTest[
   With[{g = PetersenGraph[]},
     With[{pt = FindInfraPoint[g, 1, "From" -> {2, 3, 4}]},
-      Length @ pt == 1 && SubsetQ[{2, 3, 4}, (#[[ 1, 1 ]] & /@ pt)]
+      Length @ pt == 1 && SubsetQ[{2, 3, 4}, (#["Vertex"] & /@ pt)]
     ]
   ],
   True,
@@ -113,12 +113,12 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{pts = (#[[ 1, 1 ]] & /@ FindInfraPoint[g, 2, "From" -> {1, 2, 3, 4, 5}, "Distance" -> 4])},
+    With[{pts = (#["Vertex"] & /@ First @ FindInfraSimplex[g, 2, 1, "From" -> {1, 2, 3, 4, 5}, "Distance" -> 4])},
       Length[pts] == 2 && GraphDistance[g, pts[[1]], pts[[2]]] >= 4
     ]
   ],
   True,
-  TestID -> "FindInfraPoint-vertex-list-with-distance"
+  TestID -> "FindInfraSimplex-vertex-list-with-distance"
 ]
 
 VerificationTest[
@@ -129,14 +129,14 @@ VerificationTest[
 
 VerificationTest[
   With[{pts = FindInfraPoint[PathGraph[Range[3]], UpTo[10]]},
-    Length @ pts == 3 && SubsetQ[VertexList[PathGraph[Range[3]]], (#[[ 1, 1 ]] & /@ pts)]
+    Length @ pts == 3 && SubsetQ[VertexList[PathGraph[Range[3]]], (#["Vertex"] & /@ pts)]
   ],
   True,
   TestID -> "FindInfraPoint-upto-returns-available"
 ]
 
 VerificationTest[
-  FindInfraPoint[PathGraph[Range[3]], 3, "Distance" -> 5],
+  FindInfraSimplex[PathGraph[Range[3]], 3, 1, "Distance" -> 5],
   $Failed,
   TestID -> "FindInfraPoint-exact-fails-impossible-distance"
 ]
@@ -144,7 +144,7 @@ VerificationTest[
 VerificationTest[
   With[{g = PathGraph[Range[7]]},
     With[{pt = FindInfraPoint[g, 1, "From" -> 3 -> 2]},
-      Length @ pt == 1 && GraphDistance[g, 3, First @ First @ First @ pt] == 2
+      Length @ pt == 1 && GraphDistance[g, 3, First[pt]["Vertex"]] == 2
     ]
   ],
   True,
@@ -153,7 +153,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{pts = (#[[ 1, 1 ]] & /@ FindInfraPoint[g, UpTo[20], "From" -> 1 -> {2, 3}])},
+    With[{pts = (#["Vertex"] & /@ FindInfraPoint[g, UpTo[20], "From" -> 1 -> {2, 3}])},
       AllTrue[pts, 2 <= GraphDistance[g, 1, #] <= 3 &]
     ]
   ],
@@ -164,7 +164,7 @@ VerificationTest[
 VerificationTest[
   With[{g = CycleGraph[8]},
     With[{ecc = Max[GraphDistance[g, 1, #] & /@ VertexList[g]]},
-      With[{pts = (#[[ 1, 1 ]] & /@ FindInfraPoint[g, UpTo[VertexCount[g]], "From" -> 1 -> "Max"])},
+      With[{pts = (#["Vertex"] & /@ FindInfraPoint[g, UpTo[VertexCount[g]], "From" -> 1 -> "Max"])},
         AllTrue[pts, GraphDistance[g, 1, #] == ecc &]
       ]
     ]
@@ -174,15 +174,15 @@ VerificationTest[
 ]
 
 VerificationTest[
-  MatchQ[ FindInfraPoint[ PetersenGraph[], 3 ], { InfraPoint[ { _ } ] .. } ],
+  MatchQ[ FindInfraPoint[ PetersenGraph[], 3 ], { InfraPoint[_] .. } ],
   True,
   TestID -> "FindInfraPoint-returns-list-of-unary-InfraPoint"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{pts = (#[[ 1, 1 ]] & /@ FindInfraPoint[g, UpTo[VertexCount[g]],
-      "From" -> InfraPoint[{1, 16}] -> 3])},
+    With[{pts = (#["Vertex"] & /@ FindInfraPoint[g, UpTo[VertexCount[g]],
+      "From" -> InfraSet[{1, 16}] -> 3])},
       AllTrue[pts, GraphDistance[g, 1, #] == 3 && GraphDistance[g, 16, #] == 3 &]
     ]
   ],
@@ -192,7 +192,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    Sort @ (#[[ 1, 1 ]] & /@ FindInfraPoint[g, UpTo[VertexCount[g]], "From" -> InfraPoint[{2, 5, 7}]])
+    Sort @ (#["Vertex"] & /@ FindInfraPoint[g, UpTo[VertexCount[g]], "From" -> InfraSet[{2, 5, 7}]])
   ],
   {2, 5, 7},
   TestID -> "FindInfraPoint-multi-anchor-pool-no-distance"
@@ -1026,7 +1026,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    Sort @ (#[[ 1, 1 ]] & /@ FindInfraPoint[ g, All ]) === VertexList[ g ]
+    Sort @ (#["Vertex"] & /@ FindInfraPoint[ g, All ]) === VertexList[ g ]
   ],
   True,
   TestID -> "FindInfraPoint-All-returns-every-vertex"
@@ -1152,7 +1152,7 @@ VerificationTest[
   With[ { g = PathGraph[ Range[ 5 ] ] },
     ExtendInfraSegment[ g, 1, 2, 1, 2, All ]
   ],
-  InfraPoint[ { 3 } ],
+  { InfraPoint[3] },
   TestID -> "ExtendInfraSegment-A4-PathGraph"
 ]
 

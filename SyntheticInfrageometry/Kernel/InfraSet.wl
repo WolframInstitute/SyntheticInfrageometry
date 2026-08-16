@@ -9,17 +9,29 @@ PackageImport["WolframInstitute`Infrageometry`"]
    Infra* wrapper to its underlying vertex set; rendered as a "Sets" highlight by
    InfraSceneVisualization.wl and accepted by InfraDistance. *)
 
+(* idempotency: re-wrapping a set is the identity *)
+InfraSet[ inner_InfraSet ] := inner
+
+(* canonical form: a set is sorted and duplicate-free.  Guarded against the
+   Infra* payload rules below (and against itself) so it fires once, and
+   against PATTERN arguments: DownValues evaluate patterns, so without the
+   FreeQ guard this rule would rewrite a rule-author's InfraSet[{v_, ___}]
+   into InfraSet[{___, v_}] and silently bind the wrong element. *)
+InfraSet[ vs_List ] /;
+    FreeQ[ vs, _Blank | _BlankSequence | _BlankNullSequence | _Pattern ] &&
+    ! MemberQ[ vs, _InfraPoint | _InfraSet | _InfraMesoPoint ] &&
+    ( ! DuplicateFreeQ[ vs ] || vs =!= Sort[ vs ] ) :=
+  InfraSet[ Sort @ DeleteDuplicates @ vs ]
+
 InfraSet[ vs_List ] /; MemberQ[ vs, _InfraSet ] :=
   InfraSet[ Union @@ Replace[ vs, s_InfraSet :> s[ "Vertices" ], {1} ] ]
 
-(* InfraPoint is special: each realisation IS a vertex (possibly a list vertex
-   label like {i,j}), so the first argument is already the vertex list -- no
-   flattening needed.  A measured InfraPoint contributes its support -- a set
-   discards the measure. *)
-InfraSet[ InfraPoint[ m_Association ] ] := InfraSet[ Sort @ Keys @ m ]
+(* Points are special: an atom IS a vertex (possibly a list label like {i,j}),
+   so no flattening applies.  A list of atoms is the family layer written out;
+   a mesopoint contributes its support -- a set discards the measure. *)
+InfraSet[ InfraPoint[ v_ ] ] := InfraSet[ { v } ]
+InfraSet[ list : { __InfraPoint } ] := InfraSet[ Sort @ DeleteDuplicates[ #[[ 1 ]] & /@ list ] ]
 InfraSet[ InfraMesoPoint[ m_Association ] ] := InfraSet[ Sort @ Keys @ m ]
-InfraSet[ InfraPoint[ vs_List ] ] :=
-  InfraSet[ Sort @ DeleteDuplicates @ vs ]
 
 (* All other Infra* container wrappers have realisations that are vertex-lists
    (InfraBall, InfraShell, InfraSegment, ...): rs = {{vs_1}, {vs_2}, ...}.
@@ -29,9 +41,24 @@ InfraSet[ wrapper_Symbol[ rs_List ] ] /;
   InfraSet[ Sort @ DeleteDuplicates @ Flatten[ rs, 1 ] ]
 
 InfraSet[ vs_List ][ "Vertices" ] := vs
+InfraSet[ vs_List ][ "Weights" ]  := ConstantArray[ 1, Length @ vs ]
 InfraSet[ vs_List ][ "Length" ]   := Length[ vs ]
 
 (* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
+(* synthetic-invariant accessors: one row per vertex -- the rectangular,
+   stats-ready collection form of the InfraPoint atom readouts. *)
+InfraSet[ vs_List ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, vs, rest ]
+InfraSet[ vs_List ][ "ShellAreas", g_, rest___ ]             := ShellAreas[ g, vs, rest ]
+InfraSet[ vs_List ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients /@ BallVolumes[ g, vs, rest ]
+InfraSet[ vs_List ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, vs, rest ]
+InfraSet[ vs_List ][ "Dimension", g_, rest___ ]              := ( #[ "BallDimension" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
+InfraSet[ vs_List ][ "ScalarCurvature", g_, rest___ ]        := ( #[ "BallScalarCurvature" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
+InfraSet[ vs_List ][ "CurvatureByRadius", g_, rest___ ]      := ( #[ "BallCurvatureByRadius" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
+
+InfraSet /: BallVolumes[ g_, s_InfraSet, rest___ ]             := BallVolumes[ g, s[ "Vertices" ], rest ]
+InfraSet /: ShellAreas[ g_, s_InfraSet, rest___ ]              := ShellAreas[ g, s[ "Vertices" ], rest ]
+InfraSet /: VolumeGrowthObservables[ g_, s_InfraSet, rest___ ] := VolumeGrowthObservables[ g, s[ "Vertices" ], rest ]
+
 InfraSet[ vs_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraSet[ vs ] ]
 InfraSet[ vs_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraSet[ vs ] ]
 InfraSet[ vs_List ][ "Measure" ] := InfraMeasure[ InfraSet[ vs ] ]
@@ -75,13 +102,13 @@ FindInfraEquidistantSet[ graph_Graph, pts_List /; Length[ pts ] <= 1, { _Integer
    the pair (S_{i-1}, S_i), so this is a NestList on consecutive-front pairs: the
    discrete second-order (wave-equation) form, momentum carried as the trailing
    front.  Returns { InfraSet[S_0], ..., InfraSet[S_steps] }; origin is a single
-   vertex (a bare label, including a list-vertex {i, j}) or an InfraPoint[{...}]
+   vertex (a bare label, including a list-vertex {i, j}), an InfraPoint atom, an InfraSet
    multi-source. *)
 
 FindAdvancingInfraFront[ graph_Graph, origin_, steps_Integer ] :=
   With[
     { vl  = VertexList[ graph ],
-      src = Replace[ origin, { InfraPoint[ vs_List, ___ ] :> vs, v_ :> { v } } ] },
+      src = infraPointVertices @ origin },
     { adj  = AssociationMap[ AdjacencyList[ graph, # ] &, vl ],
       vidx = AssociationThread[ vl, Range[ Length @ vl ] ],
       dm   = GraphDistanceMatrix[ graph ] },

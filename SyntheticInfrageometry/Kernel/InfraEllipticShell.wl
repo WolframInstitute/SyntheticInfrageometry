@@ -61,7 +61,7 @@ FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
         ]
       ]
     ],
-    Replace[ foci, InfraPoint[ { v_ } ] :> v, { 1 } ], c ]
+    Replace[ foci, InfraPoint[ v_ ] :> v, { 1 } ], c ]
 
 
 (* { v : cMin <= d(p1,v) + d(p2,v) <= cMax } as a vertex list *)

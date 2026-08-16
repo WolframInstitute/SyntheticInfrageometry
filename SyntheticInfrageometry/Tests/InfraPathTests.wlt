@@ -78,7 +78,7 @@ VerificationTest[
 
 VerificationTest[
   Sort[ #[[ { 1, -1 } ]] & /@
-    FindInfraPath[ PathGraph[ Range[ 5 ] ], InfraPoint[ { 1, 2 } ], 5, Infinity, All ][ "Realizations" ] ],
+    FindInfraPath[ PathGraph[ Range[ 5 ] ], InfraSet[ { 1, 2 } ], 5, Infinity, All ][ "Realizations" ] ],
   Sort[ { { 1, 5 }, { 2, 5 } } ],
   TestID -> "FindInfraPath-multi-source-spread"
 ]

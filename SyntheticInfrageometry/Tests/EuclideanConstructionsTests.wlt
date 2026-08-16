@@ -133,30 +133,30 @@ VerificationTest[
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], All],
-  InfraPoint[{3}],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[13], All],
+  { InfraPoint[3] },
   TestID -> "FindClosestInfraPoint-grid-InfraSegment"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraLine[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], All],
-  InfraPoint[{3}],
+    InfraLine[{{1, 2, 3, 4, 5}}], InfraPoint[13], All],
+  { InfraPoint[3] },
   TestID -> "FindClosestInfraPoint-grid-InfraLine"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
     {1, 2, 3, 4, 5}, 13, All],
-  InfraPoint[{3}],
+  { InfraPoint[3] },
   TestID -> "FindClosestInfraPoint-bare-list-and-vertex"
 ]
 
 (* Point already on the segment: closest is itself. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{3}], All],
-  InfraPoint[{3}],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[3], All],
+  { InfraPoint[3] },
   TestID -> "FindClosestInfraPoint-point-on-line"
 ]
 
@@ -164,31 +164,31 @@ VerificationTest[
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
     InfraSegment[{{1, 2, 3, 4, 5}, {1, 6, 11, 16, 21}}],
-    InfraPoint[{13}], All],
-  InfraPoint[{3, 11}],
+    InfraPoint[13], All],
+  { InfraPoint[3], InfraPoint[11] },
   TestID -> "FindClosestInfraPoint-multi-segment-Cartesian"
 ]
 
 (* Cartesian spread: one segment, two point realisations. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{11, 15}], All],
-  InfraPoint[{1, 5}],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraSet[{11, 15}], All],
+  { InfraPoint[1], InfraPoint[5] },
   TestID -> "FindClosestInfraPoint-multi-point-Cartesian"
 ]
 
 (* Default count = 1 returns one InfraPoint carrying a single realisation. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{13}]],
-  InfraPoint[{3}],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[13]],
+  { InfraPoint[3] },
   TestID -> "FindClosestInfraPoint-default-count-1"
 ]
 
 (* Strict count larger than available -> $Failed. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], 5],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[13], 5],
   $Failed,
   TestID -> "FindClosestInfraPoint-strict-count-too-large-fails"
 ]
@@ -196,31 +196,31 @@ VerificationTest[
 (* UpTo caps gracefully. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], UpTo[5]],
-  InfraPoint[{3}],
+    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[13], UpTo[5]],
+  { InfraPoint[3] },
   TestID -> "FindClosestInfraPoint-UpTo-caps"
 ]
 
 (* Tied minimisers (CycleGraph[5], point 1 to opposite arc {3, 4}: both at distance 2). *)
 VerificationTest[
   FindClosestInfraPoint[CycleGraph[5],
-    InfraSegment[{{3, 4}}], InfraPoint[{1}], All],
-  InfraPoint[{3, 4}],
+    InfraSegment[{{3, 4}}], InfraPoint[1], All],
+  { InfraPoint[3], InfraPoint[4] },
   TestID -> "FindClosestInfraPoint-ties-symmetric"
 ]
 
 (* InfraPath and InfraRay heads are also accepted. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraPath[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], All],
-  InfraPoint[{3}],
+    InfraPath[{{1, 2, 3, 4, 5}}], InfraPoint[13], All],
+  { InfraPoint[3] },
   TestID -> "FindClosestInfraPoint-InfraPath"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraRay[{{1, 2, 3, 4, 5}}], InfraPoint[{13}], All],
-  InfraPoint[{3}],
+    InfraRay[{{1, 2, 3, 4, 5}}], InfraPoint[13], All],
+  { InfraPoint[3] },
   TestID -> "FindClosestInfraPoint-InfraRay"
 ]
 
@@ -236,7 +236,7 @@ VerificationTest[
 
 VerificationTest[
   FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, All],
-  FindInfraBisectingHyperplane[PathGraph[Range[5]], InfraPoint[{1}], InfraPoint[{5}], All],
+  FindInfraBisectingHyperplane[PathGraph[Range[5]], InfraPoint[1], InfraPoint[5], All],
   TestID -> "FindInfraBisectingHyperplane-list-form-equiv"
 ]
 
@@ -398,20 +398,20 @@ VerificationTest[
 (* ===== CompleteInfraEquilateralTriangle ===== *)
 
 VerificationTest[
-  Sort @ CompleteInfraEquilateralTriangle[CycleGraph[6], 1, 3, All][ "Realizations" ],
+  Sort[ #[ "Vertex" ] & /@ CompleteInfraEquilateralTriangle[CycleGraph[6], 1, 3, All] ],
   {5},
   TestID -> "CompleteInfraEquilateralTriangle-cycle6"
 ]
 
 VerificationTest[
   CompleteInfraEquilateralTriangle[PathGraph[Range[5]], 1, 5, All],
-  InfraPoint[{}],
+  { },
   TestID -> "CompleteInfraEquilateralTriangle-path-no-apex"
 ]
 
 VerificationTest[
   CompleteInfraEquilateralTriangle[CompleteGraph[4], 1, 2, 1],
-  InfraPoint[{3}],
+  { InfraPoint[3] },
   TestID -> "CompleteInfraEquilateralTriangle-K4-strict-1"
 ]
 

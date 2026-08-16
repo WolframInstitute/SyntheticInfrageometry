@@ -83,7 +83,7 @@ TarskiCongruenceIdentityQ[ graph_Graph ] :=
 TarskiSegmentConstructionQ[ graph_Graph ] :=
   AllTrue[ Tuples[ VertexList[ graph ], 4 ],
     tuple |-> Length @ ExtendInfraSegment[ graph,
-      tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ][ "Realizations" ] > 0 ]
+      tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ] > 0 ]
 
 
 (* A5 (Five Segments).  Brute O(n^8); "MaxTuples" cap keeps small-graph tests
@@ -207,7 +207,7 @@ FindTarskiCounterexample[ graph_Graph, predQ_Symbol, All ] :=
     TarskiSegmentConstructionQ,
       Select[ Tuples[ VertexList[ graph ], 4 ],
         tuple |-> Length @ ExtendInfraSegment[ graph,
-          tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ][ "Realizations" ] === 0 ],
+          tuple[[ 1 ]], tuple[[ 2 ]], tuple[[ 3 ]], tuple[[ 4 ]], UpTo[ 1 ] ] === 0 ],
     TarskiFiveSegmentsQ,
       (* cap = 200000 keeps the 8-tuple sweep bounded on non-trivial graphs *)
       Module[ { found = { }, count = 0, cap = 200000 },

@@ -16,35 +16,35 @@ InfraRadarBasisQ[ args___ ] := ResolvingSetQ[ args ]
 (* ===================== RadarCoordinates ===================== *)
 
 (* Distance vector of v wrt basis b: (d(v, b1), ..., d(v, bk)).
-   An InfraPoint[{u1, ..., um}] entry in the basis contributes the aggregated
+   An InfraSet[{u1, ..., um}] entry in the basis contributes the aggregated
    distance Min | Mean | Max over its realisations (Min = the infra-observer's
    nearest-anchor reading, default).  The bulk form RadarCoordinates[g, b]
    returns an Association of all vertices' radar coordinates. *)
 
 (* The crisp RadarCoordinates[g, b, v] / [g, b] now lives in Infrageometry.  Here
-   we add the InfraObject overloads: an InfraPoint query point, and InfraPoint
+   we add the InfraObject overloads: an InfraPoint query point, and InfraSet
    anchors in the basis aggregated by "InfraPointAggregation" (Min default). *)
 
 Options[ RadarCoordinates ] = { "InfraPointAggregation" -> Min }
 
 (* InfraPoint anchors in the basis -- more specific than the crisp Infrageometry
    pattern b_List, so this is tried first. *)
-RadarCoordinates[ g_Graph, b : { ___, _InfraPoint, ___ }, v : Except[ _Rule | _RuleDelayed | _InfraPoint ], opts : OptionsPattern[] ] :=
+RadarCoordinates[ g_Graph, b : { ___, _InfraSet, ___ }, v : Except[ _Rule | _RuleDelayed | _InfraPoint | _InfraSet ], opts : OptionsPattern[] ] :=
   With[ { agg = OptionValue[ "InfraPointAggregation" ] },
     infraAnchorDistance[ g, v, #, agg ] & /@ b
   ]
 
-RadarCoordinates[ g_Graph, b_List, InfraPoint[ { v_ } ], opts : OptionsPattern[] ] :=
+RadarCoordinates[ g_Graph, b_List, InfraPoint[ v_ ], opts : OptionsPattern[] ] :=
   RadarCoordinates[ g, b, v, opts ]
 
-RadarCoordinates[ g_Graph, b_List, InfraPoint[ vs_List ], opts : OptionsPattern[] ] /;
+RadarCoordinates[ g_Graph, b_List, InfraSet[ vs_List ], opts : OptionsPattern[] ] /;
   Length[ vs ] > 1 && SubsetQ[ VertexList[ g ], vs ] :=
   RadarCoordinates[ g, b, #, opts ] & /@ vs
 
 (* The crisp Infrageometry definitions load first, so Mathematica keeps them
-   ahead of these InfraPoint overloads in DownValues order.  Reorder so the
-   InfraPoint rules (which are the more specific cases) are tried first. *)
-DownValues[ RadarCoordinates ] = SortBy[ DownValues[ RadarCoordinates ], FreeQ[ #, InfraPoint ] & ]
+   ahead of these point overloads in DownValues order.  Reorder so the
+   InfraPoint / InfraSet rules (the more specific cases) are tried first. *)
+DownValues[ RadarCoordinates ] = SortBy[ DownValues[ RadarCoordinates ], FreeQ[ #, InfraPoint | InfraSet ] & ]
 
 
 (* ===================== OrthogonalCoordinates ===================== *)
@@ -63,7 +63,7 @@ Options[ OrthogonalCoordinates ] = { "SelectCoordinate" -> "Centered" };
 OrthogonalCoordinates[ g_Graph, c_, axes_List, v_, opts : OptionsPattern[] ] /;
     MemberQ[ VertexList[ g ], v ] :=
   With[ {
-      centerVs  = Replace[ c, { InfraPoint[ vs_List ] :> vs, x_ :> { x } } ],
+      centerVs  = Replace[ c, { InfraSet[ vs_List ] :> vs, InfraPoint[ p_ ] :> { p }, x_ :> { x } } ],
       axisPaths = Replace[ #, InfraSegment[ reps_List ] :> First @ reps ] & /@ axes,
       sel       = OptionValue[ "SelectCoordinate" ]
     },
@@ -121,24 +121,24 @@ FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, n_Integer
     If[ Length[ result ] >= n, wrapFrame /@ Take[ result, n ], $Failed ]
   ]
 
-(* InfraPoint centre: singleton degenerates to the single-vertex centre;
-   multi-vertex InfraPoint runs the search per source and merges. *)
+(* InfraPoint centre: the atom degenerates to the single-vertex centre;
+   an InfraSet centre runs the search per source and merges. *)
 
-FindInfraOrthogonalFrame[ g_Graph, InfraPoint[ { v_ } ], rest___ ] :=
+FindInfraOrthogonalFrame[ g_Graph, InfraPoint[ v_ ], rest___ ] :=
   FindInfraOrthogonalFrame[ g, v, rest ]
 
-FindInfraOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip : InfraSet[ vs_List ], axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   With[ { result = findOrthogonalFrameCore[ g, ip, axisLength, 1, { opts } ] },
     If[ result =!= { }, wrapFrame @ First @ result, $Failed ]
   ]
 
-FindInfraOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip : InfraSet[ vs_List ], axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   wrapFrame /@ findOrthogonalFrameCore[ g, ip, axisLength, All, { opts } ]
 
-FindInfraOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip : InfraSet[ vs_List ], axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   wrapFrame /@ Take[ findOrthogonalFrameCore[ g, ip, axisLength, n, { opts } ], UpTo[ n ] ]
 
-FindInfraOrthogonalFrame[ g_Graph, ip : InfraPoint[ vs_List ], axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip : InfraSet[ vs_List ], axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   With[ { result = findOrthogonalFrameCore[ g, ip, axisLength, n, { opts } ] },
     If[ Length[ result ] >= n, wrapFrame /@ Take[ result, n ], $Failed ]
   ]
@@ -186,16 +186,16 @@ FindInfraSpanningAxes[ g_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
    "Dimension", "Origin") is relocated to the Infrageometry paclet.  The InfraPoint
    query overloads stay here. *)
 
-ResistanceCoordinates[ g_Graph, InfraPoint[ { v_ } ], opts : OptionsPattern[] ] :=
+ResistanceCoordinates[ g_Graph, InfraPoint[ v_ ], opts : OptionsPattern[] ] :=
   ResistanceCoordinates[ g, v, opts ]
 
-ResistanceCoordinates[ g_Graph, InfraPoint[ vs_List ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+ResistanceCoordinates[ g_Graph, InfraSet[ vs_List ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
   With[ { all = ResistanceCoordinates[ g, opts ] }, all /@ vs ]
 
 
 (* ===================== Helpers: anchor distance ===================== *)
 
-infraAnchorDistance[ g_, v_, InfraPoint[ vs_List ], agg_ ] :=
+infraAnchorDistance[ g_, v_, InfraSet[ vs_List ], agg_ ] :=
   agg[ GraphDistance[ g, v, # ] & /@ vs ]
 
 infraAnchorDistance[ g_, v_, u_, _ ] :=
@@ -415,7 +415,7 @@ findOrthogonalFrameCore[ g_Graph, c_, axisLength_, count_, opts_List ] /; Member
     ]
   ]
 
-findOrthogonalFrameCore[ g_Graph, InfraPoint[ vs_List ], axisLength_, count_, opts_List ] :=
+findOrthogonalFrameCore[ g_Graph, InfraSet[ vs_List ], axisLength_, count_, opts_List ] :=
   With[ { method = methodName @ resolveSearchMethod[ opts ],
           axisMult = axisMultiplicityFn[ g ] },
     { perSource = Map[ findOrthogonalFrameCore[ g, #, axisLength, All, opts ] &, vs ] },

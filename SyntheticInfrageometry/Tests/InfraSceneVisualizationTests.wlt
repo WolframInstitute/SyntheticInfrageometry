@@ -31,7 +31,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Head @ InfraSceneHighlight[ g, { InfraPoint @ FindInfraPoint[ g, 5 ] } ]
+    Head @ InfraSceneHighlight[ g, { InfraSet @ FindInfraPoint[ g, 5 ] } ]
   ],
   Graph,
   TestID -> "InfraSceneHighlight-vertex-singletons"
@@ -66,7 +66,7 @@ VerificationTest[
     With[ {
         pts  = Take[ VertexList @ g, 2 ],
         opts = Options @
-          InfraSceneHighlight[ g, { InfraPoint[ Take[ VertexList @ g, 2 ] ] -> Red } ] },
+          InfraSceneHighlight[ g, { InfraMesoPoint[ InfraSet[ Take[ VertexList @ g, 2 ] ] ] -> Red } ] },
       Length @ Flatten @ Cases[ opts,
         HoldPattern[ VertexShapeFunction -> rules_ ] :>
           Cases[ rules, ( v_ -> _ ) /; MemberQ[ pts, v ] ], Infinity ] > 0 &&
@@ -144,7 +144,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     ! FreeQ[
       Options @ InfraSceneHighlight[ g,
-        { InfraPoint[ { 1, 6, 11 } ] -> Directive[ Blue, AbsolutePointSize[ 25 ] ] } ],
+        { InfraSet[ { 1, 6, 11 } ] -> Directive[ Blue, AbsolutePointSize[ 25 ] ] } ],
       AbsolutePointSize[ 25 ] ]
   ],
   True,
@@ -157,7 +157,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     ! FreeQ[
       Options @ InfraSceneHighlight[ g,
-        { Style[ InfraPoint[ { 1, 6 } ], Green, AbsolutePointSize[ 30 ] ] } ],
+        { Style[ InfraSet[ { 1, 6 } ], Green, AbsolutePointSize[ 30 ] ] } ],
       AbsolutePointSize[ 30 ] ]
   ],
   True,
@@ -256,7 +256,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     With[ { opts = Options @ InfraSceneHighlight[ g,
-          { InfraPoint[ { 13 } ] -> { VertexStyle -> Blue, VertexSize -> 12 } } ] },
+          { InfraPoint[13] -> { VertexStyle -> Blue, VertexSize -> 12 } } ] },
       Cases[ opts, HoldPattern[ VertexSize -> _ ], Infinity ] =!= { } &&
       FreeQ[ opts, AbsolutePointSize ]
     ]
@@ -271,7 +271,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     With[ { opts = Options @ InfraSceneHighlight[ g,
-          { InfraPoint[ { 13 } ] -> { Blue, AbsolutePointSize[ 12 ],
+          { InfraPoint[13] -> { Blue, AbsolutePointSize[ 12 ],
             "PointSizeRange" -> { 4, 30 } } } ] },
       Cases[ opts, HoldPattern[ VertexShapeFunction -> _ ], Infinity ] =!= { } &&
       ! FreeQ[ opts, AbsolutePointSize[ 12 ] ] &&
@@ -314,9 +314,9 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ {
-        fuzzy = Cases[ Options @ InfraSceneHighlight[ g, { InfraPoint[ { 1, 6 } ] } ],
+        fuzzy = Cases[ Options @ InfraSceneHighlight[ g, { InfraMesoPoint[ InfraSet[ { 1, 6 } ] ] } ],
           AbsolutePointSize[ s_ ] :> s, Infinity ],
-        crisp = Cases[ Options @ InfraSceneHighlight[ g, { InfraPoint[ { 1 } ] } ],
+        crisp = Cases[ Options @ InfraSceneHighlight[ g, { InfraPoint[1] } ],
           AbsolutePointSize[ s_ ] :> s, Infinity ] },
       crisp =!= { } && Max[ fuzzy ] == Max[ crisp ] / 2
     ]
@@ -345,7 +345,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     Cases[
       Options @ InfraSceneHighlight[ g,
-        { InfraPoint[ { 13 } ] -> { VertexSize -> Large } } ],
+        { InfraPoint[13] -> { VertexSize -> Large } } ],
       HoldPattern[ VertexSize -> _ ], Infinity ] =!= { }
   ],
   True,

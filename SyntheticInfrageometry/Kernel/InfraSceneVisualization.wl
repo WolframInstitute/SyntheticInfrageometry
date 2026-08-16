@@ -246,10 +246,11 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                 1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ],
             record },
           {
-            { InfraPoint   [ b_List, w_List ], c_, u_ } :> { b, c, "Points",
-                Append[ u, "Weights" -> AssociationThread[ b -> w ] ] },
-            { InfraPoint   [ b_List ], c_, u_ } :> { b, c, "Points", u },
+            (* no "Weights" override: the generic path reads the measure via
+               infraVertexMultiset / infraNumReps, so density = mass / total mass
+               -- a sharp mesopoint draws full size, a spread one fades. *)
             { InfraMesoPoint[ m_Association ], c_, u_ } :> { Keys @ m, c, "Points", u },
+            { InfraPoint   [ v_ ], c_, u_ } :> { { v }, c, "Points", u },
             { InfraSegment [ dag_Graph ], c_, u_ } :> { { dag }, c, "Paths" , u },
             { InfraSegment [ b : { __Graph } ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },

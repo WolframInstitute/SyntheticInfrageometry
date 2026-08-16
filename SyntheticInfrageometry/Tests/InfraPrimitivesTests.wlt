@@ -3,9 +3,9 @@
    First / Length / Part on the inner list directly. *)
 
 VerificationTest[
-  InfraPoint[ { InfraPoint[ { 1, 2 } ], InfraPoint[ { 3 } ], 4 } ],
-  InfraPoint[ { 1, 2, 3, 4 } ],
-  TestID -> "InfraPoint-auto-flatten"
+  InfraSet[ { InfraSet[ { 1, 2 } ], InfraSet[ { 3, 4 } ] } ],
+  InfraSet[ { 1, 2, 3, 4 } ],
+  TestID -> "InfraSet-auto-flatten"
 ]
 
 VerificationTest[
@@ -19,78 +19,83 @@ VerificationTest[
    from a Find* result). *)
 
 VerificationTest[
-  InfraPoint @ { InfraPoint[ { 1 } ], InfraPoint[ { 2 } ], InfraPoint[ { 3 } ] },
-  InfraPoint[ { 1, 2, 3 } ],
-  TestID -> "InfraPoint-unary-list-to-multi"
+  InfraSet @ { InfraPoint[1], InfraPoint[2], InfraPoint[3] },
+  InfraSet[ { 1, 2, 3 } ],
+  TestID -> "InfraSet-from-atom-list"
 ]
 
 
 (* ----- weighted InfraPoint (mass) ----- *)
 
+(* a set deduplicates; repetition becomes mass only in the measure layer *)
 VerificationTest[
-  InfraPoint[ { a, a, b } ],
-  InfraPoint[ { a, b }, { 2, 1 } ],
-  TestID -> "InfraPoint-duplicate-merges-to-weighted"
+  { InfraSet[ { a, a, b } ], InfraMesoPoint[ { InfraPoint[a], InfraPoint[a], InfraPoint[b] } ] },
+  { InfraSet[ { a, b } ], InfraMesoPoint[<|a -> 2, b -> 1|>] },
+  TestID -> "set-dedups-measure-counts"
+]
+
+(* the all-ones measure STAYS a mesopoint -- layers never cross silently *)
+VerificationTest[
+  Head @ InfraMesoPoint[<|a -> 1, b -> 1|>],
+  InfraMesoPoint,
+  TestID -> "InfraMesoPoint-all-ones-stays-meso"
 ]
 
 VerificationTest[
-  InfraPoint[ { a, b }, { 1, 1 } ],
-  InfraPoint[ { a, b } ],
-  TestID -> "InfraPoint-all-ones-collapses"
+  { InfraMesoPoint[<|a -> 2, b -> 1|>][ "Support" ],
+    InfraMesoPoint[<|a -> 2, b -> 1|>][ "Weights" ],
+    InfraMesoPoint[<|a -> 2, b -> 1|>][ "Mass" ],
+    InfraSet[ { a, b } ][ "Weights" ] },
+  { InfraSet[ { a, b } ], { 2, 1 }, 3, { 1, 1 } },
+  TestID -> "point-layer-weight-accessors"
 ]
 
+(* repetition in an atom list is mass: the counting measure *)
 VerificationTest[
-  { InfraPoint[ { a, b }, { 2, 1 } ][ "Support" ],
-    InfraPoint[ { a, b }, { 2, 1 } ][ "Weights" ],
-    InfraPoint[ { a, b }, { 2, 1 } ][ "Mass" ],
-    InfraPoint[ { a, b } ][ "Weights" ] },
-  { { a, b }, { 2, 1 }, 3, { 1, 1 } },
-  TestID -> "InfraPoint-weight-accessors"
-]
-
-VerificationTest[
-  InfraPoint[ { InfraPoint[ { a }, { 2 } ], InfraPoint[ { a, b } ] } ],
-  InfraPoint[ { a, b }, { 3, 1 } ],
-  TestID -> "InfraPoint-aggregation-sums-mass"
+  InfraMesoPoint[ { InfraPoint[a], InfraPoint[a], InfraPoint[b] } ],
+  InfraMesoPoint[<|a -> 2, b -> 1|>],
+  TestID -> "InfraMesoPoint-counts-atom-list"
 ]
 
 
 (* ----- synthetic-invariant accessors (delegate to Infrageometry over the support) ----- *)
 
 (* one ball-volume row per support vertex: on a path B_r(end) = r + 1 *)
+(* the atom returns the bare per-radius row; the set returns one row per vertex *)
 VerificationTest[
-  InfraPoint[ { 1 } ][ "BallVolumes", PathGraph @ Range[ 7 ], { 0, 3 } ],
-  { { 1, 2, 3, 4 } },
-  TestID -> "InfraPoint-BallVolumes-accessor"
+  { InfraPoint[1][ "BallVolumes", PathGraph @ Range[ 7 ], { 0, 3 } ],
+    InfraSet[ { 1 } ][ "BallVolumes", PathGraph @ Range[ 7 ], { 0, 3 } ] },
+  { { 1, 2, 3, 4 }, { { 1, 2, 3, 4 } } },
+  TestID -> "point-layer-BallVolumes-accessor"
 ]
 
 (* the accessor respects BallVolumes (counting) == Accumulate[ShellAreas] *)
 VerificationTest[
-  With[ { g = CycleGraph[ 10 ], p = InfraPoint[ { 1 } ] },
-    First @ p[ "BallVolumes", g ] === Accumulate[ First @ p[ "ShellAreas", g ] ] ],
+  With[ { g = CycleGraph[ 10 ], p = InfraPoint[1] },
+    p[ "BallVolumes", g ] === Accumulate[ p[ "ShellAreas", g ] ] ],
   True,
   TestID -> "InfraPoint-BallVolumes-accumulates-ShellAreas"
 ]
 
 (* multi-support point: one row per support vertex *)
 VerificationTest[
-  Length @ InfraPoint[ { 1, 5 } ][ "ShellAreas", PathGraph @ Range[ 7 ], { 0, 2 } ],
+  Length @ InfraSet[ { 1, 5 } ][ "ShellAreas", PathGraph @ Range[ 7 ], { 0, 2 } ],
   2,
-  TestID -> "InfraPoint-ShellAreas-per-support-vertex"
+  TestID -> "InfraSet-ShellAreas-per-vertex"
 ]
 
 (* dimension readout projects VolumeGrowthObservables["BallDimension"]: one numeric per support *)
 VerificationTest[
-  MatchQ[ InfraPoint[ { 25 } ][ "Dimension", GridGraph[ { 7, 7 } ] ], { _?NumericQ } ],
+  MatchQ[ InfraPoint[25][ "Dimension", GridGraph[ { 7, 7 } ] ], _?NumericQ ],
   True,
   TestID -> "InfraPoint-Dimension-accessor-numeric"
 ]
 
 VerificationTest[
-  { First @ InfraPoint[ { a, b }, { 2, 1 } ], First @ InfraPoint[ { a, b } ],
-    InfraPoint[ { a, b }, { 2, 1 } ][ "Support" ] },
-  { <| a -> 2, b -> 1 |>, { a, b }, { a, b } },
-  TestID -> "InfraPoint-First-is-the-stored-argument"
+  { First @ InfraMesoPoint[<|a -> 2, b -> 1|>], First @ InfraSet[ { a, b } ],
+    InfraMesoPoint[<|a -> 2, b -> 1|>][ "Support" ], InfraPoint[a][ "Vertex" ] },
+  { <| a -> 2, b -> 1 |>, { a, b }, InfraSet[ { a, b } ], a },
+  TestID -> "point-layer-First-is-the-stored-argument"
 ]
 
 
@@ -177,7 +182,7 @@ VerificationTest[
    bare vertices -- FindInfraPoint output composes into FindInfraSegment directly *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
-    FindInfraSegment[ g, InfraPoint[ { 1 } ], InfraPoint[ { 25 } ] ] === FindInfraSegment[ g, 1, 25 ] ],
+    FindInfraSegment[ g, InfraPoint[1], InfraPoint[25] ] === FindInfraSegment[ g, 1, 25 ] ],
   True,
   TestID -> "FindInfraSegment-InfraPoint-endpoints-give-DAG"
 ]
@@ -271,8 +276,8 @@ VerificationTest[
 VerificationTest[
   FindInfraPolylineSubdivision[ GridGraph[ { 4, 4 } ],
     { 1, 2, 6, 5, 9, 13, 14, 15, 16 }, "MaxLength" -> 2 ][ "Knots" ],
-  { { InfraPoint[ { 1 } ], InfraPoint[ { 6 } ], InfraPoint[ { 9 } ],
-      InfraPoint[ { 14 } ], InfraPoint[ { 16 } ] } },
+  { { InfraPoint[1], InfraPoint[6], InfraPoint[9],
+      InfraPoint[14], InfraPoint[16] } },
   TestID -> "InfraPolyline-Knots-as-InfraPoints"
 ]
 

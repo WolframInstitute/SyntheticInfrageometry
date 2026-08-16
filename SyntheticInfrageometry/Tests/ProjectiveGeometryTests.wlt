@@ -71,7 +71,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  MatchQ[ FindInfraRay[CycleGraph[6], InfraPoint[{1, 2}], 4, All][ "Realizations" ], { __List } ],
+  MatchQ[ FindInfraRay[CycleGraph[6], InfraSet[{1, 2}], 4, All][ "Realizations" ], { __List } ],
   True,
   TestID -> "FindInfraRay-multi-anchor-shape"
 ]
@@ -171,13 +171,13 @@ VerificationTest[
 (* ===== FindInfraCommonLine multi-anchor (wrapped entries) ===== *)
 
 VerificationTest[
-  FindInfraCommonLine[PathGraph[Range[5]], {InfraPoint[{1, 3}]}, All],
+  FindInfraCommonLine[PathGraph[Range[5]], {InfraSet[{1, 3}]}, All],
   InfraLine[{{1, 2, 3, 4, 5}}],
   TestID -> "FindInfraCommonLine-InfraPoint-anchor"
 ]
 
 VerificationTest[
-  FindInfraCommonLine[PathGraph[Range[5]], {InfraPoint[{1, 3}], 5}, All],
+  FindInfraCommonLine[PathGraph[Range[5]], {InfraSet[{1, 3}], 5}, All],
   InfraLine[{{1, 2, 3, 4, 5}}],
   TestID -> "FindInfraCommonLine-mixed-anchor"
 ]
@@ -186,19 +186,19 @@ VerificationTest[
 
 VerificationTest[
   FindInfraCommonPoint[PathGraph[Range[5]], {{1, 2, 3}, {2, 3, 4}}, All],
-  InfraPoint[{2, 3}],
+  { InfraPoint[2], InfraPoint[3] },
   TestID -> "FindInfraCommonPoint-overlap-two"
 ]
 
 VerificationTest[
   FindInfraCommonPoint[PathGraph[Range[5]], {{1, 2}, {3, 4}}, All],
-  InfraPoint[{}],
+  { },
   TestID -> "FindInfraCommonPoint-disjoint-empty"
 ]
 
 VerificationTest[
   FindInfraCommonPoint[PathGraph[Range[5]], {{1, 2, 3}, {2, 3, 4}}, 1],
-  InfraPoint[{2}],
+  { InfraPoint[2] },
   TestID -> "FindInfraCommonPoint-strict-1"
 ]
 
@@ -210,7 +210,7 @@ VerificationTest[
 
 VerificationTest[
   FindInfraCommonPoint[PathGraph[Range[5]], {{1, 2, 3}, {2, 3, 4}}, UpTo[5]],
-  InfraPoint[{2, 3}],
+  { InfraPoint[2], InfraPoint[3] },
   TestID -> "FindInfraCommonPoint-UpTo-soft"
 ]
 
@@ -218,12 +218,12 @@ VerificationTest[
 
 VerificationTest[
   FindInfraCommonPoint[PathGraph[Range[5]], {InfraSegment[{{1, 2, 3}}], InfraSegment[{{2, 3, 4}}]}, All],
-  InfraPoint[{2, 3}],
+  { InfraPoint[2], InfraPoint[3] },
   TestID -> "FindInfraCommonPoint-InfraSegment-wrapped"
 ]
 
 VerificationTest[
-  Length @ FindInfraCommonPoint[CycleGraph[6], FindInfraCommonLine[CycleGraph[6], {1, 4}, All][ "Realizations" ], All][ "Realizations" ],
+  Length[ #[ "Vertex" ] & /@ FindInfraCommonPoint[CycleGraph[6], FindInfraCommonLine[CycleGraph[6], {1, 4}, All][ "Realizations" ], All] ],
   2,
   TestID -> "FindInfraCommonPoint-from-FindInfraCommonLine"
 ]

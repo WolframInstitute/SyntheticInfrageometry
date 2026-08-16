@@ -34,22 +34,22 @@ VerificationTest[
   TestID -> "InfraAngle-Alexandrov-Curvature0-matches-Euclidean"
 ]
 
-(* ===== InfraAngle accepts InfraPoint[{v}] wrappers ===== *)
+(* ===== InfraAngle accepts InfraPoint[v] wrappers ===== *)
 
 VerificationTest[
-  InfraAngle[ GridGraph[ { 5, 5 } ], { InfraPoint[ { 3 } ], InfraPoint[ { 13 } ], InfraPoint[ { 11 } ] } ],
+  InfraAngle[ GridGraph[ { 5, 5 } ], { InfraPoint[3], InfraPoint[13], InfraPoint[11] } ],
   InfraAngle[ GridGraph[ { 5, 5 } ], { 3, 13, 11 } ],
   TestID -> "InfraAngle-accepts-InfraPoint-wrappers-Arclength"
 ]
 
 VerificationTest[
-  InfraAngle[ CompleteGraph[ 3 ], { InfraPoint[ { 1 } ], InfraPoint[ { 2 } ], InfraPoint[ { 3 } ] }, Method -> "Alexandrov" ],
+  InfraAngle[ CompleteGraph[ 3 ], { InfraPoint[1], InfraPoint[2], InfraPoint[3] }, Method -> "Alexandrov" ],
   InfraAngle[ CompleteGraph[ 3 ], { 1, 2, 3 }, Method -> "Alexandrov" ],
   TestID -> "InfraAngle-accepts-InfraPoint-wrappers-Alexandrov"
 ]
 
 VerificationTest[
-  InfraAngle[ GridGraph[ { 5, 5 } ], { 3, InfraPoint[ { 13 } ], 11 } ],
+  InfraAngle[ GridGraph[ { 5, 5 } ], { 3, InfraPoint[13], 11 } ],
   InfraAngle[ GridGraph[ { 5, 5 } ], { 3, 13, 11 } ],
   TestID -> "InfraAngle-accepts-mixed-wrapped-and-bare"
 ]

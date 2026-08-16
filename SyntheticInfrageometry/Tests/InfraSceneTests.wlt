@@ -404,7 +404,7 @@ VerificationTest[
 
 (* Bare vertex paired with an InfraPoint singleton wrapper. *)
 VerificationTest[
-  InfraDistance[GridGraph[{3, 3}], InfraPoint[{1}], 9],
+  InfraDistance[GridGraph[{3, 3}], InfraPoint[1], 9],
   4,
   TestID -> "InfraDistance-bare-InfraPoint-singleton"
 ]
@@ -413,14 +413,14 @@ VerificationTest[
    cross-product of realisations.  d(1,9)=4, d(1,7)=2, d(3,9)=2, d(3,7)=4
    -> Min = 2. *)
 VerificationTest[
-  InfraDistance[GridGraph[{3, 3}], InfraPoint[{1, 3}], InfraPoint[{7, 9}]],
+  InfraDistance[GridGraph[{3, 3}], InfraSet[{1, 3}], InfraSet[{7, 9}]],
   2,
   TestID -> "InfraDistance-InfraPoint-Min-default"
 ]
 
 (* Same arguments under "Aggregation" -> Max gives the diameter, 4. *)
 VerificationTest[
-  InfraDistance[GridGraph[{3, 3}], InfraPoint[{1, 3}], InfraPoint[{7, 9}],
+  InfraDistance[GridGraph[{3, 3}], InfraSet[{1, 3}], InfraSet[{7, 9}],
     "Aggregation" -> Max],
   4,
   TestID -> "InfraDistance-InfraPoint-Max"
@@ -428,7 +428,7 @@ VerificationTest[
 
 (* Mean over the four pair distances = 3. *)
 VerificationTest[
-  InfraDistance[GridGraph[{3, 3}], InfraPoint[{1, 3}], InfraPoint[{7, 9}],
+  InfraDistance[GridGraph[{3, 3}], InfraSet[{1, 3}], InfraSet[{7, 9}],
     "Aggregation" -> Mean],
   3,
   TestID -> "InfraDistance-InfraPoint-Mean"
@@ -451,11 +451,11 @@ VerificationTest[
   TestID -> "InfraDistance-InfraShell-bare"
 ]
 
-(* FindInfraPoint returns InfraPoint[{v}]; InfraDistance accepts it directly,
-   so callers no longer need First @ (#[[ 1, 1 ]] & /@ FindInfraPoint[g, 1]). *)
+(* FindInfraPoint returns InfraPoint atoms; InfraDistance accepts one directly,
+   so callers never index into the wrapper. *)
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], fp = FindInfraPoint[GridGraph[{3, 3}], 1]},
-    InfraDistance[g, fp, 9] === GraphDistance[g, First @ (#[[ 1, 1 ]] & /@ fp), 9]
+  With[{g = GridGraph[{3, 3}], fp = First @ FindInfraPoint[GridGraph[{3, 3}], 1]},
+    InfraDistance[g, fp, 9] === GraphDistance[g, fp["Vertex"], 9]
   ],
   True,
   TestID -> "InfraDistance-FindInfraPoint-no-extraction"
@@ -488,7 +488,7 @@ VerificationTest[
 VerificationTest[
   InfraDistance[ PathGraph @ Range @ 5,
     InfraEllipticShell[ { { 2, 3, 4 } } ],
-    InfraPoint[ { 1 } ] ],
+    InfraPoint[1] ],
   1,
   TestID -> "InfraDistance-InfraEllipticShell-InfraPoint"
 ]
@@ -506,7 +506,7 @@ VerificationTest[
 (* Symmetry: InfraDistance[g, p, q] == InfraDistance[g, q, p] for any two
    multi-realisation arguments under any aggregator over the pairwise matrix. *)
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], p = InfraPoint[ { 1, 3 } ], q = InfraPoint[ { 7, 9 } ] },
+  With[ { g = GridGraph[ { 3, 3 } ], p = InfraSet[ { 1, 3 } ], q = InfraSet[ { 7, 9 } ] },
     And @@ Map[
       agg |-> InfraDistance[ g, p, q, "Aggregation" -> agg ] ===
               InfraDistance[ g, q, p, "Aggregation" -> agg ],
@@ -537,7 +537,7 @@ VerificationTest[
 
 VerificationTest[
   InfraIntersection[
-    InfraPoint[ { 1, 2, 3 } ],
+    InfraSet[ { 1, 2, 3 } ],
     InfraSegment[ { { 2, 3, 4 } } ],
     InfraBall[ { { 3, 4, 5 } } ] ],
   InfraSet[ { 3 } ],
@@ -546,7 +546,7 @@ VerificationTest[
 
 VerificationTest[
   InfraUnion[
-    InfraPoint[ { 1, 2 } ],
+    InfraSet[ { 1, 2 } ],
     InfraSegment[ { { 3, 4 } } ] ],
   InfraSet[ { 1, 2, 3, 4 } ],
   TestID -> "InfraUnion-mixed-heads"

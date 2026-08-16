@@ -4,159 +4,152 @@ PackageImport["WolframInstitute`Infrageometry`"]
 
 PackageScope[findPointPool]
 PackageScope[selectFromPointSpace]
+PackageScope[infraPointVertices]
 
 
 (* ===================== InfraPoint wrapper ===================== *)
 
-(* InfraPoint is the ONLY measured wrapper, and this is why: its realisations
-   ARE vertices, so the marginal onto vertices is the object itself -- nothing
-   is lost, and a deduplicated point bundle therefore cannot express density.
-   For every other head the vertex marginal is a strictly lossy projection
-   (see InfraMeasure), so those heads stay plain SETS of realisations.
+(* InfraPoint is the ATOM of the point ontology: one vertex of the substrate,
+   nothing more.  The three layers are distinct heads --
 
-   InfraPoint[{v1, ...}]          -- unweighted: a candidate set in
-                                     superposition, no density claim.
-   InfraPoint[<|v -> m, ...|>]    -- measured: the measure on vertices, stored
-                                     as the association it is.
-   InfraPoint[{v1, ...}, {m1, ...}] is input sugar for the association (parallel
-   lists at the call site); duplicate vertices sum.  The all-ones measure
-   collapses back to the bare support.
+     InfraPoint[v]                  -- the atom, an element of V
+     InfraSet[{v1, ...}]            -- a family / region, a subset of V
+     InfraMesoPoint[<|v -> m, ...|>] -- a measure on V, entered at projections
 
-   Measured points are CONSTRUCTED at a projection, not propagated: seg[[i]],
-   ["Start"] / ["End"], FindInfraMidpoint, FindInfraShellCenter, ... *)
+   -- because for points alone all three would otherwise share one shape (a
+   weighted vertex set), which is what made the old single head ambiguous: its
+   atom sits at depth 0, so on a graph whose vertices are lists no guard can
+   separate InfraPoint[{1,1}] the atom from InfraPoint[{1,1}] the bundle. *)
 
-(* idempotency: re-wrapping a wrapper is the identity *)
+(* idempotency: re-wrapping an atom is the identity *)
 InfraPoint[ inner_InfraPoint ] := inner
 
-(* vertex marginal: any other Infra object coerces directly to the point of its
-   occupation counts -- InfraPoint[FindInfraBall[g, c, r]] is the ball's vertices,
-   no InfraSet detour.  A set-like wrapper carries all-ones masses, which collapse
-   to the bare support; a multi-realisation bundle keeps its multiplicities, which
-   is exactly the projection InfraMeasure reads (and where a measure is meant to be
-   constructed).  InfraSet is the set-valued twin of this coercion.
+(* The atom carries its vertex label verbatim -- including a list label like
+   {i, j}, which is why no rule may read the argument as a support list: the
+   atom form and a bundle form cannot coexist at arity 1 (see InfraSet for the
+   family layer and InfraMesoPoint for the measure layer). *)
 
-   The head test is a run-time condition, not a pattern built from
-   $infraBundleHeads: the alternatives would be frozen at definition time, and
-   Tools.wl need not have assigned them when this file is read. *)
-InfraPoint[ obj_ ] /;
-    Length[ obj ] === 1 && MatchQ[ Head @ obj, $infraBundleHeads | InfraObject | InfraSet ] :=
-  InfraPoint @ infraVertexMultiset @ obj
+InfraPoint[ v_ ][ "Vertex" ]   := v
+InfraPoint[ v_ ][ "First" ]    := v
+InfraPoint[ v_ ][ "Vertices" ] := { v }
+InfraPoint[ v_ ][ "Mass" ]     := 1
 
-InfraPoint[ verts_List, masses_List ] :=
-  InfraPoint[ Merge[ Thread[ verts -> masses ], Total ] ]
+(* occupation measures (see InfraMeasure): an atom is the unit mass at its vertex. *)
+InfraPoint[ v_ ][ "OccupationCount" ]    := <| v -> 1 |>
+InfraPoint[ v_ ][ "OccupationMeasure" ]  := <| v -> 1 |>
+InfraPoint[ v_ ][ "Measure" ]            := <| v -> 1 |>
+InfraPoint[ v_ ][ "ProbabilityMeasure" ] := <| v -> 1 |>
 
-InfraPoint[ m_Association ] /; Values[ m ] === ConstantArray[ 1, Length @ m ] :=
-  InfraPoint[ Keys @ m ]
+(* synthetic-invariant accessors (Infrageometry primitives at the vertex; the graph is
+   passed in since the wrapper holds no graph).  Extra args forward verbatim -- e.g.
+   p["BallVolumes", g, {0, R}], p["Dimension", g, {1, 5}].  An atom returns the bare
+   per-radius numbers; the collection forms (InfraSet, a list of atoms) return one row
+   per vertex, which is the rectangular shape the statistics compose over. *)
 
-InfraPoint[ reps_List ] /; ! FreeQ[ reps, _InfraPoint ] :=
-  InfraPoint @ Merge[ Catenate @ Replace[ reps, {
-      InfraPoint[ m_Association ] :> Normal @ m,
-      InfraPoint[ vs_List ]       :> Thread[ vs -> 1 ],
-      v_                          :> { v -> 1 } }, { 1 } ], Total ]
-
-(* repetition in a bare support is read as mass -- the measure is the object *)
-InfraPoint[ reps_List ] /; FreeQ[ reps, _InfraPoint ] && ! DuplicateFreeQ[ reps ] :=
-  InfraPoint @ Counts @ reps
-
-InfraPoint[ verts_List ][ "Support" ]        := verts
-InfraPoint[ m_Association ][ "Support" ]     := Keys @ m
-(* alias: the support is the realisation list of a point bundle *)
-InfraPoint[ verts_List ][ "Realizations" ]    := verts
-InfraPoint[ m_Association ][ "Realizations" ] := Keys @ m
-InfraPoint[ verts_List ][ "Weights" ]        := ConstantArray[ 1, Length @ verts ]
-InfraPoint[ m_Association ][ "Weights" ]     := Values @ m
-InfraPoint[ verts_List ][ "Mass" ]           := Length @ verts
-InfraPoint[ m_Association ][ "Mass" ]        := Total @ m
-InfraPoint[ verts_List ][ "First" ]          := First @ verts
-InfraPoint[ m_Association ][ "First" ]       := First @ Keys @ m
-
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
-InfraPoint[ p : _List | _Association ][ "OccupationCount" ] := infraVertexMultiset[ InfraPoint[ p ] ]
-InfraPoint[ p : _List | _Association ][ "OccupationMeasure" ] := InfraMeasure[ InfraPoint[ p ] ]
-InfraPoint[ p : _List | _Association ][ "Measure" ] := InfraMeasure[ InfraPoint[ p ] ]
-InfraPoint[ p : _List | _Association ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraPoint[ p ], Method -> "Probability" ]
-
-(* synthetic-invariant accessors (Infrageometry primitives over the support, one result
-   per support vertex; the graph is passed in since the wrapper holds no graph).  Extra
-   args forward verbatim -- e.g. p["BallVolumes", g, {0, R}], p["Dimension", g, {1, 5}].
-   The dimension / curvature readouts project the Ball* keys of VolumeGrowthObservables.
-   The invariants are properties of the support; the measure does not enter. *)
-InfraPoint[ m_Association ][ key_String, rest__ ] := InfraPoint[ Keys @ m ][ key, rest ]
-
-InfraPoint[ verts_List ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, verts, rest ]
-InfraPoint[ verts_List ][ "ShellAreas", g_, rest___ ]             := ShellAreas[ g, verts, rest ]
-InfraPoint[ verts_List ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients /@ BallVolumes[ g, verts, rest ]
-InfraPoint[ verts_List ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, verts, rest ]
-InfraPoint[ verts_List ][ "Dimension", g_, rest___ ]              := ( #[ "BallDimension" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
-InfraPoint[ verts_List ][ "ScalarCurvature", g_, rest___ ]        := ( #[ "BallScalarCurvature" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
-InfraPoint[ verts_List ][ "CurvatureByRadius", g_, rest___ ]      := ( #[ "BallCurvatureByRadius" ] & ) /@ VolumeGrowthObservables[ g, verts, rest ]
+InfraPoint[ v_ ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, v, rest ]
+InfraPoint[ v_ ][ "ShellAreas", g_, rest___ ]             := ShellAreas[ g, v, rest ]
+InfraPoint[ v_ ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients @ BallVolumes[ g, v, rest ]
+InfraPoint[ v_ ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, v, rest ]
+InfraPoint[ v_ ][ "Dimension", g_, rest___ ]              := VolumeGrowthObservables[ g, v, rest ][ "BallDimension" ]
+InfraPoint[ v_ ][ "ScalarCurvature", g_, rest___ ]        := VolumeGrowthObservables[ g, v, rest ][ "BallScalarCurvature" ]
+InfraPoint[ v_ ][ "CurvatureByRadius", g_, rest___ ]      := VolumeGrowthObservables[ g, v, rest ][ "BallCurvatureByRadius" ]
 
 (* the same invariants the other way round: the Infrageometry primitives accept an
-   InfraPoint directly (via its support), so BallVolumes[g, p] == p["BallVolumes", g]. *)
-InfraPoint /: BallVolumes[ g_, p_InfraPoint, rest___ ]              := BallVolumes[ g, p[ "Support" ], rest ]
-InfraPoint /: ShellAreas[ g_, p_InfraPoint, rest___ ]              := ShellAreas[ g, p[ "Support" ], rest ]
-InfraPoint /: VolumeGrowthObservables[ g_, p_InfraPoint, rest___ ] := VolumeGrowthObservables[ g, p[ "Support" ], rest ]
+   InfraPoint directly, so BallVolumes[g, p] == p["BallVolumes", g]. *)
+InfraPoint /: BallVolumes[ g_, p_InfraPoint, rest___ ]             := BallVolumes[ g, p[ "Vertex" ], rest ]
+InfraPoint /: ShellAreas[ g_, p_InfraPoint, rest___ ]              := ShellAreas[ g, p[ "Vertex" ], rest ]
+InfraPoint /: VolumeGrowthObservables[ g_, p_InfraPoint, rest___ ] := VolumeGrowthObservables[ g, p[ "Vertex" ], rest ]
+
 
 (* ===================== FindInfraPoint ===================== *)
 
-(* FindInfraPoint[g, n] returns n unary InfraPoint[{v}] wrappers.  With
-   "Distance" -> r the n vertices are mutually at exactly distance r;
-   with {dMin, dMax} mutually within that range; with "Max" mutually as far
-   apart as possible (maximal minimum pairwise gap, ties broken randomly);
-   with "Spread" the same maximal gap but ties broken toward the most
-   equidistant set (minimal variance of pairwise distances).  "From" restricts
-   the candidate pool. *)
+(* A point of the substrate, drawn from the "From" candidate pool.  The
+   count-less form returns ONE InfraPoint atom; the calling triple returns a
+   plain List of atoms (the FindClique / FindInstance shape).  The pool as a
+   region is InfraSet @ FindInfraPoint[g, All]; a tuple of mutually constrained
+   points is FindInfraSimplex. *)
 
-Options[ FindInfraPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
+Options[ FindInfraPoint ] = { "From" -> "Random" };
 
 FindInfraPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+  InfraPoint /@ RandomSample[ findPointPool[ graph, OptionValue[ "From" ] ], UpTo[ n ] ]
+
+FindInfraPoint[ graph_Graph, All, opts : OptionsPattern[] ] :=
+  InfraPoint /@ findPointPool[ graph, OptionValue[ "From" ] ]
+
+FindInfraPoint[ graph_Graph, n_Integer, opts : OptionsPattern[] ] :=
+  With[ { result = FindInfraPoint[ graph, UpTo[ n ], opts ] },
+    If[ Length[ result ] < n, $Failed, result ] ]
+
+(* no count: one point *)
+FindInfraPoint[ graph_Graph, opts : OptionsPattern[] ] :=
+  InfraPoint @ RandomChoice @ findPointPool[ graph, OptionValue[ "From" ] ]
+
+
+(* ===================== FindInfraSimplex ===================== *)
+
+(* An infra-simplex: n vertices at prescribed mutual distances -- a clique in
+   the distance-r graph, the complete-graph sibling of FindInfraRegularPolygon
+   (which prescribes cyclic diagonals) and the general case of
+   CompleteInfraEquilateralTriangle.  Each configuration is a List of n
+   InfraPoint atoms; the count argument picks CONFIGURATIONS (FindClique's k),
+   not points.  "Distance" -> r fixes the mutual distance exactly, {dMin, dMax}
+   a range, "Max" maximises the minimum pairwise gap, "Spread" breaks the "Max"
+   ties toward the most equidistant set (minimal variance of pairwise
+   distances).  "From" restricts the candidate pool. *)
+
+Options[ FindInfraSimplex ] = { "From" -> "Random", "Distance" -> "Max", "MaxCliques" -> All };
+
+FindInfraSimplex[ graph_Graph, n_Integer,
+    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   Module[ { pool = findPointPool[ graph, OptionValue[ "From" ] ],
             dist = OptionValue[ "Distance" ],
             maxCl = OptionValue[ "MaxCliques" ],
-            distMatrix, finiteMax, cliques },
-    InfraPoint[ { # } ] & /@ If[ n == 1 || dist === None,
-      RandomSample[ pool, UpTo[ n ] ],
+            distMatrix, finiteMax, cliques, configs },
+    configs = If[ Length[ pool ] < n, { },
       With[ { vertexIndex = Lookup[ AssociationThread[ VertexList @ graph, Range @ VertexCount @ graph ], pool ] },
         distMatrix = GraphDistanceMatrix[ graph ][[ vertexIndex, vertexIndex ]];
         finiteMax = Max @ Select[ Flatten @ distMatrix, # < Infinity & ];
         distMatrix = Replace[ distMatrix, Infinity -> finiteMax + 1, { 2 } ];
         With[ { mask = 1 - IdentityMatrix @ Length @ vertexIndex },
           If[ dist === "Max" || dist === "Spread",
-            cliques = {};
+            cliques = { };
             Do[
               cliques = FindClique[
                 AdjacencyGraph[ pool, UnitStep[ distMatrix - d ] * UnitStep[ finiteMax - distMatrix ] * mask ],
                 { n, Length @ pool }, maxCl ];
-              If[ cliques =!= {}, Break[] ],
+              If[ cliques =!= { }, Break[ ] ],
               { d, Reverse @ DeleteCases[ Union @@ distMatrix, 0 | _?( # > finiteMax & ) ] } ];
             Which[
-              cliques === {}, {},
-              dist === "Spread", mostEquidistantSubset[ cliques, distMatrix, pool, n ],
-              True, RandomSample[ RandomChoice @ cliques, UpTo[ n ] ] ],
+              cliques === { }, { },
+              dist === "Spread", equidistanceOrderedSubsets[ cliques, distMatrix, pool, n ],
+              True, DeleteDuplicates[ Sort /@ Catenate[ Subsets[ #, { n } ] & /@ cliques ] ] ],
             With[ { range = Replace[ dist,
                     { d_?NumericQ :> { d, d },
                       { dMin_, dMax_ } :> { dMin, dMax /. Infinity -> finiteMax } } ] },
               cliques = FindClique[
                 AdjacencyGraph[ pool, UnitStep[ distMatrix - range[[ 1 ]] ] * UnitStep[ range[[ 2 ]] - distMatrix ] * mask ],
-                { Min[ n, Length @ pool ], Length @ pool }, maxCl ];
-              If[ cliques === {}, {}, RandomSample[ RandomChoice @ cliques, UpTo[ n ] ] ]
+                { n, Length @ pool }, maxCl ];
+              If[ cliques === { }, { },
+                DeleteDuplicates[ Sort /@ Catenate[ Subsets[ #, { n } ] & /@ cliques ] ] ]
             ]
           ]
         ]
       ]
-    ]
+    ];
+    Replace[ infraCap[ configs, count ], cs_List :> Map[ InfraPoint, cs, { 2 } ] ]
   ]
 
-FindInfraPoint[ graph_Graph, All, opts : OptionsPattern[] ] :=
-  FindInfraPoint[ graph, UpTo[ VertexCount[ graph ] ], opts ]
-
-FindInfraPoint[ graph_Graph, n_Integer, opts : OptionsPattern[] ] :=
-  With[ { result = FindInfraPoint[ graph, UpTo[ n ], opts ] },
-    If[ Length[ result ] < n, $Failed, result ] ]
-
-(* no count: THE canonical point -- the whole candidate pool in superposition *)
-FindInfraPoint[ graph_Graph, opts : OptionsPattern[] ] :=
-  InfraPoint[ findPointPool[ graph, OptionValue[ "From" ] ] ]
+(* the n-subsets of the maximal-gap cliques, most equidistant first (minimal
+   variance of pairwise distances); for n < 3 every pair is trivially
+   equidistant, so the found order stands *)
+equidistanceOrderedSubsets[ cliques_List, distMatrix_, pool_List, n_Integer ] :=
+  With[ { idx = AssociationThread[ pool -> Range @ Length @ pool ],
+          subsets = DeleteDuplicates[ Sort /@ Catenate[ Subsets[ #, { n } ] & /@ cliques ] ] },
+    If[ n < 3, subsets,
+      SortBy[ subsets,
+        s |-> Variance[ distMatrix[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] & /@ Subsets[ s, { 2 } ] ] ] ]
+  ]
 
 
 (* "From" option dispatch -- vertex pool to draw points from. *)
@@ -176,7 +169,7 @@ findPointPool[ graph_Graph, { "Center", _ } ] := VertexList[ graph ]
 
 findPointPool[ graph_Graph, _String ]     := VertexList[ graph ]
 
-findPointPool[ graph_Graph, InfraPoint[ reps_List ] ] := reps
+findPointPool[ graph_Graph, InfraPoint[ v_ ] ] := { v }
 findPointPool[ graph_Graph, InfraMesoPoint[ m_Association ] ] := Keys @ m
 findPointPool[ graph_Graph, InfraSet[ vs_List ] ] := vs
 
@@ -189,7 +182,7 @@ findPointPool[ graph_Graph, ( origin_ -> spec_ ) ] :=
   ]
 
 findPointPool[ graph_Graph, v_ ] /; MemberQ[ VertexList[ graph ], v ] := { v }
-findPointPool[ graph_Graph, list_List ] /; AllTrue[ list, MatchQ[ InfraPoint[ { _ } ] ] ] := First /@ list
+findPointPool[ graph_Graph, list : { __InfraPoint } ] := #[[ 1 ]] & /@ list
 findPointPool[ graph_Graph, list_List ] := list
 findPointPool[ graph_Graph, _ ]         := VertexList[ graph ]
 
@@ -393,32 +386,26 @@ FindClosestInfraPoint[ graph_Graph, line_, point_,
 Options[ SelectInfraPoint ] = { "From" -> All, "Distance" -> None, "MaxCliques" -> All };
 
 SelectInfraPoint[ graph_Graph, vertices_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] /;
-    vertices === { } || ! AllTrue[ vertices, MatchQ[ InfraPoint[ { _ } ] ] ] :=
-  InfraPoint[ { # } ] & /@ selectFromPointSpace[ graph, vertices, n,
+    vertices === { } || ! AllTrue[ vertices, MatchQ[ _InfraPoint ] ] :=
+  InfraPoint /@ selectFromPointSpace[ graph, vertices, n,
     OptionValue[ "From" ], OptionValue[ "Distance" ], OptionValue[ "MaxCliques" ] ]
 
 SelectInfraPoint[ graph_Graph, vertices_List, All, opts : OptionsPattern[] ] /;
-    vertices === { } || ! AllTrue[ vertices, MatchQ[ InfraPoint[ { _ } ] ] ] :=
+    vertices === { } || ! AllTrue[ vertices, MatchQ[ _InfraPoint ] ] :=
   SelectInfraPoint[ graph, vertices, UpTo[ Length[ vertices ] ], opts ]
 
 SelectInfraPoint[ graph_Graph, vertices_List, n_Integer : 1, opts : OptionsPattern[] ] /;
-    vertices === { } || ! AllTrue[ vertices, MatchQ[ InfraPoint[ { _ } ] ] ] :=
+    vertices === { } || ! AllTrue[ vertices, MatchQ[ _InfraPoint ] ] :=
   With[ { result = SelectInfraPoint[ graph, vertices, UpTo[ n ], opts ] },
     If[ ListQ[ result ] && Length[ result ] < n, $Failed, result ] ]
 
-SelectInfraPoint[ graph_Graph, InfraPoint[ vs_List ],
+SelectInfraPoint[ graph_Graph, list : { __InfraPoint },
                   countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  With[ { result = SelectInfraPoint[ graph, vs, countSpec, opts ] },
-    If[ result === $Failed, $Failed, InfraPoint[ First /@ result ] ] ]
-
-SelectInfraPoint[ graph_Graph, list_List,
-                  countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
-    list =!= { } && AllTrue[ list, MatchQ[ InfraPoint[ { _ } ] ] ] :=
-  SelectInfraPoint[ graph, First /@ list, countSpec, opts ]
+  SelectInfraPoint[ graph, #[[ 1 ]] & /@ list, countSpec, opts ]
 
 (* Any set-like Infra* wrapper is a vertex bundle: select from its vertex set. *)
 SelectInfraPoint[ graph_Graph,
-                  bundle : ( InfraBall | InfraShell | InfraEllipticShell | InfraPlane | InfraSet | InfraObject | InfraCircle | InfraEllipse )[ _List ],
+                  bundle : ( InfraBall | InfraShell | InfraEllipticShell | InfraPlane | InfraSet | InfraObject | InfraCircle | InfraEllipse )[ _List ] | _InfraMesoPoint,
                   countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   SelectInfraPoint[ graph, infraVertexSet[ bundle ], countSpec, opts ]
 
@@ -494,8 +481,11 @@ pointPoolPositions[ graph_Graph, vertices_List, ( anchor_ -> spec_ ), _ ] :=
       { 1 }, Heads -> False ]
   ]
 
-pointPoolPositions[ _, vertices_List, InfraPoint[ reps_List ], _ ] :=
+pointPoolPositions[ _, vertices_List, InfraSet[ reps_List ], _ ] :=
   Flatten @ Position[ vertices, Alternatives @@ reps, { 1 }, Heads -> False ]
+
+pointPoolPositions[ _, vertices_List, list : { __InfraPoint }, _ ] :=
+  Flatten @ Position[ vertices, Alternatives @@ ( #[[ 1 ]] & /@ list ), { 1 }, Heads -> False ]
 
 pointPoolPositions[ _, vertices_List, v_, _ ] /; MemberQ[ vertices, v ] :=
   { First @ FirstPosition[ vertices, v ] }
@@ -514,8 +504,11 @@ pointPoolPositions[ _, vertices_List, _, _ ] := Range @ Length @ vertices
 InfraReachableQ[ graph_Graph, p1_, p2_ ] :=
   IntersectingQ[ VertexComponent[ graph, infraPointVertices @ p1 ], infraPointVertices @ p2 ]
 
-infraPointVertices[ InfraPoint[ vs_List ] ] := vs
-infraPointVertices[ list_List ]              := list
+infraPointVertices[ InfraPoint[ v_ ] ]        := { v }
+infraPointVertices[ InfraSet[ vs_List ] ]     := vs
+infraPointVertices[ InfraMesoPoint[ m_Association ] ] := Keys @ m
+infraPointVertices[ list : { __InfraPoint } ] := #[[ 1 ]] & /@ list
+infraPointVertices[ list_List ]               := list
 infraPointVertices[ v_ ]                     := { v }
 
 
@@ -527,13 +520,16 @@ dispatchConstruction[ graph_Graph, InfraPoint[ ] ] :=
 dispatchConstruction[ graph_Graph, InfraPoint[ v_ ] ] /; MemberQ[ VertexList @ graph, v ] :=
   { v }
 
-(* A predefined, already-resolved point: the unary/multi InfraPoint[{v, ...}]
-   wrapper returned by FindInfraPoint et al.  Each underlying vertex is a
-   realisation, so a scene symbol can be bound directly to a computed point
-   (p == FindInfraPoint[graph, ...][[1]]) without unwrapping. *)
-dispatchConstruction[ graph_Graph, InfraPoint[ vs_List ] ] /;
+(* A predefined, already-resolved point family: an InfraSet or a list of
+   atoms as returned by FindInfraPoint et al., so a scene symbol can be bound
+   directly to a computed point without unwrapping. *)
+dispatchConstruction[ graph_Graph, InfraSet[ vs_List ] ] /;
     vs =!= { } && SubsetQ[ VertexList @ graph, vs ] :=
   vs
+
+dispatchConstruction[ graph_Graph, list : { __InfraPoint } ] /;
+    SubsetQ[ VertexList @ graph, #[[ 1 ]] & /@ list ] :=
+  #[[ 1 ]] & /@ list
 
 dispatchConstruction[ graph_Graph, InfraPoint[ pool_String ] ] :=
   Switch[ pool,

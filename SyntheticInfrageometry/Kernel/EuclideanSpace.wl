@@ -30,10 +30,10 @@ InfraScalarProduct[ graph_Graph, o_, u_, v_, OptionsPattern[] ] :=
         ]
       ],
     "Parallelogram",
-      With[ { plus  = FindInfraLinearCombination[
-                graph, o, { { 1, u }, {  1, v } }, All, "ScaleMethod" -> "Line" ][ "Realizations" ],
-              minus = FindInfraLinearCombination[
-                graph, o, { { 1, u }, { -1, v } }, All, "ScaleMethod" -> "Line" ][ "Realizations" ] },
+      With[ { plus  = #[ "Vertex" ] & /@ FindInfraLinearCombination[
+                graph, o, { { 1, u }, {  1, v } }, All, "ScaleMethod" -> "Line" ],
+              minus = #[ "Vertex" ] & /@ FindInfraLinearCombination[
+                graph, o, { { 1, u }, { -1, v } }, All, "ScaleMethod" -> "Line" ] },
         If[ plus === { } || minus === { }, $Failed,
           With[ { vals = DeleteDuplicates @ Flatten @ Outer[
                 ( GraphDistance[ graph, o, #1 ]^2 - GraphDistance[ graph, o, #2 ]^2 ) / 4 &,
@@ -97,11 +97,11 @@ InfraAngle::badmethod = "Method `1` is not supported by InfraAngle.";
 
 Options[ InfraAngle ] = { Method -> "Arclength" };
 
-(* Accept InfraPoint[{v}] wrappers anywhere in the triple -- paclet-wide
+(* Accept InfraPoint atoms anywhere in the triple -- paclet-wide
    convention that wrapped and bare-vertex forms are interchangeable. *)
 InfraAngle[ graph_Graph, triple : { _, _, _ }, opts : OptionsPattern[] ] /;
     ! FreeQ[ triple, _InfraPoint ] :=
-  InfraAngle[ graph, triple /. InfraPoint[ { v_ } ] :> v, opts ]
+  InfraAngle[ graph, triple /. InfraPoint[ v_ ] :> v, opts ]
 
 InfraAngle[ graph_Graph, { q1_, p_, q2_ }, OptionsPattern[] ] :=
   Switch[ methodName @ OptionValue[ Method ],

@@ -353,8 +353,9 @@ Scan[ defineInfraBundleRules,
    property, it is reconstructed at the projection); anything else becomes a
    singleton. *)
 
-With[ { heads = InfraPoint | $infraBundleHeads },
-  infraSpread[ InfraPoint[ m_Association ] ] := Keys @ m;
+infraSpread[ InfraPoint[ v_ ] ] := { v }
+infraSpread[ list : { __InfraPoint } ] := #[[ 1 ]] & /@ list
+With[ { heads = $infraBundleHeads },
   infraSpread[ heads[ reps_List ] ] := reps;
   infraSpread[ list_List ] /; AllTrue[ list, MatchQ[ heads[ { _ } ] ] ] :=
     #[[ 1, 1 ]] & /@ list
@@ -466,6 +467,14 @@ spreadFind[ wrapHead_, count_, core_, anchors__ ] :=
 
 (* the count contract on a realisation set: strict n fails on under-supply. *)
 
+(* the point family is a plain List of atoms, not a wrapper: the Wolfram
+   FindClique / FindInstance shape.  Regions are InfraSet, measures are
+   InfraMesoPoint -- see the point ontology in InfraPoint.wl. *)
+bundleTake[ InfraPoint, reps_, All ]               := InfraPoint /@ reps
+bundleTake[ InfraPoint, reps_, UpTo[ n_Integer ] ] := InfraPoint /@ Take[ reps, UpTo @ n ]
+bundleTake[ InfraPoint, reps_, n_Integer ]         :=
+  If[ Length @ reps < n, $Failed, InfraPoint /@ Take[ reps, n ] ]
+
 bundleTake[ head_, reps_, All ]               := head[ reps ]
 bundleTake[ head_, reps_, UpTo[ n_Integer ] ] := head[ Take[ reps, UpTo @ n ] ]
 bundleTake[ head_, reps_, n_Integer ]         :=
@@ -481,8 +490,7 @@ bundleTake[ head_, reps_, n_Integer ]         :=
    enumeration) exactly as the enumerated family would. *)
 
 infraVertexMultiset[ InfraMesoPoint[ m_Association ] ] := m
-infraVertexMultiset[ InfraPoint[ m_Association ] ] := m
-infraVertexMultiset[ InfraPoint[ reps_List ] ]     := Counts @ reps
+infraVertexMultiset[ InfraPoint[ v_ ] ] := <| v -> 1 |>
 infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] := Counts @ vs
 infraVertexMultiset[ InfraSegment[ dag_Graph ] ]   := GeodesicOccupation[ dag ]
 With[ { heads = $infraBundleHeads },
@@ -581,7 +589,7 @@ infraRepType[ InfraSet ]           = "Sets";
 
 infraRepSeqs[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] := polylineToVertexSeqs @ reps
 infraRepSeqs[ ( InfraObject | InfraSet )[ vs_List ] ]                        := { vs }
-infraRepSeqs[ InfraPoint[ m_Association ] ]                                  := Keys @ m
+infraRepSeqs[ InfraPoint[ v_ ] ]                                             := { v }
 infraRepSeqs[ InfraMesoPoint[ m_Association ] ]                              := Keys @ m
 infraRepSeqs[ head_[ reps_List, ___ ] ]                                      := reps
 
@@ -600,7 +608,7 @@ infraRepVerts[ _, rep_ ]        := rep
    realisation slot (1 for an explicit realisation, the whole geodesic count
    for a compact DAG atom); InfraObject / InfraSet hold a single set, N = 1. *)
 
-infraNumReps[ InfraPoint[ m_Association ] ]         := If[ Length @ m === 0, 1, Total @ m ]
+infraNumReps[ InfraPoint[ _ ] ]                     := 1
 infraNumReps[ InfraMesoPoint[ m_Association ] ]      := If[ Length @ m === 0, 1, Total @ m ]
 infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
 infraNumReps[ InfraSegment[ dag_Graph ] ]           := atomFamilySize[ dag ]

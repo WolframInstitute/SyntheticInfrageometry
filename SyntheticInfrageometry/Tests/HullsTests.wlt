@@ -241,8 +241,8 @@ VerificationTest[
   With[ { g = GridGraph[ { 6, 4 } ] },
     SameQ[
       FindBallHull[ g, { 1, 6, 22 } ],
-      FindBallHull[ g, { InfraPoint[ { 1 } ], InfraPoint[ { 6 } ], InfraPoint[ { 22 } ] } ],
-      FindBallHull[ g, InfraPoint[ { 1, 6, 22 } ] ] ] ],
+      FindBallHull[ g, { InfraPoint[1], InfraPoint[6], InfraPoint[22] } ],
+      FindBallHull[ g, InfraSet[ { 1, 6, 22 } ] ] ] ],
   True,
   TestID -> "FindBallHull-input-form-invariance"
 ]

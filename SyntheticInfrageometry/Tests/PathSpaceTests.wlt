@@ -492,19 +492,19 @@ EndTestSection[]
 
 BeginTestSection["SelectInfraPoint"]
 VerificationTest[
-  SubsetQ[ Range[ 5 ], #[[1, 1]]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Center" ] ],
+  SubsetQ[ Range[ 5 ], #["Vertex"]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Center" ] ],
   True,
   TestID -> "SelectInfraPoint-Center-pool-is-sublist"
 ]
 
 VerificationTest[
-  #[[1, 1]]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Center" ],
+  #["Vertex"]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Center" ],
   { 3 },
   TestID -> "SelectInfraPoint-Center-on-PathGraph-picks-middle"
 ]
 
 VerificationTest[
-  Sort[ #[[1, 1]]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Periphery" ] ],
+  Sort[ #["Vertex"]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Periphery" ] ],
   { 1, 5 },
   TestID -> "SelectInfraPoint-Periphery-on-PathGraph-picks-endpoints"
 ]
@@ -546,13 +546,14 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Head @ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], InfraPoint[ Range[ 5 ] ], All ],
-  InfraPoint,
-  TestID -> "SelectInfraPoint-preserves-InfraPoint-wrapper"
+  { Head @ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], InfraSet[ Range[ 5 ] ], All ],
+    Head @ First @ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], InfraSet[ Range[ 5 ] ], All ] },
+  { List, InfraPoint },
+  TestID -> "SelectInfraPoint-returns-atom-list"
 ]
 
 VerificationTest[
-  Sort[ #[[1, 1]]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], All, "From" -> "Periphery" ][ Range[ 5 ] ] ],
+  Sort[ #["Vertex"]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], All, "From" -> "Periphery" ][ Range[ 5 ] ] ],
   { 1, 5 },
   TestID -> "SelectInfraPoint-operator-form"
 ]
@@ -565,7 +566,7 @@ VerificationTest[
 
 VerificationTest[
   SubsetQ[ Range[ 5 ],
-    #[[1, 1]]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> ( 3 -> 2 ) ] ],
+    #["Vertex"]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> ( 3 -> 2 ) ] ],
   True,
   TestID -> "SelectInfraPoint-anchor-distance-pool-is-sublist"
 ]
@@ -682,7 +683,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     With[ { s1 = FindInfraSegment[ g, 1, 9 ], s2 = FindInfraSegment[ g, 3, 7 ] },
-      Sort @ FindInfraCommonPoint[ g, { s1, s2 } ][ "Support" ] ===
+      Sort[ #[ "Vertex" ] & /@ FindInfraCommonPoint[ g, { s1, s2 } ] ] ===
         Sort @ Intersection[
           Union @@ FindInfraSegment[ g, 1, 9, All ][ "Realizations" ],
           Union @@ FindInfraSegment[ g, 3, 7, All ][ "Realizations" ] ] ]

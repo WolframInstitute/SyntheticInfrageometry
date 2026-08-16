@@ -23,7 +23,7 @@ CollinearQ[ graph_Graph, verts_List ] :=
 
 ConcurrentQ[ graph_Graph, lines_List ] :=
   Length[ lines ] <= 1 ||
-    Length[ FindInfraCommonPoint[ graph, lines, UpTo[ 1 ] ][ "Realizations" ] ] > 0
+    Length[ FindInfraCommonPoint[ graph, lines, UpTo[ 1 ] ] ] > 0
 
 
 (* UniquePencilQ[g, O]: every direction at O is single-valued - exactly
@@ -45,7 +45,7 @@ UniqueCollinearQ[ graph_Graph, verts_List ] :=
    the unique-witness companion of ConcurrentQ. *)
 
 UniqueConcurrentQ[ graph_Graph, lines_List ] :=
-  Length[ FindInfraCommonPoint[ graph, lines, All ][ "Realizations" ] ] == 1
+  Length[ FindInfraCommonPoint[ graph, lines, All ] ] == 1
 
 
 (* ===================== Whitehead axioms ===================== *)

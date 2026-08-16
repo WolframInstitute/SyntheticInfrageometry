@@ -28,9 +28,11 @@ VerificationTest[
 
 (* InfraPoint: realisations are vertices directly *)
 VerificationTest[
-  InfraSet[ InfraPoint[ {3, 1, 3, 5} ] ][ "Vertices" ],
-  {1, 3, 5},
-  TestID -> "InfraSet-coerces-InfraPoint"
+  { InfraSet[ InfraSet[ {3, 1, 3, 5} ] ][ "Vertices" ],
+    InfraSet[ { InfraPoint[3], InfraPoint[1], InfraPoint[3] } ][ "Vertices" ],
+    InfraSet[ InfraPoint[3] ][ "Vertices" ] },
+  { {1, 3, 5}, {1, 3}, {3} },
+  TestID -> "InfraSet-coerces-points"
 ]
 
 (* InfraBall: realisations are vertex-lists, flattened and unioned *)
@@ -238,41 +240,41 @@ VerificationTest[
 
 (* InfraPoint origin seeds a multi-source front: S_0 is the source set. *)
 VerificationTest[
-  Sort @ First[ FindAdvancingInfraFront[ GridGraph[ {6, 6} ], InfraPoint[ {1, 36} ], 5 ] ][ "Vertices" ],
+  Sort @ First[ FindAdvancingInfraFront[ GridGraph[ {6, 6} ], InfraSet[ {1, 36} ], 5 ] ][ "Vertices" ],
   {1, 36},
   TestID -> "FindAdvancingInfraFront-multi-source-seed"
 ]
 
 
-(* ===== InfraPoint coerces any Infra object to its vertex marginal ===== *)
+(* ===== the two projections of a bundle: support and occupation ===== *)
 
-(* a set-like wrapper: all-ones masses collapse to the bare support, so the
-   coercion agrees with the InfraSet route and needs no repackaging *)
+(* a set-like wrapper: InfraSet reads the support, InfraMesoPoint the
+   occupation, which for a set is the all-ones measure on that same support *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     With[ { ball = FindInfraBall[ g, 13, 2 ] },
-      InfraPoint[ ball ] === InfraPoint[ InfraSet[ ball ][ "Vertices" ] ] &&
-        InfraPoint[ ball ][ "Weights" ] === ConstantArray[ 1, Length @ InfraSet[ ball ][ "Vertices" ] ] ]
+      InfraMesoPoint[ ball ][ "Support" ] === InfraSet[ ball ] &&
+        InfraMesoPoint[ ball ][ "Weights" ] === ConstantArray[ 1, Length @ InfraSet[ ball ][ "Vertices" ] ] ]
   ],
   True,
-  TestID -> "InfraPoint-coerces-InfraBall-to-support"
+  TestID -> "InfraMesoPoint-coerces-InfraBall-to-occupation"
 ]
 
 (* a multi-realisation bundle keeps the occupation multiplicities *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { seg = FindInfraSegment[ g, 1, 16, All ] },
-      InfraPoint[ seg ][ "OccupationCount" ] === seg[ "OccupationCount" ] ]
+      InfraMesoPoint[ seg ][ "OccupationCount" ] === seg[ "OccupationCount" ] ]
   ],
   True,
-  TestID -> "InfraPoint-coerces-bundle-to-occupation-measure"
+  TestID -> "InfraMesoPoint-coerces-bundle-to-occupation-measure"
 ]
 
 (* the coerced point is a legal anchor and re-wrapping is the identity *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
-    With[ { p = InfraPoint[ FindInfraShell[ g, 13, { 2, 2 } ] ] },
-      InfraPoint[ p ] === p &&
+    With[ { p = InfraSet[ FindInfraShell[ g, 13, { 2, 2 } ] ] },
+      InfraSet[ p ] === p &&
         Head @ FindInfraSegment[ g, p, 13, All ] === InfraSegment ]
   ],
   True,
@@ -281,9 +283,9 @@ VerificationTest[
 
 (* scene-language constructors keep their meaning: only single-argument wrappers coerce *)
 VerificationTest[
-  { Head @ InfraShell[ 3, 2 ], Head @ InfraPoint[ 7 ], Head @ InfraPoint[ { 3, 4 } ] },
-  { InfraShell, InfraPoint, InfraPoint },
-  TestID -> "InfraPoint-coercion-leaves-scene-forms-alone"
+  { Head @ InfraShell[ 3, 2 ], Head @ InfraPoint[ 7 ], Head @ InfraSet[ { 3, 4 } ] },
+  { InfraShell, InfraPoint, InfraSet },
+  TestID -> "point-heads-stay-distinct"
 ]
 
 EndTestSection[]

@@ -84,7 +84,7 @@ VerificationTest[
 
 (* Multi-source: an InfraPoint origin seeds S_0 with the whole vertex set. *)
 VerificationTest[
-  First[ FindAdvancingInfraFront[ CycleGraph[ 10 ], InfraPoint[ { 1, 6 } ], 4 ] ][ "Vertices" ],
+  First[ FindAdvancingInfraFront[ CycleGraph[ 10 ], InfraSet[ { 1, 6 } ], 4 ] ][ "Vertices" ],
   { 1, 6 },
   TestID -> "AdvancingFront-multi-source-seed"
 ]

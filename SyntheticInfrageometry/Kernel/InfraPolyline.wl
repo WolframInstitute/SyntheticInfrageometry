@@ -25,7 +25,7 @@ InfraPolyline[ reps_List ][ "Length" ] :=
 
 (* "Knots" = list of knot vertices wrapped as unary InfraPoint, per realisation. *)
 InfraPolyline[ reps_List ][ "Knots" ] :=
-  Map[ poly |-> ( InfraPoint[ { # } ] & /@ polylineToKnots[ poly ] ), reps ]
+  Map[ poly |-> ( InfraPoint /@ polylineToKnots[ poly ] ), reps ]
 (* ===================== FindInfraPolylineSubdivision ===================== *)
 
 (* Greedy chunking of a walk into the fewest geodesic InfraSegments whose

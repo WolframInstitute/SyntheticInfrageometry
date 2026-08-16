@@ -9,6 +9,7 @@ PackageExport[InfraMesoPoint]
 (* InfraPoint.wl *)
 PackageExport[InfraPoint]
 PackageExport[FindInfraPoint]
+PackageExport[FindInfraSimplex]
 PackageExport[FindInfraMidpoint]
 PackageExport[FindInfraGoldenSection]
 PackageExport[FindInfraReflection]

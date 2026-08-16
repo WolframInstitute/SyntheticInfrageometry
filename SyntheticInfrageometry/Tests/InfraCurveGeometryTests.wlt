@@ -165,7 +165,7 @@ VerificationTest[
 (* ===== TurningAngles accepts InfraPoint-wrapped path vertices ===== *)
 
 VerificationTest[
-  TurningAngles[CycleGraph[6], {InfraPoint[{1}], InfraPoint[{2}], InfraPoint[{3}]}],
+  TurningAngles[CycleGraph[6], {InfraPoint[1], InfraPoint[2], InfraPoint[3]}],
   TurningAngles[CycleGraph[6], {1, 2, 3}],
   TestID -> "TurningAngles-accepts-InfraPoint-wrappers"
 ]

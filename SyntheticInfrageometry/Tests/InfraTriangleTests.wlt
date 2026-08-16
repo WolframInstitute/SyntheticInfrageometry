@@ -10,7 +10,7 @@ VerificationTest[
 
 VerificationTest[
   InfraTriangle[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4 } } ], InfraSegment[ { { 4, 1 } } ] } } ][ "Vertices" ],
-  { { InfraPoint[ { 1 } ], InfraPoint[ { 3 } ], InfraPoint[ { 4 } ] } },
+  { { InfraPoint[1], InfraPoint[3], InfraPoint[4] } },
   TestID -> "InfraTriangle-Vertices-single"
 ]
 

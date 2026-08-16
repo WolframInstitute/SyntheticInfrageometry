@@ -27,7 +27,7 @@ InfraPolygon[ reps_List ][ "Length" ] :=
 
 (* "Vertices" = corner vertices per realisation, as unary InfraPoints. *)
 InfraPolygon[ reps_List ][ "Vertices" ] :=
-  Map[ poly |-> ( InfraPoint[ { # } ] & /@ Most @ polylineToKnots[ poly ] ), reps ]
+  Map[ poly |-> ( InfraPoint /@ Most @ polylineToKnots[ poly ] ), reps ]
 
 
 (* ===================== FindInfraPolygon ===================== *)
@@ -59,7 +59,7 @@ findPolygonCore[ graph_Graph, vertices_List, count_, opts : OptionsPattern[ Find
     ]
   ]
 
-polygonCorner[ InfraPoint[ { v_ } ] ] := v
+polygonCorner[ InfraPoint[ v_ ] ] := v
 polygonCorner[ v_ ]                   := v
 
 
@@ -153,9 +153,9 @@ FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
      All                        -> {None,  All}    (no localization)
      v                          -> {v,     All}    (cycles containing v)
      v -> r                     -> {v,     r}      (cycles within N_r(v))
-     InfraPoint[{v}]            -> {v,     All}    (unwrap unary wrapper)
-     InfraPoint[{v1,...,vk}]    -> {{...}, All}    (multi-anchor: union semantics)
-     {InfraPoint[{v1}],...}     -> {{...}, All}    (list of unaries, e.g. FindInfraPoint output)
+     InfraPoint[v]              -> {v,     All}    (unwrap the atom)
+     InfraSet[{v1,...,vk}]      -> {{...}, All}    (multi-anchor: union semantics)
+     {InfraPoint[v1],...}       -> {{...}, All}    (atom list, e.g. FindInfraPoint output)
    Anchor in the localization (-> r) case is forwarded directly to
    NeighborhoodGraph (which accepts vertex or vertex-list); anchor in the
    membership case is dispatched by anchorContainedQ (MemberQ vs IntersectingQ). *)
@@ -167,9 +167,9 @@ parseFromSpec[ anchor_ ] /; ! MatchQ[ anchor, _Rule ] :=
   { normalizeAnchor @ anchor, All }
 
 
-normalizeAnchor[ InfraPoint[ { v_ } ] ]                              := v
-normalizeAnchor[ InfraPoint[ vs_List ] ]                             := vs
-normalizeAnchor[ list_List ] /; AllTrue[ list, MatchQ[ InfraPoint[ { _ } ] ] ] :=
+normalizeAnchor[ InfraPoint[ v_ ] ]                                  := v
+normalizeAnchor[ InfraSet[ vs_List ] ]                               := vs
+normalizeAnchor[ list_List ] /; AllTrue[ list, MatchQ[ _InfraPoint ] ] :=
   list[[ All, 1, 1 ]]
 normalizeAnchor[ v_ ]                                                := v
 

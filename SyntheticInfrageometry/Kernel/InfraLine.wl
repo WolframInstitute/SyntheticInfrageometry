@@ -584,7 +584,7 @@ perpendicularAtProjection[ g_Graph, seq1_List, seq2_List, p_, equality_, radius_
       perpendicularFeet[ localG, localSeq2, # ] & /@ Complement[ localSeq1, localCommon ] ];
     compare = If[ equality === "Subset",
       proj |-> SubsetQ[ localCommon, proj ],
-      proj |-> InfraEqualQ[ g, InfraPoint[ proj ], InfraPoint[ localCommon ], Method -> equality ] ];
+      proj |-> InfraEqualQ[ g, InfraSet[ proj ], InfraSet[ localCommon ], Method -> equality ] ];
     compare[ proj12 ] && compare[ proj21 ]
   ]
 
@@ -644,7 +644,7 @@ perpendicularAtCoordinate[ g_Graph, seq1_List, seq2_List, p_, zeroTest_, radius_
     i2     = FirstPosition[ s2, p, { 0 }, { 1 }, Heads -> False ][[ 1 ]];
     If[ i1 == 0 || i2 == 0, Return[ False, Module ] ];
     signedCoord[ seq_, pIdx_, v_ ] :=
-      With[ { feet = FindClosestInfraPoint[ localG, seq, v, All ][ "Realizations" ] },
+      With[ { feet = #[ "Vertex" ] & /@ FindClosestInfraPoint[ localG, seq, v, All ] },
         Mean[ ( FirstPosition[ seq, #, { 0 }, { 1 }, Heads -> False ][[ 1 ]] - pIdx ) & /@ feet ]
       ];
     c12 = signedCoord[ s1, i1, # ] & /@ DeleteCases[ s2, p ];
