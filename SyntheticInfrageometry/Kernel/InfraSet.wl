@@ -17,6 +17,7 @@ InfraSet[ vs_List ] /; MemberQ[ vs, _InfraSet ] :=
    flattening needed.  A measured InfraPoint contributes its support -- a set
    discards the measure. *)
 InfraSet[ InfraPoint[ m_Association ] ] := InfraSet[ Sort @ Keys @ m ]
+InfraSet[ InfraMesoPoint[ m_Association ] ] := InfraSet[ Sort @ Keys @ m ]
 InfraSet[ InfraPoint[ vs_List ] ] :=
   InfraSet[ Sort @ DeleteDuplicates @ vs ]
 

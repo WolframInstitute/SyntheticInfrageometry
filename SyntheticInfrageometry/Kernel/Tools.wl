@@ -359,21 +359,23 @@ With[ { heads = InfraPoint | $infraBundleHeads },
   infraSpread[ list_List ] /; AllTrue[ list, MatchQ[ heads[ { _ } ] ] ] :=
     #[[ 1, 1 ]] & /@ list
 ]
+infraSpread[ InfraMesoPoint[ m_Association ] ] := Keys @ m
+infraSpread[ InfraSet[ vs_List ] ] := vs
 infraSpread[ InfraSegment[ dag_Graph ] ] := dagGeodesics[ dag ]
 infraSpread[ InfraSegment[ dags : { _Graph, __Graph } ] ] := Join @@ ( dagGeodesics /@ dags )
 infraSpread[ other_ ] := { other }
 
 
 (* Project a bundle of vertex-sequence realisations onto position i: the
-   measured InfraPoint whose support is the i-th vertices (only realisations
-   long enough contribute) and whose masses are their multiplicities -- one of
-   the projections at which a measure is constructed.  i may be negative
-   (counted from the end). *)
+   InfraMesoPoint whose support is the i-th vertices (only realisations long
+   enough contribute) and whose masses are their multiplicities -- one of the
+   projections at which a measure is constructed.  i may be negative (counted
+   from the end). *)
 
 PackageScope[columnInfraPoint]
 
 columnInfraPoint[ reps_List, i_Integer ] :=
-  InfraPoint @ Counts[ ( #[[ i ]] & ) /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] ]
+  InfraMesoPoint @ Counts[ ( #[[ i ]] & ) /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] ]
 
 
 (* Enumerate every geodesic of a geodesic-DAG segment: all source -> sink
@@ -478,6 +480,7 @@ bundleTake[ head_, reps_, n_Integer ]         :=
    geodesic-DAG atom contributes its whole family's occupation (by DP, no
    enumeration) exactly as the enumerated family would. *)
 
+infraVertexMultiset[ InfraMesoPoint[ m_Association ] ] := m
 infraVertexMultiset[ InfraPoint[ m_Association ] ] := m
 infraVertexMultiset[ InfraPoint[ reps_List ] ]     := Counts @ reps
 infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] := Counts @ vs
@@ -554,6 +557,7 @@ normalizeMeasure[ method_, counts_, obj_ ] := Switch[ method,
    InfraSceneHighlight's repVerts / repEdges dispatch. *)
 
 infraRepType[ InfraPoint ]         = "Points";
+infraRepType[ InfraMesoPoint ]     = "Points";
 infraRepType[ InfraSegment ]       = "Paths";
 infraRepType[ InfraLine ]          = "Paths";
 infraRepType[ InfraPath ]          = "Paths";
@@ -578,6 +582,7 @@ infraRepType[ InfraSet ]           = "Sets";
 infraRepSeqs[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] := polylineToVertexSeqs @ reps
 infraRepSeqs[ ( InfraObject | InfraSet )[ vs_List ] ]                        := { vs }
 infraRepSeqs[ InfraPoint[ m_Association ] ]                                  := Keys @ m
+infraRepSeqs[ InfraMesoPoint[ m_Association ] ]                              := Keys @ m
 infraRepSeqs[ head_[ reps_List, ___ ] ]                                      := reps
 
 (* per-type vertex / edge extraction from one canonical realisation -- the
@@ -596,6 +601,7 @@ infraRepVerts[ _, rep_ ]        := rep
    for a compact DAG atom); InfraObject / InfraSet hold a single set, N = 1. *)
 
 infraNumReps[ InfraPoint[ m_Association ] ]         := If[ Length @ m === 0, 1, Total @ m ]
+infraNumReps[ InfraMesoPoint[ m_Association ] ]      := If[ Length @ m === 0, 1, Total @ m ]
 infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
 infraNumReps[ InfraSegment[ dag_Graph ] ]           := atomFamilySize[ dag ]
 infraNumReps[ head_[ reps_List, ___ ] ]             := Max[ Total[ atomFamilySize /@ reps ], 1 ]

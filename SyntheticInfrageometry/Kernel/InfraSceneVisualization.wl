@@ -45,7 +45,7 @@ $infraColors = <|
 
 (* which colour each wrapper head is drawn in; several wrappers deliberately share one *)
 $infraHeadColors = <|
-  InfraPoint -> "Point",
+  InfraPoint -> "Point", InfraMesoPoint -> "Point",
   InfraSegment -> "Segment", InfraPolyline -> "Segment",
   InfraLine -> "Line",
   InfraPath -> "Path", InfraLoop -> "Path", InfraString -> "Path",
@@ -239,7 +239,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
       { item, idx } |-> With[ {
           obj    = If[ MatchQ[ item, _Rule ], First @ item, item ],
           record = parseHighlightStyle[ If[ MatchQ[ item, _Rule ], Last @ item, Automatic ], ranges ] },
-        Append[ If[ MatchQ[ Head @ obj, InfraPoint | InfraObject | InfraSet | $infraBundleHeads ], obj, None ] ] @
+        Append[ If[ MatchQ[ Head @ obj, InfraPoint | InfraMesoPoint | InfraObject | InfraSet | $infraBundleHeads ], obj, None ] ] @
         Replace[
           { obj, Lookup[ $infraColors, Lookup[ $infraHeadColors, Head @ obj, None ],
               $InfraSceneHighlightPalette[[
@@ -249,6 +249,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             { InfraPoint   [ b_List, w_List ], c_, u_ } :> { b, c, "Points",
                 Append[ u, "Weights" -> AssociationThread[ b -> w ] ] },
             { InfraPoint   [ b_List ], c_, u_ } :> { b, c, "Points", u },
+            { InfraMesoPoint[ m_Association ], c_, u_ } :> { Keys @ m, c, "Points", u },
             { InfraSegment [ dag_Graph ], c_, u_ } :> { { dag }, c, "Paths" , u },
             { InfraSegment [ b : { __Graph } ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },

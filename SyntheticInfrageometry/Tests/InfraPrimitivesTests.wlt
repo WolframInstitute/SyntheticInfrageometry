@@ -98,19 +98,19 @@ VerificationTest[
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ 1 ]],
-  InfraPoint[ { 1 }, { 2 } ],
+  InfraMesoPoint[ <| 1 -> 2 |> ],
   TestID -> "InfraSegment-column-start-weighted"
 ]
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ -1 ]],
-  InfraPoint[ { 3 }, { 2 } ],
+  InfraMesoPoint[ <| 3 -> 2 |> ],
   TestID -> "InfraSegment-column-end-weighted"
 ]
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ 2 ]],
-  InfraPoint[ { 2, 4 } ],
+  InfraMesoPoint[ <| 2 -> 1, 4 -> 1 |> ],
   TestID -> "InfraSegment-column-middle-spread"
 ]
 
@@ -122,7 +122,7 @@ VerificationTest[
 
 VerificationTest[
   InfraLine[ { { 1, 2, 3 }, { 1, 2, 5 } } ][[ 2 ]],
-  InfraPoint[ { 2 }, { 2 } ],
+  InfraMesoPoint[ <| 2 -> 2 |> ],
   TestID -> "InfraLine-column-weighted"
 ]
 
@@ -182,11 +182,11 @@ VerificationTest[
   TestID -> "FindInfraSegment-InfraPoint-endpoints-give-DAG"
 ]
 
-(* the DAG "Start" / "End" are the source / sink InfraPoints (in/out-degree-0) *)
+(* the DAG "Start" / "End" are the source / sink InfraSets (in/out-degree-0) *)
 VerificationTest[
   With[ { seg = FindInfraSegment[ GridGraph[ { 5, 5 } ], 1, 25 ] },
     { seg[ "Start" ], seg[ "End" ] } ],
-  { InfraPoint[ { 1 } ], InfraPoint[ { 25 } ] },
+  { InfraSet[ { 1 } ], InfraSet[ { 25 } ] },
   TestID -> "InfraSegment-DAG-Start-End-source-sink"
 ]
 
@@ -194,7 +194,7 @@ VerificationTest[
 VerificationTest[
   { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][ "Start" ],
     InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][ "End" ] },
-  { InfraPoint[ { 1 } ], InfraPoint[ { 3 } ] },
+  { InfraSet[ { 1 } ], InfraSet[ { 3 } ] },
   TestID -> "InfraSegment-reps-Start-End"
 ]
 

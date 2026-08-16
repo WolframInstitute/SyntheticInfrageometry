@@ -177,6 +177,8 @@ findPointPool[ graph_Graph, { "Center", _ } ] := VertexList[ graph ]
 findPointPool[ graph_Graph, _String ]     := VertexList[ graph ]
 
 findPointPool[ graph_Graph, InfraPoint[ reps_List ] ] := reps
+findPointPool[ graph_Graph, InfraMesoPoint[ m_Association ] ] := Keys @ m
+findPointPool[ graph_Graph, InfraSet[ vs_List ] ] := vs
 
 findPointPool[ graph_Graph, ( origin_ -> spec_ ) ] :=
   With[ { anchors = infraSpread[ origin ],
@@ -243,14 +245,14 @@ indexBandMasses[ frac_, tol_ ][ walk_List ] :=
 
 FindInfraMidpoint[ graph_Graph, InfraSegment[ dag_Graph ], opts : OptionsPattern[] ] :=
   If[ methodName @ OptionValue[ FindInfraMidpoint, { opts }, Method ] === "Metric",
-    InfraPoint @ indexBandMasses[ 1/2, OptionValue[ FindInfraMidpoint, { opts }, "Tolerance" ] ][ dag ],
+    InfraMesoPoint @ indexBandMasses[ 1/2, OptionValue[ FindInfraMidpoint, { opts }, "Tolerance" ] ][ dag ],
     FindInfraMidpoint[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ] ]
 
 FindInfraMidpoint[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        InfraPoint @ Merge[ indexBandMasses[ 1/2, tol ] /@ First @ seg, Total ],
+        InfraMesoPoint @ Merge[ indexBandMasses[ 1/2, tol ] /@ First @ seg, Total ],
       "Embedding",
         (* closest vertex to the coord-space midpoint of the endpoints; pool
            "ShortestPaths" = vertices of the supplied walks, "AllPaths" = all *)
@@ -261,8 +263,8 @@ FindInfraMidpoint[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
                        coords[[ vertexIndex[ Last @ First @ walks ] ]] ) / 2,
             pool = If[ embOpts[ "Pool" ] === "AllPaths",
                      VertexList[ graph ], DeleteDuplicates @ Catenate @ walks ] },
-          InfraPoint[ { First @
-            SortBy[ pool, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ] } ] ]
+          InfraMesoPoint[ <| First @
+            SortBy[ pool, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ] -> 1 |> ] ]
     ]
   ]
 
@@ -286,7 +288,7 @@ Options[ FindInfraGoldenSection ] = { Method -> "Metric", "Tolerance" -> 0 };
 
 FindInfraGoldenSection[ graph_Graph, InfraSegment[ dag_Graph ], opts : OptionsPattern[] ] :=
   If[ methodName @ OptionValue[ FindInfraGoldenSection, { opts }, Method ] === "Metric",
-    InfraPoint @ indexBandMasses[ N[ 1 / GoldenRatio ],
+    InfraMesoPoint @ indexBandMasses[ N[ 1 / GoldenRatio ],
       OptionValue[ FindInfraGoldenSection, { opts }, "Tolerance" ] ][ dag ],
     FindInfraGoldenSection[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ] ]
 
@@ -294,7 +296,7 @@ FindInfraGoldenSection[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ]
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        InfraPoint @ Merge[ indexBandMasses[ N[ 1 / GoldenRatio ], tol ] /@ First @ seg, Total ],
+        InfraMesoPoint @ Merge[ indexBandMasses[ N[ 1 / GoldenRatio ], tol ] /@ First @ seg, Total ],
       "Embedding",
         (* closest vertex to the coord-space golden point p1 + (p2 - p1)/phi;
            pool as in FindInfraMidpoint *)
@@ -306,8 +308,8 @@ FindInfraGoldenSection[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ]
                        coords[[ vertexIndex[ First @ First @ walks ] ]] ) / N[ GoldenRatio ],
             pool = If[ embOpts[ "Pool" ] === "AllPaths",
                      VertexList[ graph ], DeleteDuplicates @ Catenate @ walks ] },
-          InfraPoint[ { First @
-            SortBy[ pool, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ] } ] ]
+          InfraMesoPoint[ <| First @
+            SortBy[ pool, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ] -> 1 |> ] ]
     ]
   ]
 

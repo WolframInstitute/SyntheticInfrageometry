@@ -107,25 +107,25 @@ VerificationTest[
 (* even chord d(1,7)=6: one estimate, exact midpoint 4 at radius 3 *)
 VerificationTest[
   FindInfraShellCenter[PathGraph[Range[7]], {1, 7}],
-  {{InfraPoint[{4}], 3}},
+  {{InfraMesoPoint[<|4 -> 1|>], 3}},
   TestID -> "FindInfraShellCenter-path-even-exact-midpoint"
 ]
 
 VerificationTest[
   FindInfraShellCenter[CycleGraph[8], {1, 5}],
-  {{InfraPoint[{3, 7}], 2}},
+  {{InfraMesoPoint[<|3 -> 1, 7 -> 1|>], 2}},
   TestID -> "FindInfraShellCenter-cycle-two-antipodal-midpoints"
 ]
 
 VerificationTest[
-  MatchQ[FindInfraShellCenter[PetersenGraph[], {2, 5, 10, 9, 8, 7}], {{_InfraPoint, _Integer} ..}],
+  MatchQ[FindInfraShellCenter[PetersenGraph[], {2, 5, 10, 9, 8, 7}], {{_InfraMesoPoint, _Integer} ..}],
   True,
   TestID -> "FindInfraShellCenter-returns-estimate-list"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{5, 5}], shell = Select[VertexList[GridGraph[{5, 5}]], GraphDistance[GridGraph[{5, 5}], 13, #] == 2 &]},
-    MemberQ[FindInfraShellCenter[g, shell][[1, 1]]["Support"], 13]
+    MemberQ[FindInfraShellCenter[g, shell][[1, 1]]["Vertices"], 13]
   ],
   True,
   TestID -> "FindInfraShellCenter-blob-contains-true-center"
@@ -141,7 +141,7 @@ VerificationTest[
 (* ... Odd parity keeps it, the mesopoint splits across radii 2 and 3 *)
 VerificationTest[
   FindInfraShellCenter[PathGraph[Range[6]], {1, 6}, Method -> {"MaximalChordsBisectors", "Parity" -> "Odd"}],
-  {{InfraPoint[{3}], 2}, {InfraPoint[{4}], 3}},
+  {{InfraMesoPoint[<|3 -> 1|>], 2}, {InfraMesoPoint[<|4 -> 1|>], 3}},
   TestID -> "FindInfraShellCenter-Odd-splits-mesopoint-by-radius"
 ]
 
@@ -151,8 +151,8 @@ VerificationTest[
 VerificationTest[
   { FindInfraShellCenter[PathGraph[Range[10]], {1, 4, 10}, Method -> {"MaximalChordsBisectors", "Maximality" -> "Diameter"}],
     FindInfraShellCenter[PathGraph[Range[10]], {1, 4, 10}, Method -> {"MaximalChordsBisectors", "Maximality" -> "PerVertex"}] },
-  { {{InfraPoint[{5}], 4}, {InfraPoint[{6}], 5}},
-    {{InfraPoint[{7}], 3}, {InfraPoint[{5}], 4}, {InfraPoint[{6}], 5}} },
+  { {{InfraMesoPoint[<|5 -> 1|>], 4}, {InfraMesoPoint[<|6 -> 1|>], 5}},
+    {{InfraMesoPoint[<|7 -> 1|>], 3}, {InfraMesoPoint[<|5 -> 1|>], 4}, {InfraMesoPoint[<|6 -> 1|>], 5}} },
   TestID -> "FindInfraShellCenter-Maximality-Diameter-vs-PerVertex"
 ]
 
@@ -161,13 +161,13 @@ VerificationTest[
    {2,5,10,9,8,7} is centered exactly at vertex 1. *)
 VerificationTest[
   FindInfraShellCenter[PetersenGraph[], {2, 5, 10, 9, 8, 7}, Method -> "EquidistantPoints"],
-  {{InfraPoint[{1}], 2}},
+  {{InfraMesoPoint[<|1 -> 1|>], 2}},
   TestID -> "FindInfraShellCenter-EquidistantPoints-Petersen-true-center"
 ]
 
 VerificationTest[
   FindInfraShellCenter[CycleGraph[8], {1, 5}, Method -> "EquidistantPoints"],
-  {{InfraPoint[{3, 7}], 2}},
+  {{InfraMesoPoint[<|3 -> 1, 7 -> 1|>], 2}},
   TestID -> "FindInfraShellCenter-EquidistantPoints-cycle-two-centers"
 ]
 
@@ -198,7 +198,7 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{5, 5}], shell = Select[VertexList[GridGraph[{5, 5}]], GraphDistance[GridGraph[{5, 5}], 13, #] == 2 &]},
     With[{center = FindInfraShellCenter[g, shell][[1, 1]]},
-      MemberQ[Pick[center["Support"], center["Weights"], Max @ center["Weights"]], 13]
+      MemberQ[Pick[center["Vertices"], center["Weights"], Max @ center["Weights"]], 13]
     ]
   ],
   True,

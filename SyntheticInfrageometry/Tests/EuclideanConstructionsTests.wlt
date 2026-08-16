@@ -5,34 +5,34 @@ BeginTestSection["EuclideanConstructions"]
 (* Even distance -> single centre vertex. *)
 VerificationTest[
   FindInfraMidpoint[PathGraph[Range[5]], {1, 2, 3, 4, 5}],
-  InfraPoint[{3}],
+  InfraMesoPoint[<|3 -> 1|>],
   TestID -> "FindInfraMidpoint-segment-even-distance-single"
 ]
 
 (* Odd distance -> the two closest indices, a mesopoint (always non-empty). *)
 VerificationTest[
-  Sort @ First @ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}],
+  Sort @ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}]["Vertices"],
   {2, 3},
   TestID -> "FindInfraMidpoint-segment-odd-distance-mesopoint"
 ]
 
 (* Tolerance widens the band beyond the closest offset (0.5 + 1 = 1.5). *)
 VerificationTest[
-  Sort @ First @ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}, "Tolerance" -> 1],
+  Sort @ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}, "Tolerance" -> 1]["Vertices"],
   {1, 2, 3, 4},
   TestID -> "FindInfraMidpoint-segment-tolerance-widens-band"
 ]
 
 VerificationTest[
   FindInfraMidpoint[PathGraph[Range[5]], 1, 5],
-  InfraPoint[{3}],
+  InfraMesoPoint[<|3 -> 1|>],
   TestID -> "FindInfraMidpoint-endpoints-single"
 ]
 
 (* Union over all geodesics matches the per-geodesic centre vertices. *)
 VerificationTest[
   With[{g = GridGraph[{3, 3}], d = GraphDistance[GridGraph[{3, 3}], 1, 9]},
-    Sort @ FindInfraMidpoint[g, 1, 9]["Support"] ===
+    Sort @ FindInfraMidpoint[g, 1, 9]["Vertices"] ===
       Sort @ DeleteDuplicates[
         #[[ Ceiling[ Length[#] / 2 ] ]] & /@ FindPath[g, 1, 9, {d}, All]
       ]
@@ -45,14 +45,14 @@ VerificationTest[
 
 VerificationTest[
   FindInfraMidpoint[PathGraph[Range[5]], InfraSegment[{{1, 2, 3, 4, 5}}]],
-  InfraPoint[{3}],
+  InfraMesoPoint[<|3 -> 1|>],
   TestID -> "FindInfraMidpoint-InfraSegment-single-walk"
 ]
 
 (* Walks with different centres union into one mesopoint. *)
 VerificationTest[
-  Sort @ First @ FindInfraMidpoint[ PathGraph[ Range[ 7 ] ],
-    InfraSegment[ { { 1, 2, 3, 4, 5, 6, 7 }, { 1, 2, 3, 4, 5 } } ] ],
+  Sort @ FindInfraMidpoint[ PathGraph[ Range[ 7 ] ],
+    InfraSegment[ { { 1, 2, 3, 4, 5, 6, 7 }, { 1, 2, 3, 4, 5 } } ] ][ "Vertices" ],
   { 3, 4 },
   TestID -> "FindInfraMidpoint-InfraSegment-multi-walk-union"
 ]
@@ -62,7 +62,7 @@ VerificationTest[
 VerificationTest[
   FindInfraMidpoint[ PathGraph[ Range[ 5 ] ],
     InfraSegment[ { { 1, 2, 3, 4, 5 }, { 5, 4, 3, 2, 1 } } ] ],
-  InfraPoint[ <| 3 -> 2 |> ],
+  InfraMesoPoint[ <| 3 -> 2 |> ],
   TestID -> "FindInfraMidpoint-InfraSegment-mass-of-shared-middle"
 ]
 
@@ -427,14 +427,14 @@ VerificationTest[
 
 (* Embedding returns the single nearest-coordinate vertex, which lies in the metric union. *)
 VerificationTest[
-  MemberQ[ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, Method -> "Metric" ][ "Support" ],
+  MemberQ[ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, Method -> "Metric" ][ "Vertices" ],
            FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, Method -> "Embedding" ][ "First" ] ],
   True,
   TestID -> "FindInfraMidpoint-Embedding-in-metric-union"
 ]
 
 VerificationTest[
-  Length @ First @ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, Method -> "Embedding" ],
+  Length @ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, Method -> "Embedding" ][ "Vertices" ],
   1,
   TestID -> "FindInfraMidpoint-Embedding-single-vertex"
 ]
@@ -456,24 +456,24 @@ VerificationTest[
 (* Closest index to the golden index 1 + 10/phi = 7.18 -> vertex 7, always a single point. *)
 VerificationTest[
   FindInfraGoldenSection[PathGraph[Range[11]], 1, 11],
-  InfraPoint[{7}],
+  InfraMesoPoint[<|7 -> 1|>],
   TestID -> "FindInfraGoldenSection-single-point-vertex-7"
 ]
 
 VerificationTest[
   FindInfraGoldenSection[PathGraph[Range[11]], 1, 11, "Tolerance" -> 0.5],
-  InfraPoint[{7}],
+  InfraMesoPoint[<|7 -> 1|>],
   TestID -> "FindInfraGoldenSection-tolerance"
 ]
 
 VerificationTest[
   FindInfraGoldenSection[PathGraph[Range[11]], InfraSegment[{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}}]],
-  InfraPoint[{7}],
+  InfraMesoPoint[<|7 -> 1|>],
   TestID -> "FindInfraGoldenSection-InfraSegment"
 ]
 
 VerificationTest[
-  Length @ First @ FindInfraGoldenSection[PathGraph[Range[11]], 1, 11, Method -> "Embedding"],
+  Length @ FindInfraGoldenSection[PathGraph[Range[11]], 1, 11, Method -> "Embedding"]["Vertices"],
   1,
   TestID -> "FindInfraGoldenSection-Embedding-single-vertex"
 ]

@@ -21,10 +21,10 @@ InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Length" ] := ( Length[ # ]
    shares its endpoints, so the multiplicity would only restate the family size.
    For the position-i occupation measure use seg[[i]] (and InfraPath, whose walks
    really can end anywhere, keeps its endpoint multiplicity). *)
-InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Start" ] := InfraPoint[ DeleteDuplicates[ First /@ reps ] ]
-InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "End" ]   := InfraPoint[ DeleteDuplicates[ Last /@ reps ] ]
+InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Start" ] := InfraSet[ DeleteDuplicates[ First /@ reps ] ]
+InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "End" ]   := InfraSet[ DeleteDuplicates[ Last /@ reps ] ]
 
-(* seg[[i]] = the measured InfraPoint of the i-th position across realisations
+(* seg[[i]] = the InfraMesoPoint of the i-th position across realisations
    (mass = multiplicity).  First/Last and multi-index Part bypass this. *)
 InfraSegment /: Part[ InfraSegment[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]
 
@@ -60,10 +60,10 @@ InfraSegment /: Part[ InfraSegment[ dag_Graph ], i_Integer ] :=
   With[ { layers = dagLayers[ dag ] },
     { len = Max[ 0, Values @ layers ] },
     { vs = Keys @ Select[ layers, # === If[ i > 0, i - 1, len + 1 + i ] & ] },
-    InfraPoint @ KeyTake[ GeodesicOccupation[ dag ], vs ] ]
+    InfraMesoPoint @ KeyTake[ GeodesicOccupation[ dag ], vs ] ]
 
-InfraSegment[ dag_Graph ][ "Start" ] := InfraPoint[ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ]
-InfraSegment[ dag_Graph ][ "End" ]   := InfraPoint[ Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] ]
+InfraSegment[ dag_Graph ][ "Start" ] := InfraSet[ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ]
+InfraSegment[ dag_Graph ][ "End" ]   := InfraSet[ Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] ]
 
 
 (* ===================== FindInfraSegment ===================== *)

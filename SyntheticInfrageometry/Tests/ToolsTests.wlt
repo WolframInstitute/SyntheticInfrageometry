@@ -167,9 +167,9 @@ VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ], s = FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9 ] },
     { s[[ 2 ]], s[ "Start" ], FindInfraMidpoint[ g, s ] } ],
   (* ["Start"] is a set-level fact (every geodesic of a family shares it), so it
-     stays a bare support; the position and midpoint projections are measures *)
-  { InfraPoint[ <| 2 -> 3, 4 -> 3 |> ], InfraPoint[ { 1 } ],
-    InfraPoint[ <| 3 -> 1, 5 -> 4, 7 -> 1 |> ] },
+     is an InfraSet; the position and midpoint projections are measures *)
+  { InfraMesoPoint[ <| 2 -> 3, 4 -> 3 |> ], InfraSet[ { 1 } ],
+    InfraMesoPoint[ <| 3 -> 1, 5 -> 4, 7 -> 1 |> ] },
   TestID -> "Measure-constructed-at-projection"
 ]
 

@@ -122,7 +122,7 @@ FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
 (* ===================== FindInfraShellCenter ===================== *)
 
 (* Center / radius of a metric shell, two methods.  Both return a list
-   of estimates { InfraPoint[support, masses], r }, one per radius r,
+   of estimates { InfraMesoPoint[support, masses], r }, one per radius r,
    sorted ascending.
 
    Method -> "MaximalChordsBisectors" (default): bisect the shell's
@@ -191,7 +191,7 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
       With[ { d = dm[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] },
         Switch[ parity, All, True, "Even", EvenQ[ d ], "Odd", OddQ[ d ] ] ] & ];
     radiiBins = GroupBy[ Catenate[ chordMidpointRadii[ dm, idx, # ] & /@ kept ], Last -> First ];
-    KeyValueMap[ { r, vlist } |-> With[ { ct = Counts @ vlist }, { InfraPoint[ Keys @ ct, Values @ ct ], r } ], KeySort @ radiiBins ]
+    KeyValueMap[ { r, vlist } |-> With[ { ct = Counts @ vlist }, { InfraMesoPoint[ ct ], r } ], KeySort @ radiiBins ]
   ]
 
 (* Centers equidistant from vs, binned by their common radius r = d(c, vs) > 0,
@@ -201,7 +201,7 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
 equidistantShellPoints[ graph_Graph, vs_List ] :=
   With[ { ds = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, First @ vs ] ] },
     { centers = Select[ FindInfraEquidistantSet[ graph, vs ][ "Vertices" ], c |-> 0 < ds[ c ] < Infinity ] },
-    KeyValueMap[ { r, cs } |-> { InfraPoint[ cs ], r }, KeySort @ GroupBy[ centers, ds ] ] ]
+    KeyValueMap[ { r, cs } |-> { InfraMesoPoint[ cs, ConstantArray[ 1, Length @ cs ] ], r }, KeySort @ GroupBy[ centers, ds ] ] ]
 
 (* Midpoint incidences { v, r } of the chord {a, b} (a = lower endpoint):
    vertices v on some a-b geodesic at a middle distance r = d(a, v) in
