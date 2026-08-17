@@ -1052,6 +1052,80 @@ VerificationTest[
   TestID -> "FindInfraLine-Exhaustive-equals-Automatic"
 ]
 
+(* ===== FindInfraLine / FindInfraParallel: "Greedy" vs "GreedyRandomPick" ===== *)
+
+(* "Greedy" (pick = First) is fully deterministic -- no randomness is consumed. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 6, 6 } ] },
+    FindInfraLine[ g, 1, 2, 1, Method -> "Greedy" ] === FindInfraLine[ g, 1, 2, 1, Method -> "Greedy" ]
+  ],
+  True,
+  TestID -> "FindInfraLine-Greedy-deterministic"
+]
+
+(* Regression guard: growing both sides of a Greedy line must re-derive the
+   cross-distance against the OTHER side's live frontier, not the original
+   anchor -- else the two arms can fail to concatenate into a geodesic. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 7, 7 } ] },
+    AllTrue[ Range[ 1, 48 ],
+      p |-> InfraSegmentQ[ g, FindInfraLine[ g, p, p + 1, 1, Method -> "Greedy" ][ "First" ] ] ]
+  ],
+  True,
+  TestID -> "FindInfraLine-Greedy-BothSides-is-geodesic"
+]
+
+(* "GreedyRandomPick" (pick = RandomChoice) is reproducible given an ambient
+   SeedRandom -- no seed is threaded as a parameter. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 6, 6 } ] },
+    BlockRandom[ FindInfraLine[ g, 1, 2, 1, Method -> "GreedyRandomPick" ], RandomSeeding -> 11 ] ===
+      BlockRandom[ FindInfraLine[ g, 1, 2, 1, Method -> "GreedyRandomPick" ], RandomSeeding -> 11 ]
+  ],
+  True,
+  TestID -> "FindInfraLine-GreedyRandomPick-seeded-reproducible"
+]
+
+(* Different seeds explore different admissible chains where the graph branches. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 8, 8 } ] },
+    Length @ DeleteDuplicates @ Table[
+      BlockRandom[ FindInfraLine[ g, 20, 21, 1, Method -> "GreedyRandomPick" ][ "First" ], RandomSeeding -> s ],
+      { s, 1, 10 } ]
+  ],
+  _Integer?( # > 1 & ),
+  SameTest -> MatchQ,
+  TestID -> "FindInfraLine-GreedyRandomPick-varies-across-seeds"
+]
+
+(* Every GreedyRandomPick realisation is still a genuine geodesic (BothSides fix applies here too). *)
+VerificationTest[
+  With[ { g = GridGraph[ { 7, 7 } ] },
+    AllTrue[ Range[ 1, 5 ],
+      s |-> InfraSegmentQ[ g,
+        BlockRandom[ FindInfraLine[ g, 25, 26, 1, Method -> "GreedyRandomPick" ][ "First" ], RandomSeeding -> s ] ] ]
+  ],
+  True,
+  TestID -> "FindInfraLine-GreedyRandomPick-BothSides-is-geodesic"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 6, 6 } ], line = FindInfraLine[ GridGraph[ { 6, 6 } ], 1, 2, 1 ][ "First" ] },
+    FindInfraParallel[ g, line, 20, 1, Method -> "Greedy" ] === FindInfraParallel[ g, line, 20, 1, Method -> "Greedy" ]
+  ],
+  True,
+  TestID -> "FindInfraParallel-Greedy-deterministic"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 6, 6 } ], line = FindInfraLine[ GridGraph[ { 6, 6 } ], 1, 2, 1 ][ "First" ] },
+    BlockRandom[ FindInfraParallel[ g, line, 20, 1, Method -> "GreedyRandomPick" ], RandomSeeding -> 3 ] ===
+      BlockRandom[ FindInfraParallel[ g, line, 20, 1, Method -> "GreedyRandomPick" ], RandomSeeding -> 3 ]
+  ],
+  True,
+  TestID -> "FindInfraParallel-GreedyRandomPick-seeded-reproducible"
+]
+
 (* ===== FindInfraLine[g, segment] overload (replaces 2-arg ExtendInfraSegment) ===== *)
 
 VerificationTest[

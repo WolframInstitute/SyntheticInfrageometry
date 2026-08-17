@@ -73,10 +73,11 @@ FindInfraLine[ graph_Graph, p1_, p2_,
         { middles = allGeodesics[ graph, q1, q2, cap /. Infinity -> All ] },
         { ext = Union @ Flatten[
             Switch[ methodHead,
-              "Exhaustive",  findLineExtensions[ graph, #, pruning, direction,
-                               cap ] & /@ middles,
-              "Greedy",      findLineExtensionsGreedy[ graph, #, direction ]     & /@ middles,
-              _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
+              "Exhaustive",       findLineExtensions[ graph, #, pruning, direction,
+                                     cap ] & /@ middles,
+              "Greedy",           findLineExtensionsGreedy[ graph, #, First, direction ]        & /@ middles,
+              "GreedyRandomPick", findLineExtensionsGreedy[ graph, #, RandomChoice, direction ]  & /@ middles,
+              _,                  Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
             ], 1 ] },
         If[ maximality === "Diameter",
           Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
@@ -112,9 +113,10 @@ FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] 
         (* "Diameter" post-filters, so it must see the whole family *)
         { cap = If[ maximality === "Diameter", Infinity, countLimit @ count ] },
         { ext = Switch[ methodHead,
-            "Exhaustive",  findLineExtensions[ graph, segment, pruning, direction, cap ],
-            "Greedy",      findLineExtensionsGreedy[ graph, segment, direction ],
-            _,             Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
+            "Exhaustive",       findLineExtensions[ graph, segment, pruning, direction, cap ],
+            "Greedy",           findLineExtensionsGreedy[ graph, segment, First, direction ],
+            "GreedyRandomPick", findLineExtensionsGreedy[ graph, segment, RandomChoice, direction ],
+            _,                  Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
           ] },
         If[ maximality === "Diameter",
           Select[ ext, line |-> Length[ line ] - 1 == GraphDiameter[ graph ] ],
@@ -206,44 +208,70 @@ cappedGeodesics[ graph_Graph, u_, v_, len_, n_Integer ] :=
 
 
 (* Greedy maximal geodesic extension: walk vertex-by-vertex outward from each
-   endpoint, accepting the first neighbor that extends the geodesic by one
-   step.  Returns exactly one chain -- maximally inextensible but not
-   necessarily of maximum total length. *)
+   endpoint, extending by one admissible neighbor per step.  pick = First is
+   "Greedy" (deterministic, no backtracking); pick = RandomChoice is
+   "GreedyRandomPick" (uniform over admissible neighbors at each step,
+   controllable via an ambient SeedRandom -- no seed is threaded as a
+   parameter).  Either way, returns exactly one chain -- maximally
+   inextensible but not necessarily of maximum total length. *)
 
-findLineExtensionsGreedy[ graph_Graph, segment_List ] :=
-  findLineExtensionsGreedy[ graph, segment, "BothSides" ]
+findLineExtensionsGreedy[ graph_Graph, segment_List, pick_ : First, direction_String : "BothSides" ] :=
+  findLineExtensionsGreedy[ graph, segment, pick, True &, direction ]
 
-findLineExtensionsGreedy[ graph_Graph, segment_List, direction_String ] :=
-  findLineExtensionsGreedy[ graph, segment, True &, direction ]
-
-findLineExtensionsGreedy[ graph_Graph, segment_List, admissible_,
+findLineExtensionsGreedy[ graph_Graph, segment_List, pick_, admissible_,
     direction_String : "BothSides" ] /; ! StringQ[ admissible ] :=
-  { greedyWalkDirection[ graph, segment, admissible, direction ] }
+  { greedyWalkDirection[ graph, segment, admissible, pick, direction ] }
 
-greedyWalkDirection[ graph_Graph, segment_List, admissible_, direction_String ] /;
+greedyWalkDirection[ graph_Graph, segment_List, admissible_, pick_, direction_String ] /;
     Length[ segment ] < 2 := segment
 
-greedyWalkDirection[ graph_Graph, segment_List, admissible_, direction_String ] :=
+greedyWalkDirection[ graph_Graph, segment_List, admissible_, pick_, direction_String ] :=
   With[ { p1 = First[ segment ], p2 = Last[ segment ],
           d  = GraphDistance[ graph, First[ segment ], Last[ segment ] ] },
     Switch[ direction,
+      (* the two sides cannot grow independently against the ORIGINAL p1/p2 -- a
+         side that is locally geodesic to the other side's original position is
+         not necessarily geodesic to where that side ends up after it also
+         grows -- so BothSides re-derives the current cross-distance at every
+         step and grows one side at a time against the other's live frontier *)
       "BothSides",
-        Join[ Reverse @ greedyWalk[ graph, p1, p2, d, admissible ],
-              segment,
-              greedyWalk[ graph, p2, p1, d, admissible ] ],
+        With[ { grown = greedyWalkBothSides[ graph, p1, p2, admissible, pick ] },
+          Join[ grown[[ 1 ]], segment, grown[[ 2 ]] ] ],
       "Forward",
-        Join[ segment, greedyWalk[ graph, p2, p1, d, admissible ] ],
+        Join[ segment, greedyWalk[ graph, p2, p1, d, admissible, pick ] ],
       "Backward",
-        Join[ Reverse @ greedyWalk[ graph, p1, p2, d, admissible ], segment ]
+        Join[ Reverse @ greedyWalk[ graph, p1, p2, d, admissible, pick ], segment ]
     ]
   ]
 
 
-greedyWalk[ graph_Graph, h_, a_, db_, admissible_ ] :=
-  With[ { v = SelectFirst[ AdjacencyList[ graph, h ],
-            c |-> admissible[ c ] && GraphDistance[ graph, c, a ] == db + 1, Missing[] ] },
-    If[ MissingQ[ v ], { },
-      Prepend[ greedyWalk[ graph, v, a, db + 1, admissible ], v ] ]
+greedyWalk[ graph_Graph, h_, a_, db_, admissible_, pick_ ] :=
+  With[ { candidates = Select[ AdjacencyList[ graph, h ],
+            c |-> admissible[ c ] && GraphDistance[ graph, c, a ] == db + 1 ] },
+    If[ candidates === { }, { },
+      With[ { v = pick @ candidates },
+        Prepend[ greedyWalk[ graph, v, a, db + 1, admissible, pick ], v ] ]
+    ]
+  ]
+
+
+(* Joint two-sided greedy growth: each step extends whichever side still has
+   an admissible neighbor at cross-distance + 1 from the OTHER side's current
+   (not original) frontier, re-deriving the cross-distance after every move so
+   the two accumulated arms always concatenate to a single geodesic. *)
+
+greedyWalkBothSides[ graph_Graph, p1_, p2_, admissible_, pick_ ] :=
+  Module[ { hL = p1, hR = p2, left = { }, right = { }, dCur, leftCands, rightCands, grew = True },
+    While[ grew,
+      grew = False;
+      dCur = GraphDistance[ graph, hL, hR ];
+      leftCands = Select[ AdjacencyList[ graph, hL ], c |-> admissible[ c ] && GraphDistance[ graph, c, hR ] == dCur + 1 ];
+      If[ leftCands =!= { }, grew = True; hL = pick @ leftCands; left = Prepend[ left, hL ] ];
+      dCur = GraphDistance[ graph, hL, hR ];
+      rightCands = Select[ AdjacencyList[ graph, hR ], c |-> admissible[ c ] && GraphDistance[ graph, hL, c ] == dCur + 1 ];
+      If[ rightCands =!= { }, grew = True; hR = pick @ rightCands; right = Append[ right, hR ] ];
+    ];
+    { left, right }
   ]
 
 
@@ -271,9 +299,10 @@ FindInfraParallel[ graph_Graph, line_, p_,
       With[ { methodHead = methodName @ methodSpec,
               pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
         Switch[ methodHead,
-          "Exhaustive", findParallelExtensions[ graph, line0, p0, pruning ],
-          "Greedy",     findParallelExtensionsGreedy[ graph, line0, p0 ],
-          _,            Message[ FindInfraParallel::badmethod, methodSpec ]; Throw[ $Failed ]
+          "Exhaustive",       findParallelExtensions[ graph, line0, p0, pruning ],
+          "Greedy",           findParallelExtensionsGreedy[ graph, line0, p0, First ],
+          "GreedyRandomPick", findParallelExtensionsGreedy[ graph, line0, p0, RandomChoice ],
+          _,                  Message[ FindInfraParallel::badmethod, methodSpec ]; Throw[ $Failed ]
         ]
       ]
     ], line, p ]
@@ -299,14 +328,14 @@ findParallelExtensions[ graph_Graph, line_List, p_, pruning_ : Infinity ] :=
   ]
 
 
-findParallelExtensionsGreedy[ graph_Graph, line_List, p_ ] :=
+findParallelExtensionsGreedy[ graph_Graph, line_List, p_, pick_ : First ] :=
   With[ { lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ] },
     { r = lineDist[ p ] },
     If[ r === Infinity, { },
       With[ { admissible = c |-> lineDist[ c ] == r },
-        { seed = SelectFirst[ AdjacencyList[ graph, p ], admissible, Missing[] ] },
-        If[ MissingQ[ seed ], { { p } },
-          { greedyWalkDirection[ graph, { p, seed }, admissible, "BothSides" ] } ]
+        { seeds = Select[ AdjacencyList[ graph, p ], admissible ] },
+        If[ seeds === { }, { { p } },
+          { greedyWalkDirection[ graph, { p, pick @ seeds }, admissible, pick, "BothSides" ] } ]
       ]
     ]
   ]

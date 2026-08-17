@@ -96,8 +96,7 @@ FindLineStructure[ graph_Graph, opts : OptionsPattern[] ] :=
 (* the edges in ranked order; the ranking key is the only thing a Method changes *)
 edgeRanking[ graph_, edges_, "Lexicographic" ] := SortBy[ edges, Sort @* Apply[ List ] ]
 
-edgeRanking[ graph_, edges_, { "Random", seed_ } ] :=
-  BlockRandom[ SeedRandom[ seed ]; RandomSample @ edges ]
+edgeRanking[ graph_, edges_, "Random" ] := RandomSample @ edges
 
 (* resistance is only a ranking key, so machine PseudoInverse is fine and self-
    contained; the 2^(-i) weights supply genericity, sorted endpoints break ties *)

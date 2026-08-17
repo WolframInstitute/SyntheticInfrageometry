@@ -234,7 +234,7 @@ trueGeodesicLinesQ[ g_, lines_ ] :=
     L |-> AllTrue[ Partition[ L, 2, 1 ], EdgeQ[ g, UndirectedEdge @@ # ] & ] &&
       Length[ L ] - 1 == GraphDistance[ g, First @ L, Last @ L ] ];
 
-methodList = { "Lexicographic", { "Random", 1 }, { "Random", 2 }, "Resistance",
+methodList = { "Lexicographic", "Random", "Resistance",
   "Weight" -> ( First[ # ]^2 + Last[ # ] & ) };
 
 (* ===== Each method gives a consistent, true-geodesic, fully covering system ===== *)
@@ -248,13 +248,13 @@ VerificationTest[
   TestID -> "FindLineStructure-all-methods-consistent-geodesic-covering"
 ]
 
-(* ===== {"Random", seed} is deterministic given the seed ===== *)
+(* ===== "Random" is deterministic given an ambient SeedRandom (no seed parameter) ===== *)
 
 VerificationTest[
-  FindLineStructure[ GridGraph[ { 3, 4 } ], Method -> { "Random", 7 } ][ "Lines" ] ===
-    FindLineStructure[ GridGraph[ { 3, 4 } ], Method -> { "Random", 7 } ][ "Lines" ],
+  BlockRandom[ FindLineStructure[ GridGraph[ { 3, 4 } ], Method -> "Random" ][ "Lines" ], RandomSeeding -> 7 ] ===
+    BlockRandom[ FindLineStructure[ GridGraph[ { 3, 4 } ], Method -> "Random" ][ "Lines" ], RandomSeeding -> 7 ],
   True,
-  TestID -> "FindLineStructure-Random-seed-deterministic"
+  TestID -> "FindLineStructure-Random-seeded-in-front-deterministic"
 ]
 
 (* ===== The tie-break choice can change the structure (line count is method-dependent) ===== *)
