@@ -27,6 +27,9 @@ FindInfraBall[ graph_Graph, c_, r_ ] :=
 (* vs is a closed metric ball iff there exists a center c in vs such that
    { v : d(c, v) <= max_{w in vs} d(c, w) } == vs. *)
 
+InfraBallQ[ graph_Graph, b : _InfraBall | _InfraSet ] :=
+  AllTrue[ If[ Head[ b ] === InfraSet, { First @ b }, First @ b ], InfraBallQ[ graph, # ] & ]
+
 InfraBallQ[ graph_Graph, vs_List ] :=
   vs =!= { } &&
   AnyTrue[ vs, c |->

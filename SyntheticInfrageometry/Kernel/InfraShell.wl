@@ -223,6 +223,9 @@ chordMidpointRadii[ dm_, idx_, chord_ ] :=
    vertex of vs at a common finite radius r, and vs is exactly the level
    set { v : d(c, v) == r }. *)
 
+InfraShellQ[ graph_Graph, s : _InfraShell | _InfraSet ] :=
+  AllTrue[ If[ Head[ s ] === InfraSet, { First @ s }, First @ s ], InfraShellQ[ graph, # ] & ]
+
 InfraShellQ[ graph_Graph, vs_List ] :=
   AnyTrue[ VertexList[ graph ],
     c |-> With[ { ds = GraphDistance[ graph, c, # ] & /@ vs },

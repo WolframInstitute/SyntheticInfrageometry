@@ -90,6 +90,9 @@ propertyPredicateEllipticCycle[ _, _, _, other_ ] :=
 
 (* cycle is an ellipse iff it is a cyclic path whose vertex set is an elliptic shell. *)
 
+InfraEllipseQ[ graph_Graph, e_InfraEllipse ] :=
+  AllTrue[ First @ e, InfraEllipseQ[ graph, # ] & ]
+
 InfraEllipseQ[ graph_Graph, cycle_List ] /; Length[ cycle ] >= 3 :=
   With[ {
       closed = If[ First @ cycle === Last @ cycle, cycle, Append[ cycle, First @ cycle ] ] },

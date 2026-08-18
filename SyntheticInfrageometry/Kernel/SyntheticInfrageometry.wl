@@ -111,6 +111,7 @@ PackageExport[FindInfraBisectingHyperplane]
 (* InfraRay.wl *)
 PackageExport[InfraRay]
 PackageExport[FindInfraRay]
+PackageExport[InfraRayQ]
 
 (* InfraPolyline.wl *)
 PackageExport[InfraPolyline]

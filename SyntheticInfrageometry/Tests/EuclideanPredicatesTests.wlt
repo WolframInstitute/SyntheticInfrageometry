@@ -545,4 +545,94 @@ VerificationTest[
   TestID -> "InfraPlaneQ-scene-form-stays-inert"
 ]
 
+(* ===== InfraRayQ ===== *)
+
+(* Every ray FindInfraRay produces satisfies its own predicate. *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    AllTrue[First @ FindInfraRay[g, 1, 13, All], InfraRayQ[g, #] &]],
+  True,
+  TestID -> "InfraRayQ-FindInfraRay-roundtrip-grid"
+]
+
+(* Truncating a ray leaves its far end extensible, so it is no longer a ray. *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    InfraRayQ[g, Most @ First @ First @ FindInfraRay[g, 1, 13, All]]],
+  False,
+  TestID -> "InfraRayQ-truncated-far-end-false"
+]
+
+(* On a path the whole graph is a ray from either end; a proper initial segment
+   is not, because it can still be prolonged. *)
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    {InfraRayQ[g, {1, 2, 3, 4, 5}], InfraRayQ[g, {1, 2, 3}]}],
+  {True, False},
+  TestID -> "InfraRayQ-path-whole-vs-initial-segment"
+]
+
+(* Inextensibility is required only at the far end: a ray may start anywhere.
+   {3, 4, 5} is a geodesic out of 3 whose far end is a leaf. *)
+VerificationTest[
+  InfraRayQ[PathGraph[Range[5]], {3, 4, 5}],
+  True,
+  TestID -> "InfraRayQ-origin-need-not-be-peripheral"
+]
+
+(* A closed walk round a cycle is not a geodesic, hence not a ray. *)
+VerificationTest[
+  InfraRayQ[CycleGraph[6], {1, 2, 3, 4, 5, 6}],
+  False,
+  TestID -> "InfraRayQ-cycle-not-geodesic-false"
+]
+
+(* Degenerate input. *)
+VerificationTest[
+  InfraRayQ[PathGraph[Range[5]], {1}],
+  False,
+  TestID -> "InfraRayQ-singleton-false"
+]
+
+(* ===== Predicates accept the wrappers their constructors return ===== *)
+
+(* The family invariant: feeding a Find* result straight back into its own *Q
+   must answer, not return unevaluated.  Before 0.13.6 every one of these
+   returned unevaluated, which reads as a False that never came. *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    {InfraSegmentQ[g, FindInfraSegment[g, 1, 13]],
+     InfraSegmentQ[g, FindInfraSegment[g, 1, 13, All]],
+     InfraLineQ[g, FindInfraLine[g, 1, 21, All]],
+     InfraShellQ[g, FindInfraShell[g, 13, 2]],
+     InfraBallQ[g, FindInfraBall[g, 13, 2]],
+     InfraCircleQ[g, FindInfraCircle[g, 13, 2]],
+     InfraEllipseQ[g, FindInfraEllipse[g, {11, 15}, 6]],
+     InfraEllipticShellQ[g, FindInfraEllipticShell[g, {11, 15}, 6]],
+     InfraPathQ[g, FindInfraPath[g, 1, 13, 6, All]],
+     InfraPlaneQ[g, FindInfraBisectingHyperplane[g, 11, 15], 11, 15],
+     InfraRayQ[g, FindInfraRay[g, 1, 13, All]]}],
+  ConstantArray[True, 11],
+  TestID -> "predicates-accept-their-own-constructor-output"
+]
+
+(* InfraSet coerces any region to a vertex set, so the set-shaped predicates
+   must accept it too. *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    {InfraShellQ[g, InfraSet[FindInfraShell[g, 13, 2][[1, 1]]]],
+     InfraBallQ[g, InfraSet[FindInfraBall[g, 13, 2][[1, 1]]]]}],
+  {True, True},
+  TestID -> "set-predicates-accept-InfraSet"
+]
+
+(* A wrapper holding something that is not of its kind answers False rather
+   than passing by virtue of being wrapped. *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    {InfraShellQ[g, InfraShell[{{1, 2, 3}}]], InfraLineQ[g, InfraLine[{{1, 2, 3}}]]}],
+  {False, False},
+  TestID -> "wrapped-non-instances-are-False"
+]
+
 EndTestSection[]

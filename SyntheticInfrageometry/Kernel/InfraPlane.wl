@@ -105,6 +105,10 @@ propertyPredicate[ _, _, _, _, other_ ] :=
    The three-argument InfraPlaneQ[h, p1, p2] is the inert scene assertion; it
    stays unevaluated until FindInfraScene supplies the graph. *)
 
+InfraPlaneQ[ graph_Graph, h : _InfraPlane | _InfraSet, p1_, p2_, window_ : 0 ] :=
+  AllTrue[ If[ Head[ h ] === InfraSet, { First @ h }, First @ h ],
+    InfraPlaneQ[ graph, #, p1, p2, window ] & ]
+
 InfraPlaneQ[ graph_Graph, h_List, p1_, p2_, window_ : 0 ] :=
   With[ { bounds = If[ ListQ @ window, window, { -window, window } ] },
     SeparatesQ[ graph, h, p1, p2 ] &&

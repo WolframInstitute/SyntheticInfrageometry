@@ -123,6 +123,9 @@ FindInfraCycle[ graph_Graph, { kMin_Integer, kMax_ },
    underlying vertex set is a metric shell.  Accepts open ({v0, ..., vk},
    vk != v0) and closed ({v0, ..., vk, v0}) input. *)
 
+InfraCircleQ[ graph_Graph, c_InfraCircle ] :=
+  AllTrue[ First @ c, InfraCircleQ[ graph, # ] & ]
+
 InfraCircleQ[ graph_Graph, cycle_List ] /; Length[ cycle ] >= 3 :=
   With[ {
       closed = If[ First @ cycle === Last @ cycle, cycle, Append[ cycle, First @ cycle ] ] },

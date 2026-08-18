@@ -127,6 +127,7 @@ FindInfraBisectingHyperplane::usage = "FindInfraBisectingHyperplane[graph, p1, p
 
 InfraRay::usage = "InfraRay[{ray1, ...}] is a bundle of pointed half-lines, each running from a base vertex to an inextensible endpoint.";
 FindInfraRay::usage = "FindInfraRay[graph, O, v] gives the half-line from O through v: the pointed half of a maximal geodesic through O and v.";
+InfraRayQ::usage = "InfraRayQ[graph, ray] tests whether ray is a pointed half-line: a geodesic from its own first vertex that cannot be prolonged past its last.";
 
 (* ===================== InfraPolyline ===================== *)
 

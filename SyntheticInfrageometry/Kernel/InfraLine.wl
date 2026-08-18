@@ -506,6 +506,9 @@ FindInfraCommonLine[ graph_Graph, verts_List,
 
 (* A segment is a line iff no extension preserves the geodesic property. *)
 
+InfraLineQ[ graph_Graph, line_InfraLine ] :=
+  AllTrue[ First @ line, InfraLineQ[ graph, # ] & ]
+
 InfraLineQ[ graph_Graph, segment_List ] :=
   InfraSegmentQ[ graph, segment ] &&
   Length[ First @ findLineExtensions[ graph, segment ] ] == Length[ segment ]

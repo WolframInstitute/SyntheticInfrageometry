@@ -195,6 +195,9 @@ dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
 (* A vertex sequence (v0, ..., vk) is a path iff consecutive vertices are
    adjacent and no vertex repeats.  InfraPathQ \supset InfraSegmentQ \supset InfraLineQ. *)
 
+InfraPathQ[ graph_Graph, w : _InfraPath | _InfraLoop | _InfraString ] :=
+  AllTrue[ First @ w, InfraPathQ[ graph, # ] & ]
+
 InfraPathQ[ graph_Graph, path_List ] /; Length[ path ] >= 2 :=
   DuplicateFreeQ[ path ] &&
   AllTrue[ Partition[ path, 2, 1 ], EdgeQ[ graph, UndirectedEdge @@ # ] & ]
@@ -206,6 +209,9 @@ InfraPathQ[ _Graph, path_List ] /; Length[ path ] < 2 := False
 
 (* A vertex sequence (v0, ..., vk) is a geodesic from v0 to vk iff consecutive
    vertices are adjacent and the total edge count equals d(v0, vk). *)
+
+InfraSegmentQ[ graph_Graph, seg_InfraSegment ] :=
+  AllTrue[ segReps @ seg, InfraSegmentQ[ graph, # ] & ]
 
 InfraSegmentQ[ graph_Graph, segment_List ] /; Length[ segment ] >= 2 :=
   GraphDistance[ graph, First[ segment ], Last[ segment ] ] == Length[ segment ] - 1 &&

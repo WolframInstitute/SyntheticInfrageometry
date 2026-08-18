@@ -35,6 +35,24 @@ FindInfraRay[ graph_Graph, origin_, v_,
     ], origin, v ]
 
 
+(* ===================== InfraRayQ ===================== *)
+
+(* A ray is the pointed half of a maximal geodesic: a geodesic starting at its
+   own first vertex that cannot be prolonged past its last.  Inextensibility is
+   required only at the far end -- the origin is an endpoint by fiat, which is
+   what distinguishes a ray from a line. *)
+
+InfraRayQ[ graph_Graph, ray_List ] /; Length[ ray ] >= 2 :=
+  InfraSegmentQ[ graph, ray ] &&
+  NoneTrue[ AdjacencyList[ graph, Last @ ray ],
+    GraphDistance[ graph, First @ ray, # ] == Length[ ray ] & ]
+
+InfraRayQ[ _Graph, ray_List ] /; Length[ ray ] < 2 := False
+
+InfraRayQ[ graph_Graph, r_InfraRay ] :=
+  AllTrue[ First @ r, InfraRayQ[ graph, # ] & ]
+
+
 (* ===================== Scene-DSL constructor ===================== *)
 
 dispatchConstruction[ graph_Graph, InfraRay[ origin_, v_, opts___Rule ] ] :=
