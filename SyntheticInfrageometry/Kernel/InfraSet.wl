@@ -33,12 +33,19 @@ InfraSet[ InfraPoint[ v_ ] ] := InfraSet[ { v } ]
 InfraSet[ list : { __InfraPoint } ] := InfraSet[ Sort @ DeleteDuplicates[ #[[ 1 ]] & /@ list ] ]
 InfraSet[ InfraMesoPoint[ m_Association ] ] := InfraSet[ Sort @ Keys @ m ]
 
+(* A realisation may be a geodesic DAG instead of a vertex list -- the compact
+   InfraSegment form FindInfraSegment returns by default.  Read the vertices off
+   the DAG (VertexList == MetricInterval), never by enumerating the geodesic
+   family, which is exponential in general. *)
+InfraSet[ InfraSegment[ dag_Graph ] ] := InfraSet[ VertexList @ dag ]
+
 (* All other Infra* container wrappers have realisations that are vertex-lists
    (InfraBall, InfraShell, InfraSegment, ...): rs = {{vs_1}, {vs_2}, ...}.
-   Flatten one level to union all vertex-sets into a flat list. *)
+   Flatten one level to union all vertex-sets into a flat list; a DAG sitting in
+   a realisation slot contributes its vertices. *)
 InfraSet[ wrapper_Symbol[ rs_List ] ] /;
     wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
-  InfraSet[ Sort @ DeleteDuplicates @ Flatten[ rs, 1 ] ]
+  InfraSet[ Sort @ DeleteDuplicates @ Flatten[ Replace[ rs, d_Graph :> VertexList[ d ], { 1 } ], 1 ] ]
 
 InfraSet[ vs_List ][ "Vertices" ] := vs
 InfraSet[ vs_List ][ "Weights" ]  := ConstantArray[ 1, Length @ vs ]

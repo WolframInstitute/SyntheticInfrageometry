@@ -288,4 +288,32 @@ VerificationTest[
   TestID -> "point-heads-stay-distinct"
 ]
 
+(* ===== InfraSet coerces the geodesic-DAG form ===== *)
+
+(* FindInfraSegment returns the compact DAG form by default, so InfraSet must
+   coerce it -- and must agree with the enumerated form's support. *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    InfraSet[FindInfraSegment[g, 1, 16]] === InfraSet[FindInfraSegment[g, 1, 16, All]]],
+  True,
+  TestID -> "InfraSet-DAG-form-agrees-with-enumerated"
+]
+
+(* The support of a segment is its metric interval. *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    InfraSet[FindInfraSegment[g, 1, 16]]["Vertices"] === Sort @ MetricInterval[g, 1, 16]],
+  True,
+  TestID -> "InfraSet-DAG-support-is-MetricInterval"
+]
+
+(* A DAG sitting in a realisation slot contributes its vertices too. *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    InfraSet[InfraSegment[{First @ FindInfraSegment[g, 1, 16]}]]["Vertices"] ===
+      Sort @ MetricInterval[g, 1, 16]],
+  True,
+  TestID -> "InfraSet-DAG-inside-realisation-list"
+]
+
 EndTestSection[]
