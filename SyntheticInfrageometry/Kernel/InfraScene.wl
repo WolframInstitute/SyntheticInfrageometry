@@ -26,9 +26,7 @@ resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
       InfraSegmentQ[ s_ ]          :> InfraSegmentQ[ graph, s ],
       InfraShellQ[ vs_ ]           :> InfraShellQ[ graph, vs ],
       InfraBallQ[ vs_ ]            :> InfraBallQ[ graph, vs ],
-      InfraPlaneQ[ h_, p1_, p2_ ]  :> SeparatesQ[ graph, h, p1, p2 ] &&
-                                       AllTrue[ h, GraphDistance[ graph, p1, # ] ==
-                                                    GraphDistance[ graph, p2, # ] & ],
+      InfraPlaneQ[ h_, p1_, p2_ ]  :> InfraPlaneQ[ graph, h, p1, p2 ],
       InfraCircleQ[ c_ ]           :> InfraCircleQ[ graph, c ],
       InfraLineQ[ s_ ]             :> InfraLineQ[ graph, s ],
       InfraParallelQ[ l1_, l2_ ]   :> InfraParallelQ[ graph, l1, l2 ],

@@ -477,4 +477,72 @@ VerificationTest[
   TestID -> "UniqueInfraSegmentQ-CompleteGraph-whole-true"
 ]
 
+(* ===== InfraPlaneQ ===== *)
+
+(* The bisector FindInfraBisectingHyperplane returns must satisfy its own predicate. *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    InfraPlaneQ[g, FindInfraBisectingHyperplane[g, 11, 15][[1, 1]], 11, 15]],
+  True,
+  TestID -> "InfraPlaneQ-roundtrip-grid-bisector"
+]
+
+(* Every vertex of a bisector is equidistant from the two foci. *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    AllTrue[FindInfraBisectingHyperplane[g, 11, 15][[1, 1]],
+      GraphDistance[g, 11, #] == GraphDistance[g, 15, #] &]],
+  True,
+  TestID -> "InfraPlaneQ-bisector-is-equidistant"
+]
+
+(* Dropping a vertex breaks separation, so the remainder is not a hyperplane. *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    InfraPlaneQ[g, Rest @ FindInfraBisectingHyperplane[g, 11, 15][[1, 1]], 11, 15]],
+  False,
+  TestID -> "InfraPlaneQ-punctured-bisector-false"
+]
+
+(* A set containing a focus never separates it from anything. *)
+VerificationTest[
+  InfraPlaneQ[GridGraph[{5, 5}], {11, 13}, 11, 15],
+  False,
+  TestID -> "InfraPlaneQ-set-containing-focus-false"
+]
+
+(* On an odd path the strict bisector is empty and cannot separate. *)
+VerificationTest[
+  InfraPlaneQ[PathGraph[Range[5]], {3}, 1, 5],
+  True,
+  TestID -> "InfraPlaneQ-path-midvertex-separates"
+]
+
+(* On a 4-cycle the two off-diagonal vertices are equidistant from the antipodal
+   pair and separate it, so they form a hyperplane already at window 0; widening
+   the slab cannot break that. *)
+VerificationTest[
+  {InfraPlaneQ[CycleGraph[4], {2, 4}, 1, 3],
+   InfraPlaneQ[CycleGraph[4], {2, 4}, 1, 3, 1]},
+  {True, True},
+  TestID -> "InfraPlaneQ-cycle4-antipodal-band"
+]
+
+(* The window widens the slab: a vertex one step off the bisector is rejected
+   at window 0 and accepted at window 1. *)
+VerificationTest[
+  With[{g = PathGraph[Range[5]]},
+    {InfraPlaneQ[g, {2}, 1, 5], InfraPlaneQ[g, {2}, 1, 5, 3]}],
+  {False, True},
+  TestID -> "InfraPlaneQ-window-widens-slab"
+]
+
+(* The graph-free three-argument form is the inert scene assertion: it must
+   stay unevaluated so InfraScene can hold it until bindings resolve. *)
+VerificationTest[
+  MatchQ[InfraPlaneQ[{3, 8, 13}, 11, 15], _InfraPlaneQ],
+  True,
+  TestID -> "InfraPlaneQ-scene-form-stays-inert"
+]
+
 EndTestSection[]

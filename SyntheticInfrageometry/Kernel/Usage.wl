@@ -260,8 +260,8 @@ InfraGeometricStep::usage = "InfraGeometricStep[{hyp1, ...}] groups hypotheses i
 InfraIntersection::usage = "InfraIntersection[obj1, obj2, ...] gives the vertex-set intersection of Infra* objects as an InfraSet.";
 InfraUnion::usage = "InfraUnion[obj1, obj2, ...] gives the vertex-set union of Infra* objects as an InfraSet.";
 InfraDistance::usage = "InfraDistance[graph, p, q] gives the graph distance between two Infra* objects, aggregated over their vertex sets. Option \"Aggregation\".";
-InfraPlaneQ::usage = "InfraPlaneQ[h, p1, p2] asserts inside an InfraScene that h is a bisecting hyperplane between p1 and p2.";
-InfraIntersectQ::usage = "InfraIntersectQ[s1, s2] asserts inside an InfraScene that two sets intersect.";
+InfraPlaneQ::usage = "InfraPlaneQ[graph, h, p1, p2] tests whether h lies in the bisector slab of p1, p2 and separates them; a trailing window widens the slab. The graph-free InfraPlaneQ[h, p1, p2] is the inert InfraScene assertion.";
+InfraIntersectQ::usage = "InfraIntersectQ[s1, s2] asserts inside an InfraScene that two sets intersect; it stays inert until bindings resolve, which is why it exists rather than the built-in IntersectingQ.";
 
 (* ===================== Highlights / Viewers ===================== *)
 

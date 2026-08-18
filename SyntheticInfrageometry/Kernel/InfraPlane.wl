@@ -96,6 +96,23 @@ propertyPredicate[ _, _, _, _, other_ ] :=
   ( Message[ FindInfraBisectingHyperplane::badproperty, other ]; Throw[ $Failed ] )
 
 
+(* ===================== InfraPlaneQ ===================== *)
+
+(* h is a bisecting hyperplane between p1 and p2: h sits inside the bisector
+   slab { v : lo <= d(p1, v) - d(p2, v) <= hi } and separates p1 from p2.
+   window is a half-width w (the slab { -w, w }, default 0 = strict bisector)
+   or an explicit { lo, hi }, matching FindInfraBisectingHyperplane's window.
+   The three-argument InfraPlaneQ[h, p1, p2] is the inert scene assertion; it
+   stays unevaluated until FindInfraScene supplies the graph. *)
+
+InfraPlaneQ[ graph_Graph, h_List, p1_, p2_, window_ : 0 ] :=
+  With[ { bounds = If[ ListQ @ window, window, { -window, window } ] },
+    SeparatesQ[ graph, h, p1, p2 ] &&
+    AllTrue[ h,
+      bounds[[ 1 ]] <= GraphDistance[ graph, p1, # ] - GraphDistance[ graph, p2, # ] <= bounds[[ 2 ]] & ]
+  ]
+
+
 (* ===================== Scene-DSL constructor ===================== *)
 
 dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_, opts___Rule ] ] :=
