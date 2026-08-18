@@ -196,9 +196,8 @@ normalizeHighlightSpec[ x_ ]                 := { x }
    "ThicknessRange" defaults to the base measure $InfraEdgeThickness;
    "OpacityRange" keeps the floored envelope.  "PointSizeRange" defaults to
    Automatic: point-shaped objects (InfraPoint, polyline knots, polygon
-   corners) distribute the base measure $InfraPointSize, while path-, cycle- and
-   set-shaped objects take their own "ThicknessRange", so every vertex carries a
-   joint disk exactly as wide as the band meeting it. *)
+   corners) distribute the base measure $InfraPointSize, while vertices of
+   path- and set-shaped objects inherit the underlying graph's point size. *)
 Options[ InfraSceneHighlight ] = Join[
   {
     "OpacityRange"   :> $InfraOpacityRange,
@@ -297,18 +296,12 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
 
     triples = Join[ triples, knotTriples ];
 
-    (* Resolve the Automatic point-size default per object type: point-shaped objects
-       distribute the base measure; an edge-drawing object gets a joint disk as wide as its
-       own band, since HighlightGraph butt-caps each edge separately (CapForm inside an
-       EdgeStyle directive is ignored) and a bend would otherwise cut a wedge of background
-       into the ribbon. *)
+    (* Resolve the Automatic point-size default per object type: point-shaped
+       objects distribute the base measure, everything else stays off. *)
     triples = Apply[
       { reps, color, type, record, obj } |-> { reps, color, type,
         Append[ record, "PointSizeRange" -> Replace[ record[ "PointSizeRange" ],
-          Automatic :> Switch[ type,
-            "Points" | "PointSet",       $InfraPointSize,
-            "Paths" | "Cycles" | "Sets", record[ "ThicknessRange" ],
-            _,                           None ] ] ], obj },
+          Automatic :> If[ MatchQ[ type, "Points" | "PointSet" ], $InfraPointSize, None ] ] ], obj },
       triples, { 1 } ];
 
     (* repVerts / repEdges share the per-type dispatch with InfraMeasure via
@@ -401,12 +394,48 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                      "VSize" -> If[ rec[ "VertexSize" ] === None, Nothing, v -> rec[ "VertexSize" ] ] |>
               ] ],
             Merge[ vEntries, Identity ] ] },
+        {
+          coords    = AssociationThread[ VertexList @ graph -> GraphEmbedding @ graph ],
+          edgeStyle = Association @ Cases[ edgeData, kv_Association :> kv[ "EdgeStyle" ] ]
+        },
+        (* A walk is one stroke, not a chain of edges.  HighlightGraph draws each edge
+           separately with a butt cap and ignores a CapForm / JoinForm placed in the edge
+           directive, so a bend leaves a wedge of background bitten out of the ribbon.
+           Each maximal run of equal-styled consecutive steps is therefore redrawn as one
+           joined Line, carried by the EdgeShapeFunction of its first unclaimed edge while
+           the run's remaining unclaimed edges draw nothing.  Each edge takes at most one
+           rule -- a walk that repeats an edge, and overlapping realisations, would otherwise
+           hand Graph two rules for it, and only the first survives. *)
+        {
+          strokes = Catenate @ Cases[ triples,
+            { reps_, _, type : "Paths" | "Cycles", record_, _ } /; record[ "EdgeShapeFunction" ] === None :>
+              Catenate @ Map[
+                walk |-> Map[
+                  steps |-> { UndirectedEdge @@ Sort @ # & /@ steps,
+                              coords /@ Prepend[ Last /@ steps, First @ First @ steps ] },
+                  Select[ SplitBy[ Partition[ walk, 2, 1 ], edgeStyle[ UndirectedEdge @@ Sort @ # ] & ],
+                    Length[ # ] >= 2 & ] ],
+                Replace[ Cases[ reps, r_List /; Length[ r ] >= 2 && FreeQ[ r, _Graph ] ],
+                  w_ :> If[ type === "Cycles" && Last[ w ] =!= First[ w ], Append[ w, First @ w ], w ], { 1 } ] ] ]
+        },
+        {
+          joinRules = Last @ Fold[
+            { state, stroke } |-> Replace[ DeleteDuplicates @ Select[ First @ stroke, ! KeyExistsQ[ First @ state, # ] & ], {
+                { } -> state,
+                fresh_ :> {
+                  Join[ First @ state, AssociationThread[ fresh -> True ] ],
+                  Join[ Last @ state,
+                    { First @ fresh -> ( { JoinForm[ "Round" ], Line @ Last @ stroke } & ) },
+                    ( # -> ( { } & ) ) & /@ Rest @ fresh ] } } ],
+            { <| |>, { } },
+            strokes ]
+        },
 
         HighlightGraph[ graph,
           Cases[ vertexData, kv_Association /; KeyExistsQ[ kv, "Style" ] :> kv[ "Style" ] ],
           Sequence @@ DeleteCases[ {
             EdgeStyle           -> DeleteCases[ Cases[ edgeData,   kv_Association :> kv[ "EdgeStyle" ] ], Nothing ],
-            EdgeShapeFunction   -> DeleteCases[ Cases[ edgeData,   kv_Association :> kv[ "EdgeShapeFunction" ] ], Nothing ],
+            EdgeShapeFunction   -> Join[ DeleteCases[ Cases[ edgeData, kv_Association :> kv[ "EdgeShapeFunction" ] ], Nothing ], joinRules ],
             VertexShapeFunction -> Cases[ vertexData, kv_Association /; KeyExistsQ[ kv, "VSF" ] :> kv[ "VSF" ] ],
             VertexSize          -> DeleteCases[ Cases[ vertexData, kv_Association /; KeyExistsQ[ kv, "VSize" ] :> kv[ "VSize" ] ], Nothing ]
           }, _ -> { } ],

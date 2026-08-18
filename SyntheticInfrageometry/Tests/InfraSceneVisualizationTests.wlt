@@ -178,14 +178,14 @@ VerificationTest[
 ]
 
 (* An explicit Opacity directive overrides the on-by-default "OpacityRange"
-   count-diffusion: only the user's opacity is emitted, so no gradient-induced
-   opacity values appear alongside it. *)
+   count-diffusion: only the user's opacity is emitted on each edge, so no
+   gradient-induced opacity values appear alongside it. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { opts = Options @ InfraSceneHighlight[ g,
+    With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
           { InfraSegment[ { { 1, 2, 3, 4 } } ] -> Directive[ Orange, Opacity[ 0.3 ] ] } ] },
-      ! FreeQ[ opts, Opacity[ 0.3 ] ] &&
-      Cases[ opts, Opacity[ x_ ] /; x =!= 0.3, Infinity ] === { }
+      ! FreeQ[ styles, Opacity[ 0.3 ] ] &&
+      Cases[ styles, Opacity[ x_ ] /; x =!= 0.3, Infinity ] === { }
     ]
   ],
   True,
@@ -325,21 +325,44 @@ VerificationTest[
   TestID -> "InfraSceneHighlight-mesopoint-relative-mass"
 ]
 
-(* Every edge-drawing object carries a joint disk at least as wide as each band
-   meeting it, so a bend never cuts a wedge of background into the ribbon. *)
+(* A highlighted walk is drawn as ONE joined stroke through its vertices, not as a
+   chain of separately butt-capped edges: a bend must not bite a wedge of background
+   out of the ribbon. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { opts = Options @ InfraSceneHighlight[ g,
-          { InfraShell @ FindInfraShell[ g, 1, { 1, 2 }, All ] } ] },
-      { sizes = Association @ Cases[ opts,
-          ( v_ -> f_Function ) :> ( v -> First @ Cases[ f, AbsolutePointSize[ s_ ] :> s, Infinity ] ), Infinity ],
-        bands = Cases[ opts,
-          ( UndirectedEdge[ a_, b_ ] -> d_Directive ) :> { a, b, First @ Cases[ d, AbsoluteThickness[ t_ ] :> t ] }, Infinity ] },
-      bands =!= { } && AllTrue[ bands, sizes[ #[[ 1 ]] ] >= #[[ 3 ]] && sizes[ #[[ 2 ]] ] >= #[[ 3 ]] & ]
-    ]
+    Cases[ Options @ InfraSceneHighlight[ g, { InfraPath[ { { 1, 2, 6, 10, 11 } } ] } ],
+      Line[ q_ ] :> q, Infinity ] === { GraphEmbedding[ g ][[ { 1, 2, 6, 10, 11 } ]] }
   ],
   True,
-  TestID -> "InfraSceneHighlight-joint-covers-band"
+  TestID -> "InfraSceneHighlight-walk-is-one-stroke"
+]
+
+(* A walk that repeats an edge still paints every step: an edge whose shape function
+   draws nothing has to lie on one of the joined strokes. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    { opts = Options @ InfraSceneHighlight[ g, { InfraPath[ { { 1, 2, 6, 2, 3, 7 } } ] } ],
+      xy   = AssociationThread[ VertexList[ g ] -> GraphEmbedding[ g ] ] },
+    { stroked = Union @ Catenate[ Sort /@ Partition[ #, 2, 1 ] & /@ Cases[ opts, Line[ q_ ] :> q, Infinity ] ],
+      blank   = Cases[ opts, ( e_UndirectedEdge -> f_Function ) /; FreeQ[ f, _Line ] :> Sort[ xy /@ List @@ e ], Infinity ] },
+    blank =!= { } && SubsetQ[ stroked, blank ]
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-repeated-edge-walk-keeps-every-step"
+]
+
+(* The Automatic point-size default stays off for non-point objects: a set
+   highlight emits no VertexShapeFunction, its vertices inherit the graph's
+   point size. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Cases[
+      Options @ InfraSceneHighlight[ g,
+        { InfraShell @ FindInfraShell[ g, 1, { 1, 2 }, All ] } ],
+      HoldPattern[ VertexShapeFunction -> _ ], Infinity ] === { }
+  ],
+  True,
+  TestID -> "InfraSceneHighlight-automatic-pointsize-off-for-sets"
 ]
 
 (* A symbolic per-entry VertexSize (Large / Tiny / Scaled[..]) stays on the
