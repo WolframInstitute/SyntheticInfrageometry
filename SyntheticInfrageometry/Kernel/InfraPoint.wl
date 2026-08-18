@@ -73,13 +73,18 @@ InfraPoint /: VolumeGrowthObservables[ g_, p_InfraPoint, rest___ ] := VolumeGrow
    variance of pairwise distances).  The pool as a region is
    InfraSet @ FindInfraPoint[g, All]. *)
 
+FindInfraPoint::badfrom = "\"From\" specification `1` is not supported by FindInfraPoint. Supported: All, \"Random\", \"Center\", \"Periphery\", {\"Center\", cap}, anchor -> spec, a vertex, a vertex list, InfraPoint, InfraMesoPoint, InfraSet.";
+
 Options[ FindInfraPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
 
 FindInfraPoint[ graph_Graph, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
-  Module[ { pool = findPointPool[ graph, OptionValue[ "From" ] ],
+  Module[ { from = OptionValue[ "From" ], pool,
             dist = OptionValue[ "Distance" ],
             maxCl = OptionValue[ "MaxCliques" ],
             distMatrix, finiteMax, cliques },
+    If[ ! fromPointSpecQ[ graph, from ],
+      Message[ FindInfraPoint::badfrom, from ]; Return[ $Failed ] ];
+    pool = findPointPool[ graph, from ];
     InfraPoint /@ If[ n == 1 || dist === None,
       RandomSample[ pool, UpTo[ n ] ],
       With[ { vertexIndex = Lookup[ AssociationThread[ VertexList @ graph, Range @ VertexCount @ graph ], pool ] },
@@ -122,7 +127,21 @@ FindInfraPoint[ graph_Graph, n_Integer, opts : OptionsPattern[] ] :=
 
 (* no count: one point *)
 FindInfraPoint[ graph_Graph, opts : OptionsPattern[] ] :=
-  InfraPoint @ RandomChoice @ findPointPool[ graph, OptionValue[ "From" ] ]
+  With[ { from = OptionValue[ "From" ] },
+    If[ ! fromPointSpecQ[ graph, from ],
+      Message[ FindInfraPoint::badfrom, from ]; $Failed,
+      InfraPoint @ RandomChoice @ findPointPool[ graph, from ] ] ]
+
+
+(* Admissible "From" specifications, tested before dispatch: an unrecognised
+   selector must raise ::badfrom rather than fall through to the whole vertex
+   pool, which reads as a legitimate random draw.  Shared with SelectInfraPoint,
+   whose pool selectors mirror these. *)
+
+fromPointSpecQ[ graph_Graph, spec_ ] :=
+  MatchQ[ spec, All | "Random" | "Center" | "Periphery" | { "Center", _Integer | Infinity }
+                | _InfraPoint | _InfraMesoPoint | _InfraSet | _Rule | _List ] ||
+  MemberQ[ VertexList @ graph, spec ]
 
 
 (* "From" option dispatch -- vertex pool to draw points from. *)
@@ -356,12 +375,17 @@ FindClosestInfraPoint[ graph_Graph, line_, point_,
    "Center" / "Periphery" use sub-bundle eccentricity, "Distance" enforces a
    mutual-distance clique on the n returned vertices. *)
 
+SelectInfraPoint::badfrom = "\"From\" specification `1` is not supported by SelectInfraPoint. Supported: All, \"Random\", \"Center\", \"Periphery\", anchor -> spec, a vertex, a vertex list, InfraPoint, InfraMesoPoint, InfraSet.";
+
 Options[ SelectInfraPoint ] = { "From" -> All, "Distance" -> None, "MaxCliques" -> All };
 
 SelectInfraPoint[ graph_Graph, vertices_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] /;
     vertices === { } || ! AllTrue[ vertices, MatchQ[ _InfraPoint ] ] :=
-  InfraPoint /@ selectFromPointSpace[ graph, vertices, n,
-    OptionValue[ "From" ], OptionValue[ "Distance" ], OptionValue[ "MaxCliques" ] ]
+  With[ { from = OptionValue[ "From" ] },
+    If[ ! fromPointSpecQ[ graph, from ],
+      Message[ SelectInfraPoint::badfrom, from ]; $Failed,
+      InfraPoint /@ selectFromPointSpace[ graph, vertices, n, from,
+        OptionValue[ "Distance" ], OptionValue[ "MaxCliques" ] ] ] ]
 
 SelectInfraPoint[ graph_Graph, vertices_List, All, opts : OptionsPattern[] ] /;
     vertices === { } || ! AllTrue[ vertices, MatchQ[ _InfraPoint ] ] :=

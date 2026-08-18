@@ -67,6 +67,48 @@ VerificationTest[
   TestID -> "FindInfraPoint-iterated-center-disconnected-region"
 ]
 
+(* An unrecognised "From" selector is refused rather than silently read as the
+   whole vertex pool -- the retired "MinCurvature" / "MaxCurvature" names are the
+   case that matters, since a reader copying them from older prose otherwise gets
+   a random draw and no indication the selector did nothing. *)
+VerificationTest[
+  FindInfraPoint[GridGraph[{5, 5}], All, "From" -> "MinCurvature"],
+  $Failed,
+  {FindInfraPoint::badfrom},
+  TestID -> "FindInfraPoint-badfrom-retired-selector"
+]
+
+(* an atom that is not a vertex of the graph is not a pool either *)
+VerificationTest[
+  FindInfraPoint[GridGraph[{5, 5}], All, "From" -> 999],
+  $Failed,
+  {FindInfraPoint::badfrom},
+  TestID -> "FindInfraPoint-badfrom-non-vertex"
+]
+
+(* the count-less form validates on the same vocabulary *)
+VerificationTest[
+  FindInfraPoint[GridGraph[{5, 5}], "From" -> "Nonsense"],
+  $Failed,
+  {FindInfraPoint::badfrom},
+  TestID -> "FindInfraPoint-badfrom-no-count-form"
+]
+
+(* Refusing a legitimate selector would be worse than the silence it replaces:
+   every admissible "From" shape must still produce a pool. *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    FreeQ[
+      FindInfraPoint[g, All, "From" -> #] & /@
+        {All, "Random", "Center", "Periphery", {"Center", 0}, {"Center", Infinity},
+         7, 1 -> 2, {2, 3, 4}, InfraPoint[9], InfraSet[{2, 5, 7}],
+         InfraMesoPoint[<|3 -> 1, 4 -> 1|>]},
+      $Failed]
+  ],
+  True,
+  TestID -> "FindInfraPoint-From-vocabulary-not-refused"
+]
+
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
     With[{pts = (#["Vertex"] & /@ FindInfraPoint[g, 2, "Distance" -> 4])},

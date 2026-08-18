@@ -701,5 +701,62 @@ VerificationTest[
   { True, True },
   TestID -> "GeodesicSprayGraph-accepts-point-atoms"
 ]
+(* ===== "From" validation ===== *)
+
+(* An unrecognised "From" selector is refused rather than silently read as the
+   whole bundle.  "MinCurvature" / "MaxCurvature" were replaced by
+   {"Min", scoreFn} / {"Max", scoreFn}, so they are the names a reader is most
+   likely to copy from older prose. *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    SelectInfraPath[ g, FindInfraPath[ g, 1, 13, 6, All ][ "Realizations" ], All,
+      "From" -> "MinCurvature" ] ],
+  $Failed,
+  { SelectInfraPath::badfrom },
+  TestID -> "SelectInfraPath-badfrom-retired-selector"
+]
+
+VerificationTest[
+  SelectInfraCycle[ GridGraph[ { 5, 5 } ], { { 1, 2, 7, 6 } }, All, "From" -> "MaxCurvature" ],
+  $Failed,
+  { SelectInfraCycle::badfrom },
+  TestID -> "SelectInfraCycle-badfrom-retired-selector"
+]
+
+VerificationTest[
+  SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "MinCurvature" ],
+  $Failed,
+  { SelectInfraPoint::badfrom },
+  TestID -> "SelectInfraPoint-badfrom-retired-selector"
+]
+
+(* Refusing a legitimate selector would be worse than the silence it replaces:
+   every admissible "From" shape must still produce a pool. *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    { paths = FindInfraPath[ g, 1, 13, 6, All ][ "Realizations" ] },
+    FreeQ[
+      SelectInfraPath[ g, paths, All, "From" -> # ] & /@
+        { All, "Center", "Periphery", "MostVisited", "Bottleneck", "MinLength", "MaxLength",
+          First[ paths ] -> 2, { "Min", Length }, { "Max", Length } },
+      $Failed ]
+  ],
+  True,
+  TestID -> "SelectInfraPath-From-vocabulary-not-refused"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    FreeQ[
+      SelectInfraPoint[ g, Range[ 25 ], All, "From" -> # ] & /@
+        { All, "Random", "Center", "Periphery", 7, 3 -> 2, { 2, 3, 4 }, InfraSet[ { 2, 5, 7 } ] },
+      $Failed ]
+  ],
+  True,
+  TestID -> "SelectInfraPoint-From-vocabulary-not-refused"
+]
+
 
 EndTestSection[]

@@ -34,6 +34,9 @@ PackageScope[windowDeform]
    SelectInfraCycle accepts InfraCircle[cycles].
    Operator form: SelectInfraPath[g, n, opts][paths]. *)
 
+SelectInfraPath::badfrom  = "\"From\" specification `1` is not supported by SelectInfraPath. Supported: All, \"Center\", \"Periphery\", \"MostVisited\", \"Bottleneck\", \"MinLength\", \"MaxLength\", anchor -> spec, {\"Min\", scoreFn}, {\"Max\", scoreFn}.";
+SelectInfraCycle::badfrom = "\"From\" specification `1` is not supported by SelectInfraCycle. Supported: All, \"Center\", \"Periphery\", \"MostVisited\", \"Bottleneck\", \"MinLength\", \"MaxLength\", anchor -> spec, {\"Min\", scoreFn}, {\"Max\", scoreFn}.";
+
 Options[ SelectInfraPath ] = {
   "From"       -> All,
   "Distance"   -> None,
@@ -46,9 +49,11 @@ Options[ SelectInfraCycle ] = Options[ SelectInfraPath ];
 
 SelectInfraPath[ graph_Graph, paths_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] /;
     paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraLine | InfraPath | InfraRay )[ { _ } ] ] ] :=
-  selectFromPathSpace[ graph, paths, n, False,
-    OptionValue[ "From" ], OptionValue[ "Distance" ],
-    OptionValue[ "Metric" ], OptionValue[ "MaxCliques" ] ]
+  With[ { from = OptionValue[ "From" ] },
+    If[ ! fromPathSpecQ[ from ],
+      Message[ SelectInfraPath::badfrom, from ]; $Failed,
+      selectFromPathSpace[ graph, paths, n, False, from, OptionValue[ "Distance" ],
+        OptionValue[ "Metric" ], OptionValue[ "MaxCliques" ] ] ] ]
 
 SelectInfraPath[ graph_Graph, paths_List, All, opts : OptionsPattern[] ] /;
     paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraLine | InfraPath | InfraRay )[ { _ } ] ] ] :=
@@ -123,9 +128,11 @@ SelectInfraPath[ graph_Graph, countSpec : ( _Integer | UpTo[ _Integer ] | All ),
 
 SelectInfraCycle[ graph_Graph, cycles_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] /;
     cycles === { } || ! AllTrue[ cycles, MatchQ[ InfraCircle[ { _ } ] ] ] :=
-  selectFromPathSpace[ graph, cycles, n, True,
-    OptionValue[ "From" ], OptionValue[ "Distance" ],
-    OptionValue[ "Metric" ], OptionValue[ "MaxCliques" ] ]
+  With[ { from = OptionValue[ "From" ] },
+    If[ ! fromPathSpecQ[ from ],
+      Message[ SelectInfraCycle::badfrom, from ]; $Failed,
+      selectFromPathSpace[ graph, cycles, n, True, from, OptionValue[ "Distance" ],
+        OptionValue[ "Metric" ], OptionValue[ "MaxCliques" ] ] ] ]
 
 SelectInfraCycle[ graph_Graph, cycles_List, All, opts : OptionsPattern[] ] /;
     cycles === { } || ! AllTrue[ cycles, MatchQ[ InfraCircle[ { _ } ] ] ] :=
@@ -723,6 +730,15 @@ selectFromPathSpace[ graph_Graph, paths_List, nMax_Integer, cyclic_,
     ];
     picked
   ]
+
+
+(* Admissible "From" specifications, tested before dispatch: an unrecognised
+   selector must raise ::badfrom rather than fall through to the whole bundle,
+   which reads as a legitimate random draw. *)
+
+fromPathSpecQ[ spec_ ] :=
+  MatchQ[ spec, All | "Center" | "Periphery" | "MostVisited" | "Bottleneck"
+                | "MinLength" | "MaxLength" | _Rule | { "Min" | "Max", _ } ]
 
 
 (* Pool selection: positions in paths satisfying the "From" specification. *)
