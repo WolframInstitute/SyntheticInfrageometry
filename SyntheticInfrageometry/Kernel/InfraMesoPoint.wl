@@ -30,6 +30,17 @@ InfraMesoPoint[ obj_ ] /;
     Length[ obj ] === 1 && MatchQ[ Head @ obj, $infraBundleHeads | InfraPoint | InfraObject | InfraSet ] :=
   InfraMesoPoint @ infraVertexMultiset @ obj
 
+(* canonical form: keys sorted, so two equal measures built by different routes
+   compare SameQ -- the DAG form and the enumerated form of the same segment
+   used to differ by key order alone.  Guarded against PATTERN arguments for the
+   same reason as InfraSet: DownValues evaluate patterns, so without the FreeQ a
+   rule-author's InfraMesoPoint[<|v_ -> m_|>] would be rewritten. *)
+InfraMesoPoint[ m_Association ] /;
+    FreeQ[ m, _Blank | _BlankSequence | _BlankNullSequence | _Pattern ] &&
+    Keys[ m ] =!= Sort @ Keys[ m ] :=
+  InfraMesoPoint @ KeySort @ m
+
+
 InfraMesoPoint[ m_Association ][ "Support" ]  := InfraSet[ Sort @ Keys @ m ]
 InfraMesoPoint[ m_Association ][ "Vertices" ] := Keys @ m
 InfraMesoPoint[ m_Association ][ "Weights" ]  := Values @ m

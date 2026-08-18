@@ -261,10 +261,13 @@ VerificationTest[
 ]
 
 (* a multi-realisation bundle keeps the occupation multiplicities *)
+(* KeySort both sides: the claim is that the two measures agree, not that they
+   enumerate their support in the same order.  InfraMesoPoint canonicalises key
+   order; the bundle accessor keeps discovery order. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { seg = FindInfraSegment[ g, 1, 16, All ] },
-      InfraMesoPoint[ seg ][ "OccupationCount" ] === seg[ "OccupationCount" ] ]
+      KeySort @ InfraMesoPoint[ seg ][ "OccupationCount" ] === KeySort @ seg[ "OccupationCount" ] ]
   ],
   True,
   TestID -> "InfraMesoPoint-coerces-bundle-to-occupation-measure"
@@ -314,6 +317,37 @@ VerificationTest[
       Sort @ MetricInterval[g, 1, 16]],
   True,
   TestID -> "InfraSet-DAG-inside-realisation-list"
+]
+
+(* ===== InfraMesoPoint canonical form ===== *)
+
+(* Multiplicities survive the DAG -> measure conversion, and the compact and
+   enumerated forms of the same segment give the SAME measure -- they used to
+   differ by association key order alone, which broke SameQ equality. *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    InfraMesoPoint[FindInfraSegment[g, 1, 16]] ===
+      InfraMesoPoint[FindInfraSegment[g, 1, 16, All]]],
+  True,
+  TestID -> "InfraMesoPoint-DAG-and-enumerated-forms-are-SameQ"
+]
+
+(* The weights are the true geodesic occupation: counted by brute force over the
+   whole enumerated family, they agree with the DP on the DAG. *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    {m = InfraMesoPoint[FindInfraSegment[g, 1, 16]]},
+    {paths = First @ FindInfraSegment[g, 1, 16, All]},
+    AllTrue[m["Vertices"], m[[1]][#] == Count[paths, p_ /; MemberQ[p, #]] &]],
+  True,
+  TestID -> "InfraMesoPoint-DAG-weights-are-true-occupation"
+]
+
+(* Keys are sorted, so equal measures entered in any order are SameQ. *)
+VerificationTest[
+  InfraMesoPoint[<|9 -> 2, 1 -> 5|>] === InfraMesoPoint[<|1 -> 5, 9 -> 2|>],
+  True,
+  TestID -> "InfraMesoPoint-key-order-canonicalised"
 ]
 
 EndTestSection[]
