@@ -20,7 +20,9 @@ InfraEllipticShell[ reps_List ][ "Volume" ] := Length /@ reps
        requires disconnecting the near region {d_sum < cMin} from the far
        region {d_sum > cMax}; "Connected" requires ConnectedGraphQ.
      Method     -- "Exhaustive" (default; BFS peel-DAG over the level set) |
-       {"Exhaustive", "Pruning" -> spec} | "Greedy" (DFS, one realisation).
+       {"Exhaustive", "Pruning" -> spec} | "Greedy" (DFS, one realisation) |
+       "GreedyRandomPick" (same walk, random admissible removal at each
+       step, seed via ambient SeedRandom).
    When Properties is empty, Method is ignored. *)
 
 FindInfraEllipticShell::badmethod   = "Method `1` is not supported by FindInfraEllipticShell.";
@@ -54,9 +56,10 @@ FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
         Catch[
           admissible = admissibleEllipticShell[ graph, verts, row1, row2, range, properties ];
           Switch[ methodHead,
-            "Exhaustive", findAllMinimalAdmissible[ graph, levelSet, admissible, pruning ],
-            "Greedy",     findGreedyMinimalAdmissible[ graph, levelSet, admissible ],
-            _,            Message[ FindInfraEllipticShell::badmethod, methodSpec ]; $Failed
+            "Exhaustive",       findAllMinimalAdmissible[ graph, levelSet, admissible, pruning ],
+            "Greedy",           findGreedyMinimalAdmissible[ graph, levelSet, admissible, First ],
+            "GreedyRandomPick", findGreedyMinimalAdmissible[ graph, levelSet, admissible, RandomChoice ],
+            _,                  Message[ FindInfraEllipticShell::badmethod, methodSpec ]; $Failed
           ]
         ]
       ]

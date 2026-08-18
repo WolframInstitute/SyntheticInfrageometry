@@ -22,7 +22,9 @@ InfraShell[ reps_List ][ "Volume" ] := Length /@ reps
        Properties.  "Exhaustive" (default) is top-down BFS over the
        peel-DAG, deduplicated; the nested form {"Exhaustive", "Pruning"
        -> spec} caps per-layer branching via applyPruning.  "Greedy" is
-       top-down DFS, no backtracking, one realisation.
+       top-down DFS, no backtracking, one realisation; "GreedyRandomPick"
+       is the same walk with a random admissible removal at each step
+       (seed via ambient SeedRandom).
    When Properties is empty, Method is ignored. *)
 
 FindInfraShell::badmethod   = "Method `1` is not supported by FindInfraShell.";
@@ -54,9 +56,10 @@ FindInfraShell[ graph_Graph, p_, r_,
         Catch[
           admissible = admissibleShell[ localG, p0, radius, properties ];
           Switch[ methodHead,
-            "Exhaustive", findAllMinimalAdmissible[ localG, levelSet, admissible, pruning ],
-            "Greedy",     findGreedyMinimalAdmissible[ localG, levelSet, admissible ],
-            _,            Message[ FindInfraShell::badmethod, methodSpec ]; $Failed
+            "Exhaustive",       findAllMinimalAdmissible[ localG, levelSet, admissible, pruning ],
+            "Greedy",           findGreedyMinimalAdmissible[ localG, levelSet, admissible, First ],
+            "GreedyRandomPick", findGreedyMinimalAdmissible[ localG, levelSet, admissible, RandomChoice ],
+            _,                  Message[ FindInfraShell::badmethod, methodSpec ]; $Failed
           ]
         ]
       ]

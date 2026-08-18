@@ -24,7 +24,9 @@ InfraPlane[ reps_List ][ "Volume" ] := Length /@ reps
         Properties.  "Exhaustive" (default) is a top-down BFS over the
         peel-DAG, deduplicated; the nested form {"Exhaustive", "Pruning"
         -> spec} caps per-layer branching via applyPruning.  "Greedy"
-        is a top-down DFS, no backtracking, one realisation.
+        is a top-down DFS, no backtracking, one realisation;
+        "GreedyRandomPick" is the same walk with a random admissible
+        removal at each step (seed via ambient SeedRandom).
    When Properties is empty, Method is ignored.  On a non-bipartite graph
    the strict equidistant set may fail to separate, so widen the window
    or use {-1, 1} to recover the parity-stranded band. *)
@@ -73,9 +75,10 @@ FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
             Graph[ nodes, DeleteDuplicates[ Join[ paired, direct ] ] ] ];
           admissible = admissibleBisectingHyperplane[ graph, aux, q1, q2, properties ];
           Switch[ methodHead,
-            "Exhaustive", findAllMinimalAdmissible[ graph, bisector, admissible, pruning ],
-            "Greedy",     findGreedyMinimalAdmissible[ graph, bisector, admissible ],
-            _,            Message[ FindInfraBisectingHyperplane::badmethod, methodSpec ]; $Failed
+            "Exhaustive",       findAllMinimalAdmissible[ graph, bisector, admissible, pruning ],
+            "Greedy",           findGreedyMinimalAdmissible[ graph, bisector, admissible, First ],
+            "GreedyRandomPick", findGreedyMinimalAdmissible[ graph, bisector, admissible, RandomChoice ],
+            _,                  Message[ FindInfraBisectingHyperplane::badmethod, methodSpec ]; $Failed
           ]
         ]
       ]

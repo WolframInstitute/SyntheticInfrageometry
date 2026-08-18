@@ -84,8 +84,11 @@ Options[ FindInfraSegment ] = {
 (* No extra conditions (empty Properties, Exhaustive, no explicit count) ->
    the compact geodesic-DAG form: one GeodesicIntervalGraph atom per endpoint
    pair, the atoms held as a set (a lone atom collapses to the bare
-   InfraSegment[dag]).  An explicit count, any Properties filter, or Greedy ->
-   the enumerated path form (the calling triple over spreadFind).  A multi-source
+   InfraSegment[dag]).  An explicit count, any Properties filter, or Greedy /
+   GreedyRandomPick -> the enumerated path form (the calling triple over
+   spreadFind).  GreedyRandomPick differs from Greedy only when Properties is
+   non-empty -- with trivial Properties both take the same deterministic
+   FindShortestPath fast path (see Wiki/Concepts/RandomnessConventions.md).  A multi-source
    / multi-sink union of geodesic intervals is not acyclic in general (opposite
    orientations from different sources), so multi-endpoint families stay a set
    of per-pair atoms rather than one DAG. *)
@@ -144,7 +147,17 @@ findSegmentCore[ graph_Graph, p1_, p2_,
               If[ path === { }, { }, { path } ] ],
             greedyFrontierSweep[ graph, p1, p2,
               makeCandidateFn[ graph, geodesicDAGBaseFn[ graph, p1, p2 ],
-                properties, FindInfraSegment ] ]
+                properties, FindInfraSegment ], First ]
+          ],
+        "GreedyRandomPick",
+          If[ fastPathQ,
+            (* trivial Properties has no per-step candidate set to randomize over --
+               same deterministic fast path "Greedy" takes, for the same reason *)
+            With[ { path = FindShortestPath[ graph, p1, p2 ] },
+              If[ path === { }, { }, { path } ] ],
+            greedyFrontierSweep[ graph, p1, p2,
+              makeCandidateFn[ graph, geodesicDAGBaseFn[ graph, p1, p2 ],
+                properties, FindInfraSegment ], RandomChoice ]
           ],
         _,
           Message[ FindInfraSegment::badmethod, methodSpec ]; $Failed

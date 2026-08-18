@@ -728,6 +728,80 @@ VerificationTest[
   TestID -> "FindInfraShell-Greedy-count-gt-1-fails"
 ]
 
+(* GreedyRandomPick: same walk as Greedy (findGreedyMinimalAdmissible), pick =
+   RandomChoice instead of First -- deterministic Greedy unchanged, seeded
+   reproducible, varies across seeds where the peel actually branches. *)
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    FindInfraShell[ g, 6, { 1, 2 }, 1, Properties -> { "Separating", "Connected" }, Method -> "Greedy" ] ===
+      FindInfraShell[ g, 6, { 1, 2 }, 1, Properties -> { "Separating", "Connected" }, Method -> "Greedy" ]
+  ],
+  True,
+  TestID -> "FindInfraShell-Greedy-deterministic"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    BlockRandom[ FindInfraShell[ g, 6, { 1, 2 }, 1, Properties -> { "Separating", "Connected" }, Method -> "GreedyRandomPick" ], RandomSeeding -> 4 ] ===
+      BlockRandom[ FindInfraShell[ g, 6, { 1, 2 }, 1, Properties -> { "Separating", "Connected" }, Method -> "GreedyRandomPick" ], RandomSeeding -> 4 ]
+  ],
+  True,
+  TestID -> "FindInfraShell-GreedyRandomPick-seeded-reproducible"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Length @ DeleteDuplicates @ Table[
+      BlockRandom[ FindInfraShell[ g, 6, { 1, 2 }, 1, Properties -> { "Separating", "Connected" }, Method -> "GreedyRandomPick" ][ "First" ], RandomSeeding -> s ],
+      { s, 1, 10 } ]
+  ],
+  _Integer?( # > 1 & ),
+  SameTest -> MatchQ,
+  TestID -> "FindInfraShell-GreedyRandomPick-varies-across-seeds"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 6, 6 } ] },
+    FindInfraBisectingHyperplane[ g, 1, 36, 1, Properties -> { "Separating" }, Method -> "Greedy" ] ===
+      FindInfraBisectingHyperplane[ g, 1, 36, 1, Properties -> { "Separating" }, Method -> "Greedy" ]
+  ],
+  True,
+  TestID -> "FindInfraBisectingHyperplane-Greedy-deterministic"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 6, 6 } ] },
+    BlockRandom[ FindInfraBisectingHyperplane[ g, 1, 36, 1, Properties -> { "Separating" }, Method -> "GreedyRandomPick" ], RandomSeeding -> 4 ] ===
+      BlockRandom[ FindInfraBisectingHyperplane[ g, 1, 36, 1, Properties -> { "Separating" }, Method -> "GreedyRandomPick" ], RandomSeeding -> 4 ]
+  ],
+  True,
+  TestID -> "FindInfraBisectingHyperplane-GreedyRandomPick-seeded-reproducible"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 6, 6 } ] },
+    FindInfraSegment[ g, 1, 36, 1,
+      Properties -> { { "EdgeMin", { a, b } |-> VertexDegree[ g, a ] + VertexDegree[ g, b ] } }, Method -> "Greedy" ] ===
+    FindInfraSegment[ g, 1, 36, 1,
+      Properties -> { { "EdgeMin", { a, b } |-> VertexDegree[ g, a ] + VertexDegree[ g, b ] } }, Method -> "Greedy" ]
+  ],
+  True,
+  TestID -> "FindInfraSegment-GreedyRandomPick-Greedy-deterministic"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 6, 6 } ] },
+    { edgeMin = { a, b } |-> VertexDegree[ g, a ] + VertexDegree[ g, b ] },
+    Length @ DeleteDuplicates @ Table[
+      BlockRandom[ FindInfraSegment[ g, 1, 36, 1, Properties -> { { "EdgeMin", edgeMin } }, Method -> "GreedyRandomPick" ][ "First" ], RandomSeeding -> s ],
+      { s, 1, 8 } ]
+  ],
+  _Integer?( # > 1 & ),
+  SameTest -> MatchQ,
+  TestID -> "FindInfraSegment-GreedyRandomPick-varies-across-seeds"
+]
+
 (* Method -> {"Exhaustive", "Pruning" -> n} respects branching cap. *)
 
 VerificationTest[

@@ -127,16 +127,18 @@ frontierSweep[ graph_Graph, p1_, p2_, candidateFn_, prune_, count_ ] :=
   ]
 
 
-(* DFS one realisation: pick the first admissible candidate at each step. *)
+(* DFS one realisation: pick an admissible candidate at each step -- pick =
+   First (default, "Greedy") or pick = RandomChoice ("GreedyRandomPick",
+   seed via ambient SeedRandom). *)
 
-greedyFrontierSweep[ graph_Graph, p1_, p2_, candidateFn_ ] :=
+greedyFrontierSweep[ graph_Graph, p1_, p2_, candidateFn_, pick_ : First ] :=
   If[ p1 === p2 || ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ] ||
       GraphDistance[ graph, p1, p2 ] === Infinity, { },
     Module[ { path = { p1 }, cands },
       While[ Last[ path ] =!= p2,
         cands = candidateFn[ graph, path ];
         If[ cands === { }, Return[ { } ] ];
-        AppendTo[ path, First @ cands ]
+        AppendTo[ path, pick @ cands ]
       ];
       { path }
     ]
@@ -255,15 +257,18 @@ SeparatingSetQ[ graph_Graph, vs_List, center_, radius_ ] :=
    helpers terminate when no further admissible single-removal exists --
    inclusion-minimality is automatic at the peel leaves. *)
 
-(* DFS, no backtracking: one realisation, deterministic vertex order. *)
+(* DFS, no backtracking: one realisation.  pick = First is deterministic
+   ("Greedy"); pick = RandomChoice is "GreedyRandomPick" (uniform over
+   admissible single removals at each step, seed via ambient SeedRandom --
+   see Wiki/Concepts/RandomnessConventions.md). *)
 
-findGreedyMinimalAdmissible[ graph_Graph, set_List, admissible_ ] :=
+findGreedyMinimalAdmissible[ graph_Graph, set_List, admissible_, pick_ : First ] :=
   If[ ! admissible[ set ], { },
-    Module[ { T = set, v },
+    Module[ { T = set, candidates },
       While[ True,
-        v = SelectFirst[ T, w |-> admissible[ DeleteCases[ T, w ] ], Missing[ ] ];
-        If[ MissingQ[ v ], Break[ ] ];
-        T = DeleteCases[ T, v ];
+        candidates = Select[ T, w |-> admissible[ DeleteCases[ T, w ] ] ];
+        If[ candidates === { }, Break[ ] ];
+        T = DeleteCases[ T, pick @ candidates ];
       ];
       { T }
     ]
