@@ -196,8 +196,9 @@ normalizeHighlightSpec[ x_ ]                 := { x }
    "ThicknessRange" defaults to the base measure $InfraEdgeThickness;
    "OpacityRange" keeps the floored envelope.  "PointSizeRange" defaults to
    Automatic: point-shaped objects (InfraPoint, polyline knots, polygon
-   corners) distribute the base measure $InfraPointSize, while vertices of
-   path- and set-shaped objects inherit the underlying graph's point size. *)
+   corners) distribute the base measure $InfraPointSize, while path-, cycle- and
+   set-shaped objects take their own "ThicknessRange", so every vertex carries a
+   joint disk exactly as wide as the band meeting it. *)
 Options[ InfraSceneHighlight ] = Join[
   {
     "OpacityRange"   :> $InfraOpacityRange,
@@ -296,12 +297,18 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
 
     triples = Join[ triples, knotTriples ];
 
-    (* Resolve the Automatic point-size default per object type: point-shaped
-       objects distribute the base measure, everything else stays off. *)
+    (* Resolve the Automatic point-size default per object type: point-shaped objects
+       distribute the base measure; an edge-drawing object gets a joint disk as wide as its
+       own band, since HighlightGraph butt-caps each edge separately (CapForm inside an
+       EdgeStyle directive is ignored) and a bend would otherwise cut a wedge of background
+       into the ribbon. *)
     triples = Apply[
       { reps, color, type, record, obj } |-> { reps, color, type,
         Append[ record, "PointSizeRange" -> Replace[ record[ "PointSizeRange" ],
-          Automatic :> If[ MatchQ[ type, "Points" | "PointSet" ], $InfraPointSize, None ] ] ], obj },
+          Automatic :> Switch[ type,
+            "Points" | "PointSet",       $InfraPointSize,
+            "Paths" | "Cycles" | "Sets", record[ "ThicknessRange" ],
+            _,                           None ] ] ], obj },
       triples, { 1 } ];
 
     (* repVerts / repEdges share the per-type dispatch with InfraMeasure via

@@ -178,14 +178,14 @@ VerificationTest[
 ]
 
 (* An explicit Opacity directive overrides the on-by-default "OpacityRange"
-   count-diffusion: only the user's opacity is emitted on each edge, so no
-   gradient-induced opacity values appear alongside it. *)
+   count-diffusion: only the user's opacity is emitted, so no gradient-induced
+   opacity values appear alongside it. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
+    With[ { opts = Options @ InfraSceneHighlight[ g,
           { InfraSegment[ { { 1, 2, 3, 4 } } ] -> Directive[ Orange, Opacity[ 0.3 ] ] } ] },
-      ! FreeQ[ styles, Opacity[ 0.3 ] ] &&
-      Cases[ styles, Opacity[ x_ ] /; x =!= 0.3, Infinity ] === { }
+      ! FreeQ[ opts, Opacity[ 0.3 ] ] &&
+      Cases[ opts, Opacity[ x_ ] /; x =!= 0.3, Infinity ] === { }
     ]
   ],
   True,
@@ -325,18 +325,21 @@ VerificationTest[
   TestID -> "InfraSceneHighlight-mesopoint-relative-mass"
 ]
 
-(* The Automatic point-size default stays off for non-point objects: a set
-   highlight emits no VertexShapeFunction, its vertices inherit the graph's
-   point size. *)
+(* Every edge-drawing object carries a joint disk at least as wide as each band
+   meeting it, so a bend never cuts a wedge of background into the ribbon. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Cases[
-      Options @ InfraSceneHighlight[ g,
-        { InfraShell @ FindInfraShell[ g, 1, { 1, 2 }, All ] } ],
-      HoldPattern[ VertexShapeFunction -> _ ], Infinity ] === { }
+    With[ { opts = Options @ InfraSceneHighlight[ g,
+          { InfraShell @ FindInfraShell[ g, 1, { 1, 2 }, All ] } ] },
+      { sizes = Association @ Cases[ opts,
+          ( v_ -> f_Function ) :> ( v -> First @ Cases[ f, AbsolutePointSize[ s_ ] :> s, Infinity ] ), Infinity ],
+        bands = Cases[ opts,
+          ( UndirectedEdge[ a_, b_ ] -> d_Directive ) :> { a, b, First @ Cases[ d, AbsoluteThickness[ t_ ] :> t ] }, Infinity ] },
+      bands =!= { } && AllTrue[ bands, sizes[ #[[ 1 ]] ] >= #[[ 3 ]] && sizes[ #[[ 2 ]] ] >= #[[ 3 ]] & ]
+    ]
   ],
   True,
-  TestID -> "InfraSceneHighlight-automatic-pointsize-off-for-sets"
+  TestID -> "InfraSceneHighlight-joint-covers-band"
 ]
 
 (* A symbolic per-entry VertexSize (Large / Tiny / Scaled[..]) stays on the
