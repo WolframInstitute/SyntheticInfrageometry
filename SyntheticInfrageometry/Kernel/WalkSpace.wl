@@ -10,13 +10,7 @@ PackageScope[geodesicDAGNeighbors]
 PackageScope[resolveEmbeddingCoords]
 PackageScope[parseEmbeddingMethod]
 
-PackageScope[forwardEndpoints]
-PackageScope[referenceWalk]
-PackageScope[deformationSize]
-PackageScope[axisSpec]
-PackageScope[axisOK]
-PackageScope[deformationsAt]
-PackageScope[windowDeform]
+PackageScope[deformationReference]
 
 
 (* ===================== SelectInfraWalk ===================== *)
@@ -393,148 +387,98 @@ PathSubgraph[ g_Graph, u_, v_, lengthSpec : ( _Integer | UpTo[ _Integer ] | All 
   ]
 
 
-(* ===================== FindForwardDeformation ===================== *)
+(* ===================== FindInfraMonotoneDeformation ===================== *)
 
-(* Forward deformations of a walk A -> B in the augmented spray from A: every edge raises
-   d(A, .) by 1 (radial) or keeps it equal (transverse).  Relative to the reference walk
-   (edge count L) a deformation has LengthDelta = #edges - L (negative when the reference
-   is longer than a geodesic) and reroutes a reference arc of DeformationSize edges.  spec
-   names at least one of "LengthDelta" / "DeformationSize"; the first-named axis groups
-   the output, the other filters and orders within each group.  Each axis takes {x} | x
-   (<= x) | {lo, hi}, a bare name is the single minimum by that axis, a bare integer /
-   integer list is shorthand for "LengthDelta". *)
+(* Monotone deformations of a walk A -> B: the walks A -> B along which a
+   potential never decreases.  Under the default potential d(A, .) every edge is
+   either radial (rank +1) or transverse (same rank), so a deformation is a walk
+   that never steps back toward A -- the discrete variation of a geodesic with
+   fixed endpoints, monotone in the radial coordinate.  Relative to the
+   reference (edge count L) it has LengthDelta = #edges - L, negative when the
+   reference is not itself monotone-shortest.  deltaSpec is a kspec relative to
+   L and is what makes the class finite: transverse edges let a walk shuffle
+   inside one level set forever, so an unbounded deltaSpec is refused.  Output
+   is flat, sorted by (LengthDelta, InfraDeformationSize). *)
 
-FindForwardDeformation[ g_Graph, seg_, spec_, count_ : 1 ] := Module[
-  { src, tgt, ref, dA, n, h, L, axes, cap, groups },
-  { src, tgt } = forwardEndpoints[ seg ];
-  ref = referenceWalk[ g, seg, src, tgt ];
-  dA  = AssociationThread[ VertexList[ g ], GraphDistance[ g, src ] ];
-  n   = dA[ tgt ];
-  (* h = directed augmented spray from src: radial (rank +1) + transverse (same rank, both
-     directions) edges, ranks <= n, trimmed to vertices on some src -> tgt path; unweighted,
-     so FindPath counts edges *)
-  h   = With[ {
-      edges = DeleteCases[ Flatten[ Map[
-        e |-> With[ { x = e[[ 1 ]], y = e[[ 2 ]] },
-          Which[
-            dA[ x ] > n || dA[ y ] > n, { },
-            dA[ y ] == dA[ x ] + 1, { DirectedEdge[ x, y ] },
-            dA[ x ] == dA[ y ] + 1, { DirectedEdge[ y, x ] },
-            dA[ x ] == dA[ y ],     { DirectedEdge[ x, y ], DirectedEdge[ y, x ] },
-            True, { } ] ],
-        EdgeList[ g ] ], 1 ], { } ] },
-    { raw = Graph[ Select[ VertexList[ g ], dA[ # ] <= n & ], edges ] },
-    Subgraph[ raw, Intersection[ VertexOutComponent[ raw, src ], VertexInComponent[ raw, tgt ] ] ] ];
-  L    = Length[ ref ] - 1;
-  axes = { First[ # ],
-      Replace[ Last[ # ], {
-        { x_Integer } :> { "Exact", x },
-        x_Integer :> { "UpTo", x },
-        { lo_Integer, hi_Integer } :> { "Range", lo, hi } } ] } & /@
-    Replace[ spec, {
-      s : "LengthDelta" | "DeformationSize" :> { s -> "Min" },
-      r : Rule[ "LengthDelta" | "DeformationSize", _ ] :> { r },
-      v_Integer :> { "LengthDelta" -> v },
-      v : { __Integer } :> { "LengthDelta" -> v } } ];
-  cap = Replace[ count, { All -> Infinity, UpTo[ m_ ] :> m } ];
-  groups = If[ axes[[ 1, 1 ]] === "LengthDelta",
-    With[ { delta = axes[[ 1, 2 ]], size = axisSpec[ axes, "DeformationSize" ] },
-      Map[
-        k |-> InfraWalk @ takeUpTo[
-           SortBy[ Select[ deformationsAt[ h, ref, src, tgt, { L + k, L + k } ],
-                           axisOK[ size, deformationSize[ ref, # ] ] & ],
-                   deformationSize[ ref, # ] & ],
-           cap ],
-        Replace[ delta, {
-          { "Exact", k_ } :> { k },
-          { "UpTo", k_ } :> Range[ n - L, k ],
-          { "Range", lo_, hi_ } :> Range[ lo, hi ],
-          "Min" :> With[ { found = SelectFirst[ Range[ n - L, VertexCount[ h ] - 1 - L ],
-                 k |-> AnyTrue[ deformationsAt[ h, ref, src, tgt, { L + k, L + k } ],
-                                axisOK[ size, deformationSize[ ref, # ] ] & ] ] },
-              If[ MissingQ[ found ], { }, { found } ] ] } ] ] ],
-    With[ { size = axes[[ 1, 2 ]], delta = axisSpec[ axes, "LengthDelta" ] },
-      If[ MatchQ[ delta, { "Exact" | "UpTo" | "Range", __ } ] ||
-          ! AllTrue[ Partition[ ref, 2, 1 ], EdgeQ[ h, DirectedEdge @@ # ] & ],
-        With[ { all = Select[
-             deformationsAt[ h, ref, src, tgt, L + Replace[ delta, {
-                { "Exact", k_ } :> { k, k },
-                { "UpTo", k_ } :> { n - L, k },
-                { "Range", lo_, hi_ } :> { Max[ lo, n - L ], hi },
-                None | "Min" :> { n - L, VertexCount[ h ] - 1 - L } } ] ],
-             axisOK[ delta, Length[ # ] - 1 - L ] & ] },
-          Map[
-            s |-> InfraWalk @ takeUpTo[
-               SortBy[ Select[ all, deformationSize[ ref, # ] == s & ], Length ], cap ],
-            Replace[ size, {
-              "Min" :> If[ all === { }, { }, { Min[ deformationSize[ ref, # ] & /@ all ] } ],
-              { "Exact", s_ } :> { s },
-              { "UpTo", s_ } :> Range[ 1, s ],
-              { "Range", lo_, hi_ } :> Range[ lo, hi ] } ] ] ],
-        (* hw = same spray with EdgeWeight radial 0 / transverse 1, so FindShortestPath
-           minimizes #transverse *)
-        With[ { hw = Graph[ VertexList[ h ], EdgeList[ h ],
-                 EdgeWeight -> Map[ If[ dA[ #[[ 1 ]] ] == dA[ #[[ 2 ]] ], 1, 0 ] &, EdgeList[ h ] ] ] },
-          Map[
-            s |-> InfraWalk @ takeUpTo[
-               SortBy[ DeleteCases[ Table[ windowDeform[ hw, ref, i, s ], { i, 0, L - s } ], $Failed ],
-                 Length ],
-               cap ],
-            Replace[ size, {
-              { "Exact", s_ } :> { s },
-              { "UpTo", s_ } :> Range[ 1, s ],
-              { "Range", lo_, hi_ } :> Range[ lo, hi ],
-              "Min" :> With[ { s0 = SelectFirst[ Range[ 1, L ],
-                     sVal |-> AnyTrue[ Range[ 0, L - sVal ],
-                       iVal |-> windowDeform[ hw, ref, iVal, sVal ] =!= $Failed ] ] },
-                  If[ MissingQ[ s0 ], { }, { s0 } ] ] } ] ] ] ] ] ];
-  Which[ groups === { }, InfraWalk[ { } ], Length[ groups ] == 1, First[ groups ], True, groups ]
-]
+FindInfraMonotoneDeformation::unbounded =
+  "The monotone deformation class is infinite without a length bound: give a finite deltaSpec (k, {k}, or {kmin, kmax}).";
 
-(* endpoints A, B of the reference path *)
-forwardEndpoints[ InfraSegment[ rs_List, ___ ] ] := { First @ First @ rs, Last @ First @ rs }
-forwardEndpoints[ InfraSegment[ dag_Graph ] ]    := { First @ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ], First @ Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] }
-forwardEndpoints[ InfraWalk[ rs_List, ___ ] ]    := { First @ First @ rs, Last @ First @ rs }
-forwardEndpoints[ w_List ]                          := { First @ w, Last @ w }
+Options[ FindInfraMonotoneDeformation ] = { "Potential" -> Automatic };
 
-(* the reference geodesic DeformationSize is measured against *)
-referenceWalk[ g_, InfraSegment[ rs_List, ___ ], _, _ ] := First[ rs ]
-referenceWalk[ g_, InfraSegment[ dag_Graph ], _, _ ]    := First @ dagGeodesics[ dag, 1 ]
-referenceWalk[ g_, InfraWalk[ rs_List, ___ ], _, _ ]    := First[ rs ]
-referenceWalk[ g_, w_List, src_, tgt_ ] := If[ Length[ w ] >= 3, w, FindShortestPath[ g, src, tgt ] ]
+FindInfraMonotoneDeformation[ graph_Graph, ref_, deltaSpec_,
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : All,
+    opts : OptionsPattern[ ] ] :=
+  Catch @ Module[ { refWalk, src, tgt, pot, spray, outs, len, minLen, lo, hi },
+    refWalk = deformationReference[ graph, ref ];
+    { src, tgt } = { First @ refWalk, Last @ refWalk };
+    len = Length[ refWalk ] - 1;
+    pot = With[ { spec = OptionValue[ FindInfraMonotoneDeformation, { opts }, "Potential" ] },
+      AssociationThread[ VertexList @ graph,
+        Which[
+          spec === Automatic,     GraphDistance[ graph, src ],
+          VertexQ[ graph, spec ], GraphDistance[ graph, spec ],
+          True,                   spec /@ VertexList @ graph ] ] ];
+    (* no monotone walk into tgt ever climbs above pot[tgt], so capping the
+       vertex set there is implied by the rule rather than an extra constraint *)
+    spray = With[ {
+        edges = Flatten[ Map[
+          e |-> With[ { x = First @ e, y = Last @ e },
+            Which[
+              pot[ x ] > pot[ tgt ] || pot[ y ] > pot[ tgt ], { },
+              pot[ y ] > pot[ x ], { DirectedEdge[ x, y ] },
+              pot[ x ] > pot[ y ], { DirectedEdge[ y, x ] },
+              True, { DirectedEdge[ x, y ], DirectedEdge[ y, x ] } ] ],
+          EdgeList[ graph ] ], 1 ] },
+      { raw = Graph[ Union[ Select[ VertexList @ graph, pot[ # ] <= pot[ tgt ] & ], { src, tgt } ], edges ] },
+      Subgraph[ raw, Intersection[ VertexOutComponent[ raw, src ], VertexInComponent[ raw, tgt ] ] ] ];
+    If[ ! ( VertexQ[ spray, src ] && VertexQ[ spray, tgt ] ), Throw[ InfraWalk[ { } ] ] ];
+    minLen = GraphDistance[ spray, src, tgt ];
+    { lo, hi } = Replace[ deltaSpec, {
+      Automatic         :> { minLen - len, minLen - len },
+      { k_Integer }     :> { k, k },
+      { l_Integer, h_ } :> { Max[ l, minLen - len ], h },
+      k_Integer         :> { minLen - len, k },
+      _                 -> { minLen - len, Infinity } } ];
+    If[ ! IntegerQ[ hi ],
+      Message[ FindInfraMonotoneDeformation::unbounded ]; Throw[ $Failed ] ];
+    outs = GroupBy[ EdgeList @ spray, First -> Last ];
+    InfraWalk @ takeUpTo[
+      SortBy[
+        DeleteCases[
+          Select[
+            frontierSweep[ spray, src, tgt,
+              { g, walk } |-> If[ Length[ walk ] - 1 >= len + hi, { }, Lookup[ outs, Last @ walk, { } ] ],
+              Infinity, Infinity ],
+            Length[ # ] - 1 >= len + lo & ],
+          refWalk ],
+        { Length, InfraDeformationSize[ refWalk, # ] & } ],
+      countLimit @ count ]
+  ]
 
-(* DeformationSize: # edges of the reference geodesic a deformation replaces
-   = n - sharedPrefixEdges - sharedSuffixEdges *)
-deformationSize[ ref_, def_ ] := With[
+(* the reference walk: deltas and sizes are measured against it, and its
+   endpoints are the deformation endpoints.  A bare pair {A, B} specifies
+   endpoints rather than a walk, so it stands for the canonical geodesic. *)
+deformationReference[ _, InfraSegment[ rs_List, ___ ] ] := First @ rs
+deformationReference[ _, InfraSegment[ dag_Graph ] ]    := First @ dagGeodesics[ dag, 1 ]
+deformationReference[ _, InfraWalk[ rs_List, ___ ] ]    := First @ rs
+deformationReference[ graph_, w_List ]                  :=
+  If[ Length[ w ] >= 3, w, FindShortestPath[ graph, First @ w, Last @ w ] ]
+
+
+(* InfraDeformationSize: how many edges of the reference a deformation replaces
+   = L - sharedPrefixEdges - sharedSuffixEdges.  One-sided -- measured in the
+   reference's edges -- so it is not a symmetric walk-space metric. *)
+
+InfraDeformationSize[ ref_, InfraWalk[ rs_List, ___ ] ] := InfraDeformationSize[ ref, # ] & /@ rs
+
+InfraDeformationSize[ InfraWalk[ rs_List, ___ ], def_List ]    := InfraDeformationSize[ First @ rs, def ]
+InfraDeformationSize[ InfraSegment[ rs_List, ___ ], def_List ] := InfraDeformationSize[ First @ rs, def ]
+
+InfraDeformationSize[ ref_List, def_List ] := With[
   { m = Min[ Length @ ref, Length @ def ] },
   { p = LengthWhile[ Transpose @ { Take[ ref, m ], Take[ def, m ] }, Apply @ SameQ ],
     s = LengthWhile[ Transpose @ { Take[ Reverse @ ref, m ], Take[ Reverse @ def, m ] }, Apply @ SameQ ] },
   Max[ 0, ( Length[ ref ] - 1 ) - ( p - 1 ) - ( s - 1 ) ]
-]
-
-axisSpec[ axes_, name_ ] := With[ { hit = SelectFirst[ axes, First[ # ] === name & ] },
-  If[ MissingQ[ hit ], None, Last[ hit ] ] ]
-
-axisOK[ None, _ ]                   := True
-axisOK[ "Min", _ ]                  := True
-axisOK[ { "Exact", x_ }, v_ ]       := v == x
-axisOK[ { "UpTo", x_ }, v_ ]        := v <= x
-axisOK[ { "Range", lo_, hi_ }, v_ ] := lo <= v <= hi
-
-(* all forward walks src -> tgt with lo <= #edges <= hi, the reference excluded *)
-deformationsAt[ h_, ref_, src_, tgt_, { lo_, hi_ } ] := With[ { lo2 = Max[ lo, 1 ] },
-  Which[
-    hi < lo2, { },
-    hi == lo2, DeleteCases[ FindPath[ h, src, tgt, { hi }, All ], ref ],
-    True, DeleteCases[ FindPath[ h, src, tgt, { lo2, hi }, All ], ref ] ] ]
-
-(* min-LengthDelta deformation rerouting the reference window [g_i, g_{i+s}]: drop the
-   original arc, take the cheapest forward reroute, stitch it back in *)
-windowDeform[ hw_, ref_, i_, s_ ] := Module[
-  { a = ref[[ i + 1 ]], b = ref[[ i + s + 1 ]], sub, p },
-  sub = If[ s == 1, EdgeDelete[ hw, DirectedEdge[ a, b ] ], VertexDelete[ hw, ref[[ i + 2 ;; i + s ]] ] ];
-  p = FindShortestPath[ sub, a, b ];
-  If[ Length[ p ] < 2, $Failed, Join[ ref[[ 1 ;; i + 1 ]], Rest[ p ], ref[[ i + s + 2 ;; ]] ] ]
 ]
 
 

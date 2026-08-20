@@ -173,7 +173,8 @@ EmbeddingClosest::usage = "EmbeddingClosest[graph, bundle, ref] keeps the bundle
 FindEmbeddingClosestPath::usage = "FindEmbeddingClosestPath[graph, curve] snaps an embedded curve to a walk, mapping sampled points to nearest vertices and joining them by geodesics.";
 GeodesicSprayGraph::usage = "GeodesicSprayGraph[graph, c] gives the BFS DAG rooted at c, whose directed source-to-sink paths are exactly the maximal geodesics from c; GeodesicSprayGraph[graph, pairs] gives the union of geodesics between listed pairs.";
 PathSubgraph::usage = "PathSubgraph[graph, u, v] gives the union of all shortest u-v paths; a trailing length cap or All widens it to longer simple paths.";
-FindForwardDeformation::usage = "FindForwardDeformation[graph, walk, spec] gives the deformations of a walk that stay monotone in the distance from its start, grouped by the first axis named in spec (\"LengthDelta\", \"DeformationSize\").";
+FindInfraMonotoneDeformation::usage = "FindInfraMonotoneDeformation[graph, ref, deltaSpec] gives the walks between ref's endpoints along which a potential never decreases; deltaSpec bounds the edge count relative to ref. Option \"Potential\".";
+InfraDeformationSize::usage = "InfraDeformationSize[ref, walk] gives the number of ref edges that walk replaces -- Length[ref] - 1 less the shared prefix and suffix.";
 
 (* ===================== Homotopy ===================== *)
 

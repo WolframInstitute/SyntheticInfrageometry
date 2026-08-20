@@ -572,98 +572,175 @@ VerificationTest[
 ]
 
 
-(* ===== FindForwardDeformation ===== *)
+(* ===== FindInfraMonotoneDeformation ===== *)
 
-(* diamond-with-ear: geodesics 1-2-5 and 1-3-5; triangle {1,2,4} gives a LengthDelta 1 bump *)
+(* diamond-with-ear: geodesics 1-2-5 and 1-3-5; the single transverse edge 4-2
+   sits in the sphere of radius 1 around vertex 1 *)
 
+(* the defining property: d(src, .) never decreases along a deformation *)
 VerificationTest[
   With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    With[ { w = First[ FindForwardDeformation[ g, { 1, 2, 5 }, "LengthDelta" -> { 1 } ] /. InfraWalk[ x_, ___ ] :> x ] },
-      Length[ w ] - 1 == GraphDistance[ g, 1, 5 ] + 1 ]
-  ],
-  True,
-  TestID -> "FindForwardDeformation-LengthDelta-equals-excess"
-]
-
-VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    With[ { w = First[ FindForwardDeformation[ g, { 1, 2, 5 }, "LengthDelta" ] /. InfraWalk[ x_, ___ ] :> x ] },
-      Length[ w ] - 1 == GraphDistance[ g, 1, 5 ] && w =!= { 1, 2, 5 } ]
-  ],
-  True,
-  TestID -> "FindForwardDeformation-min-LengthDelta-is-shortest-alternative"
-]
-
-VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    With[ { w = First[ FindForwardDeformation[ g, { 1, 2, 5 }, "DeformationSize" ] /. InfraWalk[ x_, ___ ] :> x ],
-            dA = AssociationThread[ VertexList[ g ], GraphDistance[ g, 1 ] ] },
-      First[ w ] == 1 && Last[ w ] == 5 &&
-      AllTrue[ Partition[ w, 2, 1 ], dA[ #[[ 2 ]] ] - dA[ #[[ 1 ]] ] >= 0 & ]
+    With[ { dA = AssociationThread[ VertexList[ g ], GraphDistance[ g, 1 ] ],
+            ws = First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, 3, All ] },
+      ws =!= { } &&
+      AllTrue[ ws, w |-> First[ w ] === 1 && Last[ w ] === 5 &&
+        AllTrue[ Partition[ w, 2, 1 ], dA[ #[[ 2 ]] ] >= dA[ #[[ 1 ]] ] & ] ]
     ]
   ],
   True,
-  TestID -> "FindForwardDeformation-forward-monotone-endpoints"
+  TestID -> "FindInfraMonotoneDeformation-monotone-in-the-potential"
 ]
 
-(* triangulated grid: every level-k deformation has length n + k *)
+(* LengthDelta is the edge count relative to the reference *)
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    AllTrue[ Range[ 0, 2 ],
+      k |-> AllTrue[ First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, { k }, All ],
+              Length[ # ] - 1 == 2 + k & ] ]
+  ],
+  True,
+  TestID -> "FindInfraMonotoneDeformation-LengthDelta-is-edge-count-excess"
+]
+
+(* the class is honestly walk-valued: {1,2,4,2,5} is monotone and revisits 2,
+   so it belongs at delta 2 -- the simple-path engine used to drop it *)
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    MemberQ[ First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, { 2 }, All ], { 1, 2, 4, 2, 5 } ]
+  ],
+  True,
+  TestID -> "FindInfraMonotoneDeformation-class-includes-revisiting-walks"
+]
+
+(* transverse edges let a walk shuffle inside one level set forever, so the
+   class is infinite without a length bound *)
+VerificationTest[
+  FindInfraMonotoneDeformation[
+    Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ], { 1, 2, 5 }, Infinity, All ],
+  $Failed,
+  { FindInfraMonotoneDeformation::unbounded },
+  TestID -> "FindInfraMonotoneDeformation-unbounded-deltaSpec-refused"
+]
+
+(* Automatic is the smallest non-empty delta: the shortest monotone walk that is
+   not the reference *)
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    With[ { ws = First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, Automatic, All ] },
+      ws =!= { } && Union[ Length /@ ws ] === { GraphDistance[ g, 1, 5 ] + 1 } ]
+  ],
+  True,
+  TestID -> "FindInfraMonotoneDeformation-Automatic-is-minimal-delta"
+]
+
+(* a non-geodesic reference (L = 3 > d = 2) admits negative deltas: the
+   deformations straighten it to the two geodesics *)
+VerificationTest[
+  First @ FindInfraMonotoneDeformation[
+    Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ], { 1, 4, 2, 5 }, { -1 }, All ],
+  { { 1, 2, 5 }, { 1, 3, 5 } },
+  TestID -> "FindInfraMonotoneDeformation-negative-delta-straightens"
+]
+
+(* the return is one flat bundle ordered by (LengthDelta, InfraDeformationSize) *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    With[ { ref = FindShortestPath[ g, 1, 9 ] },
+      With[ { ws = First @ FindInfraMonotoneDeformation[ g, ref, 2, All ] },
+        OrderedQ[ ( { Length[ # ], InfraDeformationSize[ ref, # ] } & ) /@ ws ] ]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraMonotoneDeformation-flat-and-sorted-by-delta-then-size"
+]
+
+(* the potential is the knob: grading by d(3, .) admits no monotone 1 -> 5 walk,
+   since 1 and 5 are both at distance 1 from 3 and are not adjacent *)
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    { First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, 2, All, "Potential" -> 3 ],
+      First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, 2, All,
+        "Potential" -> ( v |-> GraphDistance[ g, 1, v ] ) ] ===
+      First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, 2, All ] }
+  ],
+  { { }, True },
+  TestID -> "FindInfraMonotoneDeformation-Potential-sets-the-grading"
+]
+
+(* a bare pair specifies endpoints, not a walk, so it stands for the geodesic *)
+VerificationTest[
+  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
+    First @ FindInfraMonotoneDeformation[ g, { 1, 5 }, 1, All ] ===
+    First @ FindInfraMonotoneDeformation[ g, FindShortestPath[ g, 1, 5 ], 1, All ]
+  ],
+  True,
+  TestID -> "FindInfraMonotoneDeformation-vertex-pair-means-the-geodesic"
+]
+
+(* triangulated grid: every delta-k deformation has length n + k *)
 VerificationTest[
   With[ { g = Graph[ Flatten[ {
        Table[ { i, j } <-> { i + 1, j }, { i, 2 }, { j, 3 } ],
        Table[ { i, j } <-> { i, j + 1 }, { i, 3 }, { j, 2 } ],
        Table[ { i, j } <-> { i + 1, j + 1 }, { i, 2 }, { j, 2 } ] } ] ] },
-    With[ { n = GraphDistance[ g, { 1, 1 }, { 3, 3 } ],
-            res = FindForwardDeformation[ g, { { 1, 1 }, { 3, 3 } }, "LengthDelta" -> 2, All ] /. InfraWalk[ x_, ___ ] :> x },
-      AllTrue[ Range[ 0, 2 ], k |-> AllTrue[ res[[ k + 1 ]], Length[ # ] - 1 == n + k & ] ]
+    With[ { n = GraphDistance[ g, { 1, 1 }, { 3, 3 } ] },
+      AllTrue[ Range[ 0, 2 ],
+        k |-> AllTrue[ First @ FindInfraMonotoneDeformation[ g, { { 1, 1 }, { 3, 3 } }, { k }, All ],
+                Length[ # ] - 1 == n + k & ] ]
     ]
   ],
   True,
-  TestID -> "FindForwardDeformation-grid-length-equals-n-plus-k"
+  TestID -> "FindInfraMonotoneDeformation-grid-length-equals-n-plus-k"
 ]
 
-(* non-geodesic forward reference {1,4,2,5} (L = 3 > n = 2): deformations can shorten *)
+
+(* ===== InfraDeformationSize ===== *)
+
+(* the number of reference edges a deformation replaces *)
 VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    FindForwardDeformation[ g, { 1, 4, 2, 5 }, "LengthDelta" -> { -1 }, All ] /. InfraWalk[ x_, ___ ] :> x
+  { InfraDeformationSize[ { 1, 2, 5 }, { 1, 3, 5 } ],
+    InfraDeformationSize[ { 1, 2, 5 }, { 1, 4, 2, 5 } ],
+    InfraDeformationSize[ { 1, 2, 5 }, { 1, 2, 4, 2, 5 } ] },
+  { 2, 1, 0 },
+  TestID -> "InfraDeformationSize-counts-replaced-reference-edges"
+]
+
+(* a deformation sharing a prefix and a suffix with the reference replaces only
+   the edges between them *)
+VerificationTest[
+  With[ { ref = Range[ 6 ] },
+    { InfraDeformationSize[ ref, { 1, 2, 3, 9, 5, 6 } ],
+      InfraDeformationSize[ ref, { 1, 2, 8, 9, 5, 6 } ],
+      InfraDeformationSize[ ref, ref ] }
   ],
-  { { 1, 2, 5 }, { 1, 3, 5 } },
-  TestID -> "FindForwardDeformation-negative-delta-reaches-geodesics"
+  { 2, 3, 0 },
+  TestID -> "InfraDeformationSize-is-the-replaced-window"
 ]
 
+(* bundle form: one number per realisation *)
 VerificationTest[
   With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    FindForwardDeformation[ g, { 1, 4, 2, 5 }, "LengthDelta", All ] /. InfraWalk[ x_, ___ ] :> x
+    InfraDeformationSize[ { 1, 2, 5 }, FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, 2, All ] ]
   ],
-  { { 1, 2, 5 }, { 1, 3, 5 } },
-  TestID -> "FindForwardDeformation-min-delta-is-distance-minus-reference-length"
+  { 2, 1, 0 },
+  TestID -> "InfraDeformationSize-maps-over-a-bundle"
 ]
 
-(* non-forward reference (2 -> 1 runs against the spray): deformations straighten it,
-   DeformationSize measured against the given walk *)
+(* the invariant composes as a walk-space score: grouping and extremising by it
+   happen at the call site, not through an option *)
 VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    With[ { dA = AssociationThread[ VertexList[ g ], GraphDistance[ g, 1 ] ],
-            groups = FindForwardDeformation[ g, { 1, 2, 1, 3, 5 }, "DeformationSize" -> { 1, 4 }, All ] /. InfraWalk[ x_, ___ ] :> x },
-      ( FindForwardDeformation[ g, { 1, 2, 1, 3, 5 }, "DeformationSize", All ] /. InfraWalk[ x_, ___ ] :> x ) === { { 1, 3, 5 } } &&
-      AllTrue[ Flatten[ groups, 1 ], w |-> AllTrue[ Partition[ w, 2, 1 ], dA[ #[[ 2 ]] ] - dA[ #[[ 1 ]] ] >= 0 & ] ]
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    With[ { ref = FindShortestPath[ g, 1, 9 ] },
+      With[ { ws = FindInfraMonotoneDeformation[ g, ref, 1, All ] },
+        With[ { picked = SelectInfraWalk[ g, ws, All,
+                  "From" -> { "Min", w |-> InfraDeformationSize[ ref, w ] } ] },
+          Union[ InfraDeformationSize[ ref, picked ] ] ===
+            { Min @ InfraDeformationSize[ ref, ws ] } ]
+      ]
     ]
   ],
   True,
-  TestID -> "FindForwardDeformation-nonforward-base-straightened-forward"
-]
-
-(* spec order decides the driving axis: size-first groups by DeformationSize,
-   delta-first groups by LengthDelta *)
-VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    {
-      FindForwardDeformation[ g, { 1, 2, 5 }, { "DeformationSize" -> { 1 }, "LengthDelta" -> 1 }, All ] /. InfraWalk[ x_, ___ ] :> x,
-      FindForwardDeformation[ g, { 1, 2, 5 }, { "LengthDelta" -> 1, "DeformationSize" -> { 1 } }, All ] /. InfraWalk[ x_, ___ ] :> x,
-      FindForwardDeformation[ g, { 1, 2, 5 }, { "DeformationSize" -> { 1, 2 }, "LengthDelta" -> 1 }, All ] /. InfraWalk[ x_, ___ ] :> x
-    }
-  ],
-  { { { 1, 4, 2, 5 } }, { { }, { { 1, 4, 2, 5 } } }, { { { 1, 4, 2, 5 } }, { { 1, 3, 5 } } } },
-  TestID -> "FindForwardDeformation-spec-order-decides-driver"
+  TestID -> "InfraDeformationSize-drives-SelectInfraWalk-at-the-call-site"
 ]
 
 
