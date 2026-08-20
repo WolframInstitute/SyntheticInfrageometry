@@ -127,7 +127,7 @@ Cell[BoxData[
   RowBox[{"g", ",", 
    RowBox[{"{", 
     RowBox[{"1", ",", "6", ",", "11"}], "}"}], ",", 
-   RowBox[{"Method", "\[Rule]", "\"\<Comparison\>\""}]}], "]"}]], "Input",Expr\
+   RowBox[{"Method", "\[Rule]", "\"\<Alexandrov\>\""}]}], "]"}]], "Input",Expr\
 essionUUID->"9a99c7da-2b5c-434a-a0c3-7681d4c3554b"],
 
 Cell["Comparison angle in M_k^2 with negative curvature.", "CodeText",ExpressionUUID->"fbe01d39-1b16-4034-a033-8d1a40c64994"],
@@ -139,7 +139,7 @@ Cell[BoxData[
     RowBox[{"1", ",", "6", ",", "11"}], "}"}], ",", 
    RowBox[{"Method", "\[Rule]", 
     RowBox[{"{", 
-     RowBox[{"\"\<Comparison\>\"", ",", 
+     RowBox[{"\"\<Alexandrov\>\"", ",", 
       RowBox[{"\"\<Curvature\>\"", "\[Rule]", 
        RowBox[{"-", "1"}]}]}], "}"}]}]}], "]"}]], "Input",ExpressionUUID->\
 "36d9bd4f-96cb-45e1-a4ba-5dac373316ee"],
