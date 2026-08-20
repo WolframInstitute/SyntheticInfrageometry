@@ -13,8 +13,7 @@ PackageScope[takeUpTo]
 PackageScope[allGeodesics]
 PackageScope[frontierSweep]
 PackageScope[greedyFrontierSweep]
-PackageScope[makeCandidateFn]
-PackageScope[propertyFilter]
+PackageScope[windowCandidateFn]
 PackageScope[applyPruning]
 PackageScope[infraSpread]
 PackageScope[infraCap]
@@ -149,7 +148,7 @@ greedyFrontierSweep[ graph_Graph, p1_, p2_, candidateFn_, pick_ : First, maxStep
   ]
 
 
-(* ===================== Property-filter machinery ===================== *)
+(* ===================== Window-rule machinery ===================== *)
 
 (* Sub-options of a property entry: "Foo" -> { }, {"Foo", opts___} -> {opts}. *)
 
@@ -157,88 +156,89 @@ propertiesSubOpts[ s_String ]              := { }
 propertiesSubOpts[ { _String, opts___ } ]  := { opts }
 
 
-(* makeCandidateFn[g, baseFn, properties, badPropMsg]: closure
-     (g, path) -> admissible-next-vertex set
-   by Fold-ing per-property filters over the base candidate set baseFn[g, path].
-   Each filter shrinks the candidate set in turn (AND-conjunction). *)
+(* windowCandidateFn[g, scale, rules, fnSym]: closure
+     (g, walk) -> admissible-next-vertex set.
+   Every rule sees one thing -- the window: the last <= scale vertices of the
+   walk with the candidate appended (the whole walk at scale Infinity).
+   Constraints ("Minimizing", "Simple", a bare window predicate) are checked
+   first and commute; selectors ("Straightest", {"Minimal", f}, {"Maximal", f})
+   follow in list order, each refining the previous ties. *)
 
-makeCandidateFn[ graph_Graph, baseFn_, properties_List, fnSym_ ] :=
-  With[ { filters = propertyFilter[ graph, #, fnSym ] & /@ properties },
-    { g, path } |->
-      Fold[ #2[ g, path, #1 ] &, baseFn[ g, path ], filters ]
+windowCandidateFn[ graph_Graph, scale_, rules_List, fnSym_ ] :=
+  With[ { species = windowRuleSpecies[ #, fnSym ] & /@ rules },
+    { constraints = Pick[ rules, species, "Constraint" ],
+      selectors   = windowSelector[ graph, scale, # ] & /@ Pick[ rules, species, "Selector" ] },
+    { g, walk } |->
+      Fold[ #2[ walk, #1 ] &,
+        Select[ AdjacencyList[ g, Last @ walk ],
+          w |-> AllTrue[ constraints, windowRuleQ[ g, scale, #, walk, w ] & ] ],
+        selectors ]
   ]
 
 
-(* propertyFilter[g, propertySpec, fnSym]: dispatch on property name, return a
-   closure (g, path, candidates) -> candidates'.  Unknown property raises
-   fnSym::badproperty and Throw[$Failed]; caller wraps in Catch.  fnSym is the
-   calling head symbol (not fnSym::badproperty -- a MessageName passed as a bare
-   argument evaluates to its template string, so Message would emit Message::name). *)
+(* Which side of the constraint / selector split a rule falls on.  An
+   unrecognised string (or string-headed list) raises fnSym::badproperty and
+   Throw[$Failed]; the caller wraps in Catch.  fnSym is the calling head symbol
+   (not fnSym::badproperty -- a MessageName passed as a bare argument evaluates
+   to its template string, so Message would emit Message::name). *)
 
-propertyFilter[ _Graph, "Simple", _ ]                          := simpleFilter
-propertyFilter[ _Graph, { "Simple" }, _ ]                      := simpleFilter
-
-propertyFilter[ graph_Graph, "ShortestPath", _ ]               := shortestPathFilter[ graph, Infinity ]
-propertyFilter[ graph_Graph, { "ShortestPath", subs___ }, _ ]  :=
-  shortestPathFilter[ graph, "Window" /. { subs } /. "Window" -> Infinity ]
-
-propertyFilter[ graph_Graph, "LongestPath", _ ]                := longestPathFilter[ graph, 2, "Lex" ]
-propertyFilter[ graph_Graph, { "LongestPath", subs___ }, _ ]   :=
-  longestPathFilter[ graph,
-    "Window"      /. { subs } /. "Window"      -> 2,
-    "Aggregation" /. { subs } /. "Aggregation" -> "Lex" ]
-
-propertyFilter[ _Graph, { "EdgeMin", f_ }, _ ]                 := edgeMinFilter[ f ]
-propertyFilter[ _Graph, { "EdgeMax", f_ }, _ ]                 := edgeMaxFilter[ f ]
-
-propertyFilter[ _Graph, other_, fnSym_ ] :=
-  ( Message[ MessageName[ fnSym, "badproperty" ], other ]; Throw[ $Failed ] )
+windowRuleSpecies[ rule_, fnSym_ ] :=
+  Switch[ rule,
+    "Minimizing" | "Simple",              "Constraint",
+    "Straightest",                        "Selector",
+    { "Minimal", _ } | { "Maximal", _ },  "Selector",
+    _String | { _String, ___ },
+      ( Message[ MessageName[ fnSym, "badproperty" ], rule ]; Throw[ $Failed ] ),
+    _,                                    "Constraint"
+  ]
 
 
-(* "Simple": disallow revisits. *)
-simpleFilter[ _Graph, path_, candidates_ ] :=
-  Select[ candidates, ! MemberQ[ path, # ] & ]
+(* Constraints on the window (walk-window plus candidate w). *)
+
+(* "Minimizing": the window is a shortest path. *)
+windowRuleQ[ g_Graph, scale_, "Minimizing", walk_List, w_ ] :=
+  With[ { win = walkWindow[ walk, scale ] },
+    GraphDistance[ g, First @ win, w ] == Length[ win ] ]
+
+(* "Simple": no revisits. *)
+windowRuleQ[ _Graph, _, "Simple", walk_List, w_ ] := ! MemberQ[ walk, w ]
+
+(* a bare predicate is a custom local law on the window *)
+windowRuleQ[ _Graph, scale_, pred_, walk_List, w_ ] :=
+  pred @ Append[ walkWindow[ walk, scale ], w ]
 
 
-(* "ShortestPath", "Window" -> k: strict d(path[[-k]], w) == k. *)
-shortestPathFilter[ _Graph, window_ ] :=
-  { g, path, candidates } |->
-    With[ { k = If[ window === All || window === Infinity, Length[ path ],
-                    Min[ window, Length[ path ] ] ] },
-      Select[ candidates, GraphDistance[ g, path[[ -k ]], # ] == k & ]
-    ]
+(* Selectors: closures (walk, candidates) -> candidates'. *)
 
-
-(* "LongestPath", "Window" -> k, "Aggregation" -> Lex | Sum:
-   MaximalBy distance-tuple to the last k vertices. *)
-longestPathFilter[ graph_Graph, window_, aggregation_ ] :=
+(* "Straightest": maximise the distance tuple from the candidate back along the
+   window, nearest first (the immediate predecessor sits at distance 1 for every
+   candidate and carries no information).  Matrix-backed -- the distance matrix
+   is built once per closure, not once per step. *)
+windowSelector[ graph_Graph, scale_, "Straightest" ] :=
   With[ { vidx = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ],
           dmat = GraphDistanceMatrix[ graph ] },
-    { g, path, candidates } |->
-      With[ { historyIdx = With[ { rev = vidx /@ Reverse @ Most[ path ] },
-                If[ window === All || window === Infinity, rev,
-                    Take[ rev, UpTo[ window - 1 ] ] ] ] },
-        Which[
-          candidates === { } || historyIdx === { },  candidates,
-          aggregation === "Sum",                     MaximalBy[ candidates, w |-> Total @ dmat[[ historyIdx, vidx[ w ] ]] ],
-          True,                                      MaximalBy[ candidates, w |-> dmat[[ historyIdx, vidx[ w ] ]] ]
-        ]
+    { walk, candidates } |->
+      With[ { historyIdx = vidx /@ Reverse @ Most @ walkWindow[ walk, scale ] },
+        If[ candidates === { } || historyIdx === { }, candidates,
+          MaximalBy[ candidates, w |-> dmat[[ historyIdx, vidx[ w ] ]] ] ]
       ]
   ]
 
-
-(* "EdgeMin", f: MinimalBy f[v, w] over candidates (v = Last @ path). *)
-edgeMinFilter[ f_ ] :=
-  { g, path, candidates } |->
+windowSelector[ _Graph, scale_, { "Minimal", f_ } ] :=
+  { walk, candidates } |->
     If[ candidates === { }, candidates,
-      MinimalBy[ candidates, w |-> f[ Last @ path, w ] ] ]
+      MinimalBy[ candidates, w |-> f @ Append[ walkWindow[ walk, scale ], w ] ] ]
 
-
-(* "EdgeMax", f: MaximalBy f[v, w] over candidates. *)
-edgeMaxFilter[ f_ ] :=
-  { g, path, candidates } |->
+windowSelector[ _Graph, scale_, { "Maximal", f_ } ] :=
+  { walk, candidates } |->
     If[ candidates === { }, candidates,
-      MaximalBy[ candidates, w |-> f[ Last @ path, w ] ] ]
+      MaximalBy[ candidates, w |-> f @ Append[ walkWindow[ walk, scale ], w ] ] ]
+
+
+(* The walk-side of the window: its last <= scale vertices. *)
+
+walkWindow[ walk_List, Infinity ]          := walk
+walkWindow[ walk_List, scale_Integer ]     := Take[ walk, -Min[ scale, Length[ walk ] ] ]
 
 
 (* ===================== Separating sets ===================== *)

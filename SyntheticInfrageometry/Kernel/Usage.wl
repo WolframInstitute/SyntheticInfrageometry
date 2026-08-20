@@ -25,7 +25,7 @@ InfraReachableQ::usage = "InfraReachableQ[graph, p1, p2] tests whether p1 and p2
 (* ===================== InfraSegment ===================== *)
 
 InfraSegment::usage = "InfraSegment[{path1, ...}] is a bundle of alternative geodesics; InfraSegment[dag] is the compact geodesic-DAG form. Accessors \"Graph\", \"Length\", \"Multiplicity\", \"Measure\", \"Realizations\".";
-FindInfraSegment::usage = "FindInfraSegment[graph, p1, p2] gives the geodesic interval from p1 to p2 as an InfraSegment DAG; a trailing n | UpTo[n] | All enumerates that many geodesics instead. Options Properties, Method.";
+FindInfraSegment::usage = "FindInfraSegment[graph, p1, p2] gives the geodesic interval from p1 to p2 as an InfraSegment DAG; a trailing n | UpTo[n] | All enumerates that many geodesics instead. Option Method.";
 ExtendInfraSegment::usage = "ExtendInfraSegment[graph, a, b, c, d] gives the points x with B(a, b, x) and d(b, x) == d(c, d) (Tarski axiom A4).";
 InfraWalkQ::usage = "InfraWalkQ[graph, walk] tests whether walk is a walk: consecutive vertices adjacent (revisits allowed).";
 InfraSegmentQ::usage = "InfraSegmentQ[graph, walk] tests whether walk is a geodesic.";
@@ -34,8 +34,10 @@ UniqueInfraSegmentQ::usage = "UniqueInfraSegmentQ[graph, u, v] tests whether the
 (* ===================== InfraWalk ===================== *)
 
 InfraWalk::usage = "InfraWalk[{walk1, ...}] is a bundle of walks, not necessarily simple. Inside InfraScene, InfraWalk[p1, ..., pk] is the step-wise constructor.";
-FindInfraWalk::usage = "FindInfraWalk[graph, p1, p2, kspec] gives walks from p1 to p2 of length restricted by kspec (k, {k}, {kmin, kmax}, Infinity). Options Properties, Method.";
-ExtendInfraWalk::usage = "ExtendInfraWalk[graph, path] grows a walk one vertex per step until inextensible. Options Properties, Method, \"Length\", \"Direction\".";
+FindInfraWalk::usage = "FindInfraWalk[graph, p1, p2, kspec] gives walks from p1 to p2 of length restricted by kspec (k, {k}, {kmin, kmax}, Infinity). Options Properties (\"Simple\"), Method.";
+FindInfraGeodesic::usage = "FindInfraGeodesic[graph, p1, p2, scale] gives the walks from p1 to p2 obeying a local rule in every window of scale consecutive vertices, as an InfraWalk; a trailing kspec bounds the length. Options Properties, Method.";
+InfraGeodesicQ::usage = "InfraGeodesicQ[graph, walk, scale] tests whether every window of scale consecutive vertices of walk plus the next one is a shortest path; scale 1 gives InfraWalkQ and Infinity gives InfraSegmentQ.";
+ExtendInfraWalk::usage = "ExtendInfraWalk[graph, path] grows a walk one vertex per step until inextensible. Options Properties, Method, \"InfraScale\", \"Length\", \"Direction\".";
 ConcatenateInfraWalk::usage = "ConcatenateInfraWalk[path1, path2] joins every compatible walk pair, those with Last[walk1] === First[walk2].";
 InfraLoop::usage = "InfraLoop[{walk1, ...}] is a bundle of closed walks with a fixed base point; open realisations are auto-closed.";
 InfraString::usage = "InfraString[{walk1, ...}] is a bundle of closed walks modulo cyclic rotation -- the free-loop wrapper, stored in lex-least rotation.";
@@ -91,7 +93,7 @@ InfraCircleQ::usage = "InfraCircleQ[graph, cycle] tests whether cycle is a cycli
 (* ===================== InfraPolygon ===================== *)
 
 InfraPolygon::usage = "InfraPolygon[{poly1, ...}] is a bundle of closed chains of geodesic InfraSegment sides. Accessors \"Sides\", \"Length\", \"Vertices\".";
-FindInfraPolygon::usage = "FindInfraPolygon[graph, {p1, ..., pn}] gives the polygon with corners p1, ..., pn and a geodesic between each consecutive pair. Options Properties, Method.";
+FindInfraPolygon::usage = "FindInfraPolygon[graph, {p1, ..., pn}] gives the polygon with corners p1, ..., pn and a geodesic between each consecutive pair. Option Method.";
 FindInfraRegularPolygon::usage = "FindInfraRegularPolygon[graph, As, n] gives the closed n-vertex sequences whose k-th diagonal distances all match As[[k]] (each slot an Integer, {lo, hi}, or Automatic). Options Method, \"From\".";
 InfraPolygonQ::usage = "InfraPolygonQ[graph, poly] tests whether poly is a closed cyclic chain of geodesic sides.";
 InfraRegularPolygonQ::usage = "InfraRegularPolygonQ[graph, cycle, As] tests whether cycle is regular with respect to the diagonal-distance tuple As.";
@@ -99,7 +101,7 @@ InfraRegularPolygonQ::usage = "InfraRegularPolygonQ[graph, cycle, As] tests whet
 (* ===================== InfraTriangle ===================== *)
 
 InfraTriangle::usage = "InfraTriangle[{poly1, ...}] is a bundle of geodesic triangles -- the n = 3 case of InfraPolygon. Accessors \"Sides\", \"Length\", \"Vertices\".";
-FindInfraTriangle::usage = "FindInfraTriangle[graph, {a, b, c}] gives the triangle with corners a, b, c and a geodesic on each side. Options Properties, Method.";
+FindInfraTriangle::usage = "FindInfraTriangle[graph, {a, b, c}] gives the triangle with corners a, b, c and a geodesic on each side. Option Method.";
 InfraTriangleQ::usage = "InfraTriangleQ[graph, poly] tests whether poly is a closed chain of exactly three geodesic sides.";
 
 (* ===================== InfraEllipticShell ===================== *)

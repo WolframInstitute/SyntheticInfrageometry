@@ -25,7 +25,7 @@ InfraTriangle[ reps_List ][ "Vertices" ] :=
 
 (* Triangle through corners a, b, c: the n = 3 case of FindInfraPolygon. *)
 
-Options[ FindInfraTriangle ] = { Properties -> { }, Method -> "Exhaustive" };
+Options[ FindInfraTriangle ] = { Method -> "Exhaustive" };
 
 FindInfraTriangle[ graph_Graph, vertices_List /; Length[ vertices ] === 3,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=

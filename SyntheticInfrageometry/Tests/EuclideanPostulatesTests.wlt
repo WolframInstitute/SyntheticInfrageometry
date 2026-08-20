@@ -378,15 +378,16 @@ VerificationTest[
   TestID -> "FindInfraSegment-explicit-count-enumerates"
 ]
 
-(* ===== FindInfraSegment Properties (geodesic family) ===== *)
+(* ===== FindInfraSegment carries no Properties axis ===== *)
 
-(* Geodesic-ness is implicit; "ShortestPath" Property is rejected. *)
+(* The symbol is the whole class: a rule narrowing the geodesic bundle is a local
+   law at an infra-scale, hence a FindInfraGeodesic call. *)
 
 VerificationTest[
-  FindInfraSegment[GridGraph[{3, 3}], 1, 9, 1, Properties -> {"ShortestPath"}],
+  FindInfraSegment[GridGraph[{3, 3}], 1, 9, 1, Properties -> {"Minimizing"}],
   $Failed,
   {FindInfraSegment::badproperty},
-  TestID -> "FindInfraSegment-ShortestPath-Property-rejected"
+  TestID -> "FindInfraSegment-Properties-axis-rejected"
 ]
 
 VerificationTest[
@@ -403,68 +404,48 @@ VerificationTest[
   TestID -> "FindInfraSegment-badmethod-message"
 ]
 
-(* {"EdgeMin", f}: among geodesics, keep those MinimalBy f[v, w] at each step.
-   degSum is a synthetic edge function (sum of vertex degrees on the edge). *)
+(* The narrowed bundles now come from FindInfraGeodesic at scale Infinity, where
+   "Minimizing" is the segment class and a selector refines it. *)
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    With[{paths = FindInfraSegment[g, 1, 9, All, Properties -> {{"EdgeMin", degSum}}]["Realizations"]},
+  With[{g = GridGraph[{3, 3}],
+        degSum = w |-> VertexDegree[GridGraph[{3, 3}], w[[-2]]] + VertexDegree[GridGraph[{3, 3}], w[[-1]]]},
+    With[{paths = FindInfraGeodesic[g, 1, 9, Infinity, Infinity, All,
+            Properties -> {"Minimizing", {"Minimal", degSum}}]["Realizations"]},
       Length[paths] >= 1 &&
         AllTrue[paths, Length[#] - 1 == GraphDistance[g, 1, 9] &]
     ]
   ],
   True,
-  TestID -> "FindInfraSegment-EdgeMin-stays-geodesic"
+  TestID -> "FindInfraGeodesic-Minimal-stays-geodesic"
 ]
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    SubsetQ[
-      Sort @ FindInfraSegment[g, 1, 9, All]["Realizations"],
-      Sort @ FindInfraSegment[g, 1, 9, All, Properties -> {{"EdgeMin", degSum}}]["Realizations"]
-    ]
-  ],
-  True,
-  TestID -> "FindInfraSegment-EdgeMin-is-subset-of-geodesics"
-]
-
-VerificationTest[
-  With[{g = GridGraph[{4, 4}], degSum = {a, b} |-> VertexDegree[GridGraph[{4, 4}], a] + VertexDegree[GridGraph[{4, 4}], b]},
+  With[{g = GridGraph[{4, 4}],
+        degSum = w |-> VertexDegree[GridGraph[{4, 4}], w[[-2]]] + VertexDegree[GridGraph[{4, 4}], w[[-1]]]},
     BlockRandom[
-      Length @ FindInfraSegment[g, 1, 16, All,
-        Properties -> {{"EdgeMin", degSum}},
+      Length @ FindInfraGeodesic[g, 1, 16, Infinity, Infinity, All,
+        Properties -> {"Minimizing", {"Minimal", degSum}},
         Method -> {"Exhaustive", "Pruning" -> 1}]["Realizations"] <= 1,
       RandomSeeding -> 42
     ]
   ],
   True,
-  TestID -> "FindInfraSegment-EdgeMin-pruning-beam-1"
+  TestID -> "FindInfraGeodesic-Minimal-pruning-beam-1"
 ]
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    Length @ FindInfraSegment[g, 1, 9, UpTo[2], Properties -> {{"EdgeMin", degSum}}]["Realizations"]
+  With[{g = GridGraph[{3, 3}],
+        degSum = w |-> VertexDegree[GridGraph[{3, 3}], w[[-2]]] + VertexDegree[GridGraph[{3, 3}], w[[-1]]]},
+    Length @ FindInfraGeodesic[g, 1, 9, Infinity, Infinity, UpTo[2],
+      Properties -> {"Minimizing", {"Minimal", degSum}}]["Realizations"]
   ],
   _Integer?(# <= 2 &),
   SameTest -> MatchQ,
-  TestID -> "FindInfraSegment-EdgeMin-UpTo-truncates"
+  TestID -> "FindInfraGeodesic-Minimal-UpTo-truncates"
 ]
 
-(* {"LongestPath", "Window" -> k}: among geodesics, MaximalBy distance-tuple
-   to the last k vertices.  Result is a subset of the full geodesic bundle. *)
-
-VerificationTest[
-  With[{g = GridGraph[{3, 3}]},
-    SubsetQ[
-      Sort @ FindInfraSegment[g, 1, 9, All]["Realizations"],
-      Sort @ FindInfraSegment[g, 1, 9, All, Properties -> {{"LongestPath", "Window" -> 2}}]["Realizations"]
-    ]
-  ],
-  True,
-  TestID -> "FindInfraSegment-LongestPath-Window2-subset-of-geodesics"
-]
-
-(* "Greedy" Method on default Properties = {} falls back to FindShortestPath. *)
+(* "Greedy" Method on the segment class falls back to FindShortestPath. *)
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
@@ -505,72 +486,64 @@ VerificationTest[
   TestID -> "FindInfraWalk-Simple-no-repeats"
 ]
 
-(* {"ShortestPath", "Window" -> k}: K-local geodesic walks.  Window = Infinity
-   forces global geodesic from path[[1]]. *)
+(* The local geodesic rules live on FindInfraGeodesic: "Minimizing" at scale
+   Infinity is the global geodesic from the first vertex. *)
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Sort @ FindInfraWalk[g, 1, 9, Infinity, All,
-        Properties -> {"Simple", {"ShortestPath", "Window" -> Infinity}}]["Realizations"] ===
+    Sort @ FindInfraGeodesic[g, 1, 9, Infinity, Infinity, All,
+        Properties -> {"Simple", "Minimizing"}]["Realizations"] ===
       Sort @ FindInfraSegment[g, 1, 9, All]["Realizations"]
   ],
   True,
-  TestID -> "FindInfraWalk-ShortestPath-WindowInf-equals-geodesics"
+  TestID -> "FindInfraGeodesic-Minimizing-scale-Infinity-equals-geodesics"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ FindInfraWalk[g, 1, 4, Infinity, All,
-        Properties -> {"Simple", {"ShortestPath", "Window" -> 2}}]["Realizations"]
+    Sort @ FindInfraGeodesic[g, 1, 4, 2, Infinity, All,
+        Properties -> {"Simple", "Minimizing"}]["Realizations"]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
-  TestID -> "FindInfraWalk-ShortestPath-Window2-cycle-geodesics"
+  TestID -> "FindInfraGeodesic-Minimizing-scale-2-cycle-geodesics"
 ]
 
-(* {"LongestPath", "Window" -> k}: pull-apart walks. *)
+(* "Straightest": pull-apart walks. *)
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ FindInfraWalk[g, 1, 4, Infinity, All,
-        Properties -> {"Simple", {"LongestPath", "Window" -> 2}}]["Realizations"]
+    Sort @ FindInfraGeodesic[g, 1, 4, 2, Infinity, All,
+        Properties -> {"Simple", "Straightest"}]["Realizations"]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
-  TestID -> "FindInfraWalk-LongestPath-Window2-cycle-symmetric"
-]
-
-VerificationTest[
-  With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
-    Sort @ FindInfraWalk[g, 1, 3, Infinity, All,
-        Properties -> {"Simple", {"LongestPath", "Window" -> 2}}]["Realizations"]
-  ],
-  Sort[{{1, 2, 3}, {1, 4, 3}}],
-  TestID -> "FindInfraWalk-LongestPath-Window2-strict-between"
+  TestID -> "FindInfraGeodesic-Straightest-scale-2-cycle-symmetric"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     BlockRandom[
-      Length @ FindInfraWalk[g, 1, 16, Infinity, All,
-        Properties -> {"Simple", {"LongestPath", "Window" -> 2}},
+      Length @ FindInfraGeodesic[g, 1, 16, 2, Infinity, All,
+        Properties -> {"Simple", "Straightest"},
         Method -> {"Exhaustive", "Pruning" -> 1}]["Realizations"] == 1,
       RandomSeeding -> 42
     ]
   ],
   True,
-  TestID -> "FindInfraWalk-LongestPath-pruning-beam-1"
+  TestID -> "FindInfraGeodesic-Straightest-pruning-beam-1"
 ]
 
-(* {"EdgeMin", f} composed with "Simple" gives valid simple walks. *)
+(* A selector composed with "Simple" still gives simple walks. *)
 
 VerificationTest[
-  With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    With[{walks = FindInfraWalk[g, 1, 9, {4}, All,
-            Properties -> {"Simple", {"EdgeMin", degSum}}]["Realizations"]},
+  With[{g = GridGraph[{3, 3}],
+        degSum = w |-> VertexDegree[GridGraph[{3, 3}], w[[-2]]] + VertexDegree[GridGraph[{3, 3}], w[[-1]]]},
+    With[{walks = FindInfraGeodesic[g, 1, 9, 1, {4}, All,
+            Properties -> {"Simple", {"Minimal", degSum}}]["Realizations"]},
       AllTrue[walks, DuplicateFreeQ]
     ]
   ],
   True,
-  TestID -> "FindInfraWalk-Simple-EdgeMin-valid-walks"
+  TestID -> "FindInfraGeodesic-Simple-Minimal-valid-walks"
 ]
 
 (* ===== FindInfraLine ===== *)
@@ -781,27 +754,18 @@ VerificationTest[
   TestID -> "FindInfraBisectingHyperplane-GreedyRandomPick-seeded-reproducible"
 ]
 
-VerificationTest[
-  With[ { g = GridGraph[ { 6, 6 } ] },
-    FindInfraSegment[ g, 1, 36, 1,
-      Properties -> { { "EdgeMin", { a, b } |-> VertexDegree[ g, a ] + VertexDegree[ g, b ] } }, Method -> "Greedy" ] ===
-    FindInfraSegment[ g, 1, 36, 1,
-      Properties -> { { "EdgeMin", { a, b } |-> VertexDegree[ g, a ] + VertexDegree[ g, b ] } }, Method -> "Greedy" ]
-  ],
-  True,
-  TestID -> "FindInfraSegment-GreedyRandomPick-Greedy-deterministic"
-]
+(* The segment class carries no per-step choice, so both greedy methods take the
+   same deterministic FindShortestPath witness; the randomised descent lives on
+   FindInfraGeodesic, where a selector creates the ties to draw from (its
+   seed-variation test is in InfraWalkTests). *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 6, 6 } ] },
-    { edgeMin = { a, b } |-> VertexDegree[ g, a ] + VertexDegree[ g, b ] },
-    Length @ DeleteDuplicates @ Table[
-      BlockRandom[ FindInfraSegment[ g, 1, 36, 1, Properties -> { { "EdgeMin", edgeMin } }, Method -> "GreedyRandomPick" ][ "First" ], RandomSeeding -> s ],
-      { s, 1, 8 } ]
+    FindInfraSegment[ g, 1, 36, 1, Method -> "Greedy" ] ===
+      FindInfraSegment[ g, 1, 36, 1, Method -> "GreedyRandomPick" ]
   ],
-  _Integer?( # > 1 & ),
-  SameTest -> MatchQ,
-  TestID -> "FindInfraSegment-GreedyRandomPick-varies-across-seeds"
+  True,
+  TestID -> "FindInfraSegment-both-greedy-methods-agree"
 ]
 
 (* Method -> {"Exhaustive", "Pruning" -> n} respects branching cap. *)

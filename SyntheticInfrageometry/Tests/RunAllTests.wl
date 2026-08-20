@@ -12,104 +12,12 @@ Needs["WolframInstitute`SyntheticInfrageometry`"];
 
 $testDir = DirectoryName[$InputFileName];
 
-Print["Running ToolsTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "ToolsTests.wlt"}]]]
 
-Print["Running EuclideanPostulatesTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "EuclideanPostulatesTests.wlt"}]]]
+(* Every .wlt in this directory, discovered rather than listed: the hand-kept
+   list had gone stale in both directions -- five test files unrun, four named
+   files gone. *)
 
-Print["Running EuclideanPredicatesTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "EuclideanPredicatesTests.wlt"}]]]
-
-Print["Running EuclideanConstructionsTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "EuclideanConstructionsTests.wlt"}]]]
-
-Print["Running EuclideanSpaceTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "EuclideanSpaceTests.wlt"}]]]
-
-Print["Running InfraCurveGeometryTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraCurveGeometryTests.wlt"}]]]
-
-Print["Running WalkSpaceTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "WalkSpaceTests.wlt"}]]]
-
-Print["Running InfraLoopTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraLoopTests.wlt"}]]]
-
-Print["Running InfraStringTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraStringTests.wlt"}]]]
-
-Print["Running HomotopyTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "HomotopyTests.wlt"}]]]
-
-Print["Running MetricAlgebraTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "MetricAlgebraTests.wlt"}]]]
-
-Print["Running InfraSetTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraSetTests.wlt"}]]]
-
-Print["Running AdvancingInfraFrontTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "AdvancingInfraFrontTests.wlt"}]]]
-
-Print["Running LaplacianAlgebraTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "LaplacianAlgebraTests.wlt"}]]]
-
-Print["Running ResistanceGeometryTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "ResistanceGeometryTests.wlt"}]]]
-
-Print["Running SpectralGeometryTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "SpectralGeometryTests.wlt"}]]]
-
-Print["Running InfraPrimitivesTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraPrimitivesTests.wlt"}]]]
-
-Print["Running InfraPolylineTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraPolylineTests.wlt"}]]]
-
-Print["Running InfraPolygonTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraPolygonTests.wlt"}]]]
-
-Print["Running InfraTriangleTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraTriangleTests.wlt"}]]]
-
-Print["Running InfraRevolutionTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraRevolutionTests.wlt"}]]]
-
-Print["Running InfraBallTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraBallTests.wlt"}]]]
-
-Print["Running InfraQuadricTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraQuadricTests.wlt"}]]]
-
-Print["Running InfraSceneTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraSceneTests.wlt"}]]]
-
-Print["Running InfraEqualityTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraEqualityTests.wlt"}]]]
-
-Print["Running CoordinatizationTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "CoordinatizationTests.wlt"}]]]
-
-Print["Running InfraSceneVisualizationTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraSceneVisualizationTests.wlt"}]]]
-
-Print["Running InfraSceneInteractiveTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "InfraSceneInteractiveTests.wlt"}]]]
-
-Print["Running ProjectiveGeometryTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "ProjectiveGeometryTests.wlt"}]]]
-
-Print["Running HullsTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "HullsTests.wlt"}]]]
-
-Print["Running TarskiGeometryTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "TarskiGeometryTests.wlt"}]]]
-
-Print["Running GraphEnumerationTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "GraphEnumerationTests.wlt"}]]]
-
-(* ExampleGraphs / RegularMaps / UniformMaps tests moved to the Infrageometry paclet
-   along with the generators (TorusTessellation / SchlafliTessellation / Archimedean...). *)
-
-Print["Running CurvaturesTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "CurvaturesTests.wlt"}]]]
+Scan[
+  file |-> ( Print["Running ", FileBaseName[file], "..."]; Print[TestReport[file]] ),
+  FileNames["*.wlt", $testDir]
+]

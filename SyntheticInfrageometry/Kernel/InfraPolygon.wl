@@ -35,9 +35,9 @@ InfraPolygon[ reps_List ][ "Vertices" ] :=
 (* Polygon through corners p1, ..., pn (n >= 3): each side (p_i, p_{i+1 mod n})
    is a geodesic InfraSegment; a realisation is one geodesic per side, and the
    Cartesian product over sides enumerates all polygons.  Sides reuse
-   findSegmentCore, so Properties / Method forward to the side geodesics. *)
+   findSegmentCore, so Method forwards to the side geodesics. *)
 
-Options[ FindInfraPolygon ] = { Properties -> { }, Method -> "Exhaustive" };
+Options[ FindInfraPolygon ] = { Method -> "Exhaustive" };
 
 FindInfraPolygon[ graph_Graph, vertices_List /; Length[ vertices ] >= 3,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=

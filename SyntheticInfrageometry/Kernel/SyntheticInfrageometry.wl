@@ -29,6 +29,8 @@ PackageExport[UniqueInfraSegmentQ]
 (* InfraWalk.wl *)
 PackageExport[InfraWalk]
 PackageExport[FindInfraWalk]
+PackageExport[FindInfraGeodesic]
+PackageExport[InfraGeodesicQ]
 PackageExport[ExtendInfraWalk]
 PackageExport[ConcatenateInfraWalk]
 
