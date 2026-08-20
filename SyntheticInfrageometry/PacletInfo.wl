@@ -3,7 +3,7 @@ PacletObject[
     "Name" -> "WolframInstitute/SyntheticInfrageometry",
     "Description" -> "Axiomatic geometry on graphs and hypergraphs",
     "Creator" -> "Pavel Hajek",
-    "Version" -> "0.13.14",
+    "Version" -> "0.13.15",
     "WolframVersion" -> "14.3+",
     "PublisherID" -> "WolframInstitute",
     "License" -> "MIT",
