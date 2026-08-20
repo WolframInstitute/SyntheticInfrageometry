@@ -42,7 +42,7 @@ PackageScope[propertiesSubOpts]
 (* Path-space distances and selectors (HausdorffDistance, FrechetDistance,
    MinimalSeparationDistance, EmbeddingHausdorffDistance,
    EmbeddingCircleDistance, pathFilterPairwiseDistances, applySelect)
-   live in PathSpace.wl. *)
+   live in WalkSpace.wl. *)
 
 
 (* ===================== Method-spec helper ===================== *)
@@ -129,16 +129,20 @@ frontierSweep[ graph_Graph, p1_, p2_, candidateFn_, prune_, count_ ] :=
 
 (* DFS one realisation: pick an admissible candidate at each step -- pick =
    First (default, "Greedy") or pick = RandomChoice ("GreedyRandomPick",
-   seed via ambient SeedRandom). *)
+   seed via ambient SeedRandom).  maxSteps caps the descent (Infinity default,
+   the geodesic-DAG callers' natural termination); a walk-family caller with
+   revisits allowed needs this to guarantee termination. *)
 
-greedyFrontierSweep[ graph_Graph, p1_, p2_, candidateFn_, pick_ : First ] :=
+greedyFrontierSweep[ graph_Graph, p1_, p2_, candidateFn_, pick_ : First, maxSteps_ : Infinity ] :=
   If[ p1 === p2 || ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ] ||
       GraphDistance[ graph, p1, p2 ] === Infinity, { },
-    Module[ { path = { p1 }, cands },
+    Module[ { path = { p1 }, cands, steps = 0 },
       While[ Last[ path ] =!= p2,
+        If[ steps >= maxSteps, Return[ { } ] ];
         cands = candidateFn[ graph, path ];
         If[ cands === { }, Return[ { } ] ];
-        AppendTo[ path, pick @ cands ]
+        AppendTo[ path, pick @ cands ];
+        steps++
       ];
       { path }
     ]
@@ -319,7 +323,7 @@ findAllMinimalAdmissible[ graph_Graph, set_List, admissible_, pruning_ ] :=
 
 (* the bundle heads whose first argument is a realisation list; the single
    source of truth for the canonicalisation rules and measure dispatch. *)
-$infraBundleHeads = InfraSegment | InfraLine | InfraPath | InfraLoop | InfraString |
+$infraBundleHeads = InfraSegment | InfraLine | InfraWalk | InfraLoop | InfraString |
   InfraShell | InfraBall | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse |
   InfraPolygon | InfraTriangle | InfraRay | InfraPolyline;
 
@@ -573,7 +577,7 @@ infraRepType[ InfraPoint ]         = "Points";
 infraRepType[ InfraMesoPoint ]     = "Points";
 infraRepType[ InfraSegment ]       = "Paths";
 infraRepType[ InfraLine ]          = "Paths";
-infraRepType[ InfraPath ]          = "Paths";
+infraRepType[ InfraWalk ]          = "Paths";
 infraRepType[ InfraLoop ]          = "Paths";
 infraRepType[ InfraRay ]           = "Paths";
 infraRepType[ InfraPolyline ]      = "Paths";
@@ -644,7 +648,7 @@ infraRepEdges[ g_, "Sets", rep_ ] :=
    Bare list = vertex sequence; line wrappers unwrap to the union of realisations. *)
 
 (* a realisation slot may be a compact geodesic-DAG atom standing for its family *)
-linePointSet[ ( InfraLine | InfraSegment | InfraPath | InfraRay )[ reps_List ] ] :=
+linePointSet[ ( InfraLine | InfraSegment | InfraWalk | InfraRay )[ reps_List ] ] :=
   Union @@ Replace[ reps, d_Graph :> VertexList[ d ], { 1 } ]
 linePointSet[ InfraSegment[ dag_Graph ] ] := VertexList[ dag ]
 linePointSet[ line_List ] := line

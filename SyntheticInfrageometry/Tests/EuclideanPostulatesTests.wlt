@@ -272,12 +272,12 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = (SelectInfraPath[g, FindInfraSegment[g, 1, 9, All]["Realizations"],All, "From" -> "Center", "Metric" -> "Frechet"])},
+    With[{segs = (SelectInfraWalk[g, FindInfraSegment[g, 1, 9, All]["Realizations"],All, "From" -> "Center", "Metric" -> "Frechet"])},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
   ],
   True,
-  TestID -> "FindInfraSegment-SelectInfraPath-Center-Frechet"
+  TestID -> "FindInfraSegment-SelectInfraWalk-Center-Frechet"
 ]
 
 VerificationTest[
@@ -298,27 +298,27 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = (SelectInfraPath[g, FindInfraSegment[g, 1, 9, All]["Realizations"],All, "From" -> "Center", "Metric" -> "Hausdorff"])},
+    With[{segs = (SelectInfraWalk[g, FindInfraSegment[g, 1, 9, All]["Realizations"],All, "From" -> "Center", "Metric" -> "Hausdorff"])},
       Length[segs] >= 1
     ]
   ],
   True,
-  TestID -> "FindInfraSegment-SelectInfraPath-Center-Hausdorff"
+  TestID -> "FindInfraSegment-SelectInfraWalk-Center-Hausdorff"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = (SelectInfraPath[g, FindInfraSegment[g, 1, 9, All]["Realizations"],All, "From" -> "Periphery"])},
+    With[{segs = (SelectInfraWalk[g, FindInfraSegment[g, 1, 9, All]["Realizations"],All, "From" -> "Periphery"])},
       Length[segs] >= 1
     ]
   ],
   True,
-  TestID -> "FindInfraSegment-SelectInfraPath-Periphery"
+  TestID -> "FindInfraSegment-SelectInfraWalk-Periphery"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{segs = EmbeddingClosest[g, {1, 9}] @ SelectInfraPath[g, All, "From" -> "Center"] @
+    With[{segs = EmbeddingClosest[g, {1, 9}] @ SelectInfraWalk[g, All, "From" -> "Center"] @
         (FindInfraSegment[g, 1, 9, All]["Realizations"])},
       Length[segs] >= 1 && AllTrue[segs, Length[#] == 5 &]
     ]
@@ -475,32 +475,34 @@ VerificationTest[
 ]
 
 
-(* ===== FindInfraPath Properties (path family) ===== *)
+(* ===== FindInfraWalk Properties (path family) ===== *)
 
 VerificationTest[
-  FindInfraPath[GridGraph[{3, 3}], 1, 9, Infinity, 1, Properties -> {"Bogus"}],
+  FindInfraWalk[GridGraph[{3, 3}], 1, 9, Infinity, 1, Properties -> {"Bogus"}],
   $Failed,
-  {FindInfraPath::badproperty},
-  TestID -> "FindInfraPath-badproperty-message"
+  {FindInfraWalk::badproperty},
+  TestID -> "FindInfraWalk-badproperty-message"
 ]
 
+(* "Greedy" is a supported Method (lazy DFS, one instance); an unrecognised
+   Method string is still rejected. *)
 VerificationTest[
-  FindInfraPath[GridGraph[{3, 3}], 1, 9, Infinity, 1, Method -> "Greedy"],
+  FindInfraWalk[GridGraph[{3, 3}], 1, 9, Infinity, 1, Method -> "Unknown"],
   $Failed,
-  {FindInfraPath::badmethod},
-  TestID -> "FindInfraPath-badmethod-Greedy-rejected"
+  {FindInfraWalk::badmethod},
+  TestID -> "FindInfraWalk-badmethod-message"
 ]
 
 (* "Simple" Property: opt-in simplicity. *)
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{walks = FindInfraPath[g, 1, 9, {4}, All, Properties -> {"Simple"}]["Realizations"]},
+    With[{walks = FindInfraWalk[g, 1, 9, {4}, All, Properties -> {"Simple"}]["Realizations"]},
       Length[walks] >= 1 && AllTrue[walks, DuplicateFreeQ]
     ]
   ],
   True,
-  TestID -> "FindInfraPath-Simple-no-repeats"
+  TestID -> "FindInfraWalk-Simple-no-repeats"
 ]
 
 (* {"ShortestPath", "Window" -> k}: K-local geodesic walks.  Window = Infinity
@@ -508,67 +510,67 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Sort @ FindInfraPath[g, 1, 9, Infinity, All,
+    Sort @ FindInfraWalk[g, 1, 9, Infinity, All,
         Properties -> {"Simple", {"ShortestPath", "Window" -> Infinity}}]["Realizations"] ===
       Sort @ FindInfraSegment[g, 1, 9, All]["Realizations"]
   ],
   True,
-  TestID -> "FindInfraPath-ShortestPath-WindowInf-equals-geodesics"
+  TestID -> "FindInfraWalk-ShortestPath-WindowInf-equals-geodesics"
 ]
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ FindInfraPath[g, 1, 4, Infinity, All,
+    Sort @ FindInfraWalk[g, 1, 4, Infinity, All,
         Properties -> {"Simple", {"ShortestPath", "Window" -> 2}}]["Realizations"]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
-  TestID -> "FindInfraPath-ShortestPath-Window2-cycle-geodesics"
+  TestID -> "FindInfraWalk-ShortestPath-Window2-cycle-geodesics"
 ]
 
 (* {"LongestPath", "Window" -> k}: pull-apart walks. *)
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ FindInfraPath[g, 1, 4, Infinity, All,
+    Sort @ FindInfraWalk[g, 1, 4, Infinity, All,
         Properties -> {"Simple", {"LongestPath", "Window" -> 2}}]["Realizations"]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
-  TestID -> "FindInfraPath-LongestPath-Window2-cycle-symmetric"
+  TestID -> "FindInfraWalk-LongestPath-Window2-cycle-symmetric"
 ]
 
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 2 <-> 4}]},
-    Sort @ FindInfraPath[g, 1, 3, Infinity, All,
+    Sort @ FindInfraWalk[g, 1, 3, Infinity, All,
         Properties -> {"Simple", {"LongestPath", "Window" -> 2}}]["Realizations"]
   ],
   Sort[{{1, 2, 3}, {1, 4, 3}}],
-  TestID -> "FindInfraPath-LongestPath-Window2-strict-between"
+  TestID -> "FindInfraWalk-LongestPath-Window2-strict-between"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     BlockRandom[
-      Length @ FindInfraPath[g, 1, 16, Infinity, All,
+      Length @ FindInfraWalk[g, 1, 16, Infinity, All,
         Properties -> {"Simple", {"LongestPath", "Window" -> 2}},
         Method -> {"Exhaustive", "Pruning" -> 1}]["Realizations"] == 1,
       RandomSeeding -> 42
     ]
   ],
   True,
-  TestID -> "FindInfraPath-LongestPath-pruning-beam-1"
+  TestID -> "FindInfraWalk-LongestPath-pruning-beam-1"
 ]
 
 (* {"EdgeMin", f} composed with "Simple" gives valid simple walks. *)
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}], degSum = {a, b} |-> VertexDegree[GridGraph[{3, 3}], a] + VertexDegree[GridGraph[{3, 3}], b]},
-    With[{walks = FindInfraPath[g, 1, 9, {4}, All,
+    With[{walks = FindInfraWalk[g, 1, 9, {4}, All,
             Properties -> {"Simple", {"EdgeMin", degSum}}]["Realizations"]},
       AllTrue[walks, DuplicateFreeQ]
     ]
   ],
   True,
-  TestID -> "FindInfraPath-Simple-EdgeMin-valid-walks"
+  TestID -> "FindInfraWalk-Simple-EdgeMin-valid-walks"
 ]
 
 (* ===== FindInfraLine ===== *)
@@ -599,12 +601,12 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{exts = Take[SelectInfraPath[g, FindInfraLine[g, 5, 6, All]["Realizations"], All, "From" -> "Center"], UpTo[3]]},
+    With[{exts = Take[SelectInfraWalk[g, FindInfraLine[g, 5, 6, All]["Realizations"], All, "From" -> "Center"], UpTo[3]]},
       Length[exts] >= 1 && AllTrue[exts, Length[#] > 2 &]
     ]
   ],
   True,
-  TestID -> "FindInfraLine-with-SelectInfraPath-Center"
+  TestID -> "FindInfraLine-with-SelectInfraWalk-Center"
 ]
 
 VerificationTest[
@@ -861,19 +863,19 @@ VerificationTest[
   TestID -> "FindInfraOsculatingShell-PathGraph-no-centers-default-fails"
 ]
 
-(* InfraPath[{walk}] equivalent to bare list. *)
+(* InfraWalk[{walk}] equivalent to bare list. *)
 
 VerificationTest[
-  FindInfraOsculatingShell[CompleteGraph[5], InfraPath[{{1, 2, 3}}], 2, 3, All],
+  FindInfraOsculatingShell[CompleteGraph[5], InfraWalk[{{1, 2, 3}}], 2, 3, All],
   FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3, All],
-  TestID -> "FindInfraOsculatingShell-InfraPath-equiv-bare-list"
+  TestID -> "FindInfraOsculatingShell-InfraWalk-equiv-bare-list"
 ]
 
-(* Multi-realisation InfraPath: centers union across walks. *)
+(* Multi-realisation InfraWalk: centers union across walks. *)
 
 VerificationTest[
   Length @ FindInfraOsculatingShell[CompleteGraph[5],
-    InfraPath[{{1, 2, 3}, {1, 4, 5}}], 2, 3, All]["Realizations"],
+    InfraWalk[{{1, 2, 3}, {1, 4, 5}}], 2, 3, All]["Realizations"],
   4,
   TestID -> "FindInfraOsculatingShell-multi-realisation-union"
 ]
@@ -1024,28 +1026,28 @@ VerificationTest[
 ]
 
 (* Under the default ({Separating, Shortest}) every returned cycle has the
-   same length, so SelectInfraCycle's longest / shortest circumference
+   same length, so SelectInfraWalk's longest / shortest circumference
    selectors are trivially uniform.  Drop "Shortest" to get multiple lengths
    and exercise the selector. *)
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = SelectInfraCycle[g, FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]["Realizations"], All, "From" -> "MaxLength"]},
+    With[{circles = SelectInfraWalk[g, FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]["Realizations"], All, "From" -> "MaxLength", "Cyclic" -> True]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
   True,
-  TestID -> "FindInfraCircle-SelectInfraCycle-MaxLength-uniform"
+  TestID -> "FindInfraCircle-SelectInfraWalk-MaxLength-uniform"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = SelectInfraCycle[g, FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]["Realizations"], All, "From" -> "MinLength"]},
+    With[{circles = SelectInfraWalk[g, FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]["Realizations"], All, "From" -> "MinLength", "Cyclic" -> True]},
       Length[circles] >= 1 && Length[Union[Length /@ circles]] == 1
     ]
   ],
   True,
-  TestID -> "FindInfraCircle-SelectInfraCycle-MinLength"
+  TestID -> "FindInfraCircle-SelectInfraWalk-MinLength"
 ]
 
 (* ===== FindInfraParallel ===== *)

@@ -22,7 +22,7 @@ toVertexSet[ vs_List ] := vs
 resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
   ( expr /. Normal[ bindings ] ) /.
     { InfraDistance[ x_, y_ ]      :> GraphDistance[ graph, x, y ],
-      InfraPathQ[ w_ ]             :> InfraPathQ[ graph, w ],
+      InfraWalkQ[ w_ ]             :> InfraWalkQ[ graph, w ],
       InfraSegmentQ[ s_ ]          :> InfraSegmentQ[ graph, s ],
       InfraShellQ[ vs_ ]           :> InfraShellQ[ graph, vs ],
       InfraBallQ[ vs_ ]            :> InfraBallQ[ graph, vs ],
@@ -53,8 +53,8 @@ capBranches[ other_, _ ]                    := other
 (* The "Select" hypothesis option accepts None, a criterion string, or a list
    thereof.  "EmbeddingClosest" routes to EmbeddingClosest using ctx
    ("Endpoints" for paths, "Center"+"Radius" for cycles); the legacy
-   criterion strings translate into the new SelectInfraPath / SelectInfraCycle "From"
-   pool spec with All count to preserve set-shaped semantics. *)
+   criterion strings translate into the new SelectInfraWalk "From" pool spec
+   with All count to preserve set-shaped semantics. *)
 applySelectOption[ _Graph, paths_, None, _, _ ] := paths
 applySelectOption[ graph_Graph, paths_, list_List, cyclic_, ctx_ ] :=
   Fold[ applySelectOption[ graph, #1, #2, cyclic, ctx ] &, paths, list ]
@@ -63,9 +63,9 @@ applySelectOption[ graph_Graph, paths_, "EmbeddingClosest", True,  ctx_ ] :=
 applySelectOption[ graph_Graph, paths_, "EmbeddingClosest", False, ctx_ ] :=
   EmbeddingClosest[ graph, paths, ctx[ "Endpoints" ] ]
 applySelectOption[ graph_Graph, paths_, name_String, True,  _ ] :=
-  SelectInfraCycle[ graph, paths, All, "From" -> selectFromName[ name ] ]
+  SelectInfraWalk[ graph, paths, All, "From" -> selectFromName[ name ], "Cyclic" -> True ]
 applySelectOption[ graph_Graph, paths_, name_String, False, _ ] :=
-  SelectInfraPath[ graph, paths, All, "From" -> selectFromName[ name ] ]
+  SelectInfraWalk[ graph, paths, All, "From" -> selectFromName[ name ] ]
 
 selectFromName[ "Central"    ] := "Center"
 selectFromName[ "Peripheral" ] := "Periphery"
@@ -86,7 +86,7 @@ infraVertexSet[ InfraPoint[ v_ ] ] := { v }
 infraVertexSet[ list : { __InfraPoint } ] := DeleteDuplicates[ #[[ 1 ]] & /@ list ]
 infraVertexSet[ InfraMesoPoint[ m_Association ] ] := Keys @ m
 infraVertexSet[ ( InfraObject | InfraSet )[ vs_List ] ] := vs
-infraVertexSet[ ( InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay
+infraVertexSet[ ( InfraSegment | InfraWalk | InfraLoop | InfraString | InfraLine | InfraRay
                 | InfraCircle | InfraEllipse
                 | InfraShell | InfraEllipticShell | InfraPlane | InfraBall )[ reps_List ] ] :=
   Union @@ reps
@@ -95,7 +95,7 @@ infraVertexSet[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] 
   Union @@ polylineToVertexSeqs[ reps ]
 infraVertexSet[ list_List ] /;
     list =!= { } && AllTrue[ list,
-      MatchQ[ ( InfraPoint | InfraSegment | InfraPath | InfraLoop | InfraString | InfraLine | InfraRay |
+      MatchQ[ ( InfraPoint | InfraSegment | InfraWalk | InfraLoop | InfraString | InfraLine | InfraRay |
                 InfraCircle | InfraEllipse | InfraShell | InfraEllipticShell | InfraPlane | InfraBall |
                 InfraPolyline | InfraPolygon | InfraTriangle | InfraObject | InfraSet )[ { _ } ] ] ] :=
   infraVertexSet[ Head[ First @ list ] @ ( #[[ 1, 1 ]] & /@ list ) ]
@@ -124,7 +124,7 @@ InfraDistance[ g_Graph, p_, q_, OptionsPattern[] ] :=
    the InfraScene engine's symbolic uses stay inert until bindings resolve. *)
 
 $infraWrapperHeadPattern = _InfraPoint | _InfraObject | _InfraSet | _InfraSegment |
-  _InfraPath | _InfraLoop | _InfraString | _InfraLine | _InfraRay |
+  _InfraWalk | _InfraLoop | _InfraString | _InfraLine | _InfraRay |
   _InfraCircle | _InfraEllipse | _InfraShell | _InfraEllipticShell |
   _InfraPlane | _InfraBall | _InfraPolyline | _InfraPolygon | _InfraTriangle;
 

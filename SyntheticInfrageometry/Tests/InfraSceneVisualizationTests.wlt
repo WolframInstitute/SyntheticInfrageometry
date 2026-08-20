@@ -330,7 +330,7 @@ VerificationTest[
    out of the ribbon. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Cases[ Options @ InfraSceneHighlight[ g, { InfraPath[ { { 1, 2, 6, 10, 11 } } ] } ],
+    Cases[ Options @ InfraSceneHighlight[ g, { InfraWalk[ { { 1, 2, 6, 10, 11 } } ] } ],
       Line[ q_ ] :> q, Infinity ] === { GraphEmbedding[ g ][[ { 1, 2, 6, 10, 11 } ]] }
   ],
   True,
@@ -341,7 +341,7 @@ VerificationTest[
    draws nothing has to lie on one of the joined strokes. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    { opts = Options @ InfraSceneHighlight[ g, { InfraPath[ { { 1, 2, 6, 2, 3, 7 } } ] } ],
+    { opts = Options @ InfraSceneHighlight[ g, { InfraWalk[ { { 1, 2, 6, 2, 3, 7 } } ] } ],
       xy   = AssociationThread[ VertexList[ g ] -> GraphEmbedding[ g ] ] },
     { stroked = Union @ Catenate[ Sort /@ Partition[ #, 2, 1 ] & /@ Cases[ opts, Line[ q_ ] :> q, Infinity ] ],
       blank   = Cases[ opts, ( e_UndirectedEdge -> f_Function ) /; FreeQ[ f, _Line ] :> Sort[ xy /@ List @@ e ], Infinity ] },

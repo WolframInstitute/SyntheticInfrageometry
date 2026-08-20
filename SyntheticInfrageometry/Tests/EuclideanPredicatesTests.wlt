@@ -1,41 +1,42 @@
 BeginTestSection["EuclideanPredicates"]
 
-(* ===== InfraPathQ ===== *)
+(* ===== InfraWalkQ ===== *)
 
 VerificationTest[
-  InfraPathQ[PathGraph[Range[5]], {1, 2, 3, 4, 5}],
+  InfraWalkQ[PathGraph[Range[5]], {1, 2, 3, 4, 5}],
   True,
-  TestID -> "InfraPathQ-simple-path"
+  TestID -> "InfraWalkQ-simple-path"
 ]
 
 VerificationTest[
-  InfraPathQ[PathGraph[Range[5]], {1, 3}],
+  InfraWalkQ[PathGraph[Range[5]], {1, 3}],
   False,
-  TestID -> "InfraPathQ-non-edge"
+  TestID -> "InfraWalkQ-non-edge"
 ]
 
+(* revisits are allowed -- InfraWalkQ is adjacency-only, no DuplicateFreeQ clause *)
 VerificationTest[
-  InfraPathQ[CycleGraph[5], {1, 2, 3, 4, 5, 1}],
-  False,
-  TestID -> "InfraPathQ-vertex-repeat"
-]
-
-VerificationTest[
-  InfraPathQ[GridGraph[{3, 3}], {1, 2, 5, 4}],
+  InfraWalkQ[CycleGraph[5], {1, 2, 3, 4, 5, 1}],
   True,
-  TestID -> "InfraPathQ-non-geodesic-simple"
+  TestID -> "InfraWalkQ-vertex-repeat-allowed"
+]
+
+VerificationTest[
+  InfraWalkQ[GridGraph[{3, 3}], {1, 2, 5, 4}],
+  True,
+  TestID -> "InfraWalkQ-non-geodesic-simple"
 ]
 
 VerificationTest[
   InfraSegmentQ[GridGraph[{3, 3}], {1, 2, 5, 4}],
   False,
-  TestID -> "InfraPathQ-non-geodesic-InfraSegmentQ-false"
+  TestID -> "InfraWalkQ-non-geodesic-InfraSegmentQ-false"
 ]
 
 VerificationTest[
-  InfraPathQ[PathGraph[Range[5]], {3}],
+  InfraWalkQ[PathGraph[Range[5]], {3}],
   False,
-  TestID -> "InfraPathQ-single-vertex"
+  TestID -> "InfraWalkQ-single-vertex"
 ]
 
 (* ===== InfraSegmentQ ===== *)
@@ -609,7 +610,7 @@ VerificationTest[
      InfraCircleQ[g, FindInfraCircle[g, 13, 2]],
      InfraEllipseQ[g, FindInfraEllipse[g, {11, 15}, 6]],
      InfraEllipticShellQ[g, FindInfraEllipticShell[g, {11, 15}, 6]],
-     InfraPathQ[g, FindInfraPath[g, 1, 13, 6, All]],
+     InfraWalkQ[g, FindInfraWalk[g, 1, 13, 6, All]],
      InfraPlaneQ[g, FindInfraBisectingHyperplane[g, 11, 15], 11, 15],
      InfraRayQ[g, FindInfraRay[g, 1, 13, All]]}],
   ConstantArray[True, 11],

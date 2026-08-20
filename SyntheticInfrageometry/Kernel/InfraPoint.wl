@@ -346,7 +346,7 @@ CompleteInfraEquilateralTriangle[ graph_Graph, p1_, p2_,
 
 (* Vertices common to every listed line: the intersection of the lines.
    Each input line is a bare vertex sequence or a wrapped InfraLine /
-   InfraSegment / InfraPath / InfraRay -- unwrap via linePointSet (Tools.wl). *)
+   InfraSegment / InfraWalk / InfraRay -- unwrap via linePointSet (Tools.wl). *)
 
 FindInfraCommonPoint[ graph_Graph, lines_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=

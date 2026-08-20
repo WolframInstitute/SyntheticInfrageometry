@@ -19,7 +19,7 @@ InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Length" ] := ( Length[ # ]
 (* source / sink InfraPoints: the distinct first / last vertices across
    realisations.  Deduplicated, not a measure -- every geodesic of one family
    shares its endpoints, so the multiplicity would only restate the family size.
-   For the position-i occupation measure use seg[[i]] (and InfraPath, whose walks
+   For the position-i occupation measure use seg[[i]] (and InfraWalk, whose walks
    really can end anywhere, keeps its endpoint multiplicity). *)
 InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Start" ] := InfraSet[ DeleteDuplicates[ First /@ reps ] ]
 InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "End" ]   := InfraSet[ DeleteDuplicates[ Last /@ reps ] ]
@@ -179,7 +179,7 @@ geodesicDAGBaseFn[ graph_Graph, p1_, p2_ ] :=
 
 (* Tarski axiom A4: find x with B(a, b, x) and d(b, x) == d(c, d).  The only
    surviving signature -- the 2-arg form (extend segment to maximal line) is
-   subsumed by FindInfraLine[g, seg] and ExtendInfraPath[g, seg, All, ...]. *)
+   subsumed by FindInfraLine[g, seg] and ExtendInfraWalk[g, seg, All, ...]. *)
 
 ExtendInfraSegment[ graph_Graph, a_, b_, c_, d_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
@@ -203,19 +203,18 @@ dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
     extractBranches[ { opts } ] ]
 
 
-(* ===================== InfraPathQ ===================== *)
+(* ===================== InfraWalkQ ===================== *)
 
-(* A vertex sequence (v0, ..., vk) is a path iff consecutive vertices are
-   adjacent and no vertex repeats.  InfraPathQ \supset InfraSegmentQ \supset InfraLineQ. *)
+(* A vertex sequence (v0, ..., vk) is a walk iff consecutive vertices are
+   adjacent -- revisits allowed.  InfraWalkQ \supset InfraSegmentQ \supset InfraLineQ. *)
 
-InfraPathQ[ graph_Graph, w : _InfraPath | _InfraLoop | _InfraString ] :=
-  AllTrue[ First @ w, InfraPathQ[ graph, # ] & ]
+InfraWalkQ[ graph_Graph, w : _InfraWalk | _InfraLoop | _InfraString ] :=
+  AllTrue[ First @ w, InfraWalkQ[ graph, # ] & ]
 
-InfraPathQ[ graph_Graph, path_List ] /; Length[ path ] >= 2 :=
-  DuplicateFreeQ[ path ] &&
+InfraWalkQ[ graph_Graph, path_List ] /; Length[ path ] >= 2 :=
   AllTrue[ Partition[ path, 2, 1 ], EdgeQ[ graph, UndirectedEdge @@ # ] & ]
 
-InfraPathQ[ _Graph, path_List ] /; Length[ path ] < 2 := False
+InfraWalkQ[ _Graph, path_List ] /; Length[ path ] < 2 := False
 
 
 (* ===================== InfraSegmentQ ===================== *)

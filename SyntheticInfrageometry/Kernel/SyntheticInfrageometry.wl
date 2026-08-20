@@ -22,15 +22,15 @@ PackageExport[InfraReachableQ]
 PackageExport[InfraSegment]
 PackageExport[FindInfraSegment]
 PackageExport[ExtendInfraSegment]
-PackageExport[InfraPathQ]
+PackageExport[InfraWalkQ]
 PackageExport[InfraSegmentQ]
 PackageExport[UniqueInfraSegmentQ]
 
-(* InfraPath.wl *)
-PackageExport[InfraPath]
-PackageExport[FindInfraPath]
-PackageExport[ExtendInfraPath]
-PackageExport[ConcatenateInfraPath]
+(* InfraWalk.wl *)
+PackageExport[InfraWalk]
+PackageExport[FindInfraWalk]
+PackageExport[ExtendInfraWalk]
+PackageExport[ConcatenateInfraWalk]
 
 (* InfraLoop.wl *)
 PackageExport[InfraLoop]
@@ -143,9 +143,8 @@ PackageExport[InfraComparisonTriangle]
 PackageExport[CATInequalityQ]
 PackageExport[InfraCurvature]
 
-(* PathSpace.wl *)
-PackageExport[SelectInfraPath]
-PackageExport[SelectInfraCycle]
+(* WalkSpace.wl *)
+PackageExport[SelectInfraWalk]
 PackageExport[EmbeddingClosest]
 PackageExport[FindEmbeddingClosestPath]
 PackageExport[GeodesicSprayGraph]
@@ -254,7 +253,7 @@ PackageExport[$InfraShellColor]
 PackageExport[$InfraPlaneColor]
 PackageExport[$InfraCircleColor]
 PackageExport[$InfraRayColor]
-PackageExport[$InfraPathColor]
+PackageExport[$InfraWalkColor]
 PackageExport[$InfraLineColor]
 PackageExport[$InfraObjectColor]
 

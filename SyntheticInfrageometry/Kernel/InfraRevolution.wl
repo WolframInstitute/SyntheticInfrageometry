@@ -69,7 +69,7 @@ FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
   ]
 
 
-parseAxes[ ( InfraSegment | InfraLine | InfraPath )[ paths_List ] ] := paths
+parseAxes[ ( InfraSegment | InfraLine | InfraWalk )[ paths_List ] ] := paths
 parseAxes[ paths : { _List, ___List } ] := paths
 parseAxes[ path_List ]                  := { path }
 

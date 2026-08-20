@@ -27,16 +27,16 @@ InfraReachableQ::usage = "InfraReachableQ[graph, p1, p2] tests whether p1 and p2
 InfraSegment::usage = "InfraSegment[{path1, ...}] is a bundle of alternative geodesics; InfraSegment[dag] is the compact geodesic-DAG form. Accessors \"Graph\", \"Length\", \"Multiplicity\", \"Measure\", \"Realizations\".";
 FindInfraSegment::usage = "FindInfraSegment[graph, p1, p2] gives the geodesic interval from p1 to p2 as an InfraSegment DAG; a trailing n | UpTo[n] | All enumerates that many geodesics instead. Options Properties, Method.";
 ExtendInfraSegment::usage = "ExtendInfraSegment[graph, a, b, c, d] gives the points x with B(a, b, x) and d(b, x) == d(c, d) (Tarski axiom A4).";
-InfraPathQ::usage = "InfraPathQ[graph, walk] tests whether walk is a simple path: consecutive vertices adjacent, none repeated.";
+InfraWalkQ::usage = "InfraWalkQ[graph, walk] tests whether walk is a walk: consecutive vertices adjacent (revisits allowed).";
 InfraSegmentQ::usage = "InfraSegmentQ[graph, walk] tests whether walk is a geodesic.";
 UniqueInfraSegmentQ::usage = "UniqueInfraSegmentQ[graph, u, v] tests whether the u-v geodesic is unique; UniqueInfraSegmentQ[graph] tests the geodetic property.";
 
-(* ===================== InfraPath ===================== *)
+(* ===================== InfraWalk ===================== *)
 
-InfraPath::usage = "InfraPath[{walk1, ...}] is a bundle of walks, not necessarily simple. Inside InfraScene, InfraPath[p1, ..., pk] is the step-wise constructor.";
-FindInfraPath::usage = "FindInfraPath[graph, p1, p2, kspec] gives walks from p1 to p2 of length restricted by kspec (k, {k}, {kmin, kmax}, Infinity). Options Properties, Method.";
-ExtendInfraPath::usage = "ExtendInfraPath[graph, path] grows a walk one vertex per step until inextensible. Options Properties, Method, \"Length\", \"Direction\".";
-ConcatenateInfraPath::usage = "ConcatenateInfraPath[path1, path2] joins every compatible walk pair, those with Last[walk1] === First[walk2].";
+InfraWalk::usage = "InfraWalk[{walk1, ...}] is a bundle of walks, not necessarily simple. Inside InfraScene, InfraWalk[p1, ..., pk] is the step-wise constructor.";
+FindInfraWalk::usage = "FindInfraWalk[graph, p1, p2, kspec] gives walks from p1 to p2 of length restricted by kspec (k, {k}, {kmin, kmax}, Infinity). Options Properties, Method.";
+ExtendInfraWalk::usage = "ExtendInfraWalk[graph, path] grows a walk one vertex per step until inextensible. Options Properties, Method, \"Length\", \"Direction\".";
+ConcatenateInfraWalk::usage = "ConcatenateInfraWalk[path1, path2] joins every compatible walk pair, those with Last[walk1] === First[walk2].";
 InfraLoop::usage = "InfraLoop[{walk1, ...}] is a bundle of closed walks with a fixed base point; open realisations are auto-closed.";
 InfraString::usage = "InfraString[{walk1, ...}] is a bundle of closed walks modulo cyclic rotation -- the free-loop wrapper, stored in lex-least rotation.";
 
@@ -164,10 +164,9 @@ InfraComparisonTriangle::usage = "InfraComparisonTriangle[<|...|>] is the wrappe
 CATInequalityQ::usage = "CATInequalityQ[graph, {p, q, r}, k] tests whether the geodesic triangle on p, q, r satisfies the CAT(k) thinness inequality. Option Method (\"ApexSide\", \"TwoRays\").";
 InfraCurvature::usage = "InfraCurvature[graph, v] gives the local Alexandrov upper curvature bound at v: the supremum of per-triangle CAT bounds inside a ball around v. Option \"Radius\".";
 
-(* ===================== PathSpace ===================== *)
+(* ===================== WalkSpace ===================== *)
 
-SelectInfraPath::usage = "SelectInfraPath[graph, paths] draws a path from a bundle treated as a metric space of paths. Options \"From\", \"Distance\", \"Metric\", \"MaxCliques\".";
-SelectInfraCycle::usage = "SelectInfraCycle[graph, cycles] draws a cycle from a bundle, using rotation-invariant path metrics. Options as SelectInfraPath.";
+SelectInfraWalk::usage = "SelectInfraWalk[graph, walks] draws a walk (or cycle, for a closed-head bundle) from a bundle treated as a metric space. Options \"From\", \"Distance\", \"Metric\", \"MaxCliques\", \"Cyclic\".";
 EmbeddingClosest::usage = "EmbeddingClosest[graph, bundle, ref] keeps the bundle elements drawn closest to a Euclidean reference under GraphEmbedding; ref is {p1, p2}, {center, radius}, or a curve.";
 FindEmbeddingClosestPath::usage = "FindEmbeddingClosestPath[graph, curve] snaps an embedded curve to a walk, mapping sampled points to nearest vertices and joining them by geodesics.";
 GeodesicSprayGraph::usage = "GeodesicSprayGraph[graph, c] gives the BFS DAG rooted at c, whose directed source-to-sink paths are exactly the maximal geodesics from c; GeodesicSprayGraph[graph, pairs] gives the union of geodesics between listed pairs.";
@@ -274,7 +273,7 @@ $InfraBallColor::usage    = "Default highlight color for InfraBall objects.";
 $InfraPlaneColor::usage   = "Default highlight color for InfraPlane objects.";
 $InfraCircleColor::usage  = "Default highlight color for InfraCircle objects.";
 $InfraRayColor::usage     = "Default highlight color for InfraRay objects.";
-$InfraPathColor::usage    = "Default highlight color for InfraPath, InfraLoop and InfraString objects.";
+$InfraWalkColor::usage    = "Default highlight color for InfraWalk, InfraLoop and InfraString objects.";
 $InfraObjectColor::usage  = "Default highlight color for InfraObject objects.";
 $InfraTopologyColor::usage = "Default highlight color for topology overlays.";
 $InfraPalette::usage = "$InfraPalette is the Dataset of default object colors, one row per primitive; the source both the $Infra*Color symbols and InfraSceneHighlight read from.";

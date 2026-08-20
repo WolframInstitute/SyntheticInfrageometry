@@ -15,7 +15,7 @@ PackageScope[walkModeFor]
 
 (* Each realisation is the chain {p_0, ..., p_k} of intermediate walks
    produced by k elementary moves.  The walks share the wrapper head of
-   the input to the homotopy finder (InfraPath / InfraLoop / InfraString). *)
+   the input to the homotopy finder (InfraWalk / InfraLoop / InfraString). *)
 
 InfraHomotopy[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraHomotopy[ _List ] ] ] :=
   InfraHomotopy[ Flatten[ reps /. InfraHomotopy[ xs_List ] :> xs, 1 ] ]
@@ -52,7 +52,7 @@ $infraHomotopyOptions = {
    Loop + free     : { False, True  } -- equivalence quotients by rotation; canon.
    String          : { False, True  } -- canonical form is rotation-quotiented. *)
 
-walkModeFor[ InfraPath,   freeHom_ ] := { freeHom === True, False }
+walkModeFor[ InfraWalk,   freeHom_ ] := { freeHom === True, False }
 walkModeFor[ InfraLoop,   freeHom_ ] := { False, freeHom === True }
 walkModeFor[ InfraString, _ ]        := { False, True }
 walkModeFor[ InfraCircle, _ ]        := { False, True }
@@ -62,7 +62,7 @@ walkModeFor[ InfraCircle, _ ]        := { False, True }
    the homotopy operations.  InfraCircle coerces to InfraString because
    the geometric circle has no preferred base point. *)
 
-representativeHeadFor[ InfraPath ]   := InfraPath
+representativeHeadFor[ InfraWalk ]   := InfraWalk
 representativeHeadFor[ InfraLoop ]   := InfraLoop
 representativeHeadFor[ InfraString ] := InfraString
 representativeHeadFor[ InfraCircle ] := InfraString
@@ -71,7 +71,7 @@ representativeHeadFor[ _ ]           := $Failed
 
 (* Coerce a single realisation to the canonical form for its target mode. *)
 
-coerceRealisation[ InfraPath,   walk_List ] := walk
+coerceRealisation[ InfraWalk,   walk_List ] := walk
 coerceRealisation[ InfraLoop,   walk_List ] := closeWalk @ walk
 coerceRealisation[ InfraString, walk_List ] := canonicalString @ walk
 coerceRealisation[ InfraCircle, walk_List ] := canonicalString @ closeWalk @ walk
@@ -80,10 +80,10 @@ coerceRealisation[ InfraCircle, walk_List ] := canonicalString @ closeWalk @ wal
 (* ===================== FindInfraHomotopyRepresentative ===================== *)
 
 (* The length-shortest walk in the homotopy class of obj. Polymorphic on
-   Head[obj] (InfraPath / InfraLoop / InfraString / InfraCircle).  Output
+   Head[obj] (InfraWalk / InfraLoop / InfraString / InfraCircle).  Output
    wrapper head matches the input (InfraCircle -> InfraString). *)
 
-FindInfraHomotopyRepresentative::wrap = "First argument must be wrapped in InfraPath, InfraLoop, InfraString, or InfraCircle, not `1`.";
+FindInfraHomotopyRepresentative::wrap = "First argument must be wrapped in InfraWalk, InfraLoop, InfraString, or InfraCircle, not `1`.";
 
 Options[ FindInfraHomotopyRepresentative ] = $infraHomotopyOptions;
 
@@ -111,7 +111,7 @@ representativeCore[ graph_Graph, walk_List, inHead_, opts___ ] :=
    wrapper head; the chain itself is wrapped in InfraHomotopy. *)
 
 FindInfraHomotopyRepresentativeHomotopy::wrap =
-  "First argument must be wrapped in InfraPath, InfraLoop, InfraString, or InfraCircle, not `1`.";
+  "First argument must be wrapped in InfraWalk, InfraLoop, InfraString, or InfraCircle, not `1`.";
 
 Options[ FindInfraHomotopyRepresentativeHomotopy ] = $infraHomotopyOptions;
 
@@ -137,7 +137,7 @@ reductionCore[ graph_Graph, walk_List, inHead_, opts___ ] :=
 (* Chain of elementary moves from one walk to another.  a and b must
    share a wrapper head (InfraCircle coerces to InfraString). *)
 
-FindInfraHomotopy::wrap     = "First two object arguments must be wrapped in InfraPath, InfraLoop, InfraString, or InfraCircle, not `1` and `2`.";
+FindInfraHomotopy::wrap     = "First two object arguments must be wrapped in InfraWalk, InfraLoop, InfraString, or InfraCircle, not `1` and `2`.";
 FindInfraHomotopy::mismatch = "Endpoint wrapper heads must match: got `1` and `2`.";
 FindInfraHomotopy::badmethod = "Method `1` is not supported by FindInfraHomotopy.";
 
@@ -159,10 +159,10 @@ FindInfraHomotopy[ graph_Graph, a_, b_,
 
 
 (* Unify endpoint heads: both must coerce to the same mode head.
-   InfraCircle and InfraString coerce together to InfraString.  InfraPath
+   InfraCircle and InfraString coerce together to InfraString.  InfraWalk
    and InfraLoop are distinct (paths have endpoints, loops are closed). *)
 
-unifyHomotopyHeads[ InfraPath,   InfraPath ]   := InfraPath
+unifyHomotopyHeads[ InfraWalk,   InfraWalk ]   := InfraWalk
 unifyHomotopyHeads[ InfraLoop,   InfraLoop ]   := InfraLoop
 unifyHomotopyHeads[ InfraString, InfraString ] := InfraString
 unifyHomotopyHeads[ InfraString, InfraCircle ] := InfraString
@@ -188,8 +188,8 @@ homotopyCore[ graph_Graph, walkA_List, walkB_List, inHead_, opts___ ] :=
     methodHead   = methodName @ methodSpec;
     pruning      = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity;
     If[ startW === targetW, Return[ { { startW } } ] ];
-    If[ inHead === InfraPath && First[ walkA ] =!= First[ walkB ] && ! freeHom, Return[ { } ] ];
-    If[ inHead === InfraPath && Last[ walkA ]  =!= Last[ walkB ]  && ! freeHom, Return[ { } ] ];
+    If[ inHead === InfraWalk && First[ walkA ] =!= First[ walkB ] && ! freeHom, Return[ { } ] ];
+    If[ inHead === InfraWalk && Last[ walkA ]  =!= Last[ walkB ]  && ! freeHom, Return[ { } ] ];
     If[ inHead === InfraLoop && First[ walkA ] =!= First[ walkB ] && ! freeHom, Return[ { } ] ];
     Switch[ methodHead,
       "Exhaustive",
@@ -244,8 +244,8 @@ homotopicQCore[ graph_Graph, walkA_List, walkB_List, inHead_, opts___ ] :=
     startW       = If[ canonicalize, canonicalString @ walkA, walkA ];
     targetW      = If[ canonicalize, canonicalString @ walkB, walkB ];
     If[ startW === targetW, Return[ True ] ];
-    If[ inHead === InfraPath && First[ walkA ] =!= First[ walkB ] && ! freeHom, Return[ False ] ];
-    If[ inHead === InfraPath && Last[ walkA ]  =!= Last[ walkB ]  && ! freeHom, Return[ False ] ];
+    If[ inHead === InfraWalk && First[ walkA ] =!= First[ walkB ] && ! freeHom, Return[ False ] ];
+    If[ inHead === InfraWalk && Last[ walkA ]  =!= Last[ walkB ]  && ! freeHom, Return[ False ] ];
     If[ inHead === InfraLoop && First[ walkA ] =!= First[ walkB ] && ! freeHom, Return[ False ] ];
     rules        = resolveFaces[ graph, OptionValue[ HomotopicQ, { opts }, "NullHomotopicCycles" ] ];
     maxMoves     = OptionValue[ HomotopicQ, { opts }, "MaxMoves" ];

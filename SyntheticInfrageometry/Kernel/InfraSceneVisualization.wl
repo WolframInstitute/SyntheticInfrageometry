@@ -48,7 +48,7 @@ $infraHeadColors = <|
   InfraPoint -> "Point", InfraMesoPoint -> "Point",
   InfraSegment -> "Segment", InfraPolyline -> "Segment",
   InfraLine -> "Line",
-  InfraPath -> "Path", InfraLoop -> "Path", InfraString -> "Path",
+  InfraWalk -> "Path", InfraLoop -> "Path", InfraString -> "Path",
   InfraShell -> "Shell", InfraEllipticShell -> "Shell", InfraSet -> "Shell",
   InfraBall -> "Ball",
   InfraPlane -> "Plane",
@@ -65,7 +65,7 @@ $InfraBallColor     = $infraColors[ "Ball" ];
 $InfraPlaneColor    = $infraColors[ "Plane" ];
 $InfraCircleColor   = $infraColors[ "Circle" ];
 $InfraRayColor      = $infraColors[ "Ray" ];
-$InfraPathColor     = $infraColors[ "Path" ];
+$InfraWalkColor     = $infraColors[ "Path" ];
 $InfraObjectColor   = $infraColors[ "Object" ];
 $InfraTopologyColor = $infraColors[ "Topology" ];
 
@@ -258,7 +258,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             { InfraSegment [ b : { __Graph } ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraLine    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
-            { InfraPath    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
+            { InfraWalk    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraLoop    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraString  [ b_List ], c_, u_ } :> { b, c, "Cycles", u },
             { InfraShell        [ b_List ], c_, u_ } :> { b, c, "Sets"  , u },

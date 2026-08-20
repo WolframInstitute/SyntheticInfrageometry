@@ -599,7 +599,7 @@ InfraPerpendicularQ[ graph_Graph, l1_, l2_, OptionsPattern[] ] :=
 (* Ordered first-realisation vertex sequence; bare list is its own sequence.
    Companion to linePointSet (which gives the unordered union). *)
 
-lineSequence[ ( InfraLine | InfraSegment | InfraPath | InfraRay )[ reps_List ] ] := First @ reps
+lineSequence[ ( InfraLine | InfraSegment | InfraWalk | InfraRay )[ reps_List ] ] := First @ reps
 lineSequence[ line_List ] := line
 
 

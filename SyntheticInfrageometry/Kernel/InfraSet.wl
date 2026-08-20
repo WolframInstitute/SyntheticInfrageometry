@@ -181,14 +181,14 @@ InfraVolume::badvolume = "Volume measure `1` is not supported by InfraVolume; us
 
 Options[ InfraVolume ] = { "Volume" -> "Hausdorff", Method -> "Combinatorial" };
 
-(* Line-like objects (InfraLine / InfraSegment / InfraPath / InfraRay) realise the
+(* Line-like objects (InfraLine / InfraSegment / InfraWalk / InfraRay) realise the
    UNION of their walks as path graphs -- only each line's own consecutive edges,
    so distinct lines are not joined and a line never gains the chords of its
    induced subgraph. The interior is then the same GraphInterior, fed this graph
    rather than a vertex list: a vertex is interior iff every g-edge at it is a
    line edge, so a 1-D curve has ~empty interior (a space-filling grid path keeps
    only its two pass-through corners). *)
-InfraVolume[ g_Graph, (InfraLine | InfraSegment | InfraPath | InfraRay)[ walks_List ], opts : OptionsPattern[] ] :=
+InfraVolume[ g_Graph, (InfraLine | InfraSegment | InfraWalk | InfraRay)[ walks_List ], opts : OptionsPattern[] ] :=
   With[
     { h = Graph[ Union @@ walks,
         DeleteDuplicates[ Sort /@ Catenate[ (UndirectedEdge @@@ Partition[ #, 2, 1 ] &) /@ walks ] ] ] },

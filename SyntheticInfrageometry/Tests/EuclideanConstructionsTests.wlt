@@ -209,12 +209,12 @@ VerificationTest[
   TestID -> "FindClosestInfraPoint-ties-symmetric"
 ]
 
-(* InfraPath and InfraRay heads are also accepted. *)
+(* InfraWalk and InfraRay heads are also accepted. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraPath[{{1, 2, 3, 4, 5}}], InfraPoint[13], All],
+    InfraWalk[{{1, 2, 3, 4, 5}}], InfraPoint[13], All],
   { InfraPoint[3] },
-  TestID -> "FindClosestInfraPoint-InfraPath"
+  TestID -> "FindClosestInfraPoint-InfraWalk"
 ]
 
 VerificationTest[

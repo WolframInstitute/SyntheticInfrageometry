@@ -30,8 +30,8 @@ Print[TestReport[FileNameJoin[{$testDir, "EuclideanSpaceTests.wlt"}]]]
 Print["Running InfraCurveGeometryTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "InfraCurveGeometryTests.wlt"}]]]
 
-Print["Running PathSpaceTests..."]
-Print[TestReport[FileNameJoin[{$testDir, "PathSpaceTests.wlt"}]]]
+Print["Running WalkSpaceTests..."]
+Print[TestReport[FileNameJoin[{$testDir, "WalkSpaceTests.wlt"}]]]
 
 Print["Running InfraLoopTests..."]
 Print[TestReport[FileNameJoin[{$testDir, "InfraLoopTests.wlt"}]]]

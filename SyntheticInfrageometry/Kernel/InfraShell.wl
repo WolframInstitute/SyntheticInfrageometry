@@ -89,7 +89,7 @@ propertyPredicateShell[ _, _, _, other_ ] :=
    distance r), the level set { v : d(c, v) == r }, one unary
    InfraShell[{set}] per such center, sorted by ascending radius
    (with center as a tie-break).  Forwards Properties / Method to
-   FindInfraShell.  path is a vertex list or any InfraPath wrapper
+   FindInfraShell.  path is a vertex list or any InfraWalk wrapper
    (multi-realisation paths are spread and unioned). *)
 
 Options[ FindInfraOsculatingShell ] = Options[ FindInfraShell ];
@@ -97,7 +97,7 @@ Options[ FindInfraOsculatingShell ] = Options[ FindInfraShell ];
 FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[ ] ] :=
   Module[ { walks, vlist, vidx, dm, pairs, sets, capped },
-    walks = infraSpread @ If[ ListQ @ path, InfraPath[ { path } ], path ];
+    walks = infraSpread @ If[ ListQ @ path, InfraWalk[ { path } ], path ];
     vlist = VertexList @ graph;
     vidx  = AssociationThread[ vlist -> Range @ Length @ vlist ];
     dm    = GraphDistanceMatrix @ graph;

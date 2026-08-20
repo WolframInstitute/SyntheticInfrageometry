@@ -204,9 +204,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraPath[ { { 1, 2, 3, 2, 1 } } ][ "Length" ],
+  InfraWalk[ { { 1, 2, 3, 2, 1 } } ][ "Length" ],
   { 4 },
-  TestID -> "InfraPath-Length-edge-count"
+  TestID -> "InfraWalk-Length-edge-count"
 ]
 
 VerificationTest[
