@@ -35,6 +35,21 @@ resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
       InfraRegularPolygonQ[ c_, as_ ] :> InfraRegularPolygonQ[ graph, c, as ],
       InfraRevolutionQ[ vs_, axis_, profile_ ] :> InfraRevolutionQ[ graph, vs, axis, profile ] }
 
+(* The heads resolveExpression injects the graph into -- exactly the
+   assertions a scene can decide. *)
+$sceneAssertionHeads = { InfraWalkQ, InfraSegmentQ, InfraShellQ, InfraBallQ,
+  InfraPlaneQ, InfraCircleQ, InfraLineQ, InfraParallelQ, InfraIntersectQ,
+  InfraPolylineQ, InfraRegularPolygonQ, InfraRevolutionQ };
+
+(* An Infra*Q head outside that table never receives the graph, so it stays
+   inert, TrueQ reads it as False, and the scene silently rejects every
+   branch.  Refusing the scene is the only way that failure is visible. *)
+unknownAssertionHeads[ assertions_List ] :=
+  DeleteDuplicates @ Cases[ assertions,
+    h_Symbol[ ___ ] /; StringMatchQ[ SymbolName[ h ], "Infra" ~~ ___ ~~ "Q" ] &&
+      ! MemberQ[ $sceneAssertionHeads, h ] :> h,
+    { 0, Infinity } ]
+
 extractBranches[ opts_List ] :=
   Lookup[ Association @ opts, "Branches", All ]
 
@@ -120,22 +135,29 @@ InfraDistance[ g_Graph, p_, q_, OptionsPattern[] ] :=
 
 (* Standalone vertex-set intersection / union across any number of Infra*
    objects.  Each object contributes its full vertex set (union across
-   realisations, via infraVertexSet).  Guarded on recognised Infra* heads so
-   the InfraScene engine's symbolic uses stay inert until bindings resolve. *)
+   realisations, via infraVertexSet).  Guarded on the *realisation* shape --
+   a single list payload -- not merely on the head: InfraCircle[c, r] is a
+   scene constructor whose vertex set is unknown until dispatched, and
+   matching it here collapsed scene hypotheses to InfraSet[{}] at
+   scene-construction time. *)
 
-$infraWrapperHeadPattern = _InfraPoint | _InfraObject | _InfraSet | _InfraSegment |
-  _InfraWalk | _InfraLoop | _InfraString | _InfraLine | _InfraRay |
-  _InfraCircle | _InfraEllipse | _InfraShell | _InfraEllipticShell |
-  _InfraPlane | _InfraBall | _InfraPolyline | _InfraPolygon | _InfraTriangle;
+$infraRealisationPattern =
+  ( InfraPoint | InfraObject | InfraSet | InfraSegment | InfraWalk | InfraLoop |
+    InfraString | InfraLine | InfraRay | InfraCircle | InfraEllipse | InfraShell |
+    InfraEllipticShell | InfraPlane | InfraBall | InfraPolyline | InfraPolygon |
+    InfraTriangle )[ _List ] | InfraSegment[ _Graph ] | InfraMesoPoint[ _Association ];
 
-InfraIntersection[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraWrapperHeadPattern ] ] :=
+InfraIntersection[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
   InfraSet[ Intersection @@ ( infraVertexSet /@ { args } ) ]
 
-InfraUnion[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraWrapperHeadPattern ] ] :=
+InfraUnion[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
   InfraSet[ Union @@ ( infraVertexSet /@ { args } ) ]
 
 
 (* ===================== Scene ===================== *)
+
+InfraScene::badassertion = "`1` is not a scene assertion head; it never receives \
+the graph, so the scene would reject every branch without a message.";
 
 (* Manual-step form: hypotheses contain explicit InfraGeometricStep blocks. *)
 InfraScene[ objects_List, hypotheses_List ] /;
@@ -160,6 +182,11 @@ InfraScene[ objects_List, hypotheses_List ] /;
         h |-> ! MatchQ[ h, _InfraGeometricStep ] && ! constructionPatternQ[ objects, h ] ],
       Flatten[ #[ "Assertions" ] & /@ perStep ] ];
 
+    With[ { unknown = unknownAssertionHeads[ assertions ] },
+      If[ unknown =!= { },
+        Message[ InfraScene::badassertion, First @ unknown ];
+        Return[ $Failed, Module ] ] ];
+
     InfraScene[ <|
       "Objects"         -> objects,
       "Constructions"   -> constructions,
@@ -178,6 +205,10 @@ InfraScene[ objects_List, hypotheses_List ] :=
     constructions = Association @ Cases[ hypotheses,
       ( key_ == rhs_ ) /; constructionPatternQ[ objects, key == rhs ] :> ( key -> rhs ) ];
     assertions = Select[ hypotheses, ! constructionPatternQ[ objects, # ] & ];
+    With[ { unknown = unknownAssertionHeads[ assertions ] },
+      If[ unknown =!= { },
+        Message[ InfraScene::badassertion, First @ unknown ];
+        Return[ $Failed, Module ] ] ];
     dag = Graph[ objects,
       Flatten @ KeyValueMap[
         { key, rhs } |-> With[ {
@@ -240,11 +271,18 @@ InfraInstance[ bindings_Association, syms_List ] :=
    one symbol bound to each result, or a tuple of symbols thread-bound to each
    tuple-result. *)
 
-evaluateConstruction[ graph_Graph, sym_, InfraIntersection[ obj1_, obj2_ ], bindings_Association ] :=
+(* Each operand is itself a construction (InfraCircle[a, r], ...), so it must
+   be dispatched before its vertex set exists; an operand already bound to a
+   vertex set has no dispatch rule and is read directly. *)
+evaluateConstruction[ graph_Graph, sym_, InfraIntersection[ objs__ ], bindings_Association ] :=
   Append[ bindings, sym -> # ] & /@
-    Intersection[
-      toVertexSet @ resolveExpression[ obj1, bindings, graph ],
-      toVertexSet @ resolveExpression[ obj2, bindings, graph ] ]
+    Intersection @@ Map[
+      obj |-> With[ { resolved = resolveExpression[ obj, bindings, graph ] },
+        { realisations = dispatchConstruction[ graph, resolved ] },
+        If[ ListQ[ realisations ],
+          Union @@ ( toVertexSet /@ realisations ),
+          toVertexSet[ resolved ] ] ],
+      { objs } ]
 
 evaluateConstruction[ graph_Graph, sym_, rhs_, bindings_Association ] :=
   With[ { results = dispatchConstruction[ graph, resolveExpression[ rhs, bindings, graph ] ] },

@@ -559,5 +559,97 @@ VerificationTest[
   TestID -> "InfraIntersection-symbolic-args-inert"
 ]
 
+(* A scene constructor is not a realisation: InfraCircle[c, r] names a circle
+   whose vertex set exists only after dispatch, so folding it here would
+   answer with the empty set before the graph is known. *)
+VerificationTest[
+  Head @ InfraIntersection[ InfraCircle[ ctr1, 2 ], InfraCircle[ ctr2, 2 ] ],
+  InfraIntersection,
+  TestID -> "InfraIntersection-scene-constructor-args-inert"
+]
+
+
+(* ===== Euclid I.1 ===== *)
+
+(* The equilateral-triangle construction: the apexes are the vertices lying on
+   both circles of radius d(a, b) centred at a and at b.  On PetersenGraph[]
+   with a = 1, b = 7 (d = 2) that intersection is {5, 9, 10}. *)
+VerificationTest[
+  With[ { g = PetersenGraph[ ],
+          scene = InfraScene[ { ea, eb, ec }, {
+            ec == InfraIntersection[
+              InfraCircle[ ea, InfraDistance[ ea, eb ] ],
+              InfraCircle[ eb, InfraDistance[ ea, eb ] ] ] } ] },
+    Sort @ DeleteDuplicates[
+      #[[ 1 ]][ ec ] & /@ FindInfraScene[ scene, g, <| ea -> 1, eb -> 7 |> ] ]
+  ],
+  { 5, 9, 10 },
+  TestID -> "FindInfraScene-EuclidI1-apexes"
+]
+
+(* Each apex is equidistant from both foci, at exactly the base length. *)
+VerificationTest[
+  With[ { g = PetersenGraph[ ],
+          scene = InfraScene[ { ea, eb, ec }, {
+            ec == InfraIntersection[
+              InfraCircle[ ea, InfraDistance[ ea, eb ] ],
+              InfraCircle[ eb, InfraDistance[ ea, eb ] ] ] } ] },
+    With[ { apexes = #[[ 1 ]][ ec ] & /@ FindInfraScene[ scene, g, <| ea -> 1, eb -> 7 |> ] },
+      apexes =!= { } &&
+      AllTrue[ apexes,
+        v |-> GraphDistance[ g, 1, v ] == GraphDistance[ g, 7, v ] == GraphDistance[ g, 1, 7 ] ]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraScene-EuclidI1-equilateral"
+]
+
+(* The scene agrees with the intersection taken by hand from FindInfraCircle. *)
+VerificationTest[
+  With[ { g = PetersenGraph[ ],
+          scene = InfraScene[ { ea, eb, ec }, {
+            ec == InfraIntersection[
+              InfraCircle[ ea, InfraDistance[ ea, eb ] ],
+              InfraCircle[ eb, InfraDistance[ ea, eb ] ] ] } ] },
+    Sort @ DeleteDuplicates[
+      #[[ 1 ]][ ec ] & /@ FindInfraScene[ scene, g, <| ea -> 1, eb -> 7 |> ] ] ===
+    Sort @ Intersection[
+      Union @@ FindInfraCircle[ g, 1, 2, All ][ "Realizations" ],
+      Union @@ FindInfraCircle[ g, 7, 2, All ][ "Realizations" ] ]
+  ],
+  True,
+  TestID -> "FindInfraScene-EuclidI1-agrees-with-FindInfraCircle"
+]
+
+
+(* ===== Undecidable assertions ===== *)
+
+(* An Infra*Q head the scene cannot inject the graph into would reject every
+   branch silently; the scene refuses to build instead. *)
+VerificationTest[
+  InfraScene[ { ua, uc }, { InfraPointQ[ ua ], uc == InfraPoint[ ] } ],
+  $Failed,
+  { InfraScene::badassertion },
+  TestID -> "InfraScene-unknown-assertion-head-refused"
+]
+
+(* A real predicate outside the scene table is refused on the same grounds. *)
+VerificationTest[
+  InfraScene[ { ua, us }, {
+    InfraGeometricStep[ { ua == InfraPoint[ ] } ], InfraGeodesicQ[ us ] } ],
+  $Failed,
+  { InfraScene::badassertion },
+  TestID -> "InfraScene-unknown-assertion-head-refused-manual-steps"
+]
+
+(* Heads in the table are untouched by the guard. *)
+VerificationTest[
+  Head @ InfraScene[ { ka, kb, ks }, {
+    ka == InfraPoint[ ], kb == InfraPoint[ ], ks == InfraSegment[ ka, kb ],
+    InfraSegmentQ[ ks ], InfraDistance[ ka, kb ] >= 3 } ],
+  InfraScene,
+  TestID -> "InfraScene-known-assertion-heads-accepted"
+]
+
 
 EndTestSection[]
