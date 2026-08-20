@@ -30,22 +30,13 @@ structure, the geodesic convex hull as the graph-intrinsic shadow of tropical \
 
 Cell["Setup", "Section",ExpressionUUID->"7e3d09d0-9745-4a76-9e7e-f7391c8b9897"],
 
-Cell["Load the dev paclet and the package context.", "CodeText",ExpressionUUID->"1d21ea31-5162-407c-a6cd-222276c38549"],
+Cell["Load the package context.", "CodeText",ExpressionUUID->"1d21ea31-5162-407c-a6cd-222276c38549"],
 
 Cell[BoxData[
- RowBox[{"Defer", "[", 
+ RowBox[{
   RowBox[{
-   RowBox[{
-    RowBox[{"PacletDirectoryLoad", "[", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<../../..\>\""}], 
-       "}"}], "]"}], "]"}], ";"}], ",", 
-   RowBox[{
-    RowBox[{
-    "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
-    ";"}]}], "]"}]], "Code",
+  "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
+  ";"}]], "Code",
  InitializationCell->
   True,ExpressionUUID->"ee90430c-bd4f-4924-96b9-c9f6e9a935b2"],
 

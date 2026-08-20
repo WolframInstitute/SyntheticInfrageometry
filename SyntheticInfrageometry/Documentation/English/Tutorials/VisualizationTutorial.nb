@@ -30,22 +30,13 @@ interactive viewers, and run a full InfraScene.\
 
 Cell["Setup", "Section",ExpressionUUID->"bd5bccca-68f4-403c-8f8b-51e7209cd9a1"],
 
-Cell["Load the dev paclet and the package context.", "CodeText",ExpressionUUID->"54f1e030-fc70-4d78-b8b6-5b0dcbc2ba52"],
+Cell["Load the package context.", "CodeText",ExpressionUUID->"54f1e030-fc70-4d78-b8b6-5b0dcbc2ba52"],
 
 Cell[BoxData[
- RowBox[{"Defer", "[", 
+ RowBox[{
   RowBox[{
-   RowBox[{
-    RowBox[{"PacletDirectoryLoad", "[", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<../../..\>\""}], 
-       "}"}], "]"}], "]"}], ";"}], ",", 
-   RowBox[{
-    RowBox[{
-    "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
-    ";"}]}], "]"}]], "Code",
+  "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
+  ";"}]], "Code",
  InitializationCell->
   True,ExpressionUUID->"8f20a9b9-fc88-4abc-b62e-e0181e93a314"],
 

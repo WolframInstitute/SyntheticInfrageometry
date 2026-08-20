@@ -31,22 +31,13 @@ embedding-closest representatives, and rebuild the underlying geodesic graph.\
 
 Cell["Setup", "Section",ExpressionUUID->"6354179c-0501-4fe8-a65f-4f78f137abdd"],
 
-Cell["Load the dev paclet and the package context.", "CodeText",ExpressionUUID->"2439b572-0d46-4e7d-97b6-72aa1bfcbf4d"],
+Cell["Load the package context.", "CodeText",ExpressionUUID->"2439b572-0d46-4e7d-97b6-72aa1bfcbf4d"],
 
 Cell[BoxData[
- RowBox[{"Defer", "[", 
+ RowBox[{
   RowBox[{
-   RowBox[{
-    RowBox[{"PacletDirectoryLoad", "[", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<../../..\>\""}], 
-       "}"}], "]"}], "]"}], ";"}], ",", 
-   RowBox[{
-    RowBox[{
-    "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
-    ";"}]}], "]"}]], "Code",
+  "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
+  ";"}]], "Code",
  InitializationCell->
   True,ExpressionUUID->"2bca31aa-7ef2-4b23-a2c9-dda8a8ac1aac"],
 

@@ -30,22 +30,13 @@ witnesses of failure.\
 
 Cell["Setup", "Section",ExpressionUUID->"e78c656c-dc8a-47da-ab7a-da1e2ddfe857"],
 
-Cell["Load the dev paclet and the package context.", "CodeText",ExpressionUUID->"860d7adb-092c-4663-a2ca-17c6e8068a68"],
+Cell["Load the package context.", "CodeText",ExpressionUUID->"860d7adb-092c-4663-a2ca-17c6e8068a68"],
 
 Cell[BoxData[
- RowBox[{"Defer", "[", 
+ RowBox[{
   RowBox[{
-   RowBox[{
-    RowBox[{"PacletDirectoryLoad", "[", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<../../..\>\""}], 
-       "}"}], "]"}], "]"}], ";"}], ",", 
-   RowBox[{
-    RowBox[{
-    "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
-    ";"}]}], "]"}]], "Code",
+  "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
+  ";"}]], "Code",
  InitializationCell->
   True,ExpressionUUID->"0984dabf-401d-41e2-9e1a-67cfbfce32c1"],
 

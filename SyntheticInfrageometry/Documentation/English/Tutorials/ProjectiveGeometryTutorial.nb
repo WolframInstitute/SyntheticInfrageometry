@@ -30,22 +30,13 @@ test.\
 
 Cell["Setup", "Section",ExpressionUUID->"c5697a50-df2f-45ae-a26f-94aedb9af37a"],
 
-Cell["Load the dev paclet and the package context.", "CodeText",ExpressionUUID->"2e68ec1e-b9fb-48a9-bc03-2e9b0e7c1a44"],
+Cell["Load the package context.", "CodeText",ExpressionUUID->"2e68ec1e-b9fb-48a9-bc03-2e9b0e7c1a44"],
 
 Cell[BoxData[
- RowBox[{"Defer", "[", 
+ RowBox[{
   RowBox[{
-   RowBox[{
-    RowBox[{"PacletDirectoryLoad", "[", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<../../..\>\""}], 
-       "}"}], "]"}], "]"}], ";"}], ",", 
-   RowBox[{
-    RowBox[{
-    "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
-    ";"}]}], "]"}]], "Code",
+  "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
+  ";"}]], "Code",
  InitializationCell->
   True,ExpressionUUID->"d05b6f82-c9d4-4be2-ad2b-86c9f7a45576"],
 

@@ -31,22 +31,13 @@ upper-curvature bound.\
 
 Cell["Setup", "Section",ExpressionUUID->"ed8c96c5-eaf9-44d5-ad1c-e30857f830a7"],
 
-Cell["Load the dev paclet and the package context.", "CodeText",ExpressionUUID->"ee35af62-c0be-4c7c-ad7a-3b13f73fb4de"],
+Cell["Load the package context.", "CodeText",ExpressionUUID->"ee35af62-c0be-4c7c-ad7a-3b13f73fb4de"],
 
 Cell[BoxData[
- RowBox[{"Defer", "[", 
+ RowBox[{
   RowBox[{
-   RowBox[{
-    RowBox[{"PacletDirectoryLoad", "[", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<../../..\>\""}], 
-       "}"}], "]"}], "]"}], ";"}], ",", 
-   RowBox[{
-    RowBox[{
-    "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
-    ";"}]}], "]"}]], "Code",
+  "Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", "]"}], 
+  ";"}]], "Code",
  InitializationCell->
   True,ExpressionUUID->"1284afb3-211f-4484-aad0-f911677761d2"],
 
