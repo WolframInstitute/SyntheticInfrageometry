@@ -60,7 +60,7 @@ VerificationTest[
   TestID -> "FindInfraEllipticShell-empty-properties-one-realisation"
 ]
 
-(* ===== Method -> "Greedy" / "GreedyRandomPick" (shared findGreedyMinimalAdmissible) ===== *)
+(* ===== Method -> "Greedy" / "RandomGreedy" (shared findGreedyMinimalAdmissible) ===== *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
@@ -73,22 +73,22 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    BlockRandom[ FindInfraEllipticShell[ g, { 1, 16 }, { 5, 8 }, 1, Properties -> { "Connected" }, Method -> "GreedyRandomPick" ], RandomSeeding -> 4 ] ===
-      BlockRandom[ FindInfraEllipticShell[ g, { 1, 16 }, { 5, 8 }, 1, Properties -> { "Connected" }, Method -> "GreedyRandomPick" ], RandomSeeding -> 4 ]
+    BlockRandom[ FindInfraEllipticShell[ g, { 1, 16 }, { 5, 8 }, 1, Properties -> { "Connected" }, Method -> "RandomGreedy" ], RandomSeeding -> 4 ] ===
+      BlockRandom[ FindInfraEllipticShell[ g, { 1, 16 }, { 5, 8 }, 1, Properties -> { "Connected" }, Method -> "RandomGreedy" ], RandomSeeding -> 4 ]
   ],
   True,
-  TestID -> "FindInfraEllipticShell-GreedyRandomPick-seeded-reproducible"
+  TestID -> "FindInfraEllipticShell-RandomGreedy-seeded-reproducible"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Length @ DeleteDuplicates @ Table[
-      BlockRandom[ FindInfraEllipticShell[ g, { 1, 16 }, { 5, 8 }, 1, Properties -> { "Connected" }, Method -> "GreedyRandomPick" ][ "First" ], RandomSeeding -> s ],
+      BlockRandom[ FindInfraEllipticShell[ g, { 1, 16 }, { 5, 8 }, 1, Properties -> { "Connected" }, Method -> "RandomGreedy" ][ "First" ], RandomSeeding -> s ],
       { s, 1, 8 } ]
   ],
   _Integer?( # > 1 & ),
   SameTest -> MatchQ,
-  TestID -> "FindInfraEllipticShell-GreedyRandomPick-varies-across-seeds"
+  TestID -> "FindInfraEllipticShell-RandomGreedy-varies-across-seeds"
 ]
 
 (* ===== InfraEllipticShell wrapper ===== *)

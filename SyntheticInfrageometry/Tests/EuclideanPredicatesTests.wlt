@@ -602,7 +602,7 @@ VerificationTest[
    returned unevaluated, which reads as a False that never came. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    {InfraSegmentQ[g, FindInfraSegment[g, 1, 13]],
+    {InfraSegmentQ[g, FindInfraSegment[g, 1, 13, All]],
      InfraSegmentQ[g, FindInfraSegment[g, 1, 13, All]],
      InfraLineQ[g, FindInfraLine[g, 1, 21, All]],
      InfraShellQ[g, FindInfraShell[g, 13, 2]],

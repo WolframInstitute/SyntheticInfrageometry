@@ -75,21 +75,20 @@ InfraSegment[ dag_Graph ][ "End" ]   := InfraSet[ Select[ VertexList[ dag ], Ver
 
 FindInfraSegment::badproperty = "Property `1` is not supported by FindInfraSegment; local rules on the geodesic bundle moved to FindInfraGeodesic[graph, p1, p2, scale].";
 FindInfraSegment::badmethod   = "Method `1` is not supported by FindInfraSegment.";
+FindInfraSegment::shortfall   = "\"RandomGreedy\" drew `1` distinct geodesics of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraSegment ] = {
-  Method -> "Exhaustive"
+  Method -> Automatic
 };
 
-(* Exhaustive with no explicit count -> the compact geodesic-DAG form: one
-   GeodesicIntervalGraph atom per endpoint pair, the atoms held as a set (a lone
-   atom collapses to the bare InfraSegment[dag]).  An explicit count, or Greedy /
-   GreedyRandomPick, -> the enumerated path form (the calling triple over
-   spreadFind); both greedy methods take the same deterministic FindShortestPath
-   witness, since the class carries no per-step choice to randomise over (see
-   Wiki/Concepts/RandomnessConventions.md).  A multi-source / multi-sink union of
-   geodesic intervals is not acyclic in general (opposite orientations from
-   different sources), so multi-endpoint families stay a set of per-pair atoms
-   rather than one DAG. *)
+(* count = All with the exhaustive method -> the compact geodesic-DAG form, the
+   segment's pool structure: one GeodesicIntervalGraph atom per endpoint pair,
+   the atoms held as a set (a lone atom collapses to the bare InfraSegment[dag]).
+   Any bounded count -> the enumerated path form (the calling triple over
+   spreadFind), lazily via the DAG's bounded DFS.  A multi-source / multi-sink
+   union of geodesic intervals is not acyclic in general (opposite orientations
+   from different sources), so multi-endpoint families stay a set of per-pair
+   atoms rather than one DAG. *)
 
 (* a lone atom collapses to the bare DAG form *)
 InfraSegment[ { dag_Graph } ] := InfraSegment[ dag ]
@@ -100,16 +99,15 @@ InfraSegment[ dags : { _Graph, __Graph } ][ args___ ] :=
   InfraSegment[ Join @@ ( dagGeodesics /@ dags ) ][ args ]
 
 FindInfraSegment[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : Automatic, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
   If[ ! FreeQ[ { opts }, Properties ],
     Message[ FindInfraSegment::badproperty, Properties /. { opts } ]; $Failed,
-    If[ count === Automatic &&
-        methodName[ OptionValue[ FindInfraSegment, { opts }, Method ] /. Automatic -> "Exhaustive" ] === "Exhaustive",
+    If[ count === All &&
+        methodName[ resolveMethod[ OptionValue[ FindInfraSegment, { opts }, Method ], count ] ] === "Exhaustive",
       InfraSegment[ DeleteDuplicates[ GeodesicIntervalGraph[ graph, #[[ 1 ]], #[[ 2 ]] ] & /@
         Select[ Tuples[ infraSpread /@ { p1, p2 } ],
           #[[ 1 ]] =!= #[[ 2 ]] && VertexQ[ graph, #[[ 1 ]] ] && VertexQ[ graph, #[[ 2 ]] ] & ] ] ],
-      spreadFind[ InfraSegment, count /. Automatic -> All,
-        findSegmentCore[ graph, ##, count /. Automatic -> All, opts ] &, p1, p2 ]
+      spreadFind[ InfraSegment, count, findSegmentCore[ graph, ##, count, opts ] &, p1, p2 ]
     ]
   ]
 
@@ -117,20 +115,29 @@ FindInfraSegment[ graph_Graph, p1_, p2_,
 findSegmentCore[ _Graph, p1_, p1_, ___ ] := { }
 
 findSegmentCore[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[ FindInfraSegment ] ] :=
-  With[ { methodSpec = OptionValue[ FindInfraSegment, { opts }, Method ] /. Automatic -> "Exhaustive" },
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic,
+    opts : OptionsPattern[ FindInfraSegment ] ] :=
+  With[ { methodSpec = resolveMethod[ OptionValue[ FindInfraSegment, { opts }, Method ], count ] },
     Switch[ methodName @ methodSpec,
       "Exhaustive",
-        If[ count === 1,
+        If[ countLimit @ count === 1,
           With[ { path = FindShortestPath[ graph, p1, p2 ] },
             If[ path === { }, { }, { path } ] ],
           With[ { d = GraphDistance[ graph, p1, p2 ] },
             If[ d === Infinity, { },
               FindPath[ graph, p1, p2, { d }, count /. UpTo[ k_ ] :> k ] ] ]
         ],
-      "Greedy" | "GreedyRandomPick",
-        With[ { path = FindShortestPath[ graph, p1, p2 ] },
-          If[ path === { }, { }, { path } ] ],
+      (* the pool structure already IS the lazy descent: the DAG's bounded DFS
+         stops at `count` geodesics, so the greedy branch is complete and exact *)
+      "Greedy",
+        dagGeodesics[ GeodesicIntervalGraph[ graph, p1, p2 ], count ],
+      "RandomGreedy",
+        With[ { dag = GeodesicIntervalGraph[ graph, p1, p2 ] },
+          randomDraws[
+            { } |-> greedyFrontierSweep[ dag, p1, p2,
+                { d, w } |-> DeleteCases[ VertexOutComponent[ d, { Last @ w }, 1 ], Last @ w ],
+                True &, Infinity, 1, randomBranch ],
+            count, FindInfraSegment ] ],
       _,
         Message[ FindInfraSegment::badmethod, methodSpec ]; $Failed
     ]

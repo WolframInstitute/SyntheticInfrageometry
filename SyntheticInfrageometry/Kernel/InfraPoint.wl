@@ -257,7 +257,7 @@ FindInfraMidpoint[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Length[ 
   FindInfraMidpoint[ graph, InfraSegment[ { walk } ], opts ]
 
 FindInfraMidpoint[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
-  FindInfraMidpoint[ graph, FindInfraSegment[ graph, p1, p2 ], opts ]
+  FindInfraMidpoint[ graph, FindInfraSegment[ graph, p1, p2, All ], opts ]
 
 
 (* ===================== FindInfraGoldenSection ===================== *)
@@ -302,7 +302,7 @@ FindInfraGoldenSection[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Len
   FindInfraGoldenSection[ graph, InfraSegment[ { walk } ], opts ]
 
 FindInfraGoldenSection[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
-  FindInfraGoldenSection[ graph, FindInfraSegment[ graph, p1, p2 ], opts ]
+  FindInfraGoldenSection[ graph, FindInfraSegment[ graph, p1, p2, All ], opts ]
 
 
 (* ===================== FindInfraReflection ===================== *)

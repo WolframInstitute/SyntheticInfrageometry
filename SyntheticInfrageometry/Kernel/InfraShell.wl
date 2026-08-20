@@ -19,28 +19,30 @@ InfraShell[ reps_List ][ "Volume" ] := Length /@ reps
        requires ConnectedGraphQ on the induced subgraph.  Properties
        compose via AND.
      Method     -- how to enumerate inclusion-minimal subsets satisfying
-       Properties.  "Exhaustive" (default) is top-down BFS over the
-       peel-DAG, deduplicated; the nested form {"Exhaustive", "Pruning"
-       -> spec} caps per-layer branching via applyPruning.  "Greedy" is
-       top-down DFS, no backtracking, one realisation; "GreedyRandomPick"
-       is the same walk with a random admissible removal at each step
+       Properties.  Automatic (default) reads the count: All is the
+       exhaustive top-down BFS over the peel-DAG, deduplicated, and a
+       bounded count is the lazy peel.  The nested form {"Exhaustive",
+       "Pruning" -> spec} caps per-layer branching via applyPruning.
+       "Greedy" is the top-down DFS, backtracking at each leaf, first
+       `count` minimals; "RandomGreedy" draws random peels instead
        (seed via ambient SeedRandom).
    When Properties is empty, Method is ignored. *)
 
 FindInfraShell::badmethod   = "Method `1` is not supported by FindInfraShell.";
 FindInfraShell::badproperty = "Property `1` is not supported by FindInfraShell.";
+FindInfraShell::shortfall   = "\"RandomGreedy\" drew `1` distinct shells of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraShell ] = {
   Properties -> { },
-  Method     -> "Exhaustive"
+  Method     -> Automatic
 };
 
 FindInfraShell[ graph_Graph, p_, r_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
   spreadFind[ InfraShell, count,
     { p0, r0 } |-> Module[ { properties, methodSpec, methodHead, pruning, range, localG, levelSet, radius, admissible },
       properties = OptionValue[ FindInfraShell, { opts }, Properties ];
-      methodSpec = OptionValue[ FindInfraShell, { opts }, Method ];
+      methodSpec = resolveMethod[ OptionValue[ FindInfraShell, { opts }, Method ], count ];
       methodHead = methodName @ methodSpec;
       pruning    = Replace[ methodSpec,
                     { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ),
@@ -56,10 +58,12 @@ FindInfraShell[ graph_Graph, p_, r_,
         Catch[
           admissible = admissibleShell[ localG, p0, radius, properties ];
           Switch[ methodHead,
-            "Exhaustive",       findAllMinimalAdmissible[ localG, levelSet, admissible, pruning ],
-            "Greedy",           findGreedyMinimalAdmissible[ localG, levelSet, admissible, First ],
-            "GreedyRandomPick", findGreedyMinimalAdmissible[ localG, levelSet, admissible, RandomChoice ],
-            _,                  Message[ FindInfraShell::badmethod, methodSpec ]; $Failed
+            "Exhaustive",   findAllMinimalAdmissible[ localG, levelSet, admissible, pruning ],
+            "Greedy",       findGreedyMinimalAdmissible[ localG, levelSet, admissible, count ],
+            "RandomGreedy", randomDraws[
+              { } |-> findGreedyMinimalAdmissible[ localG, levelSet, admissible, 1, randomBranch ],
+              count, FindInfraShell ],
+            _,              Message[ FindInfraShell::badmethod, methodSpec ]; $Failed
           ]
         ]
       ]

@@ -30,28 +30,36 @@ InfraWalk[ reps_List ][ "End" ]   := columnInfraPoint[ reps, -1 ]
    FindInfraGeodesic.  Properties -> {} (default) is honestly walk-valued -- the
    frontier sweep, no simplicity assumed; Properties -> {"Simple"} alone takes
    the FindPath fast path, since that is exactly what FindPath already computes.
-   Method is "Exhaustive" (default, BFS) with optional Pruning, or "Greedy"
-   (DFS, one instance). *)
+   Method -> Automatic (default) reads the count: All enumerates exhaustively,
+   a bounded count descends lazily ("Greedy"); "RandomGreedy" draws instead. *)
 
 FindInfraWalk::badproperty = "Property `1` is not supported by FindInfraWalk; \"Simple\" is its only constraint and local geodesic rules moved to FindInfraGeodesic.";
 FindInfraWalk::badmethod   = "Method `1` is not supported by FindInfraWalk.";
+FindInfraWalk::shortfall   = "\"RandomGreedy\" drew `1` distinct walks of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraWalk ] = {
   Properties -> { },
-  Method     -> "Exhaustive"
+  Method     -> Automatic
 };
 
 FindInfraWalk[ graph_Graph, p1_, p2_,
     kspec : ( _Integer | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
   spreadFind[ InfraWalk, count,
     { q1, q2 } |-> If[ q1 === q2, { },
       Catch @ With[ {
           properties = OptionValue[ FindInfraWalk, { opts }, Properties ],
-          methodSpec = OptionValue[ FindInfraWalk, { opts }, Method ] /. Automatic -> "Exhaustive" },
+          methodSpec = resolveMethod[ OptionValue[ FindInfraWalk, { opts }, Method ], count ] },
         { methodHead = methodName @ methodSpec,
           pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
-          fastPathQ  = properties === { "Simple" } },
+          fastPathQ  = properties === { "Simple" },
+          kmax       = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
+          acceptQ    = walkLengthAdmissibleQ[ kspec ],
+          (* with revisits honest and no length bound the walk class is infinite; a
+             geodesic is a walk, so it is the canonical bounded witness *)
+          unboundedQ = properties === { } && kspec === Infinity },
+        { candidateFn = If[ properties === { }, allNeighboursBaseFn,
+            { g, path } |-> Select[ allNeighboursBaseFn[ g, path ], ! MemberQ[ path, # ] & ] ] },
         If[ ! AllTrue[ properties, # === "Simple" & ],
           Message[ FindInfraWalk::badproperty,
             SelectFirst[ properties, # =!= "Simple" & ] ]; Throw[ $Failed ] ];
@@ -65,46 +73,37 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
                 With[ { path = FindShortestPath[ graph, q1, q2 ] },
                   If[ path === { }, { }, { path } ] ],
                 Replace[
-                  FindPath[ graph, q1, q2, kspec, count /. UpTo[ n_ ] :> n ],
+                  FindPath[ graph, q1, q2, kspec, count /. { UpTo[ n_ ] :> n, Automatic -> 1 } ],
                   Except[ _List ] -> { } ] ],
-              If[ kspec === Infinity,
-                (* the unconstrained class (only "Simple" is a Property here, and it
-                   takes the fast path above): with revisits allowed and no length
-                   bound the walk space is infinite -- the geodesic is the canonical
-                   bounded witness, exactly as the fast path's own count-1 shortcut
-                   already treats it *)
+              If[ unboundedQ,
                 With[ { path = FindShortestPath[ graph, q1, q2 ] },
                   If[ path === { }, { }, { path } ] ],
                 (* kspec bounds the sweep depth, not just a post-filter: with revisits
                    allowed the walk space is infinite past kmax.  Early stop on count is
                    sound only when kspec has no lower bound -- the BFS completes short
                    walks first, and those would fill the quota yet fail the filter. *)
-                With[ { kmax = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ] },
-                  Select[
-                    frontierSweep[ graph, q1, q2,
-                      { g, path } |-> If[ Length[ path ] - 1 >= kmax, { },
-                        allNeighboursBaseFn[ g, path ] ],
-                      pruning,
-                      If[ MatchQ[ kspec, { _Integer } | { _Integer, _Integer } ],
-                        Infinity, countLimit @ count ] ],
-                    walkLengthAdmissibleQ[ kspec ] ] ]
+                Select[
+                  frontierSweep[ graph, q1, q2,
+                    { g, path } |-> If[ Length[ path ] - 1 >= kmax, { },
+                      allNeighboursBaseFn[ g, path ] ],
+                    pruning,
+                    If[ MatchQ[ kspec, { _Integer } | { _Integer, _Integer } ],
+                      Infinity, countLimit @ count ] ],
+                  acceptQ ]
               ]
             ],
           "Greedy",
-            If[ properties === { } && kspec === Infinity,
-              (* unbounded greedy descent can cycle forever once revisits are honest
-                 and nothing bounds the class; a geodesic is a walk, so it is the
-                 canonical bounded witness (mirrors the "Exhaustive" honest branch) *)
+            If[ unboundedQ,
               With[ { path = FindShortestPath[ graph, q1, q2 ] },
                 If[ path === { }, { }, { path } ] ],
-              With[ { kmax = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
-                      candidateFn = If[ properties === { }, allNeighboursBaseFn,
-                        { g, path } |-> Select[ allNeighboursBaseFn[ g, path ],
-                          ! MemberQ[ path, # ] & ] ] },
-                Select[
-                  greedyFrontierSweep[ graph, q1, q2, candidateFn, First, kmax ],
-                  walkLengthAdmissibleQ[ kspec ] ] ]
-            ],
+              greedyFrontierSweep[ graph, q1, q2, candidateFn, acceptQ, kmax, count ] ],
+          "RandomGreedy",
+            If[ unboundedQ,
+              With[ { path = FindShortestPath[ graph, q1, q2 ] },
+                If[ path === { }, { }, { path } ] ],
+              randomDraws[
+                { } |-> greedyFrontierSweep[ graph, q1, q2, candidateFn, acceptQ, kmax, 1, randomBranch ],
+                count, FindInfraWalk ] ],
           _,
             Message[ FindInfraWalk::badmethod, methodSpec ]; $Failed
         ]
@@ -151,24 +150,26 @@ walkLengthAdmissibleQ[ { kmin_Integer, kmax_Integer } ] :=
 FindInfraGeodesic::badproperty = "Property `1` is not supported by FindInfraGeodesic; the rules are \"Minimizing\", \"Straightest\", \"Simple\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window.";
 FindInfraGeodesic::badmethod   = "Method `1` is not supported by FindInfraGeodesic.";
 FindInfraGeodesic::unbounded   = "The geodesic class at scale `1` is infinite without a length bound: give a finite kspec, add the \"Simple\" rule, or ask at scale Infinity.";
+FindInfraGeodesic::shortfall   = "\"RandomGreedy\" drew `1` distinct geodesics of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraGeodesic ] = {
   Properties -> { "Minimizing" },
-  Method     -> "Exhaustive"
+  Method     -> Automatic
 };
 
 FindInfraGeodesic[ graph_Graph, p1_, p2_,
     scale : ( _Integer | Infinity ),
     kspec : ( _Integer | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
   spreadFind[ InfraWalk, count,
     { q1, q2 } |-> If[ q1 === q2, { },
       Catch @ With[ {
           rules      = OptionValue[ FindInfraGeodesic, { opts }, Properties ],
-          methodSpec = OptionValue[ FindInfraGeodesic, { opts }, Method ] /. Automatic -> "Exhaustive" },
+          methodSpec = resolveMethod[ OptionValue[ FindInfraGeodesic, { opts }, Method ], count ] },
         { methodHead = methodName @ methodSpec,
           pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
           kmax       = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
+          acceptQ    = walkLengthAdmissibleQ[ kspec ],
           candidateFn = windowCandidateFn[ graph, scale, rules, FindInfraGeodesic ] },
         (* with revisits allowed a local rule alone leaves an infinite class
            (a walk can wind around a long cycle forever and stay minimizing at
@@ -186,15 +187,13 @@ FindInfraGeodesic[ graph_Graph, p1_, p2_,
                 pruning,
                 If[ MatchQ[ kspec, { _Integer } | { _Integer, _Integer } ],
                   Infinity, countLimit @ count ] ],
-              walkLengthAdmissibleQ[ kspec ] ],
+              acceptQ ],
           "Greedy",
-            Select[
-              greedyFrontierSweep[ graph, q1, q2, candidateFn, First, kmax ],
-              walkLengthAdmissibleQ[ kspec ] ],
-          "GreedyRandomPick",
-            Select[
-              greedyFrontierSweep[ graph, q1, q2, candidateFn, RandomChoice, kmax ],
-              walkLengthAdmissibleQ[ kspec ] ],
+            greedyFrontierSweep[ graph, q1, q2, candidateFn, acceptQ, kmax, count ],
+          "RandomGreedy",
+            randomDraws[
+              { } |-> greedyFrontierSweep[ graph, q1, q2, candidateFn, acceptQ, kmax, 1, randomBranch ],
+              count, FindInfraGeodesic ],
           _,
             Message[ FindInfraGeodesic::badmethod, methodSpec ]; $Failed
         ]

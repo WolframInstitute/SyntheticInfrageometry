@@ -244,7 +244,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    FindInfraSegment[g, 1, 5]["Realizations"]
+    FindInfraSegment[g, 1, 5, All]["Realizations"]
   ],
   {{1, 2, 3, 4, 5}},
   TestID -> "FindInfraSegment-unique-path"
@@ -252,7 +252,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{segs = FindInfraSegment[g, 1, 3]["Paths"]},
+    With[{segs = FindInfraSegment[g, 1, 3, All]["Paths"]},
       Length[segs] == 1 && Length[First[segs]] == 3
     ]
   ],
@@ -344,7 +344,7 @@ VerificationTest[
    DAG -- multiplicity (family size), the common geodesic length, and the interval
    vertex set. *)
 VerificationTest[
-  With[{s = FindInfraSegment[GridGraph[{3, 3}], 1, 9]},
+  With[{s = FindInfraSegment[GridGraph[{3, 3}], 1, 9, All]},
     {Head[s], Head[First[s]], s["Multiplicity"], s["Length"], Sort[s["Vertices"]]}
   ],
   {InfraSegment, Graph, 6, 4, Range[9]},
@@ -353,7 +353,7 @@ VerificationTest[
 
 (* the DAG-form occupation measure equals the measure of the enumerated family *)
 VerificationTest[
-  With[{s = FindInfraSegment[GridGraph[{3, 3}], 1, 9]},
+  With[{s = FindInfraSegment[GridGraph[{3, 3}], 1, 9, All]},
     KeySort[s["Measure"]] === KeySort[InfraMeasure[InfraSegment[s["Paths"]]]]
   ],
   True,
@@ -362,7 +362,7 @@ VerificationTest[
 
 (* Realizations bridges back to the explicit bare path list, capped by the calling triple *)
 VerificationTest[
-  With[{s = FindInfraSegment[GridGraph[{3, 3}], 1, 9]},
+  With[{s = FindInfraSegment[GridGraph[{3, 3}], 1, 9, All]},
     {Length[s["Realizations"]], Length[s["Realizations", UpTo[3]]]}
   ],
   {6, 3},
@@ -687,25 +687,30 @@ VerificationTest[
   TestID -> "FindInfraShell-Separating-only-no-connected-requirement"
 ]
 
-(* Method -> "Greedy" returns a single realisation. *)
+(* The count-less call is one certified minimal shell -- the peel run to a leaf. *)
 
 VerificationTest[
-  Length @ FindInfraShell[GridGraph[{4, 4}], 6, {1, 2}, All,
+  Length @ FindInfraShell[GridGraph[{4, 4}], 6, {1, 2},
     Properties -> {"Separating", "Connected"}, Method -> "Greedy"]["Realizations"],
   1,
   TestID -> "FindInfraShell-Greedy-single-realisation"
 ]
 
+(* "Greedy" is the LAZY peel, not a lossy one: it backtracks at each leaf, so a
+   finite count is exact and All recovers the whole minimal class that
+   "Exhaustive" enumerates. *)
+
 VerificationTest[
-  FindInfraShell[GridGraph[{4, 4}], 6, {1, 2}, 2,
-    Properties -> {"Separating", "Connected"}, Method -> "Greedy"],
-  $Failed,
-  TestID -> "FindInfraShell-Greedy-count-gt-1-fails"
+  With[ { g = GridGraph[ { 4, 4 } ], props = Properties -> { "Separating", "Connected" } },
+    Sort[ Sort /@ FindInfraShell[ g, 6, { 1, 2 }, All, props, Method -> "Greedy" ][ "Realizations" ] ] ===
+      Sort[ Sort /@ FindInfraShell[ g, 6, { 1, 2 }, All, props, Method -> "Exhaustive" ][ "Realizations" ] ] ],
+  True,
+  TestID -> "FindInfraShell-Greedy-All-agrees-with-Exhaustive"
 ]
 
-(* GreedyRandomPick: same walk as Greedy (findGreedyMinimalAdmissible), pick =
-   RandomChoice instead of First -- deterministic Greedy unchanged, seeded
-   reproducible, varies across seeds where the peel actually branches. *)
+(* RandomGreedy: the same peel drawn at random instead of in candidate order --
+   deterministic Greedy unchanged, seeded reproducible, varies across seeds where
+   the peel actually branches. *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
@@ -718,22 +723,22 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    BlockRandom[ FindInfraShell[ g, 6, { 1, 2 }, 1, Properties -> { "Separating", "Connected" }, Method -> "GreedyRandomPick" ], RandomSeeding -> 4 ] ===
-      BlockRandom[ FindInfraShell[ g, 6, { 1, 2 }, 1, Properties -> { "Separating", "Connected" }, Method -> "GreedyRandomPick" ], RandomSeeding -> 4 ]
+    BlockRandom[ FindInfraShell[ g, 6, { 1, 2 }, 1, Properties -> { "Separating", "Connected" }, Method -> "RandomGreedy" ], RandomSeeding -> 4 ] ===
+      BlockRandom[ FindInfraShell[ g, 6, { 1, 2 }, 1, Properties -> { "Separating", "Connected" }, Method -> "RandomGreedy" ], RandomSeeding -> 4 ]
   ],
   True,
-  TestID -> "FindInfraShell-GreedyRandomPick-seeded-reproducible"
+  TestID -> "FindInfraShell-RandomGreedy-seeded-reproducible"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Length @ DeleteDuplicates @ Table[
-      BlockRandom[ FindInfraShell[ g, 6, { 1, 2 }, 1, Properties -> { "Separating", "Connected" }, Method -> "GreedyRandomPick" ][ "First" ], RandomSeeding -> s ],
+      BlockRandom[ FindInfraShell[ g, 6, { 1, 2 }, 1, Properties -> { "Separating", "Connected" }, Method -> "RandomGreedy" ][ "First" ], RandomSeeding -> s ],
       { s, 1, 10 } ]
   ],
   _Integer?( # > 1 & ),
   SameTest -> MatchQ,
-  TestID -> "FindInfraShell-GreedyRandomPick-varies-across-seeds"
+  TestID -> "FindInfraShell-RandomGreedy-varies-across-seeds"
 ]
 
 VerificationTest[
@@ -747,25 +752,32 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 6, 6 } ] },
-    BlockRandom[ FindInfraBisectingHyperplane[ g, 1, 36, 1, Properties -> { "Separating" }, Method -> "GreedyRandomPick" ], RandomSeeding -> 4 ] ===
-      BlockRandom[ FindInfraBisectingHyperplane[ g, 1, 36, 1, Properties -> { "Separating" }, Method -> "GreedyRandomPick" ], RandomSeeding -> 4 ]
+    BlockRandom[ FindInfraBisectingHyperplane[ g, 1, 36, 1, Properties -> { "Separating" }, Method -> "RandomGreedy" ], RandomSeeding -> 4 ] ===
+      BlockRandom[ FindInfraBisectingHyperplane[ g, 1, 36, 1, Properties -> { "Separating" }, Method -> "RandomGreedy" ], RandomSeeding -> 4 ]
   ],
   True,
-  TestID -> "FindInfraBisectingHyperplane-GreedyRandomPick-seeded-reproducible"
+  TestID -> "FindInfraBisectingHyperplane-RandomGreedy-seeded-reproducible"
 ]
 
-(* The segment class carries no per-step choice, so both greedy methods take the
-   same deterministic FindShortestPath witness; the randomised descent lives on
-   FindInfraGeodesic, where a selector creates the ties to draw from (its
-   seed-variation test is in InfraWalkTests). *)
+(* Both greedy methods descend the geodesic interval, so every witness either
+   produces is a genuine geodesic; the random one draws a different descent per
+   seed while "Greedy" is reproducible without one. *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 6, 6 } ] },
-    FindInfraSegment[ g, 1, 36, 1, Method -> "Greedy" ] ===
-      FindInfraSegment[ g, 1, 36, 1, Method -> "GreedyRandomPick" ]
+    { AllTrue[ FindInfraSegment[ g, 1, 36, 4, Method -> "Greedy" ][ "Realizations" ],
+        InfraSegmentQ[ g, # ] & ],
+      AllTrue[ Range[ 1, 6 ],
+        s |-> InfraSegmentQ[ g,
+          BlockRandom[ FindInfraSegment[ g, 1, 36, 1, Method -> "RandomGreedy" ][ "First" ],
+            RandomSeeding -> s ] ] ],
+      Length @ DeleteDuplicates @ Table[
+        BlockRandom[ FindInfraSegment[ g, 1, 36, 1, Method -> "RandomGreedy" ][ "First" ],
+          RandomSeeding -> s ],
+        { s, 1, 10 } ] > 1 }
   ],
-  True,
-  TestID -> "FindInfraSegment-both-greedy-methods-agree"
+  { True, True, True },
+  TestID -> "FindInfraSegment-greedy-methods-give-geodesics"
 ]
 
 (* Method -> {"Exhaustive", "Pruning" -> n} respects branching cap. *)
@@ -1134,7 +1146,7 @@ VerificationTest[
   TestID -> "FindInfraLine-Exhaustive-equals-Automatic"
 ]
 
-(* ===== FindInfraLine / FindInfraParallel: "Greedy" vs "GreedyRandomPick" ===== *)
+(* ===== FindInfraLine / FindInfraParallel: "Greedy" vs "RandomGreedy" ===== *)
 
 (* "Greedy" (pick = First) is fully deterministic -- no randomness is consumed. *)
 VerificationTest[
@@ -1157,38 +1169,38 @@ VerificationTest[
   TestID -> "FindInfraLine-Greedy-BothSides-is-geodesic"
 ]
 
-(* "GreedyRandomPick" (pick = RandomChoice) is reproducible given an ambient
+(* "RandomGreedy" (pick = RandomChoice) is reproducible given an ambient
    SeedRandom -- no seed is threaded as a parameter. *)
 VerificationTest[
   With[ { g = GridGraph[ { 6, 6 } ] },
-    BlockRandom[ FindInfraLine[ g, 1, 2, 1, Method -> "GreedyRandomPick" ], RandomSeeding -> 11 ] ===
-      BlockRandom[ FindInfraLine[ g, 1, 2, 1, Method -> "GreedyRandomPick" ], RandomSeeding -> 11 ]
+    BlockRandom[ FindInfraLine[ g, 1, 2, 1, Method -> "RandomGreedy" ], RandomSeeding -> 11 ] ===
+      BlockRandom[ FindInfraLine[ g, 1, 2, 1, Method -> "RandomGreedy" ], RandomSeeding -> 11 ]
   ],
   True,
-  TestID -> "FindInfraLine-GreedyRandomPick-seeded-reproducible"
+  TestID -> "FindInfraLine-RandomGreedy-seeded-reproducible"
 ]
 
 (* Different seeds explore different admissible chains where the graph branches. *)
 VerificationTest[
   With[ { g = GridGraph[ { 8, 8 } ] },
     Length @ DeleteDuplicates @ Table[
-      BlockRandom[ FindInfraLine[ g, 20, 21, 1, Method -> "GreedyRandomPick" ][ "First" ], RandomSeeding -> s ],
+      BlockRandom[ FindInfraLine[ g, 20, 21, 1, Method -> "RandomGreedy" ][ "First" ], RandomSeeding -> s ],
       { s, 1, 10 } ]
   ],
   _Integer?( # > 1 & ),
   SameTest -> MatchQ,
-  TestID -> "FindInfraLine-GreedyRandomPick-varies-across-seeds"
+  TestID -> "FindInfraLine-RandomGreedy-varies-across-seeds"
 ]
 
-(* Every GreedyRandomPick realisation is still a genuine geodesic (BothSides fix applies here too). *)
+(* Every RandomGreedy realisation is still a genuine geodesic (BothSides fix applies here too). *)
 VerificationTest[
   With[ { g = GridGraph[ { 7, 7 } ] },
     AllTrue[ Range[ 1, 5 ],
       s |-> InfraSegmentQ[ g,
-        BlockRandom[ FindInfraLine[ g, 25, 26, 1, Method -> "GreedyRandomPick" ][ "First" ], RandomSeeding -> s ] ] ]
+        BlockRandom[ FindInfraLine[ g, 25, 26, 1, Method -> "RandomGreedy" ][ "First" ], RandomSeeding -> s ] ] ]
   ],
   True,
-  TestID -> "FindInfraLine-GreedyRandomPick-BothSides-is-geodesic"
+  TestID -> "FindInfraLine-RandomGreedy-BothSides-is-geodesic"
 ]
 
 VerificationTest[
@@ -1201,11 +1213,11 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 6, 6 } ], line = FindInfraLine[ GridGraph[ { 6, 6 } ], 1, 2, 1 ][ "First" ] },
-    BlockRandom[ FindInfraParallel[ g, line, 20, 1, Method -> "GreedyRandomPick" ], RandomSeeding -> 3 ] ===
-      BlockRandom[ FindInfraParallel[ g, line, 20, 1, Method -> "GreedyRandomPick" ], RandomSeeding -> 3 ]
+    BlockRandom[ FindInfraParallel[ g, line, 20, 1, Method -> "RandomGreedy" ], RandomSeeding -> 3 ] ===
+      BlockRandom[ FindInfraParallel[ g, line, 20, 1, Method -> "RandomGreedy" ], RandomSeeding -> 3 ]
   ],
   True,
-  TestID -> "FindInfraParallel-GreedyRandomPick-seeded-reproducible"
+  TestID -> "FindInfraParallel-RandomGreedy-seeded-reproducible"
 ]
 
 (* ===== FindInfraLine[g, segment] overload (replaces 2-arg ExtendInfraSegment) ===== *)

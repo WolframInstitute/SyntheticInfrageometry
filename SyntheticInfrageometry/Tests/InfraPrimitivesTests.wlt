@@ -182,14 +182,14 @@ VerificationTest[
    bare vertices -- FindInfraPoint output composes into FindInfraSegment directly *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
-    FindInfraSegment[ g, InfraPoint[1], InfraPoint[25] ] === FindInfraSegment[ g, 1, 25 ] ],
+    FindInfraSegment[ g, InfraPoint[1], InfraPoint[25] , All] === FindInfraSegment[ g, 1, 25 , All] ],
   True,
   TestID -> "FindInfraSegment-InfraPoint-endpoints-give-DAG"
 ]
 
 (* the DAG "Start" / "End" are the source / sink InfraSets (in/out-degree-0) *)
 VerificationTest[
-  With[ { seg = FindInfraSegment[ GridGraph[ { 5, 5 } ], 1, 25 ] },
+  With[ { seg = FindInfraSegment[ GridGraph[ { 5, 5 } ], 1, 25 , All] },
     { seg[ "Start" ], seg[ "End" ] } ],
   { InfraSet[ { 1 } ], InfraSet[ { 25 } ] },
   TestID -> "InfraSegment-DAG-Start-End-source-sink"

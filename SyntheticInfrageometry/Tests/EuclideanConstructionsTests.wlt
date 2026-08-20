@@ -297,7 +297,7 @@ VerificationTest[
   TestID -> "FindInfraBisectingHyperplane-wraps-as-InfraPlane"
 ]
 
-(* Method -> "Greedy": DFS peel returns one realisation. *)
+(* Method -> "Greedy", no count: the DFS peel returns one certified minimal. *)
 VerificationTest[
   With[{realizations = FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, Properties -> {"Separating"}, Method -> "Greedy"][ "Realizations" ]},
     Length[realizations] == 1 && MemberQ[{{3}, {4}}, First @ realizations]],
@@ -305,10 +305,12 @@ VerificationTest[
   TestID -> "FindInfraBisectingHyperplane-Greedy-returns-one-minimal"
 ]
 
+(* The peel backtracks, so a finite count is exact: both minimals of the
+   {3} / {4} bisector come back under count 2. *)
 VerificationTest[
-  FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, 2, Properties -> {"Separating"}, Method -> "Greedy"],
-  $Failed,
-  TestID -> "FindInfraBisectingHyperplane-Greedy-count-gt-1-fails"
+  Sort @ FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, 2, Properties -> {"Separating"}, Method -> "Greedy"]["Realizations"],
+  {{3}, {4}},
+  TestID -> "FindInfraBisectingHyperplane-Greedy-count-is-exact"
 ]
 
 (* Greedy on a slab that itself does not separate: empty wrapper. *)

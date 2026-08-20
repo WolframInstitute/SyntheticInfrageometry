@@ -15,6 +15,10 @@ PackageScope[frontierSweep]
 PackageScope[greedyFrontierSweep]
 PackageScope[windowCandidateFn]
 PackageScope[applyPruning]
+PackageScope[resolveMethod]
+PackageScope[retryBudget]
+PackageScope[randomDraws]
+PackageScope[randomBranch]
 PackageScope[infraSpread]
 PackageScope[infraCap]
 PackageScope[spreadFind]
@@ -61,6 +65,53 @@ methodOptions[ _String ]                := { }
 methodOptions[ { _String, opts___ } ]   := { opts }
 
 
+(* ===================== The method ladder ===================== *)
+
+(* Method -> Automatic resolves by the count: All asks for the whole class, so
+   the exhaustive pool; any bounded count asks for that many certified instances,
+   which the lazy greedy descent supplies exactly.  Exponential enumeration is
+   thereby opt-in -- see Wiki/Concepts/ObserverComplexity.md. *)
+
+resolveMethod[ Automatic, All ]  = "Exhaustive";
+resolveMethod[ Automatic, _ ]    = "Greedy";
+resolveMethod[ spec_, _ ]        := spec
+
+
+(* The branch function a lazy engine applies to its candidate set: Identity
+   explores every candidate and backtracks ("Greedy"), randomBranch explores one
+   and cannot ("RandomGreedy"), so a randomBranch descent is a single draw. *)
+
+randomBranch = RandomChoice[ #, 1 ] &;
+
+
+(* How many failed draws a randomized descent is allowed before it gives up. *)
+
+retryBudget[ Infinity ]   = 20;
+retryBudget[ n_Integer ]  := Max[ 20, 5 n ]
+
+
+(* Randomized sibling of a lazy-greedy engine: repeat single-choice descents,
+   deduplicate, and stop once `count` distinct realisations are in hand or the
+   retry budget of failed draws is spent.  descend[] is one draw (a 0- or
+   1-element list).  A strict-count shortfall is announced on the calling symbol
+   -- fnSym is that head, not fnSym::shortfall, since a MessageName passed as a
+   bare argument evaluates to its template string -- and bundleTake turns the
+   short list into $Failed. *)
+
+randomDraws[ descend_, count_, fnSym_ ] :=
+  Module[ { cap = countLimit @ count, out = { }, misses = 0, draw },
+    While[ Length[ out ] < cap && misses < retryBudget[ cap ],
+      draw = descend[ ];
+      If[ draw === { } || MemberQ[ out, First @ draw ],
+        misses++,
+        AppendTo[ out, First @ draw ] ]
+    ];
+    If[ IntegerQ[ count ] && Length[ out ] < count,
+      Message[ MessageName[ fnSym, "shortfall" ], Length @ out, count ] ];
+    out
+  ]
+
+
 (* ===================== Cycle helper ===================== *)
 
 (* FindCycle edge cycle -> open vertex sequence (wrap-around implicit). *)
@@ -70,11 +121,13 @@ cycleToVertexSequence[ cyc_List ] := First /@ cyc
 
 (* ===================== Count semantics ===================== *)
 
-(* Translate a count argument (Integer | UpTo[Integer] | All | Infinity)
-   into a numeric upper bound. *)
+(* Translate a count argument (Integer | UpTo[Integer] | All | Infinity | the
+   count-less Automatic) into a numeric upper bound.  Automatic is one instance:
+   asking without a count asks for a witness, not for the class. *)
 
 countLimit[ All ]               = Infinity
 countLimit[ Infinity ]          = Infinity
+countLimit[ Automatic ]         = 1
 countLimit[ UpTo[ n_Integer ] ] := n
 countLimit[ n_Integer ]         := n
 
@@ -126,24 +179,37 @@ frontierSweep[ graph_Graph, p1_, p2_, candidateFn_, prune_, count_ ] :=
   ]
 
 
-(* DFS one realisation: pick an admissible candidate at each step -- pick =
-   First (default, "Greedy") or pick = RandomChoice ("GreedyRandomPick",
-   seed via ambient SeedRandom).  maxSteps caps the descent (Infinity default,
-   the geodesic-DAG callers' natural termination); a walk-family caller with
-   revisits allowed needs this to guarantee termination. *)
+(* Lazy depth-first descent from p1 to p2: take the admissible candidates in
+   candidateFn order, backtrack when a branch dead-ends, and stop after `count`
+   completions accepted by acceptQ.  The descent is complete, so a finite count
+   is exact -- this is the certified-instance engine Method -> Automatic resolves
+   to for a bounded count.  branch = Identity is "Greedy"; branch = randomBranch
+   explores a single choice per step and so performs one un-backtracked random
+   draw ("RandomGreedy", via randomDraws).  maxSteps caps the depth; a walk-family
+   caller with revisits allowed needs it to guarantee termination. *)
 
-greedyFrontierSweep[ graph_Graph, p1_, p2_, candidateFn_, pick_ : First, maxSteps_ : Infinity ] :=
+(* the closures are held in Module locals, never inlined into descend's RHS: a
+   candidateFn built by windowCandidateFn is a Function[{g, walk}, ...], and
+   substituting a pattern variable of the same name into that RHS would rewrite
+   the closure's own parameter list. *)
+
+greedyFrontierSweep[ graph_Graph, p1_, p2_, candidateFn_, acceptQ_, maxSteps_, count_,
+    branch_ : Identity ] :=
   If[ p1 === p2 || ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ] ||
       GraphDistance[ graph, p1, p2 ] === Infinity, { },
-    Module[ { path = { p1 }, cands, steps = 0 },
-      While[ Last[ path ] =!= p2,
-        If[ steps >= maxSteps, Return[ { } ] ];
-        cands = candidateFn[ graph, path ];
-        If[ cands === { }, Return[ { } ] ];
-        AppendTo[ path, pick @ cands ];
-        steps++
+    Module[ { cap = countLimit @ count, acc = { }, descend,
+              cands = candidateFn, keepQ = acceptQ, pick = branch },
+      descend[ walk_ ] := Which[
+        Last @ walk === p2,
+          If[ keepQ @ walk,
+            AppendTo[ acc, walk ];
+            If[ Length @ acc >= cap, Throw[ acc, greedyFrontierSweep ] ] ],
+        Length[ walk ] - 1 >= maxSteps,
+          Null,
+        True,
+          Scan[ descend[ Append[ walk, # ] ] &, pick @ cands[ graph, walk ] ]
       ];
-      { path }
+      Catch[ descend[ { p1 } ]; acc, greedyFrontierSweep ]
     ]
   ]
 
@@ -261,20 +327,29 @@ SeparatingSetQ[ graph_Graph, vs_List, center_, radius_ ] :=
    helpers terminate when no further admissible single-removal exists --
    inclusion-minimality is automatic at the peel leaves. *)
 
-(* DFS, no backtracking: one realisation.  pick = First is deterministic
-   ("Greedy"); pick = RandomChoice is "GreedyRandomPick" (uniform over
-   admissible single removals at each step, seed via ambient SeedRandom --
-   see Wiki/Concepts/RandomnessConventions.md). *)
+(* Lazy depth-first peel: remove one admissible vertex at a time, backtracking
+   at each leaf, and stop after `count` distinct inclusion-minimal admissible
+   subsets.  Complete, so a finite count is exact; the first leaf costs one
+   straight descent, exactly what the old no-backtracking walk cost.  branch =
+   Identity is "Greedy"; branch = randomBranch is one random peel ("RandomGreedy",
+   via randomDraws -- see Wiki/Concepts/RandomnessConventions.md).  DeleteCases
+   preserves the order of `set`, so every leaf is already in canonical form. *)
 
-findGreedyMinimalAdmissible[ graph_Graph, set_List, admissible_, pick_ : First ] :=
+findGreedyMinimalAdmissible[ graph_Graph, set_List, admissible_, count_,
+    branch_ : Identity ] :=
   If[ ! admissible[ set ], { },
-    Module[ { T = set, candidates },
-      While[ True,
-        candidates = Select[ T, w |-> admissible[ DeleteCases[ T, w ] ] ];
-        If[ candidates === { }, Break[ ] ];
-        T = DeleteCases[ T, pick @ candidates ];
-      ];
-      { T }
+    (* admissible and branch are held in Module locals rather than inlined into
+       descend's RHS -- see the note on greedyFrontierSweep above *)
+    Module[ { cap = countLimit @ count, acc = { }, descend,
+              admitQ = admissible, pick = branch },
+      descend[ T_ ] :=
+        With[ { removable = Select[ T, w |-> admitQ[ DeleteCases[ T, w ] ] ] },
+          If[ removable === { },
+            If[ ! MemberQ[ acc, T ],
+              AppendTo[ acc, T ];
+              If[ Length @ acc >= cap, Throw[ acc, findGreedyMinimalAdmissible ] ] ],
+            Scan[ descend[ DeleteCases[ T, # ] ] &, pick @ removable ] ] ];
+      Catch[ descend[ set ]; acc, findGreedyMinimalAdmissible ]
     ]
   ]
 
@@ -455,9 +530,11 @@ hullVertices[ s_ ] := infraVertexSet[ s ]
 
 
 (* Apply n / UpTo[n] / All count semantics to a bare list of realisations.
-   $Failed return is the mathematical "fewer than n exist" case. *)
+   $Failed return is the mathematical "fewer than n exist" case; the count-less
+   Automatic is soft, one witness if there is one. *)
 
 infraCap[ list_List, All ]                              := list
+infraCap[ list_List, Automatic ]                        := Take[ list, UpTo[ 1 ] ]
 infraCap[ list_List, UpTo[ n_Integer ] ]                := Take[ list, UpTo[ n ] ]
 infraCap[ list_List, n_Integer ] /; n <= Length[ list ] := Take[ list, n ]
 infraCap[ _List, _Integer ]                             := $Failed
@@ -480,11 +557,13 @@ spreadFind[ wrapHead_, count_, core_, anchors__ ] :=
    FindClique / FindInstance shape.  Regions are InfraSet, measures are
    InfraMesoPoint -- see the point ontology in InfraPoint.wl. *)
 bundleTake[ InfraPoint, reps_, All ]               := InfraPoint /@ reps
+bundleTake[ InfraPoint, reps_, Automatic ]         := InfraPoint /@ Take[ reps, UpTo @ 1 ]
 bundleTake[ InfraPoint, reps_, UpTo[ n_Integer ] ] := InfraPoint /@ Take[ reps, UpTo @ n ]
 bundleTake[ InfraPoint, reps_, n_Integer ]         :=
   If[ Length @ reps < n, $Failed, InfraPoint /@ Take[ reps, n ] ]
 
 bundleTake[ head_, reps_, All ]               := head[ reps ]
+bundleTake[ head_, reps_, Automatic ]         := head[ Take[ reps, UpTo @ 1 ] ]
 bundleTake[ head_, reps_, UpTo[ n_Integer ] ] := head[ Take[ reps, UpTo @ n ] ]
 bundleTake[ head_, reps_, n_Integer ]         :=
   If[ Length @ reps < n, $Failed, head[ Take[ reps, n ] ] ]

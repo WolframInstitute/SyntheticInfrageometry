@@ -257,7 +257,7 @@ VerificationTest[
   TestID -> "FindInfraGeodesic-badmethod-message"
 ]
 
-(* Greedy is deterministic; GreedyRandomPick varies with the ambient seed. *)
+(* Greedy is deterministic; RandomGreedy varies with the ambient seed. *)
 VerificationTest[
   With[ { g = GridGraph[ { 6, 6 } ],
           f = w |-> VertexDegree[ GridGraph[ { 6, 6 } ], w[[ -2 ]] ] +
@@ -278,13 +278,13 @@ VerificationTest[
     Length @ DeleteDuplicates @ Table[
       BlockRandom[
         FindInfraGeodesic[ g, 1, 36, Infinity, Infinity, 1,
-          Properties -> { "Minimizing", { "Minimal", f } }, Method -> "GreedyRandomPick" ][ "First" ],
+          Properties -> { "Minimizing", { "Minimal", f } }, Method -> "RandomGreedy" ][ "First" ],
         RandomSeeding -> s ],
       { s, 1, 8 } ]
   ],
   _Integer?( # > 1 & ),
   SameTest -> MatchQ,
-  TestID -> "FindInfraGeodesic-GreedyRandomPick-varies-across-seeds"
+  TestID -> "FindInfraGeodesic-RandomGreedy-varies-across-seeds"
 ]
 
 VerificationTest[
@@ -326,7 +326,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Sort @ ExtendInfraWalk[ CycleGraph[ 6 ], FindInfraSegment[ CycleGraph[ 6 ], 1, 4 ], All,
+  Sort @ ExtendInfraWalk[ CycleGraph[ 6 ], FindInfraSegment[ CycleGraph[ 6 ], 1, 4 , All], All,
       "Length" -> 0, Properties -> {"Simple", "Minimizing"} ][ "Realizations" ],
   Sort[ { { 1, 2, 3, 4 }, { 1, 6, 5, 4 } } ],
   TestID -> "ExtendInfraWalk-DAG-segment-spread"
@@ -538,6 +538,56 @@ VerificationTest[
   FindInfraWalk[ PathGraph[ Range[ 5 ] ], 5, 1, 4, 1, Method -> "Greedy" ],
   InfraWalk[ { { 5, 4, 3, 2, 1 } } ],
   TestID -> "FindInfraWalk-Greedy-bounded-succeeds"
+]
+
+
+(* ===================== The method ladder ===================== *)
+
+(* The lazy descent is COMPLETE, so every finite count is exact: on CycleGraph[4]
+   there are exactly 8 walks 1 -> 3 of length 6, and asking for k of them returns
+   k distinct genuine ones for every k <= 8, each a prefix-closed subset of the
+   class.  Asking for 9 is the honest $Failed. *)
+VerificationTest[
+  With[ { g = CycleGraph[ 4 ] },
+    { whole = FindInfraWalk[ g, 1, 3, { 6 }, All ][ "Realizations" ] },
+    { AllTrue[ Range[ 1, Length @ whole ],
+        k |-> With[ { got = FindInfraWalk[ g, 1, 3, { 6 }, k ][ "Realizations" ] },
+          Length[ got ] === k && DuplicateFreeQ[ got ] && SubsetQ[ whole, got ] &&
+          AllTrue[ got, w |-> InfraWalkQ[ g, w ] && Length[ w ] - 1 === 6 ] ] ],
+      FindInfraWalk[ g, 1, 3, { 6 }, Length[ whole ] + 1 ] } ],
+  { True, $Failed },
+  TestID -> "FindInfraWalk-Greedy-finite-count-is-exact"
+]
+
+(* Count-coupling: the count-less call is one instance -- a genuine member of the
+   class, and the class itself is bigger.  This is what makes exponential
+   enumeration opt-in. *)
+VerificationTest[
+  With[ { g = CycleGraph[ 4 ] },
+    { one = FindInfraWalk[ g, 1, 3, { 6 } ][ "Realizations" ] },
+    { Length @ one === 1,
+      InfraWalkQ[ g, First @ one ],
+      Length @ FindInfraWalk[ g, 1, 3, { 6 }, All ][ "Realizations" ] > 1 } ],
+  { True, True, True },
+  TestID -> "FindInfraWalk-countless-is-one-instance"
+]
+
+(* A randomized descent cannot backtrack, so it can fall short of a strict count;
+   the shortfall is loud ($Failed plus a message) rather than a silent under-supply. *)
+VerificationTest[
+  FindInfraWalk[ CycleGraph[ 4 ], 1, 3, { 6 }, 99, Method -> "RandomGreedy" ],
+  $Failed,
+  { FindInfraWalk::shortfall },
+  TestID -> "FindInfraWalk-RandomGreedy-strict-shortfall-fails-loudly"
+]
+
+(* All the same walks, whichever engine enumerates them. *)
+VerificationTest[
+  With[ { g = CycleGraph[ 6 ] },
+    Sort @ FindInfraWalk[ g, 1, 4, { 5 }, All, Method -> "Greedy" ][ "Realizations" ] ===
+      Sort @ FindInfraWalk[ g, 1, 4, { 5 }, All, Method -> "Exhaustive" ][ "Realizations" ] ],
+  True,
+  TestID -> "FindInfraWalk-Greedy-All-agrees-with-Exhaustive"
 ]
 
 EndTestSection[]

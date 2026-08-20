@@ -23,10 +23,10 @@ VerificationTest[
    geodesics as scoring the fully enumerated bundle *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
-    ( SelectInfraWalk[ g, FindInfraSegment[ g, 1, 25 ], All, "From" -> "MostVisited" ]
+    ( SelectInfraWalk[ g, FindInfraSegment[ g, 1, 25 , All], All, "From" -> "MostVisited" ]
         /. InfraSegment[ r_List ] :> Sort[ Sort /@ r ] )
     ===
-    ( SelectInfraWalk[ g, InfraSegment[ FindInfraSegment[ g, 1, 25 ][ "Realizations" ] ], All, "From" -> "MostVisited" ]
+    ( SelectInfraWalk[ g, InfraSegment[ FindInfraSegment[ g, 1, 25 , All][ "Realizations" ] ], All, "From" -> "MostVisited" ]
         /. InfraSegment[ r_List ] :> Sort[ Sort /@ r ] )
   ],
   True,
@@ -682,7 +682,7 @@ VerificationTest[
 (* FindInfraCommonPoint accepts the compact geodesic-DAG segment form *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    With[ { s1 = FindInfraSegment[ g, 1, 9 ], s2 = FindInfraSegment[ g, 3, 7 ] },
+    With[ { s1 = FindInfraSegment[ g, 1, 9 , All], s2 = FindInfraSegment[ g, 3, 7 , All] },
       Sort[ #[ "Vertex" ] & /@ FindInfraCommonPoint[ g, { s1, s2 } ] ] ===
         Sort @ Intersection[
           Union @@ FindInfraSegment[ g, 1, 9, All ][ "Realizations" ],

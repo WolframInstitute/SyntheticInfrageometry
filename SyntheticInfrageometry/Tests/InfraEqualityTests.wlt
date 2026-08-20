@@ -87,8 +87,8 @@ VerificationTest[
 
 VerificationTest[
   InfraEqualQ[ GridGraph[ { 3, 3 } ],
-    FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9 ],
-    FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9 ] ],
+    FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9 , All],
+    FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9 , All] ],
   True,
   TestID -> "InfraEqualQ-Segment-FindInfraSegment-self"
 ]

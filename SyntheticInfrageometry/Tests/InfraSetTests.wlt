@@ -297,7 +297,7 @@ VerificationTest[
    coerce it -- and must agree with the enumerated form's support. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    InfraSet[FindInfraSegment[g, 1, 16]] === InfraSet[FindInfraSegment[g, 1, 16, All]]],
+    InfraSet[FindInfraSegment[g, 1, 16, All]] === InfraSet[FindInfraSegment[g, 1, 16, All]]],
   True,
   TestID -> "InfraSet-DAG-form-agrees-with-enumerated"
 ]
@@ -305,7 +305,7 @@ VerificationTest[
 (* The support of a segment is its metric interval. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    InfraSet[FindInfraSegment[g, 1, 16]]["Vertices"] === Sort @ MetricInterval[g, 1, 16]],
+    InfraSet[FindInfraSegment[g, 1, 16, All]]["Vertices"] === Sort @ MetricInterval[g, 1, 16]],
   True,
   TestID -> "InfraSet-DAG-support-is-MetricInterval"
 ]
@@ -313,7 +313,7 @@ VerificationTest[
 (* A DAG sitting in a realisation slot contributes its vertices too. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    InfraSet[InfraSegment[{First @ FindInfraSegment[g, 1, 16]}]]["Vertices"] ===
+    InfraSet[InfraSegment[{First @ FindInfraSegment[g, 1, 16, All]}]]["Vertices"] ===
       Sort @ MetricInterval[g, 1, 16]],
   True,
   TestID -> "InfraSet-DAG-inside-realisation-list"
@@ -326,7 +326,7 @@ VerificationTest[
    differ by association key order alone, which broke SameQ equality. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    InfraMesoPoint[FindInfraSegment[g, 1, 16]] ===
+    InfraMesoPoint[FindInfraSegment[g, 1, 16, All]] ===
       InfraMesoPoint[FindInfraSegment[g, 1, 16, All]]],
   True,
   TestID -> "InfraMesoPoint-DAG-and-enumerated-forms-are-SameQ"
@@ -336,8 +336,8 @@ VerificationTest[
    whole enumerated family, they agree with the DP on the DAG. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    {m = InfraMesoPoint[FindInfraSegment[g, 1, 16]]},
-    {paths = First @ FindInfraSegment[g, 1, 16, All]},
+    {m = InfraMesoPoint[FindInfraSegment[g, 1, 16, All]]},
+    {paths = FindInfraSegment[g, 1, 16, All]["Realizations"]},
     AllTrue[m["Vertices"], m[[1]][#] == Count[paths, p_ /; MemberQ[p, #]] &]],
   True,
   TestID -> "InfraMesoPoint-DAG-weights-are-true-occupation"

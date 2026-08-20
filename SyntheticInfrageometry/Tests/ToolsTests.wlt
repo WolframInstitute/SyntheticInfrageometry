@@ -169,7 +169,7 @@ VerificationTest[
    it: the column / endpoint / midpoint projections of a geodesic family are
    its occupation measure *)
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], s = FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9 ] },
+  With[ { g = GridGraph[ { 3, 3 } ], s = FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9 , All] },
     { s[[ 2 ]], s[ "Start" ], FindInfraMidpoint[ g, s ] } ],
   (* ["Start"] is a set-level fact (every geodesic of a family shares it), so it
      is an InfraSet; the position and midpoint projections are measures *)
@@ -182,8 +182,8 @@ VerificationTest[
    so the family (and its measure) is the same weighted or not *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraMesoPoint[<|1 -> 2, 3 -> 1|>], 9 ] ===
-    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraSet[ { 1, 3 } ], 9 ] ],
+    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraMesoPoint[<|1 -> 2, 3 -> 1|>], 9 , All] ===
+    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraSet[ { 1, 3 } ], 9 , All] ],
   True,
   TestID -> "Anchor-masses-do-not-propagate"
 ]
@@ -193,7 +193,7 @@ VerificationTest[
 (* the compact multi-atom set and the enumerated bundle carry the same measure *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ], p = InfraSet[ { 1, 3 } ] },
-    KeySort @ InfraMeasure[ FindInfraSegment[ g, p, 9 ] ] ===
+    KeySort @ InfraMeasure[ FindInfraSegment[ g, p, 9 , All] ] ===
     KeySort @ InfraMeasure[ FindInfraSegment[ g, p, 9, All ] ] ],
   True,
   TestID -> "Compact-atoms-equal-enumerated-measure"
@@ -203,9 +203,9 @@ VerificationTest[
    occupation is the sum, normalised by the summed family sizes *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    KeySort @ FindInfraSegment[ g, InfraSet[ { 1, 3 } ], 9 ][ "OccupationCount" ] ===
-    KeySort @ Merge[ { FindInfraSegment[ g, 1, 9 ][ "OccupationCount" ],
-                       FindInfraSegment[ g, 3, 9 ][ "OccupationCount" ] }, Total ] ],
+    KeySort @ FindInfraSegment[ g, InfraSet[ { 1, 3 } ], 9 , All][ "OccupationCount" ] ===
+    KeySort @ Merge[ { FindInfraSegment[ g, 1, 9 , All][ "OccupationCount" ],
+                       FindInfraSegment[ g, 3, 9 , All][ "OccupationCount" ] }, Total ] ],
   True,
   TestID -> "Multi-endpoint-family-is-the-union"
 ]
@@ -213,9 +213,9 @@ VerificationTest[
 (* DAG-native column projection equals the enumerated column projection *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    { KeySort @ InfraMeasure @ FindInfraSegment[ g, 1, 16 ][[ 2 ]] ===
+    { KeySort @ InfraMeasure @ FindInfraSegment[ g, 1, 16 , All][[ 2 ]] ===
         KeySort @ InfraMeasure @ FindInfraSegment[ g, 1, 16, All ][[ 2 ]],
-      KeySort @ InfraMeasure @ FindInfraSegment[ g, 1, 16 ][[ -2 ]] ===
+      KeySort @ InfraMeasure @ FindInfraSegment[ g, 1, 16 , All][[ -2 ]] ===
         KeySort @ InfraMeasure @ FindInfraSegment[ g, 1, 16, All ][[ -2 ]] } ],
   { True, True },
   TestID -> "DAG-column-projection-equals-enumeration"
@@ -224,9 +224,9 @@ VerificationTest[
 (* DAG-native midpoint equals the enumerated midpoint, both parities *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    { KeySort @ InfraMeasure @ FindInfraMidpoint[ g, FindInfraSegment[ g, 1, 16 ] ] ===
+    { KeySort @ InfraMeasure @ FindInfraMidpoint[ g, FindInfraSegment[ g, 1, 16 , All] ] ===
         KeySort @ InfraMeasure @ FindInfraMidpoint[ g, FindInfraSegment[ g, 1, 16, All ] ],
-      KeySort @ InfraMeasure @ FindInfraMidpoint[ g, FindInfraSegment[ g, 1, 12 ] ] ===
+      KeySort @ InfraMeasure @ FindInfraMidpoint[ g, FindInfraSegment[ g, 1, 12 , All] ] ===
         KeySort @ InfraMeasure @ FindInfraMidpoint[ g, FindInfraSegment[ g, 1, 12, All ] ] } ],
   { True, True },
   TestID -> "DAG-midpoint-equals-enumeration"
@@ -234,7 +234,7 @@ VerificationTest[
 
 (* lazy Realizations: a bounded prefix of the full family, strict cap honoured *)
 VerificationTest[
-  With[ { s = FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16 ] },
+  With[ { s = FindInfraSegment[ GridGraph[ { 4, 4 } ], 1, 16 , All] },
     { Length @ s[ "Realizations", UpTo[ 2 ] ],
       SubsetQ[ s[ "Realizations" ], s[ "Realizations", UpTo[ 2 ] ] ],
       s[ "Realizations", 1000 ] } ],
@@ -245,7 +245,7 @@ VerificationTest[
 (* the calling quadruple on FindInfraSegment *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    { Head @ First @ FindInfraSegment[ g, 1, 9 ] === Graph,
+    { Head @ First @ FindInfraSegment[ g, 1, 9 , All] === Graph,
       MatchQ[ FindInfraSegment[ g, 1, 9, 1 ], InfraSegment[ { _List } ] ],
       MatchQ[ FindInfraSegment[ g, 1, 9, UpTo[ 100 ] ], InfraSegment[ { __List } ] ],
       Length @ FindInfraSegment[ g, 1, 9, All ][ "Realizations" ] === 6,

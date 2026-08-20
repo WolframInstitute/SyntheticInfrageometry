@@ -21,35 +21,37 @@ InfraPlane[ reps_List ][ "Volume" ] := Length /@ reps
         "Connected" requires ConnectedGraphQ @ Subgraph[graph, T].
         Properties compose via AND; the resulting closure gates the peel.
      Method     -- how to enumerate inclusion-minimal subsets satisfying
-        Properties.  "Exhaustive" (default) is a top-down BFS over the
-        peel-DAG, deduplicated; the nested form {"Exhaustive", "Pruning"
-        -> spec} caps per-layer branching via applyPruning.  "Greedy"
-        is a top-down DFS, no backtracking, one realisation;
-        "GreedyRandomPick" is the same walk with a random admissible
-        removal at each step (seed via ambient SeedRandom).
+        Properties.  Automatic (default) reads the count: All is the
+        exhaustive top-down BFS over the peel-DAG, deduplicated, and a
+        bounded count is the lazy peel.  The nested form {"Exhaustive",
+        "Pruning" -> spec} caps per-layer branching via applyPruning.
+        "Greedy" is the top-down DFS, backtracking at each leaf, first
+        `count` minimals; "RandomGreedy" draws random peels instead
+        (seed via ambient SeedRandom).
    When Properties is empty, Method is ignored.  On a non-bipartite graph
    the strict equidistant set may fail to separate, so widen the window
    or use {-1, 1} to recover the parity-stranded band. *)
 
 FindInfraBisectingHyperplane::badmethod   = "Method `1` is not supported by FindInfraBisectingHyperplane.";
 FindInfraBisectingHyperplane::badproperty = "Property `1` is not supported by FindInfraBisectingHyperplane.";
+FindInfraBisectingHyperplane::shortfall   = "\"RandomGreedy\" drew `1` distinct hyperplanes of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraBisectingHyperplane ] = {
   Properties -> { },
-  Method     -> "Exhaustive"
+  Method     -> Automatic
 };
 
 FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
   FindInfraBisectingHyperplane[ graph, p1, p2, { 0, 0 }, count, opts ]
 
 FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
     window : { _Integer, _Integer },
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
   spreadFind[ InfraPlane, count,
     { q1, q2 } |-> Module[ { properties, methodSpec, methodHead, pruning, bisector, aux, admissible },
       properties = OptionValue[ FindInfraBisectingHyperplane, { opts }, Properties ];
-      methodSpec = OptionValue[ FindInfraBisectingHyperplane, { opts }, Method ];
+      methodSpec = resolveMethod[ OptionValue[ FindInfraBisectingHyperplane, { opts }, Method ], count ];
       methodHead = methodName @ methodSpec;
       pruning    = Replace[ methodSpec, { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ), _ :> Infinity } ];
       bisector   = Complement[
@@ -75,10 +77,12 @@ FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
             Graph[ nodes, DeleteDuplicates[ Join[ paired, direct ] ] ] ];
           admissible = admissibleBisectingHyperplane[ graph, aux, q1, q2, properties ];
           Switch[ methodHead,
-            "Exhaustive",       findAllMinimalAdmissible[ graph, bisector, admissible, pruning ],
-            "Greedy",           findGreedyMinimalAdmissible[ graph, bisector, admissible, First ],
-            "GreedyRandomPick", findGreedyMinimalAdmissible[ graph, bisector, admissible, RandomChoice ],
-            _,                  Message[ FindInfraBisectingHyperplane::badmethod, methodSpec ]; $Failed
+            "Exhaustive",   findAllMinimalAdmissible[ graph, bisector, admissible, pruning ],
+            "Greedy",       findGreedyMinimalAdmissible[ graph, bisector, admissible, count ],
+            "RandomGreedy", randomDraws[
+              { } |-> findGreedyMinimalAdmissible[ graph, bisector, admissible, 1, randomBranch ],
+              count, FindInfraBisectingHyperplane ],
+            _,              Message[ FindInfraBisectingHyperplane::badmethod, methodSpec ]; $Failed
           ]
         ]
       ]
