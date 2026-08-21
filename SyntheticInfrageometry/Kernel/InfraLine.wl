@@ -529,6 +529,16 @@ InfraParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
       Max[ lineDistances ] - Min[ lineDistances ] <= threshold ]
   ]
 
+InfraParallelQ[ graph_Graph,
+    l1 : _InfraLine | _InfraSegment | _InfraWalk | _InfraRay | _List,
+    l2 : _InfraLine | _InfraSegment | _InfraWalk | _InfraRay | _List,
+    threshold_ : 0 ] /; ! MatchQ[ { l1, l2 }, { _List, _List } ] :=
+  With[ { reps1 = If[ ListQ @ l1, { l1 }, First @ l1 ],
+          reps2 = If[ ListQ @ l2, { l2 }, First @ l2 ] },
+    AllTrue[ Tuples[ { reps1, reps2 } ],
+      pair |-> InfraParallelQ[ graph, pair[[ 1 ]], pair[[ 2 ]], threshold ] ]
+  ]
+
 
 (* ===================== InfraPerpendicularQ ===================== *)
 

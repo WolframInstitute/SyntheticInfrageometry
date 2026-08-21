@@ -223,7 +223,8 @@ matchPolygonSlot[ k_Integer, Automatic, cyc_List, dm_, idx_Association ] :=
    Accepts open ({v1, ..., vn}) or closed ({v1, ..., vn, v1}) input.
    Same slot grammar as FindInfraRegularPolygon. *)
 
-InfraRegularPolygonQ[ graph_Graph, cycle_List, As_List ] /; Length[ cycle ] >= 3 :=
+InfraRegularPolygonQ[ graph_Graph, cycle_List, As_List ] /;
+    Length[ cycle ] >= 3 && ! MatchQ[ cycle, { _InfraSegment .. } ] :=
   With[ { open = If[ First @ cycle === Last @ cycle, Most @ cycle, cycle ] },
     With[ {
         n   = Length @ open,
@@ -240,6 +241,12 @@ InfraRegularPolygonQ[ graph_Graph, cycle_List, As_List ] /; Length[ cycle ] >= 3
   ]
 
 InfraRegularPolygonQ[ _Graph, cycle_List, _List ] /; Length[ cycle ] < 3 := False
+
+InfraRegularPolygonQ[ graph_Graph, InfraPolygon[ reps_List ], As_List ] :=
+  AllTrue[ polylineToVertexSeqs @ reps, InfraRegularPolygonQ[ graph, #, As ] & ]
+
+InfraRegularPolygonQ[ graph_Graph, poly : { _InfraSegment .. }, As_List ] :=
+  InfraRegularPolygonQ[ graph, First @ polylineToVertexSeqs @ { poly }, As ]
 
 
 (* ===================== Scene-DSL constructors ===================== *)

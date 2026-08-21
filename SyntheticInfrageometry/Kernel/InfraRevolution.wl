@@ -149,6 +149,10 @@ FindInfraCone[ graph_Graph, axis_, slope_, opts : OptionsPattern[ ] ] :=
 InfraRevolutionQ[ graph_Graph, vs_List, axis_, profile_, opts : OptionsPattern[ FindInfraRevolution ] ] :=
   Sort @ vs === FindInfraRevolution[ graph, axis, profile, opts ][[ 1 ]]
 
+InfraRevolutionQ[ graph_Graph, o : _InfraObject | _InfraSet, axis_, profile_,
+    opts : OptionsPattern[ FindInfraRevolution ] ] :=
+  InfraRevolutionQ[ graph, First @ o, axis, profile, opts ]
+
 
 (* ===================== Scene-DSL constructor ===================== *)
 

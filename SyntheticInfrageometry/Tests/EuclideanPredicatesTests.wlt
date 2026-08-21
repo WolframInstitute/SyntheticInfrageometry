@@ -599,7 +599,9 @@ VerificationTest[
 
 (* The family invariant: feeding a Find* result straight back into its own *Q
    must answer, not return unevaluated.  Before 0.13.6 every one of these
-   returned unevaluated, which reads as a False that never came. *)
+   returned unevaluated, which reads as a False that never came.  The last
+   three are the residue that pass missed: their Find* returns a wrapper the
+   0.13.6 sweep did not enumerate. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
     {InfraSegmentQ[g, FindInfraSegment[g, 1, 13, All]],
@@ -612,9 +614,41 @@ VerificationTest[
      InfraEllipticShellQ[g, FindInfraEllipticShell[g, {11, 15}, 6]],
      InfraWalkQ[g, FindInfraWalk[g, 1, 13, 6, All]],
      InfraPlaneQ[g, FindInfraBisectingHyperplane[g, 11, 15], 11, 15],
-     InfraRayQ[g, FindInfraRay[g, 1, 13, All]]}],
-  ConstantArray[True, 11],
+     InfraRayQ[g, FindInfraRay[g, 1, 13, All]],
+     InfraParallelQ[g, InfraLine[{{1, 2, 3, 4, 5}}],
+       FindInfraParallel[g, {1, 2, 3, 4, 5}, 6, All]],
+     InfraRegularPolygonQ[g, FindInfraRegularPolygon[g, {1}, 4, 1], {1}],
+     InfraRevolutionQ[g, FindInfraRevolution[g, {1, 2, 3}, 1], {1, 2, 3}, 1]}],
+  ConstantArray[True, 14],
   TestID -> "predicates-accept-their-own-constructor-output"
+]
+
+(* Presentation-independence: a wrapper's verdict is the conjunction over its
+   realisations, so wrapping cannot change the answer.  This is what makes
+   reaching in with [[1, 1]] unnecessary rather than merely inconvenient. *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    {With[{pa = FindInfraParallel[g, {1, 2, 3, 4, 5}, 6, All]},
+       InfraParallelQ[g, InfraLine[{{1, 2, 3, 4, 5}}], pa] ===
+         AllTrue[First @ pa, InfraParallelQ[g, {1, 2, 3, 4, 5}, #] &]],
+     With[{rp = FindInfraRegularPolygon[g, {1}, 4, 1]},
+       InfraRegularPolygonQ[g, rp, {1}] ===
+         AllTrue[First @ rp, InfraRegularPolygonQ[g, #, {1}] &]],
+     With[{rv = FindInfraRevolution[g, {1, 2, 3}, 1]},
+       InfraRevolutionQ[g, rv, {1, 2, 3}, 1] ===
+         InfraRevolutionQ[g, First @ rv, {1, 2, 3}, 1]]}],
+  {True, True, True},
+  TestID -> "wrapper-verdict-is-conjunction-over-realisations"
+]
+
+(* A mixed call is legal on the two-line predicates: either side may arrive
+   wrapped or bare, and the verdict is the same. *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}], l = {1, 2, 3, 4, 5}, m = {6, 7, 8, 9, 10}},
+    {InfraParallelQ[g, InfraLine[{l}], m], InfraParallelQ[g, l, InfraLine[{m}]],
+     InfraParallelQ[g, InfraLine[{l}], InfraLine[{m}]], InfraParallelQ[g, l, m]}],
+  ConstantArray[True, 4],
+  TestID -> "InfraParallelQ-mixed-wrapper-and-bare"
 ]
 
 (* InfraSet coerces any region to a vertex set, so the set-shaped predicates
@@ -631,8 +665,11 @@ VerificationTest[
    than passing by virtue of being wrapped. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    {InfraShellQ[g, InfraShell[{{1, 2, 3}}]], InfraLineQ[g, InfraLine[{{1, 2, 3}}]]}],
-  {False, False},
+    {InfraShellQ[g, InfraShell[{{1, 2, 3}}]], InfraLineQ[g, InfraLine[{{1, 2, 3}}]],
+     InfraParallelQ[g, InfraLine[{{1, 2, 3}}], InfraLine[{{1, 6, 11}}]],
+     InfraRegularPolygonQ[g, InfraPolygon[{{InfraSegment[{{1, 2, 3}}]}}], {1}],
+     InfraRevolutionQ[g, InfraObject[{1, 2}], {1, 2, 3}, 1]}],
+  ConstantArray[False, 5],
   TestID -> "wrapped-non-instances-are-False"
 ]
 
