@@ -50,13 +50,41 @@ VerificationTest[
   TestID -> "FindInfraWalk-exact-length-spec"
 ]
 
-(* honest Properties -> {} also counts non-simple walks in the range, so this
-   compares like for like against FindPath's simple-paths-only count *)
+(* the default class is FindPath's simple paths, so the counts compare like for
+   like *)
 VerificationTest[
-  Length @ FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, { 4, 6 }, All,
-    Properties -> { "Simple" } ][ "Realizations" ],
+  Length @ FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, { 4, 6 }, All ][ "Realizations" ],
   Length @ FindPath[ GridGraph[ { 3, 3 } ], 1, 9, { 4, 6 }, All ],
   TestID -> "FindInfraWalk-range-length-spec"
+]
+
+(* simplicity is the default; "Simple" -> False opens the honest walk class:
+   on CycleGraph[4] no simple 1 -> 3 path has length 6, but 8 walks do *)
+VerificationTest[
+  With[ { g = CycleGraph[ 4 ] },
+    { FindInfraWalk[ g, 1, 3, { 6 }, All ][ "Realizations" ],
+      Length @ FindInfraWalk[ g, 1, 3, { 6 }, All, "Simple" -> False ][ "Realizations" ] } ],
+  { { }, 8 },
+  TestID -> "FindInfraWalk-Simple-default-vs-honest-class"
+]
+
+(* under the default class Method -> Automatic delegates to FindPath for every
+   count -- the same walks as an explicit "Exhaustive" *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    Sort @ FindInfraWalk[ g, 1, 9, { 6 }, 3 ][ "Realizations" ] ===
+      Sort @ FindInfraWalk[ g, 1, 9, { 6 }, 3, Method -> "Exhaustive" ][ "Realizations" ] ],
+  True,
+  TestID -> "FindInfraWalk-Automatic-takes-the-FindPath-fast-path"
+]
+
+(* the unbounded honest class is announced, not silently truncated: the witness
+   is one geodesic *)
+VerificationTest[
+  FindInfraWalk[ GridGraph[ { 4, 4 } ], 1, 16, Infinity, 1, "Simple" -> False ][ "Length" ],
+  { GraphDistance[ GridGraph[ { 4, 4 } ], 1, 16 ] },
+  { FindInfraWalk::unbounded },
+  TestID -> "FindInfraWalk-unbounded-honest-class-messages-witness"
 ]
 
 VerificationTest[
@@ -210,7 +238,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     Sort @ FindInfraGeodesic[ g, 1, 9, 1, { 4 }, All, Properties -> { "Simple", True & } ][ "Realizations" ] ===
-      Sort @ FindInfraWalk[ g, 1, 9, { 4 }, All, Properties -> { "Simple" } ][ "Realizations" ]
+      Sort @ FindInfraWalk[ g, 1, 9, { 4 }, All ][ "Realizations" ]
   ],
   True,
   TestID -> "FindInfraGeodesic-bare-predicate-True-keeps-the-class"
@@ -491,7 +519,7 @@ VerificationTest[
 (* kspec bounds the walk-space sweep itself: with revisits allowed the walk space
    is infinite past kmax, so the enumeration must terminate. *)
 VerificationTest[
-  With[ { walks = FindInfraWalk[ CycleGraph[ 6 ], 1, 4, { 5 }, All ][ "Realizations" ] },
+  With[ { walks = FindInfraWalk[ CycleGraph[ 6 ], 1, 4, { 5 }, All, "Simple" -> False ][ "Realizations" ] },
     walks =!= { } && AllTrue[ walks,
       w |-> Length[ w ] - 1 == 5 && First[ w ] == 1 && Last[ w ] == 4 &&
         AllTrue[ Partition[ w, 2, 1 ], Apply[ EdgeQ[ CycleGraph[ 6 ], UndirectedEdge[ #1, #2 ] ] & ] ] ]
@@ -507,10 +535,12 @@ VerificationTest[
   TestID -> "FindInfraWalk-Infinity-count1-geodesic"
 ]
 
-(* bare k means at most k on both the fast path and the property path *)
+(* bare k means at most k on both the FindPath fast path and the frontier sweep;
+   at k = d(1, 9) on the bipartite grid the two classes coincide, so this
+   compares like for like *)
 VerificationTest[
   Sort @ FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, 4, All,
-    Properties -> { "Simple" } ][ "Realizations" ],
+    "Simple" -> False ][ "Realizations" ],
   Sort @ FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, 4, All ][ "Realizations" ],
   TestID -> "FindInfraWalk-bare-k-at-most-both-paths"
 ]
@@ -518,13 +548,13 @@ VerificationTest[
 (* a lower length bound must not be starved by the early-stop count *)
 VerificationTest[
   Length @ FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, { 6 }, 2,
-    Properties -> { "Simple" } ][ "Realizations" ],
+    "Simple" -> False, Method -> "Exhaustive" ][ "Realizations" ],
   2,
   TestID -> "FindInfraWalk-exact-length-strict-count"
 ]
 
-(* Method -> "Greedy": lazy DFS, one instance; unconstrained length falls back
-   to the canonical geodesic witness (safe against an unbounded descent). *)
+(* Method -> "Greedy": lazy DFS, one instance; the simple default bounds the
+   unconstrained descent by itself. *)
 VerificationTest[
   FindInfraWalk[ PathGraph[ Range[ 5 ] ], 1, 5, Infinity, 1, Method -> "Greedy" ],
   InfraWalk[ { { 1, 2, 3, 4, 5 } } ],
@@ -549,12 +579,12 @@ VerificationTest[
    class.  Asking for 9 is the honest $Failed. *)
 VerificationTest[
   With[ { g = CycleGraph[ 4 ] },
-    { whole = FindInfraWalk[ g, 1, 3, { 6 }, All ][ "Realizations" ] },
+    { whole = FindInfraWalk[ g, 1, 3, { 6 }, All, "Simple" -> False ][ "Realizations" ] },
     { AllTrue[ Range[ 1, Length @ whole ],
-        k |-> With[ { got = FindInfraWalk[ g, 1, 3, { 6 }, k ][ "Realizations" ] },
+        k |-> With[ { got = FindInfraWalk[ g, 1, 3, { 6 }, k, "Simple" -> False ][ "Realizations" ] },
           Length[ got ] === k && DuplicateFreeQ[ got ] && SubsetQ[ whole, got ] &&
           AllTrue[ got, w |-> InfraWalkQ[ g, w ] && Length[ w ] - 1 === 6 ] ] ],
-      FindInfraWalk[ g, 1, 3, { 6 }, Length[ whole ] + 1 ] } ],
+      FindInfraWalk[ g, 1, 3, { 6 }, Length[ whole ] + 1, "Simple" -> False ] } ],
   { True, $Failed },
   TestID -> "FindInfraWalk-Greedy-finite-count-is-exact"
 ]
@@ -564,10 +594,10 @@ VerificationTest[
    enumeration opt-in. *)
 VerificationTest[
   With[ { g = CycleGraph[ 4 ] },
-    { one = FindInfraWalk[ g, 1, 3, { 6 } ][ "Realizations" ] },
+    { one = FindInfraWalk[ g, 1, 3, { 6 }, "Simple" -> False ][ "Realizations" ] },
     { Length @ one === 1,
       InfraWalkQ[ g, First @ one ],
-      Length @ FindInfraWalk[ g, 1, 3, { 6 }, All ][ "Realizations" ] > 1 } ],
+      Length @ FindInfraWalk[ g, 1, 3, { 6 }, All, "Simple" -> False ][ "Realizations" ] > 1 } ],
   { True, True, True },
   TestID -> "FindInfraWalk-countless-is-one-instance"
 ]
@@ -575,7 +605,7 @@ VerificationTest[
 (* A randomized descent cannot backtrack, so it can fall short of a strict count;
    the shortfall is loud ($Failed plus a message) rather than a silent under-supply. *)
 VerificationTest[
-  FindInfraWalk[ CycleGraph[ 4 ], 1, 3, { 6 }, 99, Method -> "RandomGreedy" ],
+  FindInfraWalk[ CycleGraph[ 4 ], 1, 3, { 6 }, 99, "Simple" -> False, Method -> "RandomGreedy" ],
   $Failed,
   { FindInfraWalk::shortfall },
   TestID -> "FindInfraWalk-RandomGreedy-strict-shortfall-fails-loudly"
@@ -584,8 +614,8 @@ VerificationTest[
 (* All the same walks, whichever engine enumerates them. *)
 VerificationTest[
   With[ { g = CycleGraph[ 6 ] },
-    Sort @ FindInfraWalk[ g, 1, 4, { 5 }, All, Method -> "Greedy" ][ "Realizations" ] ===
-      Sort @ FindInfraWalk[ g, 1, 4, { 5 }, All, Method -> "Exhaustive" ][ "Realizations" ] ],
+    Sort @ FindInfraWalk[ g, 1, 4, { 5 }, All, "Simple" -> False, Method -> "Greedy" ][ "Realizations" ] ===
+      Sort @ FindInfraWalk[ g, 1, 4, { 5 }, All, "Simple" -> False, Method -> "Exhaustive" ][ "Realizations" ] ],
   True,
   TestID -> "FindInfraWalk-Greedy-All-agrees-with-Exhaustive"
 ]

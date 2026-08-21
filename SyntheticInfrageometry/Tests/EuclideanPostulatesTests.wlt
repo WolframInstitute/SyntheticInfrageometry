@@ -456,13 +456,14 @@ VerificationTest[
 ]
 
 
-(* ===== FindInfraWalk Properties (path family) ===== *)
+(* ===== FindInfraWalk "Simple" (path family) ===== *)
 
+(* Properties is retired on FindInfraWalk: the class axis is "Simple" -> True | False. *)
 VerificationTest[
-  FindInfraWalk[GridGraph[{3, 3}], 1, 9, Infinity, 1, Properties -> {"Bogus"}],
+  FindInfraWalk[GridGraph[{3, 3}], 1, 9, Infinity, 1, Properties -> {"Simple"}],
   $Failed,
-  {FindInfraWalk::badproperty},
-  TestID -> "FindInfraWalk-badproperty-message"
+  {FindInfraWalk::properties},
+  TestID -> "FindInfraWalk-properties-retired-message"
 ]
 
 (* "Greedy" is a supported Method (lazy DFS, one instance); an unrecognised
@@ -474,11 +475,11 @@ VerificationTest[
   TestID -> "FindInfraWalk-badmethod-message"
 ]
 
-(* "Simple" Property: opt-in simplicity. *)
+(* simplicity is the default. *)
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{walks = FindInfraWalk[g, 1, 9, {4}, All, Properties -> {"Simple"}]["Realizations"]},
+    With[{walks = FindInfraWalk[g, 1, 9, {4}, All]["Realizations"]},
       Length[walks] >= 1 && AllTrue[walks, DuplicateFreeQ]
     ]
   ],

@@ -34,7 +34,7 @@ UniqueInfraSegmentQ::usage = "UniqueInfraSegmentQ[graph, u, v] tests whether the
 (* ===================== InfraWalk ===================== *)
 
 InfraWalk::usage = "InfraWalk[{walk1, ...}] is a bundle of walks, not necessarily simple. Inside InfraScene, InfraWalk[p1, ..., pk] is the step-wise constructor.";
-FindInfraWalk::usage = "FindInfraWalk[graph, p1, p2, kspec] gives walks from p1 to p2 of length restricted by kspec (k, {k}, {kmin, kmax}, Infinity). Options Properties (\"Simple\"), Method.";
+FindInfraWalk::usage = "FindInfraWalk[graph, p1, p2, kspec] gives walks from p1 to p2 of length restricted by kspec (k, {k}, {kmin, kmax}, Infinity), simple by default; \"Simple\" -> False allows revisits. Options \"Simple\", Method.";
 FindInfraGeodesic::usage = "FindInfraGeodesic[graph, p1, p2, scale] gives the walks from p1 to p2 obeying a local rule in every window of scale consecutive vertices, as an InfraWalk; a trailing kspec bounds the length. Options Properties, Method.";
 InfraGeodesicQ::usage = "InfraGeodesicQ[graph, walk, scale] tests whether every window of scale consecutive vertices of walk plus the next one is a shortest path; scale 1 gives InfraWalkQ and Infinity gives InfraSegmentQ.";
 ExtendInfraWalk::usage = "ExtendInfraWalk[graph, path] grows a walk one vertex per step until inextensible. Options Properties, Method, \"InfraScale\", \"Length\", \"Direction\".";
