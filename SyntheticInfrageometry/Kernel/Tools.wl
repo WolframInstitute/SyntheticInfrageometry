@@ -160,9 +160,12 @@ applyPruning[ paths_List, p_?NumericQ /; 0 < p < 1 ]     :=
 
 (* BFS frontier from p1 to p2 with candidateFn[g, path] returning the
    admissible next-vertex set at each step.  applyPruning caps the live
-   frontier per layer.  Returns up to `count` complete paths. *)
+   frontier per layer.  Returns up to `count` complete paths.  terminalQ = True
+   (default) ends a branch at its first arrival at p2; False emits every
+   arrival and keeps extending through it (a walk may pass through p2), so the
+   caller's candidateFn must bound the depth. *)
 
-frontierSweep[ graph_Graph, p1_, p2_, candidateFn_, prune_, count_ ] :=
+frontierSweep[ graph_Graph, p1_, p2_, candidateFn_, prune_, count_, terminalQ_ : True ] :=
   Module[ { frontier, completed = { }, extended },
     If[ p1 === p2, Return[ { } ] ];
     If[ ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ], Return[ { } ] ];
@@ -173,7 +176,8 @@ frontierSweep[ graph_Graph, p1_, p2_, candidateFn_, prune_, count_ ] :=
         ( path |-> ( Append[ path, # ] & ) /@ candidateFn[ graph, path ] ) /@ frontier,
         1 ];
       completed = Join[ completed, Select[ extended, Last[ # ] === p2 & ] ];
-      frontier  = applyPruning[ Select[ extended, Last[ # ] =!= p2 & ], prune ]
+      frontier  = applyPruning[
+        If[ terminalQ, Select[ extended, Last[ # ] =!= p2 & ], extended ], prune ]
     ];
     Take[ completed, UpTo[ count ] ]
   ]
@@ -186,7 +190,9 @@ frontierSweep[ graph_Graph, p1_, p2_, candidateFn_, prune_, count_ ] :=
    to for a bounded count.  branch = Identity is "Greedy"; branch = randomBranch
    explores a single choice per step and so performs one un-backtracked random
    draw ("RandomGreedy", via randomDraws).  maxSteps caps the depth; a walk-family
-   caller with revisits allowed needs it to guarantee termination. *)
+   caller with revisits allowed needs it to guarantee termination.  terminalQ =
+   True (default) ends a branch at its first arrival at p2; False emits every
+   accepted arrival and keeps descending through it. *)
 
 (* the closures are held in Module locals, never inlined into descend's RHS: a
    candidateFn built by windowCandidateFn is a Function[{g, walk}, ...], and
@@ -194,21 +200,18 @@ frontierSweep[ graph_Graph, p1_, p2_, candidateFn_, prune_, count_ ] :=
    the closure's own parameter list. *)
 
 greedyFrontierSweep[ graph_Graph, p1_, p2_, candidateFn_, acceptQ_, maxSteps_, count_,
-    branch_ : Identity ] :=
+    branch_ : Identity, terminalQ_ : True ] :=
   If[ p1 === p2 || ! VertexQ[ graph, p1 ] || ! VertexQ[ graph, p2 ] ||
       GraphDistance[ graph, p1, p2 ] === Infinity, { },
     Module[ { cap = countLimit @ count, acc = { }, descend,
-              cands = candidateFn, keepQ = acceptQ, pick = branch },
-      descend[ walk_ ] := Which[
-        Last @ walk === p2,
-          If[ keepQ @ walk,
-            AppendTo[ acc, walk ];
-            If[ Length @ acc >= cap, Throw[ acc, greedyFrontierSweep ] ] ],
-        Length[ walk ] - 1 >= maxSteps,
-          Null,
-        True,
-          Scan[ descend[ Append[ walk, # ] ] &, pick @ cands[ graph, walk ] ]
-      ];
+              cands = candidateFn, keepQ = acceptQ, pick = branch, terminal = terminalQ },
+      descend[ walk_ ] := (
+        If[ Last @ walk === p2 && keepQ @ walk,
+          AppendTo[ acc, walk ];
+          If[ Length @ acc >= cap, Throw[ acc, greedyFrontierSweep ] ] ];
+        If[ ( ! terminal || Last @ walk =!= p2 ) && Length[ walk ] - 1 < maxSteps,
+          Scan[ descend[ Append[ walk, # ] ] &, pick @ cands[ graph, walk ] ] ]
+      );
       Catch[ descend[ { p1 } ]; acc, greedyFrontierSweep ]
     ]
   ]
