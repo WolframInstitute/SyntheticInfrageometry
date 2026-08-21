@@ -448,6 +448,7 @@ infraSpread[ InfraMesoPoint[ m_Association ] ] := Keys @ m
 infraSpread[ InfraSet[ vs_List ] ] := vs
 infraSpread[ InfraSegment[ dag_Graph ] ] := dagGeodesics[ dag ]
 infraSpread[ InfraSegment[ dags : { _Graph, __Graph } ] ] := Join @@ ( dagGeodesics /@ dags )
+infraSpread[ InfraCircle[ dags : { __Graph } ] ] := Catenate[ dagGeodesics /@ dags ]
 infraSpread[ other_ ] := { other }
 
 
@@ -610,6 +611,20 @@ atomFamilySize[ _ ] := 1
 
 infraEdgeMultiset[ _, InfraSegment[ dag_Graph ] ] :=
   KeyMap[ Sort[ List @@ # ] &, GeodesicEdgeOccupation[ dag ] ]
+
+(* a circle-pool atom is an open DAG whose paths close: the wrap-around edge
+   sink - source lies on every realisation of the atom and so carries its whole
+   family, exactly as infraRepEdges closes an enumerated cycle *)
+infraEdgeMultiset[ _, InfraCircle[ dags : { __Graph } ] ] :=
+  Merge[
+    Map[
+      dag |-> With[
+        { src = First @ Select[ VertexList @ dag, VertexInDegree[ dag, # ] == 0 & ],
+          snk = First @ Select[ VertexList @ dag, VertexOutDegree[ dag, # ] == 0 & ] },
+        Join[ KeyMap[ Sort[ List @@ # ] &, GeodesicEdgeOccupation[ dag ] ],
+          <| Sort @ { snk, src } -> atomFamilySize[ dag ] |> ] ],
+      dags ],
+    Total ]
 infraEdgeMultiset[ g_, obj_ ] :=
   Merge[ atomEdgeMasses[ g ][ infraRepType @ Head @ obj ] /@ infraRepSeqs @ obj, Total ]
 

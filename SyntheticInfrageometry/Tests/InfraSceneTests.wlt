@@ -581,7 +581,7 @@ VerificationTest[
               InfraCircle[ ea, InfraDistance[ ea, eb ] ],
               InfraCircle[ eb, InfraDistance[ ea, eb ] ] ] } ] },
     Sort @ DeleteDuplicates[
-      #[[ 1 ]][ ec ] & /@ FindInfraScene[ scene, g, <| ea -> 1, eb -> 7 |> ] ]
+      #[[ 1 ]][ ec ] & /@ Quiet[ FindInfraScene[ scene, g, <| ea -> 1, eb -> 7 |> ], FindInfraCircle::uncertified ] ]
   ],
   { 5, 9, 10 },
   TestID -> "FindInfraScene-EuclidI1-apexes"
@@ -594,7 +594,7 @@ VerificationTest[
             ec == InfraIntersection[
               InfraCircle[ ea, InfraDistance[ ea, eb ] ],
               InfraCircle[ eb, InfraDistance[ ea, eb ] ] ] } ] },
-    With[ { apexes = #[[ 1 ]][ ec ] & /@ FindInfraScene[ scene, g, <| ea -> 1, eb -> 7 |> ] },
+    With[ { apexes = #[[ 1 ]][ ec ] & /@ Quiet[ FindInfraScene[ scene, g, <| ea -> 1, eb -> 7 |> ], FindInfraCircle::uncertified ] },
       apexes =!= { } &&
       AllTrue[ apexes,
         v |-> GraphDistance[ g, 1, v ] == GraphDistance[ g, 7, v ] == GraphDistance[ g, 1, 7 ] ]
@@ -612,8 +612,8 @@ VerificationTest[
               InfraCircle[ ea, InfraDistance[ ea, eb ] ],
               InfraCircle[ eb, InfraDistance[ ea, eb ] ] ] } ] },
     Sort @ DeleteDuplicates[
-      #[[ 1 ]][ ec ] & /@ FindInfraScene[ scene, g, <| ea -> 1, eb -> 7 |> ] ] ===
-    Sort @ Intersection[
+      #[[ 1 ]][ ec ] & /@ Quiet[ FindInfraScene[ scene, g, <| ea -> 1, eb -> 7 |> ], FindInfraCircle::uncertified ] ] ===
+    Sort @ Quiet @ Intersection[
       Union @@ FindInfraCircle[ g, 1, 2, All ][ "Realizations" ],
       Union @@ FindInfraCircle[ g, 7, 2, All ][ "Realizations" ] ]
   ],

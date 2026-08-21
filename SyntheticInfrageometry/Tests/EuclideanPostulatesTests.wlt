@@ -906,11 +906,14 @@ VerificationTest[
   TestID -> "FindInfraCircle-returns-cycles"
 ]
 
+(* PetersenGraph[] is non-planar, so the circle pool refuses and the family
+   comes from the cycle sweep instead -- reported by ::uncertified. *)
 VerificationTest[
   With[{g = PetersenGraph[]},
     Length @ FindInfraCircle[g, 1, {1, 2}, All]["Realizations"] >= 1
   ],
   True,
+  {FindInfraCircle::uncertified},
   TestID -> "FindInfraCircle-all-cycles"
 ]
 
@@ -919,7 +922,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{lengths = Length /@ (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All])},
+    With[{lengths = Length /@ FindInfraCircle[g, 6, {1, 2}, All]["Realizations"]},
       Length[Union[lengths]] == 1
     ]
   ],
@@ -948,9 +951,9 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{11, 11}]},
-    With[{inner = First @ First @ First @ FindInfraCircle[g, First @ GraphCenter[g], {2, 3}],
-          wide  = First @ First @ First @ FindInfraCircle[g, First @ GraphCenter[g], {2, 4}]},
-      Length[wide] == Length[inner]
+    With[{inner = Min[Length /@ FindInfraCircle[g, First @ GraphCenter[g], {2, 3}]["Realizations"]],
+          wide  = Min[Length /@ FindInfraCircle[g, First @ GraphCenter[g], {2, 4}]["Realizations"]]},
+      wide == inner
     ]
   ],
   True,
@@ -962,7 +965,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{lengths = Length /@ (#[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}])},
+    With[{lengths = Length /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]["Realizations"]},
       Length[lengths] >= 1 && lengths === Sort[lengths]
     ]
   ],
@@ -974,7 +977,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{circles = #[[ 1, 1 ]] & /@ FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]},
+    With[{circles = FindInfraCircle[g, 6, {1, 2}, All, Properties -> {"Separating"}]["Realizations"]},
       Length[circles] >= 1 &&
       AllTrue[circles, vs |-> AllTrue[vs, v |-> 1 <= GraphDistance[g, 6, v] <= 2]]
     ]
@@ -999,6 +1002,141 @@ VerificationTest[
   $Failed,
   {FindInfraCircle::badproperty},
   TestID -> "FindInfraCircle-badproperty-unknown"
+]
+
+
+(* ===== the circle pool: count All / count-less form ===== *)
+
+(* On a certified band count = All gives the pool -- one arc-folded geodesic DAG
+   per atom -- and every realisation of it is a genuine metric circle that
+   separates the centre from outside the band. *)
+
+VerificationTest[
+  With[{g = GridGraph[{11, 11}], c = 61},
+    With[{pool = FindInfraCircle[g, c, {2, 4}, All]},
+      MatchQ[pool, InfraCircle[{__Graph}]] &&
+      AllTrue[pool["Realizations"],
+        cyc |-> DuplicateFreeQ[cyc] &&
+          AllTrue[Partition[Append[cyc, First[cyc]], 2, 1], EdgeQ[g, UndirectedEdge @@ #] &]] &&
+      AllTrue[pool["Realizations"],
+        cyc |-> AllTrue[
+          SelectFirst[ConnectedComponents[VertexDelete[g, cyc]], MemberQ[#, c] &],
+          GraphDistance[g, c, #] <= 4 &]]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraCircle-pool-realisations-are-separating-circles"
+]
+
+(* The pool's realisations are exactly the separating cycles of its own length:
+   an independent single-length-class enumeration finds the same set. *)
+
+VerificationTest[
+  With[{g = GridGraph[{11, 11}], c = 61},
+    With[{pool = FindInfraCircle[g, c, {2, 4}, All]},
+      {level = Subgraph[g, Select[VertexList[g], 2 <= GraphDistance[g, c, #] <= 4 &]]},
+      {byHand = Select[First /@ (List @@@ #) & /@ FindCycle[level, {pool["Length"]}, All],
+         cyc |-> With[{cc = SelectFirst[ConnectedComponents[VertexDelete[g, cyc]], MemberQ[#, c] &]},
+           cc =!= Missing["NotFound"] && AllTrue[cc, GraphDistance[g, c, #] <= 4 &]]]},
+      Sort[Sort /@ pool["Realizations"]] === Sort[Sort /@ byHand]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraCircle-pool-equals-single-length-class-enumeration"
+]
+
+(* Every realisation is tied at the minimum circumference, so ["Length"] is one
+   number rather than one per realisation. *)
+
+VerificationTest[
+  With[{pool = FindInfraCircle[GridGraph[{11, 11}], 61, {2, 4}, All]},
+    {pool["Length"]} === Union[Length /@ pool["Realizations"]]
+  ],
+  True,
+  TestID -> "FindInfraCircle-pool-Length-is-the-common-circumference"
+]
+
+(* Property 3, the point of the pool: the marginals come off the atom DAGs by
+   dynamic programming and agree with the enumerated ones. *)
+
+VerificationTest[
+  With[{pool = FindInfraCircle[GridGraph[{11, 11}], 61, {2, 4}, All]},
+    {enumerated = InfraCircle[pool["Realizations"]]},
+    pool["Multiplicity"] === Length[pool["Realizations"]] &&
+    KeySort[InfraMeasure[pool]] === KeySort[InfraMeasure[enumerated]] &&
+    KeySort[InfraMeasure[pool, "On" -> "Edges"]] === KeySort[InfraMeasure[enumerated, "On" -> "Edges"]]
+  ],
+  True,
+  TestID -> "FindInfraCircle-pool-marginals-agree-with-enumeration"
+]
+
+(* A family too large to list: on a 25x25 grid band the count is a perfect
+   fourth power, the circle factoring into four independent quadrant arcs.
+   Enumeration cannot reach it; the DP answers in milliseconds. *)
+
+VerificationTest[
+  FindInfraCircle[GridGraph[{25, 25}], 313, {5, 9}, All]["Multiplicity"],
+  41^4,
+  TestID -> "FindInfraCircle-pool-counts-an-unenumerable-family"
+]
+
+(* Lazy materialisation: a bounded count streams circles off the pool instead of
+   enumerating the family. *)
+
+VerificationTest[
+  With[{g = GridGraph[{25, 25}]},
+    With[{cycles = FindInfraCircle[g, 313, {5, 9}, UpTo[5]]["Realizations"]},
+      Length[cycles] === 5 &&
+      AllTrue[cycles, Length[#] === 40 &] &&
+      AllTrue[cycles,
+        cyc |-> DuplicateFreeQ[cyc] &&
+          AllTrue[Partition[Append[cyc, First[cyc]], 2, 1], EdgeQ[g, UndirectedEdge @@ #] &]]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraCircle-pool-bounded-count-is-lazy"
+]
+
+(* Off the certified class the answer is still exact -- it comes from the cycle
+   sweep -- and ::uncertified says the pool was refused.  PetersenGraph[] is
+   non-planar, so winding about the centre is undefined and the atom-invariance
+   of separation fails. *)
+
+VerificationTest[
+  With[{g = PetersenGraph[]},
+    With[{cycles = FindInfraCircle[g, 1, {1, 2}, All]["Realizations"]},
+      cycles =!= {} &&
+      AllTrue[cycles,
+        cyc |-> DuplicateFreeQ[cyc] &&
+          AllTrue[Partition[Append[cyc, First[cyc]], 2, 1], EdgeQ[g, UndirectedEdge @@ #] &]]
+    ]
+  ],
+  True,
+  {FindInfraCircle::uncertified},
+  TestID -> "FindInfraCircle-uncertified-falls-back-and-stays-exact"
+]
+
+(* An honestly empty family is not a refusal: a cycle graph's band carries no
+   separating cycle, nothing is lost, and no message is emitted. *)
+
+VerificationTest[
+  FindInfraCircle[CycleGraph[6], 1, {1, 2}, All]["Realizations"],
+  {},
+  TestID -> "FindInfraCircle-empty-family-is-quiet"
+]
+
+(* Only the default Properties has a pool: narrowing or widening the class puts
+   the answer back on the sweep, in the enumerated shape. *)
+
+VerificationTest[
+  MatchQ[#, InfraCircle[{__Graph}]] & /@ {
+    FindInfraCircle[GridGraph[{11, 11}], 61, {2, 4}, All],
+    FindInfraCircle[GridGraph[{11, 11}], 61, {2, 4}, All, Properties -> {"Shortest", "Separating"}],
+    FindInfraCircle[GridGraph[{11, 11}], 61, {2, 4}, All, Properties -> {"Separating"}],
+    FindInfraCircle[GridGraph[{11, 11}], 61, {2, 4}, All, Properties -> {}]
+  },
+  {True, True, False, False},
+  TestID -> "FindInfraCircle-pool-only-under-the-default-Properties"
 ]
 
 (* Under the default ({Separating, Shortest}) every returned cycle has the

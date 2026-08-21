@@ -85,8 +85,8 @@ BallHullQ::usage = "BallHullQ[graph, S] tests whether S is ball-convex, i.e. an 
 
 (* ===================== InfraCircle ===================== *)
 
-InfraCircle::usage = "InfraCircle[{cycle1, ...}] is a bundle of metric circles, each an open vertex sequence with implicit wrap-around.";
-FindInfraCircle::usage = "FindInfraCircle[graph, c, r] gives the shortest separating cycle in the level surface at radius r around c, together with its ties. Option Properties.";
+InfraCircle::usage = "InfraCircle[{cycle1, ...}] is a bundle of metric circles, each an open vertex sequence with implicit wrap-around. InfraCircle[{dag1, ...}] is the pool form, one arc-folded geodesic DAG per atom. Accessors \"Realizations\", \"Length\", \"Multiplicity\", \"Measure\".";
+FindInfraCircle::usage = "FindInfraCircle[graph, c, r] gives the shortest separating cycle in the level surface at radius r around c, together with its ties; with count All it gives the circle pool carrying them, falling back to the cycle sweep off the pool's certified class. Option Properties.";
 FindInfraCycle::usage = "FindInfraCycle[graph, n] gives the n shortest simple cycles of graph; FindInfraCycle[graph, {kmin, kmax}, n] restricts their length.";
 InfraCircleQ::usage = "InfraCircleQ[graph, cycle] tests whether cycle is a cyclic edge chain whose vertex set is a metric shell.";
 
