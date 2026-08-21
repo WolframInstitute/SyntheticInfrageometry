@@ -2,6 +2,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageScope[toVertexSet]
 PackageScope[infraVertexSet]
+PackageScope[sceneAssertionRules]
 PackageScope[resolveExpression]
 PackageScope[extractBranches]
 PackageScope[capBranches]
@@ -17,38 +18,43 @@ PackageScope[evaluateConstruction]
 toVertexSet[ v_ ] /; AtomQ[ v ] := { v }
 toVertexSet[ vs_List ] := vs
 
+(* Every scene assertion, as (inert user-facing form :> the named predicate the
+   graph is injected into).  resolveExpression rewrites through this table and
+   the guard below decides admissibility by it, so neither a head nor an arity
+   can be accepted without a rule that decides it. *)
+sceneAssertionRules[ graph_ ] :=
+  { InfraDistance[ x_, y_ ]      :> GraphDistance[ graph, x, y ],
+    InfraWalkQ[ w_ ]             :> InfraWalkQ[ graph, w ],
+    InfraSegmentQ[ s_ ]          :> InfraSegmentQ[ graph, s ],
+    InfraShellQ[ vs_ ]           :> InfraShellQ[ graph, vs ],
+    InfraBallQ[ vs_ ]            :> InfraBallQ[ graph, vs ],
+    InfraPlaneQ[ h_, p1_, p2_ ]  :> InfraPlaneQ[ graph, h, p1, p2 ],
+    InfraCircleQ[ c_ ]           :> InfraCircleQ[ graph, c ],
+    InfraLineQ[ s_ ]             :> InfraLineQ[ graph, s ],
+    InfraParallelQ[ l1_, l2_ ]   :> InfraParallelQ[ graph, l1, l2 ],
+    InfraIntersectQ[ s1_, s2_ ]  :> IntersectingQ[ s1, s2 ],
+    InfraPolylineQ[ poly_ ]      :> InfraPolylineQ[ graph, poly ],
+    InfraRegularPolygonQ[ c_, as_ ] :> InfraRegularPolygonQ[ graph, c, as ],
+    InfraRevolutionQ[ vs_, axis_, profile_ ] :> InfraRevolutionQ[ graph, vs, axis, profile ] }
+
 (* Substitute scene-object bindings into an expression, then resolve
    InfraDistance / InfraQ heads against the graph. *)
 resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
-  ( expr /. Normal[ bindings ] ) /.
-    { InfraDistance[ x_, y_ ]      :> GraphDistance[ graph, x, y ],
-      InfraWalkQ[ w_ ]             :> InfraWalkQ[ graph, w ],
-      InfraSegmentQ[ s_ ]          :> InfraSegmentQ[ graph, s ],
-      InfraShellQ[ vs_ ]           :> InfraShellQ[ graph, vs ],
-      InfraBallQ[ vs_ ]            :> InfraBallQ[ graph, vs ],
-      InfraPlaneQ[ h_, p1_, p2_ ]  :> InfraPlaneQ[ graph, h, p1, p2 ],
-      InfraCircleQ[ c_ ]           :> InfraCircleQ[ graph, c ],
-      InfraLineQ[ s_ ]             :> InfraLineQ[ graph, s ],
-      InfraParallelQ[ l1_, l2_ ]   :> InfraParallelQ[ graph, l1, l2 ],
-      InfraIntersectQ[ s1_, s2_ ]  :> IntersectingQ[ s1, s2 ],
-      InfraPolylineQ[ poly_ ]      :> InfraPolylineQ[ graph, poly ],
-      InfraRegularPolygonQ[ c_, as_ ] :> InfraRegularPolygonQ[ graph, c, as ],
-      InfraRevolutionQ[ vs_, axis_, profile_ ] :> InfraRevolutionQ[ graph, vs, axis, profile ] }
+  ( expr /. Normal[ bindings ] ) /. sceneAssertionRules[ graph ]
 
-(* The heads resolveExpression injects the graph into -- exactly the
-   assertions a scene can decide. *)
-$sceneAssertionHeads = { InfraWalkQ, InfraSegmentQ, InfraShellQ, InfraBallQ,
-  InfraPlaneQ, InfraCircleQ, InfraLineQ, InfraParallelQ, InfraIntersectQ,
-  InfraPolylineQ, InfraRegularPolygonQ, InfraRevolutionQ };
-
-(* An Infra*Q head outside that table never receives the graph, so it stays
-   inert, TrueQ reads it as False, and the scene silently rejects every
-   branch.  Refusing the scene is the only way that failure is visible. *)
-unknownAssertionHeads[ assertions_List ] :=
-  DeleteDuplicates @ Cases[ assertions,
-    h_Symbol[ ___ ] /; StringMatchQ[ SymbolName[ h ], "Infra" ~~ ___ ~~ "Q" ] &&
-      ! MemberQ[ $sceneAssertionHeads, h ] :> h,
-    { 0, Infinity } ]
+(* An Infra*Q subexpression with no rule in that table never receives the graph,
+   so it stays inert, TrueQ reads it as False, and the scene silently rejects
+   every branch.  Matching the whole shape rather than the head catches a known
+   head at an unsupported arity too: InfraSegmentQ[s, extra] misses its rule and
+   fails exactly as invisibly as an unexported head.  Only the left sides are
+   read, so the graph the table is built with is immaterial. *)
+undecidableAssertions[ assertions_List ] :=
+  With[ { decidable = Alternatives @@ Keys @ sceneAssertionRules[ Null ] },
+    DeleteDuplicates @ Cases[ assertions,
+      token : head_Symbol[ ___ ] /;
+        StringMatchQ[ SymbolName[ head ], "Infra" ~~ ___ ~~ "Q" ] &&
+          ! MatchQ[ token, decidable ],
+      { 0, Infinity } ] ]
 
 extractBranches[ opts_List ] :=
   Lookup[ Association @ opts, "Branches", All ]
@@ -156,8 +162,9 @@ InfraUnion[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] 
 
 (* ===================== Scene ===================== *)
 
-InfraScene::badassertion = "`1` is not a scene assertion head; it never receives \
-the graph, so the scene would reject every branch without a message.";
+InfraScene::badassertion = "`1` is not a scene assertion the graph can be \
+injected into; it stays inert, so the scene would reject every branch without a \
+message.";
 
 (* Manual-step form: hypotheses contain explicit InfraGeometricStep blocks. *)
 InfraScene[ objects_List, hypotheses_List ] /;
@@ -182,9 +189,9 @@ InfraScene[ objects_List, hypotheses_List ] /;
         h |-> ! MatchQ[ h, _InfraGeometricStep ] && ! constructionPatternQ[ objects, h ] ],
       Flatten[ #[ "Assertions" ] & /@ perStep ] ];
 
-    With[ { unknown = unknownAssertionHeads[ assertions ] },
-      If[ unknown =!= { },
-        Message[ InfraScene::badassertion, First @ unknown ];
+    With[ { undecidable = undecidableAssertions[ assertions ] },
+      If[ undecidable =!= { },
+        Message[ InfraScene::badassertion, First @ undecidable ];
         Return[ $Failed, Module ] ] ];
 
     InfraScene[ <|
@@ -205,9 +212,9 @@ InfraScene[ objects_List, hypotheses_List ] :=
     constructions = Association @ Cases[ hypotheses,
       ( key_ == rhs_ ) /; constructionPatternQ[ objects, key == rhs ] :> ( key -> rhs ) ];
     assertions = Select[ hypotheses, ! constructionPatternQ[ objects, # ] & ];
-    With[ { unknown = unknownAssertionHeads[ assertions ] },
-      If[ unknown =!= { },
-        Message[ InfraScene::badassertion, First @ unknown ];
+    With[ { undecidable = undecidableAssertions[ assertions ] },
+      If[ undecidable =!= { },
+        Message[ InfraScene::badassertion, First @ undecidable ];
         Return[ $Failed, Module ] ] ];
     dag = Graph[ objects,
       Flatten @ KeyValueMap[

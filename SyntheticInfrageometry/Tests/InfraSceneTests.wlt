@@ -651,5 +651,75 @@ VerificationTest[
   TestID -> "InfraScene-known-assertion-heads-accepted"
 ]
 
+(* A known head at an arity the table has no rule for misses its rewrite and
+   stays inert, exactly like an unknown head -- so it is refused the same way. *)
+VerificationTest[
+  InfraScene[ { ya, yb, ys }, {
+    ys == InfraSegment[ ya, yb ], InfraSegmentQ[ ys, 2 ] } ],
+  $Failed,
+  { InfraScene::badassertion },
+  TestID -> "InfraScene-known-head-wrong-arity-refused"
+]
+
+
+(* ===== Structural invariants ===== *)
+
+(* An exported symbol with no definitions of any kind can only be a scene token:
+   an assertion head, a construction constructor, or the step container.  The
+   three below are exactly those; a fourth means a symbol was exported with a
+   usage message and no meaning, which is how InfraPlaneQ hid. *)
+VerificationTest[
+  Select[ Names[ "WolframInstitute`SyntheticInfrageometry`*" ],
+    n |-> AllTrue[
+      { DownValues, UpValues, SubValues, OwnValues, FormatValues, NValues },
+      f |-> ReleaseHold @ Map[ f, ToExpression[ n, InputForm, Hold ] ] === { } ] ],
+  { "InfraGeometricStep", "InfraIntersectQ", "InfraRevolution" },
+  TestID -> "InfraScene-valueless-exports-are-scene-tokens"
+]
+
+(* And each of the three is a live token, not a leftover: the assertion head is
+   accepted by the guard, the constructor is dispatched into vertex sets, and the
+   container carries a manual step. *)
+VerificationTest[
+  Head @ InfraScene[ { ta, tb }, { InfraIntersectQ[ ta, tb ] } ],
+  InfraScene,
+  TestID -> "InfraScene-token-InfraIntersectQ-is-an-assertion-head"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    And @@ ( inst |-> With[ { vs = inst[[ 1 ]][ tr ] },
+        SubsetQ[ vs, { 1, 2, 3, 4 } ] && SubsetQ[ VertexList @ g, vs ] ] ) /@
+      FindInfraScene[
+        InfraScene[ { tr }, { tr == InfraRevolution[ { 1, 2, 3, 4 }, 1 ] } ], g ] ],
+  True,
+  TestID -> "InfraScene-token-InfraRevolution-is-a-constructor"
+]
+
+VerificationTest[
+  With[ { scene = InfraScene[ { sa, sb }, {
+      InfraGeometricStep[ { sa == InfraPoint[ ] } ],
+      InfraGeometricStep[ { sb == InfraPoint[ ] } ] } ] },
+    scene[ "ManualSteps" ] === True && scene[ "Steps" ] === { { sa }, { sb } } ],
+  True,
+  TestID -> "InfraScene-token-InfraGeometricStep-carries-a-step"
+]
+
+(* Every scene assertion delegates to a named predicate.  InfraPlaneQ was the
+   one entry whose semantics lived inlined in the rule table instead of behind a
+   name, which is why InfraPlane was the only level set with no *Q at all. *)
+VerificationTest[
+  With[ { heldRHS = Cases[
+      WolframInstitute`SyntheticInfrageometry`PackageScope`sceneAssertionRules[ Null ],
+      RuleDelayed[ _, rhs_ ] :> Hold[ rhs ] ] },
+    { Select[ heldRHS, ! MatchQ[ #, Hold[ _Symbol[ ___ ] ] ] & ],
+      Select[ Extract[ #, { 1, 0 } ] & /@ heldRHS,
+        Context[ # ] =!= "System`" &&
+          ! MemberQ[ Names[ "WolframInstitute`SyntheticInfrageometry`*" ],
+            SymbolName[ # ] ] & ] } ],
+  { { }, { } },
+  TestID -> "InfraScene-assertion-rules-delegate-to-named-predicates"
+]
+
 
 EndTestSection[]
