@@ -1,0 +1,1476 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     61765,       1467]
+NotebookOptionsPosition[     53324,       1311]
+NotebookOutlinePosition[     54506,       1346]
+CellTagsIndexPosition[     54426,       1341]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["InfraMesoPoint", "ObjectName",
+ CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
+
+Cell[TextData[{
+ Cell["   ", "ModInfo",ExpressionUUID->"cd97e85d-ce3c-4e77-be67-8bab0eaa6d19"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["InfraMesoPoint"]], 
+     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraMesoPoint", 
+     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   RowBox[{"<|", 
+    RowBox[{
+     RowBox[{
+      StyleBox["v", "TI"], " ", "->", " ", 
+      StyleBox["m", "TI"]}], ",", " ", "\[Ellipsis]"}], "|>"}], "]"}]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "c4be668d-3aaa-4295-a5fe-619f82c4efc3"],
+ "\[LineSeparator]",
+ "is a measure on vertices \[LongDash] a point known only up to a \
+distribution.",
+ "\n",
+ Cell["   ", "ModInfo",ExpressionUUID->"cbad70bf-7b58-407f-9eb4-477e7f9dafcd"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["InfraMesoPoint"]], 
+     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraMesoPoint", 
+     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      StyleBox["v1", "TI"], ",", " ", "\[Ellipsis]"}], "}"}], ",", " ", 
+    RowBox[{"{", 
+     RowBox[{
+      StyleBox["m1", "TI"], ",", " ", "\[Ellipsis]"}], "}"}]}], "]"}]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "95115dde-4d79-4fd4-bdeb-5a6dd4b9926b"],
+ "\[LineSeparator]",
+ "is sugar for the association form.",
+ "\n",
+ Cell["   ", "ModInfo",ExpressionUUID->"5191efb6-9dee-418c-bf47-eeedda25104a"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["InfraMesoPoint"]], 
+     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraMesoPoint", 
+     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   StyleBox["obj", "TI"], "]"}]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "e86d9f48-5ff4-4d93-91ca-73723f2c3480"],
+ "\[LineSeparator]",
+ "is the occupation measure of any ",
+ Cell[BoxData[
+  RowBox[{"Infra", "*"}]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "db823916-09c2-471b-9e6e-fa4a45fd091f"],
+ " object."
+}], "Usage",ExpressionUUID->"4fac03de-6abd-486d-83e2-bcf17104814f"],
+
+Cell[TextData[{
+ "Definition: a mesopoint is a finitely supported measure on the vertex set \
+\[LongDash] the ",
+ StyleBox["measure",
+  FontWeight->"Bold"],
+ " layer of the point ontology, sitting above the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraPoint"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraPoint", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "e3b2de4a-d88c-495c-bf93-3a6f002fc963"],
+ " atom and the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraSet"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraSet", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "a28b20d1-f1a6-4de2-8c4d-b6e6cb5479d8"],
+ " region."
+}], "Notes",ExpressionUUID->"6b2eb725-2e38-4dce-a7f9-f4f691dafc56"],
+
+Cell["\<\
+The name is the point of it. A construction whose answer is a single point in \
+the continuum often cannot localise to a single vertex on a graph: the honest \
+answer is a blob with weights. That is a point at intermediate resolution, \
+and it is a distinct kind of object from a region that merely happens to be \
+small.\
+\>", "Notes",ExpressionUUID->"04683159-2640-4b4b-8db1-09929e5722e7"],
+
+Cell["\<\
+Weights count. They are not probabilities put in by hand \[LongDash] a weight \
+of 6 means six geodesics chose that vertex.\
+\>", "Notes",ExpressionUUID->"de20eba7-2ca2-480d-889e-f18dac67e691"],
+
+Cell[TextData[{
+ "Mesopoints are ",
+ StyleBox["created at a projection",
+  FontWeight->"Bold"],
+ ", never propagated. The producers are ",
+ Cell[BoxData[
+  RowBox[{"seg", "[", 
+   RowBox[{"[", "i", "]"}], "]"}]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "aa505a0b-2063-466b-80c4-c8e33cf2a288"],
+ " (column occupation), ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraMidpoint"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/FindInfraMidpoint", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "7b3b0244-dfaf-4bd7-a8ea-dd631d5463c5"],
+ " and ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraGoldenSection"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/\
+FindInfraGoldenSection", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "629349ce-f834-4280-bdd2-69c47de3f405"],
+ " (layer-band occupation), ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraShellCenter"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/FindInfraShellCenter",
+     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "15995f2f-3fea-4ac7-9a78-48b17fc34504"],
+ " (chord-bisection multiplicity), and ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraMeasure"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraMeasure", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "85717437-bbfe-4eca-abdd-ece0b81e5b3f"],
+ " itself. Weights on an ",
+ StyleBox["input", "TI"],
+ " do not flow through a construction: a construction reads the support and \
+ignores the measure."
+}], "Notes",ExpressionUUID->"2632e759-1dad-456a-8c25-6ea7eb4452f7"],
+
+Cell["Up-coercions, all canonical:", "Notes",ExpressionUUID->"ecaf591f-bf44-43e4-805a-b370713c0107"],
+
+Cell[BoxData[GridBox[{
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "98b4cae1-0fa0-42a7-8bed-b53bfb1e7191"], Cell["From", "TableText",
+     FontWeight->Bold,ExpressionUUID->"123e62d6-5b9f-4c65-8bc0-93ff52bc2b87"],
+     Cell["Gives", "TableText",
+     FontWeight->Bold,ExpressionUUID->"2013ae80-b3f3-467c-9eee-86bf85c1c8de"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "06aea959-a27b-46bd-8bc1-1062ca93ce61"], Cell[TextData[{
+     "a list of ",
+     Cell[BoxData["InfraPoint"], "InlineFormula",
+      FontSize->0.9 Inherited,ExpressionUUID->
+      "bbc05c16-7025-4581-b719-291a2d4686a9"],
+     " atoms"
+    }], "TableText",ExpressionUUID->"dbc6c964-7565-4a1a-89bc-48d6bcb18dc3"], 
+    Cell["the counting measure \[LongDash] repetition is mass", "TableText",
+     ExpressionUUID->"caee6168-a816-4a2e-8905-1ae53b7e43f0"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "48feb1ce-b1a4-4693-8a02-cab462470066"], Cell[TextData[{
+     "an ",
+     Cell[BoxData["InfraSet"], "InlineFormula",
+      FontSize->0.9 Inherited,ExpressionUUID->
+      "9e27037c-f337-4695-a0bc-f8808276479d"]
+    }], "TableText",ExpressionUUID->"81bce9bf-6dcc-42e8-b06e-50b2e507e2d1"], 
+    Cell[TextData[{
+     "the all-ones measure, which ",
+     StyleBox["stays",
+      FontWeight->"Bold"],
+     " a mesopoint"
+    }], "TableText",ExpressionUUID->"89543686-5d52-4fe0-ae62-0d7959110b37"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "edb454e6-22ce-488e-ada0-a4a98faa817c"], Cell[TextData[{
+     "any bundle wrapper (",
+     Cell[BoxData["InfraBall"], "InlineFormula",
+      FontSize->0.9 Inherited,ExpressionUUID->
+      "e2c21a19-4d92-4b13-aa65-6ee63a226d16"],
+     ", ",
+     Cell[BoxData["InfraSegment"], "InlineFormula",
+      FontSize->0.9 Inherited,ExpressionUUID->
+      "449e1ade-f721-42d4-8beb-9db17e5f7028"],
+     ", \[Ellipsis])"
+    }], "TableText",ExpressionUUID->"f45487e2-2b04-4b8d-a806-1670d8db51b2"], 
+    Cell["\<\
+its vertex occupation; a geodesic-DAG atom by dynamic programming, without \
+enumerating the family\
+\>", "TableText",ExpressionUUID->"b3f49b1d-ba50-40ae-9a14-09df05e8f009"]}
+  }]], "2ColumnTableMod",ExpressionUUID->"3a01e077-1881-4442-975f-\
+e69aa8659e24"],
+
+Cell[TextData[{
+ "A ",
+ StyleBox["bare vertex list is refused",
+  FontWeight->"Bold"],
+ ". ",
+ Cell[BoxData[
+  RowBox[{"InfraMesoPoint", "[", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", " ", "2"}], "}"}], "]"}]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "9faaafe3-ae1a-4d50-844c-b8177c36178c"],
+ " stays inert by design: on a graph with list-valued vertex labels a support \
+list and a single label are indistinguishable, and that ambiguity is what the \
+three-head split exists to remove."
+}], "Notes",ExpressionUUID->"f8b2de24-8c31-4acc-bf48-31e8c1c02157"],
+
+Cell["Accessors:", "Notes",ExpressionUUID->"f8aacb76-0024-411e-9da0-bc8272c731d3"],
+
+Cell[BoxData[GridBox[{
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "0039f9a5-b78e-462e-bbbd-cca29ac7a76a"], Cell["Accessor", "TableText",
+     FontWeight->Bold,ExpressionUUID->"0919ec41-9e86-4876-8cda-ab462c069f3c"],
+     Cell["Gives", "TableText",
+     FontWeight->Bold,ExpressionUUID->"85565599-fa7a-47f6-aba2-dd7ad08a0d11"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "0c05a054-2256-450f-be3b-6e3e0d9fee3f"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Support\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "7bba3fdc-c5d5-4145-8055-92fcf1ad689f"]], "TableText",ExpressionUUID->
+     "fcdcaa0c-8215-4696-98a9-52ecc7cc570c"], Cell[TextData[{
+     "the vertices, as an ",
+     Cell[BoxData["InfraSet"], "InlineFormula",
+      FontSize->0.9 Inherited,ExpressionUUID->
+      "fcf7a9e3-ff5e-46c1-b6c4-218b9d0a712a"]
+    }], "TableText",ExpressionUUID->"21dedcaa-ca63-425a-a331-9b37305f9dad"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "01311017-23cb-49ad-b958-3dd30dfa3d13"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Vertices\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "facadf6d-ea10-43a6-b149-234a271167c1"]], "TableText",ExpressionUUID->
+     "f106ad57-410b-41bb-bcb9-14ef4b82acae"], Cell[
+    "the vertices, as a plain list", "TableText",ExpressionUUID->
+     "239bde4a-3abe-43ae-9f1d-783b1a645206"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "f79c9601-4e23-4615-882a-eeaa8051a4a4"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Weights\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "2b5e6e2a-1666-4b37-9e13-41a39cf8c780"]], "TableText",ExpressionUUID->
+     "a5aa62c0-bb9f-4282-ba7a-3728cccfb20f"], Cell[
+    "the raw counts", "TableText",ExpressionUUID->
+     "b612946c-ad9a-48ab-84ae-5b7ff4e1adb2"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "1c861fb4-9674-43f3-a211-7fd6d66f9ac1"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Mass\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "6fe45d41-48c5-4c56-8e3e-2426154bdbe3"]], "TableText",ExpressionUUID->
+     "b3fda28f-ae92-4ed6-953b-cc2bd366a4e8"], Cell[
+    "the total of the weights", "TableText",ExpressionUUID->
+     "c8e2c303-552c-493b-8ac5-01c4f6eca881"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "4c79b0b7-638c-4606-b411-6fdb65afbcb2"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Entropy\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "4d712feb-4627-4734-8113-eee0824025f5"]], "TableText",ExpressionUUID->
+     "b01e0295-864c-4ae4-9027-f2d38f90b7db"], Cell[TextData[{
+     "Shannon entropy of the normalised measure; ",
+     Cell[BoxData["0"], "InlineFormula",
+      FontSize->0.9 Inherited,ExpressionUUID->
+      "63448cbc-2fc1-4d97-9617-7e24841795dd"],
+     " iff the mesopoint is sharp"
+    }], "TableText",ExpressionUUID->"0d47e7d5-a6d9-4da1-a44b-7f5be7053f21"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "5e1accd2-c615-4f96-a1fc-41977f3e7647"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Measure\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "3498aa7b-29f8-4322-b365-b2a52c66489c"]], "TableText",ExpressionUUID->
+     "4b4fcb7e-f5a7-498e-872c-ed358e3da963"], Cell["\<\
+mass over the heaviest mass \[LongDash] membership in [0,1], what the \
+renderer draws\
+\>", "TableText",ExpressionUUID->"6364b2aa-2884-462b-97ed-99e4a37a92e7"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "471cc725-e37b-4c18-9833-d861ae419077"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<ProbabilityMeasure\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "75302018-ef0c-43ff-8521-663f4d55fa9f"]], "TableText",ExpressionUUID->
+     "fd8f17e4-bc53-49be-a255-222835610a19"], Cell[
+    "mass over total mass \[LongDash] the distribution summing to 1", 
+     "TableText",ExpressionUUID->"80f166b0-6a68-4f78-8dad-6fc75bc5ca19"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "8e661a1e-fe3b-466c-8567-c347db592c8b"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<OccupationCount\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "25b8fb02-0c24-4851-8357-19521ee8e48c"]], "TableText",ExpressionUUID->
+     "b8f0d331-acce-45e8-99e5-88645a7228f3"], Cell[
+    "the raw masses", "TableText",ExpressionUUID->
+     "0dcf0cf9-6f5e-4c91-8762-c7a84e8c3128"]}
+  }]], "2ColumnTableMod",ExpressionUUID->"db930041-81ea-4c61-a8ff-\
+4105b95c5fee"],
+
+Cell[TextData[{
+ "In ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraSceneHighlight"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraSceneHighlight", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "80431ae2-0955-432f-9f9a-c1d193884553"],
+ " a mesopoint renders diffusely by ",
+ StyleBox["relative",
+  FontWeight->"Bold"],
+ " mass: each vertex is drawn at its mass over the heaviest mass, so the \
+modal vertex is full and lighter ones fade. A uniform mesopoint \[LongDash] a \
+ball, for instance \[LongDash] is therefore uniformly bright; its diffuseness \
+is its extent, not a per-vertex fade."
+}], "Notes",ExpressionUUID->"192b1088-9518-468f-97a2-0a81ead0cef7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "See Also",
+ Cell[BoxData[
+  TemplateBox[{"SeeAlso", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related reference (function) pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "b7caa910-e086-4d39-871e-e78bfb02a4b9"]
+}], "SeeAlsoSection",
+ CellID->1559318232,ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraPoint"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraPoint", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "e5949cb6-9161-4123-a5b8-65734ac305b2"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraSet"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraSet", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "af87cb0c-13ca-466b-94d2-5e4cc3f48381"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraMeasure"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraMeasure", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "27f6e6a6-4c9c-4d7f-a314-503759ad3c2c"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraMidpoint"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/FindInfraMidpoint", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "be8cca02-f73c-4d3e-aac3-cb27c7f2b707"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraShellCenter"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/FindInfraShellCenter",
+     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "04e4f074-8531-49b1-a72d-c25236aa2fb2"]
+}], "SeeAlso",ExpressionUUID->"72589f42-7db9-4daf-95c1-f4d868a6c238"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Tech Notes",
+ Cell[BoxData[
+  TemplateBox[{"TechNotes", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Insert links to related tech notes.", "MoreInfoText"], BaseStyle -> 
+       "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "a0027a76-2f69-4270-bf06-cff364aa09d7"]
+}], "TechNotesSection",
+ CellID->792424486,ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74"],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "MoreAboutSection",
+ CellID->38303248,ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5"],
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox["EuclideanGeometryGuide",
+  BaseStyle->"Link",
+  ButtonData->
+   "paclet:WolframInstitute/SyntheticInfrageometry/guide/\
+EuclideanGeometryGuide"]], \
+"InlineFormula",ExpressionUUID->"4f3ea00d-75c2-4508-9a73-83bc416f19a5"]], \
+"MoreAbout",ExpressionUUID->"7e50ff90-7ce6-4409-9a79-a1cda1047741"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Related Links",
+ Cell[BoxData[
+  TemplateBox[{"RelatedLinks", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related page, including web pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "88f916ad-99d1-4784-a15f-dfa2faf44f02"]
+}], "RelatedLinksSection",
+ CellID->47113304,ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Examples Initialization",
+ Cell[BoxData[
+  TemplateBox[{"ExamplesInitialization", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Input that is to be evaluated before any examples are run, e.g. \
+Needs[\[Ellipsis]].", "MoreInfoText"], BaseStyle -> "IFrameBox"]], 
+     "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "1ca4d14a-308f-4a68-bbf6-e6901ce2ab4c"]
+}], "ExamplesInitializationSection",
+ CellID->1718580883,ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5"],
+
+Cell[BoxData[{
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`SyntheticInfrageometry`\>\"", 
+  "]"}], "\n", 
+ RowBox[{"Needs", "[", "\"\<WolframInstitute`Infrageometry`\>\"", 
+  "]"}]}], "ExampleInitialization",
+ CellID->1969679695,ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[GridBox[{
+    {
+     StyleBox[
+      RowBox[{"Basic", " ", "Examples"}], "PrimaryExamplesSection"], 
+     ButtonBox[
+      RowBox[{
+       RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}],
+      BaseStyle->"ExtendedExamplesLink",
+      ButtonData:>"ExtendedExamples"]}
+   }],
+  $Line = 0; Null]], "PrimaryExamplesSection",
+ CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
+
+Cell["\<\
+Two vertices at odd distance have no exact midpoint. The answer is a \
+mesopoint.\
+\>", "ExampleText",ExpressionUUID->"3d2c1bfa-4673-4ba9-b914-a1136f744cca"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", " ", "=", " ", 
+     RowBox[{"ExampleGraphData", "[", 
+      RowBox[{"\"\<Square\>\"", ",", " ", "\"\<Medium\>\""}], "]"}]}], "}"}], 
+   ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"a", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"GraphCenter", "[", "g", "]"}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"b", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"Sort", " ", "@", " ", 
+       RowBox[{"Select", "[", 
+        RowBox[{
+         RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"GraphDistance", "[", 
+            RowBox[{"g", ",", " ", "a", ",", " ", "#"}], "]"}], " ", "==", 
+           " ", "5"}], " ", "&"}]}], "]"}]}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"FindInfraMidpoint", "[", 
+    RowBox[{"g", ",", " ", "a", ",", " ", "b"}], "]"}]}], "]"}]], "Input",
+ CellLabel->"In[1]:= ",ExpressionUUID->"c15e3785-bdb3-43f7-81ee-8e17972ecfb0"],
+
+Cell[BoxData[
+ RowBox[{"InfraMesoPoint", "[", 
+  RowBox[{"\[LeftAssociation]", 
+   RowBox[{
+    RowBox[{"3", "\[Rule]", "6"}], ",", 
+    RowBox[{"7", "\[Rule]", "1"}], ",", 
+    RowBox[{"8", "\[Rule]", "3"}], ",", 
+    RowBox[{"9", "\[Rule]", "3"}], ",", 
+    RowBox[{"10", "\[Rule]", "6"}], ",", 
+    RowBox[{"21", "\[Rule]", "1"}]}], "\[RightAssociation]"}], 
+  "]"}]], "Output",
+ CellLabel->"Out[1]= ",ExpressionUUID->"3555a7b2-d607-4f16-bbd6-133986eaa730"]
+}, Open  ]],
+
+Cell["\<\
+The accessors read it apart. The support is a region; the entropy says how \
+far from sharp it is.\
+\>", "ExampleText",ExpressionUUID->"da9dbb51-c130-46d8-ace9-4c80b8ae2c9a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", " ", "=", " ", 
+     RowBox[{"ExampleGraphData", "[", 
+      RowBox[{"\"\<Square\>\"", ",", " ", "\"\<Medium\>\""}], "]"}]}], "}"}], 
+   ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"a", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"GraphCenter", "[", "g", "]"}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"b", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"Sort", " ", "@", " ", 
+       RowBox[{"Select", "[", 
+        RowBox[{
+         RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"GraphDistance", "[", 
+            RowBox[{"g", ",", " ", "a", ",", " ", "#"}], "]"}], " ", "==", 
+           " ", "5"}], " ", "&"}]}], "]"}]}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"m", " ", "=", " ", 
+     RowBox[{"FindInfraMidpoint", "[", 
+      RowBox[{"g", ",", " ", "a", ",", " ", "b"}], "]"}]}], "}"}], ",", "\n", 
+   "  ", 
+   RowBox[{"<|", 
+    RowBox[{
+     RowBox[{"\"\<support\>\"", " ", "->", " ", 
+      RowBox[{"m", "[", "\"\<Support\>\"", "]"}]}], ",", " ", 
+     RowBox[{"\"\<weights\>\"", " ", "->", " ", 
+      RowBox[{"m", "[", "\"\<Weights\>\"", "]"}]}], ",", " ", 
+     RowBox[{"\"\<mass\>\"", " ", "->", " ", 
+      RowBox[{"m", "[", "\"\<Mass\>\"", "]"}]}], ",", "\n", "    ", 
+     RowBox[{"\"\<entropy\>\"", " ", "->", " ", 
+      RowBox[{"m", "[", "\"\<Entropy\>\"", "]"}]}]}], "|>"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[2]:= ",ExpressionUUID->"6e1d2718-1d60-4cde-a1ce-85029b72f7f2"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"m$", "::", "shdw"}], "MessageName"], 
+  RowBox[{":", " "}], 
+  RowBox[{"Symbol", " "}], 
+  TagBox["\<\"m$\"\>",
+   HoldCompleteForm], 
+  RowBox[{" ", 
+   RowBox[{"appears", " ", "in", " ", "multiple", " ", "contexts", " "}]}], 
+  TagBox[
+   RowBox[{"{", 
+    RowBox[{"\<\"WolframInstitute`SyntheticInfrageometry`InfraEquality`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`SyntheticInfrageometry`\
+InfraSceneVisualization`PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`SyntheticInfrageometry`WalkSpace`\
+PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`Infrageometry`Coordinatization`PackagePrivate`\
+\"\>", ",", \
+"\<\"WolframInstitute`Infrageometry`CosetEnumeration`PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`Infrageometry`Graph`PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`Infrageometry`Mesh`PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`Infrageometry`TDA`PackagePrivate`\"\>", 
+     ",", "\<\"WolframInstitute`Infrageometry`UniformMaps`PackagePrivate`\"\>\
+", ",", "\<\"Global`\"\>"}], "}"}],
+   HoldCompleteForm], 
+  RowBox[{";", " ", 
+   RowBox[{"definitions", " ", "in", " ", "context", " "}]}], 
+  TagBox["\<\"WolframInstitute`SyntheticInfrageometry`InfraEquality`\
+PackagePrivate`\"\>",
+   HoldCompleteForm], 
+  RowBox[{" ", 
+   RowBox[{
+   "may", " ", "shadow", " ", "or", " ", "be", " ", "shadowed", " ", "by", " ",
+     "other", " ", 
+    RowBox[{"definitions", "."}]}]}]}]], "Message", \
+"MSG",ExpressionUUID->"932c7fe7-5885-431e-884b-f9fcc29824c9"],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{"\<\"support\"\>", "\[Rule]", 
+    RowBox[{"InfraSet", "[", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "7", ",", "8", ",", "9", ",", "10", ",", "21"}], 
+      "}"}], "]"}]}], ",", 
+   RowBox[{"\<\"weights\"\>", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"6", ",", "1", ",", "3", ",", "3", ",", "6", ",", "1"}], "}"}]}],
+    ",", 
+   RowBox[{"\<\"mass\"\>", "\[Rule]", "20"}], ",", 
+   RowBox[{"\<\"entropy\"\>", "\[Rule]", 
+    RowBox[{
+     RowBox[{
+      FractionBox["3", "5"], " ", 
+      RowBox[{"Log", "[", 
+       FractionBox["10", "3"], "]"}]}], "+", 
+     RowBox[{
+      FractionBox["3", "10"], " ", 
+      RowBox[{"Log", "[", 
+       FractionBox["20", "3"], "]"}]}], "+", 
+     FractionBox[
+      RowBox[{"Log", "[", "20", "]"}], "10"]}]}]}], 
+  "\[RightAssociation]"}]], "Output",
+ CellLabel->"Out[2]= ",ExpressionUUID->"d719b55d-b30e-41fe-a929-e9eab1b5c931"]
+}, Open  ]],
+
+Cell["The weights are what the picture shows.", "ExampleText",ExpressionUUID->"72e62251-ba4c-4c98-83c8-01c992b1f464"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", " ", "=", " ", 
+     RowBox[{"Graph", "[", 
+      RowBox[{
+       RowBox[{"ExampleGraphData", "[", 
+        RowBox[{"\"\<Square\>\"", ",", " ", "\"\<Medium\>\""}], "]"}], ",", 
+       " ", 
+       RowBox[{"Sequence", " ", "@@", " ", 
+        RowBox[{"AmbientGraphStyle", "[", "\"\<Gray\>\"", "]"}]}]}], "]"}]}], 
+    "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"a", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"GraphCenter", "[", "g", "]"}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"b", " ", "=", " ", 
+     RowBox[{"First", " ", "@", " ", 
+      RowBox[{"Sort", " ", "@", " ", 
+       RowBox[{"Select", "[", 
+        RowBox[{
+         RowBox[{"VertexList", "[", "g", "]"}], ",", " ", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"GraphDistance", "[", 
+            RowBox[{"g", ",", " ", "a", ",", " ", "#"}], "]"}], " ", "==", 
+           " ", "5"}], " ", "&"}]}], "]"}]}]}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"InfraSceneHighlight", "[", 
+    RowBox[{"g", ",", "\n", "    ", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"FindInfraMidpoint", "[", 
+         RowBox[{"g", ",", " ", "a", ",", " ", "b"}], "]"}], " ", "->", " ", 
+        "$InfraCircleColor"}], ",", " ", 
+       RowBox[{
+        RowBox[{"InfraSet", "[", 
+         RowBox[{"{", 
+          RowBox[{"a", ",", " ", "b"}], "}"}], "]"}], " ", "->", " ", 
+        "$InfraPointColor"}]}], "}"}], ",", "\n", "    ", 
+     RowBox[{"\"\<PointSizeRange\>\"", " ", "->", " ", "22"}], ",", "\n", 
+     "    ", 
+     RowBox[{"VertexShapeFunction", " ", "->", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"AbsolutePointSize", "[", "2.2", "]"}], ",", " ", 
+          RowBox[{"Point", "[", "#", "]"}]}], "}"}], " ", "&"}], ")"}]}], ",",
+      "\n", "    ", 
+     RowBox[{"ImageSize", " ", "->", " ", "340"}]}], "]"}]}], "]"}]], "Input",\
+
+ CellLabel->"In[3]:= ",ExpressionUUID->"adc0866d-091b-4c9a-9801-0d52f50586dd"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+       20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
+       38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55,
+       56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73,
+       74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91,
+       92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107,
+       108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 
+      122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 
+      136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 
+      150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 172, 173, 174, 
+      175, 176, 177, 178, 179, 180, 191, 192, 193, 194, 195, 196, 197, 198}, {
+      Null, CompressedData["
+1:eJwVxec6KgAAANCmJClZldJGEZqEpraMMkJlpF2UkZCyR1nZo+y9ecP73fPn
+UOxBkx0EAABkQADg/0AQCAyGACEgKDQLmAWCgbNh2RA4PAecA0QgciG5UCQM
+mZWXh4KiEOgsdE5+dj4MgynILsgpLCyCF8GLc4sRJbnYEiwKh8Rh8Eg8qrSU
+kEfII6KJ6LKSskJSPimfXEDGUAqoFGoRjUYvpBczihjF5djykoqKSmxlKRPH
+xLHwLHwVpYpQXc0uZRNrCDXE2rLairqyOjqHxCFzSVwyj8qj8PkCqoAuFNbT
+6mkNjAaGqFxU3ljZWNFU2dzUzBYzxSwJU8KSVkn5sioZWy5XVCuqW2paapS1
+ylpVnapO3aQWajgajpar5ep4Op5eoOe3Cgythvq2tnZhe0NHfUdDp6iz0Sgy
+NpqaTU1dXd3N3fIecY+4V9IrMUvN0j5Zn6y/tV8xMGCRW1qsCmuLTWlTDSoH
+VUPqoa5h9XD7iGZEa9fYtaO6Ub1D59A7Dc5Wl8ttcLd7PN42b5uvw9fh7/R3
+BowB45hpzDTePd4V7A4FQ5aJnoneyZ7J3inzVN+0ebov3B92zfTPWCKR2YHZ
+gTnrnHXeNm+LDkYHF4YWhmLDseF4MO5ZHFkcWbIv2ZdHl0dXHCuOVeeqc829
+5lp3b6xveDc3tzxbvoQ34Uv6k4Ft/3ZgZ2xnfHdsd3wvtBfc30+FUpGDiYOJ
+w8nDyaOpo6nj6ePpk/BJ+HTmdOZs/Wz2/PwicjF3OXs5l55PRzPzmejVwlXs
+euE6dhO/2b+N327eJe4S98n75MP2w/bjzuPO0+7T7vPe895L6mX/NfX2+nb+
+fvl++ZH+SH9mPjNfV19X39ff1z83Pze/t7+3f69//wC9cs8q
+       "]}, {EdgeStyle -> {
+         GrayLevel[0.62]}, GraphLayout -> {"Dimension" -> 2}, ImageSize -> 
+       340, VertexCoordinates -> CompressedData["
+1:eJy9kkFOxDAMRS1WXXbRRRZdFMQ9mjNwBCTWnI0T1EeaIwAi35JfmwpGM0Sq
+vl7s2L9OHl/fX94ezOzj6/vWn3VZ7XBp/7J14hvO16y784p7J+6I49yun/Lb
+GmpW+tnFdQ51VDfyFSdDWUcc/Tp19D9j29d/inV+rOf73Tre4TX7iPrwHXFo
++O/UjXzUCd+NNY+pqVawZ5ZyHoz/uq532MDqRz8OH57zIv+PfcTxv50+mmdp
+qvkHb5l1D2LVL/V8/+o+fsyRL16RLx/wqzjnX6Axnyv7Rj30mRDXfcxNjWxg
+zzyCpbwPxm/W14/ZyAaumeVHc5kRL2TorX2IY54dH7rPpekA1vsI3pDvmSew
++i/1fP9uPvyYB3DUE6/Ir5nlV3NcEOf9L9CY/518RT/4mBHXe3hqOoKNbGDH
+eXABS/keGP8vX+HPkeeoIzZwzTyCC1j9eT+KPzfWPYkn8ADWuwjekI/6E3j2
+TzUd38s=
+        "], VertexShapeFunction -> {{
+          AbsolutePointSize[2.2], 
+          Point[#]}& , 10 -> (Append[{
+            RGBColor[0.95, 0.08, 0.08], 
+            Opacity[1.], 
+            AbsolutePointSize[22], 
+            RGBColor[0.2, 0.55, 0.65]}, 
+           Point[#]]& ), 31 -> (Append[{
+            RGBColor[0.3, 0.7, 0.5], 
+            Opacity[1.], 
+            AbsolutePointSize[22], 
+            RGBColor[0.95, 0.08, 0.08]}, 
+           Point[#]]& ), 3 -> (Append[{
+            RGBColor[0.95, 0.08, 0.08], 
+            Opacity[1.], 
+            AbsolutePointSize[22], 
+            RGBColor[0.2, 0.55, 0.65]}, 
+           Point[#]]& ), 8 -> (Append[{
+            RGBColor[0.95, 0.08, 0.08], 
+            Opacity[0.7], 
+            AbsolutePointSize[11], 
+            RGBColor[0.2, 0.55, 0.65]}, 
+           Point[#]]& ), 21 -> (Append[{
+            RGBColor[0.95, 0.08, 0.08], 
+            Opacity[0.5], 
+            AbsolutePointSize[
+             Rational[11, 3]], 
+            RGBColor[0.2, 0.55, 0.65]}, 
+           Point[#]]& ), 1 -> (Append[{
+            RGBColor[0.3, 0.7, 0.5], 
+            Opacity[1.], 
+            AbsolutePointSize[22], 
+            RGBColor[0.95, 0.08, 0.08]}, 
+           Point[#]]& ), 9 -> (Append[{
+            RGBColor[0.95, 0.08, 0.08], 
+            Opacity[0.7], 
+            AbsolutePointSize[11], 
+            RGBColor[0.2, 0.55, 0.65]}, 
+           Point[#]]& ), 7 -> (Append[{
+            RGBColor[0.95, 0.08, 0.08], 
+            Opacity[0.5], 
+            AbsolutePointSize[
+             Rational[11, 3]], 
+            RGBColor[0.2, 0.55, 0.65]}, 
+           Point[#]]& )}, VertexStyle -> {
+         GrayLevel[0.62]}}]]}, 
+    TagBox[GraphicsGroupBox[{
+       {GrayLevel[0.62], Opacity[0.7], CapForm["Round"], Arrowheads[0.], 
+        ArrowBox[CompressedData["
+1:eJyV1jHO1DAQQGEDTcoUKVKkWFbcIz4DR0Ci5ojxkTgCBWtLec6Tx7+EVskX
+eyaxPcP3X39+/v6WUspfUvqa/v/7//f3TI9/9b76JZ4H46tfEg/3NZ88GC9x
+2vOXeBnkU57vd/MV8fPu3fvk+3173yWL57tzPt5XR97teeTdOfOT8QuuW/xy
+n0ed8xc8b+tR4xfxhDh4TvOjS55cfzq/v3qNy/nSPQ+Lx/fgflqz+HV320+L
+OMeZc19rfjJfl196nl9d1nstQcd3b/nV5/Oz8/va+BXX7fshvnmXD36X8uz6
+/nDe53yreHv/6mnSz7vzvHD/07v1F+d3tfgWj+vE/bxl8QTnfhl5uTvPi51P
+y8/Gb7he5L651YOwJ/g16eXjBV6CnuDnpH/y4Hm386vrK+M3XLfvj/jmPAcr
+fu28t/jiCc757PvTuS42v9WT5jzPI8/II9/z4/mnd/tPnOti8S0e15nnec/P
+Xt+3eZr0C17mvH6H6lZPNnGOM2dds+9j8Rgn4b7Vu+pWz8Iu9Szqdt72EnOr
+h2GXehh17vu2Pp9rq4fcXzZ+x3XbP4hv3uWD3608u31/Ou9zvl18gbNejryd
+3+pp0k94nvN2Pmten2urf/Ru/4tzXS2+xeM+YT058rMneFdvR57grLcjL8iv
+zPkKZ720+mzfx8YfuN7kvrn1g6hbPQ97gl+TXpBfmXOrN0eJufWDsCf4OekZ
++eU557nd8bz1g25/y/gD123/Ib4569COX6v3Lb74Cud8tv507gub3/pJ9a5f
+jDzB2S9GnpFfnvMVznVi/ad350+c+8LiWzzuM9bTV372Bc5+M/L6vZunSb/g
+Zc7rfmvvN+kb3PrJIc5x5uxrtj4Wj3FW3Ld+V936WdStn4Vd+lnUrZ9F3erd
+q8Tc+mHUrR+GXfph1K0fRp1158Dz1g95vmz8C9ft/CC+eZcPfo/y7Lb+dN7n
+fC/xDc5+OfIFzn458lY/q6dJP+F5zlv/+Fyzn418g7Nfsv/Ru/Mvzn1l8S0e
+9ynr+Ts/+wpnvx15gnf9duQJzn478oL8ypyvcNaLke9w9kvrz7Y+Nv6N60Pu
+m9v/B6Ju/Tzq1s/DnuDXpBfkV+bc+nnUWZfbetX7+dm7/VUdv6N+8C73vKK+
+wlnvR57gXb0feYKz3o88I7885yuc9XjkO5z1nvWb/v5cW7+ozn1k8S1e9TYf
+ft/52X/UfOD7pFu9ibrVm6hbvQm71JuoW72JutWbqNt+0v3Rjf8HTNgiWw==
+
+         "], 0.08690851735015773]}, 
+       {GrayLevel[0.62], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+        {RGBColor[0.95, 0.08, 0.08], AbsolutePointSize[22], Opacity[1.], 
+         PointBox[{1., 0.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{0., 1.}]}, 
+        {RGBColor[0.2, 0.55, 0.65], AbsolutePointSize[22], Opacity[1.], 
+         PointBox[{-1., 0.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{0., -1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{1., 2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{2., 1.}]}, 
+        {RGBColor[0.2, 0.55, 0.65], AbsolutePointSize[
+          NCache[
+           Rational[11, 3], 3.6666666666666665`]], Opacity[0.5], 
+         PointBox[{-1., 2.}]}, 
+        {RGBColor[0.2, 0.55, 0.65], AbsolutePointSize[11], Opacity[0.7], 
+         PointBox[{-2., 1.}]}, 
+        {RGBColor[0.2, 0.55, 0.65], AbsolutePointSize[11], Opacity[0.7], 
+         PointBox[{-1., -2.}]}, 
+        {RGBColor[0.2, 0.55, 0.65], AbsolutePointSize[22], Opacity[1.], 
+         PointBox[{-2., -1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{2., -1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{1., -2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{0., 3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{3., 2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{2., 3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{3., 0.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-3., 0.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-2., 3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-3., 2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-3., -2.}]}, 
+        {RGBColor[0.2, 0.55, 0.65], AbsolutePointSize[
+          NCache[
+           Rational[11, 3], 3.6666666666666665`]], Opacity[0.5], 
+         PointBox[{-2., -3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{0., -3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{3., -2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{2., -3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{1., 4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-1., 4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{3., 4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{4., 3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{4., 1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{4., -1.}]}, 
+        {RGBColor[0.95, 0.08, 0.08], AbsolutePointSize[22], Opacity[1.], 
+         PointBox[{-4., -1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-4., 1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-3., 4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-4., 3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-3., -4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-4., -3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-1., -4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{1., -4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{4., -3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{3., -4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{2., 5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{0., 5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-2., 5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{5., 4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{4., 5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{5., 2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{5., 0.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{5., -2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-5., -2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-5., 0.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-5., 2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-4., 5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-5., 4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-5., -4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-4., -5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-2., -5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{0., -5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{2., -5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{5., -4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{4., -5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{3., 6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{1., 6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-1., 6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-3., 6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{5., 6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{6., 5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{6., 3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{6., 1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{6., -1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{6., -3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-6., -3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-6., -1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-6., 1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-6., 3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-5., 6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-6., 5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-5., -6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-6., -5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-3., -6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-1., -6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{1., -6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{3., -6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{6., -5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{5., -6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{4., 7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{2., 7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{0., 7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-2., 7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-4., 7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{7., 6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{6., 7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{7., 4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{7., 2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{7., 0.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{7., -2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{7., -4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-7., -4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-7., -2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-7., 0.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-7., 2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-7., 4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-6., 7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-7., 6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-7., -6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-6., -7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-4., -7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-2., -7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{0., -7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{2., -7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{4., -7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{7., -6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{6., -7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{5., 8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{3., 8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{1., 8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-1., 8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-3., 8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-5., 8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{7., 8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{8., 7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{8., 5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{8., 3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{8., 1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{8., -1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{8., -3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{8., -5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-8., -5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-8., -3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-8., -1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-8., 1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-8., 3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-8., 5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-7., 8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-8., 7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-7., -8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-8., -7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-5., -8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-3., -8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-1., -8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{1., -8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{3., -8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{5., -8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{8., -7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{7., -8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{6., 9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{4., 9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{2., 9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{0., 9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-2., 9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-4., 9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-6., 9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{9., 8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{8., 9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{9., 6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{9., 4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{9., 2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{9., 0.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{9., -2.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{9., -4.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{9., -6.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-6., -9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-4., -9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{-2., -9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{0., -9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{2., -9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{4., -9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{6., -9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{9., -8.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{8., -9.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{10., 7.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{10., 5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{10., 3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{10., 1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{10., -1.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{10., -3.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{10., -5.}]}, 
+        {AbsolutePointSize[2.2], PointBox[{10., -7.}]}}}],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None,
+  ImageSize->340]], "Output",
+ CellLabel->"Out[3]= ",ExpressionUUID->"22f2305c-10d0-4a3e-97fb-0dbfe2e894ab"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "More Examples",
+ Cell[BoxData[
+  TemplateBox[{"MoreExamples", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Extended examples in standardized sections.", "MoreInfoText"], 
+       BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "352b6acf-a93b-4224-8779-658881cdabd0"]
+}], "ExtendedExamplesSection",
+ CellTags->"ExtendedExamples",
+ CellID->533848431,ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Scope", "ExampleSection",ExpressionUUID->
+   "32e79d70-f7af-47ff-bb41-513374ef55db"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->1293636265,ExpressionUUID->"6d08f999-4c69-4709-9b28-82906be6ee75"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Generalizations & Extensions", "ExampleSection",ExpressionUUID->
+   "a148ce84-caec-4483-aa99-5b7bd6d55bf1"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->1020263627,ExpressionUUID->"85bb6475-fccb-4f83-9c4c-95411a492aa7"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Options", "ExampleSection",ExpressionUUID->
+   "b26b6366-7922-4236-a426-38c0f5de13f0"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->2061341341,ExpressionUUID->"3276b1d7-cf51-4f3b-970a-56b0e7c469f0"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Applications", "ExampleSection",ExpressionUUID->
+   "d5715ee2-1cae-4f33-89b2-0e99ea9caa6e"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->258228157,ExpressionUUID->"1cd6234d-1e3c-431d-9989-71f3025eee95"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Properties & Relations", "ExampleSection",ExpressionUUID->
+   "d18b1e1f-4c4c-49a5-bb54-1e5e145ddf4e"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->2123667759,ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438"],
+
+Cell[TextData[{
+ "The two lossy read-outs of a bundle: ",
+ Cell[BoxData["InfraSet"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "f1ddd297-3f47-4757-a1e9-f00392006a3f"],
+ " takes the support, ",
+ Cell[BoxData["InfraMesoPoint"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "92405b18-10bc-42f5-87fd-8ff447c9f8c4"],
+ " the occupation."
+}], "ExampleText",ExpressionUUID->"7967d0bc-78db-4bd3-baad-a3a20ab695a6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"g", " ", "=", " ", 
+     RowBox[{"GridGraph", "[", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", " ", "4"}], "}"}], "]"}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{"seg", " ", "=", " ", 
+     RowBox[{"FindInfraSegment", "[", 
+      RowBox[{"g", ",", " ", "1", ",", " ", "16"}], "]"}]}], "}"}], ",", "\n",
+    "  ", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"InfraSet", "[", "seg", "]"}], "[", "\"\<Length\>\"", "]"}], ",",
+      " ", 
+     RowBox[{
+      RowBox[{"InfraMesoPoint", "[", "seg", "]"}], "[", "\"\<Mass\>\"", 
+      "]"}]}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[1]:= ",ExpressionUUID->"9ac2f3c3-f2af-4617-b07e-4043de85156f"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"7", ",", "7"}], "}"}]], "Output",
+ CellLabel->"Out[1]= ",ExpressionUUID->"63926c13-218f-4d87-81fd-6ed9a6e2782b"]
+}, Open  ]],
+
+Cell["\<\
+Repetition in a list of atoms is mass; a set, by contrast, deduplicates.\
+\>", "ExampleText",ExpressionUUID->"cbff239e-df0a-43c9-844b-31668b7e5311"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"InfraMesoPoint", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"InfraPoint", "[", "4", "]"}], ",", " ", 
+      RowBox[{"InfraPoint", "[", "4", "]"}], ",", " ", 
+      RowBox[{"InfraPoint", "[", "9", "]"}]}], "}"}], "]"}], ",", " ", 
+   RowBox[{"InfraSet", "[", 
+    RowBox[{"{", 
+     RowBox[{"4", ",", " ", "4", ",", " ", "9"}], "}"}], "]"}]}], 
+  "}"}]], "Input",
+ CellLabel->"In[2]:= ",ExpressionUUID->"ef2e24c7-ff3a-4eca-b46b-0aeaf2d936c0"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"InfraMesoPoint", "[", 
+    RowBox[{"\[LeftAssociation]", 
+     RowBox[{
+      RowBox[{"4", "\[Rule]", "2"}], ",", 
+      RowBox[{"9", "\[Rule]", "1"}]}], "\[RightAssociation]"}], "]"}], ",", 
+   RowBox[{"InfraSet", "[", 
+    RowBox[{"{", 
+     RowBox[{"4", ",", "9"}], "}"}], "]"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]= ",ExpressionUUID->"ab573d8b-d114-4b55-9885-12883102cf6e"]
+}, Open  ]],
+
+Cell["\<\
+The all-ones measure stays a measure \[LongDash] the layers never cross \
+silently.\
+\>", "ExampleText",ExpressionUUID->"6ba310f3-4fd1-4922-a274-ec452c2bf94e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Head", " ", "@", " ", 
+  RowBox[{"InfraMesoPoint", "[", 
+   RowBox[{"InfraSet", "[", 
+    RowBox[{"{", 
+     RowBox[{"4", ",", " ", "9"}], "}"}], "]"}], "]"}]}]], "Input",
+ CellLabel->"In[3]:= ",ExpressionUUID->"3e636cc0-4392-48ec-9af2-72bc2c7ef69f"],
+
+Cell[BoxData["InfraMesoPoint"], "Output",
+ CellLabel->"Out[3]= ",ExpressionUUID->"adc6958f-b7a5-4d86-934f-2e41724d038a"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Possible Issues", "ExampleSection",ExpressionUUID->
+   "dda06a82-eb41-4b48-8510-6cb821647761"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->1305812373,ExpressionUUID->"9397dd0b-9de4-443a-9371-be2b75148f2f"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Interactive Examples", "ExampleSection",ExpressionUUID->
+   "e1fe5ce4-66df-44f8-b96d-14ea9265eaf2"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->1653164318,ExpressionUUID->"c5507407-1b71-491f-84b6-3f5747264ef7"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Neat Examples", "ExampleSection",ExpressionUUID->
+   "898193c6-0d9f-4097-90dd-7bc455972e43"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->589267740,ExpressionUUID->"ce9d5678-57c6-4712-bdd3-87904919f71e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->311882160,ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"c83e5b59-d200-4539-afdc-500ed06d3c87"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"d4e38c0c-d937-44f2-85a5-7c0e8fc755ab"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->
+  "4c68d818-8923-4121-80f8-cf0eabb4c0de"]
+}], "History",
+ CellID->341476719,ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Categorization",
+ Cell[BoxData[
+  TemplateBox[{"Metadata", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Metadata such as page URI, context, and type of documentation page.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "4b3d4122-3cd4-481f-a8ff-5aefbb03e00d"]
+}], "CategorizationSection",
+ CellID->1755438392,ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329"],
+
+Cell["Symbol", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->686433507,ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a"],
+
+Cell["WolframInstitute/SyntheticInfrageometry", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->605800465,ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec"],
+
+Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
+ CellLabel->"Context",
+ CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
+
+Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraMesoPoint", \
+"Categorization",
+ CellLabel->"URI",ExpressionUUID->"1eefe84f-1c83-4426-8414-218ec1febead"]
+}, Closed]],
+
+Cell["Keywords", "KeywordsSection",
+ CellID->477174294,ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6"],
+
+Cell[CellGroupData[{
+
+Cell["Syntax Templates", "TemplatesSection",
+ CellID->1872225408,ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Additional Function Template",
+ CellID->1562036412,ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Arguments Pattern",
+ CellID->158391909,ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Local Variables",
+ CellID->1360575930,ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Color Equal Signs",
+ CellID->793782254,ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{700, 770},
+WindowMargins->{{5, Automatic}, {Automatic, 0}},
+TaggingRules->{
+ "Metadata" -> {
+   "title" -> "InfraMesoPoint", "context" -> 
+    "WolframInstitute`SyntheticInfrageometry`", 
+    "keywords" -> {
+     "mesopoint", "measure", "occupation", "multiplicity", "wrapper"}, 
+    "summary" -> "", "paclet" -> "WolframInstitute/SyntheticInfrageometry", 
+    "uri" -> "WolframInstitute/SyntheticInfrageometry/ref/InfraMesoPoint", 
+    "type" -> "Symbol", "index" -> True, "language" -> "en"}},
+CreateCellID->True,
+CellContext->CellGroup,
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (July 2, 2026)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "ExtendedExamples"->{
+  Cell[44979, 1060, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+   CellTags->"ExtendedExamples",
+   CellID->533848431]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"ExtendedExamples", 54231, 1334}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 112, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
+ CellID->1224892054],
+Cell[691, 25, 2310, 66, 70, "Usage",ExpressionUUID->"4fac03de-6abd-486d-83e2-bcf17104814f"],
+Cell[3004, 93, 968, 26, 70, "Notes",ExpressionUUID->"6b2eb725-2e38-4dce-a7f9-f4f691dafc56"],
+Cell[3975, 121, 401, 6, 70, "Notes",ExpressionUUID->"04683159-2640-4b4b-8db1-09929e5722e7"],
+Cell[4379, 129, 203, 3, 70, "Notes",ExpressionUUID->"de20eba7-2ca2-480d-889e-f18dac67e691"],
+Cell[4585, 134, 2039, 55, 70, "Notes",ExpressionUUID->"2632e759-1dad-456a-8c25-6ea7eb4452f7"],
+Cell[6627, 191, 100, 0, 70, "Notes",ExpressionUUID->"ecaf591f-bf44-43e4-805a-b370713c0107"],
+Cell[6730, 193, 2187, 46, 70, "2ColumnTableMod",ExpressionUUID->"3a01e077-1881-4442-975f-e69aa8659e24"],
+Cell[8920, 241, 575, 14, 70, "Notes",ExpressionUUID->"f8b2de24-8c31-4acc-bf48-31e8c1c02157"],
+Cell[9498, 257, 82, 0, 70, "Notes",ExpressionUUID->"f8aacb76-0024-411e-9da0-bc8272c731d3"],
+Cell[9583, 259, 4580, 79, 70, "2ColumnTableMod",ExpressionUUID->"db930041-81ea-4c61-a8ff-4105b95c5fee"],
+Cell[14166, 340, 799, 18, 70, "Notes",ExpressionUUID->"192b1088-9518-468f-97a2-0a81ead0cef7"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15002, 363, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+ CellID->1559318232],
+Cell[15464, 378, 1902, 50, 70, "SeeAlso",ExpressionUUID->"72589f42-7db9-4daf-95c1-f4d868a6c238"]
+}, Open  ]],
+Cell[17381, 431, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+ CellID->792424486],
+Cell[CellGroupData[{
+Cell[17841, 447, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+ CellID->38303248],
+Cell[17960, 450, 332, 7, 70, "MoreAbout",ExpressionUUID->"7e50ff90-7ce6-4409-9a79-a1cda1047741"]
+}, Open  ]],
+Cell[18307, 460, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+ CellID->47113304],
+Cell[CellGroupData[{
+Cell[18803, 477, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+ CellID->1718580883],
+Cell[19337, 493, 285, 5, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+ CellID->1969679695]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19659, 503, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+ CellID->880084151],
+Cell[20104, 517, 167, 3, 70, "ExampleText",ExpressionUUID->"3d2c1bfa-4673-4ba9-b914-a1136f744cca"],
+Cell[CellGroupData[{
+Cell[20296, 524, 1066, 26, 70, "Input",ExpressionUUID->"c15e3785-bdb3-43f7-81ee-8e17972ecfb0"],
+Cell[21365, 552, 460, 11, 70, "Output",ExpressionUUID->"3555a7b2-d607-4f16-bbd6-133986eaa730"]
+}, Open  ]],
+Cell[21840, 566, 184, 3, 70, "ExampleText",ExpressionUUID->"da9dbb51-c130-46d8-ace9-4c80b8ae2c9a"],
+Cell[CellGroupData[{
+Cell[22049, 573, 1635, 40, 70, "Input",ExpressionUUID->"6e1d2718-1d60-4cde-a1ce-85029b72f7f2"],
+Cell[23687, 615, 1565, 37, 70, "Message",ExpressionUUID->"932c7fe7-5885-431e-884b-f9fcc29824c9"],
+Cell[25255, 654, 938, 26, 70, "Output",ExpressionUUID->"d719b55d-b30e-41fe-a929-e9eab1b5c931"]
+}, Open  ]],
+Cell[26208, 683, 117, 0, 70, "ExampleText",ExpressionUUID->"72e62251-ba4c-4c98-83c8-01c992b1f464"],
+Cell[CellGroupData[{
+Cell[26350, 687, 2101, 54, 70, "Input",ExpressionUUID->"adc0866d-091b-4c9a-9801-0d52f50586dd"],
+Cell[28454, 743, 16476, 311, 70, "Output",ExpressionUUID->"22f2305c-10d0-4a3e-97fb-0dbfe2e894ab"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[44979, 1060, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+ CellTags->"ExtendedExamples",
+ CellID->533848431],
+Cell[45469, 1075, 242, 5, 70, "ExampleSection",ExpressionUUID->"6d08f999-4c69-4709-9b28-82906be6ee75",
+ CellID->1293636265],
+Cell[45714, 1082, 265, 5, 70, "ExampleSection",ExpressionUUID->"85bb6475-fccb-4f83-9c4c-95411a492aa7",
+ CellID->1020263627],
+Cell[45982, 1089, 244, 5, 70, "ExampleSection",ExpressionUUID->"3276b1d7-cf51-4f3b-970a-56b0e7c469f0",
+ CellID->2061341341],
+Cell[46229, 1096, 248, 5, 70, "ExampleSection",ExpressionUUID->"1cd6234d-1e3c-431d-9989-71f3025eee95",
+ CellID->258228157],
+Cell[CellGroupData[{
+Cell[46502, 1105, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
+ CellID->2123667759],
+Cell[46764, 1112, 442, 10, 70, "ExampleText",ExpressionUUID->"7967d0bc-78db-4bd3-baad-a3a20ab695a6"],
+Cell[CellGroupData[{
+Cell[47231, 1126, 763, 21, 70, "Input",ExpressionUUID->"9ac2f3c3-f2af-4617-b07e-4043de85156f"],
+Cell[47997, 1149, 152, 3, 70, "Output",ExpressionUUID->"63926c13-218f-4d87-81fd-6ed9a6e2782b"]
+}, Open  ]],
+Cell[48164, 1155, 158, 2, 70, "ExampleText",ExpressionUUID->"cbff239e-df0a-43c9-844b-31668b7e5311"],
+Cell[CellGroupData[{
+Cell[48347, 1161, 502, 13, 70, "Input",ExpressionUUID->"ef2e24c7-ff3a-4eca-b46b-0aeaf2d936c0"],
+Cell[48852, 1176, 433, 11, 70, "Output",ExpressionUUID->"ab573d8b-d114-4b55-9885-12883102cf6e"]
+}, Open  ]],
+Cell[49300, 1190, 169, 3, 70, "ExampleText",ExpressionUUID->"6ba310f3-4fd1-4922-a274-ec452c2bf94e"],
+Cell[CellGroupData[{
+Cell[49494, 1197, 274, 6, 70, "Input",ExpressionUUID->"3e636cc0-4392-48ec-9af2-72bc2c7ef69f"],
+Cell[49771, 1205, 120, 1, 70, "Output",ExpressionUUID->"adc6958f-b7a5-4d86-934f-2e41724d038a"]
+}, Open  ]]
+}, Open  ]],
+Cell[49918, 1210, 252, 5, 70, "ExampleSection",ExpressionUUID->"9397dd0b-9de4-443a-9371-be2b75148f2f",
+ CellID->1305812373],
+Cell[50173, 1217, 257, 5, 70, "ExampleSection",ExpressionUUID->"c5507407-1b71-491f-84b6-3f5747264ef7",
+ CellID->1653164318],
+Cell[50433, 1224, 249, 5, 70, "ExampleSection",ExpressionUUID->"ce9d5678-57c6-4712-bdd3-87904919f71e",
+ CellID->589267740]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[50719, 1234, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+ CellID->311882160],
+Cell[50832, 1237, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+ CellID->341476719],
+Cell[CellGroupData[{
+Cell[51333, 1253, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+ CellID->1755438392],
+Cell[51821, 1268, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+ CellID->686433507],
+Cell[51958, 1272, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+ CellID->605800465],
+Cell[52128, 1276, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+ CellID->468444828],
+Cell[52295, 1280, 160, 2, 70, "Categorization",ExpressionUUID->"1eefe84f-1c83-4426-8414-218ec1febead"]
+}, Closed]],
+Cell[52470, 1285, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+ CellID->477174294],
+Cell[CellGroupData[{
+Cell[52605, 1290, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+ CellID->1872225408],
+Cell[52728, 1293, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+ CellID->1562036412],
+Cell[52880, 1297, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+ CellID->158391909],
+Cell[53020, 1301, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+ CellID->1360575930],
+Cell[53159, 1305, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+ CellID->793782254]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
