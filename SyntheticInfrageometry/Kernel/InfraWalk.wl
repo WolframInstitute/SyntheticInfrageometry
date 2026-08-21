@@ -181,29 +181,26 @@ walkCrossings[ w_List ] := Length[ w ] - Length[ DeleteDuplicates[ w ] ]
 (* immersed steps only: no a,b,a cusp anywhere *)
 nonBacktrackingQ[ w_List ] := AllTrue[ Partition[ w, 3, 1 ], #[[ 1 ]] =!= #[[ 3 ]] & ]
 
-(* one random loop at u of length within [lo, hi], read off u's geodesic spray:
-   an even loop of length 2r glues two distinct geodesics to a random vertex at
-   rank r (out along plus edges, back along minus edges), an odd loop of length
-   2r + 1 routes through a random transverse edge whose ends both sit at rank r.
-   { } when the drawn length has no loop to carry it -- the caller retries. *)
+(* one random loop at u of length within [lo, hi]: a geodesic spoke out to a
+   random vertex at rank r (r uniform up to hi/2), then a shortest return
+   computed with the spoke's interior deleted, so the return must round the
+   corridor and the loop is a genuine simple cycle through u -- fat at every
+   radius, never a glued-geodesic sliver, and with no survivorship bias toward
+   short loops.  { } when the return misses the length window -- the caller
+   retries. *)
 sprayLoopDraw[ graph_Graph, u_, lo_Integer, hi_Integer ] :=
   If[ hi < 3, { },
-    With[ { len = RandomInteger[ { Max[ 3, lo ], hi } ] },
-      { r = Floor[ len / 2 ],
-        distU = AssociationThread[ VertexList @ graph, GraphDistance[ graph, u ] ] },
-      If[ EvenQ[ len ],
-        With[ { sphere = Select[ VertexList @ graph, distU[ # ] === r & ] },
-          If[ sphere === { }, { },
-            With[ { pair = FindInfraSegment[ graph, u, RandomChoice @ sphere, UpTo[ 2 ],
-                Method -> "RandomGreedy" ][ "Realizations" ] },
-              If[ Length[ pair ] < 2, { },
-                { Join[ pair[[ 1 ]], Rest @ Reverse @ pair[[ 2 ]] ] } ] ] ] ],
-        With[ { transverse = Select[ EdgeList @ graph,
-            distU[ #[[ 1 ]] ] === r && distU[ #[[ 2 ]] ] === r & ] },
-          If[ transverse === { }, { },
-            With[ { e = RandomChoice @ transverse },
-              { Join[ FindShortestPath[ graph, u, e[[ 1 ]] ], { e[[ 2 ]] },
-                  Rest @ Reverse @ FindShortestPath[ graph, u, e[[ 2 ]] ] ] } ] ] ] ] ] ]
+    With[ { distU = AssociationThread[ VertexList @ graph, GraphDistance[ graph, u ] ] },
+      { r = RandomInteger[ { 1, Max[ 1, Floor[ hi / 2 ] ] } ] },
+      { sphere = Select[ VertexList @ graph, distU[ # ] === r & ] },
+      If[ sphere === { }, { },
+        With[ { spoke = FindShortestPath[ graph, u, RandomChoice @ sphere ] },
+          { cut = If[ Length[ spoke ] == 2, EdgeDelete[ graph, UndirectedEdge @@ spoke ],
+              VertexDelete[ graph, spoke[[ 2 ;; -2 ]] ] ] },
+          { return = Quiet @ FindShortestPath[ cut, Last @ spoke, u ] },
+          If[ return === { } ||
+              ! ( Max[ 3, lo ] <= Length[ spoke ] + Length[ return ] - 2 <= hi ), { },
+            { Join[ spoke, Rest @ return ] } ] ] ] ] ]
 
 
 (* walkLengthAdmissibleQ[kspec]: predicate on a vertex sequence checking it
