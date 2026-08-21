@@ -58,27 +58,29 @@ VerificationTest[
   TestID -> "FindInfraWalk-range-length-spec"
 ]
 
-(* simplicity is the default; "Simple" -> False is the crossing class --
-   non-backtracking walks revisiting a vertex.  On CycleGraph[4] no simple
-   1 -> 3 path has length 6, and the crossing walks are exactly the two pure
-   rotations (a bounce is a cusp, excluded by non-backtracking) *)
+(* "Crossings" counts arrivals at an already-visited vertex, exactly: on
+   CycleGraph[4] every non-backtracking walk is a pure rotation, so the
+   length-6 walks 1 -> 3 have exactly 3 crossings -- the 1-crossing class is
+   empty, the 3-crossing class is the two rotations, and the default 0 is the
+   simple paths (also empty at this length) *)
 VerificationTest[
   With[ { g = CycleGraph[ 4 ] },
     { FindInfraWalk[ g, 1, 3, { 6 }, All ][ "Realizations" ],
-      Sort @ FindInfraWalk[ g, 1, 3, { 6 }, All, "Simple" -> False ][ "Realizations" ] } ],
-  { { }, Sort[ { { 1, 2, 3, 4, 1, 2, 3 }, { 1, 4, 3, 2, 1, 4, 3 } } ] },
-  TestID -> "FindInfraWalk-Simple-default-vs-crossing-class"
+      FindInfraWalk[ g, 1, 3, { 6 }, All, "Crossings" -> 1 ][ "Realizations" ],
+      Sort @ FindInfraWalk[ g, 1, 3, { 6 }, All, "Crossings" -> 3 ][ "Realizations" ] } ],
+  { { }, { }, Sort[ { { 1, 2, 3, 4, 1, 2, 3 }, { 1, 4, 3, 2, 1, 4, 3 } } ] },
+  TestID -> "FindInfraWalk-crossings-count-is-exact"
 ]
 
-(* every crossing walk self-intersects without backtracking; drawn at random
-   under the default Automatic, so the draw is seeded *)
+(* a 1-crossing walk self-intersects exactly once, without backtracking; drawn
+   at random under the default Automatic, so the draw is seeded *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     { w = BlockRandom[
-        First @ FindInfraWalk[ g, 1, 9, 8, "Simple" -> False ][ "Realizations" ],
-        RandomSeeding -> 1 ] },
+        First @ FindInfraWalk[ g, 1, 9, 8, "Crossings" -> 1 ][ "Realizations" ],
+        RandomSeeding -> 7 ] },
     { First[ w ] === 1 && Last[ w ] === 9 && Length[ w ] - 1 <= 8,
-      ! DuplicateFreeQ[ w ],
+      Length[ w ] - Length[ DeleteDuplicates[ w ] ] === 1,
       AllTrue[ Partition[ w, 3, 1 ], #[[ 1 ]] =!= #[[ 3 ]] & ] } ],
   { True, True, True },
   TestID -> "FindInfraWalk-crossing-walk-is-a-nonbacktracking-revisit"
@@ -97,7 +99,7 @@ VerificationTest[
 (* an unbounded crossing class is refused: crossings exist at every excess
    length, and a geodesic witness would be simple, hence outside the class *)
 VerificationTest[
-  FindInfraWalk[ GridGraph[ { 4, 4 } ], 1, 16, Infinity, 1, "Simple" -> False ],
+  FindInfraWalk[ GridGraph[ { 4, 4 } ], 1, 16, Infinity, 1, "Crossings" -> 1 ],
   $Failed,
   { FindInfraWalk::unbounded },
   TestID -> "FindInfraWalk-unbounded-crossing-class-refused"
@@ -535,7 +537,7 @@ VerificationTest[
 (* kspec bounds the walk-space sweep itself: the crossing space is infinite past
    kmax, so the enumeration must terminate. *)
 VerificationTest[
-  With[ { walks = FindInfraWalk[ CycleGraph[ 4 ], 1, 3, { 6 }, All, "Simple" -> False ][ "Realizations" ] },
+  With[ { walks = FindInfraWalk[ CycleGraph[ 4 ], 1, 3, { 6 }, All, "Crossings" -> 3 ][ "Realizations" ] },
     walks =!= { } && AllTrue[ walks,
       w |-> Length[ w ] - 1 == 6 && First[ w ] == 1 && Last[ w ] == 3 &&
         AllTrue[ Partition[ w, 2, 1 ], Apply[ EdgeQ[ CycleGraph[ 4 ], UndirectedEdge[ #1, #2 ] ] & ] ] ]
@@ -555,16 +557,16 @@ VerificationTest[
    {0, k} range *)
 VerificationTest[
   Sort @ FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, 8, All,
-    "Simple" -> False ][ "Realizations" ],
+    "Crossings" -> 1 ][ "Realizations" ],
   Sort @ FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, { 0, 8 }, All,
-    "Simple" -> False ][ "Realizations" ],
+    "Crossings" -> 1 ][ "Realizations" ],
   TestID -> "FindInfraWalk-bare-k-at-most-both-paths"
 ]
 
 (* a lower length bound must not be starved by the early-stop count *)
 VerificationTest[
   Length @ FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, { 8 }, 2,
-    "Simple" -> False, Method -> "Exhaustive" ][ "Realizations" ],
+    "Crossings" -> 1, Method -> "Exhaustive" ][ "Realizations" ],
   2,
   TestID -> "FindInfraWalk-exact-length-strict-count"
 ]
@@ -590,18 +592,18 @@ VerificationTest[
 (* ===================== The method ladder ===================== *)
 
 (* The lazy descent is COMPLETE, so every finite count is exact: on CycleGraph[4]
-   there are exactly 2 crossing walks 1 -> 3 of length 6 (the two rotations), and
-   asking for k of them under the deterministic "Greedy" returns k distinct
-   genuine ones for every k <= 2.  Asking for 3 is the honest $Failed. *)
+   there are exactly 2 three-crossing walks 1 -> 3 of length 6 (the two
+   rotations), and asking for k of them under the deterministic "Greedy" returns
+   k distinct genuine ones for every k <= 2.  Asking for 3 is the honest $Failed. *)
 VerificationTest[
   With[ { g = CycleGraph[ 4 ] },
-    { whole = FindInfraWalk[ g, 1, 3, { 6 }, All, "Simple" -> False ][ "Realizations" ] },
+    { whole = FindInfraWalk[ g, 1, 3, { 6 }, All, "Crossings" -> 3 ][ "Realizations" ] },
     { AllTrue[ Range[ 1, Length @ whole ],
-        k |-> With[ { got = FindInfraWalk[ g, 1, 3, { 6 }, k, "Simple" -> False,
+        k |-> With[ { got = FindInfraWalk[ g, 1, 3, { 6 }, k, "Crossings" -> 3,
               Method -> "Greedy" ][ "Realizations" ] },
           Length[ got ] === k && DuplicateFreeQ[ got ] && SubsetQ[ whole, got ] &&
           AllTrue[ got, w |-> InfraWalkQ[ g, w ] && Length[ w ] - 1 === 6 ] ] ],
-      FindInfraWalk[ g, 1, 3, { 6 }, Length[ whole ] + 1, "Simple" -> False,
+      FindInfraWalk[ g, 1, 3, { 6 }, Length[ whole ] + 1, "Crossings" -> 3,
         Method -> "Greedy" ] } ],
   { True, $Failed },
   TestID -> "FindInfraWalk-Greedy-finite-count-is-exact"
@@ -612,10 +614,11 @@ VerificationTest[
    enumeration opt-in. *)
 VerificationTest[
   With[ { g = CycleGraph[ 4 ] },
-    { one = FindInfraWalk[ g, 1, 3, { 6 }, "Simple" -> False ][ "Realizations" ] },
+    { one = FindInfraWalk[ g, 1, 3, { 6 }, "Crossings" -> 3 ][ "Realizations" ] },
     { Length @ one === 1,
-      InfraWalkQ[ g, First @ one ] && ! DuplicateFreeQ[ First @ one ],
-      Length @ FindInfraWalk[ g, 1, 3, { 6 }, All, "Simple" -> False ][ "Realizations" ] > 1 } ],
+      InfraWalkQ[ g, First @ one ] &&
+        Length[ First @ one ] - Length[ DeleteDuplicates @ First @ one ] === 3,
+      Length @ FindInfraWalk[ g, 1, 3, { 6 }, All, "Crossings" -> 3 ][ "Realizations" ] > 1 } ],
   { True, True, True },
   TestID -> "FindInfraWalk-countless-is-one-instance"
 ]
@@ -623,7 +626,7 @@ VerificationTest[
 (* A randomized descent cannot backtrack, so it can fall short of a strict count;
    the shortfall is loud ($Failed plus a message) rather than a silent under-supply. *)
 VerificationTest[
-  FindInfraWalk[ CycleGraph[ 4 ], 1, 3, { 6 }, 99, "Simple" -> False, Method -> "RandomGreedy" ],
+  FindInfraWalk[ CycleGraph[ 4 ], 1, 3, { 6 }, 99, "Crossings" -> 3, Method -> "RandomGreedy" ],
   $Failed,
   { FindInfraWalk::shortfall },
   TestID -> "FindInfraWalk-RandomGreedy-strict-shortfall-fails-loudly"
@@ -632,8 +635,8 @@ VerificationTest[
 (* All the same walks, whichever engine enumerates them. *)
 VerificationTest[
   With[ { g = CycleGraph[ 4 ] },
-    Sort @ FindInfraWalk[ g, 1, 3, { 6 }, All, "Simple" -> False, Method -> "Greedy" ][ "Realizations" ] ===
-      Sort @ FindInfraWalk[ g, 1, 3, { 6 }, All, "Simple" -> False, Method -> "Exhaustive" ][ "Realizations" ] ],
+    Sort @ FindInfraWalk[ g, 1, 3, { 6 }, All, "Crossings" -> 3, Method -> "Greedy" ][ "Realizations" ] ===
+      Sort @ FindInfraWalk[ g, 1, 3, { 6 }, All, "Crossings" -> 3, Method -> "Exhaustive" ][ "Realizations" ] ],
   True,
   TestID -> "FindInfraWalk-Greedy-All-agrees-with-Exhaustive"
 ]

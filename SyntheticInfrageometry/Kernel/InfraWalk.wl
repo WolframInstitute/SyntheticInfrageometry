@@ -24,28 +24,30 @@ InfraWalk[ reps_List ][ "Start" ] := columnInfraPoint[ reps, 1 ]
 InfraWalk[ reps_List ][ "End" ]   := columnInfraPoint[ reps, -1 ]
 (* ===================== FindInfraWalk ===================== *)
 
-(* A walk from p1 to p2.  "Simple" -> True (default) gives embedded curves --
-   simple paths, exactly FindPath's class, so Method -> Automatic delegates to
-   FindPath whatever the count (it is already lazy for bounded counts).
-   "Simple" -> False gives immersed curves with a crossing: non-backtracking
-   walks revisiting at least one vertex (a bounce a,b,a is a cusp, not a
-   crossing, and non-backtracking excludes it).  There Method -> Automatic
-   draws crossing walks at random for a bounded count ("RandomGreedy",
-   ambient-seeded lasso draws: a random loop vertex, a short cycle through it,
-   geodesic legs -- a deterministic first-completion would hug the lowest-index
-   cycle) and enumerates exhaustively under All; kspec must be finite
-   (::unbounded), since crossings exist at every excess length.  Local
-   geodesic rules live on FindInfraGeodesic, and the unrestricted
-   revisits-allowed walk class is FindInfraGeodesic at scale 1. *)
+(* A walk from p1 to p2, non-backtracking with a prescribed number of
+   self-crossings.  Option "Crossings" -> c counts the arrivals at an
+   already-visited vertex: c = 0 (default) is exactly the simple paths --
+   embedded curves, FindPath's class, so Method -> Automatic delegates to
+   FindPath whatever the count -- and c >= 1 the immersed curves crossing
+   themselves exactly c times (a bounce a,b,a is a cusp, not a crossing, and
+   non-backtracking excludes it; winding pays one crossing per revisited
+   vertex, so the C4 walk 1,2,3,4,1,2,3 has three).  For c >= 1, Automatic
+   draws lassos at random for a bounded count ("RandomGreedy", ambient-seeded:
+   route through a random loop vertex, then splice short cycles in until the
+   crossing budget is met) and enumerates exhaustively under All; kspec must
+   be finite (::unbounded).  Local geodesic rules live on FindInfraGeodesic,
+   and the unrestricted revisits-allowed walk class is FindInfraGeodesic at
+   scale 1. *)
 
-FindInfraWalk::properties  = "FindInfraWalk no longer takes Properties; use \"Simple\" -> True (default) | False. Local geodesic rules live on FindInfraGeodesic.";
+FindInfraWalk::properties  = "FindInfraWalk no longer takes Properties; use \"Crossings\" -> 0 (default, simple paths) | c. Local geodesic rules live on FindInfraGeodesic.";
+FindInfraWalk::simple      = "FindInfraWalk now counts self-crossings; use \"Crossings\" -> 0 (default, simple paths) | c.";
 FindInfraWalk::badmethod   = "Method `1` is not supported by FindInfraWalk.";
 FindInfraWalk::shortfall   = "\"RandomGreedy\" drew `1` distinct walks of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
-FindInfraWalk::unbounded   = "with \"Simple\" -> False the self-intersecting walk class is infinite without a length bound; give kspec a finite bound.";
+FindInfraWalk::unbounded   = "with \"Crossings\" -> c >= 1 the class is infinite without a length bound; give kspec a finite bound.";
 
 Options[ FindInfraWalk ] = {
-  "Simple" -> True,
-  Method   -> Automatic
+  "Crossings" -> 0,
+  Method      -> Automatic
 };
 
 FindInfraWalk[ graph_Graph, p1_, p2_,
@@ -54,35 +56,41 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
   spreadFind[ InfraWalk, count,
     { q1, q2 } |-> If[ q1 === q2, { },
       Catch @ With[ {
-          simpleQ   = TrueQ @ OptionValue[ FindInfraWalk,
-            FilterRules[ { opts }, Options @ FindInfraWalk ], "Simple" ],
+          crossings = OptionValue[ FindInfraWalk,
+            FilterRules[ { opts }, Options @ FindInfraWalk ], "Crossings" ],
           methodOpt = OptionValue[ FindInfraWalk,
             FilterRules[ { opts }, Options @ FindInfraWalk ], Method ] },
+        { embeddedQ = crossings === 0 },
         { methodSpec = resolveMethod[
             If[ methodOpt === Automatic,
-              Which[ simpleQ, "Exhaustive",
+              Which[ embeddedQ, "Exhaustive",
                 countLimit[ count ] === Infinity, "Exhaustive",
                 True, "RandomGreedy" ],
               methodOpt ], count ] },
         { methodHead = methodName @ methodSpec,
           pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
           kmax       = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
-          acceptQ    = If[ simpleQ, walkLengthAdmissibleQ[ kspec ],
-            With[ { lengthQ = walkLengthAdmissibleQ[ kspec ] },
-              w |-> lengthQ[ w ] && ! DuplicateFreeQ[ w ] ] ] },
-        { candidateFn = If[ simpleQ,
-            { g, path } |-> Select[ allNeighboursBaseFn[ g, path ], ! MemberQ[ path, # ] & ],
-            { g, path } |-> If[ Length[ path ] < 2, allNeighboursBaseFn[ g, path ],
-              DeleteCases[ allNeighboursBaseFn[ g, path ], path[[ -2 ]] ] ] ] },
+          lengthQ    = walkLengthAdmissibleQ[ kspec ] },
+        { acceptQ = w |-> lengthQ[ w ] && walkCrossings[ w ] === crossings,
+          (* non-backtracking steps, and a step onto a visited vertex only while the
+             crossing budget lasts: excess is monotone, so the descent never leaves
+             the exact class; at c = 0 this is precisely the simple-path filter *)
+          candidateFn = { g, path } |-> With[
+            { nb = If[ Length[ path ] < 2, allNeighboursBaseFn[ g, path ],
+                DeleteCases[ allNeighboursBaseFn[ g, path ], path[[ -2 ]] ] ] },
+            If[ walkCrossings[ path ] < crossings, nb,
+              Select[ nb, ! MemberQ[ path, # ] & ] ] ] },
         If[ ! FreeQ[ { opts }, Properties ],
           Message[ FindInfraWalk::properties ]; Throw[ $Failed ] ];
+        If[ ! FreeQ[ { opts }, "Simple" ],
+          Message[ FindInfraWalk::simple ]; Throw[ $Failed ] ];
         (* a crossing walk of every excess length exists once one does, so the class
            has no canonical finite witness -- refuse, as FindInfraGeodesic does *)
-        If[ ! simpleQ && kspec === Infinity,
+        If[ ! embeddedQ && kspec === Infinity,
           Message[ FindInfraWalk::unbounded ]; Throw[ $Failed ] ];
         Switch[ methodHead,
           "Exhaustive",
-            If[ simpleQ,
+            If[ embeddedQ,
               If[ kspec === Infinity && countLimit[ count ] === 1,
                 (* one length-unconstrained simple path: FindPath's DFS can wander for
                    minutes on mesh-like graphs, and a geodesic is simple -- the canonical
@@ -94,9 +102,9 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
                   Except[ _List ] -> { } ] ],
               (* kspec bounds the sweep depth, not just a post-filter: the walk space is
                  infinite past kmax.  Early stop on count is never sound here -- the BFS
-                 completes short walks first, and a short completion can be duplicate-free
-                 and fill the quota while failing the crossing filter.  A crossing walk
-                 may pass through q2, so the sweep is non-terminal. *)
+                 completes short walks first, and a short completion can fill the quota
+                 while still under the crossing budget.  A crossing walk may pass through
+                 q2, so the sweep is non-terminal. *)
               Select[
                 frontierSweep[ graph, q1, q2,
                   { g, path } |-> If[ Length[ path ] - 1 >= kmax, { },
@@ -106,17 +114,19 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
             ],
           "Greedy",
             greedyFrontierSweep[ graph, q1, q2, candidateFn, acceptQ, kmax, count,
-              Identity, simpleQ ],
+              Identity, embeddedQ ],
           "RandomGreedy",
-            If[ simpleQ,
+            If[ embeddedQ,
               randomDraws[
                 { } |-> greedyFrontierSweep[ graph, q1, q2, candidateFn, acceptQ, kmax, 1,
                   randomBranch, True ],
                 count, FindInfraWalk ],
-              (* a blind random descent almost never ends at a distant q2, so a crossing
-                 draw is assembled as a lasso: a random loop vertex v, one short cycle
-                 through it, geodesic legs q1 -> v -> q2, oriented to avoid a backtrack at
-                 the joints.  Any crossing walk contains a loop vertex v with
+              (* a blind random descent almost never ends at a distant q2, so a draw is
+                 assembled: route q1 -> v -> q2 through a random loop vertex v carrying
+                 one spray loop sized to the length budget, then splice further spray
+                 loops at random walk vertices until the crossing budget is met (a loop
+                 overlapping the walk pays several crossings at once, which is how
+                 winding shapes arise).  Any crossing walk contains a loop vertex v with
                  d(q1,v) + |C| + d(v,q2) <= its length, so no admissible v proves the
                  class empty. *)
               With[ {
@@ -126,22 +136,31 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
                 { anchors = Select[ VertexList @ graph, dist1[ # ] + dist2[ # ] + 3 <= kmax & ] },
                 If[ anchors === { }, { },
                   randomDraws[
-                    { } |-> With[ { v = RandomChoice @ anchors },
-                      { cycles = FindCycle[ { graph, v },
-                          { Max[ 3, kmin - dist1[ v ] - dist2[ v ] ],
-                            kmax - dist1[ v ] - dist2[ v ] }, 1 ] },
-                      If[ cycles === { }, { },
-                        With[ { seq = cycleToVertexSequence @ First @ cycles },
-                          { loop = Append[
-                              RotateLeft[ seq, First @ FirstPosition[ seq, v ] - 1 ], v ] },
-                          { legs = { FindShortestPath[ graph, q1, v ],
-                              FindShortestPath[ graph, v, q2 ] } },
-                          { lassos = Select[
-                              ( Join[ legs[[ 1 ]], Rest @ #, Rest @ legs[[ 2 ]] ] & ) /@
-                                { loop, Reverse @ loop },
-                              w |-> acceptQ[ w ] &&
-                                AllTrue[ Partition[ w, 3, 1 ], #[[ 1 ]] =!= #[[ 3 ]] & ] ] },
-                          If[ lassos === { }, { }, { RandomChoice @ lassos } ] ] ] ],
+                    { } |-> Module[ { walk, splices = 0, u, loop, pos, spliced },
+                      walk = With[ { v = RandomChoice @ anchors },
+                        { loops = sprayLoopDraw[ graph, v,
+                            If[ crossings === 1, Max[ 3, kmin - dist1[ v ] - dist2[ v ] ], 3 ],
+                            kmax - dist1[ v ] - dist2[ v ] ] },
+                        If[ loops === { }, $Failed,
+                          With[ { good = Select[
+                              ( Join[ FindShortestPath[ graph, q1, v ], Rest @ #,
+                                  Rest @ FindShortestPath[ graph, v, q2 ] ] & ) /@
+                                { First @ loops, Reverse @ First @ loops },
+                              nonBacktrackingQ ] },
+                            If[ good === { }, $Failed, RandomChoice @ good ] ] ] ];
+                      While[ walk =!= $Failed && walkCrossings[ walk ] < crossings &&
+                          Length[ walk ] + 2 <= kmax && splices < 8,
+                        splices++;
+                        u = RandomChoice @ DeleteDuplicates @ walk;
+                        loop = sprayLoopDraw[ graph, u, 3, kmax - Length[ walk ] + 1 ];
+                        If[ loop =!= { },
+                          pos = RandomChoice @ Flatten @ Position[ walk, u, { 1 }, Heads -> False ];
+                          spliced = Select[
+                            ( Join[ walk[[ ;; pos ]], Rest @ #, walk[[ pos + 1 ;; ]] ] & ) /@
+                              { First @ loop, Reverse @ First @ loop },
+                            nonBacktrackingQ ];
+                          If[ spliced =!= { }, walk = RandomChoice @ spliced ] ] ];
+                      If[ walk =!= $Failed && acceptQ[ walk ], { walk }, { } ] ],
                     count, FindInfraWalk ] ] ] ],
           _,
             Message[ FindInfraWalk::badmethod, methodSpec ]; $Failed
@@ -150,10 +169,41 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
     ], p1, p2 ]
 
 
-(* Path-family base candidate function: every adjacent vertex of Last @ path,
-   without simplicity filtering -- "Simple" Property handles that opt-in. *)
+(* Path-family base candidate function: every adjacent vertex of Last @ path;
+   backtracking and the crossing budget are filtered by the caller. *)
 
 allNeighboursBaseFn[ g_Graph, path_List ] := AdjacencyList[ g, Last @ path ]
+
+
+(* crossings of a walk: arrivals at an already-visited vertex *)
+walkCrossings[ w_List ] := Length[ w ] - Length[ DeleteDuplicates[ w ] ]
+
+(* immersed steps only: no a,b,a cusp anywhere *)
+nonBacktrackingQ[ w_List ] := AllTrue[ Partition[ w, 3, 1 ], #[[ 1 ]] =!= #[[ 3 ]] & ]
+
+(* one random loop at u of length within [lo, hi], read off u's geodesic spray:
+   an even loop of length 2r glues two distinct geodesics to a random vertex at
+   rank r (out along plus edges, back along minus edges), an odd loop of length
+   2r + 1 routes through a random transverse edge whose ends both sit at rank r.
+   { } when the drawn length has no loop to carry it -- the caller retries. *)
+sprayLoopDraw[ graph_Graph, u_, lo_Integer, hi_Integer ] :=
+  If[ hi < 3, { },
+    With[ { len = RandomInteger[ { Max[ 3, lo ], hi } ] },
+      { r = Floor[ len / 2 ],
+        distU = AssociationThread[ VertexList @ graph, GraphDistance[ graph, u ] ] },
+      If[ EvenQ[ len ],
+        With[ { sphere = Select[ VertexList @ graph, distU[ # ] === r & ] },
+          If[ sphere === { }, { },
+            With[ { pair = FindInfraSegment[ graph, u, RandomChoice @ sphere, UpTo[ 2 ],
+                Method -> "RandomGreedy" ][ "Realizations" ] },
+              If[ Length[ pair ] < 2, { },
+                { Join[ pair[[ 1 ]], Rest @ Reverse @ pair[[ 2 ]] ] } ] ] ] ],
+        With[ { transverse = Select[ EdgeList @ graph,
+            distU[ #[[ 1 ]] ] === r && distU[ #[[ 2 ]] ] === r & ] },
+          If[ transverse === { }, { },
+            With[ { e = RandomChoice @ transverse },
+              { Join[ FindShortestPath[ graph, u, e[[ 1 ]] ], { e[[ 2 ]] },
+                  Rest @ Reverse @ FindShortestPath[ graph, u, e[[ 2 ]] ] ] } ] ] ] ] ] ]
 
 
 (* walkLengthAdmissibleQ[kspec]: predicate on a vertex sequence checking it

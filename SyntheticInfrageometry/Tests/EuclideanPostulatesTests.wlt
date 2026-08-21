@@ -456,14 +456,22 @@ VerificationTest[
 ]
 
 
-(* ===== FindInfraWalk "Simple" (path family) ===== *)
+(* ===== FindInfraWalk "Crossings" (path family) ===== *)
 
-(* Properties is retired on FindInfraWalk: the class axis is "Simple" -> True | False. *)
+(* Properties and the short-lived "Simple" boolean are retired on FindInfraWalk:
+   the class axis is "Crossings" -> c. *)
 VerificationTest[
   FindInfraWalk[GridGraph[{3, 3}], 1, 9, Infinity, 1, Properties -> {"Simple"}],
   $Failed,
   {FindInfraWalk::properties},
   TestID -> "FindInfraWalk-properties-retired-message"
+]
+
+VerificationTest[
+  FindInfraWalk[GridGraph[{3, 3}], 1, 9, Infinity, 1, "Simple" -> False],
+  $Failed,
+  {FindInfraWalk::simple},
+  TestID -> "FindInfraWalk-simple-retired-message"
 ]
 
 (* "Greedy" is a supported Method (lazy DFS, one instance); an unrecognised
