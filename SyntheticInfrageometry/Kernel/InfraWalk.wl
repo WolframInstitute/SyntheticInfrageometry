@@ -32,12 +32,17 @@ InfraWalk[ reps_List ][ "End" ]   := columnInfraPoint[ reps, -1 ]
    themselves exactly c times (a bounce a,b,a is a cusp, not a crossing, and
    non-backtracking excludes it; winding pays one crossing per revisited
    vertex, so the C4 walk 1,2,3,4,1,2,3 has three).  For c >= 1, Automatic
-   draws lassos at random for a bounded count ("RandomGreedy", ambient-seeded:
-   route through a random loop vertex, then splice short cycles in until the
-   crossing budget is met) and enumerates exhaustively under All; kspec must
-   be finite (::unbounded).  Local geodesic rules live on FindInfraGeodesic,
-   and the unrestricted revisits-allowed walk class is FindInfraGeodesic at
-   scale 1. *)
+   draws kinked walks at random for a bounded count ("RandomGreedy",
+   ambient-seeded: a uniform random simple backbone, then c loop splices, each
+   loop drawn uniformly in the graph punctured by the walk so the count is
+   exact, with germs twisted by the link rotation so the crossing is
+   transversal where the substrate carries one; option "LoopLength" ->
+   Automatic | {lmin, lmax} confines each loop's length -- the floor keeps
+   loops off the girth.  Under Automatic the lasso fallback covers walks the
+   splices cannot reach, e.g. windings) and enumerates exhaustively under All;
+   kspec must be finite (::unbounded).  Local geodesic rules live on
+   FindInfraGeodesic, and the unrestricted revisits-allowed walk class is
+   FindInfraGeodesic at scale 1. *)
 
 FindInfraWalk::properties  = "FindInfraWalk no longer takes Properties; use \"Crossings\" -> 0 (default, simple paths) | c. Local geodesic rules live on FindInfraGeodesic.";
 FindInfraWalk::simple      = "FindInfraWalk now counts self-crossings; use \"Crossings\" -> 0 (default, simple paths) | c.";
@@ -46,8 +51,9 @@ FindInfraWalk::shortfall   = "\"RandomGreedy\" drew `1` distinct walks of the `2
 FindInfraWalk::unbounded   = "with \"Crossings\" -> c >= 1 the class is infinite without a length bound; give kspec a finite bound.";
 
 Options[ FindInfraWalk ] = {
-  "Crossings" -> 0,
-  Method      -> Automatic
+  "Crossings"  -> 0,
+  "LoopLength" -> Automatic,
+  Method       -> Automatic
 };
 
 FindInfraWalk[ graph_Graph, p1_, p2_,
@@ -58,6 +64,8 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
       Catch @ With[ {
           crossings = OptionValue[ FindInfraWalk,
             FilterRules[ { opts }, Options @ FindInfraWalk ], "Crossings" ],
+          loopSpec = OptionValue[ FindInfraWalk,
+            FilterRules[ { opts }, Options @ FindInfraWalk ], "LoopLength" ],
           methodOpt = OptionValue[ FindInfraWalk,
             FilterRules[ { opts }, Options @ FindInfraWalk ], Method ] },
         { embeddedQ = crossings === 0 },
@@ -122,46 +130,65 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
                   randomBranch, True ],
                 count, FindInfraWalk ],
               (* a blind random descent almost never ends at a distant q2, so a draw is
-                 assembled: route q1 -> v -> q2 through a random loop vertex v carrying
-                 one spray loop sized to the length budget, then splice further spray
-                 loops at random walk vertices until the crossing budget is met (a loop
-                 overlapping the walk pays several crossings at once, which is how
-                 winding shapes arise).  Any crossing walk contains a loop vertex v with
-                 d(q1,v) + |C| + d(v,q2) <= its length, so no admissible v proves the
-                 class empty. *)
+                 assembled: a uniform random simple backbone in the metric ellipse
+                 { v : d(q1,v) + d(v,q2) <= d + slack }, then c kink splices -- each
+                 loop drawn uniformly in the graph punctured by the walk, so the splice
+                 pays exactly one crossing, with germs twisted by the link rotation
+                 where the substrate carries one, so the crossing is transversal.
+                 "LoopLength" confines each loop's length; under Automatic a failed
+                 kinked draw falls back to the lasso splicer, whose overlapping loops
+                 reach the winding walks the punctured splices cannot.  Any crossing
+                 walk contains a loop vertex v with d(q1,v) + |C| + d(v,q2) <= its
+                 length, so no admissible v proves the class empty. *)
               With[ {
                   dist1 = AssociationThread[ VertexList @ graph, GraphDistance[ graph, q1 ] ],
                   dist2 = AssociationThread[ VertexList @ graph, GraphDistance[ graph, q2 ] ],
                   kmin  = Replace[ kspec, { { lo_, _ } :> lo, { k_Integer } :> k, _ -> 0 } ] },
                 { anchors = Select[ VertexList @ graph, dist1[ # ] + dist2[ # ] + 3 <= kmax & ] },
                 If[ anchors === { }, { },
-                  randomDraws[
-                    { } |-> Module[ { walk, splices = 0, u, loop, pos, spliced },
-                      walk = With[ { v = RandomChoice @ anchors },
-                        { loops = sprayLoopDraw[ graph, v,
-                            If[ crossings === 1, Max[ 3, kmin - dist1[ v ] - dist2[ v ] ], 3 ],
-                            kmax - dist1[ v ] - dist2[ v ] ] },
-                        If[ loops === { }, $Failed,
-                          With[ { good = Select[
-                              ( Join[ FindShortestPath[ graph, q1, v ], Rest @ #,
-                                  Rest @ FindShortestPath[ graph, v, q2 ] ] & ) /@
-                                { First @ loops, Reverse @ First @ loops },
-                              nonBacktrackingQ ] },
-                            If[ good === { }, $Failed, RandomChoice @ good ] ] ] ];
-                      While[ walk =!= $Failed && walkCrossings[ walk ] < crossings &&
-                          Length[ walk ] + 2 <= kmax && splices < 8,
-                        splices++;
-                        u = RandomChoice @ DeleteDuplicates @ walk;
-                        loop = sprayLoopDraw[ graph, u, 3, kmax - Length[ walk ] + 1 ];
-                        If[ loop =!= { },
-                          pos = RandomChoice @ Flatten @ Position[ walk, u, { 1 }, Heads -> False ];
-                          spliced = Select[
-                            ( Join[ walk[[ ;; pos ]], Rest @ #, walk[[ pos + 1 ;; ]] ] & ) /@
-                              { First @ loop, Reverse @ First @ loop },
-                            nonBacktrackingQ ];
-                          If[ spliced =!= { }, walk = RandomChoice @ spliced ] ] ];
-                      If[ walk =!= $Failed && acceptQ[ walk ], { walk }, { } ] ],
-                    count, FindInfraWalk ] ] ] ],
+                  With[ { d = dist1[ q2 ] },
+                    { loopWin = Replace[ loopSpec, Automatic :>
+                        With[ { share = Floor[ ( kmax - d ) / crossings ] },
+                          { Max[ 3, Ceiling[ share / 2 ] ], Max[ 3, share ] } ] ] },
+                    { slack = Max[ 0, Min[ 4, kmax - d - crossings * loopWin[[ 1 ]] ] ] },
+                    { workGraph = ellipseSubgraph[ graph, dist1, dist2,
+                        d + slack + loopWin[[ 2 ]] + 4 ] },
+                    { backboneSampler = nbWalkSampler[
+                        ellipseSubgraph[ workGraph, dist1, dist2, d + slack ],
+                        q1, q2, { d, d + slack } ] },
+                    randomDraws[
+                      { } |-> With[ { w = kinkedWalkDraw[ workGraph, backboneSampler,
+                            crossings, loopWin ] },
+                        Which[
+                          ListQ @ w && acceptQ @ w, { w },
+                          loopSpec =!= Automatic, { },
+                          True,
+                            Module[ { walk, splices = 0, u, loop, pos, spliced },
+                              walk = With[ { v = RandomChoice @ anchors },
+                                { loops = sprayLoopDraw[ graph, v,
+                                    If[ crossings === 1, Max[ 3, kmin - dist1[ v ] - dist2[ v ] ], 3 ],
+                                    kmax - dist1[ v ] - dist2[ v ] ] },
+                                If[ loops === { }, $Failed,
+                                  With[ { good = Select[
+                                      ( Join[ FindShortestPath[ graph, q1, v ], Rest @ #,
+                                          Rest @ FindShortestPath[ graph, v, q2 ] ] & ) /@
+                                        { First @ loops, Reverse @ First @ loops },
+                                      nonBacktrackingQ ] },
+                                    If[ good === { }, $Failed, RandomChoice @ good ] ] ] ];
+                              While[ walk =!= $Failed && walkCrossings[ walk ] < crossings &&
+                                  Length[ walk ] + 2 <= kmax && splices < 8,
+                                splices++;
+                                u = RandomChoice @ DeleteDuplicates @ walk;
+                                loop = sprayLoopDraw[ graph, u, 3, kmax - Length[ walk ] + 1 ];
+                                If[ loop =!= { },
+                                  pos = RandomChoice @ Flatten @ Position[ walk, u, { 1 }, Heads -> False ];
+                                  spliced = Select[
+                                    ( Join[ walk[[ ;; pos ]], Rest @ #, walk[[ pos + 1 ;; ]] ] & ) /@
+                                      { First @ loop, Reverse @ First @ loop },
+                                    nonBacktrackingQ ];
+                                  If[ spliced =!= { }, walk = RandomChoice @ spliced ] ] ];
+                              If[ walk =!= $Failed && acceptQ[ walk ], { walk }, { } ] ] ] ],
+                      count, FindInfraWalk ] ] ] ] ],
           _,
             Message[ FindInfraWalk::badmethod, methodSpec ]; $Failed
         ]
@@ -201,6 +228,106 @@ sprayLoopDraw[ graph_Graph, u_, lo_Integer, hi_Integer ] :=
           If[ return === { } ||
               ! ( Max[ 3, lo ] <= Length[ spoke ] + Length[ return ] - 2 <= hi ), { },
             { Join[ spoke, Rest @ return ] } ] ] ] ] ]
+
+
+(* walks q1 -> q2 of length <= budget live exactly in the metric ellipse *)
+ellipseSubgraph[ graph_, dist1_, dist2_, budget_ ] :=
+  Subgraph[ graph, Select[ VertexList @ graph, dist1[ # ] + dist2[ # ] <= budget & ] ]
+
+
+(* backward walk counts on directed edges (the non-backtracking transfer
+   matrix), consumed by nbWalkDraw: one draw is exactly uniform over the
+   non-backtracking walks a -> b with length in the window.  $Failed when the
+   class is empty. *)
+nbWalkSampler[ graph_, a_, b_, { lmin_, lmax_ } ] := Module[
+  { de, idx, sIdx, transfer, seedVec, counts, starts, totals },
+  If[ lmax < 1 || ! MemberQ[ VertexList @ graph, a ] || ! MemberQ[ VertexList @ graph, b ],
+    Return[ $Failed, Module ] ];
+  de = Join[ #, Reverse /@ # ] & @ ( List @@@ EdgeList @ graph );
+  If[ de === { }, Return[ $Failed, Module ] ];
+  idx = AssociationThread[ de, Range @ Length @ de ];
+  sIdx = Table[
+    idx[ { edge[[ 2 ]], # } ] & /@ DeleteCases[ AdjacencyList[ graph, edge[[ 2 ]] ], edge[[ 1 ]] ],
+    { edge, de } ];
+  transfer = SparseArray[
+    Flatten @ Table[ { i, j } -> 1, { i, Length @ de }, { j, sIdx[[ i ]] } ],
+    { Length @ de, Length @ de } ];
+  seedVec = SparseArray[ Table[ If[ de[[ i, 2 ]] === b, 1, 0 ], { i, Length @ de } ] ];
+  counts = NestList[ transfer . # &, seedVec, lmax - 1 ];
+  starts = Flatten @ Position[ de, { a, _ } ];
+  totals = Table[ Total @ counts[[ l, starts ]], { l, Max[ 1, lmin ], lmax } ];
+  If[ starts === { } || Total @ totals == 0, $Failed,
+    <| "Edges" -> de, "Successors" -> sIdx, "Counts" -> counts, "Starts" -> starts,
+       "Totals" -> totals, "Window" -> { Max[ 1, lmin ], lmax } |> ] ]
+
+nbWalkDraw[ s_ ] := Module[ { len, e, walk },
+  len = RandomChoice[ s[ "Totals" ] -> Range[ s[ "Window" ][[ 1 ]], s[ "Window" ][[ 2 ]] ] ];
+  e = RandomChoice[ Normal @ s[ "Counts" ][[ len, s[ "Starts" ] ]] -> s[ "Starts" ] ];
+  walk = s[ "Edges" ][[ e ]];
+  Do[
+    e = RandomChoice[
+      Normal @ s[ "Counts" ][[ len - step, s[ "Successors" ][[ e ]] ]] -> s[ "Successors" ][[ e ]] ];
+    walk = Append[ walk, s[ "Edges" ][[ e, 2 ]] ], { step, 1, len - 1 } ];
+  walk ]
+
+
+(* germ pair of a kink at u with walk arms a1, a2: when the link of u is a
+   cycle (a rotation), both germs in one arc cut by the arms in the twisted
+   cyclic order (a1, n2, n1, a2) -- the pairing that interleaves the branches,
+   so the crossing is transversal; without a rotation, any two distinct
+   punctured neighbours. *)
+kinkGermPair[ ball_, punct_, u_, a1_, a2_ ] := With[
+  { lk = With[ { sub = Subgraph[ ball, AdjacencyList[ ball, u ] ] },
+      If[ ConnectedGraphQ[ sub ] && Union[ VertexDegree[ sub ] ] === { 2 },
+        First @ FindCycle[ sub, { VertexCount[ sub ] }, 1 ] /. UndirectedEdge[ x_, _ ] :> x,
+        $Failed ] ] },
+  If[ lk === $Failed,
+    With[ { cands = Select[ AdjacencyList[ ball, u ], MemberQ[ VertexList @ punct, # ] & ] },
+      If[ Length @ cands < 2, $Failed, RandomSample[ cands, 2 ] ] ],
+    With[ { rot = RotateLeft[ lk, First @ FirstPosition[ lk, a1 ] - 1 ] },
+      { k = First @ FirstPosition[ rot, a2 ] },
+      { arcs = Select[
+          Select[ #, MemberQ[ VertexList @ punct, # ] & ] & /@
+            { rot[[ 2 ;; k - 1 ]], Reverse @ rot[[ k + 1 ;; ]] },
+          Length[ # ] >= 2 & ] },
+      If[ arcs === { }, $Failed,
+        With[ { arc = RandomChoice @ arcs },
+          { ij = Sort @ RandomSample[ Range @ Length @ arc, 2 ] },
+          { arc[[ ij[[ 2 ]] ]], arc[[ ij[[ 1 ]] ]] } ] ] ] ] ]
+
+
+(* one kink: splice a loop at walk[[p]], drawn uniformly in the ball punctured
+   by the walk -- the splice pays exactly one crossing and retraces no edge --
+   with loop length in the window *)
+kinkSplice[ graph_, walk_, p_, { lmin_, lmax_ } ] := Module[
+  { u = walk[[ p ]], ball, punct, germs, s, path },
+  ball = NeighborhoodGraph[ graph, u, Ceiling[ lmax / 2 ] + 1 ];
+  punct = VertexDelete[ ball,
+    Intersection[ VertexList @ ball, DeleteCases[ DeleteDuplicates @ walk, u ] ] ];
+  germs = kinkGermPair[ ball, punct, u, walk[[ p - 1 ]], walk[[ p + 1 ]] ];
+  If[ germs === $Failed, Return[ $Failed, Module ] ];
+  s = nbWalkSampler[ VertexDelete[ punct, { u } ], germs[[ 1 ]], germs[[ 2 ]],
+    { Max[ 1, lmin - 2 ], lmax - 2 } ];
+  If[ s === $Failed, Return[ $Failed, Module ] ];
+  path = SelectFirst[ Table[ nbWalkDraw @ s, 40 ], DuplicateFreeQ ];
+  If[ MissingQ @ path, $Failed, Join[ walk[[ ;; p ]], path, walk[[ p ;; ]] ] ] ]
+
+
+(* one kinked-walk draw: a uniform random simple backbone off the prepared
+   sampler, then c kink splices at random positions *)
+kinkedWalkDraw[ workGraph_, backboneSampler_, crossings_, loopWin_ ] := Module[
+  { walk, try },
+  If[ backboneSampler === $Failed, Return[ $Failed, Module ] ];
+  walk = SelectFirst[ Table[ nbWalkDraw @ backboneSampler, 40 ], DuplicateFreeQ ];
+  If[ MissingQ @ walk || Length @ walk < 3, Return[ $Failed, Module ] ];
+  Do[
+    try = SelectFirst[
+      Table[ Quiet @ kinkSplice[ workGraph, walk,
+          RandomInteger[ { 2, Length[ walk ] - 1 } ], loopWin ], 20 ],
+      ListQ, $Failed ];
+    If[ try === $Failed, Return[ $Failed, Module ], walk = try ],
+    crossings ];
+  walk ]
 
 
 (* walkLengthAdmissibleQ[kspec]: predicate on a vertex sequence checking it

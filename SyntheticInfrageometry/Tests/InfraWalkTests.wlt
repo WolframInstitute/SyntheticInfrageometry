@@ -641,4 +641,34 @@ VerificationTest[
   TestID -> "FindInfraWalk-Greedy-All-agrees-with-Exhaustive"
 ]
 
+(* The kinked sampler: each splice pays exactly one crossing, retraces no edge,
+   and respects the "LoopLength" floor -- the loop span at every doubled vertex
+   is at least lmin. *)
+VerificationTest[
+  SeedRandom[ 7 ];
+  With[ { g = GridGraph[ { 6, 6 } ] },
+    { w = First @ FindInfraWalk[ g, 1, 36, { 10, 26 }, 1, "Crossings" -> 1,
+        "LoopLength" -> { 8, 12 } ][ "Realizations" ] },
+    { Length[ w ] - Length[ DeleteDuplicates @ w ],
+      Min[ ( Last[ # ] - First[ # ] & ) @ Flatten @ Position[ w, # ] & /@
+          Select[ DeleteDuplicates @ w, Count[ w, # ] > 1 & ] ] >= 8,
+      Max[ Values @ Counts[ Sort /@ Partition[ w, 2, 1 ] ] ] === 1,
+      AllTrue[ Partition[ w, 3, 1 ], #[[ 1 ]] =!= #[[ 3 ]] & ],
+      10 <= Length[ w ] - 1 <= 26 } ],
+  { 1, True, True, True, True },
+  TestID -> "FindInfraWalk-LoopLength-floor-and-exact-crossing"
+]
+
+(* Automatic LoopLength: the default bounded-count draw stays in the exact class. *)
+VerificationTest[
+  SeedRandom[ 3 ];
+  With[ { g = GridGraph[ { 6, 6 } ] },
+    { w = First @ FindInfraWalk[ g, 1, 36, { 10, 24 }, 1, "Crossings" -> 2 ][ "Realizations" ] },
+    { Length[ w ] - Length[ DeleteDuplicates @ w ],
+      AllTrue[ Partition[ w, 3, 1 ], #[[ 1 ]] =!= #[[ 3 ]] & ],
+      10 <= Length[ w ] - 1 <= 24 } ],
+  { 2, True, True },
+  TestID -> "FindInfraWalk-Automatic-LoopLength-exact-class"
+]
+
 EndTestSection[]
