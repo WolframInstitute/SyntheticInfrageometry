@@ -435,3 +435,30 @@ VerificationTest[
   True,
   TestID -> "InfraSceneHighlight-Arrowheads-independent-of-stroke-weight"
 ]
+
+(* StrikeOutPalette: colour follows ADDITION ORDER, not object type. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    With[ { a = FindInfraSegment[ g, 1, 25 ], b = InfraSet @ FindInfraBall[ g, 13, 1 ] },
+      Module[ { c1, c2 },
+        c1 = Cases[ ToBoxes @ InfraSceneHighlight[ g, { a, b } ], _RGBColor, Infinity ];
+        c2 = Cases[ ToBoxes @ InfraSceneHighlight[ g, { b, a } ], _RGBColor, Infinity ];
+        { MemberQ[ c1, First @ $InfraStrikeOutPalette ], c1 =!= c2 } ] ] ],
+  { True, True },
+  TestID -> "InfraSceneHighlight-Palette-follows-addition-order"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    With[ { seg = FindInfraSegment[ g, 1, 25 ] },
+      MemberQ[ Cases[ ToBoxes @ InfraSceneHighlight[ g, { seg -> RGBColor[ 0, 1, 0 ] } ], _RGBColor, Infinity ],
+        RGBColor[ 0, 1, 0 ] ] ] ],
+  True,
+  TestID -> "InfraSceneHighlight-Palette-explicit-colour-still-wins"
+]
+
+VerificationTest[
+  { Length @ $InfraStrikeOutPalette, First @ $InfraStrikeOutPalette === First @ ColorData[ 112, "ColorList" ] },
+  { 15, True },
+  TestID -> "InfraStrikeOutPalette-is-ColorData-112"
+]

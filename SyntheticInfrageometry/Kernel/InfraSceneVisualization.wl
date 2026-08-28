@@ -11,6 +11,7 @@ PackageExport[$InfraRayColor]
 PackageExport[$InfraObjectColor]
 PackageExport[$InfraTopologyColor]
 PackageExport[$InfraPalette]
+PackageExport[$InfraStrikeOutPalette]
 PackageExport[$InfraPointSizes]
 PackageExport[$InfraAccentPointSize]
 PackageScope[$infraColors]
@@ -97,6 +98,11 @@ $InfraAccentPointSize = 12;
    renders at $InfraSceneImageSize, and a multi-panel GraphicsRow / GraphicsGrid sets
    its own symbolic size while its panels inherit this one. *)
 $InfraSceneImageSize = Medium;
+
+(* The strike-out palette: colours belong to the ORDER objects are added to a scene, not to
+   object types.  15 colours beginning red -> blue -> orange -> green -> purple -> teal, so
+   "first highlight colour is red, then a hierarchy" falls out of the order for free. *)
+$InfraStrikeOutPalette := ColorData[ 112, "ColorList" ];
 
 $InfraSceneHighlightPalette := Join[
   { $InfraSegmentColor, $InfraShellColor, $InfraCircleColor, $InfraPointColor, $InfraRayColor },
@@ -214,6 +220,7 @@ Options[ InfraSceneHighlight ] = Join[
     "ThicknessRange" :> $InfraEdgeThickness,
     "PointSizeRange" -> Automatic,
     "Arrowheads"     -> Automatic,
+    "Palette"        -> Automatic,
     ImageSize        :> $InfraSceneImageSize
   },
   Options[ HighlightGraph ]
@@ -223,7 +230,7 @@ InfraSceneHighlight[ graph_Graph, obj : Except[_List], opts : OptionsPattern[] ]
   InfraSceneHighlight[ graph, { obj }, opts ]
 
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
-  Module[ { triples, knotTriples, ranges, defaultRecord, vEntries, eEntries, objects, arrowSpec },
+  Module[ { triples, knotTriples, ranges, defaultRecord, vEntries, eEntries, objects, arrowSpec, palette },
 
     (* One head per path object, at its end -- not one per edge.  The value doubles as the
        head spec, so the option turns the feature on AND selects the head.  True resolves to
@@ -234,6 +241,16 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
       True :> Arrowheads[ Medium ],
       a_Arrowheads :> a,
       other_ :> Arrowheads[ other ] } ];
+
+    (* Colour by ADDITION ORDER, not by object type: the first object added takes the first
+       palette colour, and no colour belongs to "ball" or "segment" any more.  None restores
+       the type-keyed behaviour through $InfraPalette.  An explicit obj -> colour is parsed by
+       parseHighlightStyle before this runs, so a caller's own colour still wins. *)
+    palette = Replace[ OptionValue[ "Palette" ], {
+      Automatic :> $InfraStrikeOutPalette,
+      None -> None,
+      list_List /; Length[ list ] > 0 :> list,
+      other_ :> { other } } ];
 
     (* Normalise each item: unwrap Style[obj, dirs__] into obj -> Directive[dirs];
        merge {InfraX[{r1}],...} into InfraX[{r1,...}];
@@ -262,9 +279,11 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           record = parseHighlightStyle[ If[ MatchQ[ item, _Rule ], Last @ item, Automatic ], ranges ] },
         Append[ If[ MatchQ[ Head @ obj, InfraPoint | InfraEffectivePoint | InfraObject | InfraSet | $infraBundleHeads ], obj, None ] ] @
         Replace[
-          { obj, Lookup[ $infraColors, Lookup[ $infraHeadColors, Head @ obj, None ],
-              $InfraSceneHighlightPalette[[
-                1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ],
+          { obj, If[ palette === None,
+              Lookup[ $infraColors, Lookup[ $infraHeadColors, Head @ obj, None ],
+                $InfraSceneHighlightPalette[[
+                  1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ],
+              palette[[ 1 + Mod[ First @ idx - 1, Length @ palette ] ]] ],
             record },
           {
             (* no "Weights" override: the generic path reads the measure via
