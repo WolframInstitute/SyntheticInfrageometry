@@ -281,7 +281,7 @@ $InfraObjectColor::usage  = "Default highlight color for InfraObject objects.";
 $InfraTopologyColor::usage = "Default highlight color for topology overlays.";
 $InfraPalette::usage = "$InfraPalette is the Dataset of default object colors, one row per primitive; the source both the $Infra*Color symbols and InfraSceneHighlight read from.";
 
-InfraSceneHighlight::usage = "InfraSceneHighlight[graph, objects] renders Infra* objects diffusely on graph, intensity scaling with multiplicity and colors blending across objects. Options \"OpacityRange\", \"ThicknessRange\", \"PointSizeRange\".";
+InfraSceneHighlight::usage = "InfraSceneHighlight[graph, objects] renders Infra* objects diffusely on graph, intensity scaling with multiplicity and colors blending across objects. Options \"OpacityRange\", \"ThicknessRange\", \"PointSizeRange\", \"Arrowheads\" (Automatic = off; True = Arrowheads[Medium]; or an explicit head spec -- one head at the end of each path object, sized from the plot rather than the stroke).";
 InfraSceneViewer::usage = "InfraSceneViewer[scene, graph] is an interactive step-by-step visualisation of an InfraScene on a graph.";
 PointViewer::usage = "PointViewer[graph] is an interactive viewer for selecting points; PointViewer[graph, sym] stores the selection in sym.";
 SegmentViewer::usage = "SegmentViewer[graph] is an interactive viewer for exploring geodesic segments.";

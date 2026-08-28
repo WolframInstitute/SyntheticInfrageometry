@@ -213,6 +213,7 @@ Options[ InfraSceneHighlight ] = Join[
     "OpacityRange"   :> $InfraOpacityRange,
     "ThicknessRange" :> $InfraEdgeThickness,
     "PointSizeRange" -> Automatic,
+    "Arrowheads"     -> Automatic,
     ImageSize        :> $InfraSceneImageSize
   },
   Options[ HighlightGraph ]
@@ -222,7 +223,17 @@ InfraSceneHighlight[ graph_Graph, obj : Except[_List], opts : OptionsPattern[] ]
   InfraSceneHighlight[ graph, { obj }, opts ]
 
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
-  Module[ { triples, knotTriples, ranges, defaultRecord, vEntries, eEntries, objects },
+  Module[ { triples, knotTriples, ranges, defaultRecord, vEntries, eEntries, objects, arrowSpec },
+
+    (* One head per path object, at its end -- not one per edge.  The value doubles as the
+       head spec, so the option turns the feature on AND selects the head.  True resolves to
+       Arrowheads[Medium]: a symbolic size scales with the plot rather than with the stroke,
+       so a heavy edge does not get a giant head nor a light one an invisible head. *)
+    arrowSpec = Replace[ OptionValue[ "Arrowheads" ], {
+      Automatic | None | False -> None,
+      True :> Arrowheads[ Medium ],
+      a_Arrowheads :> a,
+      other_ :> Arrowheads[ other ] } ];
 
     (* Normalise each item: unwrap Style[obj, dirs__] into obj -> Directive[dirs];
        merge {InfraX[{r1}],...} into InfraX[{r1,...}];
@@ -420,11 +431,14 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           strokes = Catenate @ Cases[ triples,
             { reps_, _, type : "Paths" | "Cycles", record_, _ } /; record[ "EdgeShapeFunction" ] === None :>
               Catenate @ Map[
-                walk |-> Map[
-                  steps |-> { UndirectedEdge @@ Sort @ # & /@ steps,
-                              coords /@ Prepend[ Last /@ steps, First @ First @ steps ] },
-                  Select[ SplitBy[ Partition[ walk, 2, 1 ], edgeStyle[ UndirectedEdge @@ Sort @ # ] & ],
-                    Length[ # ] >= 2 & ] ],
+                walk |-> With[ {
+                    runs = Select[ SplitBy[ Partition[ walk, 2, 1 ], edgeStyle[ UndirectedEdge @@ Sort @ # ] & ],
+                      Length[ # ] >= 2 & ] },
+                  MapIndexed[
+                    { steps, position } |-> { UndirectedEdge @@ Sort @ # & /@ steps,
+                                coords /@ Prepend[ Last /@ steps, First @ First @ steps ],
+                                First[ position ] === Length[ runs ] },
+                    runs ] ],
                 Replace[ Cases[ reps, r_List /; Length[ r ] >= 2 && FreeQ[ r, _Graph ] ],
                   w_ :> If[ type === "Cycles" && Last[ w ] =!= First[ w ], Append[ w, First @ w ], w ], { 1 } ] ] ]
         },
@@ -435,7 +449,10 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                 fresh_ :> {
                   Join[ First @ state, AssociationThread[ fresh -> True ] ],
                   Join[ Last @ state,
-                    { First @ fresh -> ( { JoinForm[ "Round" ], Line @ Last @ stroke } & ) },
+                    { First @ fresh -> ( { JoinForm[ "Round" ],
+                        If[ arrowSpec =!= None && stroke[[ 3 ]],
+                          Sequence @@ { arrowSpec, Arrow @ stroke[[ 2 ]] },
+                          Line @ stroke[[ 2 ]] ] } & ) },
                     ( # -> ( { } & ) ) & /@ Rest @ fresh ] } } ],
             { <| |>, { } },
             strokes ]

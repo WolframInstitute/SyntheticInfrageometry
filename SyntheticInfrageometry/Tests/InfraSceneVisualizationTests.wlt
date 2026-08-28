@@ -415,3 +415,23 @@ VerificationTest[
   { <| Small -> 4, Medium -> 7, Large -> 10 |>, 12 },
   TestID -> "InfraPointSizes-closed-table"
 ]
+
+(* DirectedPathDisplay: one arrowhead per path object, at its end, sized from the plot and
+   NOT from the terminal edge's weight -- a heavy edge must not get a giant head.  The head
+   is counted in the BOXES: arrowSpec is a Module local inside the EdgeShapeFunction body, so
+   it only resolves when that function is called to draw. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] }, With[ { seg = FindInfraSegment[ g, 1, 25 ] },
+    { Count[ ToBoxes @ InfraSceneHighlight[ g, { seg } ], ArrowBox, Infinity, Heads -> True ] > 0,
+      Count[ ToBoxes @ InfraSceneHighlight[ g, { seg }, "Arrowheads" -> True ], ArrowBox, Infinity, Heads -> True ] > 0 } ] ],
+  { False, True },
+  TestID -> "InfraSceneHighlight-Arrowheads-off-by-default-drawn-when-on"
+]
+
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] }, With[ { seg = FindInfraSegment[ g, 1, 25 ] },
+    SameQ @@ ( ( t |-> Cases[ ToBoxes @ InfraSceneHighlight[ g, { seg }, "Arrowheads" -> True,
+        "ThicknessRange" -> t ], ArrowheadsBox[ a___ ] :> { a }, Infinity ] ) /@ { 2, 9 } ) ] ],
+  True,
+  TestID -> "InfraSceneHighlight-Arrowheads-independent-of-stroke-weight"
+]
