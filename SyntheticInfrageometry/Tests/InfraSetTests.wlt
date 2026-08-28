@@ -248,29 +248,29 @@ VerificationTest[
 
 (* ===== the two projections of a bundle: support and occupation ===== *)
 
-(* a set-like wrapper: InfraSet reads the support, InfraMesoPoint the
+(* a set-like wrapper: InfraSet reads the support, InfraEffectivePoint the
    occupation, which for a set is the all-ones measure on that same support *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     With[ { ball = FindInfraBall[ g, 13, 2 ] },
-      InfraMesoPoint[ ball ][ "Support" ] === InfraSet[ ball ] &&
-        InfraMesoPoint[ ball ][ "Weights" ] === ConstantArray[ 1, Length @ InfraSet[ ball ][ "Vertices" ] ] ]
+      InfraEffectivePoint[ ball ][ "Support" ] === InfraSet[ ball ] &&
+        InfraEffectivePoint[ ball ][ "Weights" ] === ConstantArray[ 1, Length @ InfraSet[ ball ][ "Vertices" ] ] ]
   ],
   True,
-  TestID -> "InfraMesoPoint-coerces-InfraBall-to-occupation"
+  TestID -> "InfraEffectivePoint-coerces-InfraBall-to-occupation"
 ]
 
 (* a multi-realisation bundle keeps the occupation multiplicities *)
 (* KeySort both sides: the claim is that the two measures agree, not that they
-   enumerate their support in the same order.  InfraMesoPoint canonicalises key
+   enumerate their support in the same order.  InfraEffectivePoint canonicalises key
    order; the bundle accessor keeps discovery order. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { seg = FindInfraSegment[ g, 1, 16, All ] },
-      KeySort @ InfraMesoPoint[ seg ][ "OccupationCount" ] === KeySort @ seg[ "OccupationCount" ] ]
+      KeySort @ InfraEffectivePoint[ seg ][ "OccupationCount" ] === KeySort @ seg[ "OccupationCount" ] ]
   ],
   True,
-  TestID -> "InfraMesoPoint-coerces-bundle-to-occupation-measure"
+  TestID -> "InfraEffectivePoint-coerces-bundle-to-occupation-measure"
 ]
 
 (* the coerced point is a legal anchor and re-wrapping is the identity *)
@@ -319,35 +319,35 @@ VerificationTest[
   TestID -> "InfraSet-DAG-inside-realisation-list"
 ]
 
-(* ===== InfraMesoPoint canonical form ===== *)
+(* ===== InfraEffectivePoint canonical form ===== *)
 
 (* Multiplicities survive the DAG -> measure conversion, and the compact and
    enumerated forms of the same segment give the SAME measure -- they used to
    differ by association key order alone, which broke SameQ equality. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    InfraMesoPoint[FindInfraSegment[g, 1, 16, All]] ===
-      InfraMesoPoint[FindInfraSegment[g, 1, 16, All]]],
+    InfraEffectivePoint[FindInfraSegment[g, 1, 16, All]] ===
+      InfraEffectivePoint[FindInfraSegment[g, 1, 16, All]]],
   True,
-  TestID -> "InfraMesoPoint-DAG-and-enumerated-forms-are-SameQ"
+  TestID -> "InfraEffectivePoint-DAG-and-enumerated-forms-are-SameQ"
 ]
 
 (* The weights are the true geodesic occupation: counted by brute force over the
    whole enumerated family, they agree with the DP on the DAG. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    {m = InfraMesoPoint[FindInfraSegment[g, 1, 16, All]]},
+    {m = InfraEffectivePoint[FindInfraSegment[g, 1, 16, All]]},
     {paths = FindInfraSegment[g, 1, 16, All]["Realizations"]},
     AllTrue[m["Vertices"], m[[1]][#] == Count[paths, p_ /; MemberQ[p, #]] &]],
   True,
-  TestID -> "InfraMesoPoint-DAG-weights-are-true-occupation"
+  TestID -> "InfraEffectivePoint-DAG-weights-are-true-occupation"
 ]
 
 (* Keys are sorted, so equal measures entered in any order are SameQ. *)
 VerificationTest[
-  InfraMesoPoint[<|9 -> 2, 1 -> 5|>] === InfraMesoPoint[<|1 -> 5, 9 -> 2|>],
+  InfraEffectivePoint[<|9 -> 2, 1 -> 5|>] === InfraEffectivePoint[<|1 -> 5, 9 -> 2|>],
   True,
-  TestID -> "InfraMesoPoint-key-order-canonicalised"
+  TestID -> "InfraEffectivePoint-key-order-canonicalised"
 ]
 
 EndTestSection[]

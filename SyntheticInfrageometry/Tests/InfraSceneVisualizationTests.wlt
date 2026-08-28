@@ -66,7 +66,7 @@ VerificationTest[
     With[ {
         pts  = Take[ VertexList @ g, 2 ],
         opts = Options @
-          InfraSceneHighlight[ g, { InfraMesoPoint[ InfraSet[ Take[ VertexList @ g, 2 ] ] ] -> Red } ] },
+          InfraSceneHighlight[ g, { InfraEffectivePoint[ InfraSet[ Take[ VertexList @ g, 2 ] ] ] -> Red } ] },
       Length @ Flatten @ Cases[ opts,
         HoldPattern[ VertexShapeFunction -> rules_ ] :>
           Cases[ rules, ( v_ -> _ ) /; MemberQ[ pts, v ] ], Infinity ] > 0 &&
@@ -313,16 +313,16 @@ VerificationTest[
    the whole measure.  Stated as the ratio, so the palette may retune the base. *)
 VerificationTest[
   With[ { g = GridGraph[ { 7, 7 } ] },
-    { (* a UNIFORM mesopoint (here a ball) is uniformly bright: its diffuseness
+    { (* a UNIFORM effective point (here a ball) is uniformly bright: its diffuseness
          is its extent, not a per-vertex fade *)
-      Union @ Cases[ Options @ InfraSceneHighlight[ g, { InfraMesoPoint[ FindInfraBall[ g, 25, 2 ] ] } ],
+      Union @ Cases[ Options @ InfraSceneHighlight[ g, { InfraEffectivePoint[ FindInfraBall[ g, 25, 2 ] ] } ],
         AbsolutePointSize[ s_ ] :> s, Infinity ],
-      (* a NON-uniform mesopoint draws its heaviest vertex full and the rest smaller *)
+      (* a NON-uniform effective point draws its heaviest vertex full and the rest smaller *)
       With[ { sizes = Cases[ Options @ InfraSceneHighlight[ g, { FindInfraMidpoint[ g, 1, 49 ] } ],
                 AbsolutePointSize[ s_ ] :> s, Infinity ] },
         { Max @ sizes, Max @ sizes > Min @ sizes } ] } ],
   { { 6 }, { 6, True } },
-  TestID -> "InfraSceneHighlight-mesopoint-relative-mass"
+  TestID -> "InfraSceneHighlight-effectivepoint-relative-mass"
 ]
 
 (* A highlighted walk is drawn as ONE joined stroke through its vertices, not as a

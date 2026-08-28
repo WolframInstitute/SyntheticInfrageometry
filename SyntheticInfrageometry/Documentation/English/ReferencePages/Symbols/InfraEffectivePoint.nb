@@ -20,7 +20,7 @@ WindowFrame->Normal*)
 Notebook[{
 
 Cell[CellGroupData[{
-Cell["InfraMesoPoint", "ObjectName",
+Cell["InfraEffectivePoint", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
@@ -29,8 +29,8 @@ Cell[TextData[{
   RowBox[{
    TemplateBox[{
      Cell[
-      TextData["InfraMesoPoint"]], 
-     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraMesoPoint", 
+      TextData["InfraEffectivePoint"]], 
+     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraEffectivePoint", 
      "WolframInstitute/SyntheticInfrageometry Package Symbol"},
     "PackageLink",
     BaseStyle->"InlineFormula"], "[", 
@@ -51,8 +51,8 @@ distribution.",
   RowBox[{
    TemplateBox[{
      Cell[
-      TextData["InfraMesoPoint"]], 
-     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraMesoPoint", 
+      TextData["InfraEffectivePoint"]], 
+     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraEffectivePoint", 
      "WolframInstitute/SyntheticInfrageometry Package Symbol"},
     "PackageLink",
     BaseStyle->"InlineFormula"], "[", 
@@ -74,8 +74,8 @@ distribution.",
   RowBox[{
    TemplateBox[{
      Cell[
-      TextData["InfraMesoPoint"]], 
-     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraMesoPoint", 
+      TextData["InfraEffectivePoint"]], 
+     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraEffectivePoint", 
      "WolframInstitute/SyntheticInfrageometry Package Symbol"},
     "PackageLink",
     BaseStyle->"InlineFormula"], "[", 
@@ -245,7 +245,7 @@ Cell[TextData[{
   FontWeight->"Bold"],
  ". ",
  Cell[BoxData[
-  RowBox[{"InfraMesoPoint", "[", 
+  RowBox[{"InfraEffectivePoint", "[", 
    RowBox[{"{", 
     RowBox[{"1", ",", " ", "2"}], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
@@ -551,7 +551,7 @@ Cell[BoxData[
  CellLabel->"In[1]:= ",ExpressionUUID->"c15e3785-bdb3-43f7-81ee-8e17972ecfb0"],
 
 Cell[BoxData[
- RowBox[{"InfraMesoPoint", "[", 
+ RowBox[{"InfraEffectivePoint", "[", 
   RowBox[{"\[LeftAssociation]", 
    RowBox[{
     RowBox[{"3", "\[Rule]", "6"}], ",", 
@@ -1116,7 +1116,7 @@ Cell[TextData[{
   FontSize->0.9 Inherited,ExpressionUUID->
   "f1ddd297-3f47-4757-a1e9-f00392006a3f"],
  " takes the support, ",
- Cell[BoxData["InfraMesoPoint"], "InlineFormula",
+ Cell[BoxData["InfraEffectivePoint"], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
   "92405b18-10bc-42f5-87fd-8ff447c9f8c4"],
  " the occupation."
@@ -1143,7 +1143,7 @@ Cell[BoxData[
       RowBox[{"InfraSet", "[", "seg", "]"}], "[", "\"\<Length\>\"", "]"}], ",",
       " ", 
      RowBox[{
-      RowBox[{"InfraMesoPoint", "[", "seg", "]"}], "[", "\"\<Mass\>\"", 
+      RowBox[{"InfraEffectivePoint", "[", "seg", "]"}], "[", "\"\<Mass\>\"", 
       "]"}]}], "}"}]}], "]"}]], "Input",
  CellLabel->"In[1]:= ",ExpressionUUID->"9ac2f3c3-f2af-4617-b07e-4043de85156f"],
 
@@ -1162,7 +1162,7 @@ Cell[CellGroupData[{
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   RowBox[{"InfraMesoPoint", "[", 
+   RowBox[{"InfraEffectivePoint", "[", 
     RowBox[{"{", 
      RowBox[{
       RowBox[{"InfraPoint", "[", "4", "]"}], ",", " ", 
@@ -1177,7 +1177,7 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   RowBox[{"InfraMesoPoint", "[", 
+   RowBox[{"InfraEffectivePoint", "[", 
     RowBox[{"\[LeftAssociation]", 
      RowBox[{
       RowBox[{"4", "\[Rule]", "2"}], ",", 
@@ -1197,13 +1197,13 @@ Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"Head", " ", "@", " ", 
-  RowBox[{"InfraMesoPoint", "[", 
+  RowBox[{"InfraEffectivePoint", "[", 
    RowBox[{"InfraSet", "[", 
     RowBox[{"{", 
      RowBox[{"4", ",", " ", "9"}], "}"}], "]"}], "]"}]}]], "Input",
  CellLabel->"In[3]:= ",ExpressionUUID->"3e636cc0-4392-48ec-9af2-72bc2c7ef69f"],
 
-Cell[BoxData["InfraMesoPoint"], "Output",
+Cell[BoxData["InfraEffectivePoint"], "Output",
  CellLabel->"Out[3]= ",ExpressionUUID->"adc6958f-b7a5-4d86-934f-2e41724d038a"]
 }, Open  ]]
 }, Open  ]],
@@ -1278,7 +1278,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
  CellLabel->"Context",
  CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
 
-Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraMesoPoint", \
+Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraEffectivePoint", \
 "Categorization",
  CellLabel->"URI",ExpressionUUID->"1eefe84f-1c83-4426-8414-218ec1febead"]
 }, Closed]],
@@ -1313,12 +1313,12 @@ WindowSize->{700, 770},
 WindowMargins->{{5, Automatic}, {Automatic, 0}},
 TaggingRules->{
  "Metadata" -> {
-   "title" -> "InfraMesoPoint", "context" -> 
+   "title" -> "InfraEffectivePoint", "context" -> 
     "WolframInstitute`SyntheticInfrageometry`", 
     "keywords" -> {
      "mesopoint", "measure", "occupation", "multiplicity", "wrapper"}, 
     "summary" -> "", "paclet" -> "WolframInstitute/SyntheticInfrageometry", 
-    "uri" -> "WolframInstitute/SyntheticInfrageometry/ref/InfraMesoPoint", 
+    "uri" -> "WolframInstitute/SyntheticInfrageometry/ref/InfraEffectivePoint", 
     "type" -> "Symbol", "index" -> True, "language" -> "en"}},
 CreateCellID->True,
 CellContext->CellGroup,

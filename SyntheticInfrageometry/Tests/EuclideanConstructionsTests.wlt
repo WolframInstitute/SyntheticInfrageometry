@@ -5,15 +5,15 @@ BeginTestSection["EuclideanConstructions"]
 (* Even distance -> single centre vertex. *)
 VerificationTest[
   FindInfraMidpoint[PathGraph[Range[5]], {1, 2, 3, 4, 5}],
-  InfraMesoPoint[<|3 -> 1|>],
+  InfraEffectivePoint[<|3 -> 1|>],
   TestID -> "FindInfraMidpoint-segment-even-distance-single"
 ]
 
-(* Odd distance -> the two closest indices, a mesopoint (always non-empty). *)
+(* Odd distance -> the two closest indices, a effective point (always non-empty). *)
 VerificationTest[
   Sort @ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}]["Vertices"],
   {2, 3},
-  TestID -> "FindInfraMidpoint-segment-odd-distance-mesopoint"
+  TestID -> "FindInfraMidpoint-segment-odd-distance-effective point"
 ]
 
 (* Tolerance widens the band beyond the closest offset (0.5 + 1 = 1.5). *)
@@ -25,7 +25,7 @@ VerificationTest[
 
 VerificationTest[
   FindInfraMidpoint[PathGraph[Range[5]], 1, 5],
-  InfraMesoPoint[<|3 -> 1|>],
+  InfraEffectivePoint[<|3 -> 1|>],
   TestID -> "FindInfraMidpoint-endpoints-single"
 ]
 
@@ -45,11 +45,11 @@ VerificationTest[
 
 VerificationTest[
   FindInfraMidpoint[PathGraph[Range[5]], InfraSegment[{{1, 2, 3, 4, 5}}]],
-  InfraMesoPoint[<|3 -> 1|>],
+  InfraEffectivePoint[<|3 -> 1|>],
   TestID -> "FindInfraMidpoint-InfraSegment-single-walk"
 ]
 
-(* Walks with different centres union into one mesopoint. *)
+(* Walks with different centres union into one effective point. *)
 VerificationTest[
   Sort @ FindInfraMidpoint[ PathGraph[ Range[ 7 ] ],
     InfraSegment[ { { 1, 2, 3, 4, 5, 6, 7 }, { 1, 2, 3, 4, 5 } } ] ][ "Vertices" ],
@@ -62,7 +62,7 @@ VerificationTest[
 VerificationTest[
   FindInfraMidpoint[ PathGraph[ Range[ 5 ] ],
     InfraSegment[ { { 1, 2, 3, 4, 5 }, { 5, 4, 3, 2, 1 } } ] ],
-  InfraMesoPoint[ <| 3 -> 2 |> ],
+  InfraEffectivePoint[ <| 3 -> 2 |> ],
   TestID -> "FindInfraMidpoint-InfraSegment-mass-of-shared-middle"
 ]
 
@@ -458,19 +458,19 @@ VerificationTest[
 (* Closest index to the golden index 1 + 10/phi = 7.18 -> vertex 7, always a single point. *)
 VerificationTest[
   FindInfraGoldenSection[PathGraph[Range[11]], 1, 11],
-  InfraMesoPoint[<|7 -> 1|>],
+  InfraEffectivePoint[<|7 -> 1|>],
   TestID -> "FindInfraGoldenSection-single-point-vertex-7"
 ]
 
 VerificationTest[
   FindInfraGoldenSection[PathGraph[Range[11]], 1, 11, "Tolerance" -> 0.5],
-  InfraMesoPoint[<|7 -> 1|>],
+  InfraEffectivePoint[<|7 -> 1|>],
   TestID -> "FindInfraGoldenSection-tolerance"
 ]
 
 VerificationTest[
   FindInfraGoldenSection[PathGraph[Range[11]], InfraSegment[{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}}]],
-  InfraMesoPoint[<|7 -> 1|>],
+  InfraEffectivePoint[<|7 -> 1|>],
   TestID -> "FindInfraGoldenSection-InfraSegment"
 ]
 

@@ -129,7 +129,7 @@ FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
 (* ===================== FindInfraShellCenter ===================== *)
 
 (* Center / radius of a metric shell, two methods.  Both return a list
-   of estimates { InfraMesoPoint[support, masses], r }, one per radius r,
+   of estimates { InfraEffectivePoint[support, masses], r }, one per radius r,
    sorted ascending.
 
    Method -> "MaximalChordsBisectors" (default): bisect the shell's
@@ -144,7 +144,7 @@ FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
    genuine sphere, whose vertices induce an edgeless subgraph, and is
    meaningful only on a connected shell; midpoints/parity/arms always use
    ambient distance), "Parity" (All (default) | "Even" pure single-vertex
-   bisectors | "Odd" two-vertex mesopoints).
+   bisectors | "Odd" two-vertex effective points).
 
    Method -> "EquidistantPoints": the exact centers -- every vertex
    equidistant from the whole shell at a common finite radius > 0,
@@ -198,7 +198,7 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
       With[ { d = dm[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] },
         Switch[ parity, All, True, "Even", EvenQ[ d ], "Odd", OddQ[ d ] ] ] & ];
     radiiBins = GroupBy[ Catenate[ chordMidpointRadii[ dm, idx, # ] & /@ kept ], Last -> First ];
-    KeyValueMap[ { r, vlist } |-> With[ { ct = Counts @ vlist }, { InfraMesoPoint[ ct ], r } ], KeySort @ radiiBins ]
+    KeyValueMap[ { r, vlist } |-> With[ { ct = Counts @ vlist }, { InfraEffectivePoint[ ct ], r } ], KeySort @ radiiBins ]
   ]
 
 (* Centers equidistant from vs, binned by their common radius r = d(c, vs) > 0,
@@ -208,7 +208,7 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
 equidistantShellPoints[ graph_Graph, vs_List ] :=
   With[ { ds = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, First @ vs ] ] },
     { centers = Select[ FindInfraEquidistantSet[ graph, vs ][ "Vertices" ], c |-> 0 < ds[ c ] < Infinity ] },
-    KeyValueMap[ { r, cs } |-> { InfraMesoPoint[ cs, ConstantArray[ 1, Length @ cs ] ], r }, KeySort @ GroupBy[ centers, ds ] ] ]
+    KeyValueMap[ { r, cs } |-> { InfraEffectivePoint[ cs, ConstantArray[ 1, Length @ cs ] ], r }, KeySort @ GroupBy[ centers, ds ] ] ]
 
 (* Midpoint incidences { v, r } of the chord {a, b} (a = lower endpoint):
    vertices v on some a-b geodesic at a middle distance r = d(a, v) in

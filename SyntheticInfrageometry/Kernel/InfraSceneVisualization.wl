@@ -45,7 +45,7 @@ $infraColors = <|
 
 (* which colour each wrapper head is drawn in; several wrappers deliberately share one *)
 $infraHeadColors = <|
-  InfraPoint -> "Point", InfraMesoPoint -> "Point",
+  InfraPoint -> "Point", InfraEffectivePoint -> "Point",
   InfraSegment -> "Segment", InfraPolyline -> "Segment",
   InfraLine -> "Line",
   InfraWalk -> "Path", InfraLoop -> "Path", InfraString -> "Path",
@@ -239,7 +239,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
       { item, idx } |-> With[ {
           obj    = If[ MatchQ[ item, _Rule ], First @ item, item ],
           record = parseHighlightStyle[ If[ MatchQ[ item, _Rule ], Last @ item, Automatic ], ranges ] },
-        Append[ If[ MatchQ[ Head @ obj, InfraPoint | InfraMesoPoint | InfraObject | InfraSet | $infraBundleHeads ], obj, None ] ] @
+        Append[ If[ MatchQ[ Head @ obj, InfraPoint | InfraEffectivePoint | InfraObject | InfraSet | $infraBundleHeads ], obj, None ] ] @
         Replace[
           { obj, Lookup[ $infraColors, Lookup[ $infraHeadColors, Head @ obj, None ],
               $InfraSceneHighlightPalette[[
@@ -248,8 +248,8 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           {
             (* no "Weights" override: the generic path reads the measure via
                infraVertexMultiset / infraNumReps, so density = mass / total mass
-               -- a sharp mesopoint draws full size, a spread one fades. *)
-            { InfraMesoPoint[ m_Association ], c_, u_ } :> { Keys @ m, c, "Points", u },
+               -- a sharp effective point draws full size, a spread one fades. *)
+            { InfraEffectivePoint[ m_Association ], c_, u_ } :> { Keys @ m, c, "Points", u },
             { InfraPoint   [ v_ ], c_, u_ } :> { { v }, c, "Points", u },
             (* a plain List of atoms is what the point finders return -- it must
                flow into the scene with no glue, exactly like a wrapper does *)

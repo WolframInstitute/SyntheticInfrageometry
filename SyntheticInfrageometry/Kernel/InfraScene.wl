@@ -105,7 +105,7 @@ selectFromName[ name_String  ] := name
 
 infraVertexSet[ InfraPoint[ v_ ] ] := { v }
 infraVertexSet[ list : { __InfraPoint } ] := DeleteDuplicates[ #[[ 1 ]] & /@ list ]
-infraVertexSet[ InfraMesoPoint[ m_Association ] ] := Keys @ m
+infraVertexSet[ InfraEffectivePoint[ m_Association ] ] := Keys @ m
 infraVertexSet[ ( InfraObject | InfraSet )[ vs_List ] ] := vs
 infraVertexSet[ ( InfraSegment | InfraWalk | InfraLoop | InfraString | InfraLine | InfraRay
                 | InfraCircle | InfraEllipse
@@ -151,7 +151,7 @@ $infraRealisationPattern =
   ( InfraPoint | InfraObject | InfraSet | InfraSegment | InfraWalk | InfraLoop |
     InfraString | InfraLine | InfraRay | InfraCircle | InfraEllipse | InfraShell |
     InfraEllipticShell | InfraPlane | InfraBall | InfraPolyline | InfraPolygon |
-    InfraTriangle )[ _List ] | InfraSegment[ _Graph ] | InfraMesoPoint[ _Association ];
+    InfraTriangle )[ _List ] | InfraSegment[ _Graph ] | InfraEffectivePoint[ _Association ];
 
 InfraIntersection[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
   InfraSet[ Intersection @@ ( infraVertexSet /@ { args } ) ]

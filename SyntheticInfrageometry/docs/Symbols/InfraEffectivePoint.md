@@ -1,42 +1,42 @@
 ---
 Template: Symbol
-Name: InfraMesoPoint
+Name: InfraEffectivePoint
 Context: WolframInstitute`SyntheticInfrageometry`
 ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
-URI: WolframInstitute/SyntheticInfrageometry/ref/InfraMesoPoint
-Keywords: [mesopoint, measure, occupation, multiplicity, wrapper]
+URI: WolframInstitute/SyntheticInfrageometry/ref/InfraEffectivePoint
+Keywords: [effective point, measure, occupation, multiplicity, wrapper]
 SeeAlso: [InfraPoint, InfraSet, InfraMeasure, FindInfraMidpoint, FindInfraShellCenter]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 
 ## Usage
 
-<code>[InfraMesoPoint]()[<|*v* -> *m*, …|>]</code> is a measure on vertices — a point known only up to a distribution.
+<code>[InfraEffectivePoint]()[<|*v* -> *m*, …|>]</code> is a measure on vertices — a point known only up to a distribution.
 
-<code>[InfraMesoPoint]()[{*v1*, …}, {*m1*, …}]</code> is sugar for the association form.
+<code>[InfraEffectivePoint]()[{*v1*, …}, {*m1*, …}]</code> is sugar for the association form.
 
-<code>[InfraMesoPoint]()[*obj*]</code> is the occupation measure of any `Infra*` object.
+<code>[InfraEffectivePoint]()[*obj*]</code> is the occupation measure of any `Infra*` object.
 
 ## Details & Options
 
-Definition: a mesopoint is a finitely supported measure on the vertex set — the **measure** layer of the point ontology, sitting above the [InfraPoint]() atom and the [InfraSet]() region.
+Definition: a effective point is a finitely supported measure on the vertex set — the **measure** layer of the point ontology, sitting above the [InfraPoint]() atom and the [InfraSet]() region.
 
 The name is the point of it. A construction whose answer is a single point in the continuum often cannot localise to a single vertex on a graph: the honest answer is a blob with weights. That is a point at intermediate resolution, and it is a distinct kind of object from a region that merely happens to be small.
 
 Weights count. They are not probabilities put in by hand — a weight of 6 means six geodesics chose that vertex.
 
-Mesopoints are **created at a projection**, never propagated. The producers are `seg[[i]]` (column occupation), [FindInfraMidpoint]() and [FindInfraGoldenSection]() (layer-band occupation), [FindInfraShellCenter]() (chord-bisection multiplicity), and [InfraMeasure]() itself. Weights on an *input* do not flow through a construction: a construction reads the support and ignores the measure.
+Effective points are **created at a projection**, never propagated. The producers are `seg[[i]]` (column occupation), [FindInfraMidpoint]() and [FindInfraGoldenSection]() (layer-band occupation), [FindInfraShellCenter]() (chord-bisection multiplicity), and [InfraMeasure]() itself. Weights on an *input* do not flow through a construction: a construction reads the support and ignores the measure.
 
 Up-coercions, all canonical:
 
 | From | Gives |
 |---|---|
 | a list of `InfraPoint` atoms | the counting measure — repetition is mass |
-| an `InfraSet` | the all-ones measure, which **stays** a mesopoint |
+| an `InfraSet` | the all-ones measure, which **stays** a effective point |
 | any bundle wrapper (`InfraBall`, `InfraSegment`, …) | its vertex occupation; a geodesic-DAG atom by dynamic programming, without enumerating the family |
 
-A **bare vertex list is refused**. `InfraMesoPoint[{1, 2}]` stays inert by design: on a graph with list-valued vertex labels a support list and a single label are indistinguishable, and that ambiguity is what the three-head split exists to remove.
+A **bare vertex list is refused**. `InfraEffectivePoint[{1, 2}]` stays inert by design: on a graph with list-valued vertex labels a support list and a single label are indistinguishable, and that ambiguity is what the three-head split exists to remove.
 
 Accessors:
 
@@ -46,16 +46,16 @@ Accessors:
 | `["Vertices"]` | the vertices, as a plain list |
 | `["Weights"]` | the raw counts |
 | `["Mass"]` | the total of the weights |
-| `["Entropy"]` | Shannon entropy of the normalised measure; `0` iff the mesopoint is sharp |
+| `["Entropy"]` | Shannon entropy of the normalised measure; `0` iff the effective point is sharp |
 | `["Measure"]` | mass over the heaviest mass — membership in [0,1], what the renderer draws |
 | `["ProbabilityMeasure"]` | mass over total mass — the distribution summing to 1 |
 | `["OccupationCount"]` | the raw masses |
 
-In [InfraSceneHighlight]() a mesopoint renders diffusely by **relative** mass: each vertex is drawn at its mass over the heaviest mass, so the modal vertex is full and lighter ones fade. A uniform mesopoint — a ball, for instance — is therefore uniformly bright; its diffuseness is its extent, not a per-vertex fade.
+In [InfraSceneHighlight]() a effective point renders diffusely by **relative** mass: each vertex is drawn at its mass over the heaviest mass, so the modal vertex is full and lighter ones fade. A uniform effective point — a ball, for instance — is therefore uniformly bright; its diffuseness is its extent, not a per-vertex fade.
 
 ## Basic Examples
 
-Two vertices at odd distance have no exact midpoint. The answer is a mesopoint.
+Two vertices at odd distance have no exact midpoint. The answer is a effective point.
 
 ```wl
 With[
@@ -93,23 +93,23 @@ With[
 
 ## Properties and Relations
 
-The two lossy read-outs of a bundle: `InfraSet` takes the support, `InfraMesoPoint` the occupation.
+The two lossy read-outs of a bundle: `InfraSet` takes the support, `InfraEffectivePoint` the occupation.
 
 ```wl
 With[
   {g = GridGraph[{4, 4}]},
   {seg = FindInfraSegment[g, 1, 16]},
-  {InfraSet[seg]["Length"], InfraMesoPoint[seg]["Mass"]}]
+  {InfraSet[seg]["Length"], InfraEffectivePoint[seg]["Mass"]}]
 ```
 
 Repetition in a list of atoms is mass; a set, by contrast, deduplicates.
 
 ```wl
-{InfraMesoPoint[{InfraPoint[4], InfraPoint[4], InfraPoint[9]}], InfraSet[{4, 4, 9}]}
+{InfraEffectivePoint[{InfraPoint[4], InfraPoint[4], InfraPoint[9]}], InfraSet[{4, 4, 9}]}
 ```
 
 The all-ones measure stays a measure — the layers never cross silently.
 
 ```wl
-Head @ InfraMesoPoint[InfraSet[{4, 9}]]
+Head @ InfraEffectivePoint[InfraSet[{4, 9}]]
 ```

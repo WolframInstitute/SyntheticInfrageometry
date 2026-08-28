@@ -447,7 +447,7 @@ With[ { heads = $infraBundleHeads },
   infraSpread[ list_List ] /; AllTrue[ list, MatchQ[ heads[ { _ } ] ] ] :=
     #[[ 1, 1 ]] & /@ list
 ]
-infraSpread[ InfraMesoPoint[ m_Association ] ] := Keys @ m
+infraSpread[ InfraEffectivePoint[ m_Association ] ] := Keys @ m
 infraSpread[ InfraSet[ vs_List ] ] := vs
 infraSpread[ InfraSegment[ dag_Graph ] ] := dagGeodesics[ dag ]
 infraSpread[ InfraSegment[ dags : { _Graph, __Graph } ] ] := Join @@ ( dagGeodesics /@ dags )
@@ -456,7 +456,7 @@ infraSpread[ other_ ] := { other }
 
 
 (* Project a bundle of vertex-sequence realisations onto position i: the
-   InfraMesoPoint whose support is the i-th vertices (only realisations long
+   InfraEffectivePoint whose support is the i-th vertices (only realisations long
    enough contribute) and whose masses are their multiplicities -- one of the
    projections at which a measure is constructed.  i may be negative (counted
    from the end). *)
@@ -464,7 +464,7 @@ infraSpread[ other_ ] := { other }
 PackageScope[columnInfraPoint]
 
 columnInfraPoint[ reps_List, i_Integer ] :=
-  InfraMesoPoint @ Counts[ ( #[[ i ]] & ) /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] ]
+  InfraEffectivePoint @ Counts[ ( #[[ i ]] & ) /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] ]
 
 
 (* Enumerate every geodesic of a geodesic-DAG segment: all source -> sink
@@ -559,7 +559,7 @@ spreadFind[ wrapHead_, count_, core_, anchors__ ] :=
 
 (* the point family is a plain List of atoms, not a wrapper: the Wolfram
    FindClique / FindInstance shape.  Regions are InfraSet, measures are
-   InfraMesoPoint -- see the point ontology in InfraPoint.wl. *)
+   InfraEffectivePoint -- see the point ontology in InfraPoint.wl. *)
 bundleTake[ InfraPoint, reps_, All ]               := InfraPoint /@ reps
 bundleTake[ InfraPoint, reps_, Automatic ]         := InfraPoint /@ Take[ reps, UpTo @ 1 ]
 bundleTake[ InfraPoint, reps_, UpTo[ n_Integer ] ] := InfraPoint /@ Take[ reps, UpTo @ n ]
@@ -581,7 +581,7 @@ bundleTake[ head_, reps_, n_Integer ]         :=
    geodesic-DAG atom contributes its whole family's occupation (by DP, no
    enumeration) exactly as the enumerated family would. *)
 
-infraVertexMultiset[ InfraMesoPoint[ m_Association ] ] := m
+infraVertexMultiset[ InfraEffectivePoint[ m_Association ] ] := m
 infraVertexMultiset[ InfraPoint[ v_ ] ] := <| v -> 1 |>
 infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] := Counts @ vs
 infraVertexMultiset[ InfraSegment[ dag_Graph ] ]   := GeodesicOccupation[ dag ]
@@ -671,7 +671,7 @@ normalizeMeasure[ method_, counts_, obj_ ] := Switch[ method,
    InfraSceneHighlight's repVerts / repEdges dispatch. *)
 
 infraRepType[ InfraPoint ]         = "Points";
-infraRepType[ InfraMesoPoint ]     = "Points";
+infraRepType[ InfraEffectivePoint ]     = "Points";
 infraRepType[ InfraSegment ]       = "Paths";
 infraRepType[ InfraLine ]          = "Paths";
 infraRepType[ InfraWalk ]          = "Paths";
@@ -696,7 +696,7 @@ infraRepType[ InfraSet ]           = "Sets";
 infraRepSeqs[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] := polylineToVertexSeqs @ reps
 infraRepSeqs[ ( InfraObject | InfraSet )[ vs_List ] ]                        := { vs }
 infraRepSeqs[ InfraPoint[ v_ ] ]                                             := { v }
-infraRepSeqs[ InfraMesoPoint[ m_Association ] ]                              := Keys @ m
+infraRepSeqs[ InfraEffectivePoint[ m_Association ] ]                              := Keys @ m
 infraRepSeqs[ head_[ reps_List, ___ ] ]                                      := reps
 
 (* per-type vertex / edge extraction from one canonical realisation -- the
@@ -715,13 +715,13 @@ infraRepVerts[ _, rep_ ]        := rep
    for a compact DAG atom); InfraObject / InfraSet hold a single set, N = 1. *)
 
 infraNumReps[ InfraPoint[ _ ] ]                     := 1
-(* a mesopoint normalises by its HEAVIEST mass, not its total: the measure
+(* a effective point normalises by its HEAVIEST mass, not its total: the measure
    channel encodes RELATIVE mass within the object, so the modal vertex draws
    full and lighter ones fade.  Normalising by the total would make every
    measure fainter as its support grows -- a uniform ball of n vertices would
    render at 1/n and vanish.  This is also what makes ["Measure"] (membership
    in [0,1]) genuinely different from ["ProbabilityMeasure"] (sums to 1). *)
-infraNumReps[ InfraMesoPoint[ m_Association ] ]      := If[ Length @ m === 0, 1, Max @ m ]
+infraNumReps[ InfraEffectivePoint[ m_Association ] ]      := If[ Length @ m === 0, 1, Max @ m ]
 infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
 infraNumReps[ InfraSegment[ dag_Graph ] ]           := atomFamilySize[ dag ]
 infraNumReps[ head_[ reps_List, ___ ] ]             := Max[ Total[ atomFamilySize /@ reps ], 1 ]

@@ -6,7 +6,7 @@ ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/InfraPoint
 Keywords: [point, atom, vertex, ontology, wrapper]
-SeeAlso: [FindInfraPoint, InfraSet, InfraMesoPoint, InfraMeasure, InfraSegment]
+SeeAlso: [FindInfraPoint, InfraSet, InfraEffectivePoint, InfraMeasure, InfraSegment]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 
@@ -18,14 +18,14 @@ RelatedGuides: [EuclideanGeometryGuide]
 
 Definition: an infra-point is one vertex of the substrate, wrapped so that it carries geometry.
 
-`InfraPoint` is the **atom** of the point ontology. A construction on a graph rarely has one answer, but the multiplicity does not live in this head: a family of candidate points is a `List` of atoms or an [InfraSet](), and a measure on vertices is an [InfraMesoPoint]().
+`InfraPoint` is the **atom** of the point ontology. A construction on a graph rarely has one answer, but the multiplicity does not live in this head: a family of candidate points is a `List` of atoms or an [InfraSet](), and a measure on vertices is an [InfraEffectivePoint]().
 
 | you have | use |
 |---|---|
 | one vertex | `InfraPoint[v]` |
 | several candidate points | `{InfraPoint[a], InfraPoint[b]}` — a plain list |
 | a region of vertices | `InfraSet[{a, b, …}]` |
-| a measure on vertices | `InfraMesoPoint[<\|v -> m, …\|>]` |
+| a measure on vertices | `InfraEffectivePoint[<\|v -> m, …\|>]` |
 
 The vertex label is carried verbatim, including a list label such as `{i, j}` on a grid or tessellation. This is the reason the atom exists: while one head served as both atom and container, `InfraPoint[{1, 1}]` was ambiguous on such a graph and silently produced a point supported on a vertex that was not in the graph.
 
@@ -80,7 +80,7 @@ InfraSet[{InfraPoint[4], InfraPoint[9], InfraPoint[4]}]
 ```
 
 ```wl
-InfraMesoPoint[{InfraPoint[4], InfraPoint[9], InfraPoint[4]}]
+InfraEffectivePoint[{InfraPoint[4], InfraPoint[9], InfraPoint[4]}]
 ```
 
 A list-valued vertex label is just a label.

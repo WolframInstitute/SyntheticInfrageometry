@@ -29,22 +29,22 @@ VerificationTest[
 
 (* a set deduplicates; repetition becomes mass only in the measure layer *)
 VerificationTest[
-  { InfraSet[ { a, a, b } ], InfraMesoPoint[ { InfraPoint[a], InfraPoint[a], InfraPoint[b] } ] },
-  { InfraSet[ { a, b } ], InfraMesoPoint[<|a -> 2, b -> 1|>] },
+  { InfraSet[ { a, a, b } ], InfraEffectivePoint[ { InfraPoint[a], InfraPoint[a], InfraPoint[b] } ] },
+  { InfraSet[ { a, b } ], InfraEffectivePoint[<|a -> 2, b -> 1|>] },
   TestID -> "set-dedups-measure-counts"
 ]
 
-(* the all-ones measure STAYS a mesopoint -- layers never cross silently *)
+(* the all-ones measure STAYS a effective point -- layers never cross silently *)
 VerificationTest[
-  Head @ InfraMesoPoint[<|a -> 1, b -> 1|>],
-  InfraMesoPoint,
-  TestID -> "InfraMesoPoint-all-ones-stays-meso"
+  Head @ InfraEffectivePoint[<|a -> 1, b -> 1|>],
+  InfraEffectivePoint,
+  TestID -> "InfraEffectivePoint-all-ones-stays-meso"
 ]
 
 VerificationTest[
-  { InfraMesoPoint[<|a -> 2, b -> 1|>][ "Support" ],
-    InfraMesoPoint[<|a -> 2, b -> 1|>][ "Weights" ],
-    InfraMesoPoint[<|a -> 2, b -> 1|>][ "Mass" ],
+  { InfraEffectivePoint[<|a -> 2, b -> 1|>][ "Support" ],
+    InfraEffectivePoint[<|a -> 2, b -> 1|>][ "Weights" ],
+    InfraEffectivePoint[<|a -> 2, b -> 1|>][ "Mass" ],
     InfraSet[ { a, b } ][ "Weights" ] },
   { InfraSet[ { a, b } ], { 2, 1 }, 3, { 1, 1 } },
   TestID -> "point-layer-weight-accessors"
@@ -52,9 +52,9 @@ VerificationTest[
 
 (* repetition in an atom list is mass: the counting measure *)
 VerificationTest[
-  InfraMesoPoint[ { InfraPoint[a], InfraPoint[a], InfraPoint[b] } ],
-  InfraMesoPoint[<|a -> 2, b -> 1|>],
-  TestID -> "InfraMesoPoint-counts-atom-list"
+  InfraEffectivePoint[ { InfraPoint[a], InfraPoint[a], InfraPoint[b] } ],
+  InfraEffectivePoint[<|a -> 2, b -> 1|>],
+  TestID -> "InfraEffectivePoint-counts-atom-list"
 ]
 
 
@@ -92,8 +92,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-  { First @ InfraMesoPoint[<|a -> 2, b -> 1|>], First @ InfraSet[ { a, b } ],
-    InfraMesoPoint[<|a -> 2, b -> 1|>][ "Support" ], InfraPoint[a][ "Vertex" ] },
+  { First @ InfraEffectivePoint[<|a -> 2, b -> 1|>], First @ InfraSet[ { a, b } ],
+    InfraEffectivePoint[<|a -> 2, b -> 1|>][ "Support" ], InfraPoint[a][ "Vertex" ] },
   { <| a -> 2, b -> 1 |>, { a, b }, InfraSet[ { a, b } ], a },
   TestID -> "point-layer-First-is-the-stored-argument"
 ]
@@ -103,19 +103,19 @@ VerificationTest[
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ 1 ]],
-  InfraMesoPoint[ <| 1 -> 2 |> ],
+  InfraEffectivePoint[ <| 1 -> 2 |> ],
   TestID -> "InfraSegment-column-start-weighted"
 ]
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ -1 ]],
-  InfraMesoPoint[ <| 3 -> 2 |> ],
+  InfraEffectivePoint[ <| 3 -> 2 |> ],
   TestID -> "InfraSegment-column-end-weighted"
 ]
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ 2 ]],
-  InfraMesoPoint[ <| 2 -> 1, 4 -> 1 |> ],
+  InfraEffectivePoint[ <| 2 -> 1, 4 -> 1 |> ],
   TestID -> "InfraSegment-column-middle-spread"
 ]
 
@@ -127,7 +127,7 @@ VerificationTest[
 
 VerificationTest[
   InfraLine[ { { 1, 2, 3 }, { 1, 2, 5 } } ][[ 2 ]],
-  InfraMesoPoint[ <| 2 -> 2 |> ],
+  InfraEffectivePoint[ <| 2 -> 2 |> ],
   TestID -> "InfraLine-column-weighted"
 ]
 

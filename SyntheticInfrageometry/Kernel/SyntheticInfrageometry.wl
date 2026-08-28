@@ -3,8 +3,8 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* Tools.wl *)
 PackageExport[InfraMeasure]
 
-(* InfraMesoPoint.wl *)
-PackageExport[InfraMesoPoint]
+(* InfraEffectivePoint.wl *)
+PackageExport[InfraEffectivePoint]
 
 (* InfraPoint.wl *)
 PackageExport[InfraPoint]

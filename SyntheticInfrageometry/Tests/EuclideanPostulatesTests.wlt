@@ -102,7 +102,7 @@ VerificationTest[
       FindInfraPoint[g, All, "From" -> #] & /@
         {All, "Random", "Center", "Periphery", {"Center", 0}, {"Center", Infinity},
          7, 1 -> 2, {2, 3, 4}, InfraPoint[9], InfraSet[{2, 5, 7}],
-         InfraMesoPoint[<|3 -> 1, 4 -> 1|>]},
+         InfraEffectivePoint[<|3 -> 1, 4 -> 1|>]},
       $Failed]
   ],
   True,

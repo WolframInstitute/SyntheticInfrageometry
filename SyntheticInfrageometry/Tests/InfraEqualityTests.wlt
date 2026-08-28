@@ -46,9 +46,9 @@ VerificationTest[
 
 VerificationTest[
   InfraEqualQ[ PathGraph[ Range[ 7 ] ],
-    InfraMesoPoint[ <| 3 -> 1, 4 -> 2 |> ], InfraMesoPoint[ <| 3 -> 1, 4 -> 1 |> ], Method -> "Multiset" ],
+    InfraEffectivePoint[ <| 3 -> 1, 4 -> 2 |> ], InfraEffectivePoint[ <| 3 -> 1, 4 -> 1 |> ], Method -> "Multiset" ],
   False,
-  TestID -> "InfraEqualQ-mesopoint-multiplicity-mismatch-Multiset-False"
+  TestID -> "InfraEqualQ-effectivepoint-multiplicity-mismatch-Multiset-False"
 ]
 
 VerificationTest[

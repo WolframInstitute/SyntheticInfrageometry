@@ -73,14 +73,14 @@ VerificationTest[
   TestID -> "InfraMeasure-both-shape"
 ]
 
-(* a mesopoint has two distinct normalisations: the default "Occupation" is
+(* a effective point has two distinct normalisations: the default "Occupation" is
    membership relative to the heaviest mass (max 1, what the renderer draws),
    "Probability" is the distribution summing to 1 *)
 VerificationTest[
-  { Max @ Values @ InfraMeasure[ InfraMesoPoint[<|1 -> 3, 2 -> 1|>] ],
-    Total @ Values @ InfraMeasure[ InfraMesoPoint[<|1 -> 3, 2 -> 1|>], Method -> "Probability" ] },
+  { Max @ Values @ InfraMeasure[ InfraEffectivePoint[<|1 -> 3, 2 -> 1|>] ],
+    Total @ Values @ InfraMeasure[ InfraEffectivePoint[<|1 -> 3, 2 -> 1|>], Method -> "Probability" ] },
   { 1, 1 },
-  TestID -> "InfraMeasure-mesopoint-two-normalisations"
+  TestID -> "InfraMeasure-effectivepoint-two-normalisations"
 ]
 
 (* the ["Measure"] accessor delegates to the engine, across all wrapper shapes *)
@@ -89,7 +89,7 @@ VerificationTest[
     { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
       InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ],
       InfraCircle[ { { 1, 2, 3 } } ],
-      InfraMesoPoint[<|1 -> 3, 2 -> 1|>],
+      InfraEffectivePoint[<|1 -> 3, 2 -> 1|>],
       InfraSet[ { 1, 2, 3 } ] },
     w |-> w[ "Measure" ] === InfraMeasure[ w ] ],
   True,
@@ -110,7 +110,7 @@ VerificationTest[
     { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
       InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ],
       InfraCircle[ { { 1, 2, 3 } } ],
-      InfraMesoPoint[<|1 -> 3, 2 -> 1|>],
+      InfraEffectivePoint[<|1 -> 3, 2 -> 1|>],
       InfraSet[ { 1, 2, 3 } ] },
     w |-> And[
       w[ "OccupationMeasure" ] === w[ "Measure" ],
@@ -141,28 +141,28 @@ VerificationTest[
   TestID -> "Bundle-has-no-mass-channel"
 ]
 
-(* the measure layer is InfraMesoPoint: the canonical form is the association,
+(* the measure layer is InfraEffectivePoint: the canonical form is the association,
    repetition in an atom list reads as mass, parallel lists are input sugar,
    and the all-ones measure STAYS a measure (layers never cross silently) *)
 VerificationTest[
-  { InfraMesoPoint[ { InfraPoint[1], InfraPoint[1], InfraPoint[2] } ],
-    InfraMesoPoint[ { 1, 2 }, { 3, 1 } ],
-    InfraMesoPoint[ InfraSet[ { 1, 2 } ] ],
+  { InfraEffectivePoint[ { InfraPoint[1], InfraPoint[1], InfraPoint[2] } ],
+    InfraEffectivePoint[ { 1, 2 }, { 3, 1 } ],
+    InfraEffectivePoint[ InfraSet[ { 1, 2 } ] ],
     InfraSet[ { 1, 1, 2 } ] },
-  { InfraMesoPoint[ <| 1 -> 2, 2 -> 1 |> ],
-    InfraMesoPoint[ <| 1 -> 3, 2 -> 1 |> ],
-    InfraMesoPoint[ <| 1 -> 1, 2 -> 1 |> ],
+  { InfraEffectivePoint[ <| 1 -> 2, 2 -> 1 |> ],
+    InfraEffectivePoint[ <| 1 -> 3, 2 -> 1 |> ],
+    InfraEffectivePoint[ <| 1 -> 1, 2 -> 1 |> ],
     InfraSet[ { 1, 2 } ] },
-  TestID -> "measure-layer-is-InfraMesoPoint"
+  TestID -> "measure-layer-is-InfraEffectivePoint"
 ]
 
 VerificationTest[
-  With[ { p = InfraMesoPoint[ <| 1 -> 3, 2 -> 1 |> ] },
+  With[ { p = InfraEffectivePoint[ <| 1 -> 3, 2 -> 1 |> ] },
     { p[ "Support" ], p[ "Weights" ], p[ "Mass" ], p[ "OccupationCount" ], p[ "Measure" ] } ],
   (* ["Measure"] is membership relative to the heaviest mass;
      ["ProbabilityMeasure"] is the distribution summing to 1 *)
   { InfraSet[ { 1, 2 } ], { 3, 1 }, 4, <| 1 -> 3, 2 -> 1 |>, <| 1 -> 1, 2 -> 1/3 |> },
-  TestID -> "InfraMesoPoint-measure-accessors"
+  TestID -> "InfraEffectivePoint-measure-accessors"
 ]
 
 (* the measure is CONSTRUCTED at a projection off a bundle, never carried by
@@ -173,8 +173,8 @@ VerificationTest[
     { s[[ 2 ]], s[ "Start" ], FindInfraMidpoint[ g, s ] } ],
   (* ["Start"] is a set-level fact (every geodesic of a family shares it), so it
      is an InfraSet; the position and midpoint projections are measures *)
-  { InfraMesoPoint[ <| 2 -> 3, 4 -> 3 |> ], InfraSet[ { 1 } ],
-    InfraMesoPoint[ <| 3 -> 1, 5 -> 4, 7 -> 1 |> ] },
+  { InfraEffectivePoint[ <| 2 -> 3, 4 -> 3 |> ], InfraSet[ { 1 } ],
+    InfraEffectivePoint[ <| 3 -> 1, 5 -> 4, 7 -> 1 |> ] },
   TestID -> "Measure-constructed-at-projection"
 ]
 
@@ -182,7 +182,7 @@ VerificationTest[
    so the family (and its measure) is the same weighted or not *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraMesoPoint[<|1 -> 2, 3 -> 1|>], 9 , All] ===
+    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraEffectivePoint[<|1 -> 2, 3 -> 1|>], 9 , All] ===
     KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraSet[ { 1, 3 } ], 9 , All] ],
   True,
   TestID -> "Anchor-masses-do-not-propagate"

@@ -5,7 +5,7 @@ Context: WolframInstitute`SyntheticInfrageometry`
 ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraMidpoint
-Keywords: [midpoint, geodesic, bisection, mesopoint, Euclid I.10]
+Keywords: [midpoint, geodesic, bisection, effective point, Euclid I.10]
 SeeAlso: [FindInfraSegment, InfraPoint, InfraMeasure, FindInfraReflection, BetweennessQ]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
@@ -22,7 +22,7 @@ A midpoint of *a* and *b* is a vertex *m* with $d(a,m) = d(m,b) = d(a,b)/2$.
 
 On a graph the midpoint is a **set**, not a point. Distinct geodesics from *a* to *b* put their centre at different vertices, and every one of them is returned.
 
-At odd $d(a,b)$ no vertex lies at half the distance. The two central vertices of each geodesic are returned instead — a mesopoint.
+At odd $d(a,b)$ no vertex lies at half the distance. The two central vertices of each geodesic are returned instead — a effective point.
 
 The result is an [InfraPoint]() carrying the multiplicity of each candidate. [InfraMeasure]() gives the normalized measure: the fraction of geodesics centred at each vertex.
 

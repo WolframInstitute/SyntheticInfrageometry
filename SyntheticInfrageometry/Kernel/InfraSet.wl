@@ -19,7 +19,7 @@ InfraSet[ inner_InfraSet ] := inner
    into InfraSet[{___, v_}] and silently bind the wrong element. *)
 InfraSet[ vs_List ] /;
     FreeQ[ vs, _Blank | _BlankSequence | _BlankNullSequence | _Pattern ] &&
-    ! MemberQ[ vs, _InfraPoint | _InfraSet | _InfraMesoPoint ] &&
+    ! MemberQ[ vs, _InfraPoint | _InfraSet | _InfraEffectivePoint ] &&
     ( ! DuplicateFreeQ[ vs ] || vs =!= Sort[ vs ] ) :=
   InfraSet[ Sort @ DeleteDuplicates @ vs ]
 
@@ -28,10 +28,10 @@ InfraSet[ vs_List ] /; MemberQ[ vs, _InfraSet ] :=
 
 (* Points are special: an atom IS a vertex (possibly a list label like {i,j}),
    so no flattening applies.  A list of atoms is the family layer written out;
-   a mesopoint contributes its support -- a set discards the measure. *)
+   a effective point contributes its support -- a set discards the measure. *)
 InfraSet[ InfraPoint[ v_ ] ] := InfraSet[ { v } ]
 InfraSet[ list : { __InfraPoint } ] := InfraSet[ Sort @ DeleteDuplicates[ #[[ 1 ]] & /@ list ] ]
-InfraSet[ InfraMesoPoint[ m_Association ] ] := InfraSet[ Sort @ Keys @ m ]
+InfraSet[ InfraEffectivePoint[ m_Association ] ] := InfraSet[ Sort @ Keys @ m ]
 
 (* A realisation may be a geodesic DAG instead of a vertex list -- the compact
    InfraSegment form FindInfraSegment returns by default.  Read the vertices off

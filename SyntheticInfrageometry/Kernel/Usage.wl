@@ -10,11 +10,11 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== InfraPoint ===================== *)
 
-InfraMesoPoint::usage = "InfraMesoPoint[<|v -> m, ...|>] is a finitely supported measure on the vertex set -- the measure layer of the point ontology. Accessors \"Support\", \"Vertices\", \"Weights\", \"Mass\", \"Entropy\".";
+InfraEffectivePoint::usage = "InfraEffectivePoint[<|v -> m, ...|>] is a finitely supported measure on the vertex set -- the measure layer of the point ontology. Accessors \"Support\", \"Vertices\", \"Weights\", \"Mass\", \"Entropy\".";
 InfraPoint::usage = "InfraPoint[v] is the point atom: one vertex of the substrate, carrying its label verbatim. Accessors \"Vertex\", \"Vertices\", \"Mass\", and graph-keyed invariants such as [\"BallVolumes\", g] and [\"Dimension\", g].";
 FindInfraPoint::usage = "FindInfraPoint[graph] draws a point from the candidate pool; a trailing n | UpTo[n] | All sets the count. Options \"From\", \"Distance\", \"MaxCliques\".";
-FindInfraMidpoint::usage = "FindInfraMidpoint[graph, p1, p2] gives the InfraMesoPoint of the middle vertices of every geodesic from p1 to p2 (one vertex at even distance, two at odd). Option Method.";
-FindInfraGoldenSection::usage = "FindInfraGoldenSection[graph, p1, p2] gives the InfraMesoPoint at the golden-ratio index along every geodesic from p1 to p2. Option Method.";
+FindInfraMidpoint::usage = "FindInfraMidpoint[graph, p1, p2] gives the InfraEffectivePoint of the middle vertices of every geodesic from p1 to p2 (one vertex at even distance, two at odd). Option Method.";
+FindInfraGoldenSection::usage = "FindInfraGoldenSection[graph, p1, p2] gives the InfraEffectivePoint at the golden-ratio index along every geodesic from p1 to p2. Option Method.";
 FindInfraReflection::usage = "FindInfraReflection[graph, x, a] gives the reflections x' of x through a: the vertices with B(x, a, x') and d(a, x) == d(a, x').";
 CompleteInfraEquilateralTriangle::usage = "CompleteInfraEquilateralTriangle[graph, p1, p2] gives the apexes equidistant from p1 and p2 at distance d(p1, p2) (Euclid I.1).";
 FindInfraCommonPoint::usage = "FindInfraCommonPoint[graph, lines] gives the points lying on every listed line.";
