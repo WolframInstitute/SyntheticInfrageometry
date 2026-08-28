@@ -291,3 +291,6 @@ CircleViewer::usage = "CircleViewer[graph] is an interactive viewer for explorin
 (* ===================== InfraEquality ===================== *)
 
 InfraEqualQ::usage = "InfraEqualQ[graph, a, b] tests equality of two Infra* objects through their diffusion diagrams. Option Method (\"Diffuse\", \"Overlap\", \"Set\", \"Multiset\").";
+
+$InfraPointSizes::usage = "$InfraPointSizes is the association Small -> 4, Medium -> 7, Large -> 10 of absolute vertex-dot sizes. One value per class, independent of the graph.";
+$InfraAccentPointSize::usage = "$InfraAccentPointSize is the absolute dot size (12) of the accent / centre role, which is not a size class and combines with Haloing[].";

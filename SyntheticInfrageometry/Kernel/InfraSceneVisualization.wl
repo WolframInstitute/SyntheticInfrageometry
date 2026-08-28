@@ -11,6 +11,8 @@ PackageExport[$InfraRayColor]
 PackageExport[$InfraObjectColor]
 PackageExport[$InfraTopologyColor]
 PackageExport[$InfraPalette]
+PackageExport[$InfraPointSizes]
+PackageExport[$InfraAccentPointSize]
 PackageScope[$infraColors]
 PackageScope[$infraHeadColors]
 PackageScope[$InfraSceneHighlightPalette]
@@ -82,6 +84,14 @@ $InfraEdgeThickness = 9.0;
 (* a marked point reads as a dot on the substrate, not a blob covering its neighbours:
    at 14 a single-realisation point swallowed several mesh cells on a Medium plane *)
 $InfraPointSize     = 6;
+
+(* the three named vertex-size classes, one absolute value each, deliberately independent of
+   the graph: the same class renders the same dot on a 5-vertex path and a 747-vertex plane.
+   Three-pixel gaps, so the classes are actually distinguishable; 5/6/9 was rejected for
+   putting Small and Medium one pixel apart.  The accent is NOT a class -- it is a separate
+   role, so a figure can carry a Large vertex and a distinct accent at once. *)
+$InfraPointSizes      = <| Small -> 4, Medium -> 7, Large -> 10 |>;
+$InfraAccentPointSize = 12;
 
 (* the house figure size, so a scene never carries a magic pixel number: a bare scene
    renders at $InfraSceneImageSize, and a multi-panel GraphicsRow / GraphicsGrid sets

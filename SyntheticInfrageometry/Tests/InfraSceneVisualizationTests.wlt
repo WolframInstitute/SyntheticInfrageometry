@@ -400,3 +400,18 @@ VerificationTest[
   { 6 },
   TestID -> "InfraSceneHighlight-bare-vertex"
 ]
+
+(* AbsoluteVertexSizes: a size class is one absolute value and never consults the graph.
+   The three graphs are the ones the work item named as its acceptance test. *)
+VerificationTest[
+  DeleteDuplicates[ ( graph |-> Cases[ Options @ InfraSceneHighlight[ graph, { InfraPoint @ First @ VertexList @ graph } ],
+    _AbsolutePointSize, Infinity ] ) /@ { PathGraph @ Range @ 5, GridGraph[ { 6, 6 } ], PetersenGraph[] } ],
+  { { AbsolutePointSize[ 6 ] } },
+  TestID -> "InfraSceneHighlight-vertex-size-is-graph-independent"
+]
+
+VerificationTest[
+  { $InfraPointSizes, $InfraAccentPointSize },
+  { <| Small -> 4, Medium -> 7, Large -> 10 |>, 12 },
+  TestID -> "InfraPointSizes-closed-table"
+]
