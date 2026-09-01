@@ -434,6 +434,120 @@ InfraGeodesicQ[ graph_Graph, walk_List,
 InfraGeodesicQ[ _Graph, walk_List, ___ ] /; Length[ walk ] < 2 := False
 
 
+(* ===================== WalkSingularities ===================== *)
+
+(* Singularity census of a walk read as an immersed curve: "Cusp" (positions i
+   with v_{i-1} === v_{i+1}, the non-immersed points), "TriplePoint" (position
+   lists of vertices of multiplicity >= 3), "EdgeTangency" (step-index lists of
+   edges traversed twice, either direction), the double points -- multiplicity-2
+   vertices with both passes interior -- as position pairs under "Crossing"
+   (germ pairs interleave in the link rotation), "Tangency" (a shared germ, or
+   germ pairs that do not interleave), or "Undefined" (the link of the double
+   vertex is not a cycle, so no rotation exists), and "EndpointIncidence"
+   (position lists of endpoints of multiplicity >= 2).  On InfraLoop and
+   InfraString the walk is closed: positions index the cyclic core, wraparound
+   singularities count, and there is no endpoint incidence. *)
+
+WalkSingularities[ graph_Graph, w_InfraWalk ] :=
+  singularityCensus[ graph, #, False ] & /@ First @ w
+
+WalkSingularities[ graph_Graph, w : _InfraLoop | _InfraString ] :=
+  singularityCensus[ graph, #, True ] & /@ First @ w
+
+WalkSingularities[ graph_Graph, walk_List ] := singularityCensus[ graph, walk, False ]
+
+
+singularityCensus[ graph_, walk_List, closedQ_ ] := With[
+  { core = If[ closedQ, Most @ closeWalk @ walk, walk ] },
+  { m = Length @ core },
+  { germAt = i |-> If[ closedQ,
+      { core[[ Mod[ i - 2, m ] + 1 ]], core[[ Mod[ i, m ] + 1 ]] },
+      { core[[ i - 1 ]], core[[ i + 1 ]] } ],
+    index = PositionIndex @ core },
+  { doubles = Select[ Values @ index,
+      ps |-> Length[ ps ] == 2 && ( closedQ || AllTrue[ ps, 1 < # < m & ] ) ] },
+  { classified = GroupBy[ doubles,
+      ps |-> doublePointClass[ graph, core[[ First @ ps ]], germAt /@ ps ] ] },
+  <|
+    "Cusp" -> Select[ If[ closedQ, Range @ m, Range[ 2, m - 1 ] ],
+      i |-> SameQ @@ germAt[ i ] ],
+    "TriplePoint" -> Select[ Values @ index, ps |-> Length[ ps ] >= 3 ],
+    "EdgeTangency" -> Values @ Select[
+      PositionIndex[ Sort /@ If[ closedQ, Partition[ core, 2, 1, 1 ], Partition[ core, 2, 1 ] ] ],
+      ps |-> Length[ ps ] >= 2 ],
+    "Tangency"  -> Lookup[ classified, "Tangency", { } ],
+    "Crossing"  -> Lookup[ classified, "Crossing", { } ],
+    "Undefined" -> Lookup[ classified, "Undefined", { } ],
+    "EndpointIncidence" -> If[ closedQ || m < 2, { },
+      Select[ Lookup[ index, DeleteDuplicates @ { First @ core, Last @ core } ],
+        ps |-> Length[ ps ] >= 2 ] ]
+  |> ]
+
+
+(* a double point is transverse iff its two germ pairs are disjoint and
+   interleave in the cyclic order of the link; a shared germ touches without
+   a rotation, so it is tangent on any substrate *)
+doublePointClass[ graph_, u_, { pair1_, pair2_ } ] :=
+  If[ Length @ DeleteDuplicates @ Join[ pair1, pair2 ] < 4, "Tangency",
+    With[ { lk = linkRotation[ graph, u ] },
+      Which[
+        lk === $Failed, "Undefined",
+        germPairsInterleaveQ[ lk, pair1, pair2 ], "Crossing",
+        True, "Tangency" ] ] ]
+
+
+(* cyclic order of the link of u, where the link is a cycle; $Failed otherwise *)
+linkRotation[ graph_, u_ ] := With[
+  { sub = Subgraph[ graph, AdjacencyList[ graph, u ] ] },
+  If[ ConnectedGraphQ[ sub ] && Union[ VertexDegree[ sub ] ] === { 2 },
+    First @ FindCycle[ sub, { VertexCount @ sub }, 1 ] /. UndirectedEdge[ x_, _ ] :> x,
+    $Failed ] ]
+
+
+(* two disjoint pairs in a cyclic order interleave iff exactly one element of
+   the second lies on the arc from a1 to b1 *)
+germPairsInterleaveQ[ lk_List, { a1_, b1_ }, { a2_, b2_ } ] := With[
+  { pos = AssociationThread[ lk, Range @ Length @ lk ] },
+  { arc = v |-> Mod[ pos[ v ] - pos[ a1 ], Length @ lk ] },
+  Xor[ arc[ a2 ] < arc[ b1 ], arc[ b2 ] < arc[ b1 ] ] ]
+
+
+(* ===================== InfraImmersedQ / InfraGenericQ ===================== *)
+
+(* immersed walk: a walk with no cusp; the hierarchy walk > immersed > generic
+   never tightens InfraWalkQ *)
+
+InfraImmersedQ[ graph_Graph, w_InfraWalk ] := AllTrue[ First @ w, InfraImmersedQ[ graph, # ] & ]
+
+InfraImmersedQ[ graph_Graph, w : _InfraLoop | _InfraString ] :=
+  AllTrue[ First @ w,
+    InfraWalkQ[ graph, closeWalk @ # ] &&
+      singularityCensus[ graph, #, True ][ "Cusp" ] === { } & ]
+
+InfraImmersedQ[ graph_Graph, walk_List ] :=
+  InfraWalkQ[ graph, walk ] && singularityCensus[ graph, walk, False ][ "Cusp" ] === { }
+
+
+(* generic walk: immersed, multiple points only transverse double points --
+   no triple points, no edge tangencies, no vertex tangencies, endpoints off
+   the curve; "Undefined" double points (link not a cycle) are accepted *)
+
+InfraGenericQ[ graph_Graph, w_InfraWalk ] := AllTrue[ First @ w, InfraGenericQ[ graph, # ] & ]
+
+InfraGenericQ[ graph_Graph, w : _InfraLoop | _InfraString ] :=
+  AllTrue[ First @ w,
+    InfraWalkQ[ graph, closeWalk @ # ] &&
+      genericCensusQ @ singularityCensus[ graph, #, True ] & ]
+
+InfraGenericQ[ graph_Graph, walk_List ] :=
+  InfraWalkQ[ graph, walk ] && genericCensusQ @ singularityCensus[ graph, walk, False ]
+
+
+genericCensusQ[ census_Association ] :=
+  Lookup[ census, { "Cusp", "TriplePoint", "EdgeTangency", "Tangency", "EndpointIncidence" } ] ===
+    { { }, { }, { }, { }, { } }
+
+
 (* ===================== ExtendInfraWalk ===================== *)
 
 (* ExtendInfraWalk[g, walk, n] extends a walk by per-step rules until

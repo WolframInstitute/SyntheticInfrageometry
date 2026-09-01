@@ -671,4 +671,169 @@ VerificationTest[
   TestID -> "FindInfraWalk-Automatic-LoopLength-exact-class"
 ]
 
+(* ===================== WalkSingularities ===================== *)
+
+(* a simple path is free of every singularity *)
+VerificationTest[
+  WalkSingularities[ GridGraph[ { 3, 3 } ], { 1, 2, 5, 8, 9 } ],
+  <| "Cusp" -> { }, "TriplePoint" -> { }, "EdgeTangency" -> { }, "Tangency" -> { },
+     "Crossing" -> { }, "Undefined" -> { }, "EndpointIncidence" -> { } |>,
+  TestID -> "WalkSingularities-simple-path-empty"
+]
+
+(* the square grid has no cycle links (neighbours pairwise non-adjacent), so a
+   double point classifies "Undefined" *)
+VerificationTest[
+  WalkSingularities[ GridGraph[ { 3, 3 } ], { 2, 5, 4, 7, 8, 5, 6 } ],
+  <| "Cusp" -> { }, "TriplePoint" -> { }, "EdgeTangency" -> { }, "Tangency" -> { },
+     "Crossing" -> { }, "Undefined" -> { { 2, 6 } }, "EndpointIncidence" -> { } |>,
+  TestID -> "WalkSingularities-grid-double-point-Undefined"
+]
+
+(* triangulated 5 x 5 torus grid: every link is a 6-cycle, so double points
+   classify by germ interleaving in the rotation *)
+VerificationTest[
+  With[ { torus = Graph[ Flatten @ Table[ UndirectedEdge[ { i, j }, # ] & /@
+        { { Mod[ i + 1, 5 ], j }, { i, Mod[ j + 1, 5 ] }, { Mod[ i + 1, 5 ], Mod[ j + 1, 5 ] } },
+      { i, 0, 4 }, { j, 0, 4 } ] ] },
+    WalkSingularities[ torus,
+      { { 4, 0 }, { 0, 0 }, { 1, 0 }, { 1, 4 }, { 0, 4 }, { 0, 0 }, { 0, 1 } } ][ "Crossing" ] ],
+  { { 2, 6 } },
+  TestID -> "WalkSingularities-torus-transverse-crossing"
+]
+
+VerificationTest[
+  With[ { torus = Graph[ Flatten @ Table[ UndirectedEdge[ { i, j }, # ] & /@
+        { { Mod[ i + 1, 5 ], j }, { i, Mod[ j + 1, 5 ] }, { Mod[ i + 1, 5 ], Mod[ j + 1, 5 ] } },
+      { i, 0, 4 }, { j, 0, 4 } ] ] },
+    WalkSingularities[ torus,
+      { { 4, 0 }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 0 }, { 0, 1 } } ][ "Tangency" ] ],
+  { { 2, 5 } },
+  TestID -> "WalkSingularities-torus-vertex-tangency"
+]
+
+VerificationTest[
+  With[ { torus = Graph[ Flatten @ Table[ UndirectedEdge[ { i, j }, # ] & /@
+        { { Mod[ i + 1, 5 ], j }, { i, Mod[ j + 1, 5 ] }, { Mod[ i + 1, 5 ], Mod[ j + 1, 5 ] } },
+      { i, 0, 4 }, { j, 0, 4 } ] ] },
+    WalkSingularities[ torus,
+      { { 4, 0 }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 0 }, { 0, 4 }, { 4, 4 }, { 0, 0 }, { 0, 1 } } ][ "TriplePoint" ] ],
+  { { 2, 5, 8 } },
+  TestID -> "WalkSingularities-torus-triple-point"
+]
+
+(* rotation-free tree: revisiting forces a cusp, an edge tangency, and a
+   shared-germ tangency at the revisited vertex *)
+VerificationTest[
+  WalkSingularities[ Graph[ { 1 <-> 2, 1 <-> 3, 1 <-> 4 } ], { 2, 1, 3, 1, 4 } ],
+  <| "Cusp" -> { 3 }, "TriplePoint" -> { }, "EdgeTangency" -> { { 2, 3 } },
+     "Tangency" -> { { 2, 4 } }, "Crossing" -> { }, "Undefined" -> { },
+     "EndpointIncidence" -> { } |>,
+  TestID -> "WalkSingularities-tree-cusp-and-shared-germ-tangency"
+]
+
+(* an endpoint of multiplicity >= 2 is an incidence, not a double point *)
+VerificationTest[
+  WalkSingularities[ GridGraph[ { 3, 3 } ], { 7, 4, 5, 2, 1, 4 } ][ "EndpointIncidence" ],
+  { { 2, 6 } },
+  TestID -> "WalkSingularities-endpoint-incidence"
+]
+
+(* the same closed sequence: incident endpoints as an open list, clean as a loop *)
+VerificationTest[
+  { WalkSingularities[ CycleGraph[ 6 ], { 1, 2, 3, 4, 5, 6, 1 } ][ "EndpointIncidence" ],
+    WalkSingularities[ CycleGraph[ 6 ], InfraLoop[ { { 1, 2, 3, 4, 5, 6, 1 } } ] ][[ 1, "EndpointIncidence" ]] },
+  { { { 1, 7 } }, { } },
+  TestID -> "WalkSingularities-loop-closes-endpoint-incidence"
+]
+
+(* wraparound singularities count on closed heads: the doubled edge is a
+   two-cusp edge tangency *)
+VerificationTest[
+  WalkSingularities[ GridGraph[ { 3, 3 } ], InfraLoop[ { { 1, 2, 1 } } ] ],
+  { <| "Cusp" -> { 1, 2 }, "TriplePoint" -> { }, "EdgeTangency" -> { { 1, 2 } },
+       "Tangency" -> { }, "Crossing" -> { }, "Undefined" -> { },
+       "EndpointIncidence" -> { } |> },
+  TestID -> "WalkSingularities-loop-wraparound-cusps"
+]
+
+(* figure-eight based at the cut vertex of the bowtie: a wraparound double
+   point, "Undefined" because the link is disconnected *)
+VerificationTest[
+  WalkSingularities[ Graph[ { 1 <-> 2, 2 <-> 3, 3 <-> 1, 3 <-> 4, 4 <-> 5, 5 <-> 3 } ],
+    InfraLoop[ { { 1, 2, 3, 4, 5, 3, 1 } } ] ][[ 1, "Undefined" ]],
+  { { 3, 6 } },
+  TestID -> "WalkSingularities-loop-wraparound-double-point"
+]
+
+(* ===================== InfraImmersedQ / InfraGenericQ ===================== *)
+
+(* hierarchy walk > immersed > generic on one transverse walk *)
+VerificationTest[
+  With[ { torus = Graph[ Flatten @ Table[ UndirectedEdge[ { i, j }, # ] & /@
+        { { Mod[ i + 1, 5 ], j }, { i, Mod[ j + 1, 5 ] }, { Mod[ i + 1, 5 ], Mod[ j + 1, 5 ] } },
+      { i, 0, 4 }, { j, 0, 4 } ] ],
+      w = { { 4, 0 }, { 0, 0 }, { 1, 0 }, { 1, 4 }, { 0, 4 }, { 0, 0 }, { 0, 1 } } },
+    { InfraWalkQ[ torus, w ], InfraImmersedQ[ torus, w ], InfraGenericQ[ torus, w ] } ],
+  { True, True, True },
+  TestID -> "InfraGenericQ-transverse-crossing-is-generic"
+]
+
+(* a vertex tangency is immersed but not generic *)
+VerificationTest[
+  With[ { torus = Graph[ Flatten @ Table[ UndirectedEdge[ { i, j }, # ] & /@
+        { { Mod[ i + 1, 5 ], j }, { i, Mod[ j + 1, 5 ] }, { Mod[ i + 1, 5 ], Mod[ j + 1, 5 ] } },
+      { i, 0, 4 }, { j, 0, 4 } ] ],
+      w = { { 4, 0 }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 0 }, { 0, 1 } } },
+    { InfraImmersedQ[ torus, w ], InfraGenericQ[ torus, w ] } ],
+  { True, False },
+  TestID -> "InfraGenericQ-vertex-tangency-not-generic"
+]
+
+(* "Undefined" double points are accepted by the generic class *)
+VerificationTest[
+  InfraGenericQ[ GridGraph[ { 3, 3 } ], { 2, 5, 4, 7, 8, 5, 6 } ],
+  True,
+  TestID -> "InfraGenericQ-Undefined-crossing-accepted"
+]
+
+(* a cusp breaks immersion *)
+VerificationTest[
+  InfraImmersedQ[ Graph[ { 1 <-> 2, 1 <-> 3, 1 <-> 4 } ], { 2, 1, 3, 1, 4 } ],
+  False,
+  TestID -> "InfraImmersedQ-cusp-not-immersed"
+]
+
+(* wrapper overloads AllTrue over realisations *)
+VerificationTest[
+  { InfraImmersedQ[ GridGraph[ { 3, 3 } ], InfraWalk[ { { 1, 2, 5 }, { 1, 2, 1 } } ] ],
+    InfraImmersedQ[ GridGraph[ { 3, 3 } ], InfraWalk[ { { 1, 2, 5 }, { 2, 5, 8 } } ] ] },
+  { False, True },
+  TestID -> "InfraImmersedQ-wrapper-AllTrue"
+]
+
+(* open endpoint coincidence is an incidence, the closed heads are clean *)
+VerificationTest[
+  { InfraGenericQ[ CycleGraph[ 6 ], { 1, 2, 3, 4, 5, 6, 1 } ],
+    InfraGenericQ[ CycleGraph[ 6 ], InfraLoop[ { { 1, 2, 3, 4, 5, 6, 1 } } ] ],
+    InfraGenericQ[ CycleGraph[ 6 ], InfraString[ { { 1, 2, 3, 4, 5, 6 } } ] ] },
+  { False, True, True },
+  TestID -> "InfraGenericQ-open-vs-closed-endpoint"
+]
+
+(* the closing step of a string must be a graph edge *)
+VerificationTest[
+  InfraGenericQ[ CycleGraph[ 6 ], InfraString[ { { 1, 2, 3 } } ] ],
+  False,
+  TestID -> "InfraGenericQ-string-wrap-edge-checked"
+]
+
+(* the default FindInfraWalk class (simple paths) is generic *)
+VerificationTest[
+  AllTrue[ FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, 4, All ][ "Realizations" ],
+    w |-> InfraGenericQ[ GridGraph[ { 3, 3 } ], w ] ],
+  True,
+  TestID -> "InfraGenericQ-simple-paths-are-generic"
+]
+
 EndTestSection[]
