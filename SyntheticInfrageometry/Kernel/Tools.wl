@@ -79,9 +79,11 @@ resolveMethod[ spec_, _ ]        := spec
 
 (* The branch function a lazy engine applies to its candidate set: Identity
    explores every candidate and backtracks ("Greedy"), randomBranch explores one
-   and cannot ("RandomGreedy"), so a randomBranch descent is a single draw. *)
+   and cannot ("RandomGreedy"), so a randomBranch descent is a single draw.
+   The {} guard matters: RandomChoice[{}, 1] stays unevaluated, and a Scan
+   over it descends into the expression's parts. *)
 
-randomBranch = RandomChoice[ #, 1 ] &;
+randomBranch = If[ # === { }, { }, RandomChoice[ #, 1 ] ] &;
 
 
 (* How many failed draws a randomized descent is allowed before it gives up. *)
