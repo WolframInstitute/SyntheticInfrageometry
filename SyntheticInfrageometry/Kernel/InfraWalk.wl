@@ -436,80 +436,140 @@ InfraGeodesicQ[ _Graph, walk_List, ___ ] /; Length[ walk ] < 2 := False
 
 (* ===================== WalkSingularities ===================== *)
 
-(* Singularity census of a walk read as an immersed curve: "Cusp" (positions i
-   with v_{i-1} === v_{i+1}, the non-immersed points), "TriplePoint" (position
-   lists of vertices of multiplicity >= 3), "EdgeTangency" (step-index lists of
-   edges traversed twice, either direction), the double points -- multiplicity-2
-   vertices with both passes interior -- as position pairs under "Crossing"
-   (germ pairs interleave in the link rotation), "Tangency" (a shared germ, or
-   germ pairs that do not interleave), or "Undefined" (the link of the double
-   vertex is not a cycle, so no rotation exists), and "EndpointIncidence"
-   (position lists of endpoints of multiplicity >= 2).  On InfraLoop and
-   InfraString the walk is closed: positions index the cyclic core, wraparound
-   singularities count, and there is no endpoint incidence. *)
+(* Singularity census of a walk read as a parametrized curve -- an invariant
+   of the vertex sequence alone, no substrate structure enters.  Around every
+   coincidence v_i === v_j lies a maximal matching block, same-direction or
+   reversed; the species is the shape of that block.  "Cusp": apexes i with
+   v_{i-1} === v_{i+1}; the mirrored arc around an apex belongs to the cusp,
+   however deep the retrace (a,b,c,d,c,b,a is one cusp at d).  "Tangency"
+   (self-tangency): maximal repeated blocks of length >= 2 with disjoint
+   parameter ranges, as the range pair {{i1, i2}, {j1, j2}} -- the second
+   range ascends when the arc is re-run in the same direction (direct) and
+   descends when it is retraced in reverse (inverse).  "Crossing": isolated
+   double visits (multiplicity 2, both passes interior, no block extension)
+   -- the transverse double point, the one multiple point a generic curve
+   has.  "TriplePoint": all parameters of vertices of multiplicity >= 3.
+   Open walks add "EndpointIncidence" (v_1 or v_n of multiplicity >= 2);
+   closed walks (InfraLoop / InfraString, parameters on the cyclic core)
+   instead add "Cover" -> q: a core with minimal period p < m is the q = m/p
+   fold cover of its period loop, whose census is returned. *)
 
-WalkSingularities[ graph_Graph, w_InfraWalk ] :=
-  singularityCensus[ graph, #, False ] & /@ First @ w
+WalkSingularities[ w_InfraWalk ] := openCensus /@ First @ w
 
-WalkSingularities[ graph_Graph, w : _InfraLoop | _InfraString ] :=
-  singularityCensus[ graph, #, True ] & /@ First @ w
+WalkSingularities[ w : _InfraLoop | _InfraString ] := closedCensus /@ First @ w
 
-WalkSingularities[ graph_Graph, walk_List ] := singularityCensus[ graph, walk, False ]
+WalkSingularities[ walk_List ] := openCensus @ walk
 
 
-singularityCensus[ graph_, walk_List, closedQ_ ] := With[
-  { core = If[ closedQ, Most @ closeWalk @ walk, walk ] },
-  { m = Length @ core },
-  { germAt = i |-> If[ closedQ,
-      { core[[ Mod[ i - 2, m ] + 1 ]], core[[ Mod[ i, m ] + 1 ]] },
-      { core[[ i - 1 ]], core[[ i + 1 ]] } ],
-    index = PositionIndex @ core },
-  { doubles = Select[ Values @ index,
-      ps |-> Length[ ps ] == 2 && ( closedQ || AllTrue[ ps, 1 < # < m & ] ) ] },
-  { classified = GroupBy[ doubles,
-      ps |-> doublePointClass[ graph, core[[ First @ ps ]], germAt /@ ps ] ] },
+openCensus[ walk_List ] := With[
+  { m = Length @ walk, index = PositionIndex @ walk },
   <|
-    "Cusp" -> Select[ If[ closedQ, Range @ m, Range[ 2, m - 1 ] ],
-      i |-> SameQ @@ germAt[ i ] ],
+    "Cusp" -> Select[ Range[ 2, m - 1 ], i |-> walk[[ i - 1 ]] === walk[[ i + 1 ]] ],
+    "Tangency" -> Join[ directBlocks @ walk, inverseBlocks @ walk ],
+    "Crossing" -> Select[ Values @ index,
+      ps |-> Length[ ps ] == 2 && 1 < First[ ps ] && Last[ ps ] < m &&
+        isolatedPairQ[ walk, ps ] ],
     "TriplePoint" -> Select[ Values @ index, ps |-> Length[ ps ] >= 3 ],
-    "EdgeTangency" -> Values @ Select[
-      PositionIndex[ Sort /@ If[ closedQ, Partition[ core, 2, 1, 1 ], Partition[ core, 2, 1 ] ] ],
-      ps |-> Length[ ps ] >= 2 ],
-    "Tangency"  -> Lookup[ classified, "Tangency", { } ],
-    "Crossing"  -> Lookup[ classified, "Crossing", { } ],
-    "Undefined" -> Lookup[ classified, "Undefined", { } ],
-    "EndpointIncidence" -> If[ closedQ || m < 2, { },
-      Select[ Lookup[ index, DeleteDuplicates @ { First @ core, Last @ core } ],
+    "EndpointIncidence" -> If[ m < 2, { },
+      Select[ Lookup[ index, DeleteDuplicates @ { First @ walk, Last @ walk } ],
         ps |-> Length[ ps ] >= 2 ] ]
   |> ]
 
 
-(* a double point is transverse iff its two germ pairs are disjoint and
-   interleave in the cyclic order of the link; a shared germ touches without
-   a rotation, so it is tangent on any substrate *)
-doublePointClass[ graph_, u_, { pair1_, pair2_ } ] :=
-  If[ Length @ DeleteDuplicates @ Join[ pair1, pair2 ] < 4, "Tangency",
-    With[ { lk = linkRotation[ graph, u ] },
-      Which[
-        lk === $Failed, "Undefined",
-        germPairsInterleaveQ[ lk, pair1, pair2 ], "Crossing",
-        True, "Tangency" ] ] ]
+closedCensus[ rep_List ] := With[
+  { core = Most @ closeWalk @ rep },
+  { period = SelectFirst[ Divisors @ Length @ core,
+      d |-> core === RotateLeft[ core, d ] ] },
+  Append[ cyclicCensus @ core[[ ;; period ]], "Cover" -> Length[ core ] / period ] ]
 
 
-(* cyclic order of the link of u, where the link is a cycle; $Failed otherwise *)
-linkRotation[ graph_, u_ ] := With[
-  { sub = Subgraph[ graph, AdjacencyList[ graph, u ] ] },
-  If[ ConnectedGraphQ[ sub ] && Union[ VertexDegree[ sub ] ] === { 2 },
-    First @ FindCycle[ sub, { VertexCount @ sub }, 1 ] /. UndirectedEdge[ x_, _ ] :> x,
-    $Failed ] ]
+cyclicCensus[ core_List ] := With[
+  { m = Length @ core, index = PositionIndex @ core },
+  <|
+    "Cusp" -> Select[ Range @ m,
+      i |-> core[[ Mod[ i - 2, m ] + 1 ]] === core[[ Mod[ i, m ] + 1 ]] ],
+    "Tangency" -> Join[ cyclicDirectBlocks @ core, cyclicInverseBlocks @ core ],
+    "Crossing" -> Select[ Values @ index,
+      ps |-> Length[ ps ] == 2 && cyclicIsolatedPairQ[ core, ps ] ],
+    "TriplePoint" -> Select[ Values @ index, ps |-> Length[ ps ] >= 3 ]
+  |> ]
 
 
-(* two disjoint pairs in a cyclic order interleave iff exactly one element of
-   the second lies on the arc from a1 to b1 *)
-germPairsInterleaveQ[ lk_List, { a1_, b1_ }, { a2_, b2_ } ] := With[
-  { pos = AssociationThread[ lk, Range @ Length @ lk ] },
-  { arc = v |-> Mod[ pos[ v ] - pos[ a1 ], Length @ lk ] },
-  Xor[ arc[ a2 ] < arc[ b1 ], arc[ b2 ] < arc[ b1 ] ] ]
+(* an arc traversed twice in the same direction, v_{i+t} === v_{i+d+t}; the
+   two ranges are disjoint iff the run is no longer than the shift d *)
+directBlocks[ walk_List ] := With[ { m = Length @ walk },
+  Catenate @ Table[
+    { { First @ #, Last @ # }, { First @ # + d, Last @ # + d } } & /@
+      Select[ maximalRuns @ Select[ Range[ m - d ], i |-> walk[[ i ]] === walk[[ i + d ]] ],
+        run |-> 2 <= Length[ run ] <= d ],
+    { d, 2, m - 1 } ] ]
+
+
+(* an arc retraced in reverse, v_i === v_{s-i}; a run reaching the apex s/2
+   is the mirror of a cusp, not a tangency *)
+inverseBlocks[ walk_List ] := With[ { m = Length @ walk },
+  Catenate @ Table[
+    { { First @ #, Last @ # }, { s - First @ #, s - Last @ # } } & /@
+      Select[ maximalRuns @ Select[ Range[ Max[ 1, s - m ], Floor[ ( s - 1 ) / 2 ] ],
+          i |-> walk[[ i ]] === walk[[ s - i ]] ],
+        run |-> Length[ run ] >= 2 && ! ( EvenQ[ s ] && Last[ run ] == s / 2 - 1 ) ],
+    { s, 3, 2 m - 1 } ] ]
+
+
+cyclicDirectBlocks[ core_List ] := With[
+  { m = Length @ core },
+  { cyc = i |-> Mod[ i - 1, m ] + 1 },
+  DeleteDuplicatesBy[
+    Catenate @ Table[
+      { { First @ #, Last @ # }, { cyc[ First @ # + d ], cyc[ Last @ # + d ] } } & /@
+        Select[ cyclicRuns[ Select[ Range @ m, i |-> core[[ i ]] === core[[ cyc[ i + d ] ]] ], m ],
+          run |-> 2 <= Length[ run ] <= d ],
+      { d, 2, Floor[ m / 2 ] } ],
+    entry |-> Sort[ Sort /@ entry ] ] ]
+
+
+cyclicInverseBlocks[ core_List ] := With[
+  { m = Length @ core },
+  { cyc = i |-> Mod[ i - 1, m ] + 1 },
+  { sigma = { s, i } |-> cyc[ s - i ] },
+  DeleteDuplicatesBy[
+    Catenate @ Table[
+      { { First @ #, Last @ # }, { sigma[ s, First @ # ], sigma[ s, Last @ # ] } } & /@
+        Select[ cyclicRuns[
+            Select[ Range @ m,
+              i |-> sigma[ s, i ] =!= i && core[[ i ]] === core[[ sigma[ s, i ] ]] ],
+            m ],
+          run |-> Length[ run ] >= 2 &&
+            NoneTrue[ run,
+              i |-> sigma[ s, i ] === cyc[ i + 2 ] || sigma[ s, i ] === cyc[ i - 2 ] ] ],
+      { s, 0, m - 1 } ],
+    entry |-> Sort[ Sort /@ entry ] ] ]
+
+
+maximalRuns[ set_List ] := Split[ Sort @ set, #2 == #1 + 1 & ]
+
+
+cyclicRuns[ set_List, m_ ] := With[
+  { runs = maximalRuns @ set },
+  If[ Length[ runs ] >= 2 && First[ First @ runs ] == 1 && Last[ Last @ runs ] == m,
+    Prepend[ runs[[ 2 ;; -2 ]], Join[ Last @ runs, First @ runs ] ],
+    runs ] ]
+
+
+(* no extension of the coincidence in any direction: the two visits share no
+   preceding or following vertex *)
+isolatedPairQ[ walk_List, { i_, j_ } ] := With[
+  { match = { p, q } |-> 1 <= p <= Length @ walk && 1 <= q <= Length @ walk &&
+      walk[[ p ]] === walk[[ q ]] },
+  ! ( match[ i - 1, j - 1 ] || match[ i + 1, j + 1 ] ||
+      match[ i - 1, j + 1 ] || match[ i + 1, j - 1 ] ) ]
+
+
+cyclicIsolatedPairQ[ core_List, { i_, j_ } ] := With[
+  { m = Length @ core },
+  { match = { p, q } |-> core[[ Mod[ p - 1, m ] + 1 ]] === core[[ Mod[ q - 1, m ] + 1 ]] },
+  ! ( match[ i - 1, j - 1 ] || match[ i + 1, j + 1 ] ||
+      match[ i - 1, j + 1 ] || match[ i + 1, j - 1 ] ) ]
 
 
 (* ===================== InfraImmersedQ / InfraGenericQ ===================== *)
@@ -521,31 +581,29 @@ InfraImmersedQ[ graph_Graph, w_InfraWalk ] := AllTrue[ First @ w, InfraImmersedQ
 
 InfraImmersedQ[ graph_Graph, w : _InfraLoop | _InfraString ] :=
   AllTrue[ First @ w,
-    InfraWalkQ[ graph, closeWalk @ # ] &&
-      singularityCensus[ graph, #, True ][ "Cusp" ] === { } & ]
+    InfraWalkQ[ graph, closeWalk @ # ] && closedCensus[ # ][ "Cusp" ] === { } & ]
 
 InfraImmersedQ[ graph_Graph, walk_List ] :=
-  InfraWalkQ[ graph, walk ] && singularityCensus[ graph, walk, False ][ "Cusp" ] === { }
+  InfraWalkQ[ graph, walk ] && openCensus[ walk ][ "Cusp" ] === { }
 
 
-(* generic walk: immersed, multiple points only transverse double points --
-   no triple points, no edge tangencies, no vertex tangencies, endpoints off
-   the curve; "Undefined" double points (link not a cycle) are accepted *)
+(* generic walk: immersed and in general position -- multiple points are only
+   isolated crossings; no tangencies, no triple points, endpoints off the
+   curve on open walks, singly covered on closed walks *)
 
 InfraGenericQ[ graph_Graph, w_InfraWalk ] := AllTrue[ First @ w, InfraGenericQ[ graph, # ] & ]
 
 InfraGenericQ[ graph_Graph, w : _InfraLoop | _InfraString ] :=
   AllTrue[ First @ w,
     InfraWalkQ[ graph, closeWalk @ # ] &&
-      genericCensusQ @ singularityCensus[ graph, #, True ] & ]
+      With[ { c = closedCensus @ # },
+        Lookup[ c, { "Cusp", "Tangency", "TriplePoint" } ] === { { }, { }, { } } &&
+          c[ "Cover" ] === 1 ] & ]
 
 InfraGenericQ[ graph_Graph, walk_List ] :=
-  InfraWalkQ[ graph, walk ] && genericCensusQ @ singularityCensus[ graph, walk, False ]
-
-
-genericCensusQ[ census_Association ] :=
-  Lookup[ census, { "Cusp", "TriplePoint", "EdgeTangency", "Tangency", "EndpointIncidence" } ] ===
-    { { }, { }, { }, { }, { } }
+  InfraWalkQ[ graph, walk ] &&
+  Lookup[ openCensus @ walk, { "Cusp", "Tangency", "TriplePoint", "EndpointIncidence" } ] ===
+    { { }, { }, { }, { } }
 
 
 (* ===================== ExtendInfraWalk ===================== *)
