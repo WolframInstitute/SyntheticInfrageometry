@@ -229,8 +229,10 @@ propertiesSubOpts[ { _String, opts___ } ]  := { opts }
      (g, walk) -> admissible-next-vertex set.
    Every rule sees one thing -- the window: the last <= scale vertices of the
    walk with the candidate appended (the whole walk at scale Infinity).
-   Constraints ("Minimizing", "Simple", a bare window predicate) are checked
-   first and commute; selectors ("Straightest", {"Minimal", f}, {"Maximal", f})
+   Constraints ("Minimizing", "Simple", "Immersed", "Generic", a bare window
+   predicate) are checked first and commute -- the genericity pair reads the
+   whole walk prefix rather than the window, its violations being monotone
+   under extension; selectors ("Straightest", {"Minimal", f}, {"Maximal", f})
    follow in list order, each refining the previous ties. *)
 
 windowCandidateFn[ graph_Graph, scale_, rules_List, fnSym_ ] :=
@@ -253,7 +255,8 @@ windowCandidateFn[ graph_Graph, scale_, rules_List, fnSym_ ] :=
 
 windowRuleSpecies[ rule_, fnSym_ ] :=
   Switch[ rule,
-    "Minimizing" | "Simple",              "Constraint",
+    "Minimizing" | "Simple" | "Immersed" | "Generic",
+                                          "Constraint",
     "Straightest",                        "Selector",
     { "Minimal", _ } | { "Maximal", _ },  "Selector",
     _String | { _String, ___ },
@@ -271,6 +274,21 @@ windowRuleQ[ g_Graph, scale_, "Minimizing", walk_List, w_ ] :=
 
 (* "Simple": no revisits. *)
 windowRuleQ[ _Graph, _, "Simple", walk_List, w_ ] := ! MemberQ[ walk, w ]
+
+(* "Immersed": no cusp -- the candidate does not retrace the previous edge.
+   A new cusp apex can only form at the tip, so the step check is exact. *)
+windowRuleQ[ _Graph, _, "Immersed", walk_List, w_ ] :=
+  Length[ walk ] < 2 || walk[[ -2 ]] =!= w
+
+(* "Generic": general position, InfraGenericQ's class -- the step must not
+   repeat an edge of the walk (a repeated edge is a cusp or a tangency) nor
+   visit any vertex a third time (a triple point).  Both violations are
+   monotone under extension, so pruning per step is exact; endpoint freeness
+   is not monotone (the tip keeps moving) and is the caller's finished-walk
+   check.  Reads the whole walk prefix, not the window. *)
+windowRuleQ[ _Graph, _, "Generic", walk_List, w_ ] :=
+  Count[ walk, w ] <= 1 &&
+  ! MemberQ[ Partition[ walk, 2, 1 ], { Last @ walk, w } | { w, Last @ walk } ]
 
 (* a bare predicate is a custom local law on the window *)
 windowRuleQ[ _Graph, scale_, pred_, walk_List, w_ ] :=

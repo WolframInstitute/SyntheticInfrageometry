@@ -24,34 +24,30 @@ InfraWalk[ reps_List ][ "Start" ] := columnInfraPoint[ reps, 1 ]
 InfraWalk[ reps_List ][ "End" ]   := columnInfraPoint[ reps, -1 ]
 (* ===================== FindInfraWalk ===================== *)
 
-(* A walk from p1 to p2, non-backtracking with a prescribed number of
-   self-crossings.  Option "Crossings" -> c counts the arrivals at an
-   already-visited vertex: c = 0 (default) is exactly the simple paths --
-   embedded curves, FindPath's class, so Method -> Automatic delegates to
-   FindPath whatever the count -- and c >= 1 the immersed curves crossing
-   themselves exactly c times (a bounce a,b,a is a cusp, not a crossing, and
-   non-backtracking excludes it; winding pays one crossing per revisited
-   vertex, so the C4 walk 1,2,3,4,1,2,3 has three).  For c >= 1, Automatic
-   draws kinked walks at random for a bounded count ("RandomGreedy",
-   ambient-seeded: a uniform random simple backbone, then c loop splices, each
-   loop drawn uniformly in the graph punctured by the walk so the count is
-   exact, with germs twisted by the link rotation so the crossing is
-   transversal where the substrate carries one; option "LoopLength" ->
-   Automatic | {lmin, lmax} confines each loop's length -- the floor keeps
-   loops off the girth.  Under Automatic the lasso fallback covers walks the
-   splices cannot reach, e.g. windings) and enumerates exhaustively under All;
-   kspec must be finite (::unbounded).  Local geodesic rules live on
-   FindInfraGeodesic, and the unrestricted revisits-allowed walk class is
-   FindInfraGeodesic at scale 1. *)
+(* A walk from p1 to p2 with length restricted by kspec, in the class cut out
+   by the Properties rules -- FindInfraGeodesic's rule vocabulary read on the
+   whole walk (scale-Infinity windows).  The default class {"Generic"} is the
+   generic immersed walks, InfraGenericQ's class: no cusps, no tangencies, no
+   triple points, endpoints off the curve -- every multiple point an isolated
+   transverse crossing.  Simple paths are the subclass Properties ->
+   {"Simple"}; Properties -> {} is the bare revisits-allowed walk class.
+   "Generic" bounds the class by itself (multiplicity <= 2 forces length
+   <= 2 |V|), so kspec Infinity is legal under the default; without a
+   bounding rule ("Simple", "Generic", "Minimizing") it is refused
+   (::unbounded).
 
-FindInfraWalk::properties  = "FindInfraWalk no longer takes Properties; use \"Crossings\" -> 0 (default, simple paths) | c. Local geodesic rules live on FindInfraGeodesic.";
-FindInfraWalk::simple      = "FindInfraWalk now counts self-crossings; use \"Crossings\" -> 0 (default, simple paths) | c.";
+   Legacy axis "Crossings" -> c (supersedes Properties when given): the
+   non-backtracking walks with exactly c arrivals at an already-visited
+   vertex, c >= 1 drawn at random as kinked walks under a bounded count. *)
+
+FindInfraWalk::badproperty = "Property `1` is not supported by FindInfraWalk; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the walk.";
 FindInfraWalk::badmethod   = "Method `1` is not supported by FindInfraWalk.";
 FindInfraWalk::shortfall   = "\"RandomGreedy\" drew `1` distinct walks of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
-FindInfraWalk::unbounded   = "with \"Crossings\" -> c >= 1 the class is infinite without a length bound; give kspec a finite bound.";
+FindInfraWalk::unbounded   = "the walk class is infinite without a length bound; give kspec a finite bound or a bounding rule (\"Simple\", \"Generic\").";
 
 Options[ FindInfraWalk ] = {
-  "Crossings"  -> 0,
+  Properties   -> { "Generic" },
+  "Crossings"  -> Automatic,
   "LoopLength" -> Automatic,
   Method       -> Automatic
 };
@@ -64,11 +60,71 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
       Catch @ With[ {
           crossings = OptionValue[ FindInfraWalk,
             FilterRules[ { opts }, Options @ FindInfraWalk ], "Crossings" ],
+          rules = OptionValue[ FindInfraWalk,
+            FilterRules[ { opts }, Options @ FindInfraWalk ], Properties ],
           loopSpec = OptionValue[ FindInfraWalk,
             FilterRules[ { opts }, Options @ FindInfraWalk ], "LoopLength" ],
           methodOpt = OptionValue[ FindInfraWalk,
             FilterRules[ { opts }, Options @ FindInfraWalk ], Method ] },
-        { embeddedQ = crossings === 0 },
+        If[ crossings === Automatic,
+
+        (* the Properties class engine.  A walk in a class forbidding a second
+           visit to its endpoint ("Simple", "Generic", or whole-walk
+           "Minimizing", whose distance from the start strictly increases)
+           ends at its first arrival, so the sweeps may stop branches there;
+           at whole-walk scale these are also exactly the rules that bound the
+           class without a length bound. *)
+        With[ {
+            methodSpec = resolveMethod[ methodOpt, count ] },
+          { methodHead = methodName @ methodSpec,
+            pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
+            kmax       = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
+            lengthQ    = walkLengthAdmissibleQ[ kspec ],
+            candidateFn = windowCandidateFn[ graph, Infinity, rules, FindInfraWalk ],
+            terminal   = MemberQ[ rules, "Simple" | "Generic" | "Minimizing" ] },
+          { acceptQ = If[ MemberQ[ rules, "Generic" ],
+              (* endpoint freeness is the one census condition the moving tip
+                 cannot prune; checked on the finished walk *)
+              w |-> lengthQ[ w ] && Count[ w, First @ w ] === 1 && Count[ w, Last @ w ] === 1,
+              lengthQ ] },
+          If[ kmax === Infinity && ! terminal,
+            Message[ FindInfraWalk::unbounded ]; Throw[ $Failed ] ];
+          If[ methodOpt === Automatic && kspec === Infinity && countLimit[ count ] === 1 &&
+              SubsetQ[ { "Minimizing", "Simple", "Immersed", "Generic" }, rules ],
+            (* a geodesic is simple, hence immersed, generic and minimizing --
+               the canonical count-less witness, without FindPath's wandering
+               DFS *)
+            With[ { path = FindShortestPath[ graph, q1, q2 ] },
+              If[ path === { }, { }, { path } ] ],
+            Switch[ methodHead,
+              "Exhaustive",
+                Select[
+                  frontierSweep[ graph, q1, q2,
+                    { g, walk } |-> If[ Length[ walk ] - 1 >= kmax, { }, candidateFn[ g, walk ] ],
+                    pruning,
+                    (* early stop on count is unsound when a completion can
+                       still be rejected: by an exact / range length, or by
+                       the endpoint check *)
+                    If[ MatchQ[ kspec, { _Integer } | { _Integer, _Integer } ] ||
+                        MemberQ[ rules, "Generic" ],
+                      Infinity, countLimit @ count ],
+                    terminal ],
+                  acceptQ ],
+              "Greedy",
+                greedyFrontierSweep[ graph, q1, q2, candidateFn, acceptQ, kmax, count,
+                  Identity, terminal ],
+              "RandomGreedy",
+                randomDraws[
+                  { } |-> greedyFrontierSweep[ graph, q1, q2, candidateFn, acceptQ, kmax, 1,
+                    randomBranch, terminal ],
+                  count, FindInfraWalk ],
+              _,
+                Message[ FindInfraWalk::badmethod, methodSpec ]; $Failed
+            ] ] ],
+
+        (* the legacy exact-crossing engine, "Crossings" -> c *)
+        With[ {
+        embeddedQ = crossings === 0 },
         { methodSpec = resolveMethod[
             If[ methodOpt === Automatic,
               Which[ embeddedQ, "Exhaustive",
@@ -88,10 +144,6 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
                 DeleteCases[ allNeighboursBaseFn[ g, path ], path[[ -2 ]] ] ] },
             If[ walkCrossings[ path ] < crossings, nb,
               Select[ nb, ! MemberQ[ path, # ] & ] ] ] },
-        If[ ! FreeQ[ { opts }, Properties ],
-          Message[ FindInfraWalk::properties ]; Throw[ $Failed ] ];
-        If[ ! FreeQ[ { opts }, "Simple" ],
-          Message[ FindInfraWalk::simple ]; Throw[ $Failed ] ];
         (* a crossing walk of every excess length exists once one does, so the class
            has no canonical finite witness -- refuse, as FindInfraGeodesic does *)
         If[ ! embeddedQ && kspec === Infinity,
@@ -191,7 +243,7 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
                       count, FindInfraWalk ] ] ] ] ],
           _,
             Message[ FindInfraWalk::badmethod, methodSpec ]; $Failed
-        ]
+        ] ] ]
       ]
     ], p1, p2 ]
 
@@ -350,9 +402,11 @@ walkLengthAdmissibleQ[ { kmin_Integer, kmax_Integer } ] :=
    Returns InfraWalk; InfraGeodesicQ[graph, walk, r] carries the class.
 
    Rules (Properties): "Minimizing" (window is a shortest path), "Simple" (no
-   revisits) and a bare predicate on the window are constraints; "Straightest"
-   (step away from the window) and {"Minimal", f} / {"Maximal", f} on f[window]
-   are selectors refining the surviving ties.
+   revisits), "Immersed" (no cusps), "Generic" (general position -- read on
+   the whole walk prefix, see windowRuleQ) and a bare predicate on the window
+   are constraints; "Straightest" (step away from the window) and
+   {"Minimal", f} / {"Maximal", f} on f[window] are selectors refining the
+   surviving ties.
 
    Candidates are local: every neighbour of the walk's last vertex, filtered by
    the rules alone.  p2 never enters a window, so a selector may steer the walk
@@ -360,9 +414,9 @@ walkLengthAdmissibleQ[ { kmin_Integer, kmax_Integer } ] :=
    observer whose horizon is r.  The target-aware geodesic DAG is
    FindInfraSegment's optimisation of the constraint-only case r = Infinity. *)
 
-FindInfraGeodesic::badproperty = "Property `1` is not supported by FindInfraGeodesic; the rules are \"Minimizing\", \"Straightest\", \"Simple\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window.";
+FindInfraGeodesic::badproperty = "Property `1` is not supported by FindInfraGeodesic; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window.";
 FindInfraGeodesic::badmethod   = "Method `1` is not supported by FindInfraGeodesic.";
-FindInfraGeodesic::unbounded   = "The geodesic class at scale `1` is infinite without a length bound: give a finite kspec, add the \"Simple\" rule, or ask at scale Infinity.";
+FindInfraGeodesic::unbounded   = "The geodesic class at scale `1` is infinite without a length bound: give a finite kspec, add \"Simple\" or \"Generic\", or ask \"Minimizing\" at scale Infinity.";
 FindInfraGeodesic::shortfall   = "\"RandomGreedy\" drew `1` distinct geodesics of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraGeodesic ] = {
@@ -382,13 +436,18 @@ FindInfraGeodesic[ graph_Graph, p1_, p2_,
         { methodHead = methodName @ methodSpec,
           pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
           kmax       = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
-          acceptQ    = walkLengthAdmissibleQ[ kspec ],
+          lengthQ    = walkLengthAdmissibleQ[ kspec ],
           candidateFn = windowCandidateFn[ graph, scale, rules, FindInfraGeodesic ] },
+        { acceptQ = If[ MemberQ[ rules, "Generic" ],
+            (* endpoint freeness is the one census condition the moving tip
+               cannot prune; checked on the finished walk *)
+            w |-> lengthQ[ w ] && Count[ w, First @ w ] === 1 && Count[ w, Last @ w ] === 1,
+            lengthQ ] },
         (* with revisits allowed a local rule alone leaves an infinite class
            (a walk can wind around a long cycle forever and stay minimizing at
-           every finite scale); only simplicity or a global minimizing rule
-           bounds it *)
-        If[ kmax === Infinity && ! MemberQ[ rules, "Simple" ] &&
+           every finite scale); only simplicity, genericity (multiplicity
+           <= 2), or a global minimizing rule bounds it *)
+        If[ kmax === Infinity && ! MemberQ[ rules, "Simple" | "Generic" ] &&
             ! ( scale === Infinity && MemberQ[ rules, "Minimizing" ] ),
           Message[ FindInfraGeodesic::unbounded, scale ]; Throw[ $Failed ] ];
         Switch[ methodHead,
@@ -398,7 +457,11 @@ FindInfraGeodesic[ graph_Graph, p1_, p2_,
                 { g, walk } |-> If[ Length[ walk ] - 1 >= kmax, { },
                   candidateFn[ g, walk ] ],
                 pruning,
-                If[ MatchQ[ kspec, { _Integer } | { _Integer, _Integer } ],
+                (* early stop on count is unsound when a completion can still
+                   be rejected: by an exact / range length, or by the endpoint
+                   check *)
+                If[ MatchQ[ kspec, { _Integer } | { _Integer, _Integer } ] ||
+                    MemberQ[ rules, "Generic" ],
                   Infinity, countLimit @ count ] ],
               acceptQ ],
           "Greedy",
@@ -614,7 +677,7 @@ InfraGenericQ[ graph_Graph, walk_List ] :=
    "InfraScale" (Infinity by default, so "Minimizing" extends a segment along a
    global geodesic); default Properties -> {} allows non-simple extensions. *)
 
-ExtendInfraWalk::badproperty  = "Property `1` is not supported by ExtendInfraWalk; the rules are \"Minimizing\", \"Straightest\", \"Simple\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window.";
+ExtendInfraWalk::badproperty  = "Property `1` is not supported by ExtendInfraWalk; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window.";
 ExtendInfraWalk::badmethod    = "Method `1` is not supported by ExtendInfraWalk.";
 ExtendInfraWalk::baddirection = "Direction `1` is not supported by ExtendInfraWalk.";
 
@@ -641,13 +704,21 @@ ExtendInfraWalk[ graph_Graph, path_,
         If[ methodHead =!= "Exhaustive",
           Message[ ExtendInfraWalk::badmethod, methodSpec ]; Throw[ $Failed ] ];
         With[ { candidateFn = windowCandidateFn[ graph, scale, properties, ExtendInfraWalk ],
-                simpleQ     = MemberQ[ properties, "Simple" ] },
+                (* the per-step Cartesian of a two-sided step can violate a
+                   whole-walk constraint each side admits alone; filter the
+                   joined walk on its monotone conditions *)
+                stepFilter  = Which[
+                  MemberQ[ properties, "Simple" ], DuplicateFreeQ,
+                  MemberQ[ properties, "Generic" ],
+                    w |-> Max[ Counts @ w ] <= 2 &&
+                      DuplicateFreeQ[ Sort /@ Partition[ w, 2, 1 ] ],
+                  True, True & ] },
           Switch[ direction,
             "Forward",   extendOneSide[ graph, walk0, candidateFn, length, pruning ],
             "Backward",  Reverse /@ extendOneSide[ graph, Reverse @ walk0,
                            candidateFn, length, pruning ],
             "BothSides", extendBothSidesSymmetric[ graph, walk0, candidateFn,
-                           length, pruning, simpleQ ],
+                           length, pruning, stepFilter ],
             _, Message[ ExtendInfraWalk::baddirection, direction ]; Throw[ $Failed ]
           ]
         ]
@@ -678,18 +749,20 @@ extendOneSide[ graph_Graph, seed_List, candidateFn_, length_, pruning_ ] :=
 (* Per-step symmetric BFS: each outer step grows the walk by at most one
    vertex on each side.  A side freezes when its candidateFn returns {}; the
    other side keeps growing one edge per step until it freezes too.  "Length"
-   counts outer steps. *)
+   counts outer steps.  stepFilter re-checks each joined two-sided step
+   against the whole-walk constraints ("Simple", "Generic"). *)
 
-extendBothSidesSymmetric[ graph_Graph, seed_List, candidateFn_, length_, pruning_, simpleQ_ ] :=
+extendBothSidesSymmetric[ graph_Graph, seed_List, candidateFn_, length_, pruning_, stepFilter_ ] :=
   Module[ { live = { seed }, dead = { }, steps = 0,
             maxSteps = length /. Automatic -> Infinity },
     While[ live =!= { } && steps < maxSteps,
       With[ { pairs = ( w |-> { w, stepBothSides[ graph, w, candidateFn ] } ) /@ live },
         dead = Join[ dead, Cases[ pairs, { w_, { } } :> w ] ];
-        live = applyPruning[
-          Flatten[ Cases[ pairs, { _, nexts : { __ } } :> nexts ], 1 ],
-          pruning ];
-        If[ simpleQ, live = Select[ live, DuplicateFreeQ ] ]
+        live = Select[
+          applyPruning[
+            Flatten[ Cases[ pairs, { _, nexts : { __ } } :> nexts ], 1 ],
+            pruning ],
+          stepFilter ]
       ];
       steps++
     ];

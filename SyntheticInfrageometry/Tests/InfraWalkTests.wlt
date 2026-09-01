@@ -50,7 +50,8 @@ VerificationTest[
   TestID -> "FindInfraWalk-exact-length-spec"
 ]
 
-(* the default class is FindPath's simple paths, so the counts compare like for
+(* at these lengths the generic default coincides with the simple paths (a
+   crossing on this grid needs length >= 8), so the counts compare like for
    like *)
 VerificationTest[
   Length @ FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, { 4, 6 }, All ][ "Realizations" ],
@@ -61,8 +62,8 @@ VerificationTest[
 (* "Crossings" counts arrivals at an already-visited vertex, exactly: on
    CycleGraph[4] every non-backtracking walk is a pure rotation, so the
    length-6 walks 1 -> 3 have exactly 3 crossings -- the 1-crossing class is
-   empty, the 3-crossing class is the two rotations, and the default 0 is the
-   simple paths (also empty at this length) *)
+   empty, the 3-crossing class is the two rotations, and the generic default
+   is also empty at this length (winding is a tangency) *)
 VerificationTest[
   With[ { g = CycleGraph[ 4 ] },
     { FindInfraWalk[ g, 1, 3, { 6 }, All ][ "Realizations" ],
@@ -86,14 +87,52 @@ VerificationTest[
   TestID -> "FindInfraWalk-crossing-walk-is-a-nonbacktracking-revisit"
 ]
 
-(* under the default class Method -> Automatic delegates to FindPath for every
-   count -- the same walks as an explicit "Exhaustive" *)
+(* Method -> Automatic on a bounded count is the certified lazy descent: the
+   instances are genuine, distinct members of the exhaustive class, exactly as
+   many as asked *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    Sort @ FindInfraWalk[ g, 1, 9, { 6 }, 3 ][ "Realizations" ] ===
-      Sort @ FindInfraWalk[ g, 1, 9, { 6 }, 3, Method -> "Exhaustive" ][ "Realizations" ] ],
+    { class = FindInfraWalk[ g, 1, 9, { 6 }, All, Method -> "Exhaustive" ][ "Realizations" ] },
+    { got = FindInfraWalk[ g, 1, 9, { 6 }, 3 ][ "Realizations" ] },
+    Length[ got ] === 3 && DuplicateFreeQ[ got ] && SubsetQ[ class, got ] ],
   True,
-  TestID -> "FindInfraWalk-Automatic-takes-the-FindPath-fast-path"
+  TestID -> "FindInfraWalk-Automatic-greedy-members-of-class"
+]
+
+(* the default class is InfraGenericQ's: on the 3-by-3 grid at length <= 8 it
+   strictly exceeds the simple paths (the degree-4 centre supports an isolated
+   crossing), and it is exactly the census filter over the bare walk class *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    { reps = FindInfraWalk[ g, 1, 9, 8, All ][ "Realizations" ] },
+    AllTrue[ reps, InfraGenericQ[ g, # ] & ] &&
+    AnyTrue[ reps, ! DuplicateFreeQ[ # ] & ] &&
+    Sort @ reps ===
+      Sort @ Select[
+        FindInfraGeodesic[ g, 1, 9, 1, 8, All, Properties -> { } ][ "Realizations" ],
+        InfraGenericQ[ g, # ] & ] ],
+  True,
+  TestID -> "FindInfraWalk-default-class-is-generic-immersed"
+]
+
+(* "Immersed" alone leaves an infinite class -- winding a long cycle never
+   cusps -- so an unbounded kspec is refused *)
+VerificationTest[
+  FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, Infinity, 1, Properties -> { "Immersed" } ],
+  $Failed,
+  { FindInfraWalk::unbounded },
+  TestID -> "FindInfraWalk-immersed-unbounded-refused"
+]
+
+(* Properties -> {} is the bare walk class: backtracking walks are members,
+   and a walk may pass through the endpoint and return (non-terminal sweep) *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    { reps = FindInfraWalk[ g, 1, 9, { 6 }, All, Properties -> { } ][ "Realizations" ] },
+    AnyTrue[ reps, ! InfraImmersedQ[ g, # ] & ] &&
+    AnyTrue[ reps, Count[ #, 9 ] >= 2 & ] ],
+  True,
+  TestID -> "FindInfraWalk-empty-properties-bare-walk-class"
 ]
 
 (* an unbounded crossing class is refused: crossings exist at every excess
@@ -287,6 +326,17 @@ VerificationTest[
   $Failed,
   { FindInfraGeodesic::unbounded },
   TestID -> "FindInfraGeodesic-unbounded-class-refused"
+]
+
+(* "Generic" bounds the class by itself -- multiplicity <= 2 forces termination
+   -- so kspec Infinity is accepted; on the 6-cycle the generic walks 1 -> 4
+   are exactly the two geodesics (anything longer repeats an edge or returns
+   to an endpoint). *)
+VerificationTest[
+  Sort @ FindInfraGeodesic[ CycleGraph[ 6 ], 1, 4, 1, Infinity, All,
+    Properties -> { "Generic" } ][ "Realizations" ],
+  Sort @ { { 1, 2, 3, 4 }, { 1, 6, 5, 4 } },
+  TestID -> "FindInfraGeodesic-Generic-bounds-the-class"
 ]
 
 VerificationTest[
@@ -571,7 +621,7 @@ VerificationTest[
   TestID -> "FindInfraWalk-exact-length-strict-count"
 ]
 
-(* Method -> "Greedy": lazy DFS, one instance; the simple default bounds the
+(* Method -> "Greedy": lazy DFS, one instance; the generic default bounds the
    unconstrained descent by itself. *)
 VerificationTest[
   FindInfraWalk[ PathGraph[ Range[ 5 ] ], 1, 5, Infinity, 1, Method -> "Greedy" ],

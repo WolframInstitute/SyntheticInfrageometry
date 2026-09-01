@@ -456,22 +456,24 @@ VerificationTest[
 ]
 
 
-(* ===== FindInfraWalk "Crossings" (path family) ===== *)
+(* ===== FindInfraWalk (walk family) ===== *)
 
-(* Properties and the short-lived "Simple" boolean are retired on FindInfraWalk:
-   the class axis is "Crossings" -> c. *)
+(* Properties is the class axis: the default is the generic immersed walks,
+   and "Simple" narrows to the simple paths (the old default). *)
 VerificationTest[
-  FindInfraWalk[GridGraph[{3, 3}], 1, 9, Infinity, 1, Properties -> {"Simple"}],
-  $Failed,
-  {FindInfraWalk::properties},
-  TestID -> "FindInfraWalk-properties-retired-message"
+  With[{g = GridGraph[{3, 3}]},
+    {w = First @ FindInfraWalk[g, 1, 9, Infinity, 1,
+       Properties -> {"Simple"}]["Realizations"]},
+    InfraWalkQ[g, w] && DuplicateFreeQ[w]],
+  True,
+  TestID -> "FindInfraWalk-simple-properties-class"
 ]
 
 VerificationTest[
-  FindInfraWalk[GridGraph[{3, 3}], 1, 9, Infinity, 1, "Simple" -> False],
-  $Failed,
-  {FindInfraWalk::simple},
-  TestID -> "FindInfraWalk-simple-retired-message"
+  With[{g = GridGraph[{3, 3}]},
+    AllTrue[FindInfraWalk[g, 1, 9, 8, All]["Realizations"], InfraGenericQ[g, #] &]],
+  True,
+  TestID -> "FindInfraWalk-default-generic-immersed"
 ]
 
 (* "Greedy" is a supported Method (lazy DFS, one instance); an unrecognised
@@ -483,7 +485,7 @@ VerificationTest[
   TestID -> "FindInfraWalk-badmethod-message"
 ]
 
-(* simplicity is the default. *)
+(* at geodesic length the generic default is exactly the simple paths. *)
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
