@@ -87,13 +87,13 @@ FindInfraWalk[ graph_Graph, p1_,
         Message[ FindInfraWalk::unbounded ]; Throw[ $Failed ] ];
       Switch[ methodHead,
         "Exhaustive",
-          pointedFrontierSweep[ graph, q1, candidateFn, lengthQ, deadlineFn, kmax,
+          pointedFrontierSweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax,
             pruning, countLimit @ count ],
         "Greedy",
-          pointedGreedySweep[ graph, q1, candidateFn, lengthQ, deadlineFn, kmax, count ],
+          pointedGreedySweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax, count ],
         "RandomGreedy",
           randomDraws[
-            { } |-> pointedGreedySweep[ graph, q1, candidateFn, lengthQ, deadlineFn, kmax,
+            { } |-> pointedGreedySweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax,
               1, randomBranch ],
             count, FindInfraWalk ],
         _,
@@ -172,20 +172,22 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
 
 (* ===================== Pointed growth engines ===================== *)
 
-(* Lazy depth-first growth from p1: descend by candidateFn and emit a walk
-   when its budget -- kmax tightened per branch by the stopping-condition
-   deadline -- is spent or no admissible step remains; acceptQ (the kspec
-   window) filters the emissions, and a finite count is exact because the
-   descent is complete.  branch = Identity backtracks ("Greedy"); branch =
-   randomBranch follows one uniform step per node and cannot backtrack --
-   a single draw of the random walk ("RandomGreedy", via randomDraws). *)
+(* Lazy depth-first growth from a seed walk (a single vertex for the pointed
+   finders, a longer walk for ExtendInfraGeodesic): descend by candidateFn
+   and emit a walk when its budget -- kmax tightened per branch by the
+   stopping-condition deadline -- is spent or no admissible step remains;
+   acceptQ (the kspec window) filters the emissions, and a finite count is
+   exact because the descent is complete.  branch = Identity backtracks
+   ("Greedy"); branch = randomBranch follows one uniform step per node and
+   cannot backtrack -- a single draw of the random walk ("RandomGreedy",
+   via randomDraws). *)
 
 (* the closures are held in Module locals, never inlined into descend's RHS:
    see the note on greedyFrontierSweep (Tools.wl) *)
 
-pointedGreedySweep[ graph_Graph, p1_, candidateFn_, acceptQ_, deadlineFn_, kmax_,
+pointedGreedySweep[ graph_Graph, seed_List, candidateFn_, acceptQ_, deadlineFn_, kmax_,
     count_, branch_ : Identity ] :=
-  If[ ! VertexQ[ graph, p1 ], { },
+  If[ seed === { } || ! AllTrue[ seed, VertexQ[ graph, # ] & ], { },
     Module[ { cap = countLimit @ count, acc = { }, descend, emit,
               cands = candidateFn, keepQ = acceptQ, dlFn = deadlineFn, pick = branch },
       emit[ walk_ ] := If[ keepQ @ walk,
@@ -197,7 +199,7 @@ pointedGreedySweep[ graph_Graph, p1_, candidateFn_, acceptQ_, deadlineFn_, kmax_
           With[ { nexts = pick @ cands[ graph, walk ] },
             If[ nexts === { }, emit[ walk ],
               Scan[ descend[ Append[ walk, # ] ] &, nexts ] ] ] ];
-      Catch[ descend[ { p1 } ]; acc, pointedGreedySweep ]
+      Catch[ descend[ seed ]; acc, pointedGreedySweep ]
     ] ]
 
 
@@ -205,10 +207,10 @@ pointedGreedySweep[ graph_Graph, p1_, candidateFn_, acceptQ_, deadlineFn_, kmax_
    frontier per layer, and emissions pass acceptQ before they count, so an
    early stop on the count is exact. *)
 
-pointedFrontierSweep[ graph_Graph, p1_, candidateFn_, acceptQ_, deadlineFn_, kmax_,
+pointedFrontierSweep[ graph_Graph, seed_List, candidateFn_, acceptQ_, deadlineFn_, kmax_,
     prune_, count_ ] :=
-  If[ ! VertexQ[ graph, p1 ], { },
-    Module[ { frontier = { { p1 } }, completed = { }, moves },
+  If[ seed === { } || ! AllTrue[ seed, VertexQ[ graph, # ] & ], { },
+    Module[ { frontier = { seed }, completed = { }, moves },
       While[ frontier =!= { } && Length[ completed ] < count,
         moves = ( walk |-> { walk,
             If[ Length[ walk ] - 1 >= Min[ kmax, deadlineFn @ walk ], { },
@@ -461,13 +463,13 @@ FindInfraGeodesic[ graph_Graph, p1_,
         Message[ FindInfraGeodesic::unbounded, scale ]; Throw[ $Failed ] ];
       Switch[ methodHead,
         "Exhaustive",
-          pointedFrontierSweep[ graph, q1, candidateFn, lengthQ, deadlineFn, kmax,
+          pointedFrontierSweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax,
             pruning, countLimit @ count ],
         "Greedy",
-          pointedGreedySweep[ graph, q1, candidateFn, lengthQ, deadlineFn, kmax, count ],
+          pointedGreedySweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax, count ],
         "RandomGreedy",
           randomDraws[
-            { } |-> pointedGreedySweep[ graph, q1, candidateFn, lengthQ, deadlineFn, kmax,
+            { } |-> pointedGreedySweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax,
               1, randomBranch ],
             count, FindInfraGeodesic ],
         _,
@@ -735,110 +737,183 @@ InfraGenericQ[ graph_Graph, walk_List ] :=
     { { }, { }, { }, { } }
 
 
-(* ===================== ExtendInfraWalk ===================== *)
+(* ===================== ExtendInfraGeodesic ===================== *)
 
-(* ExtendInfraWalk[g, walk, n] extends a walk by per-step rules until
-   inextensible ("Length" -> Automatic) or for the requested step budget.
-   Properties is FindInfraGeodesic's rule vocabulary, read at the infra-scale
-   "InfraScale" (Infinity by default, so "Minimizing" extends a segment along a
-   global geodesic); default Properties -> {} allows non-simple extensions. *)
+(* ExtendInfraGeodesic[g, seed, scale, kspec, count] continues a seed walk
+   under the geodesic rules at infra-scale `scale` -- the pointed finder's
+   growth seeded with a walk instead of a point: Find seeds with points and
+   owns the two-point sugar, Extend seeds with walks and owns "Direction".
+   kspec is the extension budget, read relative to the seed in added edges
+   (the deltaSpec precedent from FindInfraMonotoneDeformation), and is
+   mandatory-finite whenever the class is infinite.  "Direction" ->
+   "Forward" grows the tail, "Backward" the head (the walk reversed, grown
+   at its tail, reversed back), "BothSides" (default) at most one edge per
+   side per step, a side freezing when no admissible step remains; the
+   joined two-sided step is re-checked against the monotone whole-walk
+   constraints its sides cannot see alone.  Stopping conditions carry the
+   finder's grammar and replay over the seed -- the extension continues the
+   seed's own event history, so a deadline may already sit inside the seed
+   and the seed comes back unextended; a two-ended walk has no single tip
+   for the event clock, so "StoppingCondition" requires "Forward" or
+   "Backward". *)
 
-ExtendInfraWalk::badproperty  = "Property `1` is not supported by ExtendInfraWalk; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window.";
-ExtendInfraWalk::badmethod    = "Method `1` is not supported by ExtendInfraWalk.";
-ExtendInfraWalk::baddirection = "Direction `1` is not supported by ExtendInfraWalk.";
+ExtendInfraGeodesic::badproperty  = "Property `1` is not supported by ExtendInfraGeodesic; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window.";
+ExtendInfraGeodesic::badmethod    = "Method `1` is not supported by ExtendInfraGeodesic.";
+ExtendInfraGeodesic::baddirection = "Direction `1` is not supported by ExtendInfraGeodesic.";
+ExtendInfraGeodesic::badevent     = "Stopping condition `1` is not supported; entries are event or event -> \"Stop\" | {\"Stop\", \"Delay\" -> k, \"Count\" -> c}, with event a singularity name (\"Crossing\", \"Tangency\", \"TriplePoint\", \"Cusp\"), a constraint rule, or a predicate on the walk so far.";
+ExtendInfraGeodesic::deadevent    = "the event `1` can never fire under the Properties constraints; the walk runs to its budget.";
+ExtendInfraGeodesic::eventsided   = "stopping conditions read the walk at a single growing tip; extend with \"Direction\" -> \"Forward\" or \"Backward\".";
+ExtendInfraGeodesic::unbounded    = "The extension class at scale `1` is infinite without a length bound: give a finite kspec, add \"Simple\" or \"Generic\", or ask \"Minimizing\" at scale Infinity.";
+ExtendInfraGeodesic::shortfall    = "\"RandomGreedy\" drew `1` distinct extensions of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
-Options[ ExtendInfraWalk ] = {
-  Properties   -> { },
-  Method       -> "Exhaustive",
-  "InfraScale" -> Infinity,
-  "Length"     -> Automatic,
-  "Direction"  -> "BothSides"
+Options[ ExtendInfraGeodesic ] = {
+  Properties          -> { "Minimizing" },
+  "StoppingCondition" -> { },
+  Method              -> Automatic,
+  "Direction"         -> "BothSides"
 };
 
-ExtendInfraWalk[ graph_Graph, path_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
+ExtendInfraGeodesic[ graph_Graph, seed_,
+    scale : ( _Integer | Infinity ),
+    kspec : ( _Integer | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
   spreadFind[ InfraWalk, count,
-    walk0 |-> If[ Length[ walk0 ] < 1, { walk0 },
+    walk0 |-> If[ walk0 === { } || ! AllTrue[ walk0, VertexQ[ graph, # ] & ], { },
       Catch @ With[ {
-          properties = OptionValue[ ExtendInfraWalk, { opts }, Properties ],
-          methodSpec = OptionValue[ ExtendInfraWalk, { opts }, Method ] /. Automatic -> "Exhaustive",
-          scale      = OptionValue[ ExtendInfraWalk, { opts }, "InfraScale" ],
-          direction  = OptionValue[ ExtendInfraWalk, { opts }, "Direction" ],
-          length     = OptionValue[ ExtendInfraWalk, { opts }, "Length" ] },
-        { methodHead = methodName @ methodSpec,
-          pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-        If[ methodHead =!= "Exhaustive",
-          Message[ ExtendInfraWalk::badmethod, methodSpec ]; Throw[ $Failed ] ];
-        With[ { candidateFn = windowCandidateFn[ graph, scale, properties, ExtendInfraWalk ],
-                (* the per-step Cartesian of a two-sided step can violate a
-                   whole-walk constraint each side admits alone; filter the
-                   joined walk on its monotone conditions *)
-                stepFilter  = Which[
-                  MemberQ[ properties, "Simple" ], DuplicateFreeQ,
-                  MemberQ[ properties, "Generic" ],
-                    w |-> Max[ Counts @ w ] <= 2 &&
-                      DuplicateFreeQ[ Sort /@ Partition[ w, 2, 1 ] ],
-                  True, True & ] },
-          Switch[ direction,
-            "Forward",   extendOneSide[ graph, walk0, candidateFn, length, pruning ],
-            "Backward",  Reverse /@ extendOneSide[ graph, Reverse @ walk0,
-                           candidateFn, length, pruning ],
-            "BothSides", extendBothSidesSymmetric[ graph, walk0, candidateFn,
-                           length, pruning, stepFilter ],
-            _, Message[ ExtendInfraWalk::baddirection, direction ]; Throw[ $Failed ]
-          ]
-        ]
-      ]
-    ], path ]
+          rules  = OptionValue[ ExtendInfraGeodesic, { opts }, Properties ],
+          events = parseStoppingEvents[
+            OptionValue[ ExtendInfraGeodesic, { opts }, "StoppingCondition" ], ExtendInfraGeodesic ],
+          direction  = OptionValue[ ExtendInfraGeodesic, { opts }, "Direction" ],
+          methodSpec = resolveMethod[ OptionValue[ ExtendInfraGeodesic, { opts }, Method ], count ],
+          absSpec = Replace[ kspec, {
+            { lo_, hi_ } :> { lo, hi } + Length[ walk0 ] - 1,
+            { k_ }       :> { k + Length[ walk0 ] - 1 },
+            k_Integer    :> k + Length[ walk0 ] - 1 } ] },
+        { methodHead  = methodName @ methodSpec,
+          pruning     = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
+          kmax        = Replace[ absSpec, { { _, hi_ } :> hi, { k_ } :> k } ],
+          lengthQ     = walkLengthAdmissibleQ[ absSpec ],
+          candidateFn = windowCandidateFn[ graph, scale, rules, ExtendInfraGeodesic ],
+          deadlineFn  = stoppingDeadlineFn[ graph, scale, events ],
+          (* the per-step Cartesian of a two-sided step can violate a
+             whole-walk constraint each side admits alone; re-check the
+             joined walk on the conditions monotone under extension --
+             "Simple", "Generic", and whole-walk "Minimizing" (a walk is a
+             geodesic iff every sub-walk is, so a failed joined check never
+             heals) *)
+          stepChecks = Join[
+            If[ MemberQ[ rules, "Simple" ], { DuplicateFreeQ }, { } ],
+            If[ MemberQ[ rules, "Generic" ],
+              { w |-> Max[ Counts @ w ] <= 2 &&
+                  DuplicateFreeQ[ Sort /@ Partition[ w, 2, 1 ] ] }, { } ],
+            If[ scale === Infinity && MemberQ[ rules, "Minimizing" ],
+              { w |-> GraphDistance[ graph, First @ w, Last @ w ] == Length[ w ] - 1 }, { } ] ] },
+        { stepFilter = If[ stepChecks === { }, True &,
+            w |-> AllTrue[ stepChecks, #[ w ] & ] ] },
+        If[ events =!= { } && direction === "BothSides",
+          Message[ ExtendInfraGeodesic::eventsided ]; Throw[ $Failed ] ];
+        warnDeadEvents[ events, rules, scale, ExtendInfraGeodesic ];
+        If[ kmax === Infinity && ! MemberQ[ rules, "Simple" | "Generic" ] &&
+            ! ( scale === Infinity && MemberQ[ rules, "Minimizing" ] ),
+          Message[ ExtendInfraGeodesic::unbounded, scale ]; Throw[ $Failed ] ];
+        If[ ! MatchQ[ methodHead, "Exhaustive" | "Greedy" | "RandomGreedy" ],
+          Message[ ExtendInfraGeodesic::badmethod, methodSpec ]; Throw[ $Failed ] ];
+        Switch[ direction,
+          "Forward",
+            Switch[ methodHead,
+              "Exhaustive",
+                pointedFrontierSweep[ graph, walk0, candidateFn, lengthQ, deadlineFn, kmax,
+                  pruning, countLimit @ count ],
+              "Greedy",
+                pointedGreedySweep[ graph, walk0, candidateFn, lengthQ, deadlineFn, kmax,
+                  count ],
+              "RandomGreedy",
+                randomDraws[
+                  { } |-> pointedGreedySweep[ graph, walk0, candidateFn, lengthQ, deadlineFn,
+                    kmax, 1, randomBranch ],
+                  count, ExtendInfraGeodesic ] ],
+          "Backward",
+            Reverse /@ Switch[ methodHead,
+              "Exhaustive",
+                pointedFrontierSweep[ graph, Reverse @ walk0, candidateFn, lengthQ,
+                  deadlineFn, kmax, pruning, countLimit @ count ],
+              "Greedy",
+                pointedGreedySweep[ graph, Reverse @ walk0, candidateFn, lengthQ, deadlineFn,
+                  kmax, count ],
+              "RandomGreedy",
+                randomDraws[
+                  { } |-> pointedGreedySweep[ graph, Reverse @ walk0, candidateFn, lengthQ,
+                    deadlineFn, kmax, 1, randomBranch ],
+                  count, ExtendInfraGeodesic ] ],
+          "BothSides",
+            Switch[ methodHead,
+              "Exhaustive",
+                extendBothFrontierSweep[ graph, walk0, candidateFn, lengthQ, kmax, pruning,
+                  countLimit @ count, stepFilter ],
+              "Greedy",
+                extendBothGreedySweep[ graph, walk0, candidateFn, lengthQ, kmax, count,
+                  Identity, stepFilter ],
+              "RandomGreedy",
+                randomDraws[
+                  { } |-> extendBothGreedySweep[ graph, walk0, candidateFn, lengthQ, kmax, 1,
+                    randomBranch, stepFilter ],
+                  count, ExtendInfraGeodesic ] ],
+          _, Message[ ExtendInfraGeodesic::baddirection, direction ]; Throw[ $Failed ]
+        ] ] ], seed ]
 
 
-(* One-side frontier BFS over walk space.  Walks with no admissible next
-   vertex freeze; walks at step budget exit alive. *)
+(* ===================== Two-sided growth engines ===================== *)
 
-extendOneSide[ graph_Graph, seed_List, candidateFn_, length_, pruning_ ] :=
-  Module[ { live = { seed }, dead = { }, steps = 0,
-            maxSteps = length /. Automatic -> Infinity },
-    While[ live =!= { } && steps < maxSteps,
-      With[ { pairs = ( p |-> { p, candidateFn[ graph, p ] } ) /@ live },
-        dead = Join[ dead, Cases[ pairs, { p_, { } } :> p ] ];
-        live = applyPruning[
-          Flatten[ Cases[ pairs,
-            { p_, nexts : { __ } } :> ( Append[ p, # ] & /@ nexts ) ], 1 ],
-          pruning ]
-      ];
-      steps++
+(* Two-sided siblings of the pointed engines: each step grows the walk by at
+   most one edge per side (stepBothSides), a side freezing when its
+   candidateFn returns { }; joined steps beyond the budget or failing
+   stepFilter are cut, and a walk with no surviving step is emitted.  The
+   BFS honours "Pruning" and its early count stop is exact (emissions pass
+   acceptQ before they count); the DFS backtracks (branch = Identity, exact
+   for a finite count) or follows one uniform joined step per node (branch =
+   randomBranch, one trajectory, via randomDraws). *)
+
+extendBothFrontierSweep[ graph_Graph, seed_List, candidateFn_, acceptQ_, kmax_,
+    prune_, count_, stepFilter_ ] :=
+  Module[ { frontier = { seed }, completed = { }, moves },
+    While[ frontier =!= { } && Length[ completed ] < count,
+      moves = ( walk |-> { walk,
+          If[ Length[ walk ] - 1 >= kmax, { },
+            Select[ stepBothSides[ graph, walk, candidateFn, Identity ],
+              w |-> Length[ w ] - 1 <= kmax && stepFilter[ w ] ] ] } ) /@ frontier;
+      completed = Join[ completed,
+        Select[ Cases[ moves, { w_, { } } :> w ], acceptQ ] ];
+      frontier = applyPruning[
+        DeleteDuplicates @ Flatten[ Cases[ moves, { _, nexts : { __ } } :> nexts ], 1 ],
+        prune ]
     ];
-    DeleteDuplicates @ Join[ dead, live ]
+    Take[ completed, UpTo[ count ] ]
   ]
 
 
-(* Per-step symmetric BFS: each outer step grows the walk by at most one
-   vertex on each side.  A side freezes when its candidateFn returns {}; the
-   other side keeps growing one edge per step until it freezes too.  "Length"
-   counts outer steps.  stepFilter re-checks each joined two-sided step
-   against the whole-walk constraints ("Simple", "Generic"). *)
+(* the closures are held in Module locals, never inlined into descend's RHS:
+   see the note on greedyFrontierSweep (Tools.wl) *)
 
-extendBothSidesSymmetric[ graph_Graph, seed_List, candidateFn_, length_, pruning_, stepFilter_ ] :=
-  Module[ { live = { seed }, dead = { }, steps = 0,
-            maxSteps = length /. Automatic -> Infinity },
-    While[ live =!= { } && steps < maxSteps,
-      With[ { pairs = ( w |-> { w, stepBothSides[ graph, w, candidateFn ] } ) /@ live },
-        dead = Join[ dead, Cases[ pairs, { w_, { } } :> w ] ];
-        live = Select[
-          applyPruning[
-            Flatten[ Cases[ pairs, { _, nexts : { __ } } :> nexts ], 1 ],
-            pruning ],
-          stepFilter ]
-      ];
-      steps++
-    ];
-    DeleteDuplicates @ Join[ dead, live ]
+extendBothGreedySweep[ graph_Graph, seed_List, candidateFn_, acceptQ_, kmax_,
+    count_, branch_, stepFilter_ ] :=
+  Module[ { cap = countLimit @ count, acc = { }, descend, emit,
+            cands = candidateFn, keepQ = acceptQ, filterQ = stepFilter, pick = branch },
+    emit[ walk_ ] := If[ keepQ @ walk,
+      AppendTo[ acc, walk ];
+      If[ Length @ acc >= cap, Throw[ acc, extendBothGreedySweep ] ] ];
+    descend[ walk_ ] :=
+      If[ Length[ walk ] - 1 >= kmax,
+        emit[ walk ],
+        With[ { nexts = Select[ stepBothSides[ graph, walk, cands, pick ],
+            w |-> Length[ w ] - 1 <= kmax && filterQ[ w ] ] },
+          If[ nexts === { }, emit[ walk ], Scan[ descend, nexts ] ] ] ];
+    Catch[ descend[ seed ]; acc, extendBothGreedySweep ]
   ]
 
 
-stepBothSides[ graph_Graph, walk_List, candidateFn_ ] :=
-  With[ { backCands = candidateFn[ graph, Reverse @ walk ],
-          fwdCands  = candidateFn[ graph, walk ] },
+stepBothSides[ graph_Graph, walk_List, candidateFn_, branch_ ] :=
+  With[ { backCands = branch @ candidateFn[ graph, Reverse @ walk ],
+          fwdCands  = branch @ candidateFn[ graph, walk ] },
     Which[
       backCands === { } && fwdCands === { }, { },
       backCands === { },                     Append[ walk, # ] & /@ fwdCands,

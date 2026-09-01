@@ -148,7 +148,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
 
 (* Tarski axiom A4: find x with B(a, b, x) and d(b, x) == d(c, d).  The only
    surviving signature -- the 2-arg form (extend segment to maximal line) is
-   subsumed by FindInfraLine[g, seg] and ExtendInfraWalk[g, seg, All, ...]. *)
+   subsumed by FindInfraLine[g, seg] and ExtendInfraGeodesic[g, seg, Infinity, ...]. *)
 
 ExtendInfraSegment[ graph_Graph, a_, b_, c_, d_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=

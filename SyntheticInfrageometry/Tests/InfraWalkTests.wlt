@@ -455,138 +455,236 @@ VerificationTest[
 ]
 
 
-(* ===================== ExtendInfraWalk ===================== *)
+(* ===================== ExtendInfraGeodesic ===================== *)
 
 VerificationTest[
-  ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
-    "Direction" -> "Forward", "Length" -> 1,
-    Properties -> {"Simple", "Minimizing"} ],
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3, 4 }, Infinity, 1, 1,
+    "Direction" -> "Forward", Properties -> { "Simple", "Minimizing" } ],
   InfraWalk[ { { 3, 4, 5 } } ],
-  TestID -> "ExtendInfraWalk-PathGraph-forward"
+  TestID -> "ExtendInfraGeodesic-PathGraph-forward"
 ]
 
 VerificationTest[
-  ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
-    "Direction" -> "Backward", "Length" -> 2,
-    Properties -> {"Simple", "Minimizing"} ],
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3, 4 }, Infinity, 2, 1,
+    "Direction" -> "Backward", Properties -> { "Simple", "Minimizing" } ],
   InfraWalk[ { { 1, 2, 3, 4 } } ],
-  TestID -> "ExtendInfraWalk-PathGraph-backward"
+  TestID -> "ExtendInfraGeodesic-PathGraph-backward"
 ]
 
 VerificationTest[
-  Sort @ ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 3 }, All,
-      Properties -> {"Simple", "Minimizing"} ][ "Realizations" ],
+  Sort @ ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3 }, Infinity, Infinity, All,
+      Properties -> { "Simple", "Minimizing" } ][ "Realizations" ],
   Sort[ { { 1, 2, 3, 4, 5 }, { 5, 4, 3, 2, 1 } } ],
-  TestID -> "ExtendInfraWalk-PathGraph-both-automatic"
+  TestID -> "ExtendInfraGeodesic-PathGraph-both-unbudgeted"
 ]
 
 VerificationTest[
-  Sort @ ExtendInfraWalk[ CycleGraph[ 6 ], FindInfraSegment[ CycleGraph[ 6 ], 1, 4 , All], All,
-      "Length" -> 0, Properties -> {"Simple", "Minimizing"} ][ "Realizations" ],
+  Sort @ ExtendInfraGeodesic[ CycleGraph[ 6 ], FindInfraSegment[ CycleGraph[ 6 ], 1, 4, All ],
+      Infinity, 0, All, Properties -> { "Simple", "Minimizing" } ][ "Realizations" ],
   Sort[ { { 1, 2, 3, 4 }, { 1, 6, 5, 4 } } ],
-  TestID -> "ExtendInfraWalk-DAG-segment-spread"
+  TestID -> "ExtendInfraGeodesic-DAG-segment-spread"
 ]
 
 VerificationTest[
-  Sort @ ExtendInfraWalk[ CycleGraph[ 6 ], { 1 }, All,
-      "Direction" -> "Forward", "Length" -> 2,
-      Properties -> {"Simple", "Straightest"} ][ "Realizations" ],
+  Sort @ ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1 }, Infinity, 2, All,
+      "Direction" -> "Forward", Properties -> { "Simple", "Straightest" } ][ "Realizations" ],
   Sort[ { { 1, 2, 3 }, { 1, 6, 5 } } ],
-  TestID -> "ExtendInfraWalk-CycleGraph-LongestPath-sum"
+  TestID -> "ExtendInfraGeodesic-CycleGraph-Straightest-forward"
 ]
 
 VerificationTest[
   AllTrue[
-    ExtendInfraWalk[ GridGraph[ { 3, 3 } ], { 1 }, All,
-      "Direction" -> "Forward", "Length" -> 3, Properties -> { "Simple" } ][ "Realizations" ],
+    ExtendInfraGeodesic[ GridGraph[ { 3, 3 } ], { 1 }, Infinity, 3, All,
+      "Direction" -> "Forward", Properties -> { "Simple" } ][ "Realizations" ],
     p |-> InfraWalkQ[ GridGraph[ { 3, 3 } ], p ] ],
   True,
-  TestID -> "ExtendInfraWalk-all-extensions-pass-InfraWalkQ"
+  TestID -> "ExtendInfraGeodesic-all-extensions-pass-InfraWalkQ"
 ]
 
 VerificationTest[
   MatchQ[
-    ExtendInfraWalk[ GridGraph[ { 3, 3 } ], { 1 }, All,
-      "Direction" -> "BothSides", "Length" -> 2 ],
+    ExtendInfraGeodesic[ GridGraph[ { 3, 3 } ], { 1 }, Infinity, 2, All ],
     InfraWalk[ { __List } ] ],
   True,
-  TestID -> "ExtendInfraWalk-output-shape"
+  TestID -> "ExtendInfraGeodesic-output-shape"
 ]
 
 VerificationTest[
   Length @
-    ExtendInfraWalk[ PathGraph[ Range[ 7 ] ], { 4, 5 }, 1,
-      "Direction" -> "Forward", "Length" -> 2,
-      Properties -> {"Simple", "Minimizing"} ][ "Realizations" ][[ 1 ]],
+    ExtendInfraGeodesic[ PathGraph[ Range[ 7 ] ], { 4, 5 }, Infinity, 2, 1,
+      "Direction" -> "Forward",
+      Properties -> { "Simple", "Minimizing" } ][ "Realizations" ][[ 1 ]],
   4,
-  TestID -> "ExtendInfraWalk-Length-truncation"
+  TestID -> "ExtendInfraGeodesic-budget-truncation"
 ]
 
-(* Multi-realisation input: each realisation is extended *)
+(* Multi-realisation input: each realisation is extended, each with its own
+   relative budget *)
 VerificationTest[
-  Sort @ ExtendInfraWalk[ PathGraph[ Range[ 7 ] ],
-      InfraWalk[ { { 3 }, { 5 } } ], All,
-      "Direction" -> "Forward", "Length" -> 1,
-      Properties -> {"Simple", "Minimizing"} ][ "Realizations" ],
+  Sort @ ExtendInfraGeodesic[ PathGraph[ Range[ 7 ] ],
+      InfraWalk[ { { 3 }, { 5 } } ], Infinity, 1, All,
+      "Direction" -> "Forward", Properties -> { "Simple", "Minimizing" } ][ "Realizations" ],
   Sort[ { { 3, 2 }, { 3, 4 }, { 5, 4 }, { 5, 6 } } ],
-  TestID -> "ExtendInfraWalk-multi-realisation"
+  TestID -> "ExtendInfraGeodesic-multi-realisation"
 ]
 
 (* Dead-end freeze: forward extension of the right endpoint freezes *)
 VerificationTest[
-  ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 4, 5 }, 1,
-    "Direction" -> "Forward", "Length" -> 5,
-    Properties -> {"Simple", "Minimizing"} ],
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 4, 5 }, Infinity, 5, 1,
+    "Direction" -> "Forward", Properties -> { "Simple", "Minimizing" } ],
   InfraWalk[ { { 4, 5 } } ],
-  TestID -> "ExtendInfraWalk-dead-end-freeze"
+  TestID -> "ExtendInfraGeodesic-dead-end-freeze"
 ]
 
 VerificationTest[
-  ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 1,
-    Properties -> {"Simple", "Minimizing"} ],
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 2, 3 }, Infinity, Infinity, 1,
+    Properties -> { "Simple", "Minimizing" } ],
   InfraWalk[ { { 1, 2, 3, 4, 5 } } ],
-  TestID -> "ExtendInfraWalk-BothSides-extends-segment-to-line"
+  TestID -> "ExtendInfraGeodesic-BothSides-extends-segment-to-line"
 ]
 
-(* Per-step symmetric stepping: from oriented seed {3, 4} on PathGraph[5]
-   with Length -> 1, "BothSides" grows by exactly +1 edge on each side:
-   {2, 3, 4, 5}.  The old asymmetric Cartesian would also have produced
-   length-1 single-side walks ({3, 4, 5}, {2, 3, 4}). *)
+(* the budget counts edges added to the seed: a full two-sided step adds
+   two, so kspec 2 buys one symmetric step *)
 VerificationTest[
-  ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 3, 4 }, 1,
-    "Length" -> 1, "Direction" -> "BothSides",
-    Properties -> {"Simple", "Minimizing"} ],
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3, 4 }, Infinity, 2, 1,
+    Properties -> { "Simple", "Minimizing" } ],
   InfraWalk[ { { 2, 3, 4, 5 } } ],
-  TestID -> "ExtendInfraWalk-BothSides-symmetric-one-step"
+  TestID -> "ExtendInfraGeodesic-BothSides-symmetric-one-step"
 ]
 
-(* Asymmetric tail: from {4, 5} on PathGraph[5] with "BothSides", forward
-   freezes immediately (5 has no Simple+ShortestPath neighbor past it);
-   backward keeps growing one edge per step until it reaches vertex 1.
-   Outer-step budget Length -> 5 covers the full extension. *)
+(* an odd budget with both sides live cannot be spent symmetrically: the
+   seed comes back unextended rather than overshooting *)
 VerificationTest[
-  ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 4, 5 }, 1,
-    "Length" -> 5, "Direction" -> "BothSides",
-    Properties -> {"Simple", "Minimizing"} ],
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3, 4 }, Infinity, 1, 1,
+    Properties -> { "Simple", "Minimizing" } ],
+  InfraWalk[ { { 3, 4 } } ],
+  TestID -> "ExtendInfraGeodesic-BothSides-odd-budget-freezes"
+]
+
+(* Asymmetric tail: forward freezes immediately, backward keeps growing one
+   edge per step until it reaches vertex 1 *)
+VerificationTest[
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 4, 5 }, Infinity, 5, 1,
+    Properties -> { "Simple", "Minimizing" } ],
   InfraWalk[ { { 1, 2, 3, 4, 5 } } ],
-  TestID -> "ExtendInfraWalk-BothSides-asymmetric-tail"
+  TestID -> "ExtendInfraGeodesic-BothSides-asymmetric-tail"
+]
+
+(* the two-sided Cartesian is re-checked as a whole geodesic: without the
+   joined "Minimizing" filter C6 emits {5, 6, 1, 2, 3}, with d(5, 3) = 2 *)
+VerificationTest[
+  AllTrue[
+    ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1 }, Infinity, Infinity, All ][ "Realizations" ],
+    w |-> InfraGeodesicQ[ CycleGraph[ 6 ], w ] ],
+  True,
+  TestID -> "ExtendInfraGeodesic-BothSides-joined-Minimizing-filter"
+]
+
+(* exact relative kspec: the branch frozen after one added edge fails {2} *)
+VerificationTest[
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 4 }, Infinity, { 2 }, All,
+    "Direction" -> "Forward", Properties -> { "Simple", "Minimizing" } ],
+  InfraWalk[ { { 4, 3, 2 } } ],
+  TestID -> "ExtendInfraGeodesic-exact-kspec-drops-short-freeze"
+]
+
+VerificationTest[
+  ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2 }, Infinity, 20, 1,
+    "Direction" -> "Forward", Properties -> { "Immersed" },
+    "StoppingCondition" -> "Crossing" ],
+  InfraWalk[ { { 1, 2, 3, 4, 5, 6, 1 } } ],
+  TestID -> "ExtendInfraGeodesic-stopping-condition-forward"
+]
+
+VerificationTest[
+  ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2 }, Infinity, 20, 1,
+    "Direction" -> "Forward", Properties -> { "Immersed" },
+    "StoppingCondition" -> ( "Crossing" -> { "Stop", "Delay" -> 2 } ) ],
+  InfraWalk[ { { 1, 2, 3, 4, 5, 6, 1, 2, 3 } } ],
+  TestID -> "ExtendInfraGeodesic-stopping-condition-delay"
+]
+
+(* events replay over the seed: a deadline that already passed inside the
+   seed returns it unextended *)
+VerificationTest[
+  ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2, 3, 4, 5, 6, 1 }, Infinity, 10, 1,
+    "Direction" -> "Forward", Properties -> { "Immersed" },
+    "StoppingCondition" -> "Crossing" ],
+  InfraWalk[ { { 1, 2, 3, 4, 5, 6, 1 } } ],
+  TestID -> "ExtendInfraGeodesic-events-replay-over-seed"
+]
+
+(* a two-ended walk has no single tip for the event clock *)
+VerificationTest[
+  ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2 }, Infinity, 10, 1,
+    Properties -> { "Immersed" }, "StoppingCondition" -> "Crossing" ],
+  $Failed,
+  { ExtendInfraGeodesic::eventsided },
+  TestID -> "ExtendInfraGeodesic-eventsided"
+]
+
+VerificationTest[
+  Sort @ ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3 }, Infinity, 5, All,
+      "Direction" -> "Forward", Properties -> { "Simple" },
+      "StoppingCondition" -> "Crossing" ][ "Realizations" ],
+  Sort[ { { 3, 2, 1 }, { 3, 4, 5 } } ],
+  { ExtendInfraGeodesic::deadevent },
+  TestID -> "ExtendInfraGeodesic-deadevent-warns"
+]
+
+(* "Minimizing" at a finite scale does not bound the class *)
+VerificationTest[
+  ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1 }, 2 ],
+  $Failed,
+  { ExtendInfraGeodesic::unbounded },
+  TestID -> "ExtendInfraGeodesic-unbounded-finite-scale"
 ]
 
 (* Unknown direction -> $Failed with ::baddirection *)
 VerificationTest[
-  ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 3 }, 1,
-    "Direction" -> "Sideways", Properties -> {"Simple"} ],
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3 }, Infinity, 1, 1,
+    "Direction" -> "Sideways", Properties -> { "Simple" } ],
   $Failed,
-  {ExtendInfraWalk::baddirection},
-  TestID -> "ExtendInfraWalk-baddirection"
+  { ExtendInfraGeodesic::baddirection },
+  TestID -> "ExtendInfraGeodesic-baddirection"
 ]
 
 (* count > available: $Failed *)
 VerificationTest[
-  ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 3 }, 99,
-    Properties -> {"Simple", "Minimizing"} ],
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3 }, Infinity, Infinity, 99,
+    Properties -> { "Simple", "Minimizing" } ],
   $Failed,
-  TestID -> "ExtendInfraWalk-strict-shortfall-Failed"
+  TestID -> "ExtendInfraGeodesic-strict-shortfall-Failed"
+]
+
+(* the pointed finder and the seed-{p1} extender are the same computation *)
+VerificationTest[
+  ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1 }, Infinity, 4, All,
+    "Direction" -> "Forward", Properties -> { "Generic" } ],
+  FindInfraWalk[ CycleGraph[ 6 ], 1, 4, All ],
+  TestID -> "ExtendInfraGeodesic-seed-point-equals-pointed-finder"
+]
+
+VerificationTest[
+  BlockRandom[
+    With[ { r = ExtendInfraGeodesic[ GridGraph[ { 3, 3 } ], { 1 }, Infinity, 4, 1,
+        "Direction" -> "Forward", Properties -> { "Simple" },
+        Method -> "RandomGreedy" ] },
+      MatchQ[ r, InfraWalk[ { _List } ] ] && Length[ r[ "Realizations" ][[ 1 ]] ] == 5 ],
+    RandomSeeding -> 7 ],
+  True,
+  TestID -> "ExtendInfraGeodesic-RandomGreedy-forward-trajectory"
+]
+
+VerificationTest[
+  BlockRandom[
+    MatchQ[
+      ExtendInfraGeodesic[ GridGraph[ { 3, 3 } ], { 5 }, Infinity, 4, 1,
+        Properties -> { "Simple" }, Method -> "RandomGreedy" ],
+      InfraWalk[ { _List } ] ],
+    RandomSeeding -> 7 ],
+  True,
+  TestID -> "ExtendInfraGeodesic-RandomGreedy-BothSides-trajectory"
 ]
 
 

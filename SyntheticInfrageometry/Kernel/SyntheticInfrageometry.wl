@@ -34,7 +34,7 @@ PackageExport[InfraGeodesicQ]
 PackageExport[WalkSingularities]
 PackageExport[InfraImmersedQ]
 PackageExport[InfraGenericQ]
-PackageExport[ExtendInfraWalk]
+PackageExport[ExtendInfraGeodesic]
 PackageExport[ConcatenateInfraWalk]
 
 (* InfraLoop.wl *)
