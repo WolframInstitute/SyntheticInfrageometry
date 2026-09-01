@@ -53,7 +53,7 @@ The default form is the interval DAG. Every geodesic is a directed path through 
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   FindInfraSegment[g, a, b]["Graph"]
@@ -64,7 +64,7 @@ The DAG is small where the enumeration is large.
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   {seg = FindInfraSegment[g, a, b]},
@@ -76,7 +76,7 @@ Indexing by position gives a measured point. Position 1 is the start and carries
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   {seg = FindInfraSegment[g, a, b, All]},
@@ -89,7 +89,7 @@ The vertices of the DAG are the metric interval between the endpoints.
 
 ```wl
 With[
-  {g = InfraSubstrate["Hexagonal", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["HexagonalPatch", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   Sort @ FindInfraSegment[g, a, b]["Vertices"] === Sort @ MetricInterval[g, a, b]]
@@ -99,7 +99,7 @@ Every realisation has the same length: the graph distance.
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   Union @ FindInfraSegment[g, a, b, All]["Length"] === {GraphDistance[g, a, b]}]

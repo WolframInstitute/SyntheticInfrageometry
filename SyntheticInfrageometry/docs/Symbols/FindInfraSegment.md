@@ -55,7 +55,7 @@ Row[Table[
          VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
          ImageSize -> 250],
        Text[name <> ": " <> ToString[Length @ First @ segs] <> " geodesics"]]],
-   {name, {"Plane", "Square", "Hexagonal"}}]]
+   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]]
 ```
 
 The intensity in that picture is the multiplicity: an edge lying on many geodesics is drawn more strongly than one lying on few, so the bundle shows where the segment is concentrated.
@@ -64,7 +64,7 @@ The default form is the interval DAG, not a list of paths.
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Large", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Large", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   Head @ First @ FindInfraSegment[g, a, b]]
@@ -76,7 +76,7 @@ The vertices covered by the geodesic bundle are exactly the metric interval betw
 
 ```wl
 With[
-  {g = InfraSubstrate["Hexagonal", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["HexagonalPatch", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   Sort @ Union @ Flatten @ First @ FindInfraSegment[g, a, b, All] === Sort @ MetricInterval[g, a, b]]

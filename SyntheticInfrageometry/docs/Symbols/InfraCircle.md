@@ -40,7 +40,7 @@ The circle of a square grid at band `{4, 5}`. Its length equals its vertex count
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {circ = FindInfraCircle[g, c, {4, 5}]},
   <|"realisations" -> Length @ First @ circ,
@@ -52,7 +52,7 @@ Drawn on the substrate, with the centre marked.
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "Gray", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "Gray", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   InfraSceneHighlight[g,
     {FindInfraCircle[g, c, {4, 5}] -> $InfraCircleColor, InfraPoint[c] -> $InfraPointColor},
@@ -67,7 +67,7 @@ A circle lies inside its shell.
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   SubsetQ[First @ First @ FindInfraShell[g, c, {4, 5}], First @ First @ FindInfraCircle[g, c, {4, 5}]]]
 ```
@@ -76,7 +76,7 @@ Consecutive vertices are adjacent, and so are the last and the first.
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {cyc = First @ First @ FindInfraCircle[g, c, {4, 5}]},
   AllTrue[Partition[Append[cyc, First[cyc]], 2, 1], EdgeQ[g, UndirectedEdge @@ #] &]]

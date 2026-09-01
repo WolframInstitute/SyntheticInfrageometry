@@ -59,7 +59,7 @@ Two vertices at odd distance have no exact midpoint. The answer is a effective p
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   FindInfraMidpoint[g, a, b]]
@@ -69,7 +69,7 @@ The accessors read it apart. The support is a region; the entropy says how far f
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   {m = FindInfraMidpoint[g, a, b]},
@@ -81,7 +81,7 @@ The weights are what the picture shows.
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "Gray", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "Gray", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   InfraSceneHighlight[g,

@@ -37,7 +37,7 @@ Equidistance is symmetric in each pair and reflexive, so a segment is congruent 
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   {EquidistanceQ[g, a, b, a, b], EquidistanceQ[g, a, b, b, a]}]
@@ -51,14 +51,14 @@ Association @ Table[
      {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Length @ Union @ GraphDistance[g, c]],
-   {name, {"Plane", "Square", "Hexagonal"}}]
+   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]
 ```
 
 Every vertex of the perpendicular bisector is, by definition, equidistant from the two points it bisects.
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   AllTrue[First @ First @ FindInfraBisectingHyperplane[g, a, b], EquidistanceQ[g, a, #, b, #] &]]

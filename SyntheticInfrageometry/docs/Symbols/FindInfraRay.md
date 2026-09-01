@@ -42,7 +42,7 @@ Association @ Table[
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Length @ First @ FindInfraRay[g, a, b, All]],
-   {name, {"Plane", "Square", "Hexagonal"}}]
+   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]
 ```
 
 Three rays from the centre of each substrate. Each starts at the origin and runs to the far edge of the patch.
@@ -61,7 +61,7 @@ Row[Table[
          VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
          ImageSize -> 250],
        Text[name]]],
-   {name, {"Plane", "Square", "Hexagonal"}}]]
+   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]]
 ```
 
 ## Properties and Relations
@@ -70,7 +70,7 @@ Every ray begins at its origin, and its vertex sequence is a geodesic, so the di
 
 ```wl
 With[
-  {g = InfraSubstrate["Hexagonal", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["HexagonalPatch", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   {ray = First @ First @ FindInfraRay[g, a, b, 1]},

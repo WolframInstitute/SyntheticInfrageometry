@@ -57,7 +57,7 @@ One point is an atom; the calling triple gives a list of them.
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {FindInfraPoint[g], Length @ FindInfraPoint[g, All], VertexCount[g]}]
 ```
 
@@ -65,7 +65,7 @@ With[
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   <|"centre" -> FindInfraPoint[g, All, "From" -> "Center"],
     "periphery count" -> Length @ FindInfraPoint[g, All, "From" -> "Periphery"]|>]
 ```
@@ -74,7 +74,7 @@ Centre and periphery drawn together. The periphery of a patch is its rim.
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "Gray", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "Gray", "KeepCoordinates" -> True]},
   InfraSceneHighlight[g,
     {InfraSet @ FindInfraPoint[g, All, "From" -> "Periphery"] -> $InfraShellColor,
      InfraSet @ FindInfraPoint[g, All, "From" -> "Center"] -> $InfraPointColor},
@@ -87,7 +87,7 @@ A tuple of three mutually most-distant points comes back as three atoms.
 
 ```wl
 With[
-  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
   {t = FindInfraPoint[g, 3, "Distance" -> "Max"]},
   <|"count" -> Length[t], "vertices" -> (#["Vertex"] & /@ t)|>]
 ```
