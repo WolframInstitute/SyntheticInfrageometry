@@ -41,7 +41,7 @@ The bisector exists at even distance and is empty at odd — a parity obstructio
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Medium"]},
+  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {even = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   {odd = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
@@ -53,7 +53,7 @@ The bisector of two vertices at distance 6, drawn with its endpoints. It runs cl
 
 ```wl
 With[
-  {g = Graph[ExampleGraphData["Square", "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
+  {g = InfraSubstrate["Square", "Medium", "Gray", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   InfraSceneHighlight[g,
@@ -70,7 +70,7 @@ Every vertex of the bisector is equidistant from the two points, which is what [
 
 ```wl
 With[
-  {g = ExampleGraphData["Hexagonal", "Medium"]},
+  {g = InfraSubstrate["Hexagonal", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   AllTrue[First @ First @ FindInfraBisectingHyperplane[g, a, b], EquidistanceQ[g, a, #, b, #] &]]

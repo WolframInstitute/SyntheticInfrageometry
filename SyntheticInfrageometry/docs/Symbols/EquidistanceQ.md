@@ -37,7 +37,7 @@ Equidistance is symmetric in each pair and reflexive, so a segment is congruent 
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Medium"]},
+  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   {EquidistanceQ[g, a, b, a, b], EquidistanceQ[g, a, b, b, a]}]
@@ -48,7 +48,7 @@ The congruence classes are the distance classes, so their number is the diameter
 ```wl
 Association @ Table[
    name -> With[
-     {g = ExampleGraphData[name, "Medium"]},
+     {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Length @ Union @ GraphDistance[g, c]],
    {name, {"Plane", "Square", "Hexagonal"}}]
@@ -58,7 +58,7 @@ Every vertex of the perpendicular bisector is, by definition, equidistant from t
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Medium"]},
+  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   AllTrue[First @ First @ FindInfraBisectingHyperplane[g, a, b], EquidistanceQ[g, a, #, b, #] &]]

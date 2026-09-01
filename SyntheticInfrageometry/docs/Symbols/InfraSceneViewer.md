@@ -47,7 +47,7 @@ Build a scene and open the viewer on it. The result is a `Manipulate`.
 ```wl
 ClearAll[a, b, cA, cB, u];
 With[
-  {g = ExampleGraphData["Plane", "Medium"]},
+  {g = InfraSubstrate["Plane", "Medium", "KeepCoordinates" -> True]},
   {p1 = First @ GraphCenter[g]},
   {p2 = SelectFirst[VertexList[g], GraphDistance[g, p1, #] == 8 &]},
   {scene = InfraScene[{a, b, cA, cB, u},
@@ -64,7 +64,7 @@ The first three steps as stills: the two points, then the circle about the first
 ```wl
 ClearAll[a, b, cA];
 With[
-  {g = Graph[ExampleGraphData["Plane", "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
+  {g = InfraSubstrate["Plane", "Medium", "Gray", "KeepCoordinates" -> True]},
   {p1 = First @ GraphCenter[g]},
   {p2 = SelectFirst[VertexList[g], GraphDistance[g, p1, #] == 8 &]},
   Row[{

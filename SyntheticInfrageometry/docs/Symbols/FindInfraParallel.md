@@ -48,7 +48,7 @@ Through a point off a line, on three substrates.
 ```wl
 Association @ Table[
    name -> With[
-     {g = ExampleGraphData[name, "Small"]},
+     {g = InfraSubstrate[name, "Small", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      {far = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 4 &]},
      {line = First @ First @ FindInfraLine[g, c, far, 1]},
@@ -74,7 +74,7 @@ The distance from a maximal geodesic to a fixed line varies along it, which is w
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Small"]},
+  {g = InfraSubstrate["Square", "Small", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 4 &]},
   {line = First @ First @ FindInfraLine[g, c, far, 1]},

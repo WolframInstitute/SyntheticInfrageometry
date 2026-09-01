@@ -233,7 +233,7 @@ PackageExport[EnumerateGraphs]
 
 (* Graph generation was relocated to the Infrageometry paclet (graph-generation layer):
    the single TessellationGraph generator (regular maps by {p, q}, uniform/Archimedean maps
-   by vertex configuration, sized by n / {m, n} / a carrying group) plus PunchHole. Load it
+   by vertex configuration, sized by n / {m, n} / a carrying group). Load it
    separately via Needs["WolframInstitute`Infrageometry`"]. *)
 
 (* InfraScene.wl *)

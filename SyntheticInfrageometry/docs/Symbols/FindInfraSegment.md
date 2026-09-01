@@ -44,7 +44,7 @@ Every geodesic between two vertices at distance 6, on the discretized plane, the
 ```wl
 Row[Table[
    With[
-     {g = Graph[ExampleGraphData[name, "Large"], Sequence @@ AmbientGraphStyle["Gray"]]},
+     {g = InfraSubstrate[name, "Large", "Gray", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
      {segs = FindInfraSegment[g, a, b, All]},
@@ -64,7 +64,7 @@ The default form is the interval DAG, not a list of paths.
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Large"]},
+  {g = InfraSubstrate["Square", "Large", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   Head @ First @ FindInfraSegment[g, a, b]]
@@ -76,7 +76,7 @@ The vertices covered by the geodesic bundle are exactly the metric interval betw
 
 ```wl
 With[
-  {g = ExampleGraphData["Hexagonal", "Medium"]},
+  {g = InfraSubstrate["Hexagonal", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   Sort @ Union @ Flatten @ First @ FindInfraSegment[g, a, b, All] === Sort @ MetricInterval[g, a, b]]

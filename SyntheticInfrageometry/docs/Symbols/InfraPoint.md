@@ -48,7 +48,7 @@ A point finder returns atoms — one, or a list.
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Medium"]},
+  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
   {FindInfraPoint[g], FindInfraPoint[g, 3]}]
 ```
 
@@ -56,7 +56,7 @@ The accessor reads the vertex back out, and re-wrapping it is the identity.
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Medium"]},
+  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
   {p = FindInfraPoint[g]},
   {p["Vertex"], InfraPoint[p["Vertex"]] === p}]
 ```
@@ -65,7 +65,7 @@ An atom answers invariants with bare numbers; a set of points answers with one r
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Medium"]},
+  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {InfraPoint[c]["BallVolumes", g, {0, 3}],
    InfraSet[{c, First @ GraphPeriphery[g]}]["BallVolumes", g, {0, 3}]}]

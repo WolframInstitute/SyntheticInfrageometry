@@ -48,7 +48,7 @@ A mixed scene: the geodesic bundle, its endpoints, and its midpoints. Each head 
 
 ```wl
 With[
-  {g = Graph[ExampleGraphData["Square", "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
+  {g = InfraSubstrate["Square", "Medium", "Gray", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   InfraSceneHighlight[g,
@@ -65,7 +65,7 @@ The same bundle at three opacity settings. `None` draws every geodesic alike. A 
 ```wl
 Row[Table[
    With[
-     {g = Graph[ExampleGraphData["Square", "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
+     {g = InfraSubstrate["Square", "Medium", "Gray", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Labeled[

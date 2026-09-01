@@ -39,7 +39,7 @@ Ball volume against radius. Both lattices give exact polynomials, and the square
 ```wl
 Association @ Table[
    name -> With[
-     {g = ExampleGraphData[name, "Medium"]},
+     {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Table[First @ FindInfraBall[g, c, r]["Volume"], {r, 0, 5}]],
    {name, {"Plane", "Square", "Hexagonal"}}]
@@ -49,7 +49,7 @@ The square grid's volumes agree with $2r^2+2r+1$ exactly.
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Medium"]},
+  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   Table[First @ FindInfraBall[g, c, r]["Volume"], {r, 0, 5}] === Table[2 r^2 + 2 r + 1, {r, 0, 5}]]
 ```
@@ -59,7 +59,7 @@ The ball of radius 4 on each substrate. It is a diamond on the square grid, not 
 ```wl
 Row[Table[
    With[
-     {g = Graph[ExampleGraphData[name, "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
+     {g = InfraSubstrate[name, "Medium", "Gray", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Labeled[
        InfraSceneHighlight[g,

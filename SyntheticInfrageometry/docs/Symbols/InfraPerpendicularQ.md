@@ -43,7 +43,7 @@ A line and a perpendicular to it, produced by the construction. The default test
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Small"]},
+  {g = InfraSubstrate["Square", "Small", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 4 &]},
   {l1 = First @ First @ FindInfraLine[g, c, far, 1]},
@@ -58,7 +58,7 @@ The four methods on the same pair of lines. They do not agree, and are not meant
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Small"]},
+  {g = InfraSubstrate["Square", "Small", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 4 &]},
   {l1 = First @ First @ FindInfraLine[g, c, far, 1]},
@@ -75,7 +75,7 @@ Lines that do not meet are never perpendicular, whatever the method.
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Small"]},
+  {g = InfraSubstrate["Square", "Small", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 4 &]},
   {l1 = First @ First @ FindInfraLine[g, c, far, 1]},

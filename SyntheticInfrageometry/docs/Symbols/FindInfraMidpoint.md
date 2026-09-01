@@ -44,7 +44,7 @@ The midpoint of two vertices at distance 6, on the discretized plane, the square
 ```wl
 Row[Table[
    With[
-     {g = Graph[ExampleGraphData[name, "Large"], Sequence @@ AmbientGraphStyle["Gray"]]},
+     {g = InfraSubstrate[name, "Large", "Gray", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
      {m = FindInfraMidpoint[g, a, b]},
@@ -64,7 +64,7 @@ On the square grid the geodesics between the two vertices are centred on three d
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Large"]},
+  {g = InfraSubstrate["Square", "Large", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   Normal @ InfraMeasure @ FindInfraMidpoint[g, a, b]]
@@ -74,7 +74,7 @@ At odd distance no vertex sits halfway, and the central pair of each geodesic is
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Large"]},
+  {g = InfraSubstrate["Square", "Large", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   {GraphDistance[g, a, b], FindInfraMidpoint[g, a, b]["Realizations"]}]
@@ -86,7 +86,7 @@ The midpoint lies between its endpoints, so [BetweennessQ]() holds for every can
 
 ```wl
 With[
-  {g = ExampleGraphData["Hexagonal", "Large"]},
+  {g = InfraSubstrate["Hexagonal", "Large", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   AllTrue[FindInfraMidpoint[g, a, b]["Realizations"], BetweennessQ[g, a, #, b] &]]

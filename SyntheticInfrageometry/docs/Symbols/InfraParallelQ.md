@@ -45,7 +45,7 @@ A line is not parallel to itself, because parallels must not meet.
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Small"]},
+  {g = InfraSubstrate["Square", "Small", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 4 &]},
   {line = First @ First @ FindInfraLine[g, c, far, 1]},
@@ -56,7 +56,7 @@ Concentric shells are parallel. Each vertex of the outer one is at the same dist
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Small"]},
+  {g = InfraSubstrate["Square", "Small", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {s2 = First @ First @ FindInfraShell[g, c, 2]},
   {s3 = First @ First @ FindInfraShell[g, c, 3]},
@@ -71,7 +71,7 @@ Neither shell is a line, which shows the predicate does not require one.
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Small"]},
+  {g = InfraSubstrate["Square", "Small", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   InfraLineQ[g, First @ First @ FindInfraShell[g, c, 3]]]
 ```
@@ -80,7 +80,7 @@ Two maximal geodesics chosen independently are generally not parallel, because t
 
 ```wl
 With[
-  {g = ExampleGraphData["Square", "Small"]},
+  {g = InfraSubstrate["Square", "Small", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 4 &]},
   {l1 = First @ First @ FindInfraLine[g, c, far, 1]},

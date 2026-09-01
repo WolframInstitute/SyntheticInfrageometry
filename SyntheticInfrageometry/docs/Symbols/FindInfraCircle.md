@@ -42,7 +42,7 @@ At a single radius the circle exists on the irregular mesh and is empty on both 
 ```wl
 Association @ Table[
    name -> With[
-     {g = ExampleGraphData[name, "Medium"]},
+     {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Length @ First @ FindInfraCircle[g, c, 4]],
    {name, {"Plane", "Square", "Hexagonal"}}]
@@ -53,7 +53,7 @@ Thickening the radius to a band produces a genuine circle, and the thickness nee
 ```wl
 Association @ Table[
    band -> With[
-     {g = ExampleGraphData["Hexagonal", "Medium"]},
+     {g = InfraSubstrate["Hexagonal", "Medium", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Length @ First @ FindInfraCircle[g, c, band]],
    {band, {4, {4, 5}, {4, 6}}}]
@@ -64,7 +64,7 @@ The circle around the centre of each lattice, at the band each one needs.
 ```wl
 Row[Table[
    With[
-     {g = Graph[ExampleGraphData[First[spec], "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
+     {g = InfraSubstrate[First[spec], "Medium", "Gray", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Labeled[
        InfraSceneHighlight[g,

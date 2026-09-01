@@ -45,7 +45,7 @@ How many maximal geodesics pass through two vertices at distance 5. Uniqueness d
 ```wl
 Association @ Table[
    name -> With[
-     {g = ExampleGraphData[name, "Medium"]},
+     {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Length @ First @ FindInfraLine[g, a, b, All]],
@@ -57,7 +57,7 @@ Three of them on each substrate. Each line runs clear across the patch, since a 
 ```wl
 Row[Table[
    With[
-     {g = Graph[ExampleGraphData[name, "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
+     {g = InfraSubstrate[name, "Medium", "Gray", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Labeled[
@@ -77,7 +77,7 @@ A line through two points contains a geodesic between them, so its vertex sequen
 
 ```wl
 With[
-  {g = ExampleGraphData["Hexagonal", "Medium"]},
+  {g = InfraSubstrate["Hexagonal", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   {line = First @ First @ FindInfraLine[g, a, b, 1]},

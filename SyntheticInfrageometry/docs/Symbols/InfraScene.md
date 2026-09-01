@@ -39,7 +39,7 @@ The opening of Euclid I.10: two points, a circle about each, and the vertices wh
 ```wl
 ClearAll[a, b, cA, cB, u];
 With[
-  {g = ExampleGraphData["Plane", "Medium"]},
+  {g = InfraSubstrate["Plane", "Medium", "KeepCoordinates" -> True]},
   {p1 = First @ GraphCenter[g]},
   {p2 = SelectFirst[VertexList[g], GraphDistance[g, p1, #] == 8 &]},
   {scene = InfraScene[{a, b, cA, cB, u},
@@ -56,7 +56,7 @@ Solving it. The third argument is the step to solve up to, and the last step bin
 ```wl
 ClearAll[a, b, cA, cB, u];
 With[
-  {g = ExampleGraphData["Plane", "Medium"]},
+  {g = InfraSubstrate["Plane", "Medium", "KeepCoordinates" -> True]},
   {p1 = First @ GraphCenter[g]},
   {p2 = SelectFirst[VertexList[g], GraphDistance[g, p1, #] == 8 &]},
   {scene = InfraScene[{a, b, cA, cB, u},
@@ -74,7 +74,7 @@ The same construction on a square grid finds nothing, because there the two circ
 ```wl
 ClearAll[a, b, cA, cB, u];
 With[
-  {g = ExampleGraphData["Square", "Medium"]},
+  {g = InfraSubstrate["Square", "Medium", "KeepCoordinates" -> True]},
   {p1 = First @ GraphCenter[g]},
   {p2 = SelectFirst[VertexList[g], GraphDistance[g, p1, #] == 8 &]},
   Length @ Intersection[

@@ -40,7 +40,7 @@ Betweenness holds for every midpoint of two vertices, on each substrate.
 ```wl
 Association @ Table[
    name -> With[
-     {g = ExampleGraphData[name, "Medium"]},
+     {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      AllTrue[FindInfraMidpoint[g, a, b]["Realizations"], BetweennessQ[g, a, #, b] &]],
@@ -52,7 +52,7 @@ The set of vertices satisfying betweenness is the metric interval, and on a latt
 ```wl
 Association @ Table[
    name -> With[
-     {g = ExampleGraphData[name, "Medium"]},
+     {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Length @ Select[VertexList[g], BetweennessQ[g, a, #, b] &]],
@@ -63,7 +63,7 @@ That interval, drawn on the square grid: every vertex between the two endpoints,
 
 ```wl
 With[
-  {g = Graph[ExampleGraphData["Square", "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
+  {g = InfraSubstrate["Square", "Medium", "Gray", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   InfraSceneHighlight[g,
@@ -80,7 +80,7 @@ The vertices between two points are exactly [MetricInterval]().
 
 ```wl
 With[
-  {g = ExampleGraphData["Hexagonal", "Medium"]},
+  {g = InfraSubstrate["Hexagonal", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   Select[VertexList[g], BetweennessQ[g, a, #, b] &] === Sort @ MetricInterval[g, a, b]]

@@ -38,7 +38,7 @@ How many maximal rays leave a vertex through a given neighbour-direction, on eac
 ```wl
 Association @ Table[
    name -> With[
-     {g = ExampleGraphData[name, "Medium"]},
+     {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Length @ First @ FindInfraRay[g, a, b, All]],
@@ -50,7 +50,7 @@ Three rays from the centre of each substrate. Each starts at the origin and runs
 ```wl
 Row[Table[
    With[
-     {g = Graph[ExampleGraphData[name, "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
+     {g = InfraSubstrate[name, "Medium", "Gray", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Labeled[
@@ -70,7 +70,7 @@ Every ray begins at its origin, and its vertex sequence is a geodesic, so the di
 
 ```wl
 With[
-  {g = ExampleGraphData["Hexagonal", "Medium"]},
+  {g = InfraSubstrate["Hexagonal", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   {ray = First @ First @ FindInfraRay[g, a, b, 1]},

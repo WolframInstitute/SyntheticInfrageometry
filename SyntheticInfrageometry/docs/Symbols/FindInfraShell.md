@@ -41,7 +41,7 @@ Shell cardinality against radius. On both lattices the growth is exactly linear 
 ```wl
 Association @ Table[
    name -> With[
-     {g = ExampleGraphData[name, "Medium"]},
+     {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Table[First @ FindInfraShell[g, c, r]["Volume"], {r, 0, 5}]],
    {name, {"Plane", "Square", "Hexagonal"}}]
@@ -51,7 +51,7 @@ The successive shells around the centre of the square grid: nested rings, each o
 
 ```wl
 With[
-  {g = Graph[ExampleGraphData["Square", "Medium"], Sequence @@ AmbientGraphStyle["Gray"]]},
+  {g = InfraSubstrate["Square", "Medium", "Gray", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   InfraSceneHighlight[g,
     Table[FindInfraShell[g, c, r] -> $InfraShellColor, {r, 1, 5}],
@@ -66,7 +66,7 @@ The ball is the union of the shells up to its radius, so the volumes are the par
 
 ```wl
 With[
-  {g = ExampleGraphData["Hexagonal", "Medium"]},
+  {g = InfraSubstrate["Hexagonal", "Medium", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {areas = Table[First @ FindInfraShell[g, c, r]["Volume"], {r, 0, 5}]},
   {volumes = Table[First @ FindInfraBall[g, c, r]["Volume"], {r, 0, 5}]},
