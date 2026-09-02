@@ -38,7 +38,6 @@ VerificationTest[
   TestID -> "FindInfraWalk-pointed-maximal-both-ways"
 ]
 
-(* multi-anchor spread on the pointed form: budget-cut and frozen walks *)
 VerificationTest[
   Sort @ FindInfraWalk[ PathGraph[ Range[ 5 ] ], InfraSet[ { 1, 2 } ], 3, All ][ "Realizations" ],
   Sort[ { { 1, 2, 3, 4 }, { 2, 1 }, { 2, 3, 4, 5 } } ],
@@ -640,7 +639,6 @@ VerificationTest[
   TestID -> "ExtendInfraGeodesic-unbounded-finite-scale"
 ]
 
-(* Unknown direction -> $Failed with ::baddirection *)
 VerificationTest[
   ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3 }, Infinity, 1, 1,
     "Direction" -> "Sideways", Properties -> { "Simple" } ],
@@ -649,7 +647,6 @@ VerificationTest[
   TestID -> "ExtendInfraGeodesic-baddirection"
 ]
 
-(* count > available: $Failed *)
 VerificationTest[
   ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3 }, Infinity, Infinity, 99,
     Properties -> { "Simple", "Minimizing" } ],
@@ -690,7 +687,6 @@ VerificationTest[
 
 (* ===================== InfraWalk scene-DSL constructor ===================== *)
 
-(* Bare-vertex chain on P5: 1-2-3 is a valid walk. *)
 VerificationTest[
   With[{
     scene = InfraScene[ { path }, { path == InfraWalk[ 1, 2, 3 ] } ],
@@ -865,7 +861,6 @@ VerificationTest[
   TestID -> "FindInfraWalk-stopping-delay-arithmetic"
 ]
 
-(* "Count" postpones the deadline to the c-th firing *)
 VerificationTest[
   With[ { g = GridGraph[ { 6, 6 } ] },
     { w = BlockRandom[
@@ -894,7 +889,6 @@ VerificationTest[
   TestID -> "FindInfraWalk-dead-event-warns"
 ]
 
-(* an unknown event is refused *)
 VerificationTest[
   FindInfraWalk[ PathGraph[ Range[ 5 ] ], 1, 4, "StoppingCondition" -> "Bogus" ],
   $Failed,
@@ -1042,7 +1036,6 @@ VerificationTest[
   TestID -> "InfraImmersedQ-cusp-not-immersed"
 ]
 
-(* wrapper overloads AllTrue over realisations *)
 VerificationTest[
   { InfraImmersedQ[ GridGraph[ { 3, 3 } ], InfraWalk[ { { 1, 2, 5 }, { 1, 2, 1 } } ] ],
     InfraImmersedQ[ GridGraph[ { 3, 3 } ], InfraWalk[ { { 1, 2, 5 }, { 2, 5, 8 } } ] ] },

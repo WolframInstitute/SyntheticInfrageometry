@@ -269,8 +269,6 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init : _Association : <||>, opt
 
 (* ===================== Viewer chrome ===================== *)
 
-(* GeometricScene-style control chrome: rounded icon chips with a blue
-   accent, dark-mode aware via LightDarkSwitched. *)
 
 makeIcon[ icon_, roundedSide_: "both", widthFactor_: 1, heightFactor_: 1,
     background_: LightDarkSwitched[ GrayLevel[ .9 ], GrayLevel[ .3 ] ] ] :=

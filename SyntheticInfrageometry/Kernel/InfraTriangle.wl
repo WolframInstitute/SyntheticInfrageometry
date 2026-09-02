@@ -8,8 +8,6 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
    is the multi-realisation form.  Same storage shape as InfraPolygon, restricted
    to three sides.  Auto-flatten on nested wrappers. *)
 
-(* Set canonicalisation and the shared accessors come from
-   defineInfraBundleRules (Tools.wl). *)
 
 InfraTriangle[ reps_List ][ "Sides" ] := reps
 

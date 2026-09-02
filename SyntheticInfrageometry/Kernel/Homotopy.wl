@@ -69,8 +69,6 @@ representativeHeadFor[ InfraCircle ] := InfraString
 representativeHeadFor[ _ ]           := $Failed
 
 
-(* Coerce a single realisation to the canonical form for its target mode. *)
-
 coerceRealisation[ InfraWalk,   walk_List ] := walk
 coerceRealisation[ InfraLoop,   walk_List ] := closeWalk @ walk
 coerceRealisation[ InfraString, walk_List ] := canonicalString @ walk
@@ -311,9 +309,6 @@ HomotopyMoveTypes[ InfraHomotopy[ reps_List ] ] := HomotopyMoveTypes /@ reps
 
 (* ===================== Walk-space search engines ===================== *)
 
-(* runWalkBFS -- shared BFS driver for the unary-input finders
-   (Representative, RepresentativeHomotopy).  Sets up modes, runs to the
-   walk-space cap, and returns the walkSpaceBFS result tuple. *)
 
 runWalkBFS[ graph_Graph, walk_List, inHead_, stopWhen_, opts___ ] :=
   Module[ { freeHom, modeInfo, canonicalize, slides, startW, rules, maxMoves, maxLen },

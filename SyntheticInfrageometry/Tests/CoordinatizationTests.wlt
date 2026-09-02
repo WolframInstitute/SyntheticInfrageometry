@@ -360,7 +360,6 @@ VerificationTest[
   TestID -> "FindInfraOrthogonalFrame-AxisCount-UpTo"
 ]
 
-(* GeodesicSprayGraph primitive *)
 
 VerificationTest[
   Sort @ VertexList @ GeodesicSprayGraph[GridGraph[{3, 3}], 5],
@@ -764,8 +763,6 @@ VerificationTest[
 ]
 
 
-(* "Dimension" cap. *)
-
 VerificationTest[
   Length @ First @ Values @ ResistanceCoordinates[PetersenGraph[], "Dimension" -> 3],
   3,
@@ -778,8 +775,6 @@ VerificationTest[
   TestID -> "ResistanceCoordinates-Dimension-UpTo-clipped"
 ]
 
-
-(* InfraPoint query. *)
 
 VerificationTest[
   Dimensions @ ResistanceCoordinates[PetersenGraph[], InfraSet[{1, 2, 3}]],

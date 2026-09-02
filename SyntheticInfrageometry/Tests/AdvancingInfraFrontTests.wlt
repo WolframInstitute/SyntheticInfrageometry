@@ -6,7 +6,6 @@ BeginTestSection["AdvancingInfraFront"]
    S_{i-1}, reflecting back inward where there is no outward neighbour. The state is
    the pair (S_{i-1}, S_i), so it is a NestList on consecutive-front pairs. *)
 
-(* The foliation has one set per step, plus the seed S_0. *)
 VerificationTest[
   Length @ FindAdvancingInfraFront[ PathGraph @ Range @ 6, 1, 3 ],
   4,

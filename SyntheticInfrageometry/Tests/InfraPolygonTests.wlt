@@ -2,7 +2,6 @@ BeginTestSection["InfraPolygon"]
 
 (* ===================== InfraPolygon wrapper ===================== *)
 
-(* Length = perimeter edge count (sum of leg edge counts) per realisation. *)
 VerificationTest[
   InfraPolygon[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4 } } ], InfraSegment[ { { 4, 1 } } ] } } ][ "Length" ],
   { 4 },
@@ -16,7 +15,6 @@ VerificationTest[
   TestID -> "InfraPolygon-Length-multi"
 ]
 
-(* Sides returns the leg list per realisation; Vertices the corner points. *)
 VerificationTest[
   InfraPolygon[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4 } } ], InfraSegment[ { { 4, 1 } } ] } } ][ "Vertices" ],
   { { InfraPoint[1], InfraPoint[3], InfraPoint[4] } },
@@ -349,7 +347,6 @@ VerificationTest[
   TestID -> "FindInfraPolygon-grid4x4-square"
 ]
 
-(* Count 1 returns a wrapper with a single realisation. *)
 VerificationTest[
   Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, 1 ][ "Realizations" ],
   1,

@@ -13,8 +13,6 @@ PackageScope[polylineToKnots]
    for consecutive legs.  InfraPolyline[{poly1, ..., polyk}] is the multi-
    realisation form.  Only auto-flatten on nested wrappers. *)
 
-(* Set canonicalisation and the shared accessors come from
-   defineInfraBundleRules (Tools.wl). *)
 
 (* "Length" = sum of leg edge counts per realisation; empty polyline = 0. *)
 InfraPolyline[ reps_List ][ "Length" ] :=

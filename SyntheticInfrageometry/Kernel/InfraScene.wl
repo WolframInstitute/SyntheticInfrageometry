@@ -14,7 +14,6 @@ PackageScope[evaluateConstruction]
 
 (* ===================== Helpers ===================== *)
 
-(* Atomic-vs-list normalization: a single vertex becomes a singleton list. *)
 toVertexSet[ v_ ] /; AtomQ[ v ] := { v }
 toVertexSet[ vs_List ] := vs
 

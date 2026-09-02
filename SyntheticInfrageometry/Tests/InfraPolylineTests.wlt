@@ -121,8 +121,6 @@ VerificationTest[
 
 (* ===================== Visualisation ===================== *)
 
-(* InfraSceneHighlight returns a Graph and visits both the path edges and
-   the knot vertices (added in $InfraPointColor on top of the path). *)
 
 VerificationTest[
   Head @ InfraSceneHighlight[ PathGraph @ Range[ 11 ],

@@ -16,8 +16,6 @@ PackageScope[allCanonicalLines]
 
 (* ===================== InfraLine wrapper ===================== *)
 
-(* set canonicalisation, ["Realizations"] / ["First"] and the occupation-measure
-   accessors come from defineInfraBundleRules (Tools.wl). *)
 
 (* "Length" = list of edge counts, one per realisation: |line| - 1. *)
 InfraLine[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps

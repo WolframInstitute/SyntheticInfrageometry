@@ -42,16 +42,8 @@ PackageScope[methodOptions]
 PackageScope[propertiesSubOpts]
 
 
-(* Path-space distances and selectors (HausdorffDistance, FrechetDistance,
-   MinimalSeparationDistance, EmbeddingHausdorffDistance,
-   EmbeddingCircleDistance, pathFilterPairwiseDistances, applySelect)
-   live in WalkSpace.wl. *)
-
-
 (* ===================== Method-spec helper ===================== *)
 
-(* Normalise a Method option value to its leading method-name string:
-   "Metric" -> "Metric";  {"Metric", opts___} -> "Metric". *)
 
 methodName[ m_String ]          := m
 methodName[ { m_String, ___ } ] := m
@@ -137,8 +129,6 @@ takeUpTo[ list_, Infinity ]     := list
 takeUpTo[ list_, n_Integer ]    := Take[ list, UpTo[ n ] ]
 
 
-(* Every geodesic from u to v as a vertex sequence. *)
-
 allGeodesics[ graph_Graph, u_, v_, count_ : All ] :=
   With[ { d = GraphDistance[ graph, u, v ] },
     If[ d === Infinity, { }, FindPath[ graph, u, v, { d }, count ] ]
@@ -221,7 +211,6 @@ greedyFrontierSweep[ graph_Graph, p1_, p2_, candidateFn_, acceptQ_, maxSteps_, c
 
 (* ===================== Window-rule machinery ===================== *)
 
-(* Sub-options of a property entry: "Foo" -> { }, {"Foo", opts___} -> {opts}. *)
 
 propertiesSubOpts[ s_String ]              := { }
 propertiesSubOpts[ { _String, opts___ } ]  := { opts }
@@ -267,8 +256,6 @@ windowRuleSpecies[ rule_, fnSym_ ] :=
   ]
 
 
-(* Constraints on the window (walk-window plus candidate w). *)
-
 (* "Minimizing": the window is a shortest path. *)
 windowRuleQ[ g_Graph, scale_, "Minimizing", walk_List, w_ ] :=
   With[ { win = walkWindow[ walk, scale ] },
@@ -296,8 +283,6 @@ windowRuleQ[ _Graph, _, "Generic", walk_List, w_ ] :=
 windowRuleQ[ _Graph, scale_, pred_, walk_List, w_ ] :=
   pred @ Append[ walkWindow[ walk, scale ], w ]
 
-
-(* Selectors: closures (walk, candidates) -> candidates'. *)
 
 (* "Straightest": maximise the distance tuple from the candidate back along the
    window, nearest first (the immediate predecessor sits at distance 1 for every
@@ -526,8 +511,6 @@ dagLayers[ dag_Graph ] :=
   If[ VertexCount[ dag ] == 0, <||>,
     With[ { s = First @ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] },
       AssociationThread[ VertexList[ dag ], GraphDistance[ dag, s ] ] ] ]
-
-
 
 
 (* The geodesic vertex sequences behind an InfraSegment, regardless of form:

@@ -12,8 +12,6 @@ PackageScope[findPolygonCore]
    the last side returns to the first corner).  InfraPolygon[{poly1, ..., polyk}]
    is the multi-realisation form.  Auto-flatten on nested wrappers. *)
 
-(* Set canonicalisation and the shared accessors come from
-   defineInfraBundleRules (Tools.wl). *)
 
 (* "Sides" = the InfraSegment legs per realisation. *)
 InfraPolygon[ reps_List ][ "Sides" ] := reps

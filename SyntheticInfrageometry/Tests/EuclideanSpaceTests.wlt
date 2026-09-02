@@ -53,7 +53,6 @@ VerificationTest[
   TestID -> "InfraScalarProduct-Alexandrov-curvature-recovers-angle"
 ]
 
-(* Unknown method raises ::badmethod and returns $Failed. *)
 VerificationTest[
   Quiet @ InfraScalarProduct[PathGraph[Range[5]], 1, 3, 4, Method -> "Schoenberg"],
   $Failed,

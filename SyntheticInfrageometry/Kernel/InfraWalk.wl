@@ -3,8 +3,6 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== InfraWalk wrapper ===================== *)
 
-(* set canonicalisation, ["Realizations"] / ["First"] and the occupation-measure
-   accessors come from defineInfraBundleRules (Tools.wl). *)
 
 (* InfraWalk[p1, p2, ..., pk] with InfraPoint args (or singleton lists thereof,
    as returned by FindInfraPoint) builds the wrapper from the Cartesian product

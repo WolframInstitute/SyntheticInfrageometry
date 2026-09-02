@@ -177,7 +177,6 @@ VerificationTest[
   TestID -> "FindClosestInfraPoint-multi-point-Cartesian"
 ]
 
-(* Default count = 1 returns one InfraPoint carrying a single realisation. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
     InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[13]],
@@ -185,7 +184,6 @@ VerificationTest[
   TestID -> "FindClosestInfraPoint-default-count-1"
 ]
 
-(* Strict count larger than available -> $Failed. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
     InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[13], 5],
@@ -193,7 +191,6 @@ VerificationTest[
   TestID -> "FindClosestInfraPoint-strict-count-too-large-fails"
 ]
 
-(* UpTo caps gracefully. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
     InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[13], UpTo[5]],
@@ -209,7 +206,6 @@ VerificationTest[
   TestID -> "FindClosestInfraPoint-ties-symmetric"
 ]
 
-(* InfraWalk and InfraRay heads are also accepted. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
     InfraWalk[{{1, 2, 3, 4, 5}}], InfraPoint[13], All],
@@ -284,7 +280,6 @@ VerificationTest[
   TestID -> "FindInfraBisectingHyperplane-Separating-upto-soft"
 ]
 
-(* Default level-set mode yields exactly one realisation; asking for more fails. *)
 VerificationTest[
   FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, 5],
   $Failed,
@@ -381,7 +376,6 @@ VerificationTest[
   TestID -> "FindInfraBisectingHyperplane-Separating-results-actually-separate"
 ]
 
-(* badmethod message guard. *)
 VerificationTest[
   FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, Properties -> {"Separating"}, Method -> "Bogus"],
   $Failed,
@@ -389,7 +383,6 @@ VerificationTest[
   TestID -> "FindInfraBisectingHyperplane-badmethod"
 ]
 
-(* badproperty message guard. *)
 VerificationTest[
   FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, Properties -> {"Bogus"}],
   $Failed,

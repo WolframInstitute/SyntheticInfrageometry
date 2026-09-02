@@ -155,7 +155,6 @@ VerificationTest[
   TestID -> "TurningAngles-polyline-multi-realisation"
 ]
 
-(* Empty realisation collapses to an empty list. *)
 VerificationTest[
   TurningAngles[GridGraph[{3, 3}], InfraPolyline[{{}}]],
   {{}},

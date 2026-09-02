@@ -131,7 +131,6 @@ VerificationTest[
   TestID -> "CATInequalityQ-default-Method-equals-ApexSide"
 ]
 
-(* TwoRays branch -- basic plumbing. *)
 
 VerificationTest[
   CATInequalityQ[ PathGraph[ Range[ 5 ] ], { 1, 3, 5 }, 0, Method -> "TwoRays" ],

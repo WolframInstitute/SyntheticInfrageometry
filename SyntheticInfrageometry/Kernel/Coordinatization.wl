@@ -239,7 +239,6 @@ perAxisAnchor[ axis_Graph, vs_List ] :=
 
 (* ===================== Helpers: orthogonal-frame search ===================== *)
 
-(* allHalfAxes: every directed c -> v path in dag. *)
 
 allHalfAxes[ dag_Graph, c_ ] :=
   Catenate[ FindPath[ dag, c, #, Infinity, All ] & /@ VertexList[ dag ] ]
@@ -305,9 +304,6 @@ axisMultiplicityFn[ g_Graph ] :=
     axis |-> mMat[[ posMap[ First @ axis ], posMap[ Last @ axis ] ]]
   ]
 
-
-(* recordFrameQ / recurseDFSQ: when to record / when to keep descending
-   for each "AxisCount" spec. *)
 
 recordFrameQ[ Automatic ][ len_, vAxes_ ] := vAxes === { } && len > 0
 recordFrameQ[ All       ][ len_, _ ]       := len > 0

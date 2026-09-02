@@ -64,7 +64,6 @@ SelectInfraWalk[ graph_Graph, walks_List, n_Integer : 1, opts : OptionsPattern[]
   With[ { result = SelectInfraWalk[ graph, walks, UpTo[ n ], opts ] },
     If[ ListQ[ result ] && Length[ result ] < n, $Failed, result ] ]
 
-(* open-walk wrapper: unwrap, select as a bare-walk bundle, rewrap *)
 SelectInfraWalk[ graph_Graph, ( head : InfraSegment | InfraLine | InfraWalk | InfraRay )[ walks_List ],
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   With[ { result = SelectInfraWalk[ graph, walks, countSpec, "Cyclic" -> False, opts ] },
@@ -114,7 +113,6 @@ SelectInfraWalk[ graph_Graph, InfraSegment[ dag_Graph ],
       If[ result === $Failed, $Failed, InfraSegment[ result ] ] ]
   ]
 
-(* geodesic-DAG segment: enumerate its geodesics, then select as a walk bundle. *)
 SelectInfraWalk[ graph_Graph, InfraSegment[ dag_Graph ],
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   SelectInfraWalk[ graph, InfraSegment[ dagGeodesics[ dag ] ], countSpec, opts ]
@@ -408,7 +406,7 @@ Options[ FindInfraMonotoneDeformation ] = { "Potential" -> Automatic };
 FindInfraMonotoneDeformation[ graph_Graph, ref_, deltaSpec_,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : All,
     opts : OptionsPattern[ ] ] :=
-  Catch @ Module[ { refWalk, src, tgt, pot, spray, outs, len, minLen, lo, hi },
+  Catch @ Module[ { refWalk, src, tgt, pot, spray, distToTgt, outs, len, minLen, lo, hi },
     refWalk = deformationReference[ graph, ref ];
     { src, tgt } = { First @ refWalk, Last @ refWalk };
     len = Length[ refWalk ] - 1;
@@ -432,7 +430,8 @@ FindInfraMonotoneDeformation[ graph_Graph, ref_, deltaSpec_,
       { raw = Graph[ Union[ Select[ VertexList @ graph, pot[ # ] <= pot[ tgt ] & ], { src, tgt } ], edges ] },
       Subgraph[ raw, Intersection[ VertexOutComponent[ raw, src ], VertexInComponent[ raw, tgt ] ] ] ];
     If[ ! ( VertexQ[ spray, src ] && VertexQ[ spray, tgt ] ), Throw[ InfraWalk[ { } ] ] ];
-    minLen = GraphDistance[ spray, src, tgt ];
+    distToTgt = AssociationThread[ VertexList @ spray, GraphDistance[ ReverseGraph @ spray, tgt ] ];
+    minLen = distToTgt[ src ];
     { lo, hi } = Replace[ deltaSpec, {
       Automatic         :> { minLen - len, minLen - len },
       { k_Integer }     :> { k, k },
@@ -446,8 +445,12 @@ FindInfraMonotoneDeformation[ graph_Graph, ref_, deltaSpec_,
       SortBy[
         DeleteCases[
           Select[
+            (* a step is grown only if tgt stays reachable within the length budget:
+               on the cyclic spray this keeps the sweep proportional to the output
+               instead of exponential in len + hi *)
             frontierSweep[ spray, src, tgt,
-              { g, walk } |-> If[ Length[ walk ] - 1 >= len + hi, { }, Lookup[ outs, Last @ walk, { } ] ],
+              { g, walk } |-> Select[ Lookup[ outs, Key[ Last @ walk ], { } ],
+                Length[ walk ] + distToTgt[ # ] <= len + hi & ],
               Infinity, Infinity ],
             Length[ # ] - 1 >= len + lo & ],
           refWalk ],
@@ -525,8 +528,6 @@ resamplePath[ seq_List, m_Integer ] :=
     Round @ Rescale[ Range[ m ], { 1, m }, { 1, Length[ seq ] } ]
   ]
 
-
-(* MinimalSeparationDistance: min graph distance between two vertex subsets. *)
 
 MinimalSeparationDistance[ d_List, setX_, setY_ ] :=
   Min[ d[[ setX, setY ]] ]
@@ -674,8 +675,6 @@ fromWalkSpecQ[ spec_ ] :=
   MatchQ[ spec, All | "Center" | "Periphery" | "MostVisited" | "Bottleneck"
                 | "MinLength" | "MaxLength" | _Rule | { "Min" | "Max", _ } ]
 
-
-(* Pool selection: positions in paths satisfying the "From" specification. *)
 
 poolPositions[ _Graph, paths_List, All, _, _, _ ] := Range @ Length @ paths
 

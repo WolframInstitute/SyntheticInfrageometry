@@ -375,7 +375,6 @@ VerificationTest[
   TestID -> "InfraPerpendicularQ-Coordinate-Mean-nested-tolerance-True"
 ]
 
-(* Coordinate with an unknown ZeroTest name reports badzerotest. *)
 VerificationTest[
   InfraPerpendicularQ[GridGraph[{5, 5}], {11, 12, 13, 14, 15}, {3, 8, 13, 18, 23},
                       Method -> {"Coordinate", "ZeroTest" -> "Bogus"}],
@@ -395,7 +394,6 @@ VerificationTest[
   TestID -> "InfraPerpendicularQ-Projection-radius-1-tightens"
 ]
 
-(* InfraSegment / InfraLine wrappers accepted via lineSequence unwrap. *)
 VerificationTest[
   InfraPerpendicularQ[CycleGraph[5], InfraLine[{{1, 2, 3, 4}}], InfraSegment[{{5, 1, 2}}],
                       Method -> {"Projection", "Equality" -> "Overlap"}],
@@ -410,7 +408,6 @@ VerificationTest[
   TestID -> "InfraPerpendicularQ-empty-intersection-False"
 ]
 
-(* Bad method name reports an error and returns $Failed. *)
 VerificationTest[
   InfraPerpendicularQ[PathGraph[Range[5]], {1, 2, 3}, {3, 4, 5}, Method -> "BogusMethod"],
   $Failed,
@@ -588,7 +585,6 @@ VerificationTest[
   TestID -> "InfraRayQ-cycle-not-geodesic-false"
 ]
 
-(* Degenerate input. *)
 VerificationTest[
   InfraRayQ[PathGraph[Range[5]], {1}],
   False,
