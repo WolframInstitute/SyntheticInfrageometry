@@ -86,7 +86,6 @@ VerificationTest[
   TestID -> "FindInfraPoint-badfrom-non-vertex"
 ]
 
-(* the count-less form validates on the same vocabulary *)
 VerificationTest[
   FindInfraPoint[GridGraph[{5, 5}], "From" -> "Nonsense"],
   $Failed,
@@ -360,7 +359,6 @@ VerificationTest[
   TestID -> "FindInfraSegment-dag-measure-matches-enumeration"
 ]
 
-(* Realizations bridges back to the explicit bare path list, capped by the calling triple *)
 VerificationTest[
   With[{s = FindInfraSegment[GridGraph[{3, 3}], 1, 9, All]},
     {Length[s["Realizations"]], Length[s["Realizations", UpTo[3]]]}
@@ -369,7 +367,6 @@ VerificationTest[
   TestID -> "FindInfraSegment-dag-realizations-bridge"
 ]
 
-(* an explicit finite count returns one wrapper carrying exactly n realisations *)
 VerificationTest[
   With[{r = FindInfraSegment[GridGraph[{3, 3}], 1, 9, 3]},
     MatchQ[r, InfraSegment[{_, _, _}]] && Length[r["Realizations"]] == 3
@@ -519,7 +516,6 @@ VerificationTest[
   TestID -> "FindInfraGeodesic-Minimizing-scale-2-cycle-geodesics"
 ]
 
-(* "Straightest": pull-apart walks. *)
 
 VerificationTest[
   With[{g = CycleGraph[6]},
@@ -791,7 +787,6 @@ VerificationTest[
   TestID -> "FindInfraSegment-greedy-methods-give-geodesics"
 ]
 
-(* Method -> {"Exhaustive", "Pruning" -> n} respects branching cap. *)
 
 VerificationTest[
   Length @ FindInfraShell[GridGraph[{4, 4}], 6, {1, 2}, All,
@@ -800,7 +795,6 @@ VerificationTest[
   TestID -> "FindInfraShell-Pruning-bounded-runs"
 ]
 
-(* Unknown property name raises ::badproperty. *)
 
 VerificationTest[
   FindInfraShell[GridGraph[{4, 4}], 6, {1, 2}, 1, Properties -> {"NonExistent"}],
@@ -850,7 +844,6 @@ VerificationTest[
   TestID -> "FindInfraOsculatingShell-PathGraph-no-centers-default-fails"
 ]
 
-(* InfraWalk[{walk}] equivalent to bare list. *)
 
 VerificationTest[
   FindInfraOsculatingShell[CompleteGraph[5], InfraWalk[{{1, 2, 3}}], 2, 3, All],
@@ -867,7 +860,6 @@ VerificationTest[
   TestID -> "FindInfraOsculatingShell-multi-realisation-union"
 ]
 
-(* UpTo[n] caps below the available count. *)
 
 VerificationTest[
   Length @ FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3, UpTo[1]]["Realizations"],
@@ -875,7 +867,6 @@ VerificationTest[
   TestID -> "FindInfraOsculatingShell-UpTo-caps"
 ]
 
-(* Strict count > available returns $Failed. *)
 
 VerificationTest[
   FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3, 3],
@@ -1006,7 +997,6 @@ VerificationTest[
   TestID -> "FindInfraCircle-badproperty-Connected"
 ]
 
-(* Any unknown property raises ::badproperty. *)
 
 VerificationTest[
   FindInfraCircle[GridGraph[{4, 4}], 6, {1, 2}, 1, Properties -> {"Bogus"}],
@@ -1431,7 +1421,6 @@ VerificationTest[
   TestID -> "FindInfraLine-segment-Direction-Backward"
 ]
 
-(* Default BothSides matches the explicit value. *)
 VerificationTest[
   FindInfraLine[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 1 ] ===
     FindInfraLine[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 1,
@@ -1450,7 +1439,6 @@ VerificationTest[
   TestID -> "FindInfraLine-two-point-Direction-Forward-starts-at-p1"
 ]
 
-(* Unknown direction -> $Failed with ::baddirection *)
 VerificationTest[
   FindInfraLine[ PathGraph[ Range[ 5 ] ], { 2, 3 }, 1,
     "Direction" -> "Sideways" ],
@@ -1472,8 +1460,6 @@ VerificationTest[
   { InfraPoint[3] },
   TestID -> "ExtendInfraSegment-A4-PathGraph"
 ]
-
-
 
 
 (* FindInfraShell / FindInfraCircle: a bounded radius makes the answer depend only on
@@ -1513,7 +1499,6 @@ VerificationTest[
   TestID -> "FindInfraLine-cap-subset-of-family"
 ]
 
-(* strict count on an abundant family *)
 VerificationTest[
   Length @ FindInfraLine[ GridGraph[ { 3, 3 } ], 1, 9, 3 ][ "Realizations" ],
   3,

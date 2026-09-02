@@ -125,7 +125,6 @@ FindInfraPoint[ graph_Graph, n_Integer, opts : OptionsPattern[] ] :=
   With[ { result = FindInfraPoint[ graph, UpTo[ n ], opts ] },
     If[ Length[ result ] < n, $Failed, result ] ]
 
-(* no count: one point *)
 FindInfraPoint[ graph_Graph, opts : OptionsPattern[] ] :=
   With[ { from = OptionValue[ "From" ] },
     If[ ! fromPointSpecQ[ graph, from ],
@@ -143,8 +142,6 @@ fromPointSpecQ[ graph_Graph, spec_ ] :=
                 | _InfraPoint | _InfraEffectivePoint | _InfraSet | _Rule | _List ] ||
   MemberQ[ VertexList @ graph, spec ]
 
-
-(* "From" option dispatch -- vertex pool to draw points from. *)
 
 findPointPool[ graph_Graph, "Center" ]    := GraphCenter[ graph ]
 findPointPool[ graph_Graph, "Periphery" ] := GraphPeriphery[ graph ]

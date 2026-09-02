@@ -32,11 +32,13 @@ Options:
 
 | Option | Values |
 |---|---|
-| `"From"` | `"Random"` (default), `"Center"`, `"Periphery"`, or `anchor -> spec` |
+| `"From"` | `"Random"` (default), `"Center"`, `"Periphery"`, `{"Center", cap}`, or `anchor -> spec` |
 | `"Distance"` | *d*, `{dMin, dMax}`, `"Max"`, `"Spread"` |
 | `"MaxCliques"` | bound on the mutual-distance clique search |
 
 `"Center"` and `"Periphery"` are meant in the graph-eccentricity sense. `"Distance"` imposes a mutual-distance condition on a tuple.
+
+To keep a whole construction interior, not just its anchors, cut the substrate with `CenterGraph[g, q]` (from the Infrageometry paclet) and work on that graph: it is the ball of radius `Floor[q GraphRadius[g]]` about `GraphCenter[g]`, carrying the same vertex labels and coordinates, so the result draws on the original. Restricting `"From"` alone pins only the anchors; a construction with slack spends it outward.
 
 To narrow a bundle you already hold, use [SelectInfraPoint](). It takes the same `"From"` and `"Distance"` vocabulary on a supplied vertex set.
 
@@ -78,6 +80,19 @@ With[
   InfraSceneHighlight[g,
     {InfraSet @ FindInfraPoint[g, All, "From" -> "Periphery"] -> $InfraShellColor,
      InfraSet @ FindInfraPoint[g, All, "From" -> "Center"] -> $InfraPointColor},
+    "PointSizeRange" -> 16,
+    VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
+    ImageSize -> 340]]
+```
+
+Keeping a draw off the rim. The balls are a nested family, so `q` reads directly as the fraction of the way out a point is allowed to sit.
+
+```wl
+With[
+  {g = InfraSubstrate["SquarePatch", "Medium", "Gray", "KeepCoordinates" -> True]},
+  InfraSceneHighlight[g,
+    {InfraSet @ VertexList @ CenterGraph[g, 0.8] -> $InfraShellColor,
+     InfraSet @ VertexList @ CenterGraph[g, 0.4] -> $InfraPointColor},
     "PointSizeRange" -> 16,
     VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
     ImageSize -> 340]]
