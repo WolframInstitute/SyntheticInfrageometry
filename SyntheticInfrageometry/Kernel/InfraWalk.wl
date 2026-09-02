@@ -744,13 +744,15 @@ InfraGenericQ[ graph_Graph, walk_List ] :=
    growth seeded with a walk instead of a point: Find seeds with points and
    owns the two-point sugar, Extend seeds with walks and owns "Direction".
    kspec is the extension budget, read relative to the seed in added edges
-   (the deltaSpec precedent from FindInfraMonotoneDeformation), and is
+   per growing side (the deltaSpec precedent from
+   FindInfraMonotoneDeformation, per side by the T7 review call), and is
    mandatory-finite whenever the class is infinite.  "Direction" ->
    "Forward" grows the tail, "Backward" the head (the walk reversed, grown
    at its tail, reversed back), "BothSides" (default) at most one edge per
-   side per step, a side freezing when no admissible step remains; the
-   joined two-sided step is re-checked against the monotone whole-walk
-   constraints its sides cannot see alone.  Stopping conditions carry the
+   side per step -- there kspec counts the outer steps, each side paying
+   at most one edge per step, a side freezing when no admissible step
+   remains; the joined two-sided step is re-checked against the monotone
+   whole-walk constraints its sides cannot see alone.  Stopping conditions carry the
    finder's grammar and replay over the seed -- the extension continues the
    seed's own event history, so a deadline may already sit inside the seed
    and the seed comes back unextended; a two-ended walk has no single tip
@@ -793,6 +795,14 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
           pruning     = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
           kmax        = Replace[ absSpec, { { _, hi_ } :> hi, { k_ } :> k } ],
           lengthQ     = walkLengthAdmissibleQ[ absSpec ],
+          (* "BothSides" reads kspec per growing side: the budget is the
+             outer-step count, each live side paying one edge per step *)
+          stepsMax    = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
+          stepsQ      = Replace[ kspec, {
+            Infinity     :> ( True & ),
+            { k_ }       :> ( # == k & ),
+            { lo_, hi_ } :> ( lo <= # <= hi & ),
+            k_Integer    :> ( # <= k & ) } ],
           candidateFn = windowCandidateFn[ graph, scale, rules, ExtendInfraGeodesic ],
           deadlineFn  = stoppingDeadlineFn[ graph, scale, events ],
           (* the per-step Cartesian of a two-sided step can violate a
@@ -848,15 +858,15 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
           "BothSides",
             Switch[ methodHead,
               "Exhaustive",
-                extendBothFrontierSweep[ graph, walk0, candidateFn, lengthQ, kmax, pruning,
-                  countLimit @ count, stepFilter ],
+                extendBothFrontierSweep[ graph, walk0, candidateFn, stepsQ, stepsMax,
+                  pruning, countLimit @ count, stepFilter ],
               "Greedy",
-                extendBothGreedySweep[ graph, walk0, candidateFn, lengthQ, kmax, count,
+                extendBothGreedySweep[ graph, walk0, candidateFn, stepsQ, stepsMax, count,
                   Identity, stepFilter ],
               "RandomGreedy",
                 randomDraws[
-                  { } |-> extendBothGreedySweep[ graph, walk0, candidateFn, lengthQ, kmax, 1,
-                    randomBranch, stepFilter ],
+                  { } |-> extendBothGreedySweep[ graph, walk0, candidateFn, stepsQ, stepsMax,
+                    1, randomBranch, stepFilter ],
                   count, ExtendInfraGeodesic ] ],
           _, Message[ ExtendInfraGeodesic::baddirection, direction ]; Throw[ $Failed ]
         ] ] ], seed ]
@@ -864,28 +874,31 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
 
 (* ===================== Two-sided growth engines ===================== *)
 
-(* Two-sided siblings of the pointed engines: each step grows the walk by at
-   most one edge per side (stepBothSides), a side freezing when its
-   candidateFn returns { }; joined steps beyond the budget or failing
-   stepFilter are cut, and a walk with no surviving step is emitted.  The
-   BFS honours "Pruning" and its early count stop is exact (emissions pass
-   acceptQ before they count); the DFS backtracks (branch = Identity, exact
-   for a finite count) or follows one uniform joined step per node (branch =
-   randomBranch, one trajectory, via randomDraws). *)
+(* Two-sided siblings of the pointed engines: each outer step grows the walk
+   by at most one edge per side (stepBothSides), a side freezing when its
+   candidateFn returns { }; the budget kmax counts outer steps -- the
+   per-side edge reading of kspec, each live side paying one edge per step
+   (T7 review call) -- and stepsQ is the kspec window on that count.  Joined
+   steps failing stepFilter are cut, and a walk with no surviving step is
+   emitted.  The BFS honours "Pruning" and its early count stop is exact
+   (emissions pass stepsQ before they count); the DFS backtracks (branch =
+   Identity, exact for a finite count) or follows one uniform joined step
+   per node (branch = randomBranch, one trajectory, via randomDraws). *)
 
-extendBothFrontierSweep[ graph_Graph, seed_List, candidateFn_, acceptQ_, kmax_,
+extendBothFrontierSweep[ graph_Graph, seed_List, candidateFn_, stepsQ_, kmax_,
     prune_, count_, stepFilter_ ] :=
-  Module[ { frontier = { seed }, completed = { }, moves },
+  Module[ { frontier = { seed }, completed = { }, steps = 0, moves },
     While[ frontier =!= { } && Length[ completed ] < count,
       moves = ( walk |-> { walk,
-          If[ Length[ walk ] - 1 >= kmax, { },
-            Select[ stepBothSides[ graph, walk, candidateFn, Identity ],
-              w |-> Length[ w ] - 1 <= kmax && stepFilter[ w ] ] ] } ) /@ frontier;
+          If[ steps >= kmax, { },
+            Select[ stepBothSides[ graph, walk, candidateFn, Identity ], stepFilter ] ] } ) /@
+        frontier;
       completed = Join[ completed,
-        Select[ Cases[ moves, { w_, { } } :> w ], acceptQ ] ];
+        If[ stepsQ[ steps ], Cases[ moves, { w_, { } } :> w ], { } ] ];
       frontier = applyPruning[
         DeleteDuplicates @ Flatten[ Cases[ moves, { _, nexts : { __ } } :> nexts ], 1 ],
-        prune ]
+        prune ];
+      steps++
     ];
     Take[ completed, UpTo[ count ] ]
   ]
@@ -894,20 +907,20 @@ extendBothFrontierSweep[ graph_Graph, seed_List, candidateFn_, acceptQ_, kmax_,
 (* the closures are held in Module locals, never inlined into descend's RHS:
    see the note on greedyFrontierSweep (Tools.wl) *)
 
-extendBothGreedySweep[ graph_Graph, seed_List, candidateFn_, acceptQ_, kmax_,
+extendBothGreedySweep[ graph_Graph, seed_List, candidateFn_, stepsQ_, kmax_,
     count_, branch_, stepFilter_ ] :=
   Module[ { cap = countLimit @ count, acc = { }, descend, emit,
-            cands = candidateFn, keepQ = acceptQ, filterQ = stepFilter, pick = branch },
-    emit[ walk_ ] := If[ keepQ @ walk,
+            cands = candidateFn, keepQ = stepsQ, filterQ = stepFilter, pick = branch },
+    emit[ walk_, steps_ ] := If[ keepQ @ steps,
       AppendTo[ acc, walk ];
       If[ Length @ acc >= cap, Throw[ acc, extendBothGreedySweep ] ] ];
-    descend[ walk_ ] :=
-      If[ Length[ walk ] - 1 >= kmax,
-        emit[ walk ],
-        With[ { nexts = Select[ stepBothSides[ graph, walk, cands, pick ],
-            w |-> Length[ w ] - 1 <= kmax && filterQ[ w ] ] },
-          If[ nexts === { }, emit[ walk ], Scan[ descend, nexts ] ] ] ];
-    Catch[ descend[ seed ]; acc, extendBothGreedySweep ]
+    descend[ walk_, steps_ ] :=
+      If[ steps >= kmax,
+        emit[ walk, steps ],
+        With[ { nexts = Select[ stepBothSides[ graph, walk, cands, pick ], filterQ ] },
+          If[ nexts === { }, emit[ walk, steps ],
+            Scan[ descend[ #, steps + 1 ] &, nexts ] ] ] ];
+    Catch[ descend[ seed, 0 ]; acc, extendBothGreedySweep ]
   ]
 
 

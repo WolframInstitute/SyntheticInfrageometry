@@ -543,22 +543,22 @@ VerificationTest[
   TestID -> "ExtendInfraGeodesic-BothSides-extends-segment-to-line"
 ]
 
-(* the budget counts edges added to the seed: a full two-sided step adds
-   two, so kspec 2 buys one symmetric step *)
+(* on "BothSides" the budget counts edges added per growing side -- outer
+   steps -- so kspec 1 buys one symmetric step *)
 VerificationTest[
-  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3, 4 }, Infinity, 2, 1,
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3, 4 }, Infinity, 1, 1,
     Properties -> { "Simple", "Minimizing" } ],
   InfraWalk[ { { 2, 3, 4, 5 } } ],
   TestID -> "ExtendInfraGeodesic-BothSides-symmetric-one-step"
 ]
 
-(* an odd budget with both sides live cannot be spent symmetrically: the
-   seed comes back unextended rather than overshooting *)
+(* a frozen side stops paying: at kspec 2 the live side keeps growing one
+   edge per step, four edges added in total *)
 VerificationTest[
-  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3, 4 }, Infinity, 1, 1,
+  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3, 4 }, Infinity, 2, 1,
     Properties -> { "Simple", "Minimizing" } ],
-  InfraWalk[ { { 3, 4 } } ],
-  TestID -> "ExtendInfraGeodesic-BothSides-odd-budget-freezes"
+  InfraWalk[ { { 1, 2, 3, 4, 5 } } ],
+  TestID -> "ExtendInfraGeodesic-BothSides-budget-per-side"
 ]
 
 (* Asymmetric tail: forward freezes immediately, backward keeps growing one
