@@ -572,128 +572,6 @@ VerificationTest[
 ]
 
 
-(* ===== FindInfraMonotoneDeformation ===== *)
-
-(* diamond-with-ear: geodesics 1-2-5 and 1-3-5; the single transverse edge 4-2
-   sits in the sphere of radius 1 around vertex 1 *)
-
-(* the defining property: d(src, .) never decreases along a deformation *)
-VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    With[ { dA = AssociationThread[ VertexList[ g ], GraphDistance[ g, 1 ] ],
-            ws = First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, 3, All ] },
-      ws =!= { } &&
-      AllTrue[ ws, w |-> First[ w ] === 1 && Last[ w ] === 5 &&
-        AllTrue[ Partition[ w, 2, 1 ], dA[ #[[ 2 ]] ] >= dA[ #[[ 1 ]] ] & ] ]
-    ]
-  ],
-  True,
-  TestID -> "FindInfraMonotoneDeformation-monotone-in-the-potential"
-]
-
-(* LengthDelta is the edge count relative to the reference *)
-VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    AllTrue[ Range[ 0, 2 ],
-      k |-> AllTrue[ First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, { k }, All ],
-              Length[ # ] - 1 == 2 + k & ] ]
-  ],
-  True,
-  TestID -> "FindInfraMonotoneDeformation-LengthDelta-is-edge-count-excess"
-]
-
-(* the class is honestly walk-valued: {1,2,4,2,5} is monotone and revisits 2,
-   so it belongs at delta 2 -- the simple-path engine used to drop it *)
-VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    MemberQ[ First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, { 2 }, All ], { 1, 2, 4, 2, 5 } ]
-  ],
-  True,
-  TestID -> "FindInfraMonotoneDeformation-class-includes-revisiting-walks"
-]
-
-(* transverse edges let a walk shuffle inside one level set forever, so the
-   class is infinite without a length bound *)
-VerificationTest[
-  FindInfraMonotoneDeformation[
-    Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ], { 1, 2, 5 }, Infinity, All ],
-  $Failed,
-  { FindInfraMonotoneDeformation::unbounded },
-  TestID -> "FindInfraMonotoneDeformation-unbounded-deltaSpec-refused"
-]
-
-(* Automatic is the smallest non-empty delta: the shortest monotone walk that is
-   not the reference *)
-VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    With[ { ws = First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, Automatic, All ] },
-      ws =!= { } && Union[ Length /@ ws ] === { GraphDistance[ g, 1, 5 ] + 1 } ]
-  ],
-  True,
-  TestID -> "FindInfraMonotoneDeformation-Automatic-is-minimal-delta"
-]
-
-(* a non-geodesic reference (L = 3 > d = 2) admits negative deltas: the
-   deformations straighten it to the two geodesics *)
-VerificationTest[
-  First @ FindInfraMonotoneDeformation[
-    Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ], { 1, 4, 2, 5 }, { -1 }, All ],
-  { { 1, 2, 5 }, { 1, 3, 5 } },
-  TestID -> "FindInfraMonotoneDeformation-negative-delta-straightens"
-]
-
-(* the return is one flat bundle ordered by (LengthDelta, InfraDeformationSize) *)
-VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ] },
-    With[ { ref = FindShortestPath[ g, 1, 9 ] },
-      With[ { ws = First @ FindInfraMonotoneDeformation[ g, ref, 2, All ] },
-        OrderedQ[ ( { Length[ # ], InfraDeformationSize[ ref, # ] } & ) /@ ws ] ]
-    ]
-  ],
-  True,
-  TestID -> "FindInfraMonotoneDeformation-flat-and-sorted-by-delta-then-size"
-]
-
-(* the potential is the knob: grading by d(3, .) admits no monotone 1 -> 5 walk,
-   since 1 and 5 are both at distance 1 from 3 and are not adjacent *)
-VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    { First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, 2, All, "Potential" -> 3 ],
-      First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, 2, All,
-        "Potential" -> ( v |-> GraphDistance[ g, 1, v ] ) ] ===
-      First @ FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, 2, All ] }
-  ],
-  { { }, True },
-  TestID -> "FindInfraMonotoneDeformation-Potential-sets-the-grading"
-]
-
-(* a bare pair specifies endpoints, not a walk, so it stands for the geodesic *)
-VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    First @ FindInfraMonotoneDeformation[ g, { 1, 5 }, 1, All ] ===
-    First @ FindInfraMonotoneDeformation[ g, FindShortestPath[ g, 1, 5 ], 1, All ]
-  ],
-  True,
-  TestID -> "FindInfraMonotoneDeformation-vertex-pair-means-the-geodesic"
-]
-
-(* triangulated grid: every delta-k deformation has length n + k *)
-VerificationTest[
-  With[ { g = Graph[ Flatten[ {
-       Table[ { i, j } <-> { i + 1, j }, { i, 2 }, { j, 3 } ],
-       Table[ { i, j } <-> { i, j + 1 }, { i, 3 }, { j, 2 } ],
-       Table[ { i, j } <-> { i + 1, j + 1 }, { i, 2 }, { j, 2 } ] } ] ] },
-    With[ { n = GraphDistance[ g, { 1, 1 }, { 3, 3 } ] },
-      AllTrue[ Range[ 0, 2 ],
-        k |-> AllTrue[ First @ FindInfraMonotoneDeformation[ g, { { 1, 1 }, { 3, 3 } }, { k }, All ],
-                Length[ # ] - 1 == n + k & ] ]
-    ]
-  ],
-  True,
-  TestID -> "FindInfraMonotoneDeformation-grid-length-equals-n-plus-k"
-]
-
-
 (* ===== InfraDeformationSize ===== *)
 
 (* the number of reference edges a deformation replaces *)
@@ -719,9 +597,8 @@ VerificationTest[
 
 (* bundle form: one number per realisation *)
 VerificationTest[
-  With[ { g = Graph[ { 1 <-> 2, 2 <-> 5, 1 <-> 3, 3 <-> 5, 1 <-> 4, 4 <-> 2 } ] },
-    InfraDeformationSize[ { 1, 2, 5 }, FindInfraMonotoneDeformation[ g, { 1, 2, 5 }, 2, All ] ]
-  ],
+  InfraDeformationSize[ { 1, 2, 5 },
+    InfraWalk[ { { 1, 3, 5 }, { 1, 4, 2, 5 }, { 1, 2, 4, 2, 5 } } ] ],
   { 2, 1, 0 },
   TestID -> "InfraDeformationSize-maps-over-a-bundle"
 ]
@@ -729,17 +606,15 @@ VerificationTest[
 (* the invariant composes as a walk-space score: grouping and extremising by it
    happen at the call site, not through an option *)
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ] },
-    With[ { ref = FindShortestPath[ g, 1, 9 ] },
-      With[ { ws = FindInfraMonotoneDeformation[ g, ref, 1, All ] },
-        With[ { picked = SelectInfraWalk[ g, ws, All,
-                  "From" -> { "Min", w |-> InfraDeformationSize[ ref, w ] } ] },
-          Union[ InfraDeformationSize[ ref, picked ] ] ===
-            { Min @ InfraDeformationSize[ ref, ws ] } ]
-      ]
-    ]
+  With[ { g = GridGraph[ { 3, 3 } ], ref = { 1, 2, 3, 6, 9 },
+          ws = InfraWalk[ { { 1, 2, 3, 6, 9 }, { 1, 2, 5, 6, 9 }, { 1, 4, 7, 8, 9 } } ] },
+    { InfraDeformationSize[ ref, ws ],
+      With[ { picked = SelectInfraWalk[ g, ws, All,
+                "From" -> { "Min", w |-> InfraDeformationSize[ ref, w ] } ] },
+        Union[ InfraDeformationSize[ ref, picked ] ] ===
+          { Min @ InfraDeformationSize[ ref, ws ] } ] }
   ],
-  True,
+  { { 0, 2, 4 }, True },
   TestID -> "InfraDeformationSize-drives-SelectInfraWalk-at-the-call-site"
 ]
 

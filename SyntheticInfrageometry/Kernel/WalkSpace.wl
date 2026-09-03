@@ -10,8 +10,6 @@ PackageScope[geodesicDAGNeighbors]
 PackageScope[resolveEmbeddingCoords]
 PackageScope[parseEmbeddingMethod]
 
-PackageScope[deformationReference]
-
 
 (* ===================== SelectInfraWalk ===================== *)
 
@@ -385,88 +383,7 @@ PathSubgraph[ g_Graph, u_, v_, lengthSpec : ( _Integer | UpTo[ _Integer ] | All 
   ]
 
 
-(* ===================== FindInfraMonotoneDeformation ===================== *)
-
-(* Monotone deformations of a walk A -> B: the walks A -> B along which a
-   potential never decreases.  Under the default potential d(A, .) every edge is
-   either radial (rank +1) or transverse (same rank), so a deformation is a walk
-   that never steps back toward A -- the discrete variation of a geodesic with
-   fixed endpoints, monotone in the radial coordinate.  Relative to the
-   reference (edge count L) it has LengthDelta = #edges - L, negative when the
-   reference is not itself monotone-shortest.  deltaSpec is a kspec relative to
-   L and is what makes the class finite: transverse edges let a walk shuffle
-   inside one level set forever, so an unbounded deltaSpec is refused.  Output
-   is flat, sorted by (LengthDelta, InfraDeformationSize). *)
-
-FindInfraMonotoneDeformation::unbounded =
-  "The monotone deformation class is infinite without a length bound: give a finite deltaSpec (k, {k}, or {kmin, kmax}).";
-
-Options[ FindInfraMonotoneDeformation ] = { "Potential" -> Automatic };
-
-FindInfraMonotoneDeformation[ graph_Graph, ref_, deltaSpec_,
-    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : All,
-    opts : OptionsPattern[ ] ] :=
-  Catch @ Module[ { refWalk, src, tgt, pot, spray, distToTgt, outs, len, minLen, lo, hi },
-    refWalk = deformationReference[ graph, ref ];
-    { src, tgt } = { First @ refWalk, Last @ refWalk };
-    len = Length[ refWalk ] - 1;
-    pot = With[ { spec = OptionValue[ FindInfraMonotoneDeformation, { opts }, "Potential" ] },
-      AssociationThread[ VertexList @ graph,
-        Which[
-          spec === Automatic,     GraphDistance[ graph, src ],
-          VertexQ[ graph, spec ], GraphDistance[ graph, spec ],
-          True,                   spec /@ VertexList @ graph ] ] ];
-    (* no monotone walk into tgt ever climbs above pot[tgt], so capping the
-       vertex set there is implied by the rule rather than an extra constraint *)
-    spray = With[ {
-        edges = Flatten[ Map[
-          e |-> With[ { x = First @ e, y = Last @ e },
-            Which[
-              pot[ x ] > pot[ tgt ] || pot[ y ] > pot[ tgt ], { },
-              pot[ y ] > pot[ x ], { DirectedEdge[ x, y ] },
-              pot[ x ] > pot[ y ], { DirectedEdge[ y, x ] },
-              True, { DirectedEdge[ x, y ], DirectedEdge[ y, x ] } ] ],
-          EdgeList[ graph ] ], 1 ] },
-      { raw = Graph[ Union[ Select[ VertexList @ graph, pot[ # ] <= pot[ tgt ] & ], { src, tgt } ], edges ] },
-      Subgraph[ raw, Intersection[ VertexOutComponent[ raw, src ], VertexInComponent[ raw, tgt ] ] ] ];
-    If[ ! ( VertexQ[ spray, src ] && VertexQ[ spray, tgt ] ), Throw[ InfraWalk[ { } ] ] ];
-    distToTgt = AssociationThread[ VertexList @ spray, GraphDistance[ ReverseGraph @ spray, tgt ] ];
-    minLen = distToTgt[ src ];
-    { lo, hi } = Replace[ deltaSpec, {
-      Automatic         :> { minLen - len, minLen - len },
-      { k_Integer }     :> { k, k },
-      { l_Integer, h_ } :> { Max[ l, minLen - len ], h },
-      k_Integer         :> { minLen - len, k },
-      _                 -> { minLen - len, Infinity } } ];
-    If[ ! IntegerQ[ hi ],
-      Message[ FindInfraMonotoneDeformation::unbounded ]; Throw[ $Failed ] ];
-    outs = GroupBy[ EdgeList @ spray, First -> Last ];
-    InfraWalk @ takeUpTo[
-      SortBy[
-        DeleteCases[
-          Select[
-            (* a step is grown only if tgt stays reachable within the length budget:
-               on the cyclic spray this keeps the sweep proportional to the output
-               instead of exponential in len + hi *)
-            frontierSweep[ spray, src, tgt,
-              { g, walk } |-> Select[ Lookup[ outs, Key[ Last @ walk ], { } ],
-                Length[ walk ] + distToTgt[ # ] <= len + hi & ],
-              Infinity, Infinity ],
-            Length[ # ] - 1 >= len + lo & ],
-          refWalk ],
-        { Length, InfraDeformationSize[ refWalk, # ] & } ],
-      countLimit @ count ]
-  ]
-
-(* the reference walk: deltas and sizes are measured against it, and its
-   endpoints are the deformation endpoints.  A bare pair {A, B} specifies
-   endpoints rather than a walk, so it stands for the canonical geodesic. *)
-deformationReference[ _, InfraSegment[ rs_List, ___ ] ] := First @ rs
-deformationReference[ _, InfraSegment[ dag_Graph ] ]    := First @ dagGeodesics[ dag, 1 ]
-deformationReference[ _, InfraWalk[ rs_List, ___ ] ]    := First @ rs
-deformationReference[ graph_, w_List ]                  :=
-  If[ Length[ w ] >= 3, w, FindShortestPath[ graph, First @ w, Last @ w ] ]
-
+(* ===================== InfraDeformationSize ===================== *)
 
 (* InfraDeformationSize: how many edges of the reference a deformation replaces
    = L - sharedPrefixEdges - sharedSuffixEdges.  One-sided -- measured in the
