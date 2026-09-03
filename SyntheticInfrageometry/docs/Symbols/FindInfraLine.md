@@ -49,7 +49,7 @@ Association @ Table[
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Length @ First @ FindInfraLine[g, a, b, All]],
-   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]
+   {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]
 ```
 
 Three of them on each substrate. Each line runs clear across the patch, since a geodesic stops only where it can no longer be extended.
@@ -68,7 +68,7 @@ Row[Table[
          VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
          ImageSize -> 250],
        Text[name]]],
-   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]]
+   {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]]
 ```
 
 ## Properties and Relations
@@ -77,7 +77,7 @@ A line through two points contains a geodesic between them, so its vertex sequen
 
 ```wl
 With[
-  {g = InfraSubstrate["HexagonalPatch", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["HexagonalTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   {line = First @ First @ FindInfraLine[g, a, b, 1]},

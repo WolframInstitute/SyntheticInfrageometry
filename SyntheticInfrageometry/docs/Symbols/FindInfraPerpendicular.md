@@ -47,7 +47,7 @@ A point on the line yields nothing. That is Euclid I.11, not I.12.
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Small", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Small", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 4 &]},
   {line = First @ First @ FindInfraLine[g, c, far, 1]},
@@ -58,7 +58,7 @@ Off the line, the family is large, and `"Radius"` controls it.
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Small", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Small", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 4 &]},
   {line = First @ First @ FindInfraLine[g, c, far, 1]},
@@ -71,7 +71,7 @@ Three perpendiculars through a point, drawn with the line they cross.
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Small", "Gray", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Small", "Gray", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 4 &]},
   {line = First @ First @ FindInfraLine[g, c, far, 1]},

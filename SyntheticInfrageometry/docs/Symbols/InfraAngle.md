@@ -49,7 +49,7 @@ Three configurations at the centre of a square grid. Opposite arms of a line giv
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = First @ Sort @ Select[VertexList[g], GraphDistance[g, c, #] == 5 &]},
   {line = First @ First @ FindInfraLine[g, c, far, 1]},
@@ -62,7 +62,7 @@ The Alexandrov method is the closed form in three distances, and agrees with it 
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {q1 = First @ Sort @ Select[VertexList[g], GraphDistance[g, c, #] == 4 &]},
   {q2 = Last @ Sort @ Select[VertexList[g], GraphDistance[g, c, #] == 4 &]},
@@ -75,7 +75,7 @@ The two methods answer different questions. On the straight-line case, arclength
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = First @ Sort @ Select[VertexList[g], GraphDistance[g, c, #] == 5 &]},
   {line = First @ First @ FindInfraLine[g, c, far, 1]},

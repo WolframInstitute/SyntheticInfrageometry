@@ -59,7 +59,7 @@ One point is an atom; the calling triple gives a list of them.
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {FindInfraPoint[g], Length @ FindInfraPoint[g, All], VertexCount[g]}]
 ```
 
@@ -67,7 +67,7 @@ With[
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "KeepCoordinates" -> True]},
   <|"centre" -> FindInfraPoint[g, All, "From" -> "Center"],
     "periphery count" -> Length @ FindInfraPoint[g, All, "From" -> "Periphery"]|>]
 ```
@@ -76,7 +76,7 @@ Centre and periphery drawn together. The periphery of a patch is its rim.
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "Gray", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "Gray", "KeepCoordinates" -> True]},
   InfraSceneHighlight[g,
     {InfraSet @ FindInfraPoint[g, All, "From" -> "Periphery"] -> $InfraShellColor,
      InfraSet @ FindInfraPoint[g, All, "From" -> "Center"] -> $InfraPointColor},
@@ -89,7 +89,7 @@ Keeping a draw off the rim. The balls are a nested family, so `q` reads directly
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "Gray", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "Gray", "KeepCoordinates" -> True]},
   InfraSceneHighlight[g,
     {InfraSet @ VertexList @ CenterGraph[g, 0.8] -> $InfraShellColor,
      InfraSet @ VertexList @ CenterGraph[g, 0.4] -> $InfraPointColor},
@@ -102,7 +102,7 @@ A tuple of three mutually most-distant points comes back as three atoms.
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {t = FindInfraPoint[g, 3, "Distance" -> "Max"]},
   <|"count" -> Length[t], "vertices" -> (#["Vertex"] & /@ t)|>]
 ```

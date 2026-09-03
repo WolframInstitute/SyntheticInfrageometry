@@ -44,7 +44,7 @@ Association @ Table[
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      AllTrue[FindInfraMidpoint[g, a, b]["Realizations"], BetweennessQ[g, a, #, b] &]],
-   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]
+   {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]
 ```
 
 The set of vertices satisfying betweenness is the metric interval, and on a lattice it is broad rather than thin.
@@ -56,14 +56,14 @@ Association @ Table[
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Length @ Select[VertexList[g], BetweennessQ[g, a, #, b] &]],
-   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]
+   {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]
 ```
 
 That interval, drawn on the square grid: every vertex between the two endpoints, not merely those on one geodesic.
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "Gray", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "Gray", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   InfraSceneHighlight[g,
@@ -80,7 +80,7 @@ The vertices between two points are exactly [MetricInterval]().
 
 ```wl
 With[
-  {g = InfraSubstrate["HexagonalPatch", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["HexagonalTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   Select[VertexList[g], BetweennessQ[g, a, #, b] &] === Sort @ MetricInterval[g, a, b]]

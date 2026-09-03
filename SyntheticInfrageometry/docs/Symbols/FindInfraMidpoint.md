@@ -57,14 +57,14 @@ Row[Table[
          VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
          ImageSize -> 250],
        Text[name <> ": " <> ToString[Length @ m["Realizations"]] <> " midpoints"]]],
-   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]]
+   {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]]
 ```
 
 On the square grid the geodesics between the two vertices are centred on three different vertices. The measure records what fraction of them chooses each.
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Large", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Large", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   Normal @ InfraMeasure @ FindInfraMidpoint[g, a, b]]
@@ -74,7 +74,7 @@ At odd distance no vertex sits halfway, and the central pair of each geodesic is
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Large", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Large", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   {GraphDistance[g, a, b], FindInfraMidpoint[g, a, b]["Realizations"]}]
@@ -86,7 +86,7 @@ The midpoint lies between its endpoints, so [BetweennessQ]() holds for every can
 
 ```wl
 With[
-  {g = InfraSubstrate["HexagonalPatch", "Large", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["HexagonalTilingGraph", "Large", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 6 &]},
   AllTrue[FindInfraMidpoint[g, a, b]["Realizations"], BetweennessQ[g, a, #, b] &]]

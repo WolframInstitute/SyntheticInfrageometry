@@ -54,7 +54,7 @@ Association @ Table[
      {line = First @ First @ FindInfraLine[g, c, far, 1]},
      {p = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 2 && ! MemberQ[line, #] &]},
      Length @ First @ FindInfraParallel[g, line, p, All]],
-   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]
+   {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]
 ```
 
 The count does not change when the boundary is removed. On a flat torus, which has no rim at all, it is the same.
@@ -74,7 +74,7 @@ The distance from a maximal geodesic to a fixed line varies along it, which is w
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Small", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Small", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {far = SelectFirst[VertexList[g], GraphDistance[g, c, #] == 4 &]},
   {line = First @ First @ FindInfraLine[g, c, far, 1]},

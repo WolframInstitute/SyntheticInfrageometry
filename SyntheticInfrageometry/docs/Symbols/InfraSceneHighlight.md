@@ -40,7 +40,7 @@ Two things to watch.
 
 An explicit appearance directive suppresses the matching diffusion. A `Thickness` directive turns off `"ThicknessRange"`, and the multiplicity information with it.
 
-Ambient styling belongs on the graph, not here. Use `Graph[g, Sequence @@ AmbientGraphStyle["Gray"]]`, and set uniform dot size top-level with `VertexShapeFunction`. A per-entry `AbsolutePointSize` inside the highlight list has no effect.
+Ambient styling belongs on the graph, not here. Use `Graph[g, Sequence @@ InfraSubstrateStyle["Gray"]]`, and set uniform dot size top-level with `VertexShapeFunction`. A per-entry `AbsolutePointSize` inside the highlight list has no effect.
 
 ## Basic Examples
 
@@ -48,7 +48,7 @@ A mixed scene: the geodesic bundle, its endpoints, and its midpoints. Each head 
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "Gray", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "Gray", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
   InfraSceneHighlight[g,
@@ -65,7 +65,7 @@ The same bundle at three opacity settings. `None` draws every geodesic alike. A 
 ```wl
 Row[Table[
    With[
-     {g = InfraSubstrate["SquarePatch", "Medium", "Gray", "KeepCoordinates" -> True]},
+     {g = InfraSubstrate["SquareTilingGraph", "Medium", "Gray", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Labeled[

@@ -44,14 +44,14 @@ Association @ Table[
      {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Table[First @ FindInfraShell[g, c, r]["Volume"], {r, 0, 5}]],
-   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]
+   {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]
 ```
 
 The successive shells around the centre of the square grid: nested rings, each of 4r vertices, and none of them carrying a cycle.
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "Gray", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "Gray", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   InfraSceneHighlight[g,
     Table[FindInfraShell[g, c, r] -> $InfraShellColor, {r, 1, 5}],
@@ -66,7 +66,7 @@ The ball is the union of the shells up to its radius, so the volumes are the par
 
 ```wl
 With[
-  {g = InfraSubstrate["HexagonalPatch", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["HexagonalTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   {areas = Table[First @ FindInfraShell[g, c, r]["Volume"], {r, 0, 5}]},
   {volumes = Table[First @ FindInfraBall[g, c, r]["Volume"], {r, 0, 5}]},

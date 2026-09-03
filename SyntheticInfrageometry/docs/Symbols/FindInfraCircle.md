@@ -45,7 +45,7 @@ Association @ Table[
      {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Length @ First @ FindInfraCircle[g, c, 4]],
-   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]
+   {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]
 ```
 
 Thickening the radius to a band produces a genuine circle, and the thickness needed follows the girth: `{4, 5}` suffices on the square grid, while the hexagonal tiling needs `{4, 6}`.
@@ -53,7 +53,7 @@ Thickening the radius to a band produces a genuine circle, and the thickness nee
 ```wl
 Association @ Table[
    band -> With[
-     {g = InfraSubstrate["HexagonalPatch", "Medium", "KeepCoordinates" -> True]},
+     {g = InfraSubstrate["HexagonalTilingGraph", "Medium", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Length @ First @ FindInfraCircle[g, c, band]],
    {band, {4, {4, 5}, {4, 6}}}]
@@ -74,5 +74,5 @@ Row[Table[
          VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
          ImageSize -> 250],
        Text[First[spec] <> ", band " <> ToString[Last[spec]]]]],
-   {spec, {{"SquarePatch", {4, 5}}, {"HexagonalPatch", {4, 6}}}}]]
+   {spec, {{"SquareTilingGraph", {4, 5}}, {"HexagonalTilingGraph", {4, 6}}}}]]
 ```

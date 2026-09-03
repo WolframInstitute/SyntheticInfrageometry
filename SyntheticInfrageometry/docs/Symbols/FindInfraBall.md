@@ -42,14 +42,14 @@ Association @ Table[
      {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {c = First @ GraphCenter[g]},
      Table[First @ FindInfraBall[g, c, r]["Volume"], {r, 0, 5}]],
-   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]
+   {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]
 ```
 
 The square grid's volumes agree with $2r^2+2r+1$ exactly.
 
 ```wl
 With[
-  {g = InfraSubstrate["SquarePatch", "Medium", "KeepCoordinates" -> True]},
+  {g = InfraSubstrate["SquareTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {c = First @ GraphCenter[g]},
   Table[First @ FindInfraBall[g, c, r]["Volume"], {r, 0, 5}] === Table[2 r^2 + 2 r + 1, {r, 0, 5}]]
 ```
@@ -68,5 +68,5 @@ Row[Table[
          VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
          ImageSize -> 250],
        Text[name <> ": " <> ToString[First @ FindInfraBall[g, c, 4]["Volume"]] <> " vertices"]]],
-   {name, {"PlanePatch", "SquarePatch", "HexagonalPatch"}}]]
+   {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]]
 ```
