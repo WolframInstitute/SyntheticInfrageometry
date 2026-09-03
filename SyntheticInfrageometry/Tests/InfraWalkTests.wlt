@@ -847,15 +847,49 @@ VerificationTest[
   TestID -> "FindInfraWalk-Greedy-All-agrees-with-Exhaustive"
 ]
 
+(* Shuffling the branch order moves which walks come out first, never which
+   exist: the default descent is as complete as the deterministic one, so a
+   strict count is still exact and All still recovers the class. *)
+VerificationTest[
+  With[ { g = CycleGraph[ 4 ] },
+    { class = Sort @ FindInfraWalk[ g, 1, { 6 }, All, Properties -> { "Immersed" },
+        Method -> "Greedy" ][ "Realizations" ] },
+    { Sort @ FindInfraWalk[ g, 1, { 6 }, All, Properties -> { "Immersed" },
+          Method -> "ShuffledGreedy" ][ "Realizations" ] === class,
+      Union @ Table[
+        Length @ FindInfraWalk[ g, 1, { 6 }, 2, Properties -> { "Immersed" } ][ "Realizations" ],
+        { 20 } ],
+      SubsetQ[ class,
+        FindInfraWalk[ g, 1, { 6 }, 2, Properties -> { "Immersed" } ][ "Realizations" ] ] } ],
+  { True, { 2 }, True },
+  TestID -> "FindInfraWalk-ShuffledGreedy-is-complete"
+]
+
+(* Method -> Automatic is that shuffled descent under a bounded count, so the
+   witness is drawn from the ambient random state -- SeedRandom reproduces it. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    { BlockRandom[ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ][ "Realizations" ],
+        RandomSeeding -> 3 ] ===
+      BlockRandom[ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ][ "Realizations" ],
+        RandomSeeding -> 3 ],
+      Length @ Union @ Table[
+        First @ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ][ "Realizations" ], { 30 } ] > 1 } ],
+  { True, True },
+  TestID -> "FindInfraWalk-Automatic-witness-is-ambient-seeded"
+]
+
 
 (* ===================== Stopping conditions ===================== *)
 
 (* the deadline arithmetic is exact: a cusp fires at its apex step, a bare
-   event stops there, and "Delay" grants that many further edges *)
+   event stops there, and "Delay" grants that many further edges.  The single
+   edge forces the class -- the walk can only bounce -- so the deadline is read
+   off without the branch order entering *)
 VerificationTest[
-  { FindInfraWalk[ CycleGraph[ 6 ], 1, 9, Properties -> { },
+  { FindInfraWalk[ PathGraph[ { 1, 2 } ], 1, 9, Properties -> { },
       "StoppingCondition" -> "Cusp" ][ "Realizations" ],
-    FindInfraWalk[ CycleGraph[ 6 ], 1, 9, Properties -> { },
+    FindInfraWalk[ PathGraph[ { 1, 2 } ], 1, 9, Properties -> { },
       "StoppingCondition" -> ( "Cusp" -> { "Stop", "Delay" -> 2 } ) ][ "Realizations" ] },
   { { { 1, 2, 1 } }, { { 1, 2, 1, 2, 1 } } },
   TestID -> "FindInfraWalk-stopping-delay-arithmetic"
@@ -874,7 +908,7 @@ VerificationTest[
 
 (* entries race and the earliest deadline wins *)
 VerificationTest[
-  FindInfraWalk[ CycleGraph[ 6 ], 1, 9, Properties -> { },
+  FindInfraWalk[ PathGraph[ { 1, 2 } ], 1, 9, Properties -> { },
     "StoppingCondition" -> { "Cusp" -> { "Stop", "Delay" -> 4 },
       "Cusp" -> { "Stop", "Delay" -> 1 } } ][ "Realizations" ],
   { { 1, 2, 1, 2 } },

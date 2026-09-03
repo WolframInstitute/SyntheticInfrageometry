@@ -78,7 +78,9 @@ FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
           admissible = admissibleBisectingHyperplane[ graph, aux, q1, q2, properties ];
           Switch[ methodHead,
             "Exhaustive",   findAllMinimalAdmissible[ graph, bisector, admissible, pruning ],
-            "Greedy",       findGreedyMinimalAdmissible[ graph, bisector, admissible, count ],
+            "Greedy" | "ShuffledGreedy",
+                            findGreedyMinimalAdmissible[ graph, bisector, admissible, count,
+                              greedyBranch @ methodHead ],
             "RandomGreedy", randomDraws[
               { } |-> findGreedyMinimalAdmissible[ graph, bisector, admissible, 1, randomBranch ],
               count, FindInfraBisectingHyperplane ],

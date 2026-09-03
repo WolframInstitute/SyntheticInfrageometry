@@ -74,6 +74,8 @@ FindInfraLine[ graph_Graph, p1_, p2_,
             Switch[ methodHead,
               "Exhaustive",   findLineExtensions[ graph, #, pruning, direction, cap ] & /@ middles,
               "Greedy",       findLineExtensionsGreedy[ graph, #, True &, direction, cap ] & /@ middles,
+              "ShuffledGreedy", findLineExtensionsGreedy[ graph, #, True &, direction, cap,
+                                  RandomSample ] & /@ RandomSample[ middles ],
               (* one draw = a random middle plus a random extension of it *)
               "RandomGreedy", { randomDraws[
                                   { } |-> findLineExtensionsGreedy[ graph, RandomChoice @ middles,
@@ -117,6 +119,8 @@ FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] 
         { ext = Switch[ methodHead,
             "Exhaustive",   findLineExtensions[ graph, segment, pruning, direction, cap ],
             "Greedy",       findLineExtensionsGreedy[ graph, segment, True &, direction, cap ],
+            "ShuffledGreedy", findLineExtensionsGreedy[ graph, segment, True &, direction, cap,
+                                RandomSample ],
             "RandomGreedy", randomDraws[
                               { } |-> findLineExtensionsGreedy[ graph, segment, True &, direction, 1, randomBranch ],
                               count, FindInfraLine ],
@@ -290,6 +294,7 @@ FindInfraParallel[ graph_Graph, line_, p_,
         Switch[ methodHead,
           "Exhaustive",   findParallelExtensions[ graph, line0, p0, pruning ],
           "Greedy",       findParallelExtensionsGreedy[ graph, line0, p0, count ],
+          "ShuffledGreedy", findParallelExtensionsGreedy[ graph, line0, p0, count, RandomSample ],
           "RandomGreedy", randomDraws[
                             { } |-> findParallelExtensionsGreedy[ graph, line0, p0, 1, randomBranch ],
                             count, FindInfraParallel ],

@@ -131,6 +131,11 @@ findSegmentCore[ graph_Graph, p1_, p2_,
          stops at `count` geodesics, so the greedy branch is complete and exact *)
       "Greedy",
         dagGeodesics[ GeodesicIntervalGraph[ graph, p1, p2 ], count ],
+      "ShuffledGreedy",
+        With[ { dag = GeodesicIntervalGraph[ graph, p1, p2 ] },
+          greedyFrontierSweep[ dag, p1, p2,
+            { d, w } |-> DeleteCases[ VertexOutComponent[ d, { Last @ w }, 1 ], Last @ w ],
+            True &, Infinity, count, RandomSample ] ],
       "RandomGreedy",
         With[ { dag = GeodesicIntervalGraph[ graph, p1, p2 ] },
           randomDraws[

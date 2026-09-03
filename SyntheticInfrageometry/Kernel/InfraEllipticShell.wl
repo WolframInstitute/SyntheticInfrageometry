@@ -59,7 +59,9 @@ FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
           admissible = admissibleEllipticShell[ graph, verts, row1, row2, range, properties ];
           Switch[ methodHead,
             "Exhaustive",   findAllMinimalAdmissible[ graph, levelSet, admissible, pruning ],
-            "Greedy",       findGreedyMinimalAdmissible[ graph, levelSet, admissible, count ],
+            "Greedy" | "ShuffledGreedy",
+                            findGreedyMinimalAdmissible[ graph, levelSet, admissible, count,
+                              greedyBranch @ methodHead ],
             "RandomGreedy", randomDraws[
               { } |-> findGreedyMinimalAdmissible[ graph, levelSet, admissible, 1, randomBranch ],
               count, FindInfraEllipticShell ],

@@ -59,7 +59,9 @@ FindInfraShell[ graph_Graph, p_, r_,
           admissible = admissibleShell[ localG, p0, radius, properties ];
           Switch[ methodHead,
             "Exhaustive",   findAllMinimalAdmissible[ localG, levelSet, admissible, pruning ],
-            "Greedy",       findGreedyMinimalAdmissible[ localG, levelSet, admissible, count ],
+            "Greedy" | "ShuffledGreedy",
+                            findGreedyMinimalAdmissible[ localG, levelSet, admissible, count,
+                              greedyBranch @ methodHead ],
             "RandomGreedy", randomDraws[
               { } |-> findGreedyMinimalAdmissible[ localG, levelSet, admissible, 1, randomBranch ],
               count, FindInfraShell ],

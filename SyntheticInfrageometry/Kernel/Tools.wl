@@ -19,6 +19,7 @@ PackageScope[resolveMethod]
 PackageScope[retryBudget]
 PackageScope[randomDraws]
 PackageScope[randomBranch]
+PackageScope[greedyBranch]
 PackageScope[infraSpread]
 PackageScope[infraCap]
 PackageScope[spreadFind]
@@ -65,15 +66,15 @@ methodOptions[ { _String, opts___ } ]   := { opts }
    thereby opt-in -- see Wiki/Concepts/ObserverComplexity.md. *)
 
 resolveMethod[ Automatic, All ]  = "Exhaustive";
-resolveMethod[ Automatic, _ ]    = "Greedy";
+resolveMethod[ Automatic, _ ]    = "ShuffledGreedy";
 resolveMethod[ spec_, _ ]        := spec
 
 
-(* The branch function a lazy engine applies to its candidate set: Identity
-   explores every candidate and backtracks ("Greedy"), randomBranch explores one
-   and cannot ("RandomGreedy"), so a randomBranch descent is a single draw.
-   The {} guard matters: RandomChoice[{}, 1] stays unevaluated, and a Scan
-   over it descends into the expression's parts. *)
+(* Identity explores every candidate in candidateFn order and backtracks ("Greedy"); RandomSample the same in uniformly random order ("ShuffledGreedy"), equally complete -- the shuffle moves which realisations are reached first, never which exist; randomBranch explores one candidate and cannot backtrack ("RandomGreedy"), so its descent is a single draw.
+   The {} guard matters: RandomChoice[{}, 1] stays unevaluated, and a Scan over it descends into the expression's parts. *)
+
+greedyBranch[ "Greedy" ]          = Identity;
+greedyBranch[ "ShuffledGreedy" ]  = RandomSample;
 
 randomBranch = If[ # === { }, { }, RandomChoice[ #, 1 ] ] &;
 
