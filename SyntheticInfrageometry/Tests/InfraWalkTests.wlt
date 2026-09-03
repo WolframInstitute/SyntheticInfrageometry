@@ -105,13 +105,13 @@ VerificationTest[
   TestID -> "FindInfraWalk-crossing-count-exhaustive-spelling"
 ]
 
-(* the pointed random walk stopped at its first crossing: the tip is the one
-   doubled vertex -- drawn under the ambient seed *)
+(* the pointed random walk stopped at its first self-intersection: the tip is
+   the one doubled vertex -- drawn under the ambient seed *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     { w = BlockRandom[
         First @ FindInfraWalk[ g, 1, 20, Method -> "RandomGreedy",
-          "StoppingCondition" -> "Crossing" ][ "Realizations" ],
+          "StoppingCondition" -> 1 ][ "Realizations" ],
         RandomSeeding -> 7 ] },
     { First[ w ] === 1, Count[ w, Last @ w ] === 2,
       Length[ w ] - Length[ DeleteDuplicates[ w ] ] === 1 } ],
@@ -590,7 +590,7 @@ VerificationTest[
 VerificationTest[
   ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2 }, Infinity, 20, 1,
     "Direction" -> "Forward", Properties -> { "Immersed" },
-    "StoppingCondition" -> "Crossing" ],
+    "StoppingCondition" -> 1 ],
   InfraWalk[ { { 1, 2, 3, 4, 5, 6, 1 } } ],
   TestID -> "ExtendInfraGeodesic-stopping-condition-forward"
 ]
@@ -598,7 +598,7 @@ VerificationTest[
 VerificationTest[
   ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2 }, Infinity, 20, 1,
     "Direction" -> "Forward", Properties -> { "Immersed" },
-    "StoppingCondition" -> ( "Crossing" -> { "Stop", "Delay" -> 2 } ) ],
+    "StoppingCondition" -> { 1, "Delay" -> 2 } ],
   InfraWalk[ { { 1, 2, 3, 4, 5, 6, 1, 2, 3 } } ],
   TestID -> "ExtendInfraGeodesic-stopping-condition-delay"
 ]
@@ -608,7 +608,7 @@ VerificationTest[
 VerificationTest[
   ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2, 3, 4, 5, 6, 1 }, Infinity, 10, 1,
     "Direction" -> "Forward", Properties -> { "Immersed" },
-    "StoppingCondition" -> "Crossing" ],
+    "StoppingCondition" -> 1 ],
   InfraWalk[ { { 1, 2, 3, 4, 5, 6, 1 } } ],
   TestID -> "ExtendInfraGeodesic-events-replay-over-seed"
 ]
@@ -616,7 +616,7 @@ VerificationTest[
 (* a two-ended walk has no single tip for the event clock *)
 VerificationTest[
   ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2 }, Infinity, 10, 1,
-    Properties -> { "Immersed" }, "StoppingCondition" -> "Crossing" ],
+    Properties -> { "Immersed" }, "StoppingCondition" -> 1 ],
   $Failed,
   { ExtendInfraGeodesic::eventsided },
   TestID -> "ExtendInfraGeodesic-eventsided"
@@ -625,7 +625,7 @@ VerificationTest[
 VerificationTest[
   Sort @ ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3 }, Infinity, 5, All,
       "Direction" -> "Forward", Properties -> { "Simple" },
-      "StoppingCondition" -> "Crossing" ][ "Realizations" ],
+      "StoppingCondition" -> 1 ][ "Realizations" ],
   Sort[ { { 3, 2, 1 }, { 3, 4, 5 } } ],
   { ExtendInfraGeodesic::deadevent },
   TestID -> "ExtendInfraGeodesic-deadevent-warns"
@@ -872,49 +872,50 @@ VerificationTest[
 
 (* ===================== Stopping conditions ===================== *)
 
-(* the deadline arithmetic is exact: a cusp fires at its apex step, a bare
-   event stops there, and "Delay" grants that many further edges.  The single
-   edge forces the class -- the walk can only bounce -- so the deadline is read
-   off without the branch order entering *)
+(* the deadline arithmetic is exact: on the single edge the walk can only
+   bounce, so its first arrival at a visited vertex is the third vertex, and
+   "Delay" grants that many further edges *)
 VerificationTest[
   { FindInfraWalk[ PathGraph[ { 1, 2 } ], 1, 9, Properties -> { },
-      "StoppingCondition" -> "Cusp" ][ "Realizations" ],
+      "StoppingCondition" -> 1 ][ "Realizations" ],
     FindInfraWalk[ PathGraph[ { 1, 2 } ], 1, 9, Properties -> { },
-      "StoppingCondition" -> ( "Cusp" -> { "Stop", "Delay" -> 2 } ) ][ "Realizations" ] },
+      "StoppingCondition" -> { 1, "Delay" -> 2 } ][ "Realizations" ] },
   { { { 1, 2, 1 } }, { { 1, 2, 1, 2, 1 } } },
   TestID -> "FindInfraWalk-stopping-delay-arithmetic"
+]
+
+(* n counts arrivals at visited vertices, whichever vertex: the bounce's
+   second arrival is its fourth vertex *)
+VerificationTest[
+  FindInfraWalk[ PathGraph[ { 1, 2 } ], 1, 9, Properties -> { },
+    "StoppingCondition" -> 2 ][ "Realizations" ],
+  { { 1, 2, 1, 2 } },
+  TestID -> "FindInfraWalk-stopping-count-second-arrival"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 6, 6 } ] },
     { w = BlockRandom[
         First @ FindInfraWalk[ g, 1, 200, Method -> "RandomGreedy",
-          "StoppingCondition" -> ( "Crossing" -> { "Stop", "Count" -> 2 } ) ][ "Realizations" ],
+          "StoppingCondition" -> 2 ][ "Realizations" ],
         RandomSeeding -> 1 ] },
     Length[ w ] - Length[ DeleteDuplicates @ w ] ],
   2,
   TestID -> "FindInfraWalk-stopping-count-second-firing"
 ]
 
-(* entries race and the earliest deadline wins *)
+(* a condition awaiting a self-intersection the constraints exclude warns and
+   runs to the budget *)
 VerificationTest[
-  FindInfraWalk[ PathGraph[ { 1, 2 } ], 1, 9, Properties -> { },
-    "StoppingCondition" -> { "Cusp" -> { "Stop", "Delay" -> 4 },
-      "Cusp" -> { "Stop", "Delay" -> 1 } } ][ "Realizations" ],
-  { { 1, 2, 1, 2 } },
-  TestID -> "FindInfraWalk-stopping-entries-race"
-]
-
-(* a dead event -- excluded by the constraints -- warns and runs to the budget *)
-VerificationTest[
-  FindInfraWalk[ PathGraph[ Range[ 5 ] ], 1, "StoppingCondition" -> "Cusp" ],
+  FindInfraWalk[ PathGraph[ Range[ 5 ] ], 1, Properties -> { "Simple" },
+    "StoppingCondition" -> 1 ],
   InfraWalk[ { { 1, 2, 3, 4, 5 } } ],
   { FindInfraWalk::deadevent },
   TestID -> "FindInfraWalk-dead-event-warns"
 ]
 
 VerificationTest[
-  FindInfraWalk[ PathGraph[ Range[ 5 ] ], 1, 4, "StoppingCondition" -> "Bogus" ],
+  FindInfraWalk[ PathGraph[ Range[ 5 ] ], 1, 4, "StoppingCondition" -> "Crossing" ],
   $Failed,
   { FindInfraWalk::badevent },
   TestID -> "FindInfraWalk-badevent-message"
@@ -937,102 +938,133 @@ VerificationTest[
 (* a simple path is free of every singularity *)
 VerificationTest[
   WalkSingularities[ { 1, 2, 5, 8, 9 } ],
-  <| "Cusp" -> { }, "Tangency" -> { }, "Crossing" -> { }, "TriplePoint" -> { },
-     "EndpointIncidence" -> { } |>,
+  <| "SelfIntersections" -> { }, "SelfTangencies" -> { }, "Cusps" -> { } |>,
   TestID -> "WalkSingularities-simple-path-empty"
 ]
 
-(* the retraced arc around an apex belongs to the cusp, however deep *)
+(* the retraced arc around an apex is one cusp block, however deep; its
+   coincidences are self-intersections, not a repeated arc *)
 VerificationTest[
   WalkSingularities[ { 6, 5, 4, 3, 2, 3, 4, 7 } ],
-  <| "Cusp" -> { 5 }, "Tangency" -> { }, "Crossing" -> { }, "TriplePoint" -> { },
-     "EndpointIncidence" -> { } |>,
-  TestID -> "WalkSingularities-deep-cusp-one-name"
+  <| "SelfIntersections" -> { { 3, 7 }, { 4, 6 } }, "SelfTangencies" -> { },
+     "Cusps" -> { { 3, 4, 5, 6, 7 } } |>,
+  TestID -> "WalkSingularities-deep-cusp-one-block"
 ]
 
 (* a walk revisiting a tree edge: the fold is one cusp, nothing else *)
 VerificationTest[
   WalkSingularities[ { 2, 1, 3, 1, 4 } ],
-  <| "Cusp" -> { 3 }, "Tangency" -> { }, "Crossing" -> { }, "TriplePoint" -> { },
-     "EndpointIncidence" -> { } |>,
+  <| "SelfIntersections" -> { { 2, 4 } }, "SelfTangencies" -> { }, "Cusps" -> { { 2, 3, 4 } } |>,
   TestID -> "WalkSingularities-tree-fold-is-a-cusp"
 ]
 
-(* an arc re-run in the same direction: both ranges ascend *)
+(* an arc re-run in the same direction: both intervals ascend *)
 VerificationTest[
-  WalkSingularities[ { 1, 2, 5, 6, 3, 2, 5, 8 } ][ "Tangency" ],
+  WalkSingularities[ { 1, 2, 5, 6, 3, 2, 5, 8 } ][ "SelfTangencies" ],
   { { { 2, 3 }, { 6, 7 } } },
   TestID -> "WalkSingularities-direct-tangency"
 ]
 
-(* an arc retraced in reverse: the second range descends *)
+(* an arc retraced in reverse: the second interval descends *)
 VerificationTest[
-  WalkSingularities[ { 3, 2, 5, 8, 7, 4, 5, 2, 1 } ][ "Tangency" ],
+  WalkSingularities[ { 3, 2, 5, 8, 7, 4, 5, 2, 1 } ][ "SelfTangencies" ],
   { { { 2, 3 }, { 8, 7 } } },
   TestID -> "WalkSingularities-inverse-tangency"
 ]
 
-(* an isolated double visit is the crossing, the generic double point *)
+(* an isolated double visit is a self-intersection and nothing else *)
 VerificationTest[
   WalkSingularities[ { 2, 5, 4, 7, 8, 5, 6 } ],
-  <| "Cusp" -> { }, "Tangency" -> { }, "Crossing" -> { { 2, 6 } }, "TriplePoint" -> { },
-     "EndpointIncidence" -> { } |>,
-  TestID -> "WalkSingularities-crossing"
+  <| "SelfIntersections" -> { { 2, 6 } }, "SelfTangencies" -> { }, "Cusps" -> { } |>,
+  TestID -> "WalkSingularities-double-visit"
 ]
 
+(* a triple point is a self-intersection group of three positions *)
 VerificationTest[
-  WalkSingularities[ { 0, 1, 2, 3, 1, 4, 5, 1, 6 } ][ "TriplePoint" ],
-  { { 2, 5, 8 } },
+  WalkSingularities[ { 0, 1, 2, 3, 1, 4, 5, 1, 6 } ],
+  <| "SelfIntersections" -> { { 2, 5, 8 } }, "SelfTangencies" -> { }, "Cusps" -> { } |>,
   TestID -> "WalkSingularities-triple-point"
 ]
 
-(* an endpoint of multiplicity >= 2 is an incidence, not a crossing *)
+(* winding twice round a loop repeats the arc, the intervals overlapping at
+   one parameter *)
 VerificationTest[
-  WalkSingularities[ { 7, 4, 5, 2, 1, 4 } ],
-  <| "Cusp" -> { }, "Tangency" -> { }, "Crossing" -> { }, "TriplePoint" -> { },
-     "EndpointIncidence" -> { { 2, 6 } } |>,
-  TestID -> "WalkSingularities-endpoint-incidence"
+  WalkSingularities[ { 1, 2, 3, 1, 2, 3, 1 } ],
+  <| "SelfIntersections" -> { { 1, 4, 7 }, { 2, 5 }, { 3, 6 } },
+     "SelfTangencies" -> { { { 1, 4 }, { 4, 7 } } }, "Cusps" -> { } |>,
+  TestID -> "WalkSingularities-open-winding"
 ]
 
-(* the same closed sequence: incident endpoints as an open list, clean as a loop *)
+(* an arc traversed three times is one group of three intervals *)
 VerificationTest[
-  { WalkSingularities[ { 1, 2, 3, 4, 5, 6, 1 } ][ "EndpointIncidence" ],
+  WalkSingularities[ { 0, 1, 2, 5, 1, 2, 6, 1, 2, 7 } ][ "SelfTangencies" ],
+  { { { 2, 3 }, { 5, 6 }, { 8, 9 } } },
+  TestID -> "WalkSingularities-arc-traversed-thrice"
+]
+
+(* bouncing on one edge: three overlapping cusp blocks, and the fold arc
+   re-run in the same direction *)
+VerificationTest[
+  WalkSingularities[ { 1, 2, 1, 2, 1 } ],
+  <| "SelfIntersections" -> { { 1, 3, 5 }, { 2, 4 } }, "SelfTangencies" -> { { { 1, 3 }, { 3, 5 } } },
+     "Cusps" -> { { 1, 2, 3 }, { 1, 2, 3, 4, 5 }, { 3, 4, 5 } } |>,
+  TestID -> "WalkSingularities-bounce"
+]
+
+(* the same closed sequence: coincident endpoints as an open list, clean as a loop *)
+VerificationTest[
+  { WalkSingularities[ { 1, 2, 3, 4, 5, 6, 1 } ][ "SelfIntersections" ],
     WalkSingularities[ InfraLoop[ { { 1, 2, 3, 4, 5, 6, 1 } } ] ] },
-  { { { 1, 7 } },
-    { <| "Cusp" -> { }, "Tangency" -> { }, "Crossing" -> { }, "TriplePoint" -> { },
-         "Cover" -> 1 |> } },
-  TestID -> "WalkSingularities-loop-closes-endpoint-incidence"
+  { { { 1, 7 } }, { <| "SelfIntersections" -> { }, "SelfTangencies" -> { }, "Cusps" -> { } |> } },
+  TestID -> "WalkSingularities-loop-closes-endpoint-coincidence"
 ]
 
-(* wraparound applies on closed heads: the doubled edge is a two-cusp fold *)
+(* wraparound on closed heads: the doubled edge folds at both vertices, each
+   block cut where it would wrap onto itself *)
 VerificationTest[
-  WalkSingularities[ InfraLoop[ { { 1, 2, 1 } } ] ],
-  { <| "Cusp" -> { 1, 2 }, "Tangency" -> { }, "Crossing" -> { }, "TriplePoint" -> { },
-       "Cover" -> 1 |> },
+  WalkSingularities[ InfraLoop[ { { 1, 2, 1 } } ] ][[ 1, "Cusps" ]],
+  { { 1 }, { 2 } },
   TestID -> "WalkSingularities-loop-wraparound-cusps"
 ]
 
-(* a doubled interval folds at both ends: two cusps, nothing else *)
+(* a doubled interval folds at both ends: two cusp blocks, positions in
+   cyclic order *)
 VerificationTest[
-  WalkSingularities[ InfraLoop[ { { 1, 2, 5, 2, 1 } } ] ][[ 1, "Cusp" ]],
-  { 1, 3 },
+  WalkSingularities[ InfraLoop[ { { 1, 2, 5, 2, 1 } } ] ][[ 1 ]],
+  <| "SelfIntersections" -> { { 2, 4 } }, "SelfTangencies" -> { }, "Cusps" -> { { 4, 1, 2 }, { 2, 3, 4 } } |>,
   TestID -> "WalkSingularities-doubled-interval-two-cusps"
 ]
 
-(* a periodic core is the multiply covered loop *)
+(* a periodic core is the multiply covered loop: one repeated arc tiling the cycle *)
 VerificationTest[
-  WalkSingularities[ InfraLoop[ { { 1, 2, 3, 1, 2, 3, 1 } } ] ],
-  { <| "Cusp" -> { }, "Tangency" -> { }, "Crossing" -> { }, "TriplePoint" -> { },
-       "Cover" -> 2 |> },
+  WalkSingularities[ InfraLoop[ { { 1, 2, 3, 1, 2, 3, 1 } } ] ][[ 1 ]],
+  <| "SelfIntersections" -> { { 1, 4 }, { 2, 5 }, { 3, 6 } },
+     "SelfTangencies" -> { { { 1, 3 }, { 4, 6 } } }, "Cusps" -> { } |>,
   TestID -> "WalkSingularities-multiply-covered-loop"
 ]
 
-(* figure-eight based at the cut vertex of the bowtie: one crossing *)
+(* figure-eight based at the cut vertex of the bowtie: one double visit *)
 VerificationTest[
-  WalkSingularities[ InfraLoop[ { { 1, 2, 3, 4, 5, 3, 1 } } ] ],
-  { <| "Cusp" -> { }, "Tangency" -> { }, "Crossing" -> { { 3, 6 } }, "TriplePoint" -> { },
-       "Cover" -> 1 |> },
-  TestID -> "WalkSingularities-figure-eight-crossing"
+  WalkSingularities[ InfraLoop[ { { 1, 2, 3, 4, 5, 3, 1 } } ] ][[ 1 ]],
+  <| "SelfIntersections" -> { { 3, 6 } }, "SelfTangencies" -> { }, "Cusps" -> { } |>,
+  TestID -> "WalkSingularities-figure-eight"
+]
+
+(* a repeated arc across the wrap of a closed core is read in lifted
+   positions, mod m *)
+VerificationTest[
+  WalkSingularities[ InfraLoop[ { { 3, 7, 1, 2, 3, 4, 5, 6, 2, 3 } } ] ][[ 1 ]],
+  <| "SelfIntersections" -> { { 1, 5 }, { 4, 9 } }, "SelfTangencies" -> { { { 4, 5 }, { 9, 10 } } },
+     "Cusps" -> { } |>,
+  TestID -> "WalkSingularities-loop-wrapped-arc"
+]
+
+(* an arc retraced in reverse on a closed core *)
+VerificationTest[
+  WalkSingularities[ InfraLoop[ { { 5, 2, 3, 6, 7, 8, 9, 3, 2, 4, 5 } } ] ][[ 1 ]],
+  <| "SelfIntersections" -> { { 2, 9 }, { 3, 8 } }, "SelfTangencies" -> { { { 2, 3 }, { 9, 8 } } },
+     "Cusps" -> { } |>,
+  TestID -> "WalkSingularities-loop-inverse-tangency"
 ]
 
 (* ===================== InfraImmersedQ / InfraGenericQ ===================== *)
@@ -1072,7 +1104,7 @@ VerificationTest[
   With[ { g = Graph[ Flatten @ Table[ UndirectedEdge[ { i, j }, # ] & /@
         { { Mod[ i + 1, 4 ], j }, { i, Mod[ j + 1, 4 ] } }, { i, 0, 3 }, { j, 0, 3 } ] ],
       w = { { 1, 2 }, { 2, 2 }, { 2, 1 }, { 3, 1 }, { 3, 2 }, { 2, 2 }, { 2, 3 } } },
-    { WalkSingularities[ w ][ "Crossing" ], InfraGenericQ[ g, w ] } ],
+    { WalkSingularities[ w ][ "SelfIntersections" ], InfraGenericQ[ g, w ] } ],
   { { { 2, 6 } }, True },
   TestID -> "InfraGenericQ-torus-grid-crossing"
 ]
@@ -1107,6 +1139,160 @@ VerificationTest[
     w |-> InfraGenericQ[ GridGraph[ { 3, 3 } ], w ] ],
   True,
   TestID -> "InfraGenericQ-simple-paths-are-generic"
+]
+
+(* ===================== Species exclusion ===================== *)
+
+(* each exclusion is exactly the census filter over the bare walk class *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    { bare = FindInfraGeodesic[ g, 1, 1, { 6 }, All, Properties -> { } ][ "Realizations" ] },
+    AllTrue[ { "Cusps", "SelfTangencies", "TriplePoints", "SelfIntersections" },
+      species |->
+        Sort @ FindInfraGeodesic[ g, 1, 1, { 6 }, All,
+            Properties -> { "Exclude" -> species } ][ "Realizations" ] ===
+          Sort @ Select[ bare, Switch[ species,
+            "SelfIntersections", DuplicateFreeQ[ # ],
+            "TriplePoints", Max[ Counts @ # ] <= 2,
+            _, WalkSingularities[ # ][ species ] === { } ] & ] ] ],
+  True,
+  TestID -> "Exclude-per-species-equals-census-filter"
+]
+
+(* the named classes are exclusion sets: "Immersed" excludes cusps, and the
+   pointed generic default excludes cusps, self-tangencies and triple points *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    { Sort @ FindInfraGeodesic[ g, 1, 1, { 5 }, All, Properties -> { "Immersed" } ][ "Realizations" ] ===
+        Sort @ FindInfraGeodesic[ g, 1, 1, { 5 }, All,
+          Properties -> { "Exclude" -> "Cusps" } ][ "Realizations" ],
+      Sort @ FindInfraWalk[ g, 1, { 7 }, All ][ "Realizations" ] ===
+        Sort @ FindInfraGeodesic[ g, 1, 1, { 7 }, All,
+          Properties -> { "Exclude" -> { "Cusps", "SelfTangencies", "TriplePoints" } } ][ "Realizations" ] } ],
+  { True, True },
+  TestID -> "Exclude-named-classes-are-exclusion-sets"
+]
+
+(* excluding third visits bounds the class by itself, so an unbounded budget
+   is accepted *)
+VerificationTest[
+  With[ { reps = FindInfraWalk[ PathGraph[ Range[ 4 ] ], 1, Infinity, All,
+      Properties -> { "Exclude" -> "TriplePoints" } ][ "Realizations" ] },
+    reps =!= { } && AllTrue[ reps, Max[ Counts @ # ] <= 2 & ] ],
+  True,
+  TestID -> "Exclude-triple-points-bounds-the-class"
+]
+
+VerificationTest[
+  FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 4, Properties -> { "Exclude" -> "Bogus" } ],
+  $Failed,
+  { FindInfraWalk::badproperty },
+  TestID -> "Exclude-unknown-species-refused"
+]
+
+(* ===================== InfraWalkCrossingQ ===================== *)
+
+(* straight through the centre of the 3-by-3 grid twice, once along each
+   axis: the passes separate each other on the shell {1, 2}, a transverse
+   crossing at scale 1; the ambient point, InfraPoint and the position pair
+   all name it *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], w = { 1, 4, 5, 6, 9, 8, 5, 2, 3 } },
+    { InfraWalkCrossingQ[ g, w, 5, 1 ], InfraWalkCrossingQ[ g, w, InfraPoint[ 5 ], 1 ],
+      InfraWalkCrossingQ[ g, w, { 3, 7 }, 1 ] } ],
+  { True, True, True },
+  TestID -> "InfraWalkCrossingQ-straight-crossing-is-transverse"
+]
+
+(* two corner turns at the centre kiss on the shell: a double visit the
+   census cannot tell from a crossing, and the sphere can *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], w = { 1, 2, 5, 4, 7, 8, 5, 6, 9 } },
+    { InfraGenericQ[ g, w ], InfraWalkCrossingQ[ g, w, 5, 1 ] } ],
+  { True, False },
+  TestID -> "InfraWalkCrossingQ-corner-kiss-is-not-a-crossing"
+]
+
+(* a pass has to leave the shell for its radial arc to cut it: a walk ending
+   on the sphere resolves nothing *)
+VerificationTest[
+  InfraWalkCrossingQ[ GridGraph[ { 3, 3 } ], { 4, 5, 6, 9, 8, 5, 2 }, 5, 1 ],
+  False,
+  TestID -> "InfraWalkCrossingQ-truncated-pass-unresolved"
+]
+
+(* a point visited three times is no crossing *)
+VerificationTest[
+  InfraWalkCrossingQ[ GridGraph[ { 3, 3 } ], { 2, 5, 4, 1, 2, 5, 8, 7, 4, 5, 6 }, 5, 1 ],
+  False,
+  TestID -> "InfraWalkCrossingQ-triple-point-is-no-crossing"
+]
+
+(* the wrapper answers for all its realisations *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    { InfraWalkCrossingQ[ g,
+        InfraWalk[ { { 1, 4, 5, 6, 9, 8, 5, 2, 3 }, { 3, 6, 5, 4, 1, 2, 5, 8, 7 } } ], 5, 1 ],
+      InfraWalkCrossingQ[ g,
+        InfraWalk[ { { 1, 4, 5, 6, 9, 8, 5, 2, 3 }, { 1, 2, 5, 4, 7, 8, 5, 6, 9 } } ], 5, 1 ] } ],
+  { True, False },
+  TestID -> "InfraWalkCrossingQ-wrapper-AllTrue"
+]
+
+(* on the square torus grid the walk turns W -> S and E -> N at {2, 2}:
+   generic, not a crossing; list-valued labels take the position pair *)
+VerificationTest[
+  With[ { g = Graph[ Flatten @ Table[ UndirectedEdge[ { i, j }, # ] & /@
+        { { Mod[ i + 1, 4 ], j }, { i, Mod[ j + 1, 4 ] } }, { i, 0, 3 }, { j, 0, 3 } ] ],
+      w = { { 0, 2 }, { 1, 2 }, { 2, 2 }, { 2, 1 }, { 3, 1 }, { 3, 2 }, { 2, 2 }, { 2, 3 }, { 2, 0 } } },
+    { InfraGenericQ[ g, w ], InfraWalkCrossingQ[ g, w, { 3, 7 }, 1 ] } ],
+  { True, False },
+  TestID -> "InfraWalkCrossingQ-torus-corner-kiss"
+]
+
+(* on a larger grid the straight crossing holds at scales 1 and 2 and is
+   unresolved at scale 3, where the passes never leave the ball; two corner
+   turns are no crossing at any scale *)
+VerificationTest[
+  With[ { g = GridGraph[ { 7, 7 } ],
+      straight = { 4, 11, 18, 25, 32, 39, 46, 47, 48, 41, 34, 27, 26, 25, 24, 23, 22 },
+      corners = { 4, 11, 18, 25, 24, 23, 22, 29, 36, 43, 44, 45, 46, 39, 32, 25, 26, 27, 28 } },
+    { InfraWalkCrossingQ[ g, straight, 25, # ] & /@ { 1, 2, 3 },
+      InfraWalkCrossingQ[ g, corners, 25, # ] & /@ { 1, 2 } } ],
+  { { True, True, False }, { False, False } },
+  TestID -> "InfraWalkCrossingQ-grid-scales"
+]
+
+(* in three dimensions the shell minus two radial cuts stays connected: no
+   double point is a crossing *)
+VerificationTest[
+  InfraWalkCrossingQ[ GridGraph[ { 5, 5, 5 } ],
+    { 61, 62, 63, 64, 65, 90, 115, 114, 113, 88, 63, 38, 13 }, 63, 1 ],
+  False,
+  TestID -> "InfraWalkCrossingQ-three-dimensions-no-crossing"
+]
+
+(* on a triangulated patch, where the exact sphere is itself a cycle, the
+   straight crossing and a diagonal one are transverse at scales 1 and 2 *)
+VerificationTest[
+  With[ { g = EdgeAdd[ GridGraph[ { 7, 7 } ],
+        UndirectedEdge[ #, # + 8 ] & /@ Select[ Range[ 42 ], Mod[ #, 7 ] != 0 & ] ],
+      straight = { 4, 11, 18, 25, 32, 39, 46, 47, 48, 41, 34, 27, 26, 25, 24, 23, 22 },
+      diagonal = { 4, 11, 18, 25, 32, 39, 46, 47, 48, 41, 33, 25, 17, 9, 1 } },
+    { InfraWalkCrossingQ[ g, straight, 25, # ] & /@ { 1, 2 },
+      InfraWalkCrossingQ[ g, diagonal, 25, # ] & /@ { 1, 2 } } ],
+  { { True, True }, { True, True } },
+  TestID -> "InfraWalkCrossingQ-triangulated-patch"
+]
+
+(* a figure eight through the centre of the 5-by-5 grid, both passes
+   straight: a crossing on the closed heads too *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    { InfraWalkCrossingQ[ g, InfraLoop[ { { 13, 14, 19, 18, 13, 8, 7, 12, 13 } } ], 13, 1 ],
+      InfraWalkCrossingQ[ g, InfraString[ { { 13, 14, 19, 18, 13, 8, 7, 12 } } ], 13, 1 ] } ],
+  { True, True },
+  TestID -> "InfraWalkCrossingQ-figure-eight-loop"
 ]
 
 EndTestSection[]

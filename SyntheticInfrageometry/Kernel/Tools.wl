@@ -14,6 +14,7 @@ PackageScope[allGeodesics]
 PackageScope[frontierSweep]
 PackageScope[greedyFrontierSweep]
 PackageScope[windowCandidateFn]
+PackageScope[excludedSpecies]
 PackageScope[applyPruning]
 PackageScope[resolveMethod]
 PackageScope[greedyBranch]
@@ -157,7 +158,7 @@ propertiesSubOpts[ s_String ]              := { }
 propertiesSubOpts[ { _String, opts___ } ]  := { opts }
 
 
-(* every rule sees one thing -- the window: the last <= scale vertices of the walk with the candidate appended (the whole walk at scale Infinity).  Constraints are checked first and commute, the genericity pair reading the whole walk prefix since its violations are monotone under extension; selectors follow in list order, each refining the previous ties *)
+(* every rule sees one thing -- the window: the last <= scale vertices of the walk with the candidate appended (the whole walk at scale Infinity).  Constraints are checked first and commute, the singularity exclusions reading the whole walk prefix since their violations are monotone under extension; selectors follow in list order, each refining the previous ties *)
 
 windowCandidateFn[ graph_Graph, scale_, rules_List, fnSym_ ] :=
   With[ { species = windowRuleSpecies[ #, fnSym ] & /@ rules },
@@ -175,14 +176,25 @@ windowCandidateFn[ graph_Graph, scale_, rules_List, fnSym_ ] :=
 
 windowRuleSpecies[ rule_, fnSym_ ] :=
   Switch[ rule,
-    "Minimizing" | "Simple" | "Immersed" | "Generic",
+    "Minimizing" | "Simple" | "Immersed" | "Generic" |
+      ( "Exclude" -> ( "SelfIntersections" | "SelfTangencies" | "Cusps" | "TriplePoints" |
+          { ( "SelfIntersections" | "SelfTangencies" | "Cusps" | "TriplePoints" ) .. } ) ),
                                           "Constraint",
     "Straightest",                        "Selector",
     { "Minimal", _ } | { "Maximal", _ },  "Selector",
-    _String | { _String, ___ },
+    _String | { _String, ___ } | _Rule,
       ( Message[ MessageName[ fnSym, "badproperty" ], rule ]; Throw[ $Failed ] ),
     _,                                    "Constraint"
   ]
+
+
+(* the species a rule list forbids: "Simple", "Immersed" and "Generic" name the standard exclusion sets, "Generic" adding endpoint freeness on the finished two-point walk *)
+excludedSpecies[ rules_List ] := Union @@ Replace[ rules, {
+  "Simple"   -> { "SelfIntersections" },
+  "Immersed" -> { "Cusps" },
+  "Generic"  -> { "Cusps", "SelfTangencies", "TriplePoints" },
+  ( "Exclude" -> s_ ) :> Flatten @ { s },
+  _ -> { } }, { 1 } ]
 
 
 (* "Minimizing": the window is a shortest path. *)
@@ -190,17 +202,23 @@ windowRuleQ[ g_Graph, scale_, "Minimizing", walk_List, w_ ] :=
   With[ { win = walkWindow[ walk, scale ] },
     GraphDistance[ g, First @ win, w ] == Length[ win ] ]
 
-(* "Simple": no revisits. *)
-windowRuleQ[ _Graph, _, "Simple", walk_List, w_ ] := ! MemberQ[ walk, w ]
+(* each excluded species is refused exactly at the step that would create it, so per-step pruning is exact; endpoint freeness is not monotone and is the caller's finished-walk check *)
+windowRuleQ[ g_Graph, scale_, rule : "Simple" | "Immersed" | "Generic" | ( "Exclude" -> _List ), walk_List, w_ ] :=
+  AllTrue[ excludedSpecies @ { rule }, windowRuleQ[ g, scale, "Exclude" -> #, walk, w ] & ]
 
-(* "Immersed": no cusp -- the candidate does not retrace the previous edge; an apex can only form at the tip, so the step check is exact *)
-windowRuleQ[ _Graph, _, "Immersed", walk_List, w_ ] :=
+windowRuleQ[ _Graph, _, "Exclude" -> "SelfIntersections", walk_List, w_ ] := ! MemberQ[ walk, w ]
+
+(* an apex can only form at the tip *)
+windowRuleQ[ _Graph, _, "Exclude" -> "Cusps", walk_List, w_ ] :=
   Length[ walk ] < 2 || walk[[ -2 ]] =!= w
 
-(* "Generic": the step must not repeat an edge of the walk (a repeated edge is a cusp or a tangency) nor visit a vertex a third time (a triple point).  Both violations are monotone under extension, so per-step pruning is exact; endpoint freeness is not, and is the caller's finished-walk check *)
-windowRuleQ[ _Graph, _, "Generic", walk_List, w_ ] :=
-  Count[ walk, w ] <= 1 &&
-  ! MemberQ[ Partition[ walk, 2, 1 ], { Last @ walk, w } | { w, Last @ walk } ]
+windowRuleQ[ _Graph, _, "Exclude" -> "TriplePoints", walk_List, w_ ] := Count[ walk, w ] <= 1
+
+(* a repeated edge opens a repeated arc unless it is the mirror of a cusp, the stretch between the two traversals then being a palindrome *)
+windowRuleQ[ _Graph, _, "Exclude" -> "SelfTangencies", walk_List, w_ ] :=
+  NoneTrue[ Range[ Length[ walk ] - 1 ],
+    p |-> ( walk[[ p ]] === Last[ walk ] && walk[[ p + 1 ]] === w ) ||
+      ( walk[[ p ]] === w && walk[[ p + 1 ]] === Last[ walk ] && ! PalindromeQ[ walk[[ p + 1 ;; ]] ] ) ]
 
 (* a bare predicate is a custom local law on the window *)
 windowRuleQ[ _Graph, scale_, pred_, walk_List, w_ ] :=
