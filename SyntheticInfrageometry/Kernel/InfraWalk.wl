@@ -19,7 +19,6 @@ InfraWalk[ reps_List ][ "End" ]   := columnInfraPoint[ reps, -1 ]
 
 FindInfraWalk::badproperty = "Property `1` is not supported by FindInfraWalk; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the walk.";
 FindInfraWalk::badmethod   = "Method `1` is not supported by FindInfraWalk.";
-FindInfraWalk::shortfall   = "\"RandomGreedy\" drew `1` distinct walks of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 FindInfraWalk::unbounded   = "the walk class is infinite without a length bound; give kspec a finite bound or a bounding rule (\"Simple\", \"Generic\", \"Minimizing\").";
 FindInfraWalk::badevent    = "Stopping condition `1` is not supported; entries are event or event -> \"Stop\" | {\"Stop\", \"Delay\" -> k, \"Count\" -> c}, with event a singularity name (\"Crossing\", \"Tangency\", \"TriplePoint\", \"Cusp\"), a constraint rule, or a predicate on the walk so far.";
 FindInfraWalk::deadevent   = "the event `1` can never fire under the Properties constraints; the walk runs to its budget.";
@@ -52,14 +51,9 @@ FindInfraWalk[ graph_Graph, p1_,
         "Exhaustive",
           pointedFrontierSweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax,
             pruning, countLimit @ count ],
-        "Greedy" | "ShuffledGreedy",
+        "Greedy" | "RandomGreedy",
           pointedGreedySweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax, count,
             greedyBranch @ methodHead ],
-        "RandomGreedy",
-          randomDraws[
-            { } |-> pointedGreedySweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax,
-              1, randomBranch ],
-            count, FindInfraWalk ],
         _,
           Message[ FindInfraWalk::badmethod, methodSpec ]; $Failed
       ] ], p1 ]
@@ -111,14 +105,9 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
                     Infinity, countLimit @ count ],
                   terminal ],
                 acceptQ ],
-            "Greedy" | "ShuffledGreedy",
+            "Greedy" | "RandomGreedy",
               greedyFrontierSweep[ graph, q1, q2, stepFn, acceptQ, kmax, count,
                 greedyBranch @ methodHead, terminal ],
-            "RandomGreedy",
-              randomDraws[
-                { } |-> greedyFrontierSweep[ graph, q1, q2, stepFn, acceptQ, kmax, 1,
-                  randomBranch, terminal ],
-                count, FindInfraWalk ],
             _,
               Message[ FindInfraWalk::badmethod, methodSpec ]; $Failed
           ] ] ] ], p1, p2 ]
@@ -126,7 +115,7 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
 
 (* ===================== Pointed growth engines ===================== *)
 
-(* lazy depth-first growth from a seed walk: descend by candidateFn and emit when the budget is spent or no admissible step remains, acceptQ filtering the emissions; the descent is complete, so a finite count is exact.  branch = Identity backtracks in candidateFn order, RandomSample in shuffled order, randomBranch follows one uniform step per node and cannot backtrack *)
+(* lazy depth-first growth from a seed walk: descend by candidateFn and emit when the budget is spent or no admissible step remains, acceptQ filtering the emissions; the descent is complete, so a finite count is exact.  branch = Identity backtracks in candidateFn order, RandomSample in shuffled order *)
 
 (* the closures are held in Module locals, never inlined into descend's RHS: see greedyFrontierSweep (Tools.wl) *)
 
@@ -327,7 +316,6 @@ walkLengthAdmissibleQ[ { kmin_Integer, kmax_Integer } ] :=
 FindInfraGeodesic::badproperty = "Property `1` is not supported by FindInfraGeodesic; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window.";
 FindInfraGeodesic::badmethod   = "Method `1` is not supported by FindInfraGeodesic.";
 FindInfraGeodesic::unbounded   = "The geodesic class at scale `1` is infinite without a length bound: give a finite kspec, add \"Simple\" or \"Generic\", or ask \"Minimizing\" at scale Infinity.";
-FindInfraGeodesic::shortfall   = "\"RandomGreedy\" drew `1` distinct geodesics of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 FindInfraGeodesic::badevent    = "Stopping condition `1` is not supported; entries are event or event -> \"Stop\" | {\"Stop\", \"Delay\" -> k, \"Count\" -> c}, with event a singularity name (\"Crossing\", \"Tangency\", \"TriplePoint\", \"Cusp\"), a constraint rule, or a predicate on the walk so far.";
 FindInfraGeodesic::deadevent   = "the event `1` can never fire under the Properties constraints; the walk runs to its budget.";
 
@@ -361,14 +349,9 @@ FindInfraGeodesic[ graph_Graph, p1_,
         "Exhaustive",
           pointedFrontierSweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax,
             pruning, countLimit @ count ],
-        "Greedy" | "ShuffledGreedy",
+        "Greedy" | "RandomGreedy",
           pointedGreedySweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax, count,
             greedyBranch @ methodHead ],
-        "RandomGreedy",
-          randomDraws[
-            { } |-> pointedGreedySweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax,
-              1, randomBranch ],
-            count, FindInfraGeodesic ],
         _,
           Message[ FindInfraGeodesic::badmethod, methodSpec ]; $Failed
       ] ], p1 ]
@@ -417,14 +400,9 @@ FindInfraGeodesic[ graph_Graph, p1_, p2_,
                   Infinity, countLimit @ count ],
                 terminal ],
               acceptQ ],
-          "Greedy" | "ShuffledGreedy",
+          "Greedy" | "RandomGreedy",
             greedyFrontierSweep[ graph, q1, q2, stepFn, acceptQ, kmax, count,
               greedyBranch @ methodHead, terminal ],
-          "RandomGreedy",
-            randomDraws[
-              { } |-> greedyFrontierSweep[ graph, q1, q2, stepFn, acceptQ, kmax, 1,
-                randomBranch, terminal ],
-              count, FindInfraGeodesic ],
           _,
             Message[ FindInfraGeodesic::badmethod, methodSpec ]; $Failed
         ]
@@ -618,7 +596,6 @@ ExtendInfraGeodesic::badevent     = "Stopping condition `1` is not supported; en
 ExtendInfraGeodesic::deadevent    = "the event `1` can never fire under the Properties constraints; the walk runs to its budget.";
 ExtendInfraGeodesic::eventsided   = "stopping conditions read the walk at a single growing tip; extend with \"Direction\" -> \"Forward\" or \"Backward\".";
 ExtendInfraGeodesic::unbounded    = "The extension class at scale `1` is infinite without a length bound: give a finite kspec, add \"Simple\" or \"Generic\", or ask \"Minimizing\" at scale Infinity.";
-ExtendInfraGeodesic::shortfall    = "\"RandomGreedy\" drew `1` distinct extensions of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ ExtendInfraGeodesic ] = {
   Properties          -> { "Minimizing" },
@@ -672,7 +649,7 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
         If[ kmax === Infinity && ! MemberQ[ rules, "Simple" | "Generic" ] &&
             ! ( scale === Infinity && MemberQ[ rules, "Minimizing" ] ),
           Message[ ExtendInfraGeodesic::unbounded, scale ]; Throw[ $Failed ] ];
-        If[ ! MatchQ[ methodHead, "Exhaustive" | "Greedy" | "ShuffledGreedy" | "RandomGreedy" ],
+        If[ ! MatchQ[ methodHead, "Exhaustive" | "Greedy" | "RandomGreedy" ],
           Message[ ExtendInfraGeodesic::badmethod, methodSpec ]; Throw[ $Failed ] ];
         Switch[ direction,
           "Forward",
@@ -680,47 +657,32 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
               "Exhaustive",
                 pointedFrontierSweep[ graph, walk0, candidateFn, lengthQ, deadlineFn, kmax,
                   pruning, countLimit @ count ],
-              "Greedy" | "ShuffledGreedy",
+              "Greedy" | "RandomGreedy",
                 pointedGreedySweep[ graph, walk0, candidateFn, lengthQ, deadlineFn, kmax,
-                  count, greedyBranch @ methodHead ],
-              "RandomGreedy",
-                randomDraws[
-                  { } |-> pointedGreedySweep[ graph, walk0, candidateFn, lengthQ, deadlineFn,
-                    kmax, 1, randomBranch ],
-                  count, ExtendInfraGeodesic ] ],
+                  count, greedyBranch @ methodHead ] ],
           "Backward",
             Reverse /@ Switch[ methodHead,
               "Exhaustive",
                 pointedFrontierSweep[ graph, Reverse @ walk0, candidateFn, lengthQ,
                   deadlineFn, kmax, pruning, countLimit @ count ],
-              "Greedy" | "ShuffledGreedy",
+              "Greedy" | "RandomGreedy",
                 pointedGreedySweep[ graph, Reverse @ walk0, candidateFn, lengthQ, deadlineFn,
-                  kmax, count, greedyBranch @ methodHead ],
-              "RandomGreedy",
-                randomDraws[
-                  { } |-> pointedGreedySweep[ graph, Reverse @ walk0, candidateFn, lengthQ,
-                    deadlineFn, kmax, 1, randomBranch ],
-                  count, ExtendInfraGeodesic ] ],
+                  kmax, count, greedyBranch @ methodHead ] ],
           "BothSides",
             Switch[ methodHead,
               "Exhaustive",
                 extendBothFrontierSweep[ graph, walk0, candidateFn, stepsQ, stepsMax,
                   pruning, countLimit @ count, stepFilter ],
-              "Greedy" | "ShuffledGreedy",
+              "Greedy" | "RandomGreedy",
                 extendBothGreedySweep[ graph, walk0, candidateFn, stepsQ, stepsMax, count,
-                  greedyBranch @ methodHead, stepFilter ],
-              "RandomGreedy",
-                randomDraws[
-                  { } |-> extendBothGreedySweep[ graph, walk0, candidateFn, stepsQ, stepsMax,
-                    1, randomBranch, stepFilter ],
-                  count, ExtendInfraGeodesic ] ],
+                  greedyBranch @ methodHead, stepFilter ] ],
           _, Message[ ExtendInfraGeodesic::baddirection, direction ]; Throw[ $Failed ]
         ] ] ], seed ]
 
 
 (* ===================== Two-sided growth engines ===================== *)
 
-(* two-sided siblings of the pointed engines: each outer step grows the walk by at most one edge per side, a side freezing when its candidateFn returns { }, and kmax counts the outer steps.  The BFS honours "Pruning" and its early count stop is exact; the DFS backtracks (branch = Identity) or follows one uniform joined step per node (randomBranch) *)
+(* two-sided siblings of the pointed engines: each outer step grows the walk by at most one edge per side, a side freezing when its candidateFn returns { }, and kmax counts the outer steps.  The BFS honours "Pruning" and its early count stop is exact; the DFS backtracks, in candidateFn order (branch = Identity) or shuffled (RandomSample) *)
 
 extendBothFrontierSweep[ graph_Graph, seed_List, candidateFn_, stepsQ_, kmax_,
     prune_, count_, stepFilter_ ] :=

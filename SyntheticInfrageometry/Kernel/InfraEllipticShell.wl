@@ -14,7 +14,6 @@ InfraEllipticShell[ reps_List ][ "Volume" ] := Length /@ reps
 
 FindInfraEllipticShell::badmethod   = "Method `1` is not supported by FindInfraEllipticShell.";
 FindInfraEllipticShell::badproperty = "Property `1` is not supported by FindInfraEllipticShell.";
-FindInfraEllipticShell::shortfall   = "\"RandomGreedy\" drew `1` distinct shells of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraEllipticShell ] = {
   Properties -> { },
@@ -45,12 +44,9 @@ FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
           admissible = admissibleEllipticShell[ graph, verts, row1, row2, range, properties ];
           Switch[ methodHead,
             "Exhaustive",   findAllMinimalAdmissible[ graph, levelSet, admissible, pruning ],
-            "Greedy" | "ShuffledGreedy",
+            "Greedy" | "RandomGreedy",
                             findGreedyMinimalAdmissible[ graph, levelSet, admissible, count,
                               greedyBranch @ methodHead ],
-            "RandomGreedy", randomDraws[
-              { } |-> findGreedyMinimalAdmissible[ graph, levelSet, admissible, 1, randomBranch ],
-              count, FindInfraEllipticShell ],
             _,              Message[ FindInfraEllipticShell::badmethod, methodSpec ]; $Failed
           ]
         ]

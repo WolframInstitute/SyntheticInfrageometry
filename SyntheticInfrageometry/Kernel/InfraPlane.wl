@@ -11,7 +11,6 @@ InfraPlane[ reps_List ][ "Volume" ] := Length /@ reps
 
 FindInfraBisectingHyperplane::badmethod   = "Method `1` is not supported by FindInfraBisectingHyperplane.";
 FindInfraBisectingHyperplane::badproperty = "Property `1` is not supported by FindInfraBisectingHyperplane.";
-FindInfraBisectingHyperplane::shortfall   = "\"RandomGreedy\" drew `1` distinct hyperplanes of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraBisectingHyperplane ] = {
   Properties -> { },
@@ -54,12 +53,9 @@ FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
           admissible = admissibleBisectingHyperplane[ graph, aux, q1, q2, properties ];
           Switch[ methodHead,
             "Exhaustive",   findAllMinimalAdmissible[ graph, bisector, admissible, pruning ],
-            "Greedy" | "ShuffledGreedy",
+            "Greedy" | "RandomGreedy",
                             findGreedyMinimalAdmissible[ graph, bisector, admissible, count,
                               greedyBranch @ methodHead ],
-            "RandomGreedy", randomDraws[
-              { } |-> findGreedyMinimalAdmissible[ graph, bisector, admissible, 1, randomBranch ],
-              count, FindInfraBisectingHyperplane ],
             _,              Message[ FindInfraBisectingHyperplane::badmethod, methodSpec ]; $Failed
           ]
         ]

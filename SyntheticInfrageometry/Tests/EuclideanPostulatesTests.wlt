@@ -1287,7 +1287,7 @@ VerificationTest[
 
 (* ===== FindInfraLine / FindInfraParallel: "Greedy" vs "RandomGreedy" ===== *)
 
-(* "Greedy" (pick = First) is fully deterministic -- no randomness is consumed. *)
+(* "Greedy" (candidate order) is fully deterministic -- no randomness is consumed. *)
 VerificationTest[
   With[ { g = GridGraph[ { 6, 6 } ] },
     FindInfraLine[ g, 1, 2, 1, Method -> "Greedy" ] === FindInfraLine[ g, 1, 2, 1, Method -> "Greedy" ]
@@ -1308,7 +1308,7 @@ VerificationTest[
   TestID -> "FindInfraLine-Greedy-BothSides-is-geodesic"
 ]
 
-(* "RandomGreedy" (pick = RandomChoice) is reproducible given an ambient
+(* "RandomGreedy" (random branch order) is reproducible given an ambient
    SeedRandom -- no seed is threaded as a parameter. *)
 VerificationTest[
   With[ { g = GridGraph[ { 6, 6 } ] },

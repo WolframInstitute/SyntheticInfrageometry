@@ -11,7 +11,6 @@ InfraShell[ reps_List ][ "Volume" ] := Length /@ reps
 
 FindInfraShell::badmethod   = "Method `1` is not supported by FindInfraShell.";
 FindInfraShell::badproperty = "Property `1` is not supported by FindInfraShell.";
-FindInfraShell::shortfall   = "\"RandomGreedy\" drew `1` distinct shells of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraShell ] = {
   Properties -> { },
@@ -40,12 +39,9 @@ FindInfraShell[ graph_Graph, p_, r_,
           admissible = admissibleShell[ localG, p0, radius, properties ];
           Switch[ methodHead,
             "Exhaustive",   findAllMinimalAdmissible[ localG, levelSet, admissible, pruning ],
-            "Greedy" | "ShuffledGreedy",
+            "Greedy" | "RandomGreedy",
                             findGreedyMinimalAdmissible[ localG, levelSet, admissible, count,
                               greedyBranch @ methodHead ],
-            "RandomGreedy", randomDraws[
-              { } |-> findGreedyMinimalAdmissible[ localG, levelSet, admissible, 1, randomBranch ],
-              count, FindInfraShell ],
             _,              Message[ FindInfraShell::badmethod, methodSpec ]; $Failed
           ]
         ]

@@ -826,16 +826,6 @@ VerificationTest[
   TestID -> "FindInfraWalk-countless-is-one-instance"
 ]
 
-(* A randomized descent cannot backtrack, so it can fall short of a strict count;
-   the shortfall is loud ($Failed plus a message) rather than a silent under-supply. *)
-VerificationTest[
-  FindInfraWalk[ CycleGraph[ 4 ], 1, { 6 }, 99, Properties -> { "Immersed" },
-    Method -> "RandomGreedy" ],
-  $Failed,
-  { FindInfraWalk::shortfall },
-  TestID -> "FindInfraWalk-RandomGreedy-strict-shortfall-fails-loudly"
-]
-
 (* All the same walks, whichever engine enumerates them. *)
 VerificationTest[
   With[ { g = CycleGraph[ 4 ] },
@@ -847,25 +837,25 @@ VerificationTest[
   TestID -> "FindInfraWalk-Greedy-All-agrees-with-Exhaustive"
 ]
 
-(* Shuffling the branch order moves which walks come out first, never which
-   exist: the default descent is as complete as the deterministic one, so a
+(* Randomising the branch order moves which walks come out first, never which
+   exist: the random descent is as complete as the deterministic one, so a
    strict count is still exact and All still recovers the class. *)
 VerificationTest[
   With[ { g = CycleGraph[ 4 ] },
     { class = Sort @ FindInfraWalk[ g, 1, { 6 }, All, Properties -> { "Immersed" },
         Method -> "Greedy" ][ "Realizations" ] },
     { Sort @ FindInfraWalk[ g, 1, { 6 }, All, Properties -> { "Immersed" },
-          Method -> "ShuffledGreedy" ][ "Realizations" ] === class,
+          Method -> "RandomGreedy" ][ "Realizations" ] === class,
       Union @ Table[
         Length @ FindInfraWalk[ g, 1, { 6 }, 2, Properties -> { "Immersed" } ][ "Realizations" ],
         { 20 } ],
       SubsetQ[ class,
         FindInfraWalk[ g, 1, { 6 }, 2, Properties -> { "Immersed" } ][ "Realizations" ] ] } ],
   { True, { 2 }, True },
-  TestID -> "FindInfraWalk-ShuffledGreedy-is-complete"
+  TestID -> "FindInfraWalk-RandomGreedy-is-complete"
 ]
 
-(* Method -> Automatic is that shuffled descent under a bounded count, so the
+(* Method -> Automatic is that random descent under a bounded count, so the
    witness is drawn from the ambient random state -- SeedRandom reproduces it. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
@@ -900,7 +890,7 @@ VerificationTest[
     { w = BlockRandom[
         First @ FindInfraWalk[ g, 1, 200, Method -> "RandomGreedy",
           "StoppingCondition" -> ( "Crossing" -> { "Stop", "Count" -> 2 } ) ][ "Realizations" ],
-        RandomSeeding -> 7 ] },
+        RandomSeeding -> 1 ] },
     Length[ w ] - Length[ DeleteDuplicates @ w ] ],
   2,
   TestID -> "FindInfraWalk-stopping-count-second-firing"

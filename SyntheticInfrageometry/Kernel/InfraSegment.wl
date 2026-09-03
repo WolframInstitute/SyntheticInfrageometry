@@ -52,7 +52,6 @@ InfraSegment[ dag_Graph ][ "End" ]   := InfraSet[ Select[ VertexList[ dag ], Ver
 
 FindInfraSegment::badproperty = "Property `1` is not supported by FindInfraSegment; local rules on the geodesic bundle moved to FindInfraGeodesic[graph, p1, p2, scale].";
 FindInfraSegment::badmethod   = "Method `1` is not supported by FindInfraSegment.";
-FindInfraSegment::shortfall   = "\"RandomGreedy\" drew `1` distinct geodesics of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraSegment ] = {
   Method -> Automatic
@@ -101,18 +100,11 @@ findSegmentCore[ graph_Graph, p1_, p2_,
          stops at `count` geodesics, so the greedy branch is complete and exact *)
       "Greedy",
         dagGeodesics[ GeodesicIntervalGraph[ graph, p1, p2 ], count ],
-      "ShuffledGreedy",
+      "RandomGreedy",
         With[ { dag = GeodesicIntervalGraph[ graph, p1, p2 ] },
           greedyFrontierSweep[ dag, p1, p2,
             { d, w } |-> DeleteCases[ VertexOutComponent[ d, { Last @ w }, 1 ], Last @ w ],
             True &, Infinity, count, RandomSample ] ],
-      "RandomGreedy",
-        With[ { dag = GeodesicIntervalGraph[ graph, p1, p2 ] },
-          randomDraws[
-            { } |-> greedyFrontierSweep[ dag, p1, p2,
-                { d, w } |-> DeleteCases[ VertexOutComponent[ d, { Last @ w }, 1 ], Last @ w ],
-                True &, Infinity, 1, randomBranch ],
-            count, FindInfraSegment ] ],
       _,
         Message[ FindInfraSegment::badmethod, methodSpec ]; $Failed
     ]

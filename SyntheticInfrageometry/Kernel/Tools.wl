@@ -16,9 +16,6 @@ PackageScope[greedyFrontierSweep]
 PackageScope[windowCandidateFn]
 PackageScope[applyPruning]
 PackageScope[resolveMethod]
-PackageScope[retryBudget]
-PackageScope[randomDraws]
-PackageScope[randomBranch]
 PackageScope[greedyBranch]
 PackageScope[infraSpread]
 PackageScope[infraCap]
@@ -57,42 +54,17 @@ methodOptions[ { _String, opts___ } ]   := { opts }
 (* ===================== The method ladder ===================== *)
 
 (* Automatic resolves by the count: All asks for the whole class, hence the exhaustive pool, and any bounded count for that many certified instances, which the lazy greedy descent supplies exactly -- so exponential enumeration is opt-in.
-   The bounded branch descends in shuffled order: the class is not canonically ordered, so an always-first witness would be an artefact of the enumeration, not of the geometry. *)
+   The bounded branch descends in random order: the class is not canonically ordered, so an always-first witness would be an artefact of the enumeration, not of the geometry. *)
 
 resolveMethod[ Automatic, All ]  = "Exhaustive";
-resolveMethod[ Automatic, _ ]    = "ShuffledGreedy";
+resolveMethod[ Automatic, _ ]    = "RandomGreedy";
 resolveMethod[ spec_, _ ]        := spec
 
 
-(* Identity explores every candidate in candidateFn order and backtracks ("Greedy"); RandomSample the same in uniformly random order ("ShuffledGreedy"), equally complete -- the shuffle moves which realisations are reached first, never which exist; randomBranch explores one candidate and cannot backtrack ("RandomGreedy"), so its descent is a single draw.
-   The {} guard matters: RandomChoice[{}, 1] stays unevaluated, and a Scan over it descends into the expression's parts. *)
+(* Identity explores every candidate in candidateFn order and backtracks ("Greedy"); RandomSample the same in uniformly random order ("RandomGreedy"), equally complete -- the shuffle moves which realisations are reached first, never which exist *)
 
-greedyBranch[ "Greedy" ]          = Identity;
-greedyBranch[ "ShuffledGreedy" ]  = RandomSample;
-
-randomBranch = If[ # === { }, { }, RandomChoice[ #, 1 ] ] &;
-
-
-(* How many failed draws a randomized descent is allowed before it gives up. *)
-
-retryBudget[ Infinity ]   = 20;
-retryBudget[ n_Integer ]  := Max[ 20, 5 n ]
-
-
-(* repeat single-choice descents, deduplicate, and stop at count distinct realisations or when the retry budget of failed draws is spent.  fnSym is the calling head, not fnSym::shortfall -- a MessageName passed as a bare argument evaluates to its template string *)
-
-randomDraws[ descend_, count_, fnSym_ ] :=
-  Module[ { cap = countLimit @ count, out = { }, misses = 0, draw },
-    While[ Length[ out ] < cap && misses < retryBudget[ cap ],
-      draw = descend[ ];
-      If[ draw === { } || MemberQ[ out, First @ draw ],
-        misses++,
-        AppendTo[ out, First @ draw ] ]
-    ];
-    If[ IntegerQ[ count ] && Length[ out ] < count,
-      Message[ MessageName[ fnSym, "shortfall" ], Length @ out, count ] ];
-    out
-  ]
+greedyBranch[ "Greedy" ]        = Identity;
+greedyBranch[ "RandomGreedy" ]  = RandomSample;
 
 
 (* ===================== Cycle helper ===================== *)

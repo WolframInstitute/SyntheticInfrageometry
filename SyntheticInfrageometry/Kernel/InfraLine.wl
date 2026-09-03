@@ -23,7 +23,6 @@ InfraLine /: Part[ InfraLine[ reps_List ], i_Integer ] := columnInfraPoint[ reps
 FindInfraLine::badmethod    = "Method `1` is not supported by FindInfraLine.";
 FindInfraLine::badproperty  = "Property `1` is not supported by FindInfraLine (FindInfraLine accepts only Properties -> {}).";
 FindInfraLine::baddirection = "Direction `1` is not supported by FindInfraLine.";
-FindInfraLine::shortfall    = "\"RandomGreedy\" drew `1` distinct lines of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraLine ] = {
   Properties   -> { },
@@ -55,13 +54,8 @@ FindInfraLine[ graph_Graph, p1_, p2_,
             Switch[ methodHead,
               "Exhaustive",   findLineExtensions[ graph, #, pruning, direction, cap ] & /@ middles,
               "Greedy",       findLineExtensionsGreedy[ graph, #, True &, direction, cap ] & /@ middles,
-              "ShuffledGreedy", findLineExtensionsGreedy[ graph, #, True &, direction, cap,
-                                  RandomSample ] & /@ RandomSample[ middles ],
-              (* one draw = a random middle plus a random extension of it *)
-              "RandomGreedy", { randomDraws[
-                                  { } |-> findLineExtensionsGreedy[ graph, RandomChoice @ middles,
-                                    True &, direction, 1, randomBranch ],
-                                  count, FindInfraLine ] },
+              "RandomGreedy", findLineExtensionsGreedy[ graph, #, True &, direction, cap,
+                                RandomSample ] & /@ RandomSample[ middles ],
               _,              Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
             ], 1 ] },
         If[ maximality === "Diameter",
@@ -97,11 +91,8 @@ FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] 
         { ext = Switch[ methodHead,
             "Exhaustive",   findLineExtensions[ graph, segment, pruning, direction, cap ],
             "Greedy",       findLineExtensionsGreedy[ graph, segment, True &, direction, cap ],
-            "ShuffledGreedy", findLineExtensionsGreedy[ graph, segment, True &, direction, cap,
-                                RandomSample ],
-            "RandomGreedy", randomDraws[
-                              { } |-> findLineExtensionsGreedy[ graph, segment, True &, direction, 1, randomBranch ],
-                              count, FindInfraLine ],
+            "RandomGreedy", findLineExtensionsGreedy[ graph, segment, True &, direction, cap,
+                              RandomSample ],
             _,              Message[ FindInfraLine::badmethod, methodSpec ]; Throw[ $Failed ]
           ] },
         If[ maximality === "Diameter",
@@ -218,7 +209,6 @@ findLineExtensionsGreedy[ graph_Graph, segment_List, admissible_, direction_Stri
 
 FindInfraParallel::badmethod   = "Method `1` is not supported by FindInfraParallel.";
 FindInfraParallel::badproperty = "Property `1` is not supported by FindInfraParallel (FindInfraParallel accepts only Properties -> {}).";
-FindInfraParallel::shortfall   = "\"RandomGreedy\" drew `1` distinct parallels of the `2` requested before exhausting its retry budget; use Method -> \"Exhaustive\" for the exact class.";
 
 Options[ FindInfraParallel ] = {
   Properties -> { },
@@ -238,10 +228,7 @@ FindInfraParallel[ graph_Graph, line_, p_,
         Switch[ methodHead,
           "Exhaustive",   findParallelExtensions[ graph, line0, p0, pruning ],
           "Greedy",       findParallelExtensionsGreedy[ graph, line0, p0, count ],
-          "ShuffledGreedy", findParallelExtensionsGreedy[ graph, line0, p0, count, RandomSample ],
-          "RandomGreedy", randomDraws[
-                            { } |-> findParallelExtensionsGreedy[ graph, line0, p0, 1, randomBranch ],
-                            count, FindInfraParallel ],
+          "RandomGreedy", findParallelExtensionsGreedy[ graph, line0, p0, count, RandomSample ],
           _,              Message[ FindInfraParallel::badmethod, methodSpec ]; Throw[ $Failed ]
         ]
       ]
