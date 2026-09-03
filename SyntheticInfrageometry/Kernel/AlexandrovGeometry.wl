@@ -7,9 +7,7 @@ PackageScope[triangleEuclideanDeficit]
 
 (* ===================== Comparison-triangle math ===================== *)
 
-(* Cosine of the angle in M_k^2 at the vertex opposite "opposite",
-   adjacent to "adj1" and "adj2".  k > 0 spherical, k = 0 Euclidean,
-   k < 0 hyperbolic. *)
+(* cosine of the angle in M_k^2 at the vertex opposite "opposite"; k > 0 spherical, k = 0 Euclidean, k < 0 hyperbolic *)
 
 comparisonAngleCos[ opposite_, adj1_, adj2_, k_ ] :=
   Which[
@@ -28,10 +26,7 @@ comparisonAngleCos[ opposite_, adj1_, adj2_, k_ ] :=
   ]
 
 
-(* Square of the comparison distance d_k_bar(p, x) in M_k^2 from a vertex
-   p to a probe x on the side q-r at distance t from q, given the side
-   q-p length c and the cosine of the comparison angle at q.  Closed-form
-   in t, c, cosAngle, k. *)
+(* squared comparison distance in M_k^2 from p to a probe at distance t along q-r, closed-form in t, c, cosAngle, k *)
 
 comparisonSideSquared[ c_, t_, cosAngle_, k_ ] :=
   Which[
@@ -50,10 +45,6 @@ comparisonSideSquared[ c_, t_, cosAngle_, k_ ] :=
 
 (* ===================== ComparisonTriangle ===================== *)
 
-(* ComparisonTriangle[a, b, c, "Curvature" -> k] returns the comparison
-   triangle in M_k^2 with side lengths {a, b, c} (a opposite vertex p,
-   b opposite q, c opposite r).  k = 0 returns Triangle[{q, r, p}] in R^2;
-   k != 0 returns InfraComparisonTriangle wrapping sides, curvature, angles. *)
 
 Options[ ComparisonTriangle ] = { "Curvature" -> 0 };
 
@@ -89,15 +80,9 @@ InfraComparisonTriangle[ data_Association ][ key_String ] := data[ key ]
 
 (* ===================== CATInequalityQ ===================== *)
 
-(* CATInequalityQ[g, {p, q, r}, k : 0]: discrete-vertex check of the CAT(k)
-   thinness inequality on the geodesic triangle {p, q, r}.  Option Method:
-   "ApexSide" (default) tests d(apex, x)^2 <= d_k_bar(apex', x')^2 for every
-   apex and every interior vertex x on its opposite side; "TwoRays" tests
-   d(x, y)^2 <= d_k_bar(x', y')^2 for every cross-ray pair (x, y) on the two
-   rays emanating from each apex.  In a length space the two formulations are
-   equivalent (Bridson-Haefliger II.1.7); on a graph they are inequivalent,
-   because triangle sides are vertex sets, not arcs.  Returns Indeterminate
-   when k > 0 and the perimeter exceeds 2 Pi / Sqrt[k]. *)
+(* "ApexSide" tests d(apex, x)^2 <= d_k_bar(apex', x')^2 over the interior probes x of the opposite side, "TwoRays" every cross-ray pair.
+   Equivalent in a length space (Bridson-Haefliger II.1.7), inequivalent on a graph, where the sides are vertex sets rather than arcs.
+   Indeterminate when k > 0 and the perimeter exceeds 2 Pi / Sqrt[k]. *)
 
 Options[ CATInequalityQ ] = { Method -> "ApexSide" };
 
@@ -141,13 +126,7 @@ CATInequalityQ[ g_Graph, { p_, q_, r_ }, Optional[ k_?NumericQ, 0 ], OptionsPatt
 
 (* ===================== InfraCurvature ===================== *)
 
-(* triangleEuclideanDeficit[g, {p, q, r}] returns the worst Euclidean
-   thinness deficit Max[d(p, x)^2 - d_0_bar(t)^2] over all interior
-   probes x on every side.  -Infinity if no interior probes (degenerate
-   triangle).  Sign convention: positive deficit -> graph triangle is
-   "fatter" than its Euclidean comparison (locally positive curvature);
-   negative deficit -> "thinner" (locally negative curvature); zero ->
-   Euclidean.  Closed-form, no FindRoot. *)
+(* worst Euclidean thinness deficit Max[d(p, x)^2 - d_0_bar(t)^2] over the interior probes; positive means fatter than Euclidean, negative thinner *)
 
 triangleEuclideanDeficit[ g_Graph, { p_, q_, r_ } ] :=
   With[
@@ -173,12 +152,7 @@ sideDeficit[ g_, apex_, end1_, end2_, oppLen_, sideQp_, sideQr_ ] :=
   ]
 
 
-(* InfraCurvature[g, v, "Radius" -> L] returns the worst Euclidean
-   deficit over all triangles whose three vertices sit inside B_L(v),
-   divided by L^2 (dimensionless, scale-comparable across graphs).
-   Sign positive -> the L-ball contains a triangle fatter than Euclidean
-   (locally positive curvature); negative -> the ball is uniformly
-   thinner; -Infinity -> no non-degenerate triangle in the ball. *)
+(* the worst Euclidean deficit over the triangles inside B_L(v), divided by L^2 so it is scale-comparable across graphs *)
 
 Options[ InfraCurvature ] = { "Radius" -> Automatic };
 

@@ -1,7 +1,6 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 
-
 (* ===================== BetweennessQ / EquidistanceQ ===================== *)
 
 (* Tarski's two primitive relations restated on graphs.
@@ -21,9 +20,6 @@ EquidistanceQ[ graph_Graph, a_, b_, c_, d_ ] :=
 
 (* ===================== TarskiStructure ===================== *)
 
-(* Memoized Association bundling the hypermatrix substrate: vertex list,
-   vertex-to-index map, distance matrix, betweenness rank-3 sparse tensor,
-   equidistance partition of unordered pairs, diameter. *)
 
 TarskiStructure[ graph_Graph ] := TarskiStructure[ graph ] =
   With[ { vs = VertexList[ graph ], dMat = GraphDistanceMatrix[ graph ] },
@@ -172,8 +168,6 @@ TarskiContinuityQ[ _Graph ] := False
 
 (* ===================== TarskiAxiomQ dashboard ===================== *)
 
-(* Compose the eleven axiom predicates into a keyed Association.  Pass any
-   individual Tarski*Q symbol to FindTarskiCounterexample for witnesses. *)
 
 TarskiAxiomQ[ graph_Graph ] :=
   <|
@@ -193,9 +187,7 @@ TarskiAxiomQ[ graph_Graph ] :=
 
 (* ===================== FindTarskiCounterexample ===================== *)
 
-(* Witnesses for the failure of a Tarski axiom predicate.  Universal axioms
-   yield the offending tuple; A4 yields (a, b, c, d) for which no extension
-   exists; A11 has no finite witness and returns $Failed. *)
+(* universal axioms yield the offending tuple; A4 yields (a, b, c, d) admitting no extension; A11 has no finite witness *)
 
 FindTarskiCounterexample[ graph_Graph, predQ_Symbol, All ] :=
   Switch[ predQ,

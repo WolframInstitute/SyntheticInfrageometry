@@ -27,10 +27,7 @@ PackageScope[normalizeHighlightSpec]
 
 (* ===================== Palette ===================== *)
 
-(* $infraColors is the one place an object colour is written down.  The $Infra*Color symbols and the
-   head -> colour dispatch inside InfraSceneHighlight both read from it, and $InfraPalette exposes it
-   as a Dataset.  It is a literal rather than a shipped asset on purpose: $InfraPointColor must not
-   depend on file I/O at load time. *)
+(* the one place an object colour is written down; a literal rather than a shipped asset, so $InfraPointColor does not depend on file I/O at load time *)
 
 $infraColors = <|
   "Point"    -> RGBColor[ 0.95, 0.08, 0.08 ],
@@ -82,26 +79,16 @@ $InfraPalette := Dataset @ KeyValueMap[
 
 $InfraOpacityRange  = { 0.40, 1.0 };
 $InfraEdgeThickness = 9.0;
-(* a marked point reads as a dot on the substrate, not a blob covering its neighbours:
-   at 14 a single-realisation point swallowed several mesh cells on a Medium plane *)
+(* at 14 a single-realisation point swallowed several mesh cells on a Medium plane *)
 $InfraPointSize     = 6;
 
-(* the three named vertex-size classes, one absolute value each, deliberately independent of
-   the graph: the same class renders the same dot on a 5-vertex path and a 747-vertex plane.
-   Three-pixel gaps, so the classes are actually distinguishable; 5/6/9 was rejected for
-   putting Small and Medium one pixel apart.  The accent is NOT a class -- it is a separate
-   role, so a figure can carry a Large vertex and a distinct accent at once. *)
+(* one absolute value per class, independent of the graph, with three-pixel gaps so the classes stay distinguishable; the accent is a separate role, not a class *)
 $InfraPointSizes      = <| Small -> 4, Medium -> 7, Large -> 10 |>;
 $InfraAccentPointSize = 12;
 
-(* the house figure size, so a scene never carries a magic pixel number: a bare scene
-   renders at $InfraSceneImageSize, and a multi-panel GraphicsRow / GraphicsGrid sets
-   its own symbolic size while its panels inherit this one. *)
 $InfraSceneImageSize = Medium;
 
-(* The strike-out palette: colours belong to the ORDER objects are added to a scene, not to
-   object types.  15 colours beginning red -> blue -> orange -> green -> purple -> teal, so
-   "first highlight colour is red, then a hierarchy" falls out of the order for free. *)
+(* colours belong to the ORDER objects are added to a scene, not to object types *)
 $InfraStrikeOutPalette := ColorData[ 112, "ColorList" ];
 
 $InfraSceneHighlightPalette := Join[
@@ -112,28 +99,6 @@ $InfraSceneHighlightPalette := Join[
 
 (* ===================== Per-object style spec ===================== *)
 
-(* Parse the RHS of a per-object `obj -> spec` entry into a style record.
-   `spec` is a colour / Directive[...] (applied to both channels), or a flat
-   list whose entries are auto-classified by key: VertexStyle / VertexSize /
-   VertexShapeFunction (vertex channel), EdgeStyle / EdgeShapeFunction (edge
-   channel), "OpacityRange" / "ThicknessRange" / "PointSizeRange" (per-object
-   diffusion overrides).  A bare directive is routed by family: line-appearance
-   directives (Thickness / AbsoluteThickness / Thick / Thin / Dashing / Dashed /
-   Dotted / DotDashed) go to the edge channel, point-appearance directives
-   (PointSize / AbsolutePointSize) to the vertex channel, and everything else
-   (colours, Opacity, ...) to both.  The
-   three ranges default to the global option values passed in `defaults`;
-   a range value is None (off), a scalar base measure (distributed across
-   realisations as measure * weight), or a {min, max} envelope.
-   An explicit appearance directive overrides the matching count-diffusion: a
-   thickness directive suppresses "ThicknessRange", a point-size directive or
-   a VertexSize value suppresses "PointSizeRange", and an Opacity directive
-   suppresses "OpacityRange", so the user's value is the only one emitted on
-   that channel.
-   VertexSize is a plain graph-coordinate passthrough for every value (numeric
-   or symbolic); use AbsolutePointSize[n] for a constant on-screen point size
-   (rerouted to a VertexShapeFunction since HighlightGraph drops point sizing
-   inside Style[] highlight specs). *)
 parseHighlightStyle[ spec_, defaults_Association ] :=
   Replace[
     Fold[
@@ -154,10 +119,7 @@ parseHighlightStyle[ spec_, defaults_Association ] :=
         "VertexDir" -> { }, "EdgeDir" -> { }, "EdgeStyle" -> None,
         "EdgeShapeFunction" -> None, "VertexSize" -> None, "VertexShapeFunction" -> None |> ],
       normalizeHighlightSpec @ spec ],
-    (* An explicit appearance directive supersedes the matching count-driven
-       diffusion: suppress the corresponding *Range so the user's value is the
-       only one emitted on that channel, rather than winning on directive order
-       alone. *)
+    (* an explicit appearance directive supersedes the matching count-driven diffusion: suppress the *Range so the user's value is the only one emitted on that channel *)
     r_Association :> With[ {
         edgeThick  = ! FreeQ[ { r[ "EdgeDir" ], r[ "EdgeStyle" ] },
           Thickness | AbsoluteThickness | Thick | Thin ],
@@ -178,42 +140,8 @@ normalizeHighlightSpec[ x_ ]                 := { x }
 
 (* ===================== InfraSceneHighlight ===================== *)
 
-(* Diffuse rendering of a list of multi-objects on a graph.
-   A multi-object is a list of representations.  By default each
-   representation is auto-classified against the graph: a value matching
-   `MemberQ[VertexList[g], rep]` is a single vertex (rendered as a point);
-   anything else is a list of vertices (rendered as the induced subgraph).
-   Auto-classification is fragile when vertices are list-named and might
-   collide with the list-of-vertices interpretation, so callers can wrap
-   a multi-object explicitly using the singular scene heads with a single
-   List arg:
 
-     InfraPoint  [ {v1, v2, ...} ]           -- vertices, no edges
-     InfraSegment[ {seg1, seg2, ...} ]       -- sequential edges (Partition)
-     InfraShell  [ {set1, set2, ...} ]       -- induced subgraph edges
-     InfraPlane  [ {set1, set2, ...} ]       -- induced subgraph edges
-     InfraCircle [ {cyc1, cyc2, ...} ]       -- sequential edges + auto-closure
-     InfraRay    [ {ray1, ray2, ...} ]       -- sequential edges (Partition)
-
-   The arg shape (a single List) selects the rendering interpretation; the
-   scene-construction shapes of these heads (e.g. `InfraSegment[p1, p2]`,
-   `InfraShell[c, r]`, `InfraPlane[p1, p2]`, `InfraCircle[c, r]`) take more
-   args and never collide.
-   The per-object style spec (`entry -> color` / `-> Directive[..]` /
-   `Style[entry, ..]` / `-> {opts..}`) is parsed by `parseHighlightStyle` — see
-   there for channel routing, family-based directive dispatch, and the
-   diffusion-range overrides. *)
-
-(* Diffuse-encoding channels.  A channel value is None (off), a scalar base
-   measure t (the absolute thickness / point size a crisp single-realisation
-   object gets; a fuzzy object distributes it as t * count/numReps, so the
-   total measure across realisations is conserved), or a {min, max} envelope
-   (linear interpolation by weight; the floor keeps rare elements visible).
-   "ThicknessRange" defaults to the base measure $InfraEdgeThickness;
-   "OpacityRange" keeps the floored envelope.  "PointSizeRange" defaults to
-   Automatic: point-shaped objects (InfraPoint, polyline knots, polygon
-   corners) distribute the base measure $InfraPointSize, while vertices of
-   path- and set-shaped objects inherit the underlying graph's point size. *)
+(* a channel value is None, a scalar base measure t -- a fuzzy object distributes it as t * count/numReps, conserving the total measure across realisations -- or a {min, max} envelope interpolated by weight, whose floor keeps rare elements visible *)
 Options[ InfraSceneHighlight ] = Join[
   {
     "OpacityRange"   :> $InfraOpacityRange,
@@ -232,29 +160,20 @@ InfraSceneHighlight[ graph_Graph, obj : Except[_List], opts : OptionsPattern[] ]
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
   Module[ { triples, knotTriples, ranges, defaultRecord, vEntries, eEntries, objects, arrowSpec, palette },
 
-    (* One head per path object, at its end -- not one per edge.  The value doubles as the
-       head spec, so the option turns the feature on AND selects the head.  True resolves to
-       Arrowheads[Medium]: a symbolic size scales with the plot rather than with the stroke,
-       so a heavy edge does not get a giant head nor a light one an invisible head. *)
+    (* one head per path object, at its end, the value doubling as the head spec; True resolves to Arrowheads[Medium], a symbolic size that scales with the plot rather than with the stroke *)
     arrowSpec = Replace[ OptionValue[ "Arrowheads" ], {
       Automatic | None | False -> None,
       True :> Arrowheads[ Medium ],
       a_Arrowheads :> a,
       other_ :> Arrowheads[ other ] } ];
 
-    (* Colour by ADDITION ORDER, not by object type: the first object added takes the first
-       palette colour, and no colour belongs to "ball" or "segment" any more.  None restores
-       the type-keyed behaviour through $InfraPalette.  An explicit obj -> colour is parsed by
-       parseHighlightStyle before this runs, so a caller's own colour still wins. *)
+    (* colour by addition order, None restoring the type-keyed behaviour; an explicit obj -> colour is parsed before this runs, so a caller's own colour still wins *)
     palette = Replace[ OptionValue[ "Palette" ], {
       Automatic :> $InfraStrikeOutPalette,
       None -> None,
       list_List /; Length[ list ] > 0 :> list,
       other_ :> { other } } ];
 
-    (* Normalise each item: unwrap Style[obj, dirs__] into obj -> Directive[dirs];
-       merge {InfraX[{r1}],...} into InfraX[{r1,...}];
-       then strip $Failed / empty entries. *)
     objects = DeleteCases[
       Replace[ #, {
         Style[ obj_, dirs__ ] :> ( obj -> Directive[ dirs ] ),
@@ -269,10 +188,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
       "PointSizeRange" -> OptionValue[ "PointSizeRange" ] |>;
     defaultRecord = parseHighlightStyle[ Automatic, ranges ];
 
-    (* Each triple carries the original wrapper as a fifth element so the
-       density computation can read its measure (infraVertexMultiset /
-       infraEdgeMultiset / infraNumReps) uniformly across bundle, weighted,
-       and DAG forms; None for non-Infra highlight objects. *)
+    (* the original wrapper rides along as a fifth element so the density computation can read its measure uniformly across bundle, weighted and DAG forms *)
     triples = MapIndexed[
       { item, idx } |-> With[ {
           obj    = If[ MatchQ[ item, _Rule ], First @ item, item ],
@@ -286,13 +202,10 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
               palette[[ 1 + Mod[ First @ idx - 1, Length @ palette ] ]] ],
             record },
           {
-            (* no "Weights" override: the generic path reads the measure via
-               infraVertexMultiset / infraNumReps, so density = mass / total mass
-               -- a sharp effective point draws full size, a spread one fades. *)
+            (* density = mass / total mass, so a sharp effective point draws full size and a spread one fades *)
             { InfraEffectivePoint[ m_Association ], c_, u_ } :> { Keys @ m, c, "Points", u },
             { InfraPoint   [ v_ ], c_, u_ } :> { { v }, c, "Points", u },
-            (* a plain List of atoms is what the point finders return -- it must
-               flow into the scene with no glue, exactly like a wrapper does *)
+            (* a plain List of atoms is what the point finders return: it must flow into the scene with no glue *)
             { list : { __InfraPoint }, c_, u_ } :> { #[[ 1 ]] & /@ list, c, "Points", u },
             { InfraSegment [ dag_Graph ], c_, u_ } :> { { dag }, c, "Paths" , u },
             { InfraSegment [ b : { __Graph } ], c_, u_ } :> { b, c, "Paths" , u },
@@ -313,22 +226,18 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             { InfraObject  [ b_List ], c_, u_ } :> { { b }, c, "Sets", u },
             { InfraPolyline[ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Paths", u },
             { InfraSet      [ b_List ], c_, u_ } :> { { b }, c, "Sets", u },
-            (* a bare vertex is a legal highlight object: wrap it as a
-               one-vertex point rather than letting it reach repVerts unlisted *)
+            (* a bare vertex is a legal highlight object: wrap it as a one-vertex point *)
             { b_, c_, u_ } /; MemberQ[ VertexList @ graph, b ] :> { { b }, c, "Points", u },
             { b_, c_, u_ }                      :> { b, c, Automatic, u }
           } ] ],
       objects ];
 
-    (* Each InfraPolyline item additionally emits a knot triple (the leg
-       endpoints rendered as points in $InfraPointColor).  Drawn on top of
-       the path so the subdivision is visible.  *)
+    (* the knots are drawn on top of the path so the subdivision is visible *)
     knotTriples = Cases[ objects,
       ( InfraPolyline[ b_List ] | ( InfraPolyline[ b_List ] -> _ ) ) :>
         { polylineToKnotVertices[ b ], $InfraPointColor, "PointSet", defaultRecord, None } ];
 
-    (* Polygon / triangle items emit their corner vertices as points, so the
-       defining corners stand out from the geodesic sides. *)
+    (* corner vertices as points, so the defining corners stand out from the geodesic sides *)
     knotTriples = Join[ knotTriples, Cases[ objects,
       ( ( InfraPolygon | InfraTriangle )[ b_List ] |
         ( ( InfraPolygon | InfraTriangle )[ b_List ] -> _ ) ) :>
@@ -336,17 +245,13 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
 
     triples = Join[ triples, knotTriples ];
 
-    (* Resolve the Automatic point-size default per object type: point-shaped
-       objects distribute the base measure, everything else stays off. *)
     triples = Apply[
       { reps, color, type, record, obj } |-> { reps, color, type,
         Append[ record, "PointSizeRange" -> Replace[ record[ "PointSizeRange" ],
           Automatic :> If[ MatchQ[ type, "Points" | "PointSet" ], $InfraPointSize, None ] ] ], obj },
       triples, { 1 } ];
 
-    (* repVerts / repEdges share the per-type dispatch with InfraMeasure via
-       infraRepVerts / infraRepEdges (Tools.wl); only the Automatic-type branch
-       for non-Infra highlight objects stays local (it needs the graph). *)
+    (* the per-type dispatch is shared with InfraMeasure (Tools.wl); only the Automatic-type branch stays local, since it needs the graph *)
     With[ {
         repVerts = { type, rep } |-> Switch[ type,
           "Points" | "Paths" | "Cycles" | "Sets" | "PointSet", infraRepVerts[ type, rep ],
@@ -372,8 +277,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
         { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]], triples[[ All, 5 ]] } ];
 
       eEntries = MapThread[
-        (* DAG segments read their edge occupation off Infrageometry's
-           GeodesicEdgeOccupation via infraEdgeMultiset -- no enumeration *)
+        (* DAG segments read their edge occupation off GeodesicEdgeOccupation: no enumeration *)
         { reps, color, type, record, obj } |-> With[ {
             counts  = If[ obj =!= None, infraEdgeMultiset[ graph, obj ],
                           Counts @ Catenate[ repEdges[ type, # ] & /@ reps ] ],
@@ -384,19 +288,10 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
         { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]], triples[[ All, 5 ]] } ];
     ];
 
-    (* Colour + opacity ride per-element Style[] highlight specs (the channel
-       HighlightGraph honours).  Edge thickness and vertex point-size are
-       rerouted to top-level EdgeStyle / VertexShapeFunction rules because
-       HighlightGraph silently ignores AbsoluteThickness / AbsolutePointSize
-       inside Style[edge/vertex, ...].  A *Range record value of None
-       suppresses that channel; ranges are per-object. *)
+    (* colour and opacity ride per-element Style[] specs; thickness and point size are rerouted to top-level EdgeStyle / VertexShapeFunction, which HighlightGraph silently ignores inside Style[] *)
     With[ { lerp = { spec, w } |-> If[ ListQ @ spec, spec[[ 1 ]] + ( spec[[ 2 ]] - spec[[ 1 ]] ) w, spec w ] },
       {
-          (* All edge styling (colour, opacity, thickness) rides top-level EdgeStyle,
-             never a Style[edge, ..] highlight spec: HighlightGraph gives a highlight
-             Style priority over EdgeStyle AND drops AbsoluteThickness inside it, so an
-             edge listed both ways renders at default thickness.  EdgeStyle honours all
-             three channels, so the count-driven thickness diffusion actually shows. *)
+          (* all edge styling rides top-level EdgeStyle: HighlightGraph gives a highlight Style priority over EdgeStyle and drops AbsoluteThickness inside it, so an edge listed both ways renders at default thickness *)
           edgeData = KeyValueMap[
             { e, cs } |-> With[ { ue = UndirectedEdge @@ e, last = Last @ cs },
               { color = last[[ 1 ]], w = last[[ 2 ]], rec = last[[ 3 ]] },
@@ -421,9 +316,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
               Which[
                 rec[ "VertexShapeFunction" ] =!= None,
                   <| "VSF" -> ( v -> rec[ "VertexShapeFunction" ] ) |>,
-                (* a fixed AbsolutePointSize / PointSize in the vertex channel, or the
-                   count-scaled "PointSizeRange" diffusion, is rerouted to a top-level
-                   VertexShapeFunction since HighlightGraph drops point sizing in Style[] specs *)
+                (* point sizing is rerouted to a top-level VertexShapeFunction, since HighlightGraph drops it inside Style[] specs *)
                 rec[ "PointSizeRange" ] =!= None || ! FreeQ[ vDirs, _AbsolutePointSize | _PointSize ],
                   With[ { body = Flatten[ { color, oList,
                       If[ rec[ "PointSizeRange" ] === None, { },
@@ -438,14 +331,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           coords    = AssociationThread[ VertexList @ graph -> GraphEmbedding @ graph ],
           edgeStyle = Association @ Cases[ edgeData, kv_Association :> kv[ "EdgeStyle" ] ]
         },
-        (* A walk is one stroke, not a chain of edges.  HighlightGraph draws each edge
-           separately with a butt cap and ignores a CapForm / JoinForm placed in the edge
-           directive, so a bend leaves a wedge of background bitten out of the ribbon.
-           Each maximal run of equal-styled consecutive steps is therefore redrawn as one
-           joined Line, carried by the EdgeShapeFunction of its first unclaimed edge while
-           the run's remaining unclaimed edges draw nothing.  Each edge takes at most one
-           rule -- a walk that repeats an edge, and overlapping realisations, would otherwise
-           hand Graph two rules for it, and only the first survives. *)
+        (* a walk is one stroke: HighlightGraph draws each edge separately with a butt cap and ignores a CapForm / JoinForm in the edge directive, so a bend leaves a wedge of background bitten out of the ribbon.  Each maximal run of equal-styled consecutive steps is redrawn as one joined Line, carried by the EdgeShapeFunction of its first unclaimed edge; each edge takes at most one rule, since Graph keeps only the first *)
         {
           strokes = Catenate @ Cases[ triples,
             { reps_, _, type : "Paths" | "Cycles", record_, _ } /; record[ "EdgeShapeFunction" ] === None :>

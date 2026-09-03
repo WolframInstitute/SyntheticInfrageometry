@@ -8,27 +8,18 @@ PackageScope[polylineToKnots]
 
 (* ===================== InfraPolyline wrapper ===================== *)
 
-(* InfraPolyline[{poly}] is the unary form: poly = {seg1, seg2, ...} where each
-   seg_i is a unary InfraSegment[{path_i}] and Last[path_i] === First[path_{i+1}]
-   for consecutive legs.  InfraPolyline[{poly1, ..., polyk}] is the multi-
-   realisation form.  Only auto-flatten on nested wrappers. *)
 
-
-(* "Length" = sum of leg edge counts per realisation; empty polyline = 0. *)
 InfraPolyline[ reps_List ][ "Length" ] :=
   Replace[ reps,
     { { }              -> 0,
       segs : { _InfraSegment .. } :> Total[ ( Length[ #[[ 1, 1 ]] ] - 1 ) & /@ segs ] },
     { 1 } ]
 
-(* "Knots" = list of knot vertices wrapped as unary InfraPoint, per realisation. *)
 InfraPolyline[ reps_List ][ "Knots" ] :=
   Map[ poly |-> ( InfraPoint /@ polylineToKnots[ poly ] ), reps ]
 (* ===================== FindInfraPolylineSubdivision ===================== *)
 
-(* Greedy chunking of a walk into the fewest geodesic InfraSegments whose
-   knots are walk-vertices, with each leg a shortest path (in graph) of
-   length <= MaxLength. *)
+(* the fewest geodesic legs with knots on the walk, each leg a shortest path of length <= MaxLength *)
 
 Options[ FindInfraPolylineSubdivision ] = { "MaxLength" -> Infinity };
 
@@ -54,9 +45,7 @@ FindInfraPolylineSubdivision[ graph_Graph, path_List, OptionsPattern[] ] :=
 
 (* ===================== polylineToVertexSeqs ===================== *)
 
-(* Each realisation poly = {seg1, ..., segk} flattens to one concatenated
-   vertex sequence; consecutive legs share their endpoint, so Rest drops
-   the duplicate when joining. *)
+(* consecutive legs share their endpoint, so Rest drops the duplicate when joining *)
 
 polylineToVertexSeqs[ reps_List ] := polylineToVertexSeq /@ reps
 
@@ -67,9 +56,7 @@ polylineToVertexSeq[ segs : { _InfraSegment .. } ] :=
 
 (* ===================== polylineToKnotVertices ===================== *)
 
-(* The knot set of a polyline is { First[path_1], Last[path_1], ..., Last[path_k] }:
-   the start of the first leg followed by the end of every leg.  Consecutive
-   legs share an endpoint so this is exactly the set of break points. *)
+(* the knots are { First[path_1], Last[path_1], ..., Last[path_k] } *)
 
 polylineToKnotVertices[ reps_List ] := polylineToKnots /@ reps
 
@@ -80,8 +67,7 @@ polylineToKnots[ segs : { _InfraSegment .. } ] :=
 
 (* ===================== InfraPolylineQ ===================== *)
 
-(* A polyline is consistent iff every leg is a geodesic in graph and
-   consecutive legs share their endpoint. *)
+(* every leg a geodesic in graph, consecutive legs sharing their endpoint *)
 
 InfraPolylineQ[ graph_Graph, InfraPolyline[ reps_List ] ] :=
   AllTrue[ reps, InfraPolylineQ[ graph, # ] & ]

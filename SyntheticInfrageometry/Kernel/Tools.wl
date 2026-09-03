@@ -50,20 +50,14 @@ methodName[ m_String ]          := m
 methodName[ { m_String, ___ } ] := m
 
 
-(* Sub-options carried by a Method spec.  Bare string -> {};
-   {"Name", opts___} -> {opts}.  Consumed by Method-dispatching predicates
-   that read per-method "Tolerance", "Equality", "Statistic", etc. via Lookup. *)
-
 methodOptions[ _String ]                := { }
 methodOptions[ { _String, opts___ } ]   := { opts }
 
 
 (* ===================== The method ladder ===================== *)
 
-(* Method -> Automatic resolves by the count: All asks for the whole class, so
-   the exhaustive pool; any bounded count asks for that many certified instances,
-   which the lazy greedy descent supplies exactly.  Exponential enumeration is
-   thereby opt-in -- see Wiki/Concepts/ObserverComplexity.md. *)
+(* Automatic resolves by the count: All asks for the whole class, hence the exhaustive pool, and any bounded count for that many certified instances, which the lazy greedy descent supplies exactly -- so exponential enumeration is opt-in.
+   The bounded branch descends in shuffled order: the class is not canonically ordered, so an always-first witness would be an artefact of the enumeration, not of the geometry. *)
 
 resolveMethod[ Automatic, All ]  = "Exhaustive";
 resolveMethod[ Automatic, _ ]    = "ShuffledGreedy";
@@ -85,13 +79,7 @@ retryBudget[ Infinity ]   = 20;
 retryBudget[ n_Integer ]  := Max[ 20, 5 n ]
 
 
-(* Randomized sibling of a lazy-greedy engine: repeat single-choice descents,
-   deduplicate, and stop once `count` distinct realisations are in hand or the
-   retry budget of failed draws is spent.  descend[] is one draw (a 0- or
-   1-element list).  A strict-count shortfall is announced on the calling symbol
-   -- fnSym is that head, not fnSym::shortfall, since a MessageName passed as a
-   bare argument evaluates to its template string -- and bundleTake turns the
-   short list into $Failed. *)
+(* repeat single-choice descents, deduplicate, and stop at count distinct realisations or when the retry budget of failed draws is spent.  fnSym is the calling head, not fnSym::shortfall -- a MessageName passed as a bare argument evaluates to its template string *)
 
 randomDraws[ descend_, count_, fnSym_ ] :=
   Module[ { cap = countLimit @ count, out = { }, misses = 0, draw },
@@ -116,9 +104,7 @@ cycleToVertexSequence[ cyc_List ] := First /@ cyc
 
 (* ===================== Count semantics ===================== *)
 
-(* Translate a count argument (Integer | UpTo[Integer] | All | Infinity | the
-   count-less Automatic) into a numeric upper bound.  Automatic is one instance:
-   asking without a count asks for a witness, not for the class. *)
+(* a count argument as a numeric upper bound; Automatic is one instance -- asking without a count asks for a witness, not for the class *)
 
 countLimit[ All ]               = Infinity
 countLimit[ Infinity ]          = Infinity
@@ -136,9 +122,7 @@ allGeodesics[ graph_Graph, u_, v_, count_ : All ] :=
   ]
 
 
-(* Trim a list of partial paths by either a beam width (integer cap, random
-   sampling if exceeded) or a Bernoulli keep probability (with a one-element
-   floor so the bundle never dies by chance). *)
+(* a beam width (integer cap, random sampling if exceeded) or a Bernoulli keep probability, with a one-element floor so the bundle never dies by chance *)
 
 applyPruning[ paths_List, Infinity ]                     := paths
 applyPruning[ paths_List, n_Integer /; n >= 1 ]          :=
@@ -151,12 +135,7 @@ applyPruning[ paths_List, p_?NumericQ /; 0 < p < 1 ]     :=
 
 (* ===================== Frontier sweep ===================== *)
 
-(* BFS frontier from p1 to p2 with candidateFn[g, path] returning the
-   admissible next-vertex set at each step.  applyPruning caps the live
-   frontier per layer.  Returns up to `count` complete paths.  terminalQ = True
-   (default) ends a branch at its first arrival at p2; False emits every
-   arrival and keeps extending through it (a walk may pass through p2), so the
-   caller's candidateFn must bound the depth. *)
+(* BFS frontier from p1 to p2, applyPruning capping the live frontier per layer.  terminalQ = True ends a branch at its first arrival at p2; False emits every arrival and keeps extending through it, so the caller's candidateFn must bound the depth *)
 
 frontierSweep[ graph_Graph, p1_, p2_, candidateFn_, prune_, count_, terminalQ_ : True ] :=
   Module[ { frontier, completed = { }, extended },
@@ -176,21 +155,10 @@ frontierSweep[ graph_Graph, p1_, p2_, candidateFn_, prune_, count_, terminalQ_ :
   ]
 
 
-(* Lazy depth-first descent from p1 to p2: take the admissible candidates in
-   candidateFn order, backtrack when a branch dead-ends, and stop after `count`
-   completions accepted by acceptQ.  The descent is complete, so a finite count
-   is exact -- this is the certified-instance engine Method -> Automatic resolves
-   to for a bounded count.  branch = Identity is "Greedy"; branch = randomBranch
-   explores a single choice per step and so performs one un-backtracked random
-   draw ("RandomGreedy", via randomDraws).  maxSteps caps the depth; a walk-family
-   caller with revisits allowed needs it to guarantee termination.  terminalQ =
-   True (default) ends a branch at its first arrival at p2; False emits every
-   accepted arrival and keeps descending through it. *)
+(* lazy depth-first descent from p1 to p2: take the admissible candidates in candidateFn order, backtrack when a branch dead-ends, and stop after count completions accepted by acceptQ.  Complete, so a finite count is exact -- the certified-instance engine Automatic resolves to for a bounded count.
+   maxSteps caps the depth; a walk-family caller with revisits allowed needs it to guarantee termination.  terminalQ = True ends a branch at its first arrival at p2, False keeps descending through it. *)
 
-(* the closures are held in Module locals, never inlined into descend's RHS: a
-   candidateFn built by windowCandidateFn is a Function[{g, walk}, ...], and
-   substituting a pattern variable of the same name into that RHS would rewrite
-   the closure's own parameter list. *)
+(* the closures are held in Module locals, never inlined into descend's RHS: a candidateFn built by windowCandidateFn is a Function[{g, walk}, ...], and substituting a pattern variable of the same name would rewrite the closure's own parameter list *)
 
 greedyFrontierSweep[ graph_Graph, p1_, p2_, candidateFn_, acceptQ_, maxSteps_, count_,
     branch_ : Identity, terminalQ_ : True ] :=
@@ -217,15 +185,7 @@ propertiesSubOpts[ s_String ]              := { }
 propertiesSubOpts[ { _String, opts___ } ]  := { opts }
 
 
-(* windowCandidateFn[g, scale, rules, fnSym]: closure
-     (g, walk) -> admissible-next-vertex set.
-   Every rule sees one thing -- the window: the last <= scale vertices of the
-   walk with the candidate appended (the whole walk at scale Infinity).
-   Constraints ("Minimizing", "Simple", "Immersed", "Generic", a bare window
-   predicate) are checked first and commute -- the genericity pair reads the
-   whole walk prefix rather than the window, its violations being monotone
-   under extension; selectors ("Straightest", {"Minimal", f}, {"Maximal", f})
-   follow in list order, each refining the previous ties. *)
+(* every rule sees one thing -- the window: the last <= scale vertices of the walk with the candidate appended (the whole walk at scale Infinity).  Constraints are checked first and commute, the genericity pair reading the whole walk prefix since its violations are monotone under extension; selectors follow in list order, each refining the previous ties *)
 
 windowCandidateFn[ graph_Graph, scale_, rules_List, fnSym_ ] :=
   With[ { species = windowRuleSpecies[ #, fnSym ] & /@ rules },
@@ -239,11 +199,7 @@ windowCandidateFn[ graph_Graph, scale_, rules_List, fnSym_ ] :=
   ]
 
 
-(* Which side of the constraint / selector split a rule falls on.  An
-   unrecognised string (or string-headed list) raises fnSym::badproperty and
-   Throw[$Failed]; the caller wraps in Catch.  fnSym is the calling head symbol
-   (not fnSym::badproperty -- a MessageName passed as a bare argument evaluates
-   to its template string, so Message would emit Message::name). *)
+(* fnSym is the calling head symbol, not fnSym::badproperty -- a MessageName passed as a bare argument evaluates to its template string, so Message would emit Message::name *)
 
 windowRuleSpecies[ rule_, fnSym_ ] :=
   Switch[ rule,
@@ -265,17 +221,11 @@ windowRuleQ[ g_Graph, scale_, "Minimizing", walk_List, w_ ] :=
 (* "Simple": no revisits. *)
 windowRuleQ[ _Graph, _, "Simple", walk_List, w_ ] := ! MemberQ[ walk, w ]
 
-(* "Immersed": no cusp -- the candidate does not retrace the previous edge.
-   A new cusp apex can only form at the tip, so the step check is exact. *)
+(* "Immersed": no cusp -- the candidate does not retrace the previous edge; an apex can only form at the tip, so the step check is exact *)
 windowRuleQ[ _Graph, _, "Immersed", walk_List, w_ ] :=
   Length[ walk ] < 2 || walk[[ -2 ]] =!= w
 
-(* "Generic": general position, InfraGenericQ's class -- the step must not
-   repeat an edge of the walk (a repeated edge is a cusp or a tangency) nor
-   visit any vertex a third time (a triple point).  Both violations are
-   monotone under extension, so pruning per step is exact; endpoint freeness
-   is not monotone (the tip keeps moving) and is the caller's finished-walk
-   check.  Reads the whole walk prefix, not the window. *)
+(* "Generic": the step must not repeat an edge of the walk (a repeated edge is a cusp or a tangency) nor visit a vertex a third time (a triple point).  Both violations are monotone under extension, so per-step pruning is exact; endpoint freeness is not, and is the caller's finished-walk check *)
 windowRuleQ[ _Graph, _, "Generic", walk_List, w_ ] :=
   Count[ walk, w ] <= 1 &&
   ! MemberQ[ Partition[ walk, 2, 1 ], { Last @ walk, w } | { w, Last @ walk } ]
@@ -285,10 +235,7 @@ windowRuleQ[ _Graph, scale_, pred_, walk_List, w_ ] :=
   pred @ Append[ walkWindow[ walk, scale ], w ]
 
 
-(* "Straightest": maximise the distance tuple from the candidate back along the
-   window, nearest first (the immediate predecessor sits at distance 1 for every
-   candidate and carries no information).  Matrix-backed -- the distance matrix
-   is built once per closure, not once per step. *)
+(* "Straightest": maximise the distance tuple from the candidate back along the window, nearest first -- the immediate predecessor sits at distance 1 for every candidate and carries no information *)
 windowSelector[ graph_Graph, scale_, "Straightest" ] :=
   With[ { vidx = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ],
           dmat = GraphDistanceMatrix[ graph ] },
@@ -318,9 +265,7 @@ walkWindow[ walk_List, scale_Integer ]     := Take[ walk, -Min[ scale, Length[ w
 
 (* ===================== Separating sets ===================== *)
 
-(* SeparatingSetQ[g, vs, center, radius]: removing vs leaves a component
-   containing center that lies inside the closed ball B(center, radius),
-   and every vertex outside that component lies strictly beyond radius. *)
+(* removing vs leaves a component containing center inside the closed ball B(center, radius), every vertex outside that component lying strictly beyond radius *)
 
 SeparatingSetQ[ graph_Graph, vs_List, center_, radius_ ] :=
   With[ { rem = VertexDelete[ graph, vs ] },
@@ -331,24 +276,14 @@ SeparatingSetQ[ graph_Graph, vs_List, center_, radius_ ] :=
   ]
 
 
-(* Top-down peel from `set` toward inclusion-minimal admissible subsets.
-   `admissible` is a user-supplied predicate on a vertex subset T.  Both
-   helpers terminate when no further admissible single-removal exists --
-   inclusion-minimality is automatic at the peel leaves. *)
+(* top-down peel toward inclusion-minimal admissible subsets: both helpers terminate when no admissible single-removal exists, so minimality is automatic at the leaves *)
 
-(* Lazy depth-first peel: remove one admissible vertex at a time, backtracking
-   at each leaf, and stop after `count` distinct inclusion-minimal admissible
-   subsets.  Complete, so a finite count is exact; the first leaf costs one
-   straight descent, exactly what the old no-backtracking walk cost.  branch =
-   Identity is "Greedy"; branch = randomBranch is one random peel ("RandomGreedy",
-   via randomDraws -- see Wiki/Concepts/RandomnessConventions.md).  DeleteCases
-   preserves the order of `set`, so every leaf is already in canonical form. *)
+(* lazy depth-first peel: remove one admissible vertex at a time, backtracking at each leaf, and stop after count distinct inclusion-minimal admissible subsets.  Complete, so a finite count is exact; DeleteCases preserves the order of set, so every leaf is already in canonical form *)
 
 findGreedyMinimalAdmissible[ graph_Graph, set_List, admissible_, count_,
     branch_ : Identity ] :=
   If[ ! admissible[ set ], { },
-    (* admissible and branch are held in Module locals rather than inlined into
-       descend's RHS -- see the note on greedyFrontierSweep above *)
+    (* admissible and branch are held in Module locals, not inlined into descend's RHS: see the note on greedyFrontierSweep above *)
     Module[ { cap = countLimit @ count, acc = { }, descend,
               admitQ = admissible, pick = branch },
       descend[ T_ ] :=
@@ -394,33 +329,19 @@ findAllMinimalAdmissible[ graph_Graph, set_List, admissible_, pruning_ ] :=
 
 (* ===================== Multi-realisation wrapper helpers ===================== *)
 
-(* A multi-object is a SET of realisations: InfraX[{r1, ..., rk}], canonical
-   iff duplicate-free.  Realisations are alternative witnesses of one
-   construction -- all equally admissible -- so no invariant distinguishes
-   them and there is no mass channel here.  The vertex / edge measure of a
-   bundle is a lossy PROJECTION off it (InfraMeasure), never stored state;
-   the one head whose projection is lossless, and hence the one head that
-   carries a measure, is InfraPoint (see InfraPoint.wl).
+(* a multi-object is a SET of realisations, canonical iff duplicate-free: realisations are alternative witnesses of one construction, all equally admissible, so no invariant distinguishes them and there is no mass channel here.  The vertex / edge measure of a bundle is a lossy PROJECTION off it (InfraMeasure), never stored state, and the one head whose projection is lossless is InfraPoint.
+   A realisation slot holds either an explicit realisation or a compact atom (a geodesic-DAG Graph, InfraSegment only) standing for its whole family. *)
 
-   A realisation slot holds either an explicit realisation or a compact atom
-   (a geodesic-DAG Graph, InfraSegment only) standing for its whole family. *)
-
-(* the bundle heads whose first argument is a realisation list; the single
-   source of truth for the canonicalisation rules and measure dispatch. *)
+(* the single source of truth for the canonicalisation rules and measure dispatch *)
 $infraBundleHeads = InfraSegment | InfraLine | InfraWalk | InfraLoop | InfraString |
   InfraShell | InfraBall | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse |
   InfraPolygon | InfraTriangle | InfraRay | InfraPolyline;
 
 
-(* Set canonicalisation + shared accessors for one bundle head.  The
-   AllTrue[.., ListQ || GraphQ] realisation guard keeps scene-language forms
-   (bare-vertex arguments, e.g. InfraShell[c, r]) inert; on graphs whose
-   vertices are themselves lists a scene form is indistinguishable from a
-   bundle (pre-existing fragility of the single-List-arg convention). *)
+(* the AllTrue[.., ListQ || GraphQ] realisation guard keeps scene-language forms (InfraShell[c, r]) inert; on graphs whose vertices are themselves lists a scene form is indistinguishable from a bundle *)
 
 defineInfraBundleRules[ head_Symbol ] := (
-  (* idempotency: re-wrapping a wrapper is the identity (the old
-     "wrap the Find* output to collapse" idiom stays valid) *)
+  (* idempotency: re-wrapping a wrapper is the identity *)
   head[ inner_head ] := inner;
   head[ reps_List ] /; AnyTrue[ reps, MatchQ[ head[ _List ] ] ] :=
     head[ Flatten[ reps /. head[ xs_List ] :> xs, 1 ] ];
@@ -428,8 +349,6 @@ defineInfraBundleRules[ head_Symbol ] := (
     head[ DeleteDuplicates @ reps ];
   head[ reps : Except[ { __Graph }, _List ] ][ "Realizations" ] := reps;
   head[ reps : Except[ { __Graph }, _List ] ][ "First" ]        := First @ reps;
-  (* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v);
-     ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
   head[ reps : Except[ { __Graph }, _List ] ][ "OccupationCount" ]    := infraVertexMultiset[ head[ reps ] ];
   head[ reps : Except[ { __Graph }, _List ] ][ "OccupationMeasure" ]  := InfraMeasure[ head[ reps ] ];
   head[ reps : Except[ { __Graph }, _List ] ][ "Measure" ]            := InfraMeasure[ head[ reps ] ];
@@ -440,11 +359,7 @@ Scan[ defineInfraBundleRules,
   List @@ $infraBundleHeads ]
 
 
-(* Adapt an anchor for one slot of a Cartesian product: a multi-realisation
-   wrapper or a List of unary wrappers spreads into its bare realisations
-   (an InfraPoint spreads over its support -- the measure is not an anchor
-   property, it is reconstructed at the projection); anything else becomes a
-   singleton. *)
+(* a multi-realisation wrapper or a list of unary wrappers spreads into its bare realisations -- an InfraPoint over its support, since the measure is not an anchor property but is reconstructed at the projection; anything else becomes a singleton *)
 
 infraSpread[ InfraPoint[ v_ ] ] := { v }
 infraSpread[ list : { __InfraPoint } ] := #[[ 1 ]] & /@ list
@@ -461,11 +376,7 @@ infraSpread[ InfraCircle[ dags : { __Graph } ] ] := Catenate[ dagGeodesics /@ da
 infraSpread[ other_ ] := { other }
 
 
-(* Project a bundle of vertex-sequence realisations onto position i: the
-   InfraEffectivePoint whose support is the i-th vertices (only realisations long
-   enough contribute) and whose masses are their multiplicities -- one of the
-   projections at which a measure is constructed.  i may be negative (counted
-   from the end). *)
+(* support = the i-th vertices of the realisations long enough to have one, masses = their multiplicities: one of the projections at which a measure is constructed.  i may be negative *)
 
 PackageScope[columnInfraPoint]
 
@@ -473,10 +384,7 @@ columnInfraPoint[ reps_List, i_Integer ] :=
   InfraEffectivePoint @ Counts[ ( #[[ i ]] & ) /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] ]
 
 
-(* Enumerate every geodesic of a geodesic-DAG segment: all source -> sink
-   directed paths (the one exponential step, materialised on demand).
-   dagGeodesics[dag, limit] is the lazy form: a DFS that stops as soon as
-   `limit` geodesics are collected -- never the whole family. *)
+(* all source -> sink directed paths, the one exponential step, materialised on demand; dagGeodesics[dag, limit] is the lazy form, a DFS stopping as soon as limit geodesics are collected *)
 
 dagGeodesics[ dag_Graph ] := Which[
   VertexCount[ dag ] == 0, { },
@@ -505,8 +413,7 @@ dagGeodesics[ dag_Graph, limit_ ] := Which[
         acc, dagGeodesics ] ] ]
 
 
-(* layer map of a geodesic interval DAG: v -> d(source, v); the DAG is
-   layer-aligned, so position i along every geodesic is layer i - 1. *)
+(* v -> d(source, v): the DAG is layer-aligned, so position i along every geodesic is layer i - 1 *)
 
 dagLayers[ dag_Graph ] :=
   If[ VertexCount[ dag ] == 0, <||>,
@@ -514,20 +421,11 @@ dagLayers[ dag_Graph ] :=
       AssociationThread[ VertexList[ dag ], GraphDistance[ dag, s ] ] ] ]
 
 
-(* The geodesic vertex sequences behind an InfraSegment, regardless of form:
-   a geodesic DAG enumerates on demand, a realisation list passes through, a
-   list of unary Find* wrappers flattens.  The bridge reps-expecting consumers
-   call when handed the DAG form. *)
-
 segReps[ InfraSegment[ dag_Graph ] ]        := dagGeodesics[ dag ]
 segReps[ InfraSegment[ reps_List, ___ ] ]   :=
   Catenate[ If[ GraphQ[ # ], dagGeodesics[ # ], { # } ] & /@ reps ]
 segReps[ ws : { ___InfraSegment } ]         := Catenate[ segReps /@ ws ]
 
-
-(* Seed vertex set for the hull family (FindSegmentHull / FindLineHull /
-   FindBallHull): a bare vertex list passes through; any Infra* object, a list
-   of them, or a bare vertex falls to infraVertexSet. *)
 
 PackageScope[hullVertices]
 
@@ -537,9 +435,7 @@ hullVertices[ s_List ] := s
 hullVertices[ s_ ] := infraVertexSet[ s ]
 
 
-(* Apply n / UpTo[n] / All count semantics to a bare list of realisations.
-   $Failed return is the mathematical "fewer than n exist" case; the count-less
-   Automatic is soft, one witness if there is one. *)
+(* $Failed is the mathematical "fewer than n exist" case; the count-less Automatic is soft, one witness if there is one *)
 
 infraCap[ list_List, All ]                              := list
 infraCap[ list_List, Automatic ]                        := Take[ list, UpTo[ 1 ] ]
@@ -548,10 +444,7 @@ infraCap[ list_List, n_Integer ] /; n <= Length[ list ] := Take[ list, n ]
 infraCap[ _List, _Integer ]                             := $Failed
 
 
-(* Dispatch shell for source/endpoint anchors: spread each anchor, run the
-   single-tuple core over the Cartesian product, union-deduplicate (the result
-   is a set of alternatives), and apply the n | UpTo[n] | All count contract.
-   Returns ONE wrapper. *)
+(* spread each anchor, run the single-tuple core over the Cartesian product, union-deduplicate, and apply the count contract; returns ONE wrapper *)
 
 spreadFind[ wrapHead_, count_, core_, anchors__ ] :=
   With[ { results = core @@@ Tuples[ infraSpread /@ { anchors } ] },
@@ -561,9 +454,7 @@ spreadFind[ wrapHead_, count_, core_, anchors__ ] :=
 
 (* the count contract on a realisation set: strict n fails on under-supply. *)
 
-(* the point family is a plain List of atoms, not a wrapper: the Wolfram
-   FindClique / FindInstance shape.  Regions are InfraSet, measures are
-   InfraEffectivePoint -- see the point ontology in InfraPoint.wl. *)
+(* the point family is a plain List of atoms, not a wrapper: the FindClique / FindInstance shape *)
 bundleTake[ InfraPoint, reps_, All ]               := InfraPoint /@ reps
 bundleTake[ InfraPoint, reps_, Automatic ]         := InfraPoint /@ Take[ reps, UpTo @ 1 ]
 bundleTake[ InfraPoint, reps_, UpTo[ n_Integer ] ] := InfraPoint /@ Take[ reps, UpTo @ n ]
@@ -577,13 +468,7 @@ bundleTake[ head_, reps_, n_Integer ]         :=
   If[ Length @ reps < n, $Failed, head[ Take[ reps, n ] ] ]
 
 
-(* Vertex marginal of a wrapper: the raw occupation count c(v) = total
-   appearances across realisations, the association InfraMeasure normalises
-   and InfraEqualQ compares.  For an InfraPoint this is the object itself --
-   the measure IS the point; for every other head it is a lossy projection.
-   Realisation slots dispatch through atomVertexMasses so a compact
-   geodesic-DAG atom contributes its whole family's occupation (by DP, no
-   enumeration) exactly as the enumerated family would. *)
+(* the raw occupation count c(v) = total appearances across realisations, the association InfraMeasure normalises and InfraEqualQ compares.  For an InfraPoint the measure IS the point, for every other head a lossy projection; a compact geodesic-DAG atom contributes its whole family's occupation by DP, exactly as the enumerated family would *)
 
 infraVertexMultiset[ InfraEffectivePoint[ m_Association ] ] := m
 infraVertexMultiset[ InfraPoint[ v_ ] ] := <| v -> 1 |>
@@ -595,10 +480,7 @@ With[ { heads = $infraBundleHeads },
 ]
 
 
-(* one realisation slot's contribution: a Graph atom stands for its whole
-   geodesic family (occupation by the Brandes DP), anything else for itself.
-   familySize is the atom's realisation count -- the normalisation divisor
-   contribution of that slot. *)
+(* a Graph atom stands for its whole geodesic family (occupation by the Brandes DP), anything else for itself; familySize is that slot's contribution to the normalisation divisor *)
 
 atomVertexMasses[ _ ][ dag_Graph ] := GeodesicOccupation[ dag ]
 atomVertexMasses[ type_ ][ rep_ ]  := Counts[ infraRepVerts[ type, rep ] ]
@@ -611,17 +493,12 @@ atomFamilySize[ dag_Graph ] :=
 atomFamilySize[ _ ] := 1
 
 
-(* Edge marginal, keyed by sorted vertex pair {a, b}: the raw count of
-   appearances across realisations, a Graph atom contributing its whole
-   family's per-edge occupation.  The graph is needed only for Sets-type
-   realisations (induced-subgraph edges). *)
+(* the raw count of appearances across realisations, keyed by sorted vertex pair; the graph is needed only for Sets-type realisations, whose edges are the induced subgraph's *)
 
 infraEdgeMultiset[ _, InfraSegment[ dag_Graph ] ] :=
   KeyMap[ Sort[ List @@ # ] &, GeodesicEdgeOccupation[ dag ] ]
 
-(* a circle-pool atom is an open DAG whose paths close: the wrap-around edge
-   sink - source lies on every realisation of the atom and so carries its whole
-   family, exactly as infraRepEdges closes an enumerated cycle *)
+(* a circle-pool atom is an open DAG whose paths close: the wrap-around edge sink - source lies on every realisation of the atom and so carries its whole family *)
 infraEdgeMultiset[ _, InfraCircle[ dags : { __Graph } ] ] :=
   Merge[
     Map[
@@ -638,14 +515,7 @@ infraEdgeMultiset[ g_, obj_ ] :=
 
 (* ===================== Visit measure ===================== *)
 
-(* The occupation measure of a wrapper: the marginal of its realization bundle
-   onto its vertex / edge set, c(v) = total appearances across realisations.
-   Method picks the normalization, same shape either way (a global rescaling):
-   "Occupation" (default) m(v) = c(v) / N -- mean occupation per realisation,
-   the membership / opacity InfraSceneHighlight draws; "Probability" p(v) =
-   c(v) / Total[c] -- the probability distribution on nodes, Sigma = 1.  A lossy
-   *view* of the bundle (discards order, co-occurrence) -- the bundle stays
-   ground truth. *)
+(* c(v) = total appearances across realisations, normalised either as "Occupation" m(v) = c(v) / N -- the mean occupation per realisation, the opacity InfraSceneHighlight draws -- or as "Probability" p(v) = c(v) / Total[c].  A lossy view of the bundle: order and co-occurrence are discarded *)
 
 InfraMeasure::badmethod = "Method `1` is not one of \"Occupation\", \"Probability\".";
 
@@ -671,8 +541,7 @@ normalizeMeasure[ method_, counts_, obj_ ] := Switch[ method,
   "Probability", If[ Length @ counts === 0, counts, counts / Total[ counts ] ],
   _,             Message[ InfraMeasure::badmethod, method ]; counts ]
 
-(* head -> topology type; the single source of truth shared with
-   InfraSceneHighlight's repVerts / repEdges dispatch. *)
+(* the single source of truth shared with InfraSceneHighlight's repVerts / repEdges dispatch *)
 
 infraRepType[ InfraPoint ]         = "Points";
 infraRepType[ InfraEffectivePoint ]     = "Points";
@@ -694,8 +563,6 @@ infraRepType[ InfraPlane ]         = "Sets";
 infraRepType[ InfraObject ]        = "Sets";
 infraRepType[ InfraSet ]           = "Sets";
 
-(* canonical realisation sequences (one vertex list per realisation), the
-   bundle repVerts / repEdges consume after the polyline / set transforms. *)
 
 infraRepSeqs[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] := polylineToVertexSeqs @ reps
 infraRepSeqs[ ( InfraObject | InfraSet )[ vs_List ] ]                        := { vs }
@@ -703,36 +570,21 @@ infraRepSeqs[ InfraPoint[ v_ ] ]                                             := 
 infraRepSeqs[ InfraEffectivePoint[ m_Association ] ]                              := Keys @ m
 infraRepSeqs[ head_[ reps_List, ___ ] ]                                      := reps
 
-(* per-type vertex / edge extraction from one canonical realisation -- the
-   single source of truth shared with InfraSceneHighlight's repVerts / repEdges
-   dispatch.  A point realisation is a bare vertex (wrapped to a singleton);
-   path / cycle / set realisations are vertex lists.  Edges are sorted lists
-   {a, b} (InfraMeasure remaps them to UndirectedEdge for its public output). *)
+(* a point realisation is a bare vertex (wrapped to a singleton), path / cycle / set realisations are vertex lists; edges are sorted lists {a, b}, which InfraMeasure remaps to UndirectedEdge *)
 
 infraRepVerts[ "Points", rep_ ] := { rep }
 infraRepVerts[ _, rep_ ]        := rep
 
-(* normalization divisor N = the number of realisations the marginal was
-   summed over.  A measured InfraPoint stores one vertex per realisation as
-   multiplicities, so N = its total mass; a bundle sums the family size of each
-   realisation slot (1 for an explicit realisation, the whole geodesic count
-   for a compact DAG atom); InfraObject / InfraSet hold a single set, N = 1. *)
+(* N = the number of realisations the marginal was summed over: a measured InfraPoint's total mass, a bundle's sum of per-slot family sizes (1 for an explicit realisation, the whole geodesic count for a compact DAG atom), 1 for a single set *)
 
 infraNumReps[ InfraPoint[ _ ] ]                     := 1
-(* a effective point normalises by its HEAVIEST mass, not its total: the measure
-   channel encodes RELATIVE mass within the object, so the modal vertex draws
-   full and lighter ones fade.  Normalising by the total would make every
-   measure fainter as its support grows -- a uniform ball of n vertices would
-   render at 1/n and vanish.  This is also what makes ["Measure"] (membership
-   in [0,1]) genuinely different from ["ProbabilityMeasure"] (sums to 1). *)
+(* a measure normalises by its HEAVIEST mass, not its total: the channel encodes RELATIVE mass within the object, so the modal vertex draws full and lighter ones fade.  Normalising by the total would render a uniform ball of n vertices at 1/n and make it vanish, and it is what separates ["Measure"] from ["ProbabilityMeasure"] *)
 infraNumReps[ InfraEffectivePoint[ m_Association ] ]      := If[ Length @ m === 0, 1, Max @ m ]
 infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
 infraNumReps[ InfraSegment[ dag_Graph ] ]           := atomFamilySize[ dag ]
 infraNumReps[ head_[ reps_List, ___ ] ]             := Max[ Total[ atomFamilySize /@ reps ], 1 ]
 
-(* per-type edge extraction, keyed by sorted lists {a, b}.  Sets-type edges are
-   the induced subgraph, hence the graph dependency.  InfraMeasure remaps the
-   keys to UndirectedEdge. *)
+(* Sets-type edges are the induced subgraph's, hence the graph dependency *)
 
 infraRepEdges[ _, "Points", _ ]   := { }
 infraRepEdges[ _, "PointSet", _ ] := { }
@@ -745,8 +597,7 @@ infraRepEdges[ g_, "Sets", rep_ ] :=
   Sort /@ ( List @@@ EdgeList @ Subgraph[ g, rep ] )
 
 
-(* Vertex-set view of a line-like input (FindInfraCommonPoint, InfraPerpendicularQ).
-   Bare list = vertex sequence; line wrappers unwrap to the union of realisations. *)
+(* bare list = vertex sequence; line wrappers unwrap to the union of their realisations *)
 
 (* a realisation slot may be a compact geodesic-DAG atom standing for its family *)
 linePointSet[ ( InfraLine | InfraSegment | InfraWalk | InfraRay )[ reps_List ] ] :=

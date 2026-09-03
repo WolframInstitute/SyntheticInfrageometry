@@ -3,27 +3,11 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== InfraEllipse wrapper ===================== *)
 
-(* InfraEllipse[{cycle}] is the unary form; InfraEllipse[{cycle1, ..., cyclek}] is the
-   multi-realisation form.  Set canonicalisation and the shared accessors
-   come from defineInfraBundleRules (Tools.wl). *)
 
-(* "Length" = circumference per realisation (#edges == #vertices for an open cycle). *)
 InfraEllipse[ reps_List ][ "Length" ] := Length /@ reps
 (* ===================== FindInfraEllipse ===================== *)
 
-(* An ellipse for foci {p1, p2} at sum c is a simple cycle in the induced
-   subgraph on { v : cMin <= d(p1,v) + d(p2,v) <= cMax }.  Single axis
-   Properties, matching FindInfraCircle:
-     "Separating" -- the cycle disconnects the near region
-       {v : sum < cMin} from the far region {v : sum > cMax}; the
-       topological condition that makes a level cycle a genuine ellipse.
-     "Shortest"   -- only cycles tied at the minimum admissible length;
-       the length sweep stops at the first non-empty length class.
-   Default {"Separating", "Shortest"} returns the canonical infra-ellipse
-   (shortest separating cycle) and its ties.  Unknown property names
-   (including "Connected", since cycles are always connected) raise
-   ::badproperty.  Single length-by-length FindCycle sweep; no Method
-   axis. *)
+(* an ellipse for foci {p1, p2} is a simple cycle in the induced subgraph on { v : cMin <= d(p1, v) + d(p2, v) <= cMax } *)
 
 FindInfraEllipse::badproperty = "Property `1` is not supported by FindInfraEllipse.";
 

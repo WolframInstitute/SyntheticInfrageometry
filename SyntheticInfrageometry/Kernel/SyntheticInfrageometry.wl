@@ -175,13 +175,7 @@ PackageExport[FindSegmentHull]
 PackageExport[SegmentHullQ]
 
 (* InfraSet.wl *)
-(* The Alexandrov-topology layer (InfraTopologicalSpace / InfraBallTopology /
-   ContinuousMapQ) was relocated to the Infrageometry paclet as BallTopology /
-   Topological* / ContinuousMapQ on bare vertex lists. InfraSet stays here -- it is
-   a scene primitive. InfraBoundary / InfraInterior are the synthetic front-ends:
-   they accept any Infra* object, dispatch over Method to GraphBoundary/GraphInterior
-   ("Combinatorial") or Topological{Boundary,Interior} ("Alexandrov") from
-   Infrageometry, and return an InfraSet. *)
+(* the Alexandrov-topology layer moved to the Infrageometry paclet; InfraBoundary / InfraInterior are the synthetic front-ends over it *)
 PackageExport[InfraSet]
 PackageExport[FindInfraEquidistantSet]
 PackageExport[FindAdvancingInfraFront]
@@ -189,9 +183,7 @@ PackageExport[InfraBoundary]
 PackageExport[InfraInterior]
 PackageExport[InfraVolume]
 
-(* Coordinatization.wl -- RadarCoordinates / ResistanceCoordinates relocated to
-   the Infrageometry paclet; Synthetic adds InfraObject overloads to them and
-   keeps FindInfraRadarBasis / InfraRadarBasisQ as deprecation aliases. *)
+(* Coordinatization.wl -- RadarCoordinates / ResistanceCoordinates live in the Infrageometry paclet; the InfraObject overloads and the deprecation aliases stay here *)
 PackageExport[FindInfraRadarBasis]
 PackageExport[InfraRadarBasisQ]
 PackageExport[OrthogonalCoordinates]
@@ -233,10 +225,7 @@ PackageExport[ProjectivePlaneGraphQ]
 (* GraphEnumeration.wl *)
 PackageExport[EnumerateGraphs]
 
-(* Graph generation was relocated to the Infrageometry paclet (graph-generation layer):
-   the single TessellationGraph generator (regular maps by {p, q}, uniform/Archimedean maps
-   by vertex configuration, sized by n / {m, n} / a carrying group). Load it
-   separately via Needs["WolframInstitute`Infrageometry`"]. *)
+(* graph generation (TessellationGraph) relocated to the Infrageometry paclet *)
 
 (* InfraScene.wl *)
 PackageExport[InfraScene]

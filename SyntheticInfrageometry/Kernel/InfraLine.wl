@@ -9,28 +9,16 @@ PackageScope[canonicalLine]
 PackageScope[allCanonicalLines]
 
 
-(* FindInfraLine returns InfraLine (a maximal geodesic is a line; the wrapper head
-   distinguishes line-shaped Find output from segment-shaped Find output).
-   This file owns the line-shaped Find / construction / predicate operations. *)
-
-
 (* ===================== InfraLine wrapper ===================== *)
 
 
-(* "Length" = list of edge counts, one per realisation: |line| - 1. *)
 InfraLine[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* line[[i]] = the measured InfraPoint of the i-th position across realisations
-   (mass = multiplicity).  First/Last and multi-index Part bypass this. *)
 InfraLine /: Part[ InfraLine[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]
 
 
 (* ===================== FindInfraLine ===================== *)
 
-(* A line through p1, p2: a maximal geodesic extension (a, ..., p1, ..., p2, ..., b)
-   every contiguous sub-sequence of which is a geodesic, inextensible at both ends.
-   FindInfraLine[g, seg]: maximal geodesic lines containing seg as a sub-sequence
-   (subsumes the deleted 2-arg ExtendInfraSegment). *)
 
 FindInfraLine::badmethod    = "Method `1` is not supported by FindInfraLine.";
 FindInfraLine::badproperty  = "Property `1` is not supported by FindInfraLine (FindInfraLine accepts only Properties -> {}).";
@@ -44,9 +32,7 @@ Options[ FindInfraLine ] = {
   "Direction"  -> "BothSides"
 };
 
-(* the ! ListQ guard disambiguates from the segment overload below, but a graph may have
-   list-valued vertices (TessellationGraph labels its torus {i, j}), and excluding those made
-   FindInfraLine return unevaluated on them; admit a list that is genuinely a vertex *)
+(* a list can be a genuine vertex (TessellationGraph labels its torus {i, j}), so the guard admits it *)
 FindInfraLine[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] /;
     ( ! ListQ[ p1 ] || VertexQ[ graph, p1 ] ) && Head[ p1 ] =!= InfraSegment :=
@@ -62,12 +48,7 @@ FindInfraLine[ graph_Graph, p1_, p2_,
         Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
       With[ { methodHead = methodName @ methodSpec,
               pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-        (* a line meets q1, q2 once each, so it contains exactly one q1-q2 geodesic as a
-           contiguous sub-sequence: distinct middles give distinct lines and each middle
-           yields at least one, so capping middles and per-middle extensions at count is
-           exact for the strict-n contract (single-anchor calls; a multi-anchor spread
-           can still dedup across tuples).  "Diameter" post-filters, so it must see the
-           whole family. *)
+        (* distinct middles give distinct lines and each yields at least one, so capping both is exact *)
         { cap = If[ maximality === "Diameter", Infinity, countLimit @ count ] },
         { middles = allGeodesics[ graph, q1, q2, cap /. Infinity -> All ] },
         { ext = Union @ Flatten[
@@ -89,9 +70,6 @@ FindInfraLine[ graph_Graph, p1_, p2_,
       ]
     ], p1, p2 ]
 
-(* Overload: extend a given segment to a maximal line.  count / opts shape
-   matches the two-endpoint form; the segment list is taken as the line's
-   middle and extended jointly via findLineExtensions. *)
 
 FindInfraLine[ graph_Graph, InfraSegment[ dag_Graph ],
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
@@ -135,19 +113,7 @@ FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] 
   ]
 
 
-(* Maximal geodesic extensions of a segment.  Asymmetric Cartesian: each side
-   is extended independently to its maximal admissible length; among pairs
-   that achieve a valid joint geodesic (degenerate triangle inequality
-   d(s, e) == d(s, p1) + d + d(p2, e)) we keep those with maximum total
-   extension length b_s + a_e.  findLineExtensionsWith takes an optional
-   admissibility predicate (used by FindInfraParallel to restrict to the
-   level set).  Direction \[Element] {"Forward", "Backward", "BothSides"}
-   controls which sides of the segment are extended; the default
-   "BothSides" reproduces the old behaviour.  For "Forward" the backward
-   anchor is pinned to p1 = First[segment]; for "Backward" the forward
-   anchor is pinned to p2 = Last[segment]; the output set is identical
-   under "BothSides" to per-step symmetric stepping (only intermediate
-   enumeration differs). *)
+(* each side extended independently; a pair is joint-geodesic iff d(s, e) == d(s, p1) + d + d(p2, e), and the maxima of b_s + a_e are kept *)
 
 findLineExtensions[ graph_Graph, segment_List, pruning_ : Infinity, direction_String : "BothSides",
     cap : ( _Integer | Infinity ) : Infinity ] :=
@@ -162,9 +128,7 @@ findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
 findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
     direction_String : "BothSides", cap : ( _Integer | Infinity ) : Infinity ] :=
   With[ { p1 = First[ segment ], p2 = Last[ segment ], verts = VertexList[ graph ] },
-    (* one compiled all-pairs matrix instead of one BFS per GraphDistance call: the
-       pair enumeration below is quadratic in the extension sets, and per-pair
-       GraphDistance re-ran a fresh BFS each time (minutes on ~1000-vertex meshes) *)
+    (* one compiled all-pairs matrix: the pair enumeration is quadratic, and per-pair GraphDistance re-ran a BFS each time *)
     { dm = GraphDistanceMatrix[ graph ],
       vidx = AssociationThread[ verts, Range @ Length @ verts ] },
     { d1 = dm[[ vidx[ p1 ] ]], d2 = dm[[ vidx[ p2 ] ]] },
@@ -176,10 +140,7 @@ findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
     { validPairs = Select[ Tuples[ { extendBefore, extendAfter } ],
         pair |-> dm[[ vidx[ pair[[ 1 ]] ], vidx[ pair[[ 2 ]] ] ]] ==
                  d1[[ vidx[ pair[[ 1 ]] ] ]] + d + d2[[ vidx[ pair[[ 2 ]] ] ]] ] },
-    (* each max pair yields at least one line, so a finite cap may truncate the tied
-       pairs and flow into the geodesic enumeration; the capped call path
-       (FindInfraLine) always has trivial admissibility, so the post-filter cannot
-       starve a capped FindPath *)
+    (* a finite cap may truncate the tied pairs; capped calls have trivial admissibility, so the post-filter cannot starve FindPath *)
     { maxPairs = With[ { tied = MaximalBy[ validPairs,
           d1[[ vidx[ #[[ 1 ]] ] ]] + d2[[ vidx[ #[[ 2 ]] ] ]] & ] },
         If[ cap === Infinity, tied, Take[ tied, UpTo[ cap ] ] ] ],
@@ -204,9 +165,7 @@ findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
   ]
 
 
-(* geodesic family u -> v of known length len: FindPath for the whole family, the
-   geodesic-DAG lazy DFS when capped -- FindPath's exact-length DFS can wander for
-   seconds per call even when asked for a handful of paths. *)
+(* FindPath for the whole family, the geodesic-DAG lazy DFS when capped: FindPath's exact-length DFS can wander for seconds *)
 
 cappedGeodesics[ graph_Graph, u_, v_, len_, All ] :=
   FindPath[ graph, u, v, { len }, All ]
@@ -215,27 +174,14 @@ cappedGeodesics[ graph_Graph, u_, v_, len_, n_Integer ] :=
   dagGeodesics[ GeodesicIntervalGraph[ graph, u, v ], n ]
 
 
-(* Lazy depth-first greedy extension: grow the chain outward one admissible
-   neighbour at a time and backtrack on exhaustion, stopping once `count`
-   distinct inextensible chains are in hand.  Complete, so a finite count is
-   exact.  branch = Identity is "Greedy" (deterministic, reproducible without a
-   seed); branch = randomBranch explores a single choice per step and so yields
-   one un-backtracked random chain ("RandomGreedy", via randomDraws -- see
-   Wiki/Concepts/RandomnessConventions.md).  Inextensible, but not necessarily
-   of maximum total length: that is what "Exhaustive" adds.
-
-   The two sides cannot grow independently against the ORIGINAL endpoints -- a
-   side that is locally geodesic to the other side's original position need not
-   stay so once that side also grows -- so the cross-distance is re-derived from
-   the LIVE frontiers at every step. *)
+(* grow the chain outward one admissible neighbour at a time, backtracking on exhaustion: complete, so a finite count is exact. The two sides cannot grow against the ORIGINAL endpoints, so the cross-distance is re-derived from the live frontiers at every step *)
 
 findLineExtensionsGreedy[ graph_Graph, segment_List, admissible_, direction_String, count_,
     branch_ : Identity ] /; Length[ segment ] < 2 := { segment }
 
 findLineExtensionsGreedy[ graph_Graph, segment_List, admissible_, direction_String, count_,
     branch_ : Identity ] :=
-  (* admissible and branch are held in Module locals rather than inlined into the
-     recursive RHS -- see the note on greedyFrontierSweep in Tools.wl *)
+  (* Module locals rather than inlined into the recursive RHS: see greedyFrontierSweep in Tools.wl *)
   Module[ { cap = countLimit @ count, acc = { }, outward, grow,
             admitQ = admissible, pick = branch },
     outward[ h_, other_ ] :=
@@ -269,8 +215,6 @@ findLineExtensionsGreedy[ graph_Graph, segment_List, admissible_, direction_Stri
 
 (* ===================== FindInfraParallel ===================== *)
 
-(* FindInfraParallel[g, line, p]: maximal sub-segment of a maximal geodesic
-   through p whose vertices all lie at distance r = d(p, line) from line. *)
 
 FindInfraParallel::badmethod   = "Method `1` is not supported by FindInfraParallel.";
 FindInfraParallel::badproperty = "Property `1` is not supported by FindInfraParallel (FindInfraParallel accepts only Properties -> {}).";
@@ -304,10 +248,7 @@ FindInfraParallel[ graph_Graph, line_, p_,
     ], line, p ]
 
 
-(* Maximal level-set geodesics through p: every vertex of the result lies at
-   distance r = d(p, line) from line, and the chain is a geodesic in graph.
-   Seeded by each level-set neighbor of p, extended on both sides via the
-   line-extension machinery with an extra admissibility predicate. *)
+(* every vertex of the result lies at distance r = d(p, line) from line, and the chain is a geodesic in graph *)
 
 findParallelExtensions[ graph_Graph, line_List, p_, pruning_ : Infinity ] :=
   With[ { lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ] },
@@ -407,19 +348,6 @@ findParallelExtensionsGreedy[ graph_Graph, line_List, p_, count_, branch_ : Iden
 
 (* ===================== FindInfraPerpendicular ===================== *)
 
-(* Perpendicular line(s) at `point` to `line`.  Returns InfraLine realisations
-   through `point`.  "Metric" (default): foot-of-perpendicular construction
-   (Euclid I.12, isosceles base midpoint) -- for each pair {a, b} of L-vertices
-   equidistant from p, the midpoint of the line-arc from a to b is a candidate
-   foot; the perpendicular line is the maximal geodesic through `point` and the
-   foot.  "Projection" / "Coordinate" / "Arclength" / "Alexandrov" /
-   {"Alexandrov", "Curvature" -> k}: enumerate maximal geodesics through
-   `point` and select those passing InfraPerpendicularQ with the named method.
-   Method-specific sub-options ("Equality", "ZeroTest", "Tolerance",
-   "Curvature") are carried inside the Method spec and forwarded verbatim to
-   InfraPerpendicularQ -- see its usage.  Option "Radius" -> All (default) |
-   r_Integer localises both the candidate enumeration (workGraph =
-   NeighborhoodGraph[g, point, r]) and the test. *)
 
 FindInfraPerpendicular::badmethod = "Method `1` is not supported by FindInfraPerpendicular.";
 
@@ -444,11 +372,7 @@ FindInfraPerpendicular[ graph_Graph, line_, point_,
     ], line, point ]
 
 
-(* "Metric" recipe: feet via isosceles base midpoint, then maximal lines through
-   each foot and `point`.  Line restricted to vertices in workGraph. *)
-
-(* Euclid I.12 feet only: isosceles base midpoints of equidistant pairs on
-   line, point removed.  No line extension. *)
+(* Euclid I.12: the feet are the isosceles base midpoints of the pairs equidistant from point *)
 
 perpendicularFeet[ workGraph_Graph, line_List, point_ ] :=
   With[ { localLine = Select[ line, MemberQ[ VertexList[ workGraph ], # ] & ] },
@@ -473,10 +397,6 @@ perpendicularByMetric[ workGraph_Graph, line_List, point_ ] :=
   ]
 
 
-(* Q-side recipe: candidates = canonical maximal geodesics through `point` in
-   workGraph; selection via InfraPerpendicularQ on the original graph with
-   "Radius" -> r so the test localises identically. *)
-
 perpendicularByQ[ workGraph_Graph, graph_Graph, line_, point_, spec_, radius_ ] :=
   With[ { candidates = DeleteDuplicates @ Map[ canonicalLine, Catenate[
       Map[ neighbor |-> findLineExtensions[ workGraph, { point, neighbor } ],
@@ -490,7 +410,6 @@ perpendicularByQ[ workGraph_Graph, graph_Graph, line_, point_, spec_, radius_ ] 
 
 (* ===================== FindInfraCommonLine ===================== *)
 
-(* Canonical maximal geodesics through every vertex in verts. *)
 
 FindInfraCommonLine[ graph_Graph, verts_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
@@ -517,8 +436,7 @@ InfraLineQ[ graph_Graph, segment_List ] :=
 
 (* ===================== InfraParallelQ ===================== *)
 
-(* Definition-alpha parallelism: l1 and l2 are disjoint and the distance from
-   each vertex of l1 to l2 is constant up to threshold. *)
+(* l1, l2 disjoint and d(v, l2) constant over v in l1, up to threshold *)
 
 InfraParallelQ[ distanceMatrix_List, l1_List, l2_List, threshold_ : 0 ] :=
   If[ IntersectingQ[ l1, l2 ], False,
@@ -545,38 +463,6 @@ InfraParallelQ[ graph_Graph,
 
 (* ===================== InfraPerpendicularQ ===================== *)
 
-(* Two lines are perpendicular if, at every common vertex p, the chosen test
-   holds.  Tolerance / Equality / ZeroTest are carried as sub-options of
-   the Method spec (so each tolerance has a clear per-method meaning):
-
-   - "Projection" (default): the foot-of-perpendicular projection of one line
-     onto the other compared to the intersection set.  Sub-option "Equality"
-     selects the comparison: "Subset" (default; the natural geometric test,
-     proj subset of intersection) or one of the InfraEqualQ methods "Set" /
-     "Multiset" / "Diffuse" / "Overlap" (stricter / looser alternatives).
-
-   - "Arclength" / "Alexandrov" / {"Alexandrov", "Curvature" -> k, ...}: split
-     each line at p into left / right halves, pick the far endpoint of each
-     half as a direction representative, and require the four corner-wedge
-     angles InfraAngle[..., {a_pm, p, b_pm}, Method -> mtd] to be equal
-     within sub-option "Tolerance" (default 0; in radians).  In Euclidean
-     the wedges sum to 2 Pi so equality forces Pi/2; on a graph the
-     synthetic angle is not perfectly additive around p, so equality at a
-     common value != Pi/2 is the honest right-angle test.
-
-   - "Coordinate": project each non-common vertex of one line onto the
-     other (FindClosestInfraPoint, metric argmin) to get a signed coordinate
-     along the receiving line, relative to p.  Sub-option "ZeroTest" is the
-     predicate that decides whether the resulting coordinate cloud is at 0;
-     values: "Mean" (default; |Mean[c]| <= tol), "Median" (|Median[c]| <= tol
-     -- robust to outliers), "Contains" (Min[c] - tol <= 0 <= Max[c] + tol
-     -- 0 lies in the coordinate range), a string spec with its own
-     "Tolerance" sub-option (e.g. {"Mean", "Tolerance" -> 0.2}), or any user
-     predicate function f (f[c] called directly and the result coerced to
-     True / False).  The default "Tolerance" on the named ZeroTests is 0.
-
-   Top-level option "Radius" -> All (default) | k_Integer restricts each
-   test to a k-neighborhood of the common vertex via NeighborhoodGraph. *)
 
 InfraPerpendicularQ::badmethod   = "Method `1` is not supported by InfraPerpendicularQ.";
 InfraPerpendicularQ::badzerotest = "ZeroTest `1` is not supported by InfraPerpendicularQ \"Coordinate\".";
@@ -607,9 +493,6 @@ InfraPerpendicularQ[ graph_Graph, l1_, l2_, OptionsPattern[] ] :=
   ]
 
 
-(* Ordered first-realisation vertex sequence; bare list is its own sequence.
-   Companion to linePointSet (which gives the unordered union). *)
-
 lineSequence[ ( InfraLine | InfraSegment | InfraWalk | InfraRay )[ reps_List ] ] := First @ reps
 lineSequence[ line_List ] := line
 
@@ -632,13 +515,7 @@ perpendicularAtProjection[ g_Graph, seq1_List, seq2_List, p_, equality_, radius_
   ]
 
 
-(* Four-corner symmetric perpendicularity at p: split each line at p into
-   left/right halves (truncated to the local NeighborhoodGraph), pick the
-   far endpoint of each half as a direction representative, and require the
-   four corner-wedge angles at p to be equal within "Tolerance".  In a
-   Euclidean limit the wedges sum to 2 Pi so equality forces Pi/2; on a
-   graph the synthetic angle is not perfectly additive around p, so the
-   equality at a common value != Pi/2 is the honest right-angle test. *)
+(* the four corner-wedge angles at p equal: in the Euclidean limit they sum to 2 Pi so equality forces Pi/2, and on a graph the angle is not additive around p, so equality at a common value is the honest test *)
 
 perpendicularAtAngle[ g_Graph, seq1_List, seq2_List, p_, mtd_, tol_, radius_ ] :=
   Module[ { localG, ball, s1, s2, i1, i2, h1L, h1R, h2L, h2R, angles },
@@ -662,19 +539,7 @@ perpendicularAtAngle[ g_Graph, seq1_List, seq2_List, p_, mtd_, tol_, radius_ ] :
   ]
 
 
-(* Coordinate perpendicularity at p: project each non-common vertex of one
-   line onto the other (FindClosestInfraPoint, metric argmin) to get a
-   signed coordinate along the receiving line, relative to p's position;
-   tie-feet averaged.  Pass iff the chosen ZeroTest indicates the cloud is
-   at 0 in both directions -- the projection feet are *balanced* around p,
-   not (as in "Projection") *contained* in the intersection set.  ZeroTest
-   spec: a bare name ("Mean" / "Median" / "Contains") uses Tolerance 0; the
-   nested form {name, "Tolerance" -> t} carries its own tolerance; an
-   arbitrary user predicate function f is called directly on the coordinate
-   list and the result coerced to True / False.  Test bodies:
-     "Mean"     -- Abs[ Mean[c] ]   <= tol
-     "Median"   -- Abs[ Median[c] ] <= tol
-     "Contains" -- Min[c] - tol <= 0 <= Max[c] + tol. *)
+(* signed coordinates of the projection feet along the receiving line: perpendicular iff the cloud is balanced around p, rather than contained in the intersection as in "Projection" *)
 
 perpendicularAtCoordinate[ g_Graph, seq1_List, seq2_List, p_, zeroTest_, radius_ ] :=
   Module[ { localG, ball, s1, s2, i1, i2, signedCoord, c12, c21,
@@ -711,8 +576,6 @@ perpendicularAtCoordinate[ g_Graph, seq1_List, seq2_List, p_, zeroTest_, radius_
 
 (* ===================== PencilDirections / PencilCardinality / LineCount ===================== *)
 
-(* Canonical maximal geodesics through origin, one per projective direction class
-   at origin.  LineCount: canonical maximal geodesics overall. *)
 
 PencilDirections[ graph_Graph, origin_ ] :=
   DeleteDuplicates @ Map[ canonicalLine, Flatten[
@@ -727,15 +590,7 @@ LineCount[ graph_Graph ] := Length @ allCanonicalLines[ graph ]
 
 (* ===================== FindLineHull / LineHullQ ===================== *)
 
-(* Line hull of S: the smallest superset closed under the line operator
-   L(u, v) = the maximal geodesics through u, v, returned as an InfraSet.
-   Equivalently, grow T by every line meeting T in >= 2 vertices, to a fixed
-   point.  The De Bruijn-Erdos / Chen-Chvatal collinearity closure; cf. the
-   segment hull (metric intervals) in MetricAlgebra.wl and the ball hull
-   (intersection of balls) in InfraBall.wl.  S is any Infra* object, a list of
-   them, or a bare vertex list.  Option "LineStructure": None (default) closes
-   under all maximal geodesics; an InfraLineStructure (or a bare list of lines)
-   closes under that fixed family instead -- still a unique fixed point. *)
+(* the smallest superset closed under L(u, v) = the maximal geodesics through u, v: the De Bruijn-Erdos / Chen-Chvatal collinearity closure *)
 
 Options[ FindLineHull ] = { "LineStructure" -> None };
 
@@ -749,8 +604,6 @@ FindLineHull[ graph_Graph, s : Except[ _Rule | _RuleDelayed ], OptionsPattern[] 
     ]
   ]
 
-(* S is line-closed: it already contains every line (of the chosen family)
-   that meets it in two or more vertices. *)
 
 Options[ LineHullQ ] = { "LineStructure" -> None };
 
@@ -760,11 +613,7 @@ LineHullQ[ graph_Graph, s : Except[ _Rule | _RuleDelayed ], opts : OptionsPatter
 
 (* ===================== UniversalLineQ ===================== *)
 
-(* The Chen-Chvatal line through u, v is L(u, v) = the union of all maximal
-   geodesics through both (the metrically-collinear vertices).  A line is
-   universal when it fills a whole connected component (De Bruijn-Erdos /
-   Chen-Chvatal).  UniversalLineQ[g, {u, v}] tests the single pair;
-   UniversalLineQ[g] asks whether any pair spans a universal line. *)
+(* the Chen-Chvatal line L(u, v) = the union of all maximal geodesics through both; universal when it fills a connected component *)
 
 UniversalLineQ[ graph_Graph, { u_, v_ } ] :=
   AnyTrue[ ConnectedComponents @ graph,
@@ -777,9 +626,7 @@ UniversalLineQ[ graph_Graph ] :=
 
 (* ===================== Helpers: canonical lines ===================== *)
 
-(* canonicalLine: lexicographic minimum of a line and its reversal.
-   allCanonicalLines: every canonical maximal geodesic in the graph
-   (consumed by PencilDirections, LineCount, and ProjectiveGeometry.wl). *)
+(* the lexicographic minimum of a line and its reversal *)
 
 canonicalLine[ line_List ] := First @ Sort @ { line, Reverse[ line ] }
 

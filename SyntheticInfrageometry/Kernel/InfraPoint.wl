@@ -9,42 +9,23 @@ PackageScope[infraPointVertices]
 
 (* ===================== InfraPoint wrapper ===================== *)
 
-(* InfraPoint is the ATOM of the point ontology: one vertex of the substrate,
-   nothing more.  The three layers are distinct heads --
-
-     InfraPoint[v]                  -- the atom, an element of V
-     InfraSet[{v1, ...}]            -- a family / region, a subset of V
-     InfraEffectivePoint[<|v -> m, ...|>] -- a measure on V, entered at projections
-
-   -- because for points alone all three would otherwise share one shape (a
-   weighted vertex set), which is what made the old single head ambiguous: its
-   atom sits at depth 0, so on a graph whose vertices are lists no guard can
-   separate InfraPoint[{1,1}] the atom from InfraPoint[{1,1}] the bundle. *)
+(* the ATOM of the point ontology: one vertex of the substrate, nothing more.  On a graph whose vertices are lists no guard can separate the atom from a bundle at arity 1, which is why the family layer (InfraSet) and the measure layer (InfraEffectivePoint) are distinct heads *)
 
 (* idempotency: re-wrapping an atom is the identity *)
 InfraPoint[ inner_InfraPoint ] := inner
 
-(* The atom carries its vertex label verbatim -- including a list label like
-   {i, j}, which is why no rule may read the argument as a support list: the
-   atom form and a bundle form cannot coexist at arity 1 (see InfraSet for the
-   family layer and InfraEffectivePoint for the measure layer). *)
 
 InfraPoint[ v_ ][ "Vertex" ]   := v
 InfraPoint[ v_ ][ "First" ]    := v
 InfraPoint[ v_ ][ "Vertices" ] := { v }
 InfraPoint[ v_ ][ "Mass" ]     := 1
 
-(* occupation measures (see InfraMeasure): an atom is the unit mass at its vertex. *)
+(* an atom is the unit mass at its vertex *)
 InfraPoint[ v_ ][ "OccupationCount" ]    := <| v -> 1 |>
 InfraPoint[ v_ ][ "OccupationMeasure" ]  := <| v -> 1 |>
 InfraPoint[ v_ ][ "Measure" ]            := <| v -> 1 |>
 InfraPoint[ v_ ][ "ProbabilityMeasure" ] := <| v -> 1 |>
 
-(* synthetic-invariant accessors (Infrageometry primitives at the vertex; the graph is
-   passed in since the wrapper holds no graph).  Extra args forward verbatim -- e.g.
-   p["BallVolumes", g, {0, R}], p["Dimension", g, {1, 5}].  An atom returns the bare
-   per-radius numbers; the collection forms (InfraSet, a list of atoms) return one row
-   per vertex, which is the rectangular shape the statistics compose over. *)
 
 InfraPoint[ v_ ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, v, rest ]
 InfraPoint[ v_ ][ "ShellAreas", g_, rest___ ]             := ShellAreas[ g, v, rest ]
@@ -54,8 +35,6 @@ InfraPoint[ v_ ][ "Dimension", g_, rest___ ]              := VolumeGrowthObserva
 InfraPoint[ v_ ][ "ScalarCurvature", g_, rest___ ]        := VolumeGrowthObservables[ g, v, rest ][ "BallScalarCurvature" ]
 InfraPoint[ v_ ][ "CurvatureByRadius", g_, rest___ ]      := VolumeGrowthObservables[ g, v, rest ][ "BallCurvatureByRadius" ]
 
-(* the same invariants the other way round: the Infrageometry primitives accept an
-   InfraPoint directly, so BallVolumes[g, p] == p["BallVolumes", g]. *)
 InfraPoint /: BallVolumes[ g_, p_InfraPoint, rest___ ]             := BallVolumes[ g, p[ "Vertex" ], rest ]
 InfraPoint /: ShellAreas[ g_, p_InfraPoint, rest___ ]              := ShellAreas[ g, p[ "Vertex" ], rest ]
 InfraPoint /: VolumeGrowthObservables[ g_, p_InfraPoint, rest___ ] := VolumeGrowthObservables[ g, p[ "Vertex" ], rest ]
@@ -63,15 +42,7 @@ InfraPoint /: VolumeGrowthObservables[ g_, p_InfraPoint, rest___ ] := VolumeGrow
 
 (* ===================== FindInfraPoint ===================== *)
 
-(* Points of the substrate, drawn from the "From" candidate pool.  The
-   count-less form returns ONE InfraPoint atom; the calling triple returns a
-   plain List of atoms (the FindClique / FindInstance shape).  The count is
-   always "how many points" -- "Distance" constrains WHICH points, making the
-   returned list one mutually-constrained tuple: r fixes the mutual distance
-   exactly, {dMin, dMax} a range, "Max" maximises the minimum pairwise gap,
-   "Spread" breaks the "Max" ties toward the most equidistant set (minimal
-   variance of pairwise distances).  The pool as a region is
-   InfraSet @ FindInfraPoint[g, All]. *)
+(* "Distance" constrains which points: r fixes the mutual distance exactly, {dMin, dMax} a range, "Max" maximises the minimum pairwise gap, "Spread" breaks the "Max" ties toward minimal variance of the pairwise distances *)
 
 FindInfraPoint::badfrom = "\"From\" specification `1` is not supported by FindInfraPoint. Supported: All, \"Random\", \"Center\", \"Periphery\", {\"Center\", cap}, anchor -> spec, a vertex, a vertex list, InfraPoint, InfraEffectivePoint, InfraSet.";
 
@@ -132,10 +103,7 @@ FindInfraPoint[ graph_Graph, opts : OptionsPattern[] ] :=
       InfraPoint @ RandomChoice @ findPointPool[ graph, from ] ] ]
 
 
-(* Admissible "From" specifications, tested before dispatch: an unrecognised
-   selector must raise ::badfrom rather than fall through to the whole vertex
-   pool, which reads as a legitimate random draw.  Shared with SelectInfraPoint,
-   whose pool selectors mirror these. *)
+(* an unrecognised selector must raise ::badfrom rather than fall through to the whole vertex pool, which reads as a legitimate random draw *)
 
 fromPointSpecQ[ graph_Graph, spec_ ] :=
   MatchQ[ spec, All | "Random" | "Center" | "Periphery" | { "Center", _Integer | Infinity }
@@ -146,9 +114,7 @@ fromPointSpecQ[ graph_Graph, spec_ ] :=
 findPointPool[ graph_Graph, "Center" ]    := GraphCenter[ graph ]
 findPointPool[ graph_Graph, "Periphery" ] := GraphPeriphery[ graph ]
 
-(* iterated centre: orbit of c |-> NeighborhoodGraph[c, GraphCenter[c]] for up to
-   cap steps (Infinity = uncapped), stopping at a fixed point (pool = its centre)
-   or when the centre-neighbourhood first disconnects (pool = that whole region). *)
+(* orbit of c |-> NeighborhoodGraph[c, GraphCenter[c]], stopping at a fixed point or when the centre-neighbourhood first disconnects *)
 findPointPool[ graph_Graph ? ConnectedGraphQ, { "Center", cap : ( _Integer | Infinity ) } ] :=
   With[ { final = NestWhile[ NeighborhoodGraph[ #, GraphCenter[ # ] ] &, graph,
             ConnectedGraphQ[ #2 ] && VertexCount[ #1 ] != VertexCount[ #2 ] &, 2, cap ] },
@@ -182,10 +148,7 @@ anchorDistMatchQ[ allDists_List, idx_Integer, "Max" ]                        :=
   allDists[[ idx ]] == Max @ Select[ allDists, # < Infinity & ]
 
 
-(* Among the max-min-gap cliques, the n-subset whose pairwise distances are
-   most equal -- minimal variance of pairwise distances, the most
-   equidistantly spread configuration.  distMatrix is the pool x pool distance
-   submatrix indexed by position in pool. *)
+(* among the max-min-gap cliques, the n-subset of minimal variance of pairwise distances *)
 
 mostEquidistantSubset[ cliques_List, distMatrix_, pool_List, n_Integer ] :=
   With[ { idx = AssociationThread[ pool -> Range @ Length @ pool ],
@@ -199,20 +162,11 @@ mostEquidistantSubset[ cliques_List, distMatrix_, pool_List, n_Integer ] :=
 
 (* ===================== FindInfraMidpoint ===================== *)
 
-(* Midpoint of a walk: the vertices at the index/indices closest to the centre
-   index (n + 1)/2.  Even-length walks (odd distance) give two equidistant
-   vertices -- a effective point; odd-length walks give a single vertex.  Always
-   non-empty.  Across the walks of the segment the closest-index vertices are
-   unioned into one InfraPoint.  "Tolerance" widens the band beyond the closest
-   index by that many graph-distance units. *)
+(* the vertices at the index closest to the centre index (n + 1)/2: an odd distance gives two of them, an even one a single vertex *)
 
 Options[ FindInfraMidpoint ] = { Method -> "Metric", "Tolerance" -> 0 };
 
-(* occupation of the central index band of one realisation slot, vertex -> mass:
-   a walk contributes 1 per band vertex; a geodesic-DAG atom reads the band off
-   its layers (position i = layer i - 1) weighted by geodesic occupation --
-   exact, no enumeration.  Shared by FindInfraMidpoint (frac = 1/2) and
-   FindInfraGoldenSection (frac = 1/phi). *)
+(* occupation of the central index band, vertex -> mass: a walk contributes 1 per band vertex, a geodesic-DAG atom reads the band off its layers weighted by geodesic occupation *)
 
 indexBandMasses[ frac_, tol_ ][ dag_Graph ] :=
   With[ { layers = dagLayers[ dag ] },
@@ -236,8 +190,7 @@ FindInfraMidpoint[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
       "Metric",
         InfraEffectivePoint @ Merge[ indexBandMasses[ 1/2, tol ] /@ First @ seg, Total ],
       "Embedding",
-        (* closest vertex to the coord-space midpoint of the endpoints; pool
-           "ShortestPaths" = vertices of the supplied walks, "AllPaths" = all *)
+        (* closest vertex to the coord-space midpoint of the endpoints *)
         With[ { walks = First[ seg ], embOpts = parseEmbeddingMethod @ OptionValue[ Method ] },
           { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
             vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
@@ -259,12 +212,7 @@ FindInfraMidpoint[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
 
 (* ===================== FindInfraGoldenSection ===================== *)
 
-(* Golden-section vertex S on segment AB: AB/AS == AS/SB, i.e. AS == AB/phi.
-   The vertex at the index closest to the golden index 1 + (n - 1)/phi (n =
-   walk length); the golden index is irrational, so it is a single vertex per
-   walk -- always a single point.  Across the walks of the segment the
-   closest-index vertices are unioned into one InfraPoint.  "Tolerance" widens
-   the band beyond the closest index by that many graph-distance units. *)
+(* AB/AS == AS/SB, i.e. AS == AB/phi: the vertex at the index closest to 1 + (n - 1)/phi.  The golden index is irrational, so it is a single vertex per walk *)
 
 Options[ FindInfraGoldenSection ] = { Method -> "Metric", "Tolerance" -> 0 };
 
@@ -280,8 +228,7 @@ FindInfraGoldenSection[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ]
       "Metric",
         InfraEffectivePoint @ Merge[ indexBandMasses[ N[ 1 / GoldenRatio ], tol ] /@ First @ seg, Total ],
       "Embedding",
-        (* closest vertex to the coord-space golden point p1 + (p2 - p1)/phi;
-           pool as in FindInfraMidpoint *)
+        (* closest vertex to the coord-space golden point p1 + (p2 - p1)/phi *)
         With[ { walks = First[ seg ], embOpts = parseEmbeddingMethod @ OptionValue[ Method ] },
           { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
             vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
@@ -304,8 +251,7 @@ FindInfraGoldenSection[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
 
 (* ===================== FindInfraReflection ===================== *)
 
-(* Reflection of x through a: vertex y with BetweennessQ[x, a, y] and d(a, y) = d(a, x).
-   On a graph this is the geodesic continuation of x past a at the same distance. *)
+(* y with BetweennessQ[x, a, y] and d(a, y) = d(a, x): the geodesic continuation of x past a at the same distance *)
 
 FindInfraReflection[ graph_Graph, x_, a_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
@@ -322,8 +268,7 @@ FindInfraReflection[ graph_Graph, x_, a_,
 
 (* ===================== CompleteInfraEquilateralTriangle ===================== *)
 
-(* Apex of an equilateral triangle on p1, p2 (Euclid I.1): vertex c with
-   d(p1, c) = d(p2, c) = d(p1, p2) -- the intersection of the two spheres. *)
+(* Euclid I.1: c with d(p1, c) = d(p2, c) = d(p1, p2), the intersection of the two spheres *)
 
 Options[ CompleteInfraEquilateralTriangle ] = { Method -> "Metric" };
 
@@ -341,9 +286,7 @@ CompleteInfraEquilateralTriangle[ graph_Graph, p1_, p2_,
 
 (* ===================== FindInfraCommonPoint ===================== *)
 
-(* Vertices common to every listed line: the intersection of the lines.
-   Each input line is a bare vertex sequence or a wrapped InfraLine /
-   InfraSegment / InfraWalk / InfraRay -- unwrap via linePointSet (Tools.wl). *)
+(* the intersection of the listed lines *)
 
 FindInfraCommonPoint[ graph_Graph, lines_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
@@ -355,9 +298,7 @@ FindInfraCommonPoint[ graph_Graph, lines_List,
 
 (* ===================== FindClosestInfraPoint ===================== *)
 
-(* Metric argmin: vertices on line at minimum graph distance from point.
-   Distinct from FindInfraPerpendicular -- that runs the synthetic Euclid I.12
-   foot (midpoints of equidistant pairs); this is the closest-vertex test. *)
+(* metric argmin: the vertices of line at minimum distance from point, not the Euclid I.12 foot FindInfraPerpendicular runs *)
 
 FindClosestInfraPoint[ graph_Graph, line_, point_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
@@ -367,10 +308,6 @@ FindClosestInfraPoint[ graph_Graph, line_, point_,
 
 (* ===================== SelectInfraPoint ===================== *)
 
-(* Chainable post-filter on a bundle of vertices treated as a finite metric
-   space under the graph distance.  Pool selectors mirror FindInfraPoint;
-   "Center" / "Periphery" use sub-bundle eccentricity, "Distance" enforces a
-   mutual-distance clique on the n returned vertices. *)
 
 SelectInfraPoint::badfrom = "\"From\" specification `1` is not supported by SelectInfraPoint. Supported: All, \"Random\", \"Center\", \"Periphery\", anchor -> spec, a vertex, a vertex list, InfraPoint, InfraEffectivePoint, InfraSet.";
 
@@ -397,7 +334,6 @@ SelectInfraPoint[ graph_Graph, list : { __InfraPoint },
                   countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   SelectInfraPoint[ graph, #[[ 1 ]] & /@ list, countSpec, opts ]
 
-(* Any set-like Infra* wrapper is a vertex bundle: select from its vertex set. *)
 SelectInfraPoint[ graph_Graph,
                   bundle : ( InfraBall | InfraShell | InfraEllipticShell | InfraPlane | InfraSet | InfraObject | InfraCircle | InfraEllipse )[ _List ] | _InfraEffectivePoint,
                   countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
@@ -491,9 +427,7 @@ pointPoolPositions[ _, vertices_List, _, _ ] := Range @ Length @ vertices
 
 
 (* ===================== InfraReachableQ ===================== *)
-(* p1, p2 share a connected component: exists v in p1, w in p2 with v ~ w.
-   Single multi-source BFS via VertexComponent -- visits only the components
-   touched by p1's realisations, no full-graph component partition built. *)
+(* single multi-source BFS via VertexComponent: visits only the components touched by p1's realisations *)
 
 InfraReachableQ[ graph_Graph, p1_, p2_ ] :=
   IntersectingQ[ VertexComponent[ graph, infraPointVertices @ p1 ], infraPointVertices @ p2 ]
@@ -514,9 +448,6 @@ dispatchConstruction[ graph_Graph, InfraPoint[ ] ] :=
 dispatchConstruction[ graph_Graph, InfraPoint[ v_ ] ] /; MemberQ[ VertexList @ graph, v ] :=
   { v }
 
-(* A predefined, already-resolved point family: an InfraSet or a list of
-   atoms as returned by FindInfraPoint et al., so a scene symbol can be bound
-   directly to a computed point without unwrapping. *)
 dispatchConstruction[ graph_Graph, InfraSet[ vs_List ] ] /;
     vs =!= { } && SubsetQ[ VertexList @ graph, vs ] :=
   vs

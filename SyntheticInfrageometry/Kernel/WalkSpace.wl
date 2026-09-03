@@ -13,23 +13,6 @@ PackageScope[parseEmbeddingMethod]
 
 (* ===================== SelectInfraWalk ===================== *)
 
-(* Chainable post-filters on the bundle of walks treated as a finite metric
-   space -- polymorphic on the wrapper head, since a cycle is a closed walk
-   and circumference plays the role of length for closed heads.  Calling
-   triple n_Integer | UpTo[n] | All (default n = 1); options "From" (pool
-   selector: All, "Center", "Periphery", "MostVisited" (max total occupation),
-   "Bottleneck" (max-min occupation, widest corridor), anchor -> spec,
-   multi-anchor InfraSegment[{...}] -> spec; "MinLength" / "MaxLength"
-   (shortest / longest, circumference for closed heads); {"Min", scoreFn} /
-   {"Max", scoreFn} with user-supplied walk-aggregated scoreFn[walk] returning
-   a comparable value), "Distance" (mutual-distance constraint: None, "Max",
-   numeric, range), "Metric" ("Hausdorff" default, "Frechet", "MeanFrechet"),
-   "MaxCliques", "Cyclic" -> False (default) | True (rotation-invariant
-   metrics and closing edge; only meaningful on a BARE list -- a wrapper head
-   already says whether it is closed).  Wrappers preserved: InfraSegment /
-   InfraLine / InfraWalk / InfraRay for open walks; InfraCircle / InfraLoop /
-   InfraString for closed ones (auto-force "Cyclic" -> True).
-   Operator form: SelectInfraWalk[g, n, opts][walks]. *)
 
 SelectInfraWalk::badfrom = "\"From\" specification `1` is not supported by SelectInfraWalk. Supported: All, \"Center\", \"Periphery\", \"MostVisited\", \"Bottleneck\", \"MinLength\", \"MaxLength\", anchor -> spec, {\"Min\", scoreFn}, {\"Max\", scoreFn}.";
 
@@ -73,11 +56,7 @@ SelectInfraWalk[ graph_Graph, ( head : InfraCircle | InfraLoop | InfraString )[ 
   With[ { result = SelectInfraWalk[ graph, cycles, countSpec, "Cyclic" -> True, opts ] },
     If[ result === $Failed, $Failed, head[ result ] ] ]
 
-(* geodesic-DAG segment, "MostVisited" without distance spread: the most-visited
-   geodesic(s) are the longest additive-weight source->sink paths of the DAG under
-   node weight c(v) and edge weight w->x = f(w) b(x) (f, b = forward / backward path
-   counts; both are geodesic-occupation counts), so only the optimal geodesics
-   returned are ever enumerated -- never the whole (possibly astronomical) family. *)
+(* the most-visited geodesics are the longest additive-weight source -> sink paths of the DAG under node weight c(v) and edge weight w -> x = f(w) b(x), the forward / backward path counts, so only the optimal geodesics are ever enumerated *)
 SelectInfraWalk[ graph_Graph, InfraSegment[ dag_Graph ],
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
     OptionValue[ SelectInfraWalk, { opts }, "From" ] === "MostVisited" &&
@@ -115,8 +94,6 @@ SelectInfraWalk[ graph_Graph, InfraSegment[ dag_Graph ],
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   SelectInfraWalk[ graph, InfraSegment[ dagGeodesics[ dag ] ], countSpec, opts ]
 
-(* List of unary open-walk wrappers: route through the bare-walk core, re-wrap
-   each result under the matching head. *)
 
 SelectInfraWalk[ graph_Graph, list_List,
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
@@ -125,7 +102,6 @@ SelectInfraWalk[ graph_Graph, list_List,
           result = SelectInfraWalk[ graph, #[[ 1, 1 ]] & /@ list, countSpec, "Cyclic" -> False, opts ] },
     If[ result === $Failed, $Failed, head[ { # } ] & /@ result ] ]
 
-(* List of unary closed-walk wrappers: same, forcing circumference-as-length. *)
 
 SelectInfraWalk[ graph_Graph, list_List,
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
@@ -140,17 +116,6 @@ SelectInfraWalk[ graph_Graph, countSpec : ( _Integer | UpTo[ _Integer ] | All ),
 
 (* ===================== EmbeddingClosest ===================== *)
 
-(* Polymorphic closest-by-embedding operator.  Reference shape {p1, p2} picks
-   bundle elements closest to the Euclidean segment p1-p2 under GraphEmbedding;
-   reference shape {center, radius_?NumericQ} picks bundle elements closest to
-   the Euclidean circle of given centre and radius; an arbitrary embedded curve
-   (a Line / BSplineCurve / BezierCurve, or a list of >= 3 plane points in the
-   embedding's coordinates) picks the bundle element whose embedded polyline is
-   closest (plane Hausdorff) to that curve -- i.e. draw any curve over the graph
-   embedding and get back the best-approximating path.  Bundle elements may be
-   bare vertex sequences, InfraSegment / InfraLine / InfraWalk / InfraRay /
-   InfraCircle wrappers, or homogeneous lists of unary wrappers; wrappers are
-   preserved. *)
 
 (* --- segment-shape: bundle of paths, reference {p1, p2} --- *)
 
@@ -203,11 +168,7 @@ EmbeddingClosest[ graph_Graph, list_List, { center_, radius_?NumericQ } ] /;
     EmbeddingClosest[ graph, #[[ 1, 1 ]] & /@ list, { center, radius } ]
 
 
-(* --- shell-shape: bundle of vertex sets, reference {center, radius_?NumericQ}.
-   Bare bundles dispatch by InfraShell[{set}] wrapping; sets are ranked by the
-   directed Hausdorff distance from the embedded set to the Euclidean sphere
-   of radius r, defined as Max over set vertices of |EuclideanDistance(v, c) - r|.
-   Dimension-agnostic and independent of vertex order. *)
+(* --- shell-shape: sets ranked by the directed Hausdorff distance to the Euclidean sphere of radius r, Max over set vertices of |EuclideanDistance(v, c) - r| --- *)
 
 EmbeddingClosest[ graph_Graph, InfraShell[ sets_List ], { center_, radius_?NumericQ } ] :=
   InfraShell[ embeddingRankShellSets[ graph, sets, center, radius ] ]
@@ -229,12 +190,7 @@ embeddingRankShellSets[ graph_Graph, sets_List, center_, radius_ ] :=
   ]
 
 
-(* --- curve-shape: bundle of paths, reference an arbitrary embedded curve.
-   The curve is a Line / BSplineCurve / BezierCurve, or a bare list of >= 3 plane
-   points in the embedding's coordinates (a length-2 bare list stays a {p1, p2}
-   vertex reference -- wrap explicit coordinates in Line[..] to force a curve).
-   Returns the bundle element whose embedded polyline is closest (plane
-   Hausdorff) to the curve, wrapper head preserved. *)
+(* --- curve-shape: a length-2 bare list stays a {p1, p2} vertex reference, so explicit coordinates must be wrapped in Line[...] --- *)
 
 EmbeddingClosest[ graph_Graph, paths_List, crv_ ] /;
     embeddingCurveQ[ crv ] && Length[ paths ] <= 1 &&
@@ -271,13 +227,7 @@ EmbeddingClosest[ graph_Graph, crv : ( _Line | _BSplineCurve | _BezierCurve ) ] 
 
 (* ===================== FindEmbeddingClosestPath ===================== *)
 
-(* Snap an arbitrary embedded curve to a graph walk: sample the curve, map each
-   sample to its nearest vertex under the embedding, drop consecutive repeats,
-   and join successive anchors by geodesics.  Returns InfraWalk[{walk}] tracing
-   the curve -- the generative counterpart of EmbeddingClosest's curve selection
-   (no bundle to choose from, so the path is constructed).  `curve` is a Line /
-   BSplineCurve / BezierCurve or a list of plane points in the embedding's
-   coordinates. *)
+(* sample the curve, map each sample to its nearest vertex under the embedding, drop consecutive repeats, and join successive anchors by geodesics *)
 
 FindEmbeddingClosestPath[ graph_Graph, curve_ ] :=
   With[ { coords = resolveEmbeddingCoords[ graph, Automatic ],
@@ -292,19 +242,7 @@ FindEmbeddingClosestPath[ graph_Graph, curve_ ] :=
 
 (* ===================== GeodesicSprayGraph ===================== *)
 
-(* Union of geodesics over a source spec.  Three dispatch shapes:
-     [g, c]              -- BFS DAG of all geodesics from c: directed graph on
-                            vertices reachable from c, with edge u -> v whenever
-                            d(c, v) = d(c, u) + 1 and u-v is a g-edge.
-     [g, InfraSet[vs]] -- multi-source spray: same DAG with d_c replaced by
-                            min_i d(ci, v).
-     [g, pairs]          -- union of geodesics between the listed vertex pairs;
-                            "PathThickness" controls per-pair selection.
-   "AxisLength" -> All | k truncates the source-spray DAG at depth k.
-   "PathThickness" -> 0 keeps one shortest path per pair; Infinity keeps every
-   shortest path; a finite positive value keeps geodesics whose path-Hausdorff
-   distance to the first geodesic is at most that threshold.
-   "Directed" -> True orients DAG/pair edges from source to sink. *)
+(* [g, c]: the BFS DAG of all geodesics from c -- edge u -> v whenever d(c, v) = d(c, u) + 1 and u-v is a g-edge.  [g, InfraSet[vs]]: the same with d_c replaced by min_i d(ci, v).  [g, pairs]: the union of geodesics between the listed pairs *)
 
 Options[ GeodesicSprayGraph ] = {
   "AxisLength"    -> All,
@@ -316,8 +254,6 @@ GeodesicSprayGraph[ g_Graph, c_, OptionsPattern[] ] /; MemberQ[ VertexList[ g ],
   geodesicSprayFromDistances[ g, AssociationThread[ VertexList[ g ], GraphDistance[ g, c ] ],
     OptionValue[ "AxisLength" ], OptionValue[ "Directed" ] ]
 
-(* an InfraPoint atom is the natural single source; an InfraSet or a list of
-   atoms is the multi-source form *)
 GeodesicSprayGraph[ g_Graph, InfraPoint[ v_ ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], v ] :=
   GeodesicSprayGraph[ g, v, opts ]
 
@@ -360,9 +296,7 @@ GeodesicSprayGraph[ g_Graph, pairs : { { _, _ } .. }, OptionsPattern[] ] :=
 
 (* ===================== PathSubgraph ===================== *)
 
-(* Union of all simple u-v paths of length at most k.  Automatic = geodesic
-   case (k = d(u, v)); an integer or UpTo[k] sets the cap; All gives every
-   simple u-v path.  "Directed" -> True orients each path u -> v. *)
+(* the union of all simple u-v paths of length at most k; Automatic is the geodesic case k = d(u, v) *)
 
 Options[ PathSubgraph ] = { "Directed" -> True };
 
@@ -385,9 +319,7 @@ PathSubgraph[ g_Graph, u_, v_, lengthSpec : ( _Integer | UpTo[ _Integer ] | All 
 
 (* ===================== InfraDeformationSize ===================== *)
 
-(* InfraDeformationSize: how many edges of the reference a deformation replaces
-   = L - sharedPrefixEdges - sharedSuffixEdges.  One-sided -- measured in the
-   reference's edges -- so it is not a symmetric walk-space metric. *)
+(* L - sharedPrefixEdges - sharedSuffixEdges: the width of the window on which the two walks differ.  One-sided, measured in the reference's edges, so not a symmetric walk-space metric *)
 
 InfraDeformationSize[ ref_, InfraWalk[ rs_List, ___ ] ] := InfraDeformationSize[ ref, # ] & /@ rs
 
@@ -417,10 +349,7 @@ HausdorffDistance[ g_Graph, setX_List, setY_List ] :=
   ]
 
 
-(* FrechetDistance: f-reduced order-respecting pairing distance.  Equal-length
-   sequences pair element-wise; unequal lengths are aligned by linear
-   resampling to the common length max(|X|, |Y|).  f = Max yields the
-   classical discrete Frechet; f = Mean yields the mean-Frechet variant. *)
+(* order-respecting pairing distance; unequal lengths are aligned by linear resampling to max(|X|, |Y|), f = Max giving the classical discrete Frechet and f = Mean the mean variant *)
 
 FrechetDistance[ d_List, setX_, setY_, f_ : Max ] :=
   If[ Length[ setX ] === Length[ setY ],
@@ -453,9 +382,7 @@ MinimalSeparationDistance[ g_Graph, setX_List, setY_List ] :=
   Min[ Outer[ GraphDistance[ g, #1, #2 ] &, setX, setY, 1 ] ]
 
 
-(* EmbeddingHausdorffDistance: plane Hausdorff between the polyline of an
-   embedded path and the straight segment between its endpoints' embeddings.
-   Degenerate one-vertex paths score 0. *)
+(* plane Hausdorff between the embedded polyline and the straight segment between its endpoints *)
 
 EmbeddingHausdorffDistance[ coords_List, path_List, { p1_, p2_ } ] /; Length[ path ] >= 2 :=
   RegionHausdorffDistance[ Line[ coords[[ path ]] ], Line[ { coords[[ p1 ]], coords[[ p2 ]] } ] ]
@@ -463,9 +390,7 @@ EmbeddingHausdorffDistance[ coords_List, path_List, { p1_, p2_ } ] /; Length[ pa
 EmbeddingHausdorffDistance[ _List, path_List, { _, _ } ] /; Length[ path ] < 2 := 0
 
 
-(* EmbeddingCircleDistance: plane Hausdorff between a graph cycle (drawn as a
-   closed polyline under the embedding) and the Euclidean circle of given
-   centre / radius. *)
+(* plane Hausdorff between the embedded closed polyline of a cycle and the Euclidean circle *)
 
 EmbeddingCircleDistance[ coords_List, cycle_List, centerIdx_Integer, radius_ ] /; Length[ cycle ] >= 3 :=
   With[ { centerPt = coords[[ centerIdx ]], cyclePts = coords[[ cycle ]] },
@@ -481,9 +406,7 @@ EmbeddingCircleDistance[ coords_List, cycle_List, centerIdx_Integer, radius_ ] /
 EmbeddingCircleDistance[ _List, cycle_List, _Integer, _ ] /; Length[ cycle ] < 3 := Infinity
 
 
-(* embeddingCurveQ: is `crv` an arbitrary embedded curve reference?  A
-   Line / BSplineCurve / BezierCurve, or a bare list of >= 3 plane points.  A
-   length-2 bare list is left to the {p1, p2} vertex-reference branch. *)
+(* a length-2 bare list is left to the {p1, p2} vertex-reference branch *)
 
 embeddingCurveQ[ _Line | _BSplineCurve | _BezierCurve ] := True
 embeddingCurveQ[ pts_ ] := MatrixQ[ pts, NumericQ ] && Last[ Dimensions[ pts ] ] === 2 && Length[ pts ] >= 3
@@ -496,18 +419,13 @@ embeddingCurvePoints[ BezierCurve[ pts_, ___ ] ] :=
 embeddingCurvePoints[ pts_ ] := pts
 
 
-(* EmbeddingCurveDistance: plane Hausdorff between the embedded polyline of a
-   path (a single point when degenerate) and the reference curve's polyline. *)
-
 EmbeddingCurveDistance[ coords_List, path_List, curvePts_List ] :=
   RegionHausdorffDistance[
     If[ Length[ path ] >= 2, Line[ coords[[ path ]] ], Point[ coords[[ First @ path ]] ] ],
     Line[ curvePts ] ]
 
 
-(* Pairwise path-space distance matrix between the supplied paths under
-   baseDist.  When cyclic, every cyclic rotation of the second argument is
-   tried and the minimum kept (cycle distance is rotation-invariant). *)
+(* when cyclic, every rotation of the second argument is tried and the minimum kept: cycle distance is rotation-invariant *)
 
 pathFilterPairwiseDistances[ graph_Graph, paths_List, baseDist_, cyclic_ ] :=
   With[ { distMatrix = GraphDistanceMatrix[ graph ],
@@ -531,9 +449,7 @@ pathSpaceMetric[ _             ] := HausdorffDistance
 
 (* ===================== Helpers: SelectInfraWalk / SelectInfraWalk core ===================== *)
 
-(* selectFromWalkSpace returns up to nMax paths from the bundle; strict-n
-   shortfall handling is left to the caller.  When distSpec is set the
-   selection is the max-spread n-clique under the path-space metric. *)
+(* with distSpec set the selection is the max-spread n-clique under the path-space metric *)
 
 selectFromWalkSpace[ _Graph, paths_List, _Integer, _, _, _, _, _ ] /; Length[ paths ] <= 1 := paths
 
@@ -584,9 +500,7 @@ selectFromWalkSpace[ graph_Graph, paths_List, nMax_Integer, cyclic_,
   ]
 
 
-(* Admissible "From" specifications, tested before dispatch: an unrecognised
-   selector must raise ::badfrom rather than fall through to the whole bundle,
-   which reads as a legitimate random draw. *)
+(* an unrecognised selector must raise ::badfrom rather than fall through to the whole bundle, which reads as a legitimate random draw *)
 
 fromWalkSpecQ[ spec_ ] :=
   MatchQ[ spec, All | "Center" | "Periphery" | "MostVisited" | "Bottleneck"
@@ -620,8 +534,6 @@ poolPositions[ _Graph, paths_List, "MaxLength", _, _, _ ] :=
 poolPositions[ graph_Graph, paths_List, ( anchor_ -> spec_ ), _, baseDist_, cyclic_ ] :=
   anchorDistancePool[ graph, paths, anchor, spec, baseDist, cyclic ]
 
-(* Generic min / max selector: user-supplied scoreFn[path] returning a
-   comparable value; pool keeps positions where scoreFn is extremal. *)
 
 poolPositions[ _Graph, paths_List, { "Min", scoreFn_ }, _, _, _ ] :=
   With[ { scores = scoreFn /@ paths },
@@ -634,9 +546,7 @@ poolPositions[ _Graph, paths_List, { "Max", scoreFn_ }, _, _, _ ] :=
 poolPositions[ _, paths_List, _, _, _, _ ] := Range @ Length @ paths
 
 
-(* Positions of paths extremising the bundle visit counts of their vertices and
-   edges: agg = Total picks max total occupation ("MostVisited"), agg = Min picks
-   the max-min bottleneck (widest continuous corridor, "Bottleneck"). *)
+(* agg = Total picks the max total occupation ("MostVisited"), agg = Min the max-min bottleneck, the widest continuous corridor ("Bottleneck") *)
 
 visitPoolPositions[ paths_List, cyclic_, agg_ ] :=
   With[ { edgeSeqs = infraRepEdges[ None, If[ cyclic, "Cycles", "Paths" ], # ] & /@ paths },
@@ -648,10 +558,6 @@ visitPoolPositions[ paths_List, cyclic_, agg_ ] :=
     Flatten @ Position[ scores, Max @ scores, { 1 }, Heads -> False ]
   ]
 
-
-(* Positions of paths whose path-space distance to each anchor satisfies spec
-   (numeric d, {dMin, dMax} range, or "Max" -- max distance from each anchor
-   individually). *)
 
 anchorDistancePool[ graph_Graph, paths_List, anchor_, spec_, baseDist_, cyclic_ ] :=
   With[ { anchors = Replace[ anchor, {
@@ -685,11 +591,6 @@ anchorMatchQ[ _, _, _ ] := False
 
 (* ===================== Helpers: embedding methods ===================== *)
 
-(* parseEmbeddingMethod[spec, poolDefault] extracts the suboptions of
-   Method -> "Embedding" on FindInfraMidpoint (the only remaining consumer
-   after the path-finding consolidation that dropped "Embedding" from
-   FindInfraSegment / FindInfraLine / FindInfraParallel).  Returns
-   <| "Coordinates", "Pool", "Pruning" |>. *)
 
 parseEmbeddingMethod[ spec_, poolDefault_String : "ShortestPaths" ] :=
   Replace[ spec, {
@@ -703,9 +604,7 @@ parseEmbeddingMethod[ spec_, poolDefault_String : "ShortestPaths" ] :=
   } ]
 
 
-(* Coordinate matrix from the "Coordinates" suboption value: Automatic =
-   GraphEmbedding under SpringEmbedding (the closest built-in to the
-   edge-length-preserving criterion); else the user-supplied matrix. *)
+(* Automatic = GraphEmbedding under SpringEmbedding, the closest built-in to the edge-length-preserving criterion *)
 
 resolveEmbeddingCoords[ graph_Graph, Automatic ] :=
   GraphEmbedding[ Graph[ graph, GraphLayout -> "SpringEmbedding" ] ]
@@ -714,11 +613,7 @@ resolveEmbeddingCoords[ _, coords_List ] := coords
 
 (* ===================== Helpers: geodesic DAG ===================== *)
 
-(* geodesicDAGNeighbors[g, u, v]: vertex -> {downstream DAG neighbours} for
-   every vertex w on some geodesic from u to v.  Directed paths through the
-   DAG are exactly the u-v geodesics.
-   geodesicDAGNeighbors[g, c]: single-source form; directed paths c -> sink
-   are exactly the maximal geodesics from c. *)
+(* vertex -> downstream DAG neighbours, so the directed paths through the DAG are exactly the u-v geodesics; in the single-source form the paths c -> sink are the maximal geodesics from c *)
 
 geodesicDAGNeighbors[ graph_Graph, u_, v_ ] :=
   With[ { du = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, u ] ],
@@ -746,12 +641,7 @@ geodesicDAGNeighbors[ graph_Graph, c_ ] :=
   ]
 
 
-(* GeodesicSprayGraph construction from a precomputed distance map.  When
-   directed -> True, each edge points outward from the source (along increasing
-   distance); when False, undirected edges are emitted. *)
-
-(* the spray keeps the base graph's embedding, so its figures and every
-   NeighborhoodGraph carved out of it stay aligned with the substrate *)
+(* the spray keeps the base graph's embedding, so its figures stay aligned with the substrate *)
 geodesicSprayFromDistances[ g_Graph, dist_Association, depthSpec_, directed_ ] :=
   With[ { depth = Replace[ depthSpec, All -> Infinity ],
           coords = AssociationThread[ VertexList[ g ], GraphEmbedding[ g ] ] },

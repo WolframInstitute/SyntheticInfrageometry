@@ -3,34 +3,20 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== InfraObject wrapper ===================== *)
 
-(* InfraObject[vs] is the general single-vertex-set wrapper (no multi-realisation
-   form).  "Volume" returns the singleton list { Length[vs] } for consistency
-   with the always-a-list convention of "Volume" on multi-realisation set-like
-   wrappers (InfraBall, InfraShell, InfraPlane, InfraEllipticShell). *)
 
 InfraObject[ vs_List ][ "Volume" ] := { Length @ vs }
 
-(* occupation measures (see InfraMeasure): ["OccupationCount"] = raw c(v); ["OccupationMeasure"] == ["Measure"] = c(v)/N; ["ProbabilityMeasure"] = c(v)/Total. *)
 InfraObject[ vs_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraObject[ vs ] ]
 InfraObject[ vs_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraObject[ vs ] ]
 InfraObject[ vs_List ][ "Measure" ] := InfraMeasure[ InfraObject[ vs ] ]
 InfraObject[ vs_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraObject[ vs ], Method -> "Probability" ]
 (* ===================== FindInfraRevolution ===================== *)
 
-(* Multi-axis rotational object.  Each axis path is extended by a SET of
-   valid one-step continuations on each side -- vertices adjacent to the
-   endpoint that satisfy the triangle equality d(v, path[[k]]) = k (left)
-   or n - k + 1 (right) for every k along the axis (i.e., v, axis, axis[end]
-   is a geodesic of length n + 1).  Method dispatches:
-     "Voronoi" -- closest extended position must be in the original range.
-     "PerpendicularBisector" -- d(u, v_{i-1}) == d(u, v_{i+1}) at original i. *)
+(* each axis path is extended by the vertices v adjacent to its endpoint with d(v, path[[k]]) = k (left) or n - k + 1 (right) for every k, i.e. those prolonging the axis as a geodesic *)
 
 Options[ FindInfraRevolution ] = { "Form" -> "Solid", Method -> "Voronoi" };
 
-(* "Balls": union of metric balls B_{r_i}(c_i) over axis positions -- the sublevel
-   set { v : min_i (d(v, c_i) - r_i) <= 0 } of the varying-radius tube function.
-   No geodesic extension needed, so it also works for cyclic / non-extendable axes;
-   for a constant profile it coincides with the "Voronoi" cylinder. *)
+(* "Balls": the sublevel set { v : min_i (d(v, c_i) - r_i) <= 0 } of the varying-radius tube function; no geodesic extension, so cyclic and non-extendable axes work too *)
 
 FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] /;
   OptionValue[ FindInfraRevolution, { opts }, Method ] === "Balls" :=
@@ -42,8 +28,7 @@ FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] /;
       slack = v |-> Min @ MapThread[
         { posVerts, r } |-> Min[ GraphDistance[ graph, v, # ] & /@ posVerts ] - r,
         { positions, radii } ] },
-    (* constant-radius solid: the r-neighborhood of the axis IS the union of balls,
-       so the candidate set is already the answer -- no per-vertex slack scan. *)
+    (* constant radius: the r-neighborhood of the axis IS the union of balls, so the candidate set is already the answer *)
     InfraObject @ Sort @ If[ ! surface && Equal @@ radii,
       candidates,
       Select[ candidates, If[ surface, slack[ # ] == 0, slack[ # ] <= 0 ] & ] ]
@@ -79,11 +64,7 @@ profileRadii[ prof_List, n_Integer ]   := Round /@ prof
 profileRadii[ prof_, n_Integer ]       := Round /@ ( prof /@ Range[ n ] )
 
 
-(* Direct +1 extension: for each axis path, collect all vertices adjacent
-   to the endpoint that extend the axis as a geodesic.  Returns
-   { positions, origRange } where positions is a list of vertex SETS
-   (one per along-axis position, plus a left/right extension set if any)
-   and origRange picks the indices corresponding to the original axis. *)
+(* for each axis path, the vertices adjacent to its endpoint that extend it as a geodesic; origRange picks the indices of the original axis *)
 
 extendAxisByOne[ graph_Graph, axisPaths : { { _ }, ___ } ] :=
   { DeleteDuplicates /@ Transpose @ axisPaths, Range @ Length @ First @ axisPaths }

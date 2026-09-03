@@ -6,25 +6,11 @@ PackageScope[ellipticNearFar]
 
 (* ===================== InfraEllipticShell wrapper ===================== *)
 
-(* InfraEllipticShell[{set}] is the unary form; InfraEllipticShell[{set1, ..., setk}] is the
-   multi-realisation form.  Set canonicalisation and the shared accessors
-   come from defineInfraBundleRules (Tools.wl). *)
 
-(* "Volume" = vertex count per realisation. *)
 InfraEllipticShell[ reps_List ][ "Volume" ] := Length /@ reps
 (* ===================== FindInfraEllipticShell ===================== *)
 
-(* Elliptic shell for foci {p1, p2} at sum c: level set
-   { v : cMin <= d(p1,v) + d(p2,v) <= cMax }.  Two orthogonal axes:
-     Properties -- empty (default) returns the level set itself; "Separating"
-       requires disconnecting the near region {d_sum < cMin} from the far
-       region {d_sum > cMax}; "Connected" requires ConnectedGraphQ.
-     Method     -- Automatic (default) reads the count: All is the exhaustive
-       BFS peel-DAG over the level set, a bounded count the lazy peel.  Also
-       {"Exhaustive", "Pruning" -> spec} | "Greedy" (DFS, backtracking at each
-       leaf, first `count` minimals) | "RandomGreedy" (random peels, seed via
-       ambient SeedRandom).
-   When Properties is empty, Method is ignored. *)
+(* the level set { v : cMin <= d(p1, v) + d(p2, v) <= cMax } *)
 
 FindInfraEllipticShell::badmethod   = "Method `1` is not supported by FindInfraEllipticShell.";
 FindInfraEllipticShell::badproperty = "Property `1` is not supported by FindInfraEllipticShell.";
@@ -73,8 +59,6 @@ FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
     Replace[ foci, InfraPoint[ v_ ] :> v, { 1 } ], c ]
 
 
-(* { v : cMin <= d(p1,v) + d(p2,v) <= cMax } as a vertex list *)
-
 ellipticLevelSet[ verts_List, row1_List, row2_List, range_List ] :=
   Pick[ verts, Thread[ range[[ 1 ]] <= row1 + row2 <= range[[ 2 ]] ] ]
 
@@ -109,8 +93,7 @@ propertyPredicateEllipticShell[ _, _, _, other_ ] :=
 
 (* ===================== InfraEllipticShellQ ===================== *)
 
-(* vs is an elliptic shell iff there exist foci p1, p2 and constant c with
-   vs == { v : d(p1,v) + d(p2,v) == c }. *)
+(* vs is an elliptic shell iff there are foci p1, p2 and a constant c with vs == { v : d(p1, v) + d(p2, v) == c } *)
 
 InfraEllipticShellQ[ graph_Graph, s : _InfraEllipticShell | _InfraSet ] :=
   AllTrue[ If[ Head[ s ] === InfraSet, { First @ s }, First @ s ], InfraEllipticShellQ[ graph, # ] & ]

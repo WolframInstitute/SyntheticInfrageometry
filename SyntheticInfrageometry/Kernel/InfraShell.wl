@@ -3,30 +3,11 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== InfraShell wrapper ===================== *)
 
-(* InfraShell[{set}] is the unary form; InfraShell[{set1, ..., setk}] is the
-   multi-realisation form.  Set canonicalisation and the shared accessors
-   come from defineInfraBundleRules (Tools.wl). *)
 
-(* "Volume" = vertex count per realisation. *)
 InfraShell[ reps_List ][ "Volume" ] := Length /@ reps
 (* ===================== FindInfraShell ===================== *)
 
-(* A shell of radius r around c is a vertex subset of the level surface
-   { v : rmin <= d(c, v) <= rmax }.  Two orthogonal axes:
-     Properties -- filters every realisation must satisfy.  Empty
-       (default) means no filter: return the level surface itself, one
-       realisation.  "Separating" requires SeparatingSetQ; "Connected"
-       requires ConnectedGraphQ on the induced subgraph.  Properties
-       compose via AND.
-     Method     -- how to enumerate inclusion-minimal subsets satisfying
-       Properties.  Automatic (default) reads the count: All is the
-       exhaustive top-down BFS over the peel-DAG, deduplicated, and a
-       bounded count is the lazy peel.  The nested form {"Exhaustive",
-       "Pruning" -> spec} caps per-layer branching via applyPruning.
-       "Greedy" is the top-down DFS, backtracking at each leaf, first
-       `count` minimals; "RandomGreedy" draws random peels instead
-       (seed via ambient SeedRandom).
-   When Properties is empty, Method is ignored. *)
+(* a vertex subset of the level surface { v : rmin <= d(c, v) <= rmax } *)
 
 FindInfraShell::badmethod   = "Method `1` is not supported by FindInfraShell.";
 FindInfraShell::badproperty = "Property `1` is not supported by FindInfraShell.";
@@ -90,13 +71,7 @@ propertyPredicateShell[ _, _, _, other_ ] :=
 
 (* ===================== FindInfraOsculatingShell ===================== *)
 
-(* Osculating shells at the k-vertex window centered on path[[i]]:
-   for every vertex c equidistant from all k window-vertices (common
-   distance r), the level set { v : d(c, v) == r }, one unary
-   InfraShell[{set}] per such center, sorted by ascending radius
-   (with center as a tie-break).  Forwards Properties / Method to
-   FindInfraShell.  path is a vertex list or any InfraWalk wrapper
-   (multi-realisation paths are spread and unioned). *)
+(* for every c equidistant from all k window vertices at common distance r, the level set { v : d(c, v) == r } *)
 
 Options[ FindInfraOsculatingShell ] = Options[ FindInfraShell ];
 
@@ -130,27 +105,8 @@ FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
 
 (* ===================== FindInfraShellCenter ===================== *)
 
-(* Center / radius of a metric shell, two methods.  Both return a list
-   of estimates { InfraEffectivePoint[support, masses], r }, one per radius r,
-   sorted ascending.
-
-   Method -> "MaximalChordsBisectors" (default): bisect the shell's
-   longest chords and bin the midpoints by radius -- within a radius,
-   mass = how many chords bisect at that vertex, heaviest support vertex
-   = best center.  An even chord contributes one estimate at r = d/2; an
-   odd chord splits into r = Floor[d/2] (vertices nearer the lower
-   endpoint) and r = Ceil[d/2].  Sub-options "Maximality" ("PerVertex" (default): each
-   vertex's own farthest shell partner(s) | "Diameter": only the globally
-   longest chords), "Distance" ("Extrinsic" (default) | "Intrinsic":
-   antipodes by shell-subgraph distance -- "Intrinsic" is empty on a
-   genuine sphere, whose vertices induce an edgeless subgraph, and is
-   meaningful only on a connected shell; midpoints/parity/arms always use
-   ambient distance), "Parity" (All (default) | "Even" pure single-vertex
-   bisectors | "Odd" two-vertex effective points).
-
-   Method -> "EquidistantPoints": the exact centers -- every vertex
-   equidistant from the whole shell at a common finite radius > 0,
-   grouped into one unweighted-InfraPoint estimate per radius. *)
+(* "MaximalChordsBisectors": bisect the shell's longest chords and bin the midpoints by radius, mass = how many chords bisect at that vertex; an even chord gives one estimate at r = d/2, an odd chord splits into r = Floor[d/2] (nearer the lower endpoint) and r = Ceil[d/2].
+   "EquidistantPoints": the exact centers -- every vertex equidistant from the whole shell at a common finite radius > 0. *)
 
 FindInfraShellCenter::badmethod     = "Method `1` is not MaximalChordsBisectors or EquidistantPoints.";
 FindInfraShellCenter::badmaximality = "Maximality `1` is not PerVertex or Diameter.";
@@ -203,19 +159,14 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
     KeyValueMap[ { r, vlist } |-> With[ { ct = Counts @ vlist }, { InfraEffectivePoint[ ct ], r } ], KeySort @ radiiBins ]
   ]
 
-(* Centers equidistant from vs, binned by their common radius r = d(c, vs) > 0,
-   each bin an InfraPoint.  The equidistant locus is FindInfraEquidistantSet;
-   here it is split into nonempty positive-radius shells. *)
+(* centers equidistant from vs, binned by their common radius r = d(c, vs) > 0 *)
 
 equidistantShellPoints[ graph_Graph, vs_List ] :=
   With[ { ds = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, First @ vs ] ] },
     { centers = Select[ FindInfraEquidistantSet[ graph, vs ][ "Vertices" ], c |-> 0 < ds[ c ] < Infinity ] },
     KeyValueMap[ { r, cs } |-> { InfraEffectivePoint[ cs, ConstantArray[ 1, Length @ cs ] ], r }, KeySort @ GroupBy[ centers, ds ] ] ]
 
-(* Midpoint incidences { v, r } of the chord {a, b} (a = lower endpoint):
-   vertices v on some a-b geodesic at a middle distance r = d(a, v) in
-   { Floor[d/2], Ceil[d/2] }.  An even chord yields one r = d/2; an odd
-   chord splits into r = Floor (vertices nearer a) and r = Ceil (nearer b). *)
+(* vertices on some a-b geodesic at a middle distance r in { Floor[d/2], Ceil[d/2] }: an even chord yields r = d/2, an odd chord splits into Floor (nearer a) and Ceil (nearer b) *)
 
 chordMidpointRadii[ dm_, idx_, chord_ ] :=
   With[ { ab = Sort @ chord, verts = Keys @ idx },
@@ -228,9 +179,7 @@ chordMidpointRadii[ dm_, idx_, chord_ ] :=
 
 (* ===================== InfraShellQ ===================== *)
 
-(* vs is a metric shell iff some vertex c is equidistant from every
-   vertex of vs at a common finite radius r, and vs is exactly the level
-   set { v : d(c, v) == r }. *)
+(* vs is a metric shell iff some c is equidistant from all of vs at a common finite radius r and vs is exactly { v : d(c, v) == r } *)
 
 InfraShellQ[ graph_Graph, s : _InfraShell | _InfraSet ] :=
   AllTrue[ If[ Head[ s ] === InfraSet, { First @ s }, First @ s ], InfraShellQ[ graph, # ] & ]
@@ -245,8 +194,7 @@ InfraShellQ[ graph_Graph, vs_List ] :=
 
 (* ===================== SeparatesQ ===================== *)
 
-(* SeparatesQ tests whether deleting vs disconnects u from v.  Endpoint
-   deletion does not count as separation. *)
+(* deleting vs disconnects u from v; endpoint deletion does not count as separation *)
 
 SeparatesQ[ graph_Graph, vs_List, u_, v_ ] :=
   If[ MemberQ[ vs, u ] || MemberQ[ vs, v ], False,

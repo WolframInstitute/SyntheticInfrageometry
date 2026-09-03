@@ -7,33 +7,22 @@ PackageScope[findPolygonCore]
 
 (* ===================== InfraPolygon wrapper ===================== *)
 
-(* InfraPolygon[{poly}] is the unary form: poly = {seg1, ..., segn} is a closed
-   chain of unary InfraSegment sides (Last[path_j] === First[path_{j+1}], and
-   the last side returns to the first corner).  InfraPolygon[{poly1, ..., polyk}]
-   is the multi-realisation form.  Auto-flatten on nested wrappers. *)
 
-
-(* "Sides" = the InfraSegment legs per realisation. *)
 InfraPolygon[ reps_List ][ "Sides" ] := reps
 
-(* "Length" = per-realisation perimeter edge count (sum of leg edge counts). *)
 InfraPolygon[ reps_List ][ "Length" ] :=
   Replace[ reps,
     { { }              -> 0,
       segs : { _InfraSegment .. } :> Total[ ( Length[ #[[ 1, 1 ]] ] - 1 ) & /@ segs ] },
     { 1 } ]
 
-(* "Vertices" = corner vertices per realisation, as unary InfraPoints. *)
 InfraPolygon[ reps_List ][ "Vertices" ] :=
   Map[ poly |-> ( InfraPoint /@ Most @ polylineToKnots[ poly ] ), reps ]
 
 
 (* ===================== FindInfraPolygon ===================== *)
 
-(* Polygon through corners p1, ..., pn (n >= 3): each side (p_i, p_{i+1 mod n})
-   is a geodesic InfraSegment; a realisation is one geodesic per side, and the
-   Cartesian product over sides enumerates all polygons.  Sides reuse
-   findSegmentCore, so Method forwards to the side geodesics. *)
+(* each side (p_i, p_{i+1 mod n}) is a geodesic, and the Cartesian product over sides enumerates all polygons *)
 
 Options[ FindInfraPolygon ] = { Method -> "Exhaustive" };
 
@@ -63,8 +52,7 @@ polygonCorner[ v_ ]                   := v
 
 (* ===================== InfraPolygonQ ===================== *)
 
-(* A polygon is a closed chain of geodesic InfraSegment sides: every leg a
-   geodesic and consecutive legs (cyclically) share their endpoint. *)
+(* every leg a geodesic and consecutive legs, cyclically, sharing their endpoint *)
 
 InfraPolygonQ[ graph_Graph, InfraPolygon[ reps_List ] ] :=
   AllTrue[ reps, InfraPolygonQ[ graph, # ] & ]
@@ -79,15 +67,7 @@ InfraPolygonQ[ _Graph, _ ] := False
 
 (* ===================== FindInfraRegularPolygon ===================== *)
 
-(* A regular n-gon w.r.t. metric tuple As is a length-n cyclic vertex
-   sequence v_1, ..., v_n with d(v_i, v_{i+k mod n}) satisfying As[[k]] for
-   every i and every k = 1..Length[As].  Slot grammar:
-     A_Integer                   exact value
-     {lo_Integer, hi_Integer}    constant across i, value in [lo, hi]
-     Automatic                   constant across i, any value
-   With As[[1]] = Automatic the candidate space is the full set of simple
-   n-cycles of g (slow on large graphs); otherwise candidates come from
-   FindCycle on the distance-As[[1]] subgraph. *)
+(* a regular n-gon w.r.t. the metric tuple As is a cyclic sequence v_1, ..., v_n with d(v_i, v_{i+k mod n}) satisfying As[[k]] for every i and k; a slot is an exact integer, a range {lo, hi} constant across i, or Automatic *)
 
 FindInfraRegularPolygon::badproperty = "Property `1` is not supported by FindInfraRegularPolygon.";
 FindInfraRegularPolygon::badmethod   = "Method `1` is not supported by FindInfraRegularPolygon.";
@@ -136,8 +116,6 @@ FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
     If[ core === $Failed, $Failed,
       With[ { capped = infraCap[ core, count ] },
         If[ capped === $Failed, $Failed,
-          (* promote each closed corner cycle to a closed chain of geodesic
-             InfraSegment sides (first shortest path per side) *)
           InfraPolygon @ Map[
             cyc |-> MapThread[ { a, b } |-> InfraSegment[ { FindShortestPath[ graph, a, b ] } ],
               { cyc, RotateLeft @ cyc } ],
@@ -146,17 +124,6 @@ FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
     ]
   ]
 
-
-(* "From" parser: returns {anchor, radius} pair.
-     All                        -> {None,  All}    (no localization)
-     v                          -> {v,     All}    (cycles containing v)
-     v -> r                     -> {v,     r}      (cycles within N_r(v))
-     InfraPoint[v]              -> {v,     All}    (unwrap the atom)
-     InfraSet[{v1,...,vk}]      -> {{...}, All}    (multi-anchor: union semantics)
-     {InfraPoint[v1],...}       -> {{...}, All}    (atom list, e.g. FindInfraPoint output)
-   Anchor in the localization (-> r) case is forwarded directly to
-   NeighborhoodGraph (which accepts vertex or vertex-list); anchor in the
-   membership case is dispatched by anchorContainedQ (MemberQ vs IntersectingQ). *)
 
 parseFromSpec[ All ]                              := { None, All }
 parseFromSpec[ ( anchor_ -> r_Integer ) ] /; r >= 0 :=
@@ -176,8 +143,7 @@ anchorContainedQ[ cyc_List, anchor_List ] := IntersectingQ[ cyc, anchor ]
 anchorContainedQ[ cyc_List, anchor_ ]     := MemberQ[ cyc, anchor ]
 
 
-(* Candidate-cycle source: integer/range slot 1 -> distance subgraph;
-   Automatic -> g itself.  Self-loops removed via diagonal mask. *)
+(* integer/range slot 1 -> distance subgraph, Automatic -> g itself; self-loops removed via the diagonal mask *)
 
 candidateSourceGraph[ graph_Graph, Automatic, _, _ ] := graph
 
@@ -217,9 +183,6 @@ matchPolygonSlot[ k_Integer, Automatic, cyc_List, dm_, idx_Association ] :=
 
 (* ===================== InfraRegularPolygonQ ===================== *)
 
-(* Tests whether `cycle` is a regular n-gon w.r.t. metric tuple As.
-   Accepts open ({v1, ..., vn}) or closed ({v1, ..., vn, v1}) input.
-   Same slot grammar as FindInfraRegularPolygon. *)
 
 InfraRegularPolygonQ[ graph_Graph, cycle_List, As_List ] /;
     Length[ cycle ] >= 3 && ! MatchQ[ cycle, { _InfraSegment .. } ] :=
@@ -249,8 +212,6 @@ InfraRegularPolygonQ[ graph_Graph, poly : { _InfraSegment .. }, As_List ] :=
 
 (* ===================== Scene-DSL constructors ===================== *)
 
-(* Regular n-gon (As distance tuple + size n) and the general through-corner
-   polygon (a single vertex list) are disambiguated by arity. *)
 
 dispatchConstruction[ graph_Graph, InfraPolygon[ As_List, n_Integer, opts___Rule ] ] :=
   capBranches[

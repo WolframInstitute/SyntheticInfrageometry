@@ -13,15 +13,10 @@ PackageScope[walkModeFor]
 
 (* ===================== InfraHomotopy wrapper ===================== *)
 
-(* Each realisation is the chain {p_0, ..., p_k} of intermediate walks
-   produced by k elementary moves.  The walks share the wrapper head of
-   the input to the homotopy finder (InfraWalk / InfraLoop / InfraString). *)
 
 InfraHomotopy[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraHomotopy[ _List ] ] ] :=
   InfraHomotopy[ Flatten[ reps /. InfraHomotopy[ xs_List ] :> xs, 1 ] ]
 
-(* shared bundle accessors (InfraHomotopy is not a geometric bundle head, so
-   it is not in $infraBundleHeads; the accessor contract still applies) *)
 InfraHomotopy[ inner_InfraHomotopy ]                    := inner
 InfraHomotopy[ reps_List ][ "Realizations" ]   := reps
 InfraHomotopy[ reps_List ][ "First" ]          := First @ reps
@@ -44,13 +39,7 @@ $infraHomotopyOptions = {
 
 (* ===================== Walk-mode dispatch ===================== *)
 
-(* walkModeFor[head, freeHomotopy] -> { addSlides, canonicalize }.
-
-   Path + fixed    : { False, False } -- endpoints fixed; no slides.
-   Path + free     : { True,  False } -- endpoints can slide along edges; no canon.
-   Loop + fixed    : { False, False } -- base point fixed; no slides; closed walks.
-   Loop + free     : { False, True  } -- equivalence quotients by rotation; canon.
-   String          : { False, True  } -- canonical form is rotation-quotiented. *)
+(* { addSlides, canonicalize }: free path homotopy slides the endpoints, free loop and string homotopy quotient by rotation *)
 
 walkModeFor[ InfraWalk,   freeHom_ ] := { freeHom === True, False }
 walkModeFor[ InfraLoop,   freeHom_ ] := { False, freeHom === True }
@@ -58,9 +47,7 @@ walkModeFor[ InfraString, _ ]        := { False, True }
 walkModeFor[ InfraCircle, _ ]        := { False, True }
 
 
-(* representativeHeadFor maps an input head to the output wrapper head of
-   the homotopy operations.  InfraCircle coerces to InfraString because
-   the geometric circle has no preferred base point. *)
+(* InfraCircle coerces to InfraString: the geometric circle has no preferred base point *)
 
 representativeHeadFor[ InfraWalk ]   := InfraWalk
 representativeHeadFor[ InfraLoop ]   := InfraLoop
@@ -77,9 +64,6 @@ coerceRealisation[ InfraCircle, walk_List ] := canonicalString @ closeWalk @ wal
 
 (* ===================== FindInfraHomotopyRepresentative ===================== *)
 
-(* The length-shortest walk in the homotopy class of obj. Polymorphic on
-   Head[obj] (InfraWalk / InfraLoop / InfraString / InfraCircle).  Output
-   wrapper head matches the input (InfraCircle -> InfraString). *)
 
 FindInfraHomotopyRepresentative::wrap = "First argument must be wrapped in InfraWalk, InfraLoop, InfraString, or InfraCircle, not `1`.";
 
@@ -104,9 +88,6 @@ representativeCore[ graph_Graph, walk_List, inHead_, opts___ ] :=
 
 (* ===================== FindInfraHomotopyRepresentativeHomotopy ===================== *)
 
-(* One reduction chain {obj, ..., m} of elementary moves ending at a
-   representative m.  Each chain's intermediate walks share the input
-   wrapper head; the chain itself is wrapped in InfraHomotopy. *)
 
 FindInfraHomotopyRepresentativeHomotopy::wrap =
   "First argument must be wrapped in InfraWalk, InfraLoop, InfraString, or InfraCircle, not `1`.";
@@ -132,8 +113,6 @@ reductionCore[ graph_Graph, walk_List, inHead_, opts___ ] :=
 
 (* ===================== FindInfraHomotopy ===================== *)
 
-(* Chain of elementary moves from one walk to another.  a and b must
-   share a wrapper head (InfraCircle coerces to InfraString). *)
 
 FindInfraHomotopy::wrap     = "First two object arguments must be wrapped in InfraWalk, InfraLoop, InfraString, or InfraCircle, not `1` and `2`.";
 FindInfraHomotopy::mismatch = "Endpoint wrapper heads must match: got `1` and `2`.";
@@ -156,9 +135,7 @@ FindInfraHomotopy[ graph_Graph, a_, b_,
   ]
 
 
-(* Unify endpoint heads: both must coerce to the same mode head.
-   InfraCircle and InfraString coerce together to InfraString.  InfraWalk
-   and InfraLoop are distinct (paths have endpoints, loops are closed). *)
+(* InfraCircle and InfraString coerce together; InfraWalk and InfraLoop stay distinct -- paths have endpoints, loops are closed *)
 
 unifyHomotopyHeads[ InfraWalk,   InfraWalk ]   := InfraWalk
 unifyHomotopyHeads[ InfraLoop,   InfraLoop ]   := InfraLoop
@@ -210,9 +187,6 @@ homotopyCore[ graph_Graph, walkA_List, walkB_List, inHead_, opts___ ] :=
 
 (* ===================== HomotopicQ ===================== *)
 
-(* Predicate: are two walks in the same homotopy class?  Wrapped inputs
-   spread Cartesian-AllTrue.  Internally short-circuits via the
-   exhaustive BFS with a target-equality stop predicate. *)
 
 HomotopicQ::wrap     = FindInfraHomotopy::wrap;
 HomotopicQ::mismatch = FindInfraHomotopy::mismatch;
@@ -257,10 +231,7 @@ homotopicQCore[ graph_Graph, walkA_List, walkB_List, inHead_, opts___ ] :=
 
 (* ===================== NullHomotopicQ ===================== *)
 
-(* A closed walk is null-homotopic iff it is homotopic (with whatever
-   equivalence its wrapper head encodes) to a constant walk.  Open input
-   is auto-closed.  Accepts InfraLoop / InfraCircle / InfraString
-   wrappers (Cartesian-AllTrue conjunction) and bare closed walks. *)
+(* a closed walk is null-homotopic iff it is homotopic, under whatever equivalence its head encodes, to a constant walk *)
 
 NullHomotopicQ::wrap = "Argument must be wrapped in InfraLoop, InfraString, or InfraCircle, or a bare closed walk.";
 
@@ -289,8 +260,7 @@ NullHomotopicQ[ _Graph, _, OptionsPattern[] ] :=
 
 (* ===================== Move classification ===================== *)
 
-(* Elementary move replaces one arc by another of the same cycle, so it
-   changes walk length by |newArc| - |oldArc|: Contract / Extend / Lateral. *)
+(* an elementary move replaces one arc of a cycle by the complementary one, so it changes walk length by |newArc| - |oldArc| *)
 
 HomotopyMoveType[ walk1_List, walk2_List ] :=
   Which[
@@ -326,13 +296,7 @@ runWalkBFS[ graph_Graph, walk_List, inHead_, stopWhen_, opts___ ] :=
   ]
 
 
-(* walkSpaceBFS -- bidirectional BFS in walk-space.  start is one walk
-   (already canonicalised if canonicalize == True); rules supplies the
-   face set; maxLen caps stored-walk length; maxMoves caps BFS depth.
-   stopWhen[q, parent] short-circuits when True; otherwise the search
-   exhausts the bounded walk-space.  addSlides toggles the endpoint-
-   slide moves (free path homotopy).  canonicalize toggles per-state
-   reduction to canonicalString (free loop / string homotopy). *)
+(* bidirectional BFS in walk-space; stopWhen short-circuits, otherwise the bounded walk-space is exhausted *)
 
 walkSpaceBFS[ graph_Graph, start_List, rules_Association, maxLen_, maxMoves_, stopWhen_,
     addSlides : ( True | False ) : False, canonicalize : ( True | False ) : False ] :=
@@ -378,14 +342,7 @@ walkSpaceBFS[ graph_Graph, start_List, rules_Association, maxLen_, maxMoves_, st
   ]
 
 
-(* walkSpaceGreedyDFS -- DFS picking at each step the neighbour with
-   smallest scoreFn[q] strictly less than scoreFn[current].  No
-   backtracking, no random tie-break; ties resolved by walk length then
-   OrderedQ.  Returns the chain {start, q1, ..., qk} where qk is the
-   first walk at which no improving move exists.  If a target is given
-   (=!= None) and the search hits it, returns the chain ending at
-   target; otherwise returns the local-minimum chain.  $Failed only
-   for empty start (degenerate). *)
+(* DFS to the neighbour of smallest score strictly below the current one, without backtracking: it ends at the first walk admitting no improving move, or at target if the search hits it *)
 
 walkSpaceGreedyDFS[ graph_Graph, start_List, target_, scoreFn_, rules_Association,
     maxLen_, maxMoves_, addSlides : ( True | False ) : False, canonicalize : ( True | False ) : False ] :=
@@ -423,9 +380,7 @@ walkSpaceGreedyDFS[ graph_Graph, start_List, target_, scoreFn_, rules_Associatio
   ]
 
 
-(* hausdorffMove -- symmetric Hausdorff distance between the vertex sets
-   of two walks under the graph metric.  Used as the greedy score
-   function in FindInfraHomotopy. *)
+(* symmetric Hausdorff distance between the vertex sets of two walks, the greedy score in FindInfraHomotopy *)
 
 hausdorffMove[ graph_Graph, walkA_List, walkB_List ] :=
   With[ { setA = DeleteDuplicates @ walkA, setB = DeleteDuplicates @ walkB },
@@ -436,9 +391,6 @@ hausdorffMove[ graph_Graph, walkA_List, walkB_List ] :=
 
 (* ===================== Move set ===================== *)
 
-(* All elementary neighbours of path: 1-cycle (if Dup), 2-cycle (if Spur),
-   k >= 3 cycle moves from rules["Cycles"], and (if addSlides) endpoint-
-   slide moves for free path homotopy. *)
 
 elementaryMoves[ path_List, vN_Association, rules_Association, cycleMoves_List,
     addSlides : ( True | False ) : False ] :=
@@ -450,9 +402,7 @@ elementaryMoves[ path_List, vN_Association, rules_Association, cycleMoves_List,
   ]
 
 
-(* Endpoint slide for free path homotopy: extend or retract at either end
-   by one vertex.  Never produces an empty walk (retracts only when
-   Length >= 2). *)
+(* endpoint slide: extend or retract at either end by one vertex, never to an empty walk *)
 
 endpointSlideMoves[ path_List, vN_Association ] /; Length[ path ] === 0 := { }
 
@@ -494,9 +444,7 @@ spurMovesAt[ path_List, vN_Association ] :=
   ]
 
 
-(* faceMoves[face]: ordered (oldArc, newArc) pairs.  For closed walk
-   (f_1, ..., f_k), each cut (s, L) yields oldArc = L edges from slot s+1,
-   newArc = the complementary k-L edges (reversed). *)
+(* for a closed face (f_1, ..., f_k), each cut (s, L) gives oldArc = L edges from slot s+1 and newArc = the complementary k-L edges, reversed *)
 
 faceMoves[ face_List ] /; Length[ face ] < 2 := { }
 

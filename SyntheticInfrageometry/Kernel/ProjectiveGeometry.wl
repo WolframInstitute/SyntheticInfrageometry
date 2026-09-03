@@ -3,46 +3,40 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== Pointwise predicates ===================== *)
 
-(* SameDirectionQ[g, O, v, w]: v and w lie in the same pencil-direction
-   at O - some maximal geodesic through O contains both. *)
+(* v, w lie in the same pencil-direction at O: some maximal geodesic through O contains both *)
 
 SameDirectionQ[ graph_Graph, O_, v_, w_ ] :=
   v === w || AnyTrue[ FindInfraLine[ graph, O, v, All ][ "Realizations" ], MemberQ[ #, w ] & ]
 
 
-(* CollinearQ: there exists a single canonical line containing every
-   listed vertex (the synthetic-incidence "lie on a common line"). *)
+(* some canonical line contains every listed vertex *)
 
 CollinearQ[ graph_Graph, verts_List ] :=
   Length[ DeleteDuplicates @ verts ] <= 1 ||
     Length[ FindInfraCommonLine[ graph, verts, UpTo[ 1 ] ][ "Realizations" ] ] > 0
 
 
-(* ConcurrentQ: a set of lines shares a common vertex - the dual of
-   collinearity. *)
+(* the listed lines share a common vertex: the dual of collinearity *)
 
 ConcurrentQ[ graph_Graph, lines_List ] :=
   Length[ lines ] <= 1 ||
     Length[ FindInfraCommonPoint[ graph, lines, UpTo[ 1 ] ] ] > 0
 
 
-(* UniquePencilQ[g, O]: every direction at O is single-valued - exactly
-   one maximal geodesic through O ending at v, for every v != O.        *)
+(* every direction at O is single-valued: exactly one maximal geodesic through O ending at v *)
 
 UniquePencilQ[ graph_Graph, O_ ] :=
   AllTrue[ DeleteCases[ VertexList[ graph ], O ],
     Length[ FindInfraLine[ graph, O, #, All ][ "Realizations" ] ] == 1 & ]
 
 
-(* UniqueCollinearQ: exactly one canonical line contains every listed
-   vertex; the unique-witness companion of CollinearQ. *)
+(* exactly one canonical line contains every listed vertex *)
 
 UniqueCollinearQ[ graph_Graph, verts_List ] :=
   Length[ FindInfraCommonLine[ graph, verts, All ][ "Realizations" ] ] == 1
 
 
-(* UniqueConcurrentQ: the listed lines share exactly one common vertex;
-   the unique-witness companion of ConcurrentQ. *)
+(* the listed lines share exactly one common vertex *)
 
 UniqueConcurrentQ[ graph_Graph, lines_List ] :=
   Length[ FindInfraCommonPoint[ graph, lines, All ] ] == 1
@@ -83,8 +77,7 @@ WhiteheadW3Q[ graph_Graph ] :=
   ]
 
 
-(* ProjectivePlaneGraphQ: graph satisfies W1 + W2 + W3 plus a
-   non-degeneracy witness (four vertices, no three collinear). *)
+(* W1 + W2 + W3 plus a non-degeneracy witness: four vertices, no three collinear *)
 
 ProjectivePlaneGraphQ[ graph_Graph ] :=
   Module[ { verts },

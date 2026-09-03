@@ -17,10 +17,7 @@ PackageScope[evaluateConstruction]
 toVertexSet[ v_ ] /; AtomQ[ v ] := { v }
 toVertexSet[ vs_List ] := vs
 
-(* Every scene assertion, as (inert user-facing form :> the named predicate the
-   graph is injected into).  resolveExpression rewrites through this table and
-   the guard below decides admissibility by it, so neither a head nor an arity
-   can be accepted without a rule that decides it. *)
+(* every scene assertion, as (inert user-facing form :> the named predicate the graph is injected into); the guard below decides admissibility by this table, so no head and no arity is accepted without a rule *)
 sceneAssertionRules[ graph_ ] :=
   { InfraDistance[ x_, y_ ]      :> GraphDistance[ graph, x, y ],
     InfraWalkQ[ w_ ]             :> InfraWalkQ[ graph, w ],
@@ -36,17 +33,10 @@ sceneAssertionRules[ graph_ ] :=
     InfraRegularPolygonQ[ c_, as_ ] :> InfraRegularPolygonQ[ graph, c, as ],
     InfraRevolutionQ[ vs_, axis_, profile_ ] :> InfraRevolutionQ[ graph, vs, axis, profile ] }
 
-(* Substitute scene-object bindings into an expression, then resolve
-   InfraDistance / InfraQ heads against the graph. *)
 resolveExpression[ expr_, bindings_Association, graph_Graph ] :=
   ( expr /. Normal[ bindings ] ) /. sceneAssertionRules[ graph ]
 
-(* An Infra*Q subexpression with no rule in that table never receives the graph,
-   so it stays inert, TrueQ reads it as False, and the scene silently rejects
-   every branch.  Matching the whole shape rather than the head catches a known
-   head at an unsupported arity too: InfraSegmentQ[s, extra] misses its rule and
-   fails exactly as invisibly as an unexported head.  Only the left sides are
-   read, so the graph the table is built with is immaterial. *)
+(* an Infra*Q with no rule in that table never receives the graph, so it stays inert and TrueQ reads it as False; matching the whole shape rather than the head catches a known head at an unsupported arity too *)
 undecidableAssertions[ assertions_List ] :=
   With[ { decidable = Alternatives @@ Keys @ sceneAssertionRules[ Null ] },
     DeleteDuplicates @ Cases[ assertions,
@@ -58,9 +48,6 @@ undecidableAssertions[ assertions_List ] :=
 extractBranches[ opts_List ] :=
   Lookup[ Association @ opts, "Branches", All ]
 
-(* "Is this hypothesis a construction equation `key == rhs` whose key is one
-   of the scene objects (or a list of them)?" Used to split hypotheses into
-   constructions vs. assertions. *)
 constructionPatternQ[ objects_List, h_ ] :=
   MatchQ[ h, ( key_ == _ ) /;
     ( MemberQ[ objects, key ] || ( ListQ[ key ] && SubsetQ[ objects, key ] ) ) ]
@@ -70,11 +57,6 @@ capBranches[ paths_List, n_Integer ]        := Take[ paths, UpTo[ n ] ]
 capBranches[ paths_List, UpTo[ n_Integer ] ] := Take[ paths, UpTo[ n ] ]
 capBranches[ other_, _ ]                    := other
 
-(* The "Select" hypothesis option accepts None, a criterion string, or a list
-   thereof.  "EmbeddingClosest" routes to EmbeddingClosest using ctx
-   ("Endpoints" for paths, "Center"+"Radius" for cycles); the legacy
-   criterion strings translate into the new SelectInfraWalk "From" pool spec
-   with All count to preserve set-shaped semantics. *)
 applySelectOption[ _Graph, paths_, None, _, _ ] := paths
 applySelectOption[ graph_Graph, paths_, list_List, cyclic_, ctx_ ] :=
   Fold[ applySelectOption[ graph, #1, #2, cyclic, ctx ] &, paths, list ]
@@ -94,13 +76,6 @@ selectFromName[ name_String  ] := name
 
 (* ===================== InfraDistance ===================== *)
 
-(* infraVertexSet -- collect the underlying vertex set from any Infra* head
-   or bare vertex.  Path realisations (InfraSegment / InfraLine / InfraRay /
-   InfraCircle / InfraEllipse) and set realisations (InfraShell / InfraPlane /
-   InfraEllipticShell / InfraBall) both flatten under Union @@ to the same
-   vertex-set form needed for distance.  InfraPolyline realisations are
-   multi-leg sequences flattened by polylineToVertexSeqs first.  Bare
-   vertices fall through to the singleton case. *)
 
 infraVertexSet[ InfraPoint[ v_ ] ] := { v }
 infraVertexSet[ list : { __InfraPoint } ] := DeleteDuplicates[ #[[ 1 ]] & /@ list ]
@@ -122,12 +97,6 @@ infraVertexSet[ list_List ] /;
 infraVertexSet[ v_ ] := { v }
 
 
-(* InfraDistance[g, p, q] -- graph distance between two arguments, each of
-   which can be a bare vertex or any Infra* wrapper.  Aggregates pairwise
-   GraphDistance over the cross-product of underlying vertex sets via the
-   "Aggregation" option (Min by default = the infra-observer's nearest
-   reading; Max = diameter; Mean / any List -> Number function also work). *)
-
 Options[ InfraDistance ] = { "Aggregation" -> Min }
 
 InfraDistance[ g_Graph, p_, q_, OptionsPattern[] ] :=
@@ -138,13 +107,7 @@ InfraDistance[ g_Graph, p_, q_, OptionsPattern[] ] :=
 
 (* ===================== InfraIntersection / InfraUnion ===================== *)
 
-(* Standalone vertex-set intersection / union across any number of Infra*
-   objects.  Each object contributes its full vertex set (union across
-   realisations, via infraVertexSet).  Guarded on the *realisation* shape --
-   a single list payload -- not merely on the head: InfraCircle[c, r] is a
-   scene constructor whose vertex set is unknown until dispatched, and
-   matching it here collapsed scene hypotheses to InfraSet[{}] at
-   scene-construction time. *)
+(* guarded on the realisation shape -- a single list payload -- not merely on the head: InfraCircle[c, r] is a scene constructor whose vertex set is unknown until dispatched, and matching it here collapsed scene hypotheses to InfraSet[{}] *)
 
 $infraRealisationPattern =
   ( InfraPoint | InfraObject | InfraSet | InfraSegment | InfraWalk | InfraLoop |
@@ -204,8 +167,7 @@ InfraScene[ objects_List, hypotheses_List ] /;
     |> ]
   ]
 
-(* Auto-step form: hypotheses are bare constructions and assertions; steps are
-   the topological levels of the dependency DAG. *)
+(* auto-step form: the steps are the topological levels of the dependency DAG *)
 InfraScene[ objects_List, hypotheses_List ] :=
   Module[ { constructions, assertions, dag, steps = { }, remaining },
     constructions = Association @ Cases[ hypotheses,
@@ -244,10 +206,7 @@ InfraScene[ objects_List, hypotheses_List ] :=
 InfraScene[ data_Association ][ prop_String ] := data[ prop ]
 
 
-(* ===================== Instance accessors =====================
-   InfraInstance[bindings] is the wrapper returned by FindInfraScene.
-   The two-argument forms read out one or several bindings; bare
-   instance[[1]] continues to work. *)
+(* ===================== Instance accessors ===================== *)
 
 InfraInstance[ inst_InfraInstance, sym_ ] /; ! ListQ[ sym ] :=
   inst[[ 1 ]][ sym ]
@@ -264,22 +223,13 @@ InfraInstance[ bindings_Association, syms_List ] :=
 
 (* ===================== Construction Dispatch ===================== *)
 
-(* dispatchConstruction[graph, Head[args]] maps an InfraHead expression with
-   bindings already substituted into its concrete graph realization (vertex,
-   vertex set, vertex sequence, list thereof).  Per-primitive scene-DSL rules
-   live in their respective Infra*.wl files; helpers capBranches /
-   applySelectOption / extractBranches are PackageScope here. *)
+(* maps an InfraHead expression with bindings already substituted into its concrete graph realization; the per-primitive scene-DSL rules live in the respective Infra*.wl files *)
 
 
 (* ===================== Evaluation Engine ===================== *)
 
-(* Each call extends every input branch by the multi-spread of one step:
-   one symbol bound to each result, or a tuple of symbols thread-bound to each
-   tuple-result. *)
 
-(* Each operand is itself a construction (InfraCircle[a, r], ...), so it must
-   be dispatched before its vertex set exists; an operand already bound to a
-   vertex set has no dispatch rule and is read directly. *)
+(* each operand is itself a construction, so it must be dispatched before its vertex set exists; an operand already bound to a vertex set has no dispatch rule and is read directly *)
 evaluateConstruction[ graph_Graph, sym_, InfraIntersection[ objs__ ], bindings_Association ] :=
   Append[ bindings, sym -> # ] & /@
     Intersection @@ Map[
@@ -292,8 +242,7 @@ evaluateConstruction[ graph_Graph, sym_, InfraIntersection[ objs__ ], bindings_A
 
 evaluateConstruction[ graph_Graph, sym_, rhs_, bindings_Association ] :=
   With[ { results = dispatchConstruction[ graph, resolveExpression[ rhs, bindings, graph ] ] },
-    (* A construction that yields no result -- empty, or a dispatch with no
-       matching rule (non-list) -- simply stops propagating this branch. *)
+    (* a construction that yields no result simply stops propagating this branch *)
     If[ ! ListQ[ results ] || results === {} || results === {{}}, {},
       Append[ bindings, sym -> # ] & /@ results ] ]
 

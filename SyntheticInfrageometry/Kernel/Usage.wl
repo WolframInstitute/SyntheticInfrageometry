@@ -1,12 +1,6 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-(* Usage messages are popup-sized: one definitional sentence per symbol, plus at
-   most one short clause for a genuinely distinct call form. Option NAMES only
-   (short value lists where the values are the description); no accessor essays,
-   no method trees, no worked examples. Every Find* / Select* takes the same
-   trailing count argument n | UpTo[n] | All -- stated only where the argument is
-   easy to miss. Full detail lives in Wiki/Guides/ and the paclet documentation.
-   See CLAUDE.md "Usage messages" for the rules. *)
+(* usage-message rules: CLAUDE.md "Usage messages" *)
 
 (* ===================== InfraPoint ===================== *)
 

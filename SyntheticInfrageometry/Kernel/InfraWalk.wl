@@ -4,53 +4,18 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* ===================== InfraWalk wrapper ===================== *)
 
 
-(* InfraWalk[p1, p2, ..., pk] with InfraPoint args (or singleton lists thereof,
-   as returned by FindInfraPoint) builds the wrapper from the Cartesian product
-   of point realisations: each tuple is one walk. *)
 InfraWalk[ args : ( _InfraPoint | { _InfraPoint } ) .. ] :=
   InfraWalk[ Tuples @ Map[ Replace[ #, { x_ } :> x ][[ 1 ]]&, { args } ] ]
 
-(* "Length" = list of edge counts, one per realisation: |walk| - 1. *)
 InfraWalk[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* endpoint InfraPoints, multiplicity kept: the end-vertex multiset is the
-   occupation measure of where the walks terminate (unlike InfraSegment, whose
-   endpoints are deduplicated geodesic ends). *)
+(* multiplicity kept: the end-vertex multiset is the occupation measure of where the walks terminate, unlike InfraSegment's deduplicated geodesic ends *)
 InfraWalk[ reps_List ][ "Start" ] := columnInfraPoint[ reps, 1 ]
 InfraWalk[ reps_List ][ "End" ]   := columnInfraPoint[ reps, -1 ]
 (* ===================== FindInfraWalk ===================== *)
 
-(* The pointed form FindInfraWalk[g, p1, kspec, count] grows walks from p1 --
-   the primitive construction: growth from a seed under the Properties rules
-   (FindInfraGeodesic's vocabulary read on the whole walk, scale-Infinity
-   windows) until a stopping condition fires, the length budget kspec is
-   spent, or no admissible step remains.  The default class {"Generic"} is
-   the generic immersed walks, InfraGenericQ's class read per step: no cusps,
-   no tangencies, no triple points, every multiple point an isolated
-   transverse crossing; a stopped walk's tip may still sit on a crossing --
-   endpoint freeness is the census condition InfraGenericQ adds on the
-   finished curve.  Method -> "RandomGreedy" on the pointed form is the
-   random walk: one uniform admissible step at a time.  "Generic", "Simple"
-   and whole-walk "Minimizing" bound the class by themselves, so kspec
-   Infinity is legal under the default; without a bounding rule it is
-   refused (::unbounded) -- a stopping condition cannot bound, since it may
-   never fire.
-
-   The two-point form FindInfraWalk[g, p1, p2, kspec, count] is sugar over
-   the same class: the endpoint is one stopping condition among many -- the
-   walks ending at p2, with endpoint freeness at both ends under "Generic".
-   The pointed reading wins a positional tie, so a target that matches the
-   kspec grammar (a bare integer, {k}, {lo, hi}) is written InfraPoint[p2].
-
-   "StoppingCondition" takes event -> action rules; a bare event means
-   -> "Stop".  Events are the singularity names ("Crossing", "Tangency",
-   "TriplePoint", "Cusp": the step creates one), the constraint rules
-   ("Minimizing", "Simple", "Immersed", "Generic": the step violates one),
-   or a predicate on the walk so far.  Actions are "Stop" and {"Stop",
-   "Delay" -> k, "Count" -> c}: stop k steps after the c-th firing.
-   Entries race and the earliest deadline wins; a deadline only tightens
-   the budget, and events fire between steps, so there is no event
-   location. *)
+(* growth from a seed under the Properties rules until a stopping condition fires, the length budget kspec is spent, or no admissible step remains.  The default class {"Generic"} is InfraGenericQ's read per step: no cusps, no tangencies, no triple points, every multiple point an isolated transverse crossing -- endpoint freeness is the census condition added on the finished curve.
+   "Generic", "Simple" and whole-walk "Minimizing" bound the class by themselves, so kspec Infinity is legal under the default; without a bounding rule it is refused, since a stopping condition may never fire. *)
 
 FindInfraWalk::badproperty = "Property `1` is not supported by FindInfraWalk; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the walk.";
 FindInfraWalk::badmethod   = "Method `1` is not supported by FindInfraWalk.";
@@ -115,16 +80,10 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
           kmax        = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
           lengthQ     = walkLengthAdmissibleQ[ kspec ],
           candidateFn = windowCandidateFn[ graph, Infinity, rules, FindInfraWalk ],
-          (* a walk in a class forbidding a second visit to its endpoint
-             ("Simple", "Generic", or whole-walk "Minimizing", whose distance
-             from the start strictly increases) ends at its first arrival, so
-             the sweeps may stop branches there; at whole-walk scale these are
-             also exactly the rules that bound the class without a length
-             bound *)
+          (* a class forbidding a second visit to its endpoint ("Simple", "Generic", whole-walk "Minimizing") ends at its first arrival, so the sweeps may stop branches there; these are also exactly the rules that bound the class without a length bound *)
           terminal    = MemberQ[ rules, "Simple" | "Generic" | "Minimizing" ] },
         { acceptQ = If[ MemberQ[ rules, "Generic" ],
-            (* endpoint freeness is the one census condition the moving tip
-               cannot prune; checked on the finished walk *)
+            (* endpoint freeness is the one census condition the moving tip cannot prune; checked on the finished walk *)
             w |-> lengthQ[ w ] && Count[ w, First @ w ] === 1 && Count[ w, Last @ w ] === 1,
             lengthQ ],
           stepFn = If[ events === { }, candidateFn,
@@ -137,9 +96,7 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
         If[ methodOpt === Automatic && kspec === Infinity && countLimit[ count ] === 1 &&
             events === { } &&
             SubsetQ[ { "Minimizing", "Simple", "Immersed", "Generic" }, rules ],
-          (* a geodesic is simple, hence immersed, generic and minimizing --
-             the canonical count-less witness, without FindPath's wandering
-             DFS *)
+          (* a geodesic is simple, hence immersed, generic and minimizing: the canonical count-less witness *)
           With[ { path = FindShortestPath[ graph, q1, q2 ] },
             If[ path === { }, { }, { path } ] ],
           Switch[ methodHead,
@@ -148,9 +105,7 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
                 frontierSweep[ graph, q1, q2,
                   { g, walk } |-> If[ Length[ walk ] - 1 >= kmax, { }, stepFn[ g, walk ] ],
                   pruning,
-                  (* early stop on count is unsound when a completion can
-                     still be rejected: by an exact / range length, or by
-                     the endpoint check *)
+                  (* an early stop on count is unsound when a completion can still be rejected, by an exact / range length or by the endpoint check *)
                   If[ MatchQ[ kspec, { _Integer } | { _Integer, _Integer } ] ||
                       MemberQ[ rules, "Generic" ],
                     Infinity, countLimit @ count ],
@@ -171,18 +126,9 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
 
 (* ===================== Pointed growth engines ===================== *)
 
-(* Lazy depth-first growth from a seed walk (a single vertex for the pointed
-   finders, a longer walk for ExtendInfraGeodesic): descend by candidateFn
-   and emit a walk when its budget -- kmax tightened per branch by the
-   stopping-condition deadline -- is spent or no admissible step remains;
-   acceptQ (the kspec window) filters the emissions, and a finite count is
-   exact because the descent is complete.  branch = Identity backtracks
-   ("Greedy"); branch = randomBranch follows one uniform step per node and
-   cannot backtrack -- a single draw of the random walk ("RandomGreedy",
-   via randomDraws). *)
+(* lazy depth-first growth from a seed walk: descend by candidateFn and emit when the budget is spent or no admissible step remains, acceptQ filtering the emissions; the descent is complete, so a finite count is exact.  branch = Identity backtracks in candidateFn order, RandomSample in shuffled order, randomBranch follows one uniform step per node and cannot backtrack *)
 
-(* the closures are held in Module locals, never inlined into descend's RHS:
-   see the note on greedyFrontierSweep (Tools.wl) *)
+(* the closures are held in Module locals, never inlined into descend's RHS: see greedyFrontierSweep (Tools.wl) *)
 
 pointedGreedySweep[ graph_Graph, seed_List, candidateFn_, acceptQ_, deadlineFn_, kmax_,
     count_, branch_ : Identity ] :=
@@ -202,9 +148,7 @@ pointedGreedySweep[ graph_Graph, seed_List, candidateFn_, acceptQ_, deadlineFn_,
     ] ]
 
 
-(* BFS sibling for the exhaustive pointed sweep: applyPruning caps the live
-   frontier per layer, and emissions pass acceptQ before they count, so an
-   early stop on the count is exact. *)
+(* BFS sibling: applyPruning caps the live frontier per layer, and emissions pass acceptQ before they count, so an early stop on the count is exact *)
 
 pointedFrontierSweep[ graph_Graph, seed_List, candidateFn_, acceptQ_, deadlineFn_, kmax_,
     prune_, count_ ] :=
@@ -226,9 +170,7 @@ pointedFrontierSweep[ graph_Graph, seed_List, candidateFn_, acceptQ_, deadlineFn
 
 (* ===================== Stopping conditions ===================== *)
 
-(* "StoppingCondition" entries normalised to {event, delay, count} triples:
-   a bare event is event -> "Stop", and {"Stop", "Delay" -> k, "Count" -> c}
-   stops k steps after the c-th firing. *)
+(* entries normalised to {event, delay, count} triples: a bare event is event -> "Stop" *)
 
 parseStoppingEvents[ spec_, fnSym_ ] :=
   parseStoppingEntry[ #, fnSym ] & /@ Replace[ spec, entry : Except[ _List ] :> { entry } ]
@@ -257,8 +199,7 @@ checkStoppingEvent[ event_String, fnSym_ ] :=
 checkStoppingEvent[ event_, _ ] := event
 
 
-(* a dead event -- awaiting a singularity the constraints exclude -- can
-   never fire: warn rather than silently run to the budget *)
+(* a dead event -- awaiting a singularity the constraints exclude -- can never fire: warn rather than run silently to the budget *)
 
 warnDeadEvents[ { }, _, _, _ ] := Null
 
@@ -270,9 +211,7 @@ warnDeadEvents[ entries_List, rules_List, scale_, fnSym_ ] :=
       entries ] ]
 
 
-(* the event names each constraint prunes before they can fire.  Whole-walk
-   "Minimizing" forbids any revisit (the distance from the start strictly
-   increases), so at scale Infinity it excludes every singularity. *)
+(* whole-walk "Minimizing" forbids any revisit, so at scale Infinity it excludes every singularity *)
 
 deadEventNames[ rules_List, scale_ ] := Union @@ Replace[ rules, {
   "Simple" -> { "Simple", "Generic", "Immersed", "Crossing", "Tangency", "TriplePoint", "Cusp" },
@@ -284,15 +223,7 @@ deadEventNames[ rules_List, scale_ ] := Union @@ Replace[ rules, {
   _ -> { } }, { 1 } ]
 
 
-(* One incremental detector serves constraints (forbid the step) and events
-   (await it): each event is read at the walk's tip.  "Crossing" is an
-   arrival at any visited vertex along a fresh edge -- the isolated double
-   visit of the census, read at the moment it appears; a later pass along
-   the same arc upgrades it, and the upgrade is a "Tangency" firing.
-   "Tangency" is a retraced edge off a cusp apex, so the mirrored arc of a
-   deep cusp fires it too -- WalkSingularities on the finished walk stays
-   the authority.  A rule name fires when the step violates the rule; a
-   predicate fires when it turns True on the walk so far. *)
+(* one incremental detector serves constraints and events, each read at the walk's tip: "Crossing" is an arrival at a visited vertex along a fresh edge, and a later pass along the same arc upgrades it, the upgrade firing "Tangency".  WalkSingularities on the finished walk stays the authority *)
 
 stepEventQ[ g_, scale_, rule : "Minimizing" | "Simple" | "Immersed" | "Generic", walk_ ] :=
   ! windowRuleQ[ g, scale, rule, Most @ walk, Last @ walk ]
@@ -316,10 +247,7 @@ repeatedTipEdgeQ[ walk_ ] := Length[ walk ] >= 3 &&
   MemberQ[ Sort /@ Partition[ Most @ walk, 2, 1 ], Sort @ walk[[ -2 ;; ]] ]
 
 
-(* The per-branch event state -- remaining fire counts and the armed deadline
-   in edges -- is a function of the walk prefix: memoised per prefix, so each
-   frontier walk owns its own and a shared prefix is stepped once.  The
-   closure is rebuilt per anchor tuple, so the memo table dies with it. *)
+(* the per-branch event state is a function of the walk prefix: memoised per prefix, so a shared prefix is stepped once; the closure is rebuilt per anchor tuple, so the memo table dies with it *)
 
 stoppingDeadlineFn[ _, _, { } ] := Infinity &
 
@@ -342,16 +270,11 @@ stoppingDeadlineFn[ graph_, scale_, entries_List ] :=
     walk |-> Last @ state @ walk ]
 
 
-(* crossings of a walk: arrivals at an already-visited vertex -- an
-   invariant (and a stopping condition), never a class option *)
+(* crossings are arrivals at an already-visited vertex: an invariant, never a class option *)
 walkCrossings[ w_List ] := Length[ w ] - Length[ DeleteDuplicates[ w ] ]
 
 
-(* backward walk counts on directed edges (the non-backtracking transfer
-   matrix), consumed by nbWalkDraw: one draw is exactly uniform over the
-   non-backtracking walks from a with length in the window -- ending at b,
-   or ending anywhere (b = All, the pointed sampler).  $Failed when the
-   class is empty. *)
+(* backward walk counts on directed edges, the non-backtracking transfer matrix: one draw is exactly uniform over the non-backtracking walks from a with length in the window *)
 nbWalkSampler[ graph_, a_, window : { _, _ } ] := nbWalkSampler[ graph, a, All, window ]
 
 nbWalkSampler[ graph_, a_, b_, { lmin_, lmax_ } ] := Module[
@@ -387,9 +310,7 @@ nbWalkDraw[ s_ ] := Module[ { len, e, walk },
   walk ]
 
 
-(* walkLengthAdmissibleQ[kspec]: predicate on a vertex sequence checking it
-   has length compatible with kspec.  Path length = number of edges = Length - 1.
-   Bare k means at most k (the FindPath convention); {k} means exactly k. *)
+(* path length = number of edges = Length - 1; a bare k means at most k (the FindPath convention), {k} exactly k *)
 
 walkLengthAdmissibleQ[ Infinity ]                 := True &
 walkLengthAdmissibleQ[ k_Integer ]                := Length[ # ] - 1 <= k &
@@ -400,32 +321,8 @@ walkLengthAdmissibleQ[ { kmin_Integer, kmax_Integer } ] :=
 
 (* ===================== FindInfraGeodesic ===================== *)
 
-(* A geodesic at infra-scale r: a walk in which every window -- the last r
-   vertices together with the next one -- satisfies the local rule.  The
-   class degenerates at both ends of the scale ladder: under "Minimizing",
-   r = 1 asks only for adjacency (any walk), r = Infinity for a segment.
-   Returns InfraWalk; InfraGeodesicQ[graph, walk, r] carries the class.
-
-   The pointed form FindInfraGeodesic[g, p1, scale, kspec, count] grows the
-   class from p1 until a stopping condition fires, the budget kspec is
-   spent, or no admissible step remains -- FindInfraWalk's reshape at a
-   finite horizon, with the same "StoppingCondition" grammar.  The two-point
-   form FindInfraGeodesic[g, p1, p2, scale, kspec, count] keeps the walks
-   ending at p2; the pointed reading wins a positional tie, so a target
-   matching the scale grammar (a bare integer) is written InfraPoint[p2].
-
-   Rules (Properties): "Minimizing" (window is a shortest path), "Simple" (no
-   revisits), "Immersed" (no cusps), "Generic" (general position -- read on
-   the whole walk prefix, see windowRuleQ) and a bare predicate on the window
-   are constraints; "Straightest" (step away from the window) and
-   {"Minimal", f} / {"Maximal", f} on f[window] are selectors refining the
-   surviving ties.
-
-   Candidates are local: every neighbour of the walk's last vertex, filtered by
-   the rules alone.  p2 never enters a window, so a selector may steer the walk
-   away from p2 and no realisation survives -- that is the honest answer for an
-   observer whose horizon is r.  The target-aware geodesic DAG is
-   FindInfraSegment's optimisation of the constraint-only case r = Infinity. *)
+(* a geodesic at infra-scale r: a walk in which every window -- the last r vertices together with the next one -- satisfies the local rule.  The class degenerates at both ends of the ladder: under "Minimizing", r = 1 asks only for adjacency, r = Infinity for a segment.
+   Candidates are local, so p2 never enters a window: a selector may steer the walk away from p2 and leave no realisation, which is the honest answer for an observer whose horizon is r.  FindInfraSegment's geodesic DAG is the target-aware optimisation of the constraint-only case r = Infinity. *)
 
 FindInfraGeodesic::badproperty = "Property `1` is not supported by FindInfraGeodesic; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window.";
 FindInfraGeodesic::badmethod   = "Method `1` is not supported by FindInfraGeodesic.";
@@ -492,16 +389,11 @@ FindInfraGeodesic[ graph_Graph, p1_, p2_,
           kmax        = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
           lengthQ     = walkLengthAdmissibleQ[ kspec ],
           candidateFn = windowCandidateFn[ graph, scale, rules, FindInfraGeodesic ],
-          (* the sweeps may stop a branch at its first arrival at p2 exactly
-             when no accepted walk revisits its endpoint: under "Simple" or
-             "Generic", or under "Minimizing" at scale Infinity, where the
-             distance from the start strictly increases; a finite-scale rule
-             lets a walk pass through p2 and return *)
+          (* a branch may stop at its first arrival at p2 exactly when no accepted walk revisits its endpoint; a finite-scale rule lets a walk pass through p2 and return *)
           terminal    = MemberQ[ rules, "Simple" | "Generic" ] ||
             ( scale === Infinity && MemberQ[ rules, "Minimizing" ] ) },
         { acceptQ = If[ MemberQ[ rules, "Generic" ],
-            (* endpoint freeness is the one census condition the moving tip
-               cannot prune; checked on the finished walk *)
+            (* endpoint freeness is the one census condition the moving tip cannot prune; checked on the finished walk *)
             w |-> lengthQ[ w ] && Count[ w, First @ w ] === 1 && Count[ w, Last @ w ] === 1,
             lengthQ ],
           stepFn = If[ events === { }, candidateFn,
@@ -509,10 +401,7 @@ FindInfraGeodesic[ graph_Graph, p1_, p2_,
               { g, walk } |-> If[ Length[ walk ] - 1 >= deadlineFn @ walk, { },
                 candidateFn[ g, walk ] ] ] ] },
         warnDeadEvents[ events, rules, scale, FindInfraGeodesic ];
-        (* with revisits allowed a local rule alone leaves an infinite class
-           (a walk can wind around a long cycle forever and stay minimizing at
-           every finite scale); only simplicity, genericity (multiplicity
-           <= 2), or a global minimizing rule bounds it *)
+        (* with revisits allowed a local rule alone leaves an infinite class -- a walk can wind a long cycle forever and stay minimizing at every finite scale -- so only simplicity, genericity or a global minimizing rule bounds it *)
         If[ kmax === Infinity && ! terminal,
           Message[ FindInfraGeodesic::unbounded, scale ]; Throw[ $Failed ] ];
         Switch[ methodHead,
@@ -522,9 +411,7 @@ FindInfraGeodesic[ graph_Graph, p1_, p2_,
                 { g, walk } |-> If[ Length[ walk ] - 1 >= kmax, { },
                   stepFn[ g, walk ] ],
                 pruning,
-                (* early stop on count is unsound when a completion can still
-                   be rejected: by an exact / range length, or by the endpoint
-                   check *)
+                (* an early stop on count is unsound when a completion can still be rejected, by an exact / range length or by the endpoint check *)
                 If[ MatchQ[ kspec, { _Integer } | { _Integer, _Integer } ] ||
                     MemberQ[ rules, "Generic" ],
                   Infinity, countLimit @ count ],
@@ -547,9 +434,7 @@ FindInfraGeodesic[ graph_Graph, p1_, p2_,
 
 (* ===================== InfraGeodesicQ ===================== *)
 
-(* A walk is a geodesic at infra-scale r iff it is a walk and every window --
-   r consecutive vertices with the next one -- is a shortest path.  The ladder is
-   exact at both ends: r = 1 is InfraWalkQ, r = Infinity is InfraSegmentQ. *)
+(* every window of r consecutive vertices with the next one is a shortest path; the ladder is exact at both ends: r = 1 is InfraWalkQ, r = Infinity is InfraSegmentQ *)
 
 InfraGeodesicQ[ graph_Graph, w : _InfraWalk | _InfraLoop | _InfraString,
     scale : ( _Integer | Infinity ) : Infinity ] :=
@@ -567,23 +452,9 @@ InfraGeodesicQ[ _Graph, walk_List, ___ ] /; Length[ walk ] < 2 := False
 
 (* ===================== WalkSingularities ===================== *)
 
-(* Singularity census of a walk read as a parametrized curve -- an invariant
-   of the vertex sequence alone, no substrate structure enters.  Around every
-   coincidence v_i === v_j lies a maximal matching block, same-direction or
-   reversed; the species is the shape of that block.  "Cusp": apexes i with
-   v_{i-1} === v_{i+1}; the mirrored arc around an apex belongs to the cusp,
-   however deep the retrace (a,b,c,d,c,b,a is one cusp at d).  "Tangency"
-   (self-tangency): maximal repeated blocks of length >= 2 with disjoint
-   parameter ranges, as the range pair {{i1, i2}, {j1, j2}} -- the second
-   range ascends when the arc is re-run in the same direction (direct) and
-   descends when it is retraced in reverse (inverse).  "Crossing": isolated
-   double visits (multiplicity 2, both passes interior, no block extension)
-   -- the transverse double point, the one multiple point a generic curve
-   has.  "TriplePoint": all parameters of vertices of multiplicity >= 3.
-   Open walks add "EndpointIncidence" (v_1 or v_n of multiplicity >= 2);
-   closed walks (InfraLoop / InfraString, parameters on the cyclic core)
-   instead add "Cover" -> q: a core with minimal period p < m is the q = m/p
-   fold cover of its period loop, whose census is returned. *)
+(* an invariant of the vertex sequence alone, no substrate structure entering.  Around every coincidence v_i === v_j lies a maximal matching block, same-direction or reversed, and the species is the shape of that block.
+   "Cusp": apexes i with v_{i-1} === v_{i+1}, the whole mirrored arc belonging to the cusp however deep the retrace.  "Tangency": maximal repeated blocks of length >= 2 with disjoint parameter ranges, the second range ascending when the arc is re-run in the same direction and descending when retraced.  "Crossing": isolated double visits with both passes interior -- the transverse double point.  "TriplePoint": the parameters of vertices of multiplicity >= 3.
+   Open walks add "EndpointIncidence"; a closed core of minimal period p < m is the q = m/p fold cover of its period loop, whose census is returned as "Cover" -> q. *)
 
 WalkSingularities[ w_InfraWalk ] := openCensus /@ First @ w
 
@@ -718,9 +589,7 @@ InfraImmersedQ[ graph_Graph, walk_List ] :=
   InfraWalkQ[ graph, walk ] && openCensus[ walk ][ "Cusp" ] === { }
 
 
-(* generic walk: immersed and in general position -- multiple points are only
-   isolated crossings; no tangencies, no triple points, endpoints off the
-   curve on open walks, singly covered on closed walks *)
+(* generic walk: immersed and in general position -- multiple points only isolated crossings, endpoints off the curve *)
 
 InfraGenericQ[ graph_Graph, w_InfraWalk ] := AllTrue[ First @ w, InfraGenericQ[ graph, # ] & ]
 
@@ -739,25 +608,8 @@ InfraGenericQ[ graph_Graph, walk_List ] :=
 
 (* ===================== ExtendInfraGeodesic ===================== *)
 
-(* ExtendInfraGeodesic[g, seed, scale, kspec, count] continues a seed walk
-   under the geodesic rules at infra-scale `scale` -- the pointed finder's
-   growth seeded with a walk instead of a point: Find seeds with points and
-   owns the two-point sugar, Extend seeds with walks and owns "Direction".
-   kspec is the extension budget, read relative to the seed in added edges
-   per growing side (the deltaSpec precedent from
-   FindInfraMonotoneDeformation, per side by the T7 review call), and is
-   mandatory-finite whenever the class is infinite.  "Direction" ->
-   "Forward" grows the tail, "Backward" the head (the walk reversed, grown
-   at its tail, reversed back), "BothSides" (default) at most one edge per
-   side per step -- there kspec counts the outer steps, each side paying
-   at most one edge per step, a side freezing when no admissible step
-   remains; the joined two-sided step is re-checked against the monotone
-   whole-walk constraints its sides cannot see alone.  Stopping conditions carry the
-   finder's grammar and replay over the seed -- the extension continues the
-   seed's own event history, so a deadline may already sit inside the seed
-   and the seed comes back unextended; a two-ended walk has no single tip
-   for the event clock, so "StoppingCondition" requires "Forward" or
-   "Backward". *)
+(* continues a seed walk under the geodesic rules at infra-scale scale: Find seeds with points and owns the two-point sugar, Extend seeds with walks and owns "Direction".  kspec is the extension budget, in added edges per growing side, and is mandatory-finite whenever the class is infinite.
+   "BothSides" adds at most one edge per side per step and re-checks the joined step against the monotone whole-walk constraints its sides cannot see alone.  Stopping conditions replay over the seed, so a deadline may already sit inside it and the seed come back unextended; a two-ended walk has no single tip for the event clock, so they require "Forward" or "Backward". *)
 
 ExtendInfraGeodesic::badproperty  = "Property `1` is not supported by ExtendInfraGeodesic; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window.";
 ExtendInfraGeodesic::badmethod    = "Method `1` is not supported by ExtendInfraGeodesic.";
@@ -795,8 +647,7 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
           pruning     = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
           kmax        = Replace[ absSpec, { { _, hi_ } :> hi, { k_ } :> k } ],
           lengthQ     = walkLengthAdmissibleQ[ absSpec ],
-          (* "BothSides" reads kspec per growing side: the budget is the
-             outer-step count, each live side paying one edge per step *)
+          (* "BothSides" reads kspec per growing side: the budget counts outer steps, each live side paying one edge per step *)
           stepsMax    = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
           stepsQ      = Replace[ kspec, {
             Infinity     :> ( True & ),
@@ -805,12 +656,7 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
             k_Integer    :> ( # <= k & ) } ],
           candidateFn = windowCandidateFn[ graph, scale, rules, ExtendInfraGeodesic ],
           deadlineFn  = stoppingDeadlineFn[ graph, scale, events ],
-          (* the per-step Cartesian of a two-sided step can violate a
-             whole-walk constraint each side admits alone; re-check the
-             joined walk on the conditions monotone under extension --
-             "Simple", "Generic", and whole-walk "Minimizing" (a walk is a
-             geodesic iff every sub-walk is, so a failed joined check never
-             heals) *)
+          (* a two-sided step can violate a whole-walk constraint each side admits alone; re-check the joined walk on the constraints monotone under extension -- a walk is a geodesic iff every sub-walk is, so a failed joined check never heals *)
           stepChecks = Join[
             If[ MemberQ[ rules, "Simple" ], { DuplicateFreeQ }, { } ],
             If[ MemberQ[ rules, "Generic" ],
@@ -874,16 +720,7 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
 
 (* ===================== Two-sided growth engines ===================== *)
 
-(* Two-sided siblings of the pointed engines: each outer step grows the walk
-   by at most one edge per side (stepBothSides), a side freezing when its
-   candidateFn returns { }; the budget kmax counts outer steps -- the
-   per-side edge reading of kspec, each live side paying one edge per step
-   (T7 review call) -- and stepsQ is the kspec window on that count.  Joined
-   steps failing stepFilter are cut, and a walk with no surviving step is
-   emitted.  The BFS honours "Pruning" and its early count stop is exact
-   (emissions pass stepsQ before they count); the DFS backtracks (branch =
-   Identity, exact for a finite count) or follows one uniform joined step
-   per node (branch = randomBranch, one trajectory, via randomDraws). *)
+(* two-sided siblings of the pointed engines: each outer step grows the walk by at most one edge per side, a side freezing when its candidateFn returns { }, and kmax counts the outer steps.  The BFS honours "Pruning" and its early count stop is exact; the DFS backtracks (branch = Identity) or follows one uniform joined step per node (randomBranch) *)
 
 extendBothFrontierSweep[ graph_Graph, seed_List, candidateFn_, stepsQ_, kmax_,
     prune_, count_, stepFilter_ ] :=
@@ -904,8 +741,7 @@ extendBothFrontierSweep[ graph_Graph, seed_List, candidateFn_, stepsQ_, kmax_,
   ]
 
 
-(* the closures are held in Module locals, never inlined into descend's RHS:
-   see the note on greedyFrontierSweep (Tools.wl) *)
+(* the closures are held in Module locals, never inlined into descend's RHS: see greedyFrontierSweep (Tools.wl) *)
 
 extendBothGreedySweep[ graph_Graph, seed_List, candidateFn_, stepsQ_, kmax_,
     count_, branch_, stepFilter_ ] :=
@@ -951,9 +787,6 @@ ConcatenateInfraWalk[ path1_, path2_,
 
 (* ===================== Scene-DSL constructor ===================== *)
 
-(* InfraWalk[v1, v2, ..., vk] inside a scene is the literal walk with the
-   given vertices, valid iff each consecutive pair is a graph edge.  Non-
-   simple chains kept (no DuplicateFreeQ filter). *)
 
 dispatchConstruction[ graph_Graph, InfraWalk[ vs__ ] ] :=
   With[ { walk = { vs } },

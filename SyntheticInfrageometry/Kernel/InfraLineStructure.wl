@@ -6,21 +6,14 @@ PackageScope[canonicalLineSeq]
 
 (* ===================== InfraLineStructure wrapper ===================== *)
 
-(* InfraLineStructure[{line1, ..., linek}] is a consistent geodesic path system,
-   stored as its maximal lines (longest geodesics of the system).  Unlike the
-   multi-realisation wrappers, the stored list IS the lines: a structure is a
-   single object, and its "realisations" are its lines. *)
 
 InfraLineStructure[ lines_List ][ "Lines" ]        := lines
 InfraLineStructure[ lines_List ][ "Realizations" ] := lines
 InfraLineStructure[ lines_List ][ "First" ]        := First @ lines
 
-(* "Length" = list of edge counts, one per line: |line| - 1. *)
 InfraLineStructure[ lines_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ lines
 
-(* "Paths" = the unfolded association <|{u,v} -> P(u,v)|> -- every contiguous
-   stretch of every line, keyed by its sorted endpoint pair, oriented small->large.
-   Consistency makes the value well-defined when a pair lies on several lines. *)
+(* consistency makes P(u, v) well-defined when the pair lies on several lines *)
 InfraLineStructure[ lines_List ][ "Paths" ] :=
   Association @ Flatten @ Table[
     With[ { line = lines[[ k ]] },
@@ -31,24 +24,17 @@ InfraLineStructure[ lines_List ][ "Paths" ] :=
         { i, Length @ line - 1 }, { j, i + 1, Length @ line } ] ],
     { k, Length @ lines } ]
 
-(* "Incidence" = the transpose of the line list: <|v -> {line numbers through v}|>.
-   Order along each line is held by the stored sequence, so positions are not kept. *)
 InfraLineStructure[ lines_List ][ "Incidence" ] :=
   Sort /@ KeySort @ GroupBy[
     Catenate @ MapIndexed[ { line, idx } |-> ( ( # -> First @ idx ) & /@ line ), lines ],
     First -> Last ]
 
-(* "Coordinates" = incidence with positions: <|v -> {{line number, offset}, ...}|>,
-   offset = number of edges from the line's start to v.  The g-free coordinate atlas;
-   redundant given the stored ordered lines, so always recoverable, never stored. *)
 InfraLineStructure[ lines_List ][ "Coordinates" ] :=
   Sort /@ KeySort @ GroupBy[
     Catenate @ MapIndexed[
       { line, idx } |-> MapIndexed[ ( #1 -> { First @ idx, First @ #2 - 1 } ) &, line ], lines ],
     First -> Last ]
 
-(* "Path", u, v = recover P(u,v): the stretch of any line through both u and v,
-   oriented u->v.  Well-defined by consistency; order comes from the stored line. *)
 InfraLineStructure[ lines_List ][ "Path", u_, v_ ] :=
   With[ { line = SelectFirst[ lines, ContainsAll[ #, { u, v } ] & ] },
     { i = First @ FirstPosition[ line, u ], j = First @ FirstPosition[ line, v ] },
@@ -59,20 +45,12 @@ InfraLineStructure /: Part[ InfraLineStructure[ lines_List ], i_Integer ] := lin
 
 (* ===================== FindLineStructure ===================== *)
 
-(* A consistent geodesic path system: one shortest path P(u,v) per pair,
-   subpath-closed (any stretch of a chosen path is the chosen path between its
-   endpoints).  Consistency is created by a single generically-independent edge
-   weighting -- the unique min-weight path per pair is automatically consistent.
-   The returned InfraLineStructure stores the maximal lines of that system. *)
+(* a consistent geodesic path system: one shortest path P(u, v) per pair, subpath-closed.  Consistency comes from a single generically-independent edge weighting -- the unique min-weight path per pair is automatically consistent *)
 
 Options[ FindLineStructure ] = { Method -> "Lexicographic" };
 
-(* Every Method reduces to an edge RANKING e_1, ..., e_|E|, then the exact weight
-   w(e_i) = 1 + 2^(-i).  Distinct-subset-sum of {2^(-i)} => unique min-weight path
-   per pair (consistent); total perturbation < 1 => hop-count dominates (chosen
-   paths are true geodesics).  So any ranking yields a consistent geodesic system;
-   the Method only changes which geodesic wins among hop-count ties.  Exact
-   Rationals -- machine reals underflow near |E| ~ 50 and re-collide. *)
+(* every Method reduces to an edge ranking e_1, ..., e_|E|, then w(e_i) = 1 + 2^(-i): distinct subset sums of {2^(-i)} make the min-weight path unique per pair (consistent), and total perturbation < 1 keeps hop-count dominant (true geodesics).
+   Exact Rationals -- machine reals underflow near |E| ~ 50 and re-collide *)
 
 FindLineStructure[ graph_Graph, opts : OptionsPattern[] ] :=
   With[
@@ -84,8 +62,7 @@ FindLineStructure[ graph_Graph, opts : OptionsPattern[] ] :=
         Association @ Map[ Sort[ # ] -> spf @@ # &, Subsets[ VertexList[ graph ], { 2 } ] ],
         { } ] },
     { cands = DeleteDuplicates[ canonicalLineSeq /@ Values @ paths ] },
-    (* maximal lines: chosen paths that are not a contiguous infix (either
-       orientation) of a strictly longer chosen path *)
+    (* maximal lines: chosen paths that are not a contiguous infix, either orientation, of a strictly longer chosen path *)
     InfraLineStructure @ Select[ cands,
       c |-> NoneTrue[ cands,
         o |-> o =!= c &&
@@ -98,8 +75,7 @@ edgeRanking[ graph_, edges_, "Lexicographic" ] := SortBy[ edges, Sort @* Apply[ 
 
 edgeRanking[ graph_, edges_, "Random" ] := RandomSample @ edges
 
-(* resistance is only a ranking key, so machine PseudoInverse is fine and self-
-   contained; the 2^(-i) weights supply genericity, sorted endpoints break ties *)
+(* resistance is only a ranking key, so machine PseudoInverse is fine; the 2^(-i) weights supply genericity *)
 edgeRanking[ graph_, edges_, "Resistance" ] :=
   With[
     { lp = PseudoInverse @ N @ KirchhoffMatrix @ graph, idx = First /@ PositionIndex @ VertexList @ graph },
@@ -108,24 +84,19 @@ edgeRanking[ graph_, edges_, "Resistance" ] :=
               Sort @ Apply[ List, e ] } ]
   ]
 
-(* user edge function w[edge] as the ranking key; sorted endpoints break w-ties, so
-   no collision detection is needed -- the ranking is always a total order *)
+(* sorted endpoints break w-ties, so the ranking is always a total order *)
 edgeRanking[ graph_, edges_, ( "Weight" -> w_ ) ] :=
   SortBy[ edges, e |-> { w[ e ], Sort @ Apply[ List, e ] } ]
 
 
 (* ===================== ConsistentPathSystemQ ===================== *)
 
-(* a path system is consistent (subpath-closed) iff every contiguous stretch of a
-   chosen path is itself the chosen path between its endpoints -- Cizma-Linial
-   consistency = Bellman's principle of optimality.  Accepts the unfolded
-   association <|{u,v} -> path|>, a maximal-line set, or an InfraLineStructure. *)
+(* consistent (subpath-closed) iff every contiguous stretch of a chosen path is itself the chosen path between its endpoints: Cizma-Linial consistency = Bellman's principle of optimality *)
 
 ConsistentPathSystemQ[ graph_Graph, ls_InfraLineStructure ] :=
   ConsistentPathSystemQ[ graph, ls[ "Lines" ] ]
 
-(* line set: consistent iff no two lines induce conflicting stretches between a
-   shared endpoint pair (a conflict-free unfolding is automatically subpath-closed) *)
+(* a line set is consistent iff no two lines induce conflicting stretches between a shared endpoint pair *)
 ConsistentPathSystemQ[ graph_Graph, lines : { __List } ] :=
   AllTrue[
     GatherBy[
@@ -137,8 +108,6 @@ ConsistentPathSystemQ[ graph_Graph, lines : { __List } ] :=
       First ],
     grp |-> SameQ @@ Values @ grp ]
 
-(* association: each chosen path's every stretch equals the chosen path for its
-   own endpoint pair (which must itself be chosen) *)
 ConsistentPathSystemQ[ graph_Graph, paths_Association ] :=
   AllTrue[ Keys @ paths,
     key |-> With[ { p = paths[ key ] },

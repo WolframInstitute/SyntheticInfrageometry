@@ -3,14 +3,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== FindInfraQuadric ===================== *)
 
-(* Distance-quadric region.  For foci {p1, ..., pk} and weights {w1, ..., wk},
-   the signed-distance sum is S(v) = sum_i w_i d(p_i, v).  Scalar c selects
-   the solid half-space { v : S(v) <= c }; pair c = {cMin, cMax} selects the
-   band { v : cMin <= S(v) <= cMax }.  Default weights = all 1s (Euclidean
-   ellipsoid interior); {1, -1} gives a one-branch hyperboloid via the scalar
-   form, or a two-sided hyperboloid via a symmetric band {-c, c}.  Each focus
-   may be a bare vertex or an InfraPoint wrapper; multi-realisation
-   InfraPoint foci are reduced to their first realisation. *)
+(* S(v) = Sum_i w_i d(p_i, v); a scalar c selects { v : S(v) <= c }, a pair the band cMin <= S(v) <= cMax *)
 
 FindInfraQuadric[ graph_Graph, foci_List, c_ ] :=
   FindInfraQuadric[ graph, foci, c, ConstantArray[ 1, Length @ foci ] ]

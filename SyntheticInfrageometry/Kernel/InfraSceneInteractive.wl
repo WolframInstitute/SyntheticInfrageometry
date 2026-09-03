@@ -1,10 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-(* Manipulate-based interactive viewers built on top of `InfraSceneHighlight`.
-   Per-primitive viewers (`PointViewer`, `SegmentViewer`, `ShellViewer`,
-   `CircleViewer`) drive a single `Find*[..., All]` enumeration; the scene-level
-   `InfraSceneViewer` walks the construction-step DAG of an `InfraScene`. *)
-
 
 $InfraSegmentSelectOptions = { None, "Central", "Peripheral", "EmbeddingClosest" };
 
@@ -14,10 +9,6 @@ $InfraCircleSelectOptions = { None, "Central", "Peripheral",
 
 (* ===================== Per-object viewers ===================== *)
 
-(* Each viewer is a `Manipulate` that drives a `FindX[..., All]` enumeration,
-   optionally pipes the result through a path-space selector, takes up to `n`,
-   and renders the resulting multi-object via `InfraSceneHighlight`. Endpoints
-   / centre are overlaid as a separate fixed-colour highlight on top. *)
 
 SetAttributes[ PointViewer, HoldRest ]
 
@@ -157,14 +148,6 @@ CircleViewer[ g_Graph ] :=
 
 (* ===================== InfraSceneViewer ===================== *)
 
-(* Step-navigated viewer for an InfraScene on a graph, in the spirit of
-   Wolfram's `GeometricScene` widget: chrome-styled step / branch bars over
-   a single `InfraSceneHighlight` pane, a per-step hide toggle (eye icon),
-   and a `Fixed` checkbox that locks the current branch as the initial
-   bindings for all later steps (the fix-and-advance workflow). A step
-   whose object has no realisation shows an alert chip and keeps the last
-   constructible step on screen. Rendering options forward to
-   `InfraSceneHighlight`. *)
 
 Options[ InfraSceneViewer ] = {
   "OpacityRange"   :> $InfraOpacityRange,

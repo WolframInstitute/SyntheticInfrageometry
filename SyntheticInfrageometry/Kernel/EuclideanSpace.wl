@@ -6,14 +6,8 @@ PackageScope[findInfraSum]
 
 (* ===================== InfraScalarProduct ===================== *)
 
-(* Base-point-relative inner product of u, v wrt o.
-   "Alexandrov" (default; equivalent to {"Alexandrov", "Curvature" -> 0}):
-       <u, v>_o = d(o, u) d(o, v) cos theta_k,  where theta_k is the comparison
-       angle at o in M_k^2.  k = 0 collapses to (d(o,u)^2 + d(o,v)^2 - d(u,v)^2) / 2
-       (the polar form of the squared metric); k != 0 uses the spherical /
-       hyperbolic law of cosines via comparisonAngleCos.
-   "Parallelogram": polarisation <u, v>_o = (||u + v||_o^2 - ||u - v||_o^2) / 4
-       over realisations of u + v and u - v on the substrate (multi-valued). *)
+(* "Alexandrov": <u, v>_o = d(o, u) d(o, v) cos theta_k with theta_k the comparison angle at o in M_k^2; k = 0 collapses to (d(o,u)^2 + d(o,v)^2 - d(u,v)^2) / 2.
+   "Parallelogram": the polarisation (||u + v||_o^2 - ||u - v||_o^2) / 4 over realisations of u + v and u - v on the substrate. *)
 
 InfraScalarProduct::badmethod = "Method `1` is not supported by InfraScalarProduct.";
 
@@ -48,9 +42,7 @@ InfraScalarProduct[ graph_Graph, o_, u_, v_, OptionsPattern[] ] :=
 
 (* ===================== FindInfraLinearCombination ===================== *)
 
-(* Multi-valued vertex realisation of Sum_i lambda_i u_i from base point o.
-   Each scaled term lambda_i u_i is computed via findInfraScale; partial sums
-   are composed pairwise via findInfraSum, left-to-right. *)
+(* Sum_i lambda_i u_i from o: each scaled term via findInfraScale, the partial sums composed pairwise left-to-right *)
 
 Options[ FindInfraLinearCombination ] = {
   "ScaleMethod" -> Automatic,
@@ -84,21 +76,13 @@ FindInfraLinearCombination[ graph_Graph, o_, terms_List,
 
 (* ===================== InfraAngle ===================== *)
 
-(* An angle at p between q1, q2.
-   "Arclength" (default): the open ball B(p, min(d(p, q1), d(p, q2))) is removed
-   and d(q1, q2) in the remaining graph is normalised by the radius -- a
-   synthetic radian measure of the detour around p.
-   "Alexandrov": Alexandrov comparison-triangle angle in model space M_k^2
-   (k = 0 by default; "Curvature" -> k inside the Method list overrides).
-   The un-arccos'd scalar product (d(p,q1)^2 + d(p,q2)^2 - d(q1,q2)^2)/2 is
-   not an angle -- use InfraScalarProduct[g, p, q1, q2] for that. *)
+(* "Arclength": remove the open ball B(p, min(d(p, q1), d(p, q2))) and normalise d(q1, q2) in the rest by the radius, a synthetic radian measure of the detour around p.
+   "Alexandrov": the comparison-triangle angle in M_k^2. *)
 
 InfraAngle::badmethod = "Method `1` is not supported by InfraAngle.";
 
 Options[ InfraAngle ] = { Method -> "Arclength" };
 
-(* Accept InfraPoint atoms anywhere in the triple -- paclet-wide
-   convention that wrapped and bare-vertex forms are interchangeable. *)
 InfraAngle[ graph_Graph, triple : { _, _, _ }, opts : OptionsPattern[] ] /;
     ! FreeQ[ triple, _InfraPoint ] :=
   InfraAngle[ graph, triple /. InfraPoint[ v_ ] :> v, opts ]
@@ -125,12 +109,7 @@ InfraAngle[ graph_Graph, { q1_, p_, q2_ }, OptionsPattern[] ] :=
 
 (* ===================== Helpers: findInfraScale ===================== *)
 
-(* Scalar multiplication: realise lambda * u from origin o on the graph.
-   "Metric"   - strict integer match: collinear with o, u via distance additivity
-                at distance |lambda| r.
-   "Line"     - realisations of FindInfraLine, snap by index to lambda (uIdx - oIdx).
-   "Midpoint" - dyadic bisection via strict equidistant midpoints; lambda in [0, 1].
-   Automatic  - integer lambda -> Metric;  dyadic in [0,1] -> Midpoint;  else -> Line. *)
+(* lambda * u from o: "Metric" the vertex collinear with o, u at distance |lambda| r, "Line" the index snap along FindInfraLine, "Midpoint" dyadic bisection for lambda in [0, 1] *)
 
 findInfraScale[ graph_Graph, o_, u_, lambda_, Automatic ] :=
   Which[
@@ -206,10 +185,7 @@ findInfraScale[ graph_Graph, o_, u_, lambda_, "Midpoint" ] /; 0 < lambda < 1 :=
 
 (* ===================== Helpers: findInfraSum ===================== *)
 
-(* Vector addition (parallelogram closure): realise u + v from origin o.
-   "Metric"   - { w : d(u, w) = d(o, v) and d(v, w) = d(o, u), w != o }.
-   "Parallel" - intersection of parallels through u (parallel to line o, v) with
-                parallels through v (parallel to line o, u), minus {o, u, v}. *)
+(* u + v from o: "Metric" { w : d(u, w) == d(o, v), d(v, w) == d(o, u), w != o }, "Parallel" the intersection of the parallels through u and through v *)
 
 findInfraSum[ graph_Graph, o_, u_, v_, "Metric" ] :=
   With[ { rU = GraphDistance[ graph, o, u ], rV = GraphDistance[ graph, o, v ] },

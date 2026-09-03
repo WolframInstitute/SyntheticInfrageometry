@@ -5,9 +5,7 @@ PackageImport["WolframInstitute`Infrageometry`"]
 
 (* ===================== FindInfraRadarBasis / InfraRadarBasisQ (deprecated) ===================== *)
 
-(* The radar basis (resolving set) and the radar map now live in the Infrageometry
-   paclet as FindResolvingSet / ResolvingSet / MetricDimension / RadarCoordinates.
-   FindInfraRadarBasis / InfraRadarBasisQ are kept as deprecation aliases. *)
+(* deprecation aliases: the radar basis and radar map live in Infrageometry as FindResolvingSet / RadarCoordinates *)
 
 FindInfraRadarBasis[ args___ ] := FindResolvingSet[ args ]
 InfraRadarBasisQ[ args___ ] := ResolvingSetQ[ args ]
@@ -15,20 +13,12 @@ InfraRadarBasisQ[ args___ ] := ResolvingSetQ[ args ]
 
 (* ===================== RadarCoordinates ===================== *)
 
-(* Distance vector of v wrt basis b: (d(v, b1), ..., d(v, bk)).
-   An InfraSet[{u1, ..., um}] entry in the basis contributes the aggregated
-   distance Min | Mean | Max over its realisations (Min = the infra-observer's
-   nearest-anchor reading, default).  The bulk form RadarCoordinates[g, b]
-   returns an Association of all vertices' radar coordinates. *)
+(* the distance vector (d(v, b1), ..., d(v, bk)); an InfraSet anchor contributes Min | Mean | Max over its realisations *)
 
-(* The crisp RadarCoordinates[g, b, v] / [g, b] now lives in Infrageometry.  Here
-   we add the InfraObject overloads: an InfraPoint query point, and InfraSet
-   anchors in the basis aggregated by "InfraPointAggregation" (Min default). *)
 
 Options[ RadarCoordinates ] = { "InfraPointAggregation" -> Min }
 
-(* InfraPoint anchors in the basis -- more specific than the crisp Infrageometry
-   pattern b_List, so this is tried first. *)
+(* more specific than the crisp Infrageometry pattern b_List, so this is tried first *)
 RadarCoordinates[ g_Graph, b : { ___, _InfraSet, ___ }, v : Except[ _Rule | _RuleDelayed | _InfraPoint | _InfraSet ], opts : OptionsPattern[] ] :=
   With[ { agg = OptionValue[ "InfraPointAggregation" ] },
     infraAnchorDistance[ g, v, #, agg ] & /@ b
@@ -41,22 +31,13 @@ RadarCoordinates[ g_Graph, b_List, InfraSet[ vs_List ], opts : OptionsPattern[] 
   Length[ vs ] > 1 && SubsetQ[ VertexList[ g ], vs ] :=
   RadarCoordinates[ g, b, #, opts ] & /@ vs
 
-(* The crisp Infrageometry definitions load first, so Mathematica keeps them
-   ahead of these point overloads in DownValues order.  Reorder so the
-   InfraPoint / InfraSet rules (the more specific cases) are tried first. *)
+(* the crisp Infrageometry definitions load first, so reorder DownValues to try the more specific InfraPoint / InfraSet rules first *)
 DownValues[ RadarCoordinates ] = SortBy[ DownValues[ RadarCoordinates ], FreeQ[ #, InfraPoint | InfraSet ] & ]
 
 
 (* ===================== OrthogonalCoordinates ===================== *)
 
-(* OrthogonalCoordinates[g, c, {a1, ..., an}, v] projects v onto each axis ai
-   through the centre c by shortest-path distance and returns the tuple of
-   Z-valued displacements with c at {0, ..., 0}.  Each axis is signed relative
-   to the first vi in the (InfraPoint) centre order that lies on it.  When
-   the projection is tied, "SelectCoordinate" chooses the reducer:
-   "Centered" (default): 0 if 0 in the shifted tie list, else Round[Median[.]];
-   Min/Max/Mean/Median/First/Last: linear reducers (commute with the shift);
-   All: full shifted tie list;  any user function: applied to the shifted list. *)
+(* projects v onto each axis ai through the centre c by shortest-path distance, signed relative to the first centre-order vertex lying on the axis; a tied projection is reduced by "SelectCoordinate" *)
 
 Options[ OrthogonalCoordinates ] = { "SelectCoordinate" -> "Centered" };
 
@@ -80,21 +61,8 @@ OrthogonalCoordinates[ g_Graph, c_, axes_List, opts : OptionsPattern[] ] :=
 
 (* ===================== FindInfraOrthogonalFrame ===================== *)
 
-(* Returns a list of axes mutually perpendicular at the centre c, each wrapped
-   as InfraSegment[{path}] (one realisation: the maximal metric line through c
-   with c strictly interior).  Algorithm: build GeodesicSprayGraph[g, c]; enumerate
-   candidate lines via antipodal DAG-vertex pairs; DFS the choice tree,
-   filtering the DAG by perpendicularity at each step.
-
-   Perpendicularity at c of axes A, B: every vertex w of B has c's axis-index
-   on A among w's tied closest positions on A (and symmetrically).
-
-   axisLength (required positional): half-axis depth spec.  All = any depth;
-   n = exactly n (local axis filling the radius-n ball); UpTo[n] = at most n;
-   {min, max} = explicit range.  Option "AxisCount" filters frame sizes:
-   Automatic (saturated leaves), k (exactly k), UpTo[k] (k or saturation),
-   All (every depth >= 1).  Method -> Automatic = "Exhaustive" ranked by
-   frameSortKey; "Greedy" keeps DFS order. *)
+(* build GeodesicSprayGraph[g, c], enumerate candidate lines via antipodal DAG-vertex pairs, then DFS the choice tree, filtering by perpendicularity at each step.
+   Perpendicular at c: every vertex w of B has c's axis-index on A among w's tied closest positions on A, and symmetrically. *)
 
 Options[ FindInfraOrthogonalFrame ] = {
   Method             -> Automatic,
@@ -121,8 +89,6 @@ FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, n_Integer
     If[ Length[ result ] >= n, wrapFrame /@ Take[ result, n ], $Failed ]
   ]
 
-(* InfraPoint centre: the atom degenerates to the single-vertex centre;
-   an InfraSet centre runs the search per source and merges. *)
 
 FindInfraOrthogonalFrame[ g_Graph, InfraPoint[ v_ ], rest___ ] :=
   FindInfraOrthogonalFrame[ g, v, rest ]
@@ -146,8 +112,7 @@ FindInfraOrthogonalFrame[ g_Graph, ip : InfraSet[ vs_List ], axisLength : axisLe
 
 (* ===================== FindInfraSpanningAxes ===================== *)
 
-(* No-center form: greedy mutually-separated longest geodesics across the
-   whole graph.  Reuses orthogonalGreedy with Hausdorff-separation options. *)
+(* no-center form: greedy mutually-separated longest geodesics across the whole graph *)
 
 Options[ FindInfraSpanningAxes ] = {
   "AxisDistance"  -> "MinEndpoint",
@@ -174,17 +139,9 @@ FindInfraSpanningAxes[ g_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 (* ===================== ResistanceCoordinates ===================== *)
 
-(* Resistance-matching spectral embedding
-       Phi(v) = (phi_i(v) / Sqrt[lambda_i])_{i: lambda_i > 0}
-   satisfying ||Phi(u) - Phi(v)||^2 == R(u, v) (Klein-Randic).  Other
-   "Rescaling" options: "None" (plain Laplacian eigenvectors),
-   "Diffusion" -> t (diffusion-map embedding).  "Dimension" caps how many
-   smallest non-zero modes are kept; "Origin" shifts the embedding so the
-   chosen vertex (or InfraPoint centroid) lands at the origin. *)
+(* Phi(v) = (phi_i(v) / Sqrt[lambda_i])_{i : lambda_i > 0}, so ||Phi(u) - Phi(v)||^2 == R(u, v) (Klein-Randic) *)
 
-(* The crisp embedding ResistanceCoordinates[g] / [g, v] (Options "Rescaling",
-   "Dimension", "Origin") is relocated to the Infrageometry paclet.  The InfraPoint
-   query overloads stay here. *)
+(* the crisp embedding lives in the Infrageometry paclet; the InfraPoint query overloads stay here *)
 
 ResistanceCoordinates[ g_Graph, InfraPoint[ v_ ], opts : OptionsPattern[] ] :=
   ResistanceCoordinates[ g, v, opts ]
@@ -204,9 +161,7 @@ infraAnchorDistance[ g_, v_, u_, _ ] :=
 
 (* ===================== Helpers: orthogonal coordinates ===================== *)
 
-(* axisLayerIndex projects v onto an axis (a vertex sequence or a DAG of
-   dependencies) and returns every 0-based layer tied at the minimum graph
-   distance.  Callers reduce the list via "SelectCoordinate". *)
+(* every 0-based layer tied at the minimum distance from v to the axis; callers reduce the list via "SelectCoordinate" *)
 
 axisLayerIndex[ g_Graph, axis_List, v_ ] :=
   With[ { dists = GraphDistance[ g, v, # ] & /@ axis },
@@ -244,9 +199,7 @@ allHalfAxes[ dag_Graph, c_ ] :=
   Catenate[ FindPath[ dag, c, #, Infinity, All ] & /@ VertexList[ dag ] ]
 
 
-(* enumerateAxes: every candidate line through c with both half-axes of depth
-   >= minLength.  Pairs half-axes with antipodal endpoints; dedup on the
-   orientation-canonical vertex sequence. *)
+(* every candidate line through c with both half-axes of depth >= minLength, paired by antipodal endpoints and deduped on the orientation-canonical sequence *)
 
 enumerateAxes[ g_Graph, dag_Graph, c_, minLength_Integer ] :=
   With[ { dist = AssociationThread[ VertexList[ dag ], GraphDistance[ dag, c, # ] & /@ VertexList[ dag ] ],
@@ -266,16 +219,13 @@ enumerateAxes[ g_Graph, dag_Graph, c_, minLength_Integer ] :=
   ]
 
 
-(* axisSortKey: length-first, then ascending endpoint-geodesic-multiplicity
-   so straight axes (unique geodesic between endpoints) outrank L-shapes
-   (many parallel geodesics) on grids, then lex-min for full determinism. *)
+(* length first, then ascending endpoint-geodesic-multiplicity so straight axes outrank L-shapes on grids, then lex-min for determinism *)
 
 axisSortKey[ axisMult_ ][ axis_List ] :=
   { -Length[ axis ], axisMult[ axis ], Min[ axis, Reverse @ axis ] }
 
 
-(* projectsToCenterQ: does w project to c on axis under tie-reducer sel?
-   The same definition as the OrthogonalCoordinates coord being 0. *)
+(* the same condition as the OrthogonalCoordinates coordinate of w being 0 *)
 
 projectsToCenterQ[ g_Graph, axis_, c_, w_, sel_ ] :=
   selectCoordinate[ sel,
@@ -295,8 +245,7 @@ frameSortKey[ axisMult_ ][ frame_List ] :=
     Total[ axisMult /@ frame ], canonicalFrame[ frame ] }
 
 
-(* axisMultiplicityFn[g]: closure axis |-> GeodesicMultiplicity[g, First, Last]
-   precomputed via GeodesicMultiplicityMatrix so per-axis lookup is O(1). *)
+(* precomputed via GeodesicMultiplicityMatrix so the per-axis lookup is O(1) *)
 
 axisMultiplicityFn[ g_Graph ] :=
   With[ { mMat   = Last @ GeodesicMultiplicityMatrix[ g ],
@@ -356,16 +305,12 @@ resolveSearchMethod[ opts_List ] :=
   Replace[ Method /. opts /. Method -> Automatic, Automatic -> "Exhaustive" ]
 
 
-(* Default perpendicularity oracle: for every previously chosen axis, every one
-   of its vertices projects to the centre on the candidate.  Matches the
-   index-based test that drove the frame search before Method -> "Predicate". *)
+(* default oracle: every vertex of every previously chosen axis projects to the centre on the candidate *)
 
 inlineFramePerpQ[ g_Graph, c_, sel_ ][ currentAxes_, cand_ ] :=
   AllTrue[ currentAxes,
     prev |-> AllTrue[ prev, w |-> projectsToCenterQ[ g, cand, c, w, sel ] ] ]
 
-(* Predicate-driven perpendicularity oracle: route each axis pair through
-   InfraPerpendicularQ with caller-supplied sub-options. *)
 
 predicateFramePerpQ[ g_Graph, predOpts_List ][ currentAxes_, cand_ ] :=
   AllTrue[ currentAxes, prev |-> InfraPerpendicularQ[ g, prev, cand, Sequence @@ predOpts ] ]
@@ -377,10 +322,6 @@ resolveFramePerpQ[ g_Graph, c_, sel_, methodSpec_ ] :=
     inlineFramePerpQ[ g, c, sel ]
   ]
 
-
-(* Translate {"Predicate", "Test" -> spec, "Radius" -> r, "Tolerance" -> t}
-   sub-options into InfraPerpendicularQ's option list.  "Test" -> Automatic
-   defaults to InfraPerpendicularQ's own default (Method -> "Projection"). *)
 
 predicateSubOpts[ subOpts_List ] :=
   With[ { testVal = "Test" /. subOpts /. { "Test" -> Automatic } },

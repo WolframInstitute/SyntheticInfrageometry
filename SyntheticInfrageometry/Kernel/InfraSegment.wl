@@ -7,35 +7,19 @@ PackageScope[findSegmentCore]
 
 (* ===================== InfraSegment wrapper ===================== *)
 
-(* set canonicalisation, ["Realizations"] / ["First"] and the occupation-measure
-   accessors come from defineInfraBundleRules (Tools.wl).  The bundle carries no
-   masses; a measure appears only where a projection creates an InfraPoint. *)
 
-(* "Length" = list of edge counts, one per realisation: |path| - 1.  The walk-list
-   patterns below exclude a DAG-atom list, which delegates to its expansion instead. *)
 InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-(* source / sink InfraPoints: the distinct first / last vertices across
-   realisations.  Deduplicated, not a measure -- every geodesic of one family
-   shares its endpoints, so the multiplicity would only restate the family size.
-   For the position-i occupation measure use seg[[i]] (and InfraWalk, whose walks
-   really can end anywhere, keeps its endpoint multiplicity). *)
+(* the distinct first / last vertices across realisations, deduplicated rather than a measure: every geodesic of one family shares its endpoints *)
 InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Start" ] := InfraSet[ DeleteDuplicates[ First /@ reps ] ]
 InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "End" ]   := InfraSet[ DeleteDuplicates[ Last /@ reps ] ]
 
-(* seg[[i]] = the InfraEffectivePoint of the i-th position across realisations
-   (mass = multiplicity).  First/Last and multi-index Part bypass this. *)
 InfraSegment /: Part[ InfraSegment[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]
 
 
 (* ===== geodesic-DAG form: InfraSegment[dag_Graph] ===== *)
 
-(* The whole geodesic family between two points, stored compactly as the
-   geodesic interval DAG (GeodesicIntervalGraph).  Invariants are read straight
-   off the DAG -- occupation by the Brandes count DP, never enumerating the
-   (possibly astronomically many) geodesics.  ["Realizations"] is the bridge
-   back to the explicit InfraSegment[{paths}] form.  Occupation accessors share
-   the InfraMeasure association shape, so the renderer composes unchanged. *)
+(* the whole geodesic family stored as the geodesic interval DAG: occupation comes from the Brandes count DP, never from enumerating the (possibly astronomically many) geodesics *)
 
 InfraSegment[ dag_Graph ][ "Graph" ]              := dag
 InfraSegment[ dag_Graph ][ "Vertices" ]           := VertexList[ dag ]
@@ -51,10 +35,7 @@ InfraSegment[ dag_Graph ][ "Realizations" ]               := dagGeodesics[ dag ]
 (* lazy: the bounded DFS stops at spec geodesics, never enumerating the family *)
 InfraSegment[ dag_Graph ][ "Realizations", spec_ ]        := infraCap[ dagGeodesics[ dag, spec ], spec ]
 InfraSegment[ dag_Graph ][ "Paths" ]                      := dagGeodesics[ dag ]
-(* seg[[i]] read off the DAG: column i = layer i - 1 (the DAG is layer-aligned),
-   mass = geodesic occupation -- exact, no enumeration.  ["Start"] / ["End"] are
-   the first / last column, so a single-pair family gives a delta of mass = the
-   family size. *)
+(* column i = layer i - 1 (the DAG is layer-aligned), mass = geodesic occupation: exact, no enumeration *)
 InfraSegment /: Part[ InfraSegment[ dag_Graph ], i_Integer ] :=
   With[ { layers = dagLayers[ dag ] },
     { len = Max[ 0, Values @ layers ] },
@@ -67,11 +48,7 @@ InfraSegment[ dag_Graph ][ "End" ]   := InfraSet[ Select[ VertexList[ dag ], Ver
 
 (* ===================== FindInfraSegment ===================== *)
 
-(* A segment between p1 and p2: a geodesic vertex sequence
-   (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2) and consecutive vi adjacent.
-   The symbol is the whole class -- there is no Properties axis, since a rule
-   narrowing the geodesic bundle is a local law at an infra-scale, hence a
-   FindInfraGeodesic[graph, p1, p2, scale, ...] call. *)
+(* a geodesic sequence (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2).  No Properties axis: a rule narrowing the geodesic bundle is a local law at an infra-scale, hence a FindInfraGeodesic call *)
 
 FindInfraSegment::badproperty = "Property `1` is not supported by FindInfraSegment; local rules on the geodesic bundle moved to FindInfraGeodesic[graph, p1, p2, scale].";
 FindInfraSegment::badmethod   = "Method `1` is not supported by FindInfraSegment.";
@@ -81,20 +58,13 @@ Options[ FindInfraSegment ] = {
   Method -> Automatic
 };
 
-(* count = All with the exhaustive method -> the compact geodesic-DAG form, the
-   segment's pool structure: one GeodesicIntervalGraph atom per endpoint pair,
-   the atoms held as a set (a lone atom collapses to the bare InfraSegment[dag]).
-   Any bounded count -> the enumerated path form (the calling triple over
-   spreadFind), lazily via the DAG's bounded DFS.  A multi-source / multi-sink
-   union of geodesic intervals is not acyclic in general (opposite orientations
-   from different sources), so multi-endpoint families stay a set of per-pair
-   atoms rather than one DAG. *)
+(* count = All with the exhaustive method gives the compact geodesic-DAG form, one GeodesicIntervalGraph atom per endpoint pair; any bounded count gives the enumerated paths, lazily via the DAG's bounded DFS.
+   A multi-source / multi-sink union of geodesic intervals is not acyclic in general, so multi-endpoint families stay a set of per-pair atoms rather than one DAG *)
 
 (* a lone atom collapses to the bare DAG form *)
 InfraSegment[ { dag_Graph } ] := InfraSegment[ dag ]
 
-(* a multi-pair family stays a set of DAG atoms; accessors read it as the union of
-   their geodesics, so the atoms stay lazy until something actually asks for walks *)
+(* the atoms stay lazy until something actually asks for walks *)
 InfraSegment[ dags : { _Graph, __Graph } ][ args___ ] :=
   InfraSegment[ Join @@ ( dagGeodesics /@ dags ) ][ args ]
 
@@ -151,9 +121,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
 
 (* ===================== ExtendInfraSegment (Tarski A4) ===================== *)
 
-(* Tarski axiom A4: find x with B(a, b, x) and d(b, x) == d(c, d).  The only
-   surviving signature -- the 2-arg form (extend segment to maximal line) is
-   subsumed by FindInfraLine[g, seg] and ExtendInfraGeodesic[g, seg, Infinity, ...]. *)
+(* Tarski A4: find x with B(a, b, x) and d(b, x) == d(c, d) *)
 
 ExtendInfraSegment[ graph_Graph, a_, b_, c_, d_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
@@ -179,8 +147,7 @@ dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
 
 (* ===================== InfraWalkQ ===================== *)
 
-(* A vertex sequence (v0, ..., vk) is a walk iff consecutive vertices are
-   adjacent -- revisits allowed.  InfraWalkQ \supset InfraSegmentQ \supset InfraLineQ. *)
+(* consecutive vertices adjacent, revisits allowed: InfraWalkQ superset InfraSegmentQ superset InfraLineQ *)
 
 InfraWalkQ[ graph_Graph, w : _InfraWalk | _InfraLoop | _InfraString ] :=
   AllTrue[ First @ w, InfraWalkQ[ graph, # ] & ]
@@ -193,8 +160,7 @@ InfraWalkQ[ _Graph, path_List ] /; Length[ path ] < 2 := False
 
 (* ===================== InfraSegmentQ ===================== *)
 
-(* A vertex sequence (v0, ..., vk) is a geodesic from v0 to vk iff consecutive
-   vertices are adjacent and the total edge count equals d(v0, vk). *)
+(* consecutive vertices adjacent and the total edge count equal to d(v0, vk) *)
 
 InfraSegmentQ[ graph_Graph, seg_InfraSegment ] :=
   AllTrue[ segReps @ seg, InfraSegmentQ[ graph, # ] & ]
@@ -208,8 +174,7 @@ InfraSegmentQ[ _Graph, segment_List ] /; Length[ segment ] < 2 := False
 
 (* ===================== UniqueInfraSegmentQ ===================== *)
 
-(* UniqueInfraSegmentQ[g, u, v]: GeodesicMultiplicity[g, u, v] == 1.
-   UniqueInfraSegmentQ[g]: every vertex pair admits a unique geodesic (geodetic graph). *)
+(* a geodetic graph: every vertex pair admits a unique geodesic *)
 
 UniqueInfraSegmentQ[ graph_Graph, u_, v_ ] := GeodesicMultiplicity[ graph, u, v ] == 1
 

@@ -3,11 +3,6 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== InfraTriangle wrapper ===================== *)
 
-(* InfraTriangle[{poly}] is the unary form: poly = {seg1, seg2, seg3} is a
-   closed chain of three unary InfraSegment sides; InfraTriangle[{poly1, ...}]
-   is the multi-realisation form.  Same storage shape as InfraPolygon, restricted
-   to three sides.  Auto-flatten on nested wrappers. *)
-
 
 InfraTriangle[ reps_List ][ "Sides" ] := reps
 
@@ -21,7 +16,6 @@ InfraTriangle[ reps_List ][ "Vertices" ] :=
   Map[ poly |-> ( InfraPoint /@ Most @ polylineToKnots[ poly ] ), reps ]
 (* ===================== FindInfraTriangle ===================== *)
 
-(* Triangle through corners a, b, c: the n = 3 case of FindInfraPolygon. *)
 
 Options[ FindInfraTriangle ] = { Method -> "Exhaustive" };
 

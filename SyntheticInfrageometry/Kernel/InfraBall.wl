@@ -5,17 +5,10 @@ PackageImport["WolframInstitute`Infrageometry`"]
 
 (* ===================== InfraBall wrapper ===================== *)
 
-(* InfraBall[{ball}] is the unary form; InfraBall[{ball1, ..., ballk}] is the
-   multi-realisation form.  Set canonicalisation and the shared accessors
-   come from defineInfraBundleRules (Tools.wl). *)
 
-(* "Volume" = vertex count per realisation. *)
 InfraBall[ reps_List ][ "Volume" ] := Length /@ reps
 (* ===================== FindInfraBall ===================== *)
 
-(* The closed metric ball B_r(c) = { v : d(c, v) <= r }, returned as
-   InfraBall[{ball}].  A multi-anchor center (InfraPoint wrapper or a list
-   of unary InfraPoint wrappers) spreads into one realisation per center. *)
 
 FindInfraBall[ graph_Graph, c_, r_ ] :=
   InfraBall[ ( center |-> Select[ VertexList[ graph ], GraphDistance[ graph, center, # ] <= r & ] ) /@
@@ -24,8 +17,7 @@ FindInfraBall[ graph_Graph, c_, r_ ] :=
 
 (* ===================== InfraBallQ ===================== *)
 
-(* vs is a closed metric ball iff there exists a center c in vs such that
-   { v : d(c, v) <= max_{w in vs} d(c, w) } == vs. *)
+(* vs is a closed ball iff some c in vs has { v : d(c, v) <= max_{w in vs} d(c, w) } == vs *)
 
 InfraBallQ[ graph_Graph, b : _InfraBall | _InfraSet ] :=
   AllTrue[ If[ Head[ b ] === InfraSet, { First @ b }, First @ b ], InfraBallQ[ graph, # ] & ]
@@ -41,12 +33,7 @@ InfraBallQ[ graph_Graph, vs_List ] :=
 
 (* ===================== FindBallHull / BallHullQ ===================== *)
 
-(* The ball hull of S: the intersection of all closed balls containing S, the
-   smallest ball-convex (Mazur) superset, returned as an InfraSet.  S is any
-   Infra* object, a list of them, or a bare vertex list; the underlying vertex
-   set is handed to BallHull (WolframInstitute`Infrageometry`).  Companion of
-   the segment / line hulls (FindSegmentHull, FindLineHull) -- intersection of
-   balls rather than closure under geodesics. *)
+(* the intersection of all closed balls containing S: the smallest ball-convex (Mazur) superset *)
 
 FindBallHull[ graph_Graph, s_ ] :=
   InfraSet @ Sort @ BallHull[ graph, hullVertices @ s ]

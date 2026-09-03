@@ -3,9 +3,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== MetricInterval ===================== *)
 
-(* The metric interval I(u, v) = { w : d(u, w) + d(w, v) = d(u, v) } -
-   the union of all geodesics from u to v.  Master operation of the
-   metric-algebra layer; every other primitive can be reduced to it. *)
+(* I(u, v) = { w : d(u, w) + d(w, v) == d(u, v) }, the union of all geodesics from u to v *)
 
 MetricInterval[ graph_Graph, u_, v_ ] :=
   With[ { d = GraphDistance[ graph, u, v ] },
@@ -19,10 +17,7 @@ MetricInterval[ graph_Graph, u_, v_ ] :=
 
 (* ===================== GeodesicMultiplicity ===================== *)
 
-(* GeodesicMultiplicity[g, u, v] = (A^d)[u, v] where A is the adjacency matrix
-   and d = d(u, v).  Identity: a walk of length d(u, v) from u to v is
-   automatically a simple geodesic, so the (u, v) entry of A^d counts
-   geodesics.  Polynomial-time replacement for path enumeration. *)
+(* (A^d)[u, v] with d = d(u, v): a walk of length d(u, v) is automatically a simple geodesic, so the entry counts geodesics *)
 
 GeodesicMultiplicity[ graph_Graph, u_, v_ ] :=
   With[ { d = GraphDistance[ graph, u, v ], V = VertexList[ graph ] },
@@ -40,9 +35,7 @@ GeodesicMultiplicity[ graph_Graph, u_, v_ ] :=
 
 (* ===================== GeodesicMultiplicityMatrix ===================== *)
 
-(* The pair (D, M): D is the graph distance matrix, M[i, j] is the number
-   of geodesics from vertex i to vertex j (= (A^{D[i,j]})[i, j]).  M is
-   the multiplicity counterpart of the metric. *)
+(* D the distance matrix, M[i, j] = (A^{D[i,j]})[i, j] the number of geodesics from i to j *)
 
 GeodesicMultiplicityMatrix[ graph_Graph ] :=
   Module[ { V, n, dMat, A, mMat, powers, maxD, finiteD },
@@ -65,11 +58,7 @@ GeodesicMultiplicityMatrix[ graph_Graph ] :=
 
 (* ===================== MedianVertices ===================== *)
 
-(* The metric medians of a vertex set vs are the argmin of total distance:
-   { w : Sum d(w, x) over x in vs is minimal }.  A graph is a median graph
-   iff every triple has a unique median -- and median graphs coincide with
-   1-skeletons of CAT(0) cube complexes (Chepoi 2000,
-   https://doi.org/10.1006/aama.1999.0681). *)
+(* argmin over w of Sum_x d(w, x) for x in vs; a graph is median iff every triple has a unique median, and median graphs are the 1-skeletons of CAT(0) cube complexes (Chepoi 2000, https://doi.org/10.1006/aama.1999.0681) *)
 
 MedianVertices[ graph_Graph, vs_List ] :=
   With[ { V = VertexList[ graph ] },
@@ -81,15 +70,7 @@ MedianVertices[ graph_Graph, vs_List ] :=
 
 (* ===================== Segment hull ===================== *)
 
-(* The segment hull of a vertex set S is the smallest superset closed under
-   taking metric intervals: FixedPoint of T |-> T union over pairs of
-   MetricInterval, returned as an InfraSet.  The Farber-Jamison geodesic convex
-   hull (no metric convexity is involved -- the closed sets form only an
-   abstract convexity; cf. Wiki/Concepts/Hulls.md).  Companion hulls: FindLineHull
-   in InfraLine.wl, FindBallHull in InfraBall.wl.  S is any Infra* object, a list
-   of them, or a bare vertex list.  Option "LineStructure": None (default) closes
-   under all geodesics; an InfraLineStructure (or bare list of lines) closes under
-   the chosen-geodesic stretch between members on each line of that fixed family. *)
+(* the smallest superset closed under metric intervals: FixedPoint of T |-> T union MetricInterval over pairs.  The Farber-Jamison geodesic convex hull -- an abstract convexity, not a metric one *)
 
 Options[ FindSegmentHull ] = { "LineStructure" -> None };
 
@@ -113,8 +94,7 @@ FindSegmentHull[ graph_Graph, s : Except[ _Rule | _RuleDelayed ], OptionsPattern
     ]
   ]
 
-(* S is segment-closed: it equals its own segment hull (every geodesic, or
-   every chosen-line stretch under "LineStructure", between members lies in S). *)
+(* S equals its own segment hull *)
 
 Options[ SegmentHullQ ] = { "LineStructure" -> None };
 

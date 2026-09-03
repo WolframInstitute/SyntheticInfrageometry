@@ -3,34 +3,11 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== InfraPlane wrapper ===================== *)
 
-(* InfraPlane[{set}] is the unary form; InfraPlane[{set1, ..., setk}] is the
-   multi-realisation form.  Set canonicalisation and the shared accessors
-   come from defineInfraBundleRules (Tools.wl). *)
 
-(* "Volume" = vertex count per realisation. *)
 InfraPlane[ reps_List ][ "Volume" ] := Length /@ reps
 (* ===================== FindInfraBisectingHyperplane ===================== *)
 
-(* A bisecting hyperplane between p1 and p2 is a vertex subset of the
-   bisector slab B = { v : lo <= d(p1, v) - d(p2, v) <= hi }.  Two
-   orthogonal axes:
-     Properties -- a list of predicates the result must satisfy.
-        Empty (default) means no filter: return the slab B itself, one
-        realisation, the codim-1 perpendicular-bisector level set.
-        "Separating" requires SeparatesQ[aux, T, p1, p2].
-        "Connected" requires ConnectedGraphQ @ Subgraph[graph, T].
-        Properties compose via AND; the resulting closure gates the peel.
-     Method     -- how to enumerate inclusion-minimal subsets satisfying
-        Properties.  Automatic (default) reads the count: All is the
-        exhaustive top-down BFS over the peel-DAG, deduplicated, and a
-        bounded count is the lazy peel.  The nested form {"Exhaustive",
-        "Pruning" -> spec} caps per-layer branching via applyPruning.
-        "Greedy" is the top-down DFS, backtracking at each leaf, first
-        `count` minimals; "RandomGreedy" draws random peels instead
-        (seed via ambient SeedRandom).
-   When Properties is empty, Method is ignored.  On a non-bipartite graph
-   the strict equidistant set may fail to separate, so widen the window
-   or use {-1, 1} to recover the parity-stranded band. *)
+(* the bisector slab B = { v : lo <= d(p1, v) - d(p2, v) <= hi }.  On a non-bipartite graph the strict equidistant set may fail to separate, so widen the window to {-1, 1} to recover the parity-stranded band. *)
 
 FindInfraBisectingHyperplane::badmethod   = "Method `1` is not supported by FindInfraBisectingHyperplane.";
 FindInfraBisectingHyperplane::badproperty = "Property `1` is not supported by FindInfraBisectingHyperplane.";
@@ -62,8 +39,7 @@ FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
       If[ properties === { },
         { bisector },
         Catch[
-          (* aux graph on bisector + {q1, q2}: direct edges plus pairs joined
-             through connected components of the complement *)
+          (* aux graph on bisector + {q1, q2}: direct edges plus pairs joined through components of the complement *)
           aux = With[ { nodes = Union[ bisector, { q1, q2 } ] },
             { components = ConnectedComponents @ Subgraph[ graph,
                 Complement[ VertexList[ graph ], nodes ] ] },
@@ -107,12 +83,7 @@ propertyPredicate[ _, _, _, _, other_ ] :=
 
 (* ===================== InfraPlaneQ ===================== *)
 
-(* h is a bisecting hyperplane between p1 and p2: h sits inside the bisector
-   slab { v : lo <= d(p1, v) - d(p2, v) <= hi } and separates p1 from p2.
-   window is a half-width w (the slab { -w, w }, default 0 = strict bisector)
-   or an explicit { lo, hi }, matching FindInfraBisectingHyperplane's window.
-   The three-argument InfraPlaneQ[h, p1, p2] is the inert scene assertion; it
-   stays unevaluated until FindInfraScene supplies the graph. *)
+(* h sits inside the bisector slab and separates p1 from p2; the three-argument form is the inert scene assertion *)
 
 InfraPlaneQ[ graph_Graph, h : _InfraPlane | _InfraSet, p1_, p2_, window_ : 0 ] :=
   AllTrue[ If[ Head[ h ] === InfraSet, { First @ h }, First @ h ],
