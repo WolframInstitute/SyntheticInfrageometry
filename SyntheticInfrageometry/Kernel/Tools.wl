@@ -363,6 +363,7 @@ infraSpread[ InfraSet[ vs_List ] ] := vs
 infraSpread[ InfraSegment[ dag_Graph ] ] := dagGeodesics[ dag ]
 infraSpread[ InfraSegment[ dags : { _Graph, __Graph } ] ] := Join @@ ( dagGeodesics /@ dags )
 infraSpread[ InfraCircle[ dags : { __Graph } ] ] := Catenate[ dagGeodesics /@ dags ]
+infraSpread[ InfraLine[ dags : { __Graph } ] ]   := Catenate[ dagGeodesics /@ dags ]
 infraSpread[ other_ ] := { other }
 
 

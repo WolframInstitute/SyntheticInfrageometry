@@ -45,6 +45,21 @@ SelectInfraWalk[ graph_Graph, walks_List, n_Integer : 1, opts : OptionsPattern[]
   With[ { result = SelectInfraWalk[ graph, walks, UpTo[ n ], opts ] },
     If[ ListQ[ result ] && Length[ result ] < n, $Failed, result ] ]
 
+(* a line pool's atoms are tied in length within and ordered across, so the length selectors pick whole atoms and keep the pool form; every other selector reads the realisations *)
+SelectInfraWalk[ graph_Graph, InfraLine[ dags : { __Graph } ],
+            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
+    MatchQ[ OptionValue[ SelectInfraWalk, { opts }, "From" ], "MinLength" | "MaxLength" ] &&
+    OptionValue[ SelectInfraWalk, { opts }, "Distance" ] === None :=
+  With[ { lengths = ( Max @ Values @ dagLayers @ # & ) /@ dags },
+    { picked = Pick[ dags, lengths,
+        If[ OptionValue[ SelectInfraWalk, { opts }, "From" ] === "MaxLength", Max, Min ] @ lengths ] },
+    If[ countSpec === All, InfraLine[ picked ],
+      SelectInfraWalk[ graph, InfraLine[ Catenate[ dagGeodesics /@ picked ] ], countSpec, "From" -> All ] ] ]
+
+SelectInfraWalk[ graph_Graph, InfraLine[ dags : { __Graph } ],
+            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  SelectInfraWalk[ graph, InfraLine[ Catenate[ dagGeodesics /@ dags ] ], countSpec, opts ]
+
 SelectInfraWalk[ graph_Graph, ( head : InfraSegment | InfraLine | InfraWalk | InfraRay )[ walks_List ],
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   With[ { result = SelectInfraWalk[ graph, walks, countSpec, "Cyclic" -> False, opts ] },
@@ -292,6 +307,24 @@ GeodesicSprayGraph[ g_Graph, pairs : { { _, _ } .. }, OptionsPattern[] ] :=
       ] },
     GraphUnion @@ ( PathGraph[ #, DirectedEdges -> directed ] & /@ selectedPaths )
   ]
+
+
+(* ===================== GeodesicExtensionGraph ===================== *)
+
+(* [g, {p1, p2}]: the DAG of all geodesic extensions of the segment p1 -> p2 beyond p2 -- vertex set { e : d(p1, e) == d(p1, p2) + d(p2, e) }, edges u -> v the g-edges with d(p1, v) == d(p1, u) + 1 -- so its directed paths from the source p2 are exactly the geodesics from p2 that stay geodesic behind any p1 -> p2 geodesic.  The set is closed under such steps (d(p1, v) <= d(p1, p2) + d(p2, v) <= d(p1, u) + 1 forces equality), so the edges need no membership test.  Wrapper anchors spread to one DAG per anchor pair *)
+
+GeodesicExtensionGraph[ g_Graph, { p1_, p2_ } ] /; VertexQ[ g, p1 ] && VertexQ[ g, p2 ] :=
+  With[ { d1 = AssociationThread[ VertexList @ g, GraphDistance[ g, p1 ] ],
+          d2 = AssociationThread[ VertexList @ g, GraphDistance[ g, p2 ] ],
+          coords = AssociationThread[ VertexList @ g, GraphEmbedding @ g ] },
+    { pool = Select[ VertexList @ g, d1[ # ] < Infinity && d1[ # ] == d1[ p2 ] + d2[ # ] & ] },
+    Graph[ pool,
+      Catenate @ Map[ u |-> ( DirectedEdge[ u, # ] & /@ Select[ AdjacencyList[ g, u ], v |-> d1[ v ] == d1[ u ] + 1 ] ), pool ],
+      VertexCoordinates -> Lookup[ coords, pool ] ]
+  ]
+
+GeodesicExtensionGraph[ g_Graph, { p1_, p2_ } ] /; Tuples[ infraSpread /@ { p1, p2 } ] =!= { { p1, p2 } } :=
+  Replace[ GeodesicExtensionGraph[ g, # ] & /@ Tuples[ infraSpread /@ { p1, p2 } ], { one_ } :> one ]
 
 
 (* ===================== PathSubgraph ===================== *)

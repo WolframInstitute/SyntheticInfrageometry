@@ -597,28 +597,80 @@ VerificationTest[
   TestID -> "FindInfraLine-upto-soft"
 ]
 
+(* the class is inextensibility, not length: the short line {1, 2, 3} is a line although the diameter is 3 *)
 VerificationTest[
   With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
-    FindInfraLine[g, 1, 3, All, "Maximality" -> "Extension"]
+    FindInfraLine[g, 1, 3, All]["Realizations"]
   ],
-  InfraLine[{{1, 2, 3}}],
-  TestID -> "FindInfraLine-Maximality-Extension-keeps-short-line"
+  {{1, 2, 3}},
+  TestID -> "FindInfraLine-keeps-short-inextensible-line"
+]
+
+(* C_6 through the edge 1-2: the ends {6, 5} and {3, 4} are each admissible alone, but (5, 4) is not jointly geodesic (d(5, 4) = 1), so the pool is the two extension DAGs plus the compatibility relation, three lines *)
+VerificationTest[
+  Sort @ FindInfraLine[CycleGraph[6], 1, 2, All]["Realizations"],
+  Sort @ {{6, 1, 2, 3}, {1, 2, 3, 4}, {5, 6, 1, 2}},
+  TestID -> "FindInfraLine-C6-compatibility"
+]
+
+(* one class under every Method: the greedy enumeration and the exhaustive pool agree, and every member is a line *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    With[{exh = Sort @ FindInfraLine[g, 1, 2, All, Method -> "Exhaustive"]["Realizations"],
+          grd = Sort @ FindInfraLine[g, 1, 2, All, Method -> "Greedy"]["Realizations"]},
+      exh === grd && AllTrue[exh, InfraLineQ[g, #] &]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraLine-class-invariant-GridGraph"
 ]
 
 VerificationTest[
-  With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
-    FindInfraLine[g, 1, 3, All, "Maximality" -> "Diameter"]
+  With[{g = TorusGraph[{4, 5}]},
+    With[{exh = Sort @ FindInfraLine[g, 1, 2, All, Method -> "Exhaustive"]["Realizations"],
+          grd = Sort @ FindInfraLine[g, 1, 2, All, Method -> "Greedy"]["Realizations"]},
+      exh === grd && AllTrue[exh, InfraLineQ[g, #] &]
+    ]
   ],
-  InfraLine[{}],
-  TestID -> "FindInfraLine-Maximality-Diameter-drops-short-line"
+  True,
+  TestID -> "FindInfraLine-class-invariant-TorusGraph"
+]
+
+(* the pool carries the family by DP: its multiplicity and occupation are those of the enumerated lines *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    With[{pool = FindInfraLine[g, 1, 6, All]},
+      pool["Multiplicity"] === Length @ pool["Realizations"] &&
+      Total @ pool["OccupationCount"] === Total[Length /@ pool["Realizations"]]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraLine-pool-DP-counts-match-enumeration"
+]
+
+(* the longest lines are a selection on the pool: SelectInfraWalk reads the atoms' lengths and keeps the pool form *)
+VerificationTest[
+  With[{g = GridGraph[{4, 4}]},
+    With[{pool = FindInfraLine[g, 1, 2, All]},
+      With[{longest = SelectInfraWalk[g, pool, All, "From" -> "MaxLength"]},
+        MatchQ[longest, InfraLine[{__Graph}]] &&
+        Sort @ longest["Realizations"] === Sort @ MaximalBy[pool["Realizations"], Length]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "FindInfraLine-longest-by-SelectInfraWalk-GridGraph"
 ]
 
 VerificationTest[
-  With[{g = Graph[{1 <-> 2, 2 <-> 3, 2 <-> 4, 4 <-> 5}]},
-    FindInfraLine[g, 1, 5, All, "Maximality" -> "Diameter"]
+  With[{g = TorusGraph[{4, 5}]},
+    With[{pool = FindInfraLine[g, 1, 2, All]},
+      Sort @ SelectInfraWalk[g, pool, All, "From" -> "MaxLength"]["Realizations"] ===
+        Sort @ MaximalBy[pool["Realizations"], Length]
+    ]
   ],
-  InfraLine[{{1, 2, 4, 5}}],
-  TestID -> "FindInfraLine-Maximality-Diameter-keeps-diameter-line"
+  True,
+  TestID -> "FindInfraLine-longest-by-SelectInfraWalk-TorusGraph"
 ]
 
 (* ===== FindInfraShell ===== *)
@@ -1278,8 +1330,8 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Sort @ (#[[ 1, 1 ]] & /@ FindInfraLine[ g, 1, 16, All, Method -> "Exhaustive" ]) ===
-      Sort @ (#[[ 1, 1 ]] & /@ FindInfraLine[ g, 1, 16, All, Method -> Automatic ])
+    Sort @ FindInfraLine[ g, 1, 16, All, Method -> "Exhaustive" ][ "Realizations" ] ===
+      Sort @ FindInfraLine[ g, 1, 16, All, Method -> Automatic ][ "Realizations" ]
   ],
   True,
   TestID -> "FindInfraLine-Exhaustive-equals-Automatic"
@@ -1505,14 +1557,14 @@ VerificationTest[
   TestID -> "FindInfraLine-strict-count-exact"
 ]
 
-(* "Diameter" maximality post-filters the whole family, cap or not *)
+(* the diameter lines through opposite corners are the longest ones, a selection on the pool *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    With[ { line = FindInfraLine[ g, 1, 9, 1, "Maximality" -> "Diameter" ][ "First" ] },
-      Length[ line ] - 1 == GraphDiameter[ g ] ]
+    With[ { longest = SelectInfraWalk[ g, FindInfraLine[ g, 1, 9, All ], All, "From" -> "MaxLength" ] },
+      AllTrue[ longest[ "Length" ], # == GraphDiameter[ g ] & ] ]
   ],
   True,
-  TestID -> "FindInfraLine-Diameter-maximality-with-count"
+  TestID -> "FindInfraLine-diameter-lines-by-MaxLength"
 ]
 
 EndTestSection[]

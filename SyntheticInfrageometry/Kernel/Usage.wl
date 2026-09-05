@@ -42,12 +42,12 @@ InfraString::usage = "InfraString[{walk1, ...}] is a bundle of closed walks modu
 
 (* ===================== InfraLine ===================== *)
 
-InfraLine::usage = "InfraLine[{line1, ...}] is a bundle of maximal geodesics; line[[i]] is the InfraPoint at position i across realisations. Inside InfraScene, InfraLine[p, q] is the constructor.";
-FindInfraLine::usage = "FindInfraLine[graph, p1, p2] gives the maximal geodesics through p1 and p2; FindInfraLine[graph, segment] those containing segment. Options Method, \"Maximality\", \"Direction\".";
+InfraLine::usage = "InfraLine[{line1, ...}] is a bundle of inextensible geodesics; InfraLine[{dag1, ...}] is the pool form, one geodesic DAG per endpoint pair. Accessors \"Graph\", \"Length\", \"Multiplicity\", \"Measure\", \"Realizations\". Inside InfraScene, InfraLine[p, q] is the constructor.";
+FindInfraLine::usage = "FindInfraLine[graph, p1, p2] gives the lines through p1 and p2, the inextensible geodesics containing them; FindInfraLine[graph, segment] those containing segment. Options Method, \"Direction\".";
 FindInfraParallel::usage = "FindInfraParallel[graph, line, p] gives the lines through p that stay at constant distance from line. Option Method.";
 FindInfraPerpendicular::usage = "FindInfraPerpendicular[graph, line, point] gives the lines through point perpendicular to line. Options Method, \"Radius\".";
 FindInfraCommonLine::usage = "FindInfraCommonLine[graph, vertices] gives the canonical lines containing every listed vertex.";
-InfraLineQ::usage = "InfraLineQ[graph, walk] tests whether walk is a maximal geodesic.";
+InfraLineQ::usage = "InfraLineQ[graph, walk] tests whether walk is a line: a geodesic that no neighbour of either endpoint prolongs.";
 InfraParallelQ::usage = "InfraParallelQ[graph, l1, l2] tests whether two lines stay at constant distance; a trailing threshold allows that distance to vary.";
 InfraPerpendicularQ::usage = "InfraPerpendicularQ[graph, l1, l2] tests whether two lines meet perpendicularly at every common vertex. Options Method, \"Radius\".";
 PencilDirections::usage = "PencilDirections[graph, O] gives one canonical maximal geodesic per direction class at O.";
@@ -170,6 +170,7 @@ SelectInfraWalk::usage = "SelectInfraWalk[graph, walks] draws a walk (or cycle, 
 EmbeddingClosest::usage = "EmbeddingClosest[graph, bundle, ref] keeps the bundle elements drawn closest to a Euclidean reference under GraphEmbedding; ref is {p1, p2}, {center, radius}, or a curve.";
 FindEmbeddingClosestPath::usage = "FindEmbeddingClosestPath[graph, curve] snaps an embedded curve to a walk, mapping sampled points to nearest vertices and joining them by geodesics.";
 GeodesicSprayGraph::usage = "GeodesicSprayGraph[graph, c] gives the BFS DAG rooted at c, whose directed source-to-sink paths are exactly the maximal geodesics from c; GeodesicSprayGraph[graph, pairs] gives the union of geodesics between listed pairs.";
+GeodesicExtensionGraph::usage = "GeodesicExtensionGraph[graph, {p1, p2}] gives the DAG of geodesic extensions of the segment p1 -> p2 beyond p2: the vertices e with d(p1, e) == d(p1, p2) + d(p2, e), edges along increasing distance from p1; wrapper anchors give one DAG per pair.";
 PathSubgraph::usage = "PathSubgraph[graph, u, v] gives the union of all shortest u-v paths; a trailing length cap or All widens it to longer simple paths.";
 InfraDeformationSize::usage = "InfraDeformationSize[ref, walk] gives the number of ref edges that walk replaces -- Length[ref] - 1 less the shared prefix and suffix.";
 

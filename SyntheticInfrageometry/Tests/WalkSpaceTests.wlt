@@ -711,4 +711,46 @@ VerificationTest[
 ]
 
 
+(* ===== GeodesicExtensionGraph ===== *)
+
+(* on C_6 the extensions of 1 -> 2 beyond 2 are 2 -> 3 -> 4: vertex 5 is excluded, d(1, 5) = 2 < 1 + d(2, 5) = 4 *)
+VerificationTest[
+  With[ { ext = GeodesicExtensionGraph[ CycleGraph[ 6 ], { 1, 2 } ] },
+    { Sort @ VertexList @ ext, Sort @ EdgeList @ ext } ],
+  { { 2, 3, 4 }, { DirectedEdge[ 2, 3 ], DirectedEdge[ 3, 4 ] } },
+  TestID -> "GeodesicExtensionGraph-C6"
+]
+
+(* the vertex set is the distance condition, and every directed path from p2 is a geodesic that stays geodesic behind p1 *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ], p1 = 6, p2 = 7 },
+    With[ { ext = GeodesicExtensionGraph[ g, { p1, p2 } ] },
+      Sort @ VertexList @ ext ===
+        Sort @ Select[ VertexList @ g,
+          GraphDistance[ g, p1, # ] == GraphDistance[ g, p1, p2 ] + GraphDistance[ g, p2, # ] & ] &&
+      AllTrue[ InfraSegment[ ext ][ "Realizations" ],
+        w |-> First[ w ] === p2 && InfraSegmentQ[ g, w ] &&
+          GraphDistance[ g, p1, Last @ w ] == GraphDistance[ g, p1, p2 ] + Length[ w ] - 1 ]
+    ]
+  ],
+  True,
+  TestID -> "GeodesicExtensionGraph-GridGraph-geodesic-extensions"
+]
+
+(* the ray pool from o through v is the extension graph of {o, v}: its sinks are the inextensible ray ends *)
+VerificationTest[
+  With[ { ext = GeodesicExtensionGraph[ GridGraph[ { 3, 3 } ], { 5, 6 } ] },
+    Sort @ Select[ VertexList @ ext, VertexOutDegree[ ext, # ] == 0 & ] ],
+  { 3, 9 },
+  TestID -> "GeodesicExtensionGraph-sinks-are-ray-ends"
+]
+
+(* wrapper anchors spread to one DAG per anchor pair *)
+VerificationTest[
+  GeodesicExtensionGraph[ GridGraph[ { 3, 3 } ], { InfraSet[ { 1, 3 } ], 5 } ],
+  { GeodesicExtensionGraph[ GridGraph[ { 3, 3 } ], { 1, 5 } ],
+    GeodesicExtensionGraph[ GridGraph[ { 3, 3 } ], { 3, 5 } ] },
+  TestID -> "GeodesicExtensionGraph-InfraSet-anchor-spreads"
+]
+
 EndTestSection[]

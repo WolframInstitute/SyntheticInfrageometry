@@ -14,9 +14,10 @@ VerificationTest[
   TestID -> "EnumerateGraphs-5-W1-count"
 ]
 
+(* lines are the inextensible geodesics (2026-09-05): the bull graph {1-4, 1-5, 2-4, 3-5, 4-5} has two lines through {2, 4}, the short 2-4-1 beside 2-4-5-3, so it left the W2 class and the count fell from 3 to 2 *)
 VerificationTest[
   Length @ EnumerateGraphs[5, WhiteheadW2Q],
-  3,
+  2,
   TestID -> "EnumerateGraphs-5-W2-count"
 ]
 

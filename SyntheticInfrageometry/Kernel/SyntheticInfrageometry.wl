@@ -154,6 +154,7 @@ PackageExport[SelectInfraWalk]
 PackageExport[EmbeddingClosest]
 PackageExport[FindEmbeddingClosestPath]
 PackageExport[GeodesicSprayGraph]
+PackageExport[GeodesicExtensionGraph]
 PackageExport[PathSubgraph]
 PackageExport[InfraDeformationSize]
 

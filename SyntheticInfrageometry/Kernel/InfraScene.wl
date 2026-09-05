@@ -81,6 +81,7 @@ infraVertexSet[ InfraPoint[ v_ ] ] := { v }
 infraVertexSet[ list : { __InfraPoint } ] := DeleteDuplicates[ #[[ 1 ]] & /@ list ]
 infraVertexSet[ InfraEffectivePoint[ m_Association ] ] := Keys @ m
 infraVertexSet[ ( InfraObject | InfraSet )[ vs_List ] ] := vs
+infraVertexSet[ InfraLine[ dags : { __Graph } ] ] := Union @@ ( VertexList /@ dags )
 infraVertexSet[ ( InfraSegment | InfraWalk | InfraLoop | InfraString | InfraLine | InfraRay
                 | InfraCircle | InfraEllipse
                 | InfraShell | InfraEllipticShell | InfraPlane | InfraBall )[ reps_List ] ] :=
