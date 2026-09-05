@@ -50,8 +50,8 @@ FindInfraCommonLine::usage = "FindInfraCommonLine[graph, vertices] gives the can
 InfraLineQ::usage = "InfraLineQ[graph, walk] tests whether walk is a line: a geodesic that no neighbour of either endpoint prolongs.";
 InfraParallelQ::usage = "InfraParallelQ[graph, l1, l2] tests whether two lines stay at constant distance; a trailing threshold allows that distance to vary.";
 InfraPerpendicularQ::usage = "InfraPerpendicularQ[graph, l1, l2] tests whether two lines meet perpendicularly at every common vertex. Options Method, \"Radius\".";
-PencilDirections::usage = "PencilDirections[graph, O] gives one canonical maximal geodesic per direction class at O.";
-PencilCardinality::usage = "PencilCardinality[graph, O] gives the number of distinct direction classes at O.";
+PencilDirections::usage = "PencilDirections[graph, O] gives the pencil at O: every ray from O, as a list of vertex sequences.";
+PencilCardinality::usage = "PencilCardinality[graph, O] gives the number of rays from O, counted on the ray pools without enumeration.";
 LineCount::usage = "LineCount[graph] gives the number of distinct canonical maximal geodesics in graph.";
 FindLineHull::usage = "FindLineHull[graph, S] gives the smallest superset of S closed under the line operator. Option \"LineStructure\".";
 LineHullQ::usage = "LineHullQ[graph, S] tests whether S is closed under the line operator.";
@@ -125,8 +125,8 @@ FindInfraBisectingHyperplane::usage = "FindInfraBisectingHyperplane[graph, p1, p
 
 (* ===================== InfraRay ===================== *)
 
-InfraRay::usage = "InfraRay[{ray1, ...}] is a bundle of pointed half-lines, each running from a base vertex to an inextensible endpoint.";
-FindInfraRay::usage = "FindInfraRay[graph, O, v] gives the half-line from O through v: the pointed half of a maximal geodesic through O and v.";
+InfraRay::usage = "InfraRay[{ray1, ...}] is a bundle of rays, geodesics from a base vertex to an endpoint they cannot be prolonged past; InfraRay[{dag1, ...}] is the pool form, one geodesic DAG per anchor pair. Accessors \"Graph\", \"Length\", \"Multiplicity\", \"Measure\", \"Realizations\". Inside InfraScene, InfraRay[O, v] is the constructor.";
+FindInfraRay::usage = "FindInfraRay[graph, O, v] gives the rays from O through v: the geodesics from O containing v that cannot be prolonged past their last vertex. Option Method.";
 InfraRayQ::usage = "InfraRayQ[graph, ray] tests whether ray is a pointed half-line: a geodesic from its own first vertex that cannot be prolonged past its last.";
 
 (* ===================== InfraPolyline ===================== *)

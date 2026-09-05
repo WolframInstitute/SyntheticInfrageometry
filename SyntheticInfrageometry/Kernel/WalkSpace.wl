@@ -60,6 +60,11 @@ SelectInfraWalk[ graph_Graph, InfraLine[ dags : { __Graph } ],
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   SelectInfraWalk[ graph, InfraLine[ Catenate[ dagGeodesics /@ dags ] ], countSpec, opts ]
 
+(* a ray pool's rays end at different sinks, so every selector reads the realisations *)
+SelectInfraWalk[ graph_Graph, InfraRay[ dags : { __Graph } ],
+            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
+  SelectInfraWalk[ graph, InfraRay[ Catenate[ dagGeodesics /@ dags ] ], countSpec, opts ]
+
 SelectInfraWalk[ graph_Graph, ( head : InfraSegment | InfraLine | InfraWalk | InfraRay )[ walks_List ],
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   With[ { result = SelectInfraWalk[ graph, walks, countSpec, "Cyclic" -> False, opts ] },

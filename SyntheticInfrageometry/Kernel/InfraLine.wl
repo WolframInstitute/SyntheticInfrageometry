@@ -592,16 +592,8 @@ perpendicularAtCoordinate[ g_Graph, seq1_List, seq2_List, p_, zeroTest_, radius_
   ]
 
 
-(* ===================== PencilDirections / PencilCardinality / LineCount ===================== *)
+(* ===================== LineCount ===================== *)
 
-
-PencilDirections[ graph_Graph, origin_ ] :=
-  DeleteDuplicates @ Map[ canonicalLine, Flatten[
-    FindInfraLine[ graph, origin, #, All ][ "Realizations" ] & /@
-      DeleteCases[ VertexList[ graph ], origin ],
-    1 ] ]
-
-PencilCardinality[ graph_Graph, origin_ ] := Length @ PencilDirections[ graph, origin ]
 
 LineCount[ graph_Graph ] := Length @ allCanonicalLines[ graph ]
 

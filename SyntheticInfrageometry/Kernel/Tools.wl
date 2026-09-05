@@ -364,6 +364,7 @@ infraSpread[ InfraSegment[ dag_Graph ] ] := dagGeodesics[ dag ]
 infraSpread[ InfraSegment[ dags : { _Graph, __Graph } ] ] := Join @@ ( dagGeodesics /@ dags )
 infraSpread[ InfraCircle[ dags : { __Graph } ] ] := Catenate[ dagGeodesics /@ dags ]
 infraSpread[ InfraLine[ dags : { __Graph } ] ]   := Catenate[ dagGeodesics /@ dags ]
+infraSpread[ InfraRay[ dags : { __Graph } ] ]    := Catenate[ dagGeodesics /@ dags ]
 infraSpread[ other_ ] := { other }
 
 
@@ -386,21 +387,21 @@ dagGeodesics[ dag_Graph ] := Which[
       DeleteDuplicates @ Catenate @ Catenate @
         Table[ FindPath[ dag, s, t, Infinity, All ], { s, srcs }, { t, snks } ] ] ]
 
-dagGeodesics[ dag_Graph, All | Infinity ] := dagGeodesics[ dag ]
-dagGeodesics[ dag_Graph, limit_ ] := Which[
+dagGeodesics[ dag_Graph, All | Infinity, _ : Identity ] := dagGeodesics[ dag ]
+dagGeodesics[ dag_Graph, limit_, branch_ : Identity ] := Which[
   VertexCount[ dag ] == 0, { },
   EdgeCount[ dag ] == 0,   Take[ List /@ VertexList[ dag ], UpTo[ countLimit @ limit ] ],
   True,
-    (* bounded DFS with early Throw -- a built-in cannot stop mid-enumeration *)
+    (* bounded DFS with early Throw -- a built-in cannot stop mid-enumeration; branch orders the candidates at every node (RandomSample is "RandomGreedy") *)
     Module[ { out = GroupBy[ List @@@ EdgeList[ dag ], First -> Last ],
-              cap = countLimit @ limit, acc = { }, go },
+              cap = countLimit @ limit, acc = { }, pick = branch, go },
       go[ path_ ] := With[ { nexts = Lookup[ out, Key @ Last @ path, { } ] },
         If[ nexts === { },
           ( AppendTo[ acc, path ]; If[ Length @ acc >= cap, Throw[ acc, dagGeodesics ] ] ),
-          Scan[ go[ Append[ path, # ] ] &, nexts ] ] ];
+          Scan[ go[ Append[ path, # ] ] &, pick @ nexts ] ] ];
       Catch[
         Scan[ go[ { # } ] &,
-          Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ];
+          pick @ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ];
         acc, dagGeodesics ] ] ]
 
 

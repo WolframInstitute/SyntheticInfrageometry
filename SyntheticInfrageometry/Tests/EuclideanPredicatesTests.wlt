@@ -548,7 +548,7 @@ VerificationTest[
 (* Every ray FindInfraRay produces satisfies its own predicate. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    AllTrue[First @ FindInfraRay[g, 1, 13, All], InfraRayQ[g, #] &]],
+    AllTrue[FindInfraRay[g, 1, 13, All]["Realizations"], InfraRayQ[g, #] &]],
   True,
   TestID -> "InfraRayQ-FindInfraRay-roundtrip-grid"
 ]
@@ -556,7 +556,7 @@ VerificationTest[
 (* Truncating a ray leaves its far end extensible, so it is no longer a ray. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    InfraRayQ[g, Most @ First @ First @ FindInfraRay[g, 1, 13, All]]],
+    InfraRayQ[g, Most @ First @ FindInfraRay[g, 1, 13, All]["Realizations"]]],
   False,
   TestID -> "InfraRayQ-truncated-far-end-false"
 ]
