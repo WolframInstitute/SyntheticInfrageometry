@@ -455,8 +455,8 @@ VerificationTest[
 
 (* ===== FindInfraWalk (walk family) ===== *)
 
-(* Properties is the class axis: the default is the generic immersed walks,
-   and "Simple" narrows to the simple paths (the old default). *)
+(* Properties is the class axis: the default is the simple paths, and
+   "Generic" widens to the generic immersed walks. *)
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
     {w = First @ FindInfraWalk[g, 1, 9, Infinity, 1,
@@ -468,9 +468,9 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    AllTrue[FindInfraWalk[g, 1, 9, 8, All]["Realizations"], InfraGenericQ[g, #] &]],
+    AllTrue[FindInfraWalk[g, 1, 9, 8, All]["Realizations"], DuplicateFreeQ]],
   True,
-  TestID -> "FindInfraWalk-default-generic-immersed"
+  TestID -> "FindInfraWalk-default-simple"
 ]
 
 (* "Greedy" is a supported Method (lazy DFS, one instance); an unrecognised
@@ -482,7 +482,7 @@ VerificationTest[
   TestID -> "FindInfraWalk-badmethod-message"
 ]
 
-(* at geodesic length the generic default is exactly the simple paths. *)
+(* the default class has no repeats at any length. *)
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},

@@ -12,19 +12,22 @@ InfraWalk[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 (* multiplicity kept: the end-vertex multiset is the occupation measure of where the walks terminate, unlike InfraSegment's deduplicated geodesic ends *)
 InfraWalk[ reps_List ][ "Start" ] := columnInfraPoint[ reps, 1 ]
 InfraWalk[ reps_List ][ "End" ]   := columnInfraPoint[ reps, -1 ]
+
+
 (* ===================== FindInfraWalk ===================== *)
 
-(* growth from a seed under the Properties rules until a stopping condition fires, the length budget kspec is spent, or no admissible step remains.  The default class {"Generic"} is InfraGenericQ's read per step: no cusps, no self-tangencies, no triple points, every self-intersection an isolated double point -- endpoint freeness is the census condition added on the finished curve.
-   A rule excluding self-intersections, triple points or self-tangencies bounds the class by itself, as does whole-walk "Minimizing", so kspec Infinity is legal under the default; without a bounding rule it is refused, since a stopping condition may never fire. *)
+(* growth from a seed under the Properties rules until a stopping condition fires, the length budget kspec is spent, or no admissible step remains.  Every rule reads the window -- the last <= "InfraScale" vertices with the candidate, the whole walk at the default scale Infinity.  The default class {"Simple"} is the simple paths; "Generic" (InfraGenericQ's read per step, endpoint freeness added on the finished curve), "Immersed" and the bare class {} are opt-in.
+   A rule excluding self-intersections, triple points or self-tangencies bounds the class by itself, as does "Minimizing" at scale Infinity, so kspec Infinity is legal under the default; without a bounding rule it is refused, since a stopping condition may never fire. *)
 
-FindInfraWalk::badproperty = "Property `1` is not supported by FindInfraWalk; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Exclude\" -> species, \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the walk; species are \"SelfIntersections\", \"SelfTangencies\", \"Cusps\", \"TriplePoints\".";
-FindInfraWalk::badmethod   = "Method `1` is not supported by FindInfraWalk.";
-FindInfraWalk::unbounded   = "the walk class is infinite without a length bound; give kspec a finite bound or a bounding rule (\"Simple\", \"Generic\", \"Minimizing\", or an \"Exclude\" of \"SelfIntersections\", \"TriplePoints\" or \"SelfTangencies\").";
+FindInfraWalk::badproperty = "Property `1` is not a walk rule; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Exclude\" -> species, \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window; species are \"SelfIntersections\", \"SelfTangencies\", \"Cusps\", \"TriplePoints\".";
+FindInfraWalk::badmethod   = "Method `1` is not supported.";
+FindInfraWalk::unbounded   = "the walk class at scale `1` is infinite without a length bound: give a finite kspec, add \"Simple\", \"Generic\" or an \"Exclude\" of \"SelfIntersections\", \"TriplePoints\" or \"SelfTangencies\", or ask \"Minimizing\" at scale Infinity.";
 FindInfraWalk::badevent    = "Stopping condition `1` is not supported; give n (stop at the n-th arrival at a visited vertex), a predicate on the walk so far, or {spec, \"Delay\" -> k}.";
 FindInfraWalk::deadevent   = "the stopping condition awaits a self-intersection the Properties constraints exclude; the walk runs to its budget.";
 
 Options[ FindInfraWalk ] = {
-  Properties          -> { "Generic" },
+  "InfraScale"        -> Infinity,
+  Properties          -> { "Simple" },
   "StoppingCondition" -> None,
   Method              -> Automatic
 };
@@ -34,6 +37,7 @@ FindInfraWalk[ graph_Graph, p1_,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
   spreadFind[ InfraWalk, count,
     q1 |-> Catch @ With[ {
+        scale  = OptionValue[ FindInfraWalk, { opts }, "InfraScale" ],
         rules  = OptionValue[ FindInfraWalk, { opts }, Properties ],
         events = parseStoppingCondition[
           OptionValue[ FindInfraWalk, { opts }, "StoppingCondition" ], FindInfraWalk ],
@@ -42,11 +46,11 @@ FindInfraWalk[ graph_Graph, p1_,
         pruning     = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
         kmax        = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
         lengthQ     = walkLengthAdmissibleQ[ kspec ],
-        candidateFn = windowCandidateFn[ graph, Infinity, rules, FindInfraWalk ],
+        candidateFn = windowCandidateFn[ graph, scale, rules, FindInfraWalk ],
         deadlineFn  = stoppingDeadlineFn @ events },
-      warnDeadEvents[ events, rules, Infinity, FindInfraWalk ];
-      If[ kmax === Infinity && ! boundedClassQ[ rules, Infinity ],
-        Message[ FindInfraWalk::unbounded ]; Throw[ $Failed ] ];
+      warnDeadEvents[ events, rules, scale, FindInfraWalk ];
+      If[ kmax === Infinity && ! boundedClassQ[ rules, scale ],
+        Message[ FindInfraWalk::unbounded, scale ]; Throw[ $Failed ] ];
       Switch[ methodHead,
         "Exhaustive",
           pointedFrontierSweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax,
@@ -64,6 +68,7 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
   spreadFind[ InfraWalk, count,
     { q1, q2 } |-> If[ q1 === q2, { },
       Catch @ With[ {
+          scale  = OptionValue[ FindInfraWalk, { opts }, "InfraScale" ],
           rules  = OptionValue[ FindInfraWalk, { opts }, Properties ],
           events = parseStoppingCondition[
             OptionValue[ FindInfraWalk, { opts }, "StoppingCondition" ], FindInfraWalk ],
@@ -73,26 +78,28 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
           pruning     = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
           kmax        = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
           lengthQ     = walkLengthAdmissibleQ[ kspec ],
-          candidateFn = windowCandidateFn[ graph, Infinity, rules, FindInfraWalk ],
-          (* a class forbidding a second visit to its endpoint (no self-intersections, "Generic", whole-walk "Minimizing") ends at its first arrival, so the sweeps may stop branches there *)
+          candidateFn = windowCandidateFn[ graph, scale, rules, FindInfraWalk ],
+          deadlineFn  = stoppingDeadlineFn @ events,
+          (* a branch may stop at its first arrival at p2 exactly when no accepted walk revisits its endpoint -- no self-intersections, "Generic", or "Minimizing" on the whole walk; a finite-scale rule lets a walk pass through p2 and return *)
           terminal    = MemberQ[ excludedSpecies @ rules, "SelfIntersections" ] ||
-            MemberQ[ rules, "Generic" | "Minimizing" ] },
+            MemberQ[ rules, "Generic" ] ||
+            ( scale === Infinity && MemberQ[ rules, "Minimizing" ] ) },
         { acceptQ = If[ MemberQ[ rules, "Generic" ],
             (* endpoint freeness is the one census condition the moving tip cannot prune; checked on the finished walk *)
             w |-> lengthQ[ w ] && Count[ w, First @ w ] === 1 && Count[ w, Last @ w ] === 1,
             lengthQ ],
           stepFn = If[ events === { }, candidateFn,
-            With[ { deadlineFn = stoppingDeadlineFn @ events },
-              { g, walk } |-> If[ Length[ walk ] - 1 >= deadlineFn @ walk, { },
-                candidateFn[ g, walk ] ] ] ] },
-        warnDeadEvents[ events, rules, Infinity, FindInfraWalk ];
-        If[ kmax === Infinity && ! boundedClassQ[ rules, Infinity ],
-          Message[ FindInfraWalk::unbounded ]; Throw[ $Failed ] ];
+            { g, walk } |-> If[ Length[ walk ] - 1 >= deadlineFn @ walk, { },
+              candidateFn[ g, walk ] ] ] },
+        warnDeadEvents[ events, rules, scale, FindInfraWalk ];
+        (* with revisits allowed a local rule alone leaves an infinite class -- a walk can wind a long cycle forever and stay minimizing at every finite scale -- so only an exclusion capping the length or whole-walk "Minimizing" bounds it *)
+        If[ kmax === Infinity && ! boundedClassQ[ rules, scale ],
+          Message[ FindInfraWalk::unbounded, scale ]; Throw[ $Failed ] ];
         If[ methodOpt === Automatic && kspec === Infinity && countLimit[ count ] === 1 &&
             events === { } &&
             AllTrue[ rules,
               MatchQ[ #, "Minimizing" | "Simple" | "Immersed" | "Generic" | ( "Exclude" -> _ ) ] & ],
-          (* a geodesic is simple, hence immersed, generic and minimizing: the canonical count-less witness *)
+          (* a geodesic is simple, hence immersed, generic, and minimizing in every window at every scale: the canonical count-less witness *)
           With[ { path = FindShortestPath[ graph, q1, q2 ] },
             If[ path === { }, { }, { path } ] ],
           Switch[ methodHead,
@@ -233,17 +240,11 @@ walkLengthAdmissibleQ[ { kmin_Integer, kmax_Integer } ] :=
 
 (* ===================== FindInfraGeodesic ===================== *)
 
-(* a geodesic at infra-scale r: a walk in which every window -- the last r vertices together with the next one -- satisfies the local rule.  The class degenerates at both ends of the ladder: under "Minimizing", r = 1 asks only for adjacency, r = Infinity for a segment.
+(* a geodesic at infra-scale r: a walk in which every window -- the last r vertices together with the next one -- is a shortest path, any further rule holding on the window too.  The class degenerates at both ends of the ladder: r = 1 asks only for adjacency, r = Infinity for a segment.  The wrapper is FindInfraWalk at "InfraScale" -> r with "Minimizing" always among the rules -- the name promises the rule -- so the bare class at a finite scale is FindInfraWalk with Properties -> { }.
    Candidates are local, so p2 never enters a window: a selector may steer the walk away from p2 and leave no realisation, which is the honest answer for an observer whose horizon is r.  FindInfraSegment's geodesic DAG is the target-aware optimisation of the constraint-only case r = Infinity. *)
 
-FindInfraGeodesic::badproperty = "Property `1` is not supported by FindInfraGeodesic; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Exclude\" -> species, \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window; species are \"SelfIntersections\", \"SelfTangencies\", \"Cusps\", \"TriplePoints\".";
-FindInfraGeodesic::badmethod   = "Method `1` is not supported by FindInfraGeodesic.";
-FindInfraGeodesic::unbounded   = "The geodesic class at scale `1` is infinite without a length bound: give a finite kspec, add \"Simple\", \"Generic\" or an \"Exclude\" of \"SelfIntersections\", \"TriplePoints\" or \"SelfTangencies\", or ask \"Minimizing\" at scale Infinity.";
-FindInfraGeodesic::badevent    = "Stopping condition `1` is not supported; give n (stop at the n-th arrival at a visited vertex), a predicate on the walk so far, or {spec, \"Delay\" -> k}.";
-FindInfraGeodesic::deadevent   = "the stopping condition awaits a self-intersection the Properties constraints exclude; the walk runs to its budget.";
-
 Options[ FindInfraGeodesic ] = {
-  Properties          -> { "Minimizing" },
+  Properties          -> { },
   "StoppingCondition" -> None,
   Method              -> Automatic
 };
@@ -252,85 +253,17 @@ FindInfraGeodesic[ graph_Graph, p1_,
     scale : ( _Integer | Infinity ),
     kspec : ( _Integer | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  spreadFind[ InfraWalk, count,
-    q1 |-> Catch @ With[ {
-        rules  = OptionValue[ FindInfraGeodesic, { opts }, Properties ],
-        events = parseStoppingCondition[
-          OptionValue[ FindInfraGeodesic, { opts }, "StoppingCondition" ], FindInfraGeodesic ],
-        methodSpec = resolveMethod[ OptionValue[ FindInfraGeodesic, { opts }, Method ], count ] },
-      { methodHead  = methodName @ methodSpec,
-        pruning     = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
-        kmax        = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
-        lengthQ     = walkLengthAdmissibleQ[ kspec ],
-        candidateFn = windowCandidateFn[ graph, scale, rules, FindInfraGeodesic ],
-        deadlineFn  = stoppingDeadlineFn @ events },
-      warnDeadEvents[ events, rules, scale, FindInfraGeodesic ];
-      If[ kmax === Infinity && ! boundedClassQ[ rules, scale ],
-        Message[ FindInfraGeodesic::unbounded, scale ]; Throw[ $Failed ] ];
-      Switch[ methodHead,
-        "Exhaustive",
-          pointedFrontierSweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax,
-            pruning, countLimit @ count ],
-        "Greedy" | "RandomGreedy",
-          pointedGreedySweep[ graph, { q1 }, candidateFn, lengthQ, deadlineFn, kmax, count,
-            greedyBranch @ methodHead ],
-        _,
-          Message[ FindInfraGeodesic::badmethod, methodSpec ]; $Failed
-      ] ], p1 ]
+  FindInfraWalk[ graph, p1, kspec, count, "InfraScale" -> scale,
+    Properties -> DeleteDuplicates @ Prepend[ OptionValue[ FindInfraGeodesic, { opts }, Properties ], "Minimizing" ],
+    Sequence @@ FilterRules[ { opts }, Except[ Properties ] ] ]
 
 FindInfraGeodesic[ graph_Graph, p1_, p2_,
     scale : ( _Integer | Infinity ),
     kspec : ( _Integer | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  spreadFind[ InfraWalk, count,
-    { q1, q2 } |-> If[ q1 === q2, { },
-      Catch @ With[ {
-          rules  = OptionValue[ FindInfraGeodesic, { opts }, Properties ],
-          events = parseStoppingCondition[
-            OptionValue[ FindInfraGeodesic, { opts }, "StoppingCondition" ], FindInfraGeodesic ],
-          methodSpec = resolveMethod[ OptionValue[ FindInfraGeodesic, { opts }, Method ], count ] },
-        { methodHead  = methodName @ methodSpec,
-          pruning     = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
-          kmax        = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
-          lengthQ     = walkLengthAdmissibleQ[ kspec ],
-          candidateFn = windowCandidateFn[ graph, scale, rules, FindInfraGeodesic ],
-          (* a branch may stop at its first arrival at p2 exactly when no accepted walk revisits its endpoint; a finite-scale rule lets a walk pass through p2 and return *)
-          terminal    = MemberQ[ excludedSpecies @ rules, "SelfIntersections" ] ||
-            MemberQ[ rules, "Generic" ] ||
-            ( scale === Infinity && MemberQ[ rules, "Minimizing" ] ) },
-        { acceptQ = If[ MemberQ[ rules, "Generic" ],
-            (* endpoint freeness is the one census condition the moving tip cannot prune; checked on the finished walk *)
-            w |-> lengthQ[ w ] && Count[ w, First @ w ] === 1 && Count[ w, Last @ w ] === 1,
-            lengthQ ],
-          stepFn = If[ events === { }, candidateFn,
-            With[ { deadlineFn = stoppingDeadlineFn @ events },
-              { g, walk } |-> If[ Length[ walk ] - 1 >= deadlineFn @ walk, { },
-                candidateFn[ g, walk ] ] ] ] },
-        warnDeadEvents[ events, rules, scale, FindInfraGeodesic ];
-        (* with revisits allowed a local rule alone leaves an infinite class -- a walk can wind a long cycle forever and stay minimizing at every finite scale -- so only an exclusion capping the length or a global minimizing rule bounds it *)
-        If[ kmax === Infinity && ! boundedClassQ[ rules, scale ],
-          Message[ FindInfraGeodesic::unbounded, scale ]; Throw[ $Failed ] ];
-        Switch[ methodHead,
-          "Exhaustive",
-            Select[
-              frontierSweep[ graph, q1, q2,
-                { g, walk } |-> If[ Length[ walk ] - 1 >= kmax, { },
-                  stepFn[ g, walk ] ],
-                pruning,
-                (* an early stop on count is unsound when a completion can still be rejected, by an exact / range length or by the endpoint check *)
-                If[ MatchQ[ kspec, { _Integer } | { _Integer, _Integer } ] ||
-                    MemberQ[ rules, "Generic" ],
-                  Infinity, countLimit @ count ],
-                terminal ],
-              acceptQ ],
-          "Greedy" | "RandomGreedy",
-            greedyFrontierSweep[ graph, q1, q2, stepFn, acceptQ, kmax, count,
-              greedyBranch @ methodHead, terminal ],
-          _,
-            Message[ FindInfraGeodesic::badmethod, methodSpec ]; $Failed
-        ]
-      ]
-    ], p1, p2 ]
+  FindInfraWalk[ graph, p1, p2, kspec, count, "InfraScale" -> scale,
+    Properties -> DeleteDuplicates @ Prepend[ OptionValue[ FindInfraGeodesic, { opts }, Properties ], "Minimizing" ],
+    Sequence @@ FilterRules[ { opts }, Except[ Properties ] ] ]
 
 
 (* ===================== InfraGeodesicQ ===================== *)
@@ -521,38 +454,39 @@ walkCrossingQ[ graph_, core_List, closedQ_, { i_Integer, j_Integer }, r_ ] := Wi
   SeparatesQ[ band, DeleteDuplicates[ Join @@ cutI ], at @ First @ exitsJ, at @ Last @ exitsJ ] ]
 
 
-(* ===================== ExtendInfraGeodesic ===================== *)
+(* ===================== ExtendInfraWalk ===================== *)
 
-(* continues a seed walk under the geodesic rules at infra-scale scale: Find seeds with points and owns the two-point sugar, Extend seeds with walks and owns "Direction".  kspec is the extension budget, in added edges per growing side, and is mandatory-finite whenever the class is infinite.
+(* continues a seed walk under the Properties rules, each read on the window of the last <= "InfraScale" vertices: Find seeds with points and owns the two-point sugar, Extend seeds with walks and owns "Direction".  kspec is the extension budget, in added edges per growing side, and is mandatory-finite whenever the class is infinite.
    "BothSides" adds at most one edge per side per step and re-checks the joined step against the monotone whole-walk constraints its sides cannot see alone.  Stopping conditions replay over the seed, so a deadline may already sit inside it and the seed come back unextended; a two-ended walk has no single tip for the event clock, so they require "Forward" or "Backward". *)
 
-ExtendInfraGeodesic::badproperty  = "Property `1` is not supported by ExtendInfraGeodesic; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Exclude\" -> species, \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window; species are \"SelfIntersections\", \"SelfTangencies\", \"Cusps\", \"TriplePoints\".";
-ExtendInfraGeodesic::badmethod    = "Method `1` is not supported by ExtendInfraGeodesic.";
-ExtendInfraGeodesic::baddirection = "Direction `1` is not supported by ExtendInfraGeodesic.";
-ExtendInfraGeodesic::badevent     = "Stopping condition `1` is not supported; give n (stop at the n-th arrival at a visited vertex), a predicate on the walk so far, or {spec, \"Delay\" -> k}.";
-ExtendInfraGeodesic::deadevent    = "the stopping condition awaits a self-intersection the Properties constraints exclude; the walk runs to its budget.";
-ExtendInfraGeodesic::eventsided   = "stopping conditions read the walk at a single growing tip; extend with \"Direction\" -> \"Forward\" or \"Backward\".";
-ExtendInfraGeodesic::unbounded    = "The extension class at scale `1` is infinite without a length bound: give a finite kspec, add \"Simple\", \"Generic\" or an \"Exclude\" of \"SelfIntersections\", \"TriplePoints\" or \"SelfTangencies\", or ask \"Minimizing\" at scale Infinity.";
+ExtendInfraWalk::badproperty  = "Property `1` is not a walk rule; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Exclude\" -> species, \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window; species are \"SelfIntersections\", \"SelfTangencies\", \"Cusps\", \"TriplePoints\".";
+ExtendInfraWalk::badmethod    = "Method `1` is not supported.";
+ExtendInfraWalk::baddirection = "Direction `1` is not supported; give \"Forward\", \"Backward\" or \"BothSides\".";
+ExtendInfraWalk::badevent     = "Stopping condition `1` is not supported; give n (stop at the n-th arrival at a visited vertex), a predicate on the walk so far, or {spec, \"Delay\" -> k}.";
+ExtendInfraWalk::deadevent    = "the stopping condition awaits a self-intersection the Properties constraints exclude; the walk runs to its budget.";
+ExtendInfraWalk::eventsided   = "stopping conditions read the walk at a single growing tip; extend with \"Direction\" -> \"Forward\" or \"Backward\".";
+ExtendInfraWalk::unbounded    = "the extension class at scale `1` is infinite without a length bound: give a finite kspec, add \"Simple\", \"Generic\" or an \"Exclude\" of \"SelfIntersections\", \"TriplePoints\" or \"SelfTangencies\", or ask \"Minimizing\" at scale Infinity.";
 
-Options[ ExtendInfraGeodesic ] = {
-  Properties          -> { "Minimizing" },
+Options[ ExtendInfraWalk ] = {
+  "InfraScale"        -> Infinity,
+  Properties          -> { "Simple" },
   "StoppingCondition" -> None,
   Method              -> Automatic,
   "Direction"         -> "BothSides"
 };
 
-ExtendInfraGeodesic[ graph_Graph, seed_,
-    scale : ( _Integer | Infinity ),
+ExtendInfraWalk[ graph_Graph, seed_,
     kspec : ( _Integer | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
   spreadFind[ InfraWalk, count,
     walk0 |-> If[ walk0 === { } || ! AllTrue[ walk0, VertexQ[ graph, # ] & ], { },
       Catch @ With[ {
-          rules  = OptionValue[ ExtendInfraGeodesic, { opts }, Properties ],
+          scale  = OptionValue[ ExtendInfraWalk, { opts }, "InfraScale" ],
+          rules  = OptionValue[ ExtendInfraWalk, { opts }, Properties ],
           events = parseStoppingCondition[
-            OptionValue[ ExtendInfraGeodesic, { opts }, "StoppingCondition" ], ExtendInfraGeodesic ],
-          direction  = OptionValue[ ExtendInfraGeodesic, { opts }, "Direction" ],
-          methodSpec = resolveMethod[ OptionValue[ ExtendInfraGeodesic, { opts }, Method ], count ],
+            OptionValue[ ExtendInfraWalk, { opts }, "StoppingCondition" ], ExtendInfraWalk ],
+          direction  = OptionValue[ ExtendInfraWalk, { opts }, "Direction" ],
+          methodSpec = resolveMethod[ OptionValue[ ExtendInfraWalk, { opts }, Method ], count ],
           absSpec = Replace[ kspec, {
             { lo_, hi_ } :> { lo, hi } + Length[ walk0 ] - 1,
             { k_ }       :> { k + Length[ walk0 ] - 1 },
@@ -568,7 +502,7 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
             { k_ }       :> ( # == k & ),
             { lo_, hi_ } :> ( lo <= # <= hi & ),
             k_Integer    :> ( # <= k & ) } ],
-          candidateFn = windowCandidateFn[ graph, scale, rules, ExtendInfraGeodesic ],
+          candidateFn = windowCandidateFn[ graph, scale, rules, ExtendInfraWalk ],
           deadlineFn  = stoppingDeadlineFn @ events,
           (* a two-sided step can violate a whole-walk constraint each side admits alone; re-check the joined walk on the constraints monotone under extension -- a walk is a geodesic iff every sub-walk is, so a failed joined check never heals *)
           stepChecks = Join[
@@ -582,12 +516,12 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
         { stepFilter = If[ stepChecks === { }, True &,
             w |-> AllTrue[ stepChecks, #[ w ] & ] ] },
         If[ events =!= { } && direction === "BothSides",
-          Message[ ExtendInfraGeodesic::eventsided ]; Throw[ $Failed ] ];
-        warnDeadEvents[ events, rules, scale, ExtendInfraGeodesic ];
+          Message[ ExtendInfraWalk::eventsided ]; Throw[ $Failed ] ];
+        warnDeadEvents[ events, rules, scale, ExtendInfraWalk ];
         If[ kmax === Infinity && ! boundedClassQ[ rules, scale ],
-          Message[ ExtendInfraGeodesic::unbounded, scale ]; Throw[ $Failed ] ];
+          Message[ ExtendInfraWalk::unbounded, scale ]; Throw[ $Failed ] ];
         If[ ! MatchQ[ methodHead, "Exhaustive" | "Greedy" | "RandomGreedy" ],
-          Message[ ExtendInfraGeodesic::badmethod, methodSpec ]; Throw[ $Failed ] ];
+          Message[ ExtendInfraWalk::badmethod, methodSpec ]; Throw[ $Failed ] ];
         Switch[ direction,
           "Forward",
             Switch[ methodHead,
@@ -613,8 +547,28 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
               "Greedy" | "RandomGreedy",
                 extendBothGreedySweep[ graph, walk0, candidateFn, stepsQ, stepsMax, count,
                   greedyBranch @ methodHead, stepFilter ] ],
-          _, Message[ ExtendInfraGeodesic::baddirection, direction ]; Throw[ $Failed ]
+          _, Message[ ExtendInfraWalk::baddirection, direction ]; Throw[ $Failed ]
         ] ] ], seed ]
+
+
+(* ===================== ExtendInfraGeodesic ===================== *)
+
+(* continues a seed walk as a geodesic at infra-scale scale: ExtendInfraWalk at "InfraScale" -> scale with "Minimizing" always among the rules *)
+
+Options[ ExtendInfraGeodesic ] = {
+  Properties          -> { },
+  "StoppingCondition" -> None,
+  Method              -> Automatic,
+  "Direction"         -> "BothSides"
+};
+
+ExtendInfraGeodesic[ graph_Graph, seed_,
+    scale : ( _Integer | Infinity ),
+    kspec : ( _Integer | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
+  ExtendInfraWalk[ graph, seed, kspec, count, "InfraScale" -> scale,
+    Properties -> DeleteDuplicates @ Prepend[ OptionValue[ ExtendInfraGeodesic, { opts }, Properties ], "Minimizing" ],
+    Sequence @@ FilterRules[ { opts }, Except[ Properties ] ] ]
 
 
 (* ===================== Two-sided growth engines ===================== *)

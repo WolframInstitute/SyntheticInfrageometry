@@ -81,9 +81,7 @@ VerificationTest[
   TestID -> "FindInfraWalk-exact-length-spec"
 ]
 
-(* at these lengths the generic default coincides with the simple paths (a
-   crossing on this grid needs length >= 8), so the counts compare like for
-   like *)
+(* the simple default is FindPath's class exactly, at every length *)
 VerificationTest[
   Length @ FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, { 4, 6 }, All ][ "Realizations" ],
   Length @ FindPath[ GridGraph[ { 3, 3 } ], 1, 9, { 4, 6 }, All ],
@@ -94,7 +92,8 @@ VerificationTest[
    spelling filters the immersed class -- on CycleGraph[4] every non-
    backtracking walk is a pure rotation, so the length-6 walks 1 -> 3 have
    exactly 3 arrivals at a visited vertex, no walk has exactly 1, and the
-   generic default is empty at this length (winding is a tangency) *)
+   simple default is empty at this length (a simple walk on C4 has at most
+   3 edges) *)
 VerificationTest[
   With[ { g = CycleGraph[ 4 ] },
     { reps = FindInfraWalk[ g, 1, 3, { 6 }, All, Properties -> { "Immersed" } ][ "Realizations" ] },
@@ -106,12 +105,13 @@ VerificationTest[
 ]
 
 (* the pointed random walk stopped at its first self-intersection: the tip is
-   the one doubled vertex -- drawn under the ambient seed *)
+   the one doubled vertex -- drawn under the ambient seed.  The simple default
+   cannot self-intersect, so the generic class is asked for explicitly *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     { w = BlockRandom[
-        First @ FindInfraWalk[ g, 1, 20, Method -> "RandomGreedy",
-          "StoppingCondition" -> 1 ][ "Realizations" ],
+        First @ FindInfraWalk[ g, 1, 20, Properties -> { "Generic" },
+          Method -> "RandomGreedy", "StoppingCondition" -> 1 ][ "Realizations" ],
         RandomSeeding -> 7 ] },
     { First[ w ] === 1, Count[ w, Last @ w ] === 2,
       Length[ w ] - Length[ DeleteDuplicates[ w ] ] === 1 } ],
@@ -131,20 +131,21 @@ VerificationTest[
   TestID -> "FindInfraWalk-Automatic-greedy-members-of-class"
 ]
 
-(* the default class is InfraGenericQ's: on the 3-by-3 grid at length <= 8 it
-   strictly exceeds the simple paths (the degree-4 centre supports an isolated
-   crossing), and it is exactly the census filter over the bare walk class *)
+(* the default class is the simple paths -- the census filter DuplicateFreeQ
+   over the bare walk class -- and "Generic" is the opt-in widening: on the
+   3-by-3 grid at length <= 8 it strictly exceeds the simple paths (the
+   degree-4 centre supports an isolated crossing) and is exactly
+   InfraGenericQ's filter over the bare class *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    { reps = FindInfraWalk[ g, 1, 9, 8, All ][ "Realizations" ] },
-    AllTrue[ reps, InfraGenericQ[ g, # ] & ] &&
-    AnyTrue[ reps, ! DuplicateFreeQ[ # ] & ] &&
-    Sort @ reps ===
-      Sort @ Select[
-        FindInfraGeodesic[ g, 1, 9, 1, 8, All, Properties -> { } ][ "Realizations" ],
-        InfraGenericQ[ g, # ] & ] ],
-  True,
-  TestID -> "FindInfraWalk-default-class-is-generic-immersed"
+    { bare    = FindInfraWalk[ g, 1, 9, 8, All, Properties -> { } ][ "Realizations" ],
+      simple  = FindInfraWalk[ g, 1, 9, 8, All ][ "Realizations" ],
+      generic = FindInfraWalk[ g, 1, 9, 8, All, Properties -> { "Generic" } ][ "Realizations" ] },
+    { Sort @ simple === Sort @ Select[ bare, DuplicateFreeQ ],
+      SubsetQ[ generic, simple ] && AnyTrue[ generic, ! DuplicateFreeQ[ # ] & ],
+      Sort @ generic === Sort @ Select[ bare, InfraGenericQ[ g, # ] & ] } ],
+  { True, True, True },
+  TestID -> "FindInfraWalk-default-class-is-simple-Generic-opt-in"
 ]
 
 (* "Immersed" alone leaves an infinite class -- winding a long cycle never
@@ -353,11 +354,11 @@ VerificationTest[
 ]
 
 (* With revisits allowed a local rule alone leaves an infinite class -- refused,
-   not silently truncated. *)
+   not silently truncated.  The wrapper's messages are FindInfraWalk's. *)
 VerificationTest[
   FindInfraGeodesic[ CycleGraph[ 6 ], 1, 4, 2, Infinity, All ],
   $Failed,
-  { FindInfraGeodesic::unbounded },
+  { FindInfraWalk::unbounded },
   TestID -> "FindInfraGeodesic-unbounded-class-refused"
 ]
 
@@ -400,14 +401,14 @@ VerificationTest[
 VerificationTest[
   FindInfraGeodesic[ GridGraph[ { 3, 3 } ], 1, 9, 2, 4, 1, Properties -> { "Bogus" } ],
   $Failed,
-  { FindInfraGeodesic::badproperty },
+  { FindInfraWalk::badproperty },
   TestID -> "FindInfraGeodesic-badproperty-message"
 ]
 
 VerificationTest[
   FindInfraGeodesic[ GridGraph[ { 3, 3 } ], 1, 9, 2, 4, 1, Method -> "Unknown" ],
   $Failed,
-  { FindInfraGeodesic::badmethod },
+  { FindInfraWalk::badmethod },
   TestID -> "FindInfraGeodesic-badmethod-message"
 ]
 
@@ -454,7 +455,69 @@ VerificationTest[
 ]
 
 
-(* ===================== ExtendInfraGeodesic ===================== *)
+(* ===================== FindInfraGeodesic is FindInfraWalk at "InfraScale" ===================== *)
+
+(* the geodesic finder is the general finder at the positional scale with
+   "Minimizing" added to the rules; its Properties -> { } is the "Minimizing"
+   class, and the bare class at a finite scale is FindInfraWalk's
+   Properties -> { } *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], c = CycleGraph[ 6 ] },
+    { Sort @ FindInfraGeodesic[ g, 1, 9, 2, 6, All, Properties -> { "Simple" } ][ "Realizations" ] ===
+        Sort @ FindInfraWalk[ g, 1, 9, 6, All, "InfraScale" -> 2,
+          Properties -> { "Minimizing", "Simple" } ][ "Realizations" ],
+      Sort @ FindInfraGeodesic[ c, 1, 3, { 6 }, All, Properties -> { "Immersed" } ][ "Realizations" ] ===
+        Sort @ FindInfraWalk[ c, 1, { 6 }, All, "InfraScale" -> 3,
+          Properties -> { "Minimizing", "Immersed" } ][ "Realizations" ],
+      Sort @ FindInfraGeodesic[ g, 1, 9, 1, { 6 }, All ][ "Realizations" ] ===
+        Sort @ FindInfraWalk[ g, 1, 9, { 6 }, All, Properties -> { } ][ "Realizations" ] } ],
+  { True, True, True },
+  TestID -> "FindInfraGeodesic-is-FindInfraWalk-with-Minimizing-at-InfraScale"
+]
+
+(* "InfraScale" is the horizon of the local rule: the walk winding once round
+   C6 is minimizing in every window of 3 vertices with the next one and fails
+   at 4, so the finder emits it at scale 3 and not at 4 -- exactly
+   InfraGeodesicQ's threshold *)
+VerificationTest[
+  With[ { g = CycleGraph[ 6 ], winding = { 1, 2, 3, 4, 5, 6, 1 } },
+    { MemberQ[ FindInfraWalk[ g, 1, { 6 }, All, "InfraScale" -> #,
+          Properties -> { "Minimizing", "Immersed" } ][ "Realizations" ], winding ],
+      InfraGeodesicQ[ g, winding, # ] } & /@ { 2, 3, 4, Infinity } ],
+  { { True, True }, { True, True }, { False, False }, { False, False } },
+  TestID -> "FindInfraWalk-InfraScale-window-semantics"
+]
+
+
+(* ===================== ExtendInfraWalk / ExtendInfraGeodesic ===================== *)
+
+(* the geodesic extender is the general extender at the positional scale with
+   "Minimizing" added to the rules *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    Sort @ ExtendInfraGeodesic[ g, { 4, 5 }, 2, 3, All, Properties -> { "Simple" } ][ "Realizations" ] ===
+      Sort @ ExtendInfraWalk[ g, { 4, 5 }, 3, All, "InfraScale" -> 2,
+        Properties -> { "Minimizing", "Simple" } ][ "Realizations" ] ],
+  True,
+  TestID -> "ExtendInfraGeodesic-is-ExtendInfraWalk-with-Minimizing-at-InfraScale"
+]
+
+(* under the default class the extension is bounded by itself: a simple walk
+   cannot revisit, so kspec Infinity is legal and the two-sided extension of a
+   middle edge is the whole path *)
+VerificationTest[
+  ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 2, 3 } ],
+  InfraWalk[ { { 1, 2, 3, 4, 5 } } ],
+  TestID -> "ExtendInfraWalk-default-simple-bounds-the-class"
+]
+
+(* the pointed finder and the one-sided extender of the seed {p1} are the same
+   computation, under the shared default class *)
+VerificationTest[
+  ExtendInfraWalk[ CycleGraph[ 6 ], { 1 }, 4, All, "Direction" -> "Forward" ],
+  FindInfraWalk[ CycleGraph[ 6 ], 1, 4, All ],
+  TestID -> "ExtendInfraWalk-seed-point-equals-pointed-finder"
+]
 
 VerificationTest[
   ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3, 4 }, Infinity, 1, 1,
@@ -587,64 +650,67 @@ VerificationTest[
   TestID -> "ExtendInfraGeodesic-exact-kspec-drops-short-freeze"
 ]
 
+(* a stopping condition on a class that may self-intersect: the winding walk
+   stops at its first return, "Delay" grants further edges *)
 VerificationTest[
-  ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2 }, Infinity, 20, 1,
+  ExtendInfraWalk[ CycleGraph[ 6 ], { 1, 2 }, 20, 1,
     "Direction" -> "Forward", Properties -> { "Immersed" },
     "StoppingCondition" -> 1 ],
   InfraWalk[ { { 1, 2, 3, 4, 5, 6, 1 } } ],
-  TestID -> "ExtendInfraGeodesic-stopping-condition-forward"
+  TestID -> "ExtendInfraWalk-stopping-condition-forward"
 ]
 
 VerificationTest[
-  ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2 }, Infinity, 20, 1,
+  ExtendInfraWalk[ CycleGraph[ 6 ], { 1, 2 }, 20, 1,
     "Direction" -> "Forward", Properties -> { "Immersed" },
     "StoppingCondition" -> { 1, "Delay" -> 2 } ],
   InfraWalk[ { { 1, 2, 3, 4, 5, 6, 1, 2, 3 } } ],
-  TestID -> "ExtendInfraGeodesic-stopping-condition-delay"
+  TestID -> "ExtendInfraWalk-stopping-condition-delay"
 ]
 
 (* events replay over the seed: a deadline that already passed inside the
    seed returns it unextended *)
 VerificationTest[
-  ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2, 3, 4, 5, 6, 1 }, Infinity, 10, 1,
+  ExtendInfraWalk[ CycleGraph[ 6 ], { 1, 2, 3, 4, 5, 6, 1 }, 10, 1,
     "Direction" -> "Forward", Properties -> { "Immersed" },
     "StoppingCondition" -> 1 ],
   InfraWalk[ { { 1, 2, 3, 4, 5, 6, 1 } } ],
-  TestID -> "ExtendInfraGeodesic-events-replay-over-seed"
+  TestID -> "ExtendInfraWalk-events-replay-over-seed"
 ]
 
 (* a two-ended walk has no single tip for the event clock *)
 VerificationTest[
-  ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2 }, Infinity, 10, 1,
+  ExtendInfraWalk[ CycleGraph[ 6 ], { 1, 2 }, 10, 1,
     Properties -> { "Immersed" }, "StoppingCondition" -> 1 ],
   $Failed,
-  { ExtendInfraGeodesic::eventsided },
-  TestID -> "ExtendInfraGeodesic-eventsided"
+  { ExtendInfraWalk::eventsided },
+  TestID -> "ExtendInfraWalk-eventsided"
 ]
 
+(* under the simple default no arrival at a visited vertex can happen: the
+   condition warns and the walk runs to its budget *)
 VerificationTest[
-  Sort @ ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3 }, Infinity, 5, All,
-      "Direction" -> "Forward", Properties -> { "Simple" },
-      "StoppingCondition" -> 1 ][ "Realizations" ],
+  Sort @ ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 3 }, 5, All,
+      "Direction" -> "Forward", "StoppingCondition" -> 1 ][ "Realizations" ],
   Sort[ { { 3, 2, 1 }, { 3, 4, 5 } } ],
-  { ExtendInfraGeodesic::deadevent },
-  TestID -> "ExtendInfraGeodesic-deadevent-warns"
+  { ExtendInfraWalk::deadevent },
+  TestID -> "ExtendInfraWalk-deadevent-warns"
 ]
 
-(* "Minimizing" at a finite scale does not bound the class *)
+(* "Minimizing" at a finite scale does not bound the class; the wrapper's
+   messages are ExtendInfraWalk's *)
 VerificationTest[
   ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1 }, 2 ],
   $Failed,
-  { ExtendInfraGeodesic::unbounded },
+  { ExtendInfraWalk::unbounded },
   TestID -> "ExtendInfraGeodesic-unbounded-finite-scale"
 ]
 
 VerificationTest[
-  ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 3 }, Infinity, 1, 1,
-    "Direction" -> "Sideways", Properties -> { "Simple" } ],
+  ExtendInfraWalk[ PathGraph[ Range[ 5 ] ], { 3 }, 1, 1, "Direction" -> "Sideways" ],
   $Failed,
-  { ExtendInfraGeodesic::baddirection },
-  TestID -> "ExtendInfraGeodesic-baddirection"
+  { ExtendInfraWalk::baddirection },
+  TestID -> "ExtendInfraWalk-baddirection"
 ]
 
 VerificationTest[
@@ -652,14 +718,6 @@ VerificationTest[
     Properties -> { "Simple", "Minimizing" } ],
   $Failed,
   TestID -> "ExtendInfraGeodesic-strict-shortfall-Failed"
-]
-
-(* the pointed finder and the seed-{p1} extender are the same computation *)
-VerificationTest[
-  ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1 }, Infinity, 4, All,
-    "Direction" -> "Forward", Properties -> { "Generic" } ],
-  FindInfraWalk[ CycleGraph[ 6 ], 1, 4, All ],
-  TestID -> "ExtendInfraGeodesic-seed-point-equals-pointed-finder"
 ]
 
 VerificationTest[
@@ -893,11 +951,12 @@ VerificationTest[
   TestID -> "FindInfraWalk-stopping-count-second-arrival"
 ]
 
+(* the second firing, on the generic class: two isolated double points *)
 VerificationTest[
   With[ { g = GridGraph[ { 6, 6 } ] },
     { w = BlockRandom[
-        First @ FindInfraWalk[ g, 1, 200, Method -> "RandomGreedy",
-          "StoppingCondition" -> 2 ][ "Realizations" ],
+        First @ FindInfraWalk[ g, 1, 200, Properties -> { "Generic" },
+          Method -> "RandomGreedy", "StoppingCondition" -> 2 ][ "Realizations" ],
         RandomSeeding -> 1 ] },
     Length[ w ] - Length[ DeleteDuplicates @ w ] ],
   2,
@@ -1146,10 +1205,10 @@ VerificationTest[
 (* each exclusion is exactly the census filter over the bare walk class *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    { bare = FindInfraGeodesic[ g, 1, 1, { 6 }, All, Properties -> { } ][ "Realizations" ] },
+    { bare = FindInfraWalk[ g, 1, { 6 }, All, Properties -> { } ][ "Realizations" ] },
     AllTrue[ { "Cusps", "SelfTangencies", "TriplePoints", "SelfIntersections" },
       species |->
-        Sort @ FindInfraGeodesic[ g, 1, 1, { 6 }, All,
+        Sort @ FindInfraWalk[ g, 1, { 6 }, All,
             Properties -> { "Exclude" -> species } ][ "Realizations" ] ===
           Sort @ Select[ bare, Switch[ species,
             "SelfIntersections", DuplicateFreeQ[ # ],
@@ -1159,17 +1218,21 @@ VerificationTest[
   TestID -> "Exclude-per-species-equals-census-filter"
 ]
 
-(* the named classes are exclusion sets: "Immersed" excludes cusps, and the
-   pointed generic default excludes cusps, self-tangencies and triple points *)
+(* the named classes are exclusion sets: the default "Simple" excludes
+   self-intersections, "Immersed" cusps, and "Generic" cusps, self-tangencies
+   and triple points *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    { Sort @ FindInfraGeodesic[ g, 1, 1, { 5 }, All, Properties -> { "Immersed" } ][ "Realizations" ] ===
-        Sort @ FindInfraGeodesic[ g, 1, 1, { 5 }, All,
+    { Sort @ FindInfraWalk[ g, 1, { 7 }, All ][ "Realizations" ] ===
+        Sort @ FindInfraWalk[ g, 1, { 7 }, All,
+          Properties -> { "Exclude" -> "SelfIntersections" } ][ "Realizations" ],
+      Sort @ FindInfraWalk[ g, 1, { 5 }, All, Properties -> { "Immersed" } ][ "Realizations" ] ===
+        Sort @ FindInfraWalk[ g, 1, { 5 }, All,
           Properties -> { "Exclude" -> "Cusps" } ][ "Realizations" ],
-      Sort @ FindInfraWalk[ g, 1, { 7 }, All ][ "Realizations" ] ===
-        Sort @ FindInfraGeodesic[ g, 1, 1, { 7 }, All,
+      Sort @ FindInfraWalk[ g, 1, { 7 }, All, Properties -> { "Generic" } ][ "Realizations" ] ===
+        Sort @ FindInfraWalk[ g, 1, { 7 }, All,
           Properties -> { "Exclude" -> { "Cusps", "SelfTangencies", "TriplePoints" } } ][ "Realizations" ] } ],
-  { True, True },
+  { True, True, True },
   TestID -> "Exclude-named-classes-are-exclusion-sets"
 ]
 
