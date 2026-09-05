@@ -6,7 +6,7 @@ ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/InfraSegment
 Keywords: [segment, geodesic bundle, interval DAG, multiplicity, wrapper]
-SeeAlso: [FindInfraSegment, InfraPoint, InfraLine, InfraMeasure, MetricInterval]
+SeeAlso: [FindInfraSegment, ExtendInfraSegment, InfraPoint, InfraLine, InfraMeasure, MetricInterval]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 
@@ -16,16 +16,19 @@ RelatedGuides: [EuclideanGeometryGuide]
 
 <code>[InfraSegment]()[*dag*]</code> is the same segment given by its geodesic DAG.
 
+<code>[InfraSegment]()[{*dag1*, …, *dagk*}]</code> is the pool form: one geodesic DAG per pair of ends, as returned by [ExtendInfraSegment]() and by [FindInfraSegment]() over several anchors.
+
 ## Details & Options
 
 Definition: an infra-segment between *a* and *b* is the set of all geodesics from *a* to *b*.
 
 It carries no weights. The geodesics are equally admissible, so nothing distinguishes them.
 
-There are two forms of the same object.
+There are three forms of the same object.
 
-- The **enumerated** form is a list of paths. `All` produces it.
-- The **DAG** form is a graph: the geodesic interval. It is the default return of [FindInfraSegment]().
+- The **enumerated** form is a list of paths, what a bounded count produces.
+- The **DAG** form is a graph: the geodesic interval. `All` produces it for one pair of endpoints.
+- The **pool** form is a list of DAGs, one per pair of ends — the return of [ExtendInfraSegment]()[*g*, *seed*, *kspec*, All] and of [FindInfraSegment]() spread over wrapper anchors. A lone atom collapses to the DAG form.
 
 The DAG is preferred because the number of geodesics grows fast while the DAG stays small. On a square grid, two vertices at distance 5 have 10 geodesics and a 12-vertex DAG.
 
@@ -43,20 +46,22 @@ DAG accessors:
 | `["Start"]`, `["End"]` | the endpoints |
 | `["Realizations", n]` | enumerate on demand; `UpTo[n]` and `All` also work |
 
+On the pool the accessors are sized by the atoms, never by the family: `["Length"]` is one number per DAG, `["Start"]` and `["End"]` are the [InfraSet]() of sources and of sinks, `["Multiplicity"]` and `["Measure"]` sum the per-atom counts, `["Realizations", n]` enumerates lazily atom by atom, and `seg[[i]]` is the *i*-th layer of every atom weighted by occupation. A 20 × 20 grid edge has about 9 × 10⁹ lines through it in two atoms, so nothing here enumerates by default.
+
 Endpoints are deduplicated. Every geodesic of a family shares them. [InfraPath]() keeps endpoint multiplicity instead, because walks can end anywhere.
 
 Inside an [InfraScene](), `InfraSegment[p, q]` names a segment to be solved for.
 
 ## Basic Examples
 
-The default form is the interval DAG. Every geodesic is a directed path through it.
+`All` gives the interval DAG. Every geodesic is a directed path through it.
 
 ```wl
 With[
   {g = InfraSubstrate["SquareTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
-  FindInfraSegment[g, a, b]["Graph"]
+  FindInfraSegment[g, a, b, All]["Graph"]
 ]
 ```
 
@@ -67,7 +72,7 @@ With[
   {g = InfraSubstrate["SquareTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
-  {seg = FindInfraSegment[g, a, b]},
+  {seg = FindInfraSegment[g, a, b, All]},
   <|"DAG vertices" -> Length @ seg["Vertices"], "length" -> seg["Length"],
     "multiplicity" -> seg["Multiplicity"], "start" -> seg["Start"], "end" -> seg["End"]|>]
 ```
@@ -83,6 +88,14 @@ With[
   {seg[[1]], seg[[3]]}]
 ```
 
+The pool form: one DAG per pair of ends. Extending an edge of the grid by one step on each side gives seven ends pairs, each carrying one geodesic here.
+
+```wl
+With[
+  {pool = ExtendInfraSegment[GridGraph[{4, 4}], {6, 7}, 1, All]},
+  {Length @ pool["Graph"], pool["Multiplicity"], pool["Start"], pool["End"]}]
+```
+
 ## Properties and Relations
 
 The vertices of the DAG are the metric interval between the endpoints.
@@ -92,15 +105,16 @@ With[
   {g = InfraSubstrate["HexagonalTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
-  Sort @ FindInfraSegment[g, a, b]["Vertices"] === Sort @ MetricInterval[g, a, b]]
+  Sort @ FindInfraSegment[g, a, b, All]["Vertices"] === Sort @ MetricInterval[g, a, b]]
 ```
 
-Every realisation has the same length: the graph distance.
+The length of the DAG is the graph distance, and every realisation has it.
 
 ```wl
 With[
   {g = InfraSubstrate["SquareTilingGraph", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
-  Union @ FindInfraSegment[g, a, b, All]["Length"] === {GraphDistance[g, a, b]}]
+  {seg = FindInfraSegment[g, a, b, All]},
+  {seg["Length"] === GraphDistance[g, a, b], Union[Length[#] - 1 & /@ seg["Realizations"]] === {seg["Length"]}}]
 ```

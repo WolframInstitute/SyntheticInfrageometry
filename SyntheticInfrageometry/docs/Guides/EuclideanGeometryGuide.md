@@ -28,11 +28,13 @@ Euclidean geometry rebuilt inside a graph. The graph is all there is: no ambient
 - `InfraSegment` the set of all geodesics between two vertices
 - `FindInfraSegment` that set, as a compact interval DAG or enumerated
 - `MetricInterval` the vertices lying on some geodesic between two points
-- `InfraLine` an inclusion-maximal geodesic
-- `FindInfraLine` the maximal geodesics through two points, or containing a segment
-- `ExtendInfraSegment` Tarski's segment-construction step, laying off a segment beyond a point
+- `InfraLine` an inextensible geodesic, or the pool of them as geodesic DAGs
+- `FindInfraLine` the lines through two points, or containing a segment or a whole geodesic bundle, read off the distance matrix
+- `ExtendInfraSegment` the geodesics containing a segment or bundle, extended by a budget per side; also Tarski's segment-construction step
+- `GeodesicExtensionGraph` the DAG of geodesic extensions of a segment beyond its end, the engine behind lines and rays
 - `InfraPath`, `FindInfraPath`, `ExtendInfraPath` walks, where revisiting a vertex is allowed
-- `InfraRay`, `FindInfraRay` the pointed half of a maximal geodesic, which is how direction is expressed
+- `InfraRay`, `FindInfraRay` a geodesic from a base vertex that cannot be prolonged past its far end, which is how direction is expressed
+- `PencilDirections`, `PencilCardinality` the rays leaving a vertex, and how many there are
 - `InfraPolyline`, `FindInfraPolylineSubdivision` a walk cut into geodesic legs
 
 ### Circles, shells and balls
@@ -60,7 +62,7 @@ Euclidean geometry rebuilt inside a graph. The graph is all there is: no ambient
 
 ### Predicates
 
-- `InfraPathQ`, `InfraSegmentQ`, `InfraLineQ` a strict hierarchy: simple path, then geodesic, then maximal geodesic
+- `InfraPathQ`, `InfraSegmentQ`, `InfraLineQ` a strict hierarchy: simple path, then geodesic, then inextensible geodesic
 - `UniqueInfraSegmentQ` whether the geodesic between two points is unique, so whether Euclid's first postulate holds sharply
 - `InfraParallelQ`, `FindInfraParallel` constant distance to a line
 - `InfraPerpendicularQ`, `FindInfraPerpendicular` right angles, with several inequivalent methods

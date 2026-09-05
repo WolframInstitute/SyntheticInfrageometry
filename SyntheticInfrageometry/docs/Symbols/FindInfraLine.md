@@ -5,28 +5,38 @@ Context: WolframInstitute`SyntheticInfrageometry`
 ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraLine
-Keywords: [line, maximal geodesic, Euclid Postulate 2, parallel postulate]
-SeeAlso: [InfraLine, FindInfraSegment, FindInfraRay, FindInfraParallel, InfraLineQ, LineCount]
+Keywords: [line, inextensible geodesic, distance matrix, pool, Euclid Postulate 2, parallel postulate]
+SeeAlso: [InfraLine, InfraLineQ, ExtendInfraSegment, GeodesicExtensionGraph, FindInfraSegment, FindInfraRay, FindInfraParallel, LineCount]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 
 ## Usage
 
-<code>[FindInfraLine]()[*g*, *a*, *b*]</code> gives the maximal geodesic lines through *a* and *b* in *g*, as an [InfraLine]() wrapper.
+<code>[FindInfraLine]()[*g*, *a*, *b*]</code> gives one line through *a* and *b* in *g* — an inextensible geodesic containing both — as an [InfraLine]() wrapper.
 
-<code>[FindInfraLine]()[*g*, *segment*]</code> gives the maximal lines containing *segment* as a contiguous subsequence.
+<code>[FindInfraLine]()[*g*, *segment*]</code> gives one line containing *segment* as a contiguous subsequence; *segment* is a vertex sequence or an [InfraSegment]() bundle, which extends as a whole.
 
-A count *n* gives exactly *n* realisations or `$Failed`, `UpTo[n]` up to *n*, `All` (the default) all of them.
+<code>[FindInfraLine]()[*g*, *a*, *b*, *n*]</code> gives exactly *n* lines or `$Failed`; `UpTo[n]` gives up to *n*; `All` gives the whole class as a pool.
 
 ## Details & Options
 
-A line is an **inclusion-maximal geodesic**: a shortest path that cannot be extended at either end and still be a shortest path.
+A line is an **inextensible geodesic**: a shortest path that no neighbour of either endpoint prolongs. [InfraLineQ]() is the predicate, and every line returned satisfies it under every `Method`.
 
-That is the intrinsic reading of Euclid's second postulate — produce a finite straight line continuously — and it is where the analogy with the plane breaks hardest. In the plane two points determine one line. On a lattice they determine an enormous family: below, two vertices at distance 5 on a 177-vertex square grid lie on **81600** maximal geodesics, against 192 on the hexagonal tiling and 16 on the irregular mesh.
+That is the intrinsic reading of Euclid's second postulate — produce a finite straight line continuously — and it is where the analogy with the plane breaks hardest. In the plane two points determine one line. On a lattice they determine an enormous family: below, two vertices at distance 5 on a 313-vertex square-tiling patch lie on 5 242 880 lines, against 6144 on the hexagonal tiling and 1386 on the irregular mesh.
 
-So `All` is combinatorially dangerous on a lattice, and `UpTo[n]` is the honest default for a picture. The count itself is the interesting invariant — see [LineCount]() and [PencilCardinality]() for the summaries built on it.
+Everything is read off the distance matrix. Write *d* for *d(a, b)*. A pair of ends (*s*, *e*) is **admissible** when *d(s, e) = d(s, a) + d + d(b, e)* — the concatenation of any geodesics *s…a*, *a…b*, *b…e* is then a geodesic, whichever geodesics are used — and no neighbour of *s* or *e* prolongs *d(s, e)*. The candidate ends are the vertices of the two extension graphs <code>[GeodesicExtensionGraph]()[*g*, {*b*, *a*}]</code> and <code>[GeodesicExtensionGraph]()[*g*, {*a*, *b*}]</code>. Admissibility on each side alone is not enough: on the 6-cycle through the edge 1–2 the ends 5 and 4 are each admissible, but *d(5, 4) = 1*, so the pool is two DAGs *plus* a compatibility relation, and there are three lines through that edge, not four.
 
-Option `"Maximality"` takes `"Extension"` (default; inextensible) or `"Diameter"`. Option `"Direction"` takes `"BothSides"` (default), `"Forward"` or `"Backward"`. Option `Method` takes `"Exhaustive"` (default) or `"Greedy"`, which returns one realisation without backtracking.
+`All` returns the **pool** <code>[InfraLine]()[{*dag1*, …}]</code>, one geodesic DAG per admissible pair of ends, whose source-to-sink paths are exactly the lines with those ends. `["Multiplicity"]`, `["Length"]` (one number per DAG) and `["Measure"]` are read off the DAGs by dynamic programming, without enumeration; `["Realizations"]` enumerates on demand. A bounded count streams lines off the admissible pairs.
+
+Because admissibility reads only the ends, a whole geodesic bundle extends as one object: <code>[FindInfraLine]()[*g*, *seg*, All]</code> is <code>[ExtendInfraSegment]()[*g*, *seg*, Infinity, All]</code>, the extension pool with no budget.
+
+The longest lines are a selection on the result, `SelectInfraWalk[g, lines, All, "From" -> "MaxLength"]`, which reads the lengths off the pool and keeps the pool form.
+
+| Option | Values | Meaning |
+|---|---|---|
+| `Method` | `Automatic` (default), `"Exhaustive"`, `"Greedy"`, `"RandomGreedy"` | `Automatic` resolves by the count: `All` to `"Exhaustive"`, the pool; a bounded count to `"RandomGreedy"`, which takes the admissible pairs and the branches of each DAG in random order — put `SeedRandom` in front of a call whose output goes into a figure. The class is the same under every value. |
+| `"Direction"` | `"BothSides"` (default), `"Forward"`, `"Backward"` | which ends may move: `"Forward"` keeps *a* and extends past *b* only, `"Backward"` keeps *b* and extends before *a* only. |
+| `Properties` | `{}` | only the empty list; a rule on the extension is a local law and lives on `ExtendInfraGeodesic`. |
 
 Corresponding notions in the classical axiom systems:
 
@@ -40,7 +50,7 @@ Corresponding notions in the classical axiom systems:
 
 ## Basic Examples
 
-How many maximal geodesics pass through two vertices at distance 5. Uniqueness does not merely fail — on the square grid the family is enormous.
+How many lines pass through two vertices at distance 5. Uniqueness does not merely fail — on the square tiling the family is enormous, and the pool counts it without enumerating a single line.
 
 ```wl
 Association @ Table[
@@ -48,14 +58,14 @@ Association @ Table[
      {g = InfraSubstrate[name, "Medium", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
-     Length @ First @ FindInfraLine[g, a, b, All]],
+     FindInfraLine[g, a, b, All]["Multiplicity"]],
    {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]
 ```
 
-Three of them on each substrate. Each line runs clear across the patch, since a geodesic stops only where it can no longer be extended.
+Three of them on each substrate. A bounded count is one random descent of the pool, so the seed goes in front.
 
 ```wl
-Row[Table[
+SeedRandom[1]; Row[Table[
    With[
      {g = InfraSubstrate[name, "Medium", "Gray", "KeepCoordinates" -> True]},
      {a = First @ GraphCenter[g]},
@@ -71,15 +81,84 @@ Row[Table[
    {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]]
 ```
 
-## Properties and Relations
+## Scope
 
-A line through two points contains a geodesic between them, so its vertex sequence includes them both and the segment is a subsequence.
+Through an edge of the 6-cycle there are three lines, not four: the ends 5 and 4 are each admissible on their own side, but the pair is not.
+
+```wl
+FindInfraLine[CycleGraph[6], 1, 2, All]["Realizations"]
+```
+
+`All` is the pool: one geodesic DAG per admissible pair of ends, and the counts come from the DAGs.
 
 ```wl
 With[
-  {g = InfraSubstrate["HexagonalTilingGraph", "Medium", "KeepCoordinates" -> True]},
+  {lines = FindInfraLine[GridGraph[{4, 4}], 6, 7, All]},
+  {lines["Multiplicity"], lines["Length"], Length @ lines["Graph"]}]
+```
+
+A bounded count streams lines off the pool; a strict count that cannot be met is `$Failed`.
+
+```wl
+{FindInfraLine[CycleGraph[6], 1, 2, 2, Method -> "Greedy"],
+ FindInfraLine[CycleGraph[6], 1, 2, 5]}
+```
+
+A geodesic bundle extends as one object. Six geodesics from a corner of the grid, twelve lines through all of them at once.
+
+```wl
+With[
+  {g = GridGraph[{4, 4}]},
+  {seg = FindInfraSegment[g, 1, 11, All]},
+  {seg["Multiplicity"], FindInfraLine[g, seg, All]["Multiplicity"]}]
+```
+
+## Options
+
+### "Direction"
+
+`"Forward"` keeps the first anchor fixed and extends past the second; `"Backward"` the reverse.
+
+```wl
+{FindInfraLine[PathGraph[Range[5]], 2, 3, All, "Direction" -> "Forward"]["Realizations"],
+ FindInfraLine[PathGraph[Range[5]], 2, 3, All, "Direction" -> "Backward"]["Realizations"]}
+```
+
+### Method
+
+The class is the same under every `Method`; only the order in which lines come off the pool differs.
+
+```wl
+With[
+  {g = GridGraph[{4, 4}]},
+  SameQ @@ (Sort @ FindInfraLine[g, 6, 7, All, Method -> #]["Realizations"] & /@
+     {"Exhaustive", "Greedy", "RandomGreedy"})]
+```
+
+## Properties and Relations
+
+Every line satisfies [InfraLineQ](); the predicate accepts the pool.
+
+```wl
+InfraLineQ[GridGraph[{4, 4}], FindInfraLine[GridGraph[{4, 4}], 6, 7, All]]
+```
+
+A line through a segment is that segment extended with no budget.
+
+```wl
+With[
+  {g = GridGraph[{4, 4}]},
+  Sort @ FindInfraLine[g, {6, 7}, All]["Realizations"] ===
+    Sort @ ExtendInfraSegment[g, {6, 7}, Infinity, All]["Realizations"]]
+```
+
+The longest lines are a selection on the pool. On the irregular mesh the lines through two vertices have four different lengths.
+
+```wl
+With[
+  {g = InfraSubstrate["SquareMeshGraph", "Medium", "KeepCoordinates" -> True]},
   {a = First @ GraphCenter[g]},
   {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
-  {line = First @ First @ FindInfraLine[g, a, b, 1]},
-  {SubsetQ[line, {a, b}], InfraLineQ[g, line]}]
+  {lines = FindInfraLine[g, a, b, All]},
+  {lines["Length"], SelectInfraWalk[g, lines, All, "From" -> "MaxLength"]["Length"]}]
 ```

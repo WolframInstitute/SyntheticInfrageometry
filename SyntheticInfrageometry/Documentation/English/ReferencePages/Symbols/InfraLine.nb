@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     17294,        459]
-NotebookOptionsPosition[     11807,        348]
-NotebookOutlinePosition[     12902,        381]
-CellTagsIndexPosition[     12823,        376]
+NotebookDataLength[     34154,        881]
+NotebookOptionsPosition[     26573,        735]
+NotebookOutlinePosition[     27746,        770]
+CellTagsIndexPosition[     27667,        765]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -24,7 +24,7 @@ Cell["InfraLine", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"92dc096f-92d3-4171-bf59-d91d2ca733df"],
+ Cell["   ", "ModInfo",ExpressionUUID->"f15d7bf6-1b8e-443b-b61d-f3dc3fa4b338"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -35,31 +35,226 @@ Cell[TextData[{
     "PackageLink",
     BaseStyle->"InlineFormula"], "[", 
    RowBox[{"{", 
-    StyleBox["line", "TI"], "}"}], "]"}]], "InlineFormula",
+    RowBox[{
+     StyleBox["line1", "TI"], ",", " ", "\[Ellipsis]", ",", " ", 
+     StyleBox["linek", "TI"]}], "}"}], "]"}]], "InlineFormula",
   FontSize->0.9 Inherited,ExpressionUUID->
-  "5f95155c-aeeb-4f35-b085-3e0847204ae6"],
+  "5623627a-bc0f-4d54-aa32-5b0b77282105"],
  "\[LineSeparator]",
- "is the unary form (one maximal geodesic); InfraLine[{line1, \[Ellipsis], \
-linek}] is the multi-realisation form.",
- "\n"
-}], "Usage",ExpressionUUID->"5717efc5-75ce-41b7-8e75-8ab54ad7108a"],
+ "is a bundle of lines, each an inextensible geodesic given as a vertex \
+sequence.",
+ "\n",
+ Cell["   ", "ModInfo",ExpressionUUID->"359227c2-fe54-428d-a839-a02a35b2b172"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["InfraLine"]], 
+     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraLine", 
+     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   RowBox[{"{", 
+    RowBox[{
+     StyleBox["dag1", "TI"], ",", " ", "\[Ellipsis]", ",", " ", 
+     StyleBox["dagk", "TI"]}], "}"}], "]"}]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "9e9945e3-781e-4c00-bd6b-59f71cd7b1d9"],
+ "\[LineSeparator]",
+ "is the pool form: one geodesic DAG per pair of ends, whose source-to-sink \
+paths are the lines with those ends."
+}], "Usage",ExpressionUUID->"cf6d9505-dbb8-4b22-83d8-add90cefac7f"],
 
-Cell["\<\
-FindInfraLine / FindInfraParallel / FindInfraCommonLine return one InfraLine \
-wrapper carrying the requested realisations.\
-\>", "Notes",ExpressionUUID->"cd301990-428e-4514-80b0-73cbcc24511d"],
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraLine"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/FindInfraLine", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "6423d607-c3fd-4849-b988-ed5bcb291099"],
+ " returns the enumerated form for a bounded count and the pool form for ",
+ Cell[BoxData["All"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "c86e2361-fcc3-4439-a7b7-eaa518bc2723"],
+ ". The two describe the same object; the pool stays small where the \
+enumeration is astronomical \[LongDash] 5 242 880 lines through two vertices \
+of a 313-vertex square-tiling patch fit in 104 DAGs."
+}], "Notes",ExpressionUUID->"f0a83412-54a1-40a3-9258-befb9a8609ee"],
 
-Cell["Rendered like InfraSegment (sequential-edge semantics).", "Notes",ExpressionUUID->"e508337f-a133-414c-b9a3-6a48b5a26a52"],
+Cell["Accessors on either form:", "Notes",ExpressionUUID->"94567940-c0d2-404a-a7bb-bbb82f6cf23f"],
 
-Cell["\<\
-Scene-language constructor InfraLine[p, q] is used inside InfraScene.\
-\>", "Notes",ExpressionUUID->"131acfa2-cf78-4849-be45-d5508f643ab7"],
+Cell[BoxData[GridBox[{
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "8b9192f2-4fd8-4e3e-9250-30991d33f3f0"], Cell["Accessor", "TableText",
+     FontWeight->Bold,ExpressionUUID->"ef6f3087-dc3b-446c-83dd-107b619d7286"],
+     Cell["Gives", "TableText",
+     FontWeight->Bold,ExpressionUUID->"2b8804a3-bf93-49d6-8abf-05ade087d2cf"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "ed649a10-5879-4e18-ab44-7dcc6c48aab6"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Realizations\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "b3c03c23-c243-41e5-919f-6eb201a8d310"]], "TableText",ExpressionUUID->
+     "e60ebe1c-3185-4299-bc9e-e0f6890b82e1"], Cell[TextData[{
+     "the lines as vertex sequences; on the pool ",
+     Cell[BoxData[
+      RowBox[{"[", 
+       RowBox[{"\"\<Realizations\>\"", ",", " ", "n"}], "]"}]], 
+      "InlineFormula",
+      FontSize->0.9 Inherited,ExpressionUUID->
+      "e6fb0cdc-9683-45a5-925e-0fadeed5879d"],
+     ", ",
+     Cell[BoxData[
+      RowBox[{"UpTo", "[", "n", "]"}]], "InlineFormula",
+      FontSize->0.9 Inherited,ExpressionUUID->
+      "2506ca50-f79c-440d-a602-2abad9195101"],
+     " or ",
+     Cell[BoxData["All"], "InlineFormula",
+      FontSize->0.9 Inherited,ExpressionUUID->
+      "9e5a599b-2820-46aa-859f-dac902d912b1"],
+     " enumerates lazily, atom by atom"
+    }], "TableText",ExpressionUUID->"1a4e3079-7317-4083-8055-75353066d7a0"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "d584706a-be49-4a7e-9ad8-3df6b2386fe7"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Length\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "1e435518-3286-4151-a56e-a4387ed161df"]], "TableText",ExpressionUUID->
+     "2109bbfd-2769-49fb-b130-44f0f48a76e5"], Cell["\<\
+edge counts \[LongDash] one per line on the enumerated form, one per DAG on \
+the pool\
+\>", "TableText",ExpressionUUID->"56b34199-46b7-42d6-ac5a-62a1d425b9f2"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "8b765735-cc2d-47fd-8796-d939e0107a47"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Multiplicity\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "24b80316-bb3f-4526-9552-49ffe11421ac"]], "TableText",ExpressionUUID->
+     "418a3128-65d2-4692-b6b9-f3b65eab92b3"], Cell["\<\
+how many lines the object holds, by the path-count DP on the pool\
+\>", "TableText",ExpressionUUID->"ca72080f-c861-4b45-a489-d3ddcc6f5a9c"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "948e422f-525b-431c-9bec-ce5ddbde19dc"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Measure\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "d98be57e-195d-48a7-93e7-14265b216b5e"]], "TableText",ExpressionUUID->
+     "aea62d8f-97b0-4559-a06e-4e198a676a44"], Cell["\<\
+the per-vertex occupation, the fraction of lines through each vertex\
+\>", "TableText",ExpressionUUID->"f8dbd1f4-1606-4c6e-a966-fce4ce369f89"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "001b67c1-9ae9-40a3-9d0e-678526421fd8"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<OccupationCount\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "d4941244-06ce-413e-a4b1-2f980c9ab5f6"]], "TableText",ExpressionUUID->
+     "1467af48-cf0e-4fe5-a5d0-56d4e7d60585"], Cell[
+    "the same as a count", "TableText",ExpressionUUID->
+     "cfb8a8af-e9c0-4651-8ac7-71c77530cf41"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "bf9940f0-81f6-4216-8b30-0529346a34f7"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Graph\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "0569d4af-4f8d-4c8f-a6ad-d0b12a402c43"]], "TableText",ExpressionUUID->
+     "d73fdd82-11af-464b-b4f5-56f1e1982e0e"], Cell[
+    "the DAGs of the pool", "TableText",ExpressionUUID->
+     "ed1313b4-a49e-4783-b4f0-244aa24eef45"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "5be103bd-2c30-4c20-a210-bc3b2129c6cf"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<Vertices\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "8c5043ac-9efe-406b-a7ff-2c117bf5fcc4"]], "TableText",ExpressionUUID->
+     "cf55c1fe-f680-4f2d-9a7b-6fa3c8ccf582"], Cell[
+    "the vertices covered", "TableText",ExpressionUUID->
+     "d31edc57-08ce-4508-bb4f-0068807fce70"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "161b2d5c-082a-4747-8a4c-200120e2d898"], Cell[TextData[Cell[BoxData[
+     RowBox[{"[", "\"\<First\>\"", "]"}]], "InlineFormula",
+     FontSize->0.9 Inherited,ExpressionUUID->
+     "22336f83-98d0-47e9-af93-c93f88b23f50"]], "TableText",ExpressionUUID->
+     "7b820103-e981-4c48-bf89-f83b3d519acb"], Cell[
+    "one line", "TableText",ExpressionUUID->
+     "ff1733cd-f2a3-4c22-8fa1-9b2653ceab9e"]}
+  }]], "2ColumnTableMod",ExpressionUUID->"5fb11684-e690-4d29-8e3f-\
+86910f71c383"],
 
-Cell["\<\
-Single-index line[[i]] returns the weighted InfraPoint of the i-th position \
-across realisations (mass = multiplicity; i may be negative); First[line] and \
-multi-index line[[1,1]] keep the realisation-list / first-line meaning.\
-\>", "Notes",ExpressionUUID->"5d604fd4-6b44-4862-8d5f-8294c321a216"]
+Cell[TextData[{
+ Cell[BoxData[
+  RowBox[{"line", "[", 
+   RowBox[{"[", "i", "]"}], "]"}]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "cf8c2053-4af8-4334-b547-997fd8ad0484"],
+ " is the ",
+ StyleBox["i", "TI"],
+ "-th position across all lines as a measured ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraEffectivePoint"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraEffectivePoint", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "82253f2e-2e3c-446a-ac89-91bcc81cea5b"],
+ ": its weight at a vertex is the number of lines passing through that vertex \
+at that position. On the pool this is the ",
+ StyleBox["i", "TI"],
+ "-th layer of every DAG weighted by geodesic occupation, computed without \
+enumeration; ",
+ StyleBox["i", "TI"],
+ " may be negative."
+}], "Notes",ExpressionUUID->"ed881e37-a7ee-43c2-8ddc-34b4007e3ef5"],
+
+Cell[TextData[{
+ "Rendered like ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraSegment"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraSegment", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "8269b388-3430-485b-be04-bed199b116ae"],
+ " by ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraSceneHighlight"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraSceneHighlight", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "6373492c-7861-4668-9f9c-16a3ea756793"],
+ " \[LongDash] sequential-edge semantics."
+}], "Notes",ExpressionUUID->"ff757639-380d-4619-a395-fe51790645be"],
+
+Cell[TextData[{
+ "Inside an ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraScene"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraScene", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "98c05a9e-f993-4194-b68a-e04ca1e84b69"],
+ ", ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["InfraLine"]], 
+     "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraLine", 
+     "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   RowBox[{
+    StyleBox["p", "TI"], ",", " ", 
+    StyleBox["q", "TI"]}], "]"}]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "531a2f67-20d8-4813-b0c4-62be4760d090"],
+ " names a line to be solved for."
+}], "Notes",ExpressionUUID->"187c29b3-c7db-44dd-aae8-1cadd873d910"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -81,45 +276,65 @@ Cell[TextData[{
 
 Cell[TextData[{
  Cell[BoxData[
-  TagBox[
-   FrameBox["\<\"XXXX\"\>"],
-   "FunctionPlaceholder"]], "InlineSeeAlsoFunction",
-  TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "04f1f4f6-42ff-41c1-be38-c72199e55033"],
+  TemplateBox[{
+    Cell[
+     TextData["FindInfraLine"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/FindInfraLine", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "c91daba7-99f4-4244-bb66-9d4204e2c96b"],
+ " \[FilledVerySmallSquare] ",
  Cell[BoxData[
-  RowBox[{
-  Cell[TextData[StyleBox[
-   " \[FilledVerySmallSquare] ", "InlineSeparator"]],ExpressionUUID->
-    "e52cc72c-b17b-4daf-ba13-e4031a732989"], 
-   DynamicModuleBox[{$CellContext`nbobj$$ = NotebookObject[
-     FrontEndObject[
-      LinkObject["i7bzb_shm", 209, 9]], 22], $CellContext`cellobj$$ = 
-    CellObject[6753]}, 
-    TemplateBox[{
-      GraphicsBox[{{
-         Thickness[0.06], 
-         StrokeForm[
-          Hue[0.4167, 0.406, 0.502]], 
-         CircleBox[{0, 0}]}, {
-         Thickness[0.06], 
-         StrokeForm[
-          Hue[0.4167, 0.406, 0.502]], 
-         LineBox[{{0, 0.62}, {0, -0.62}}]}, {
-         Thickness[0.06], 
-         StrokeForm[
-          Hue[0.4167, 0.406, 0.502]], 
-         LineBox[{{-0.62, 0}, {0.62, 0}}]}}, 
-       ImagePadding -> {{1., 1.}, {2.4, 1.}}, ImageSize -> 16, 
-       PlotRange -> {{-1.06, 1.06}, {-1.06, 1.06}}, 
-       BaselinePosition -> (Center -> 
-        Center)], $CellContext`nbobj$$, $CellContext`cellobj$$},
-     "InlineListingAddButton"],
-    Initialization:>($CellContext`nbobj$$ = 
-      EvaluationNotebook[]; $CellContext`cellobj$$ = EvaluationCell[])]}]], 
-  "InlineListingAddButton",ExpressionUUID->
-  "ac548b96-3ee5-484c-99df-e6462c430c8c"]
-}], "SeeAlso",
- CellID->173389911,ExpressionUUID->"a2765fad-d0fd-4f94-9539-78ed28f4fade"]
+  TemplateBox[{
+    Cell[
+     TextData["InfraLineQ"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraLineQ", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "6b0d7a39-4155-4628-bc4a-632198dfcb1f"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraSegment"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraSegment", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "75f191fa-3427-4777-a7c8-8b21bfb68f86"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraRay"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraRay", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "d5ee7b8b-d6e6-4a3c-97a5-c7d1c6eb33eb"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraEffectivePoint"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraEffectivePoint", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "c1eca34f-02bf-4176-87df-38fa38194c14"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["InfraMeasure"]], 
+    "paclet:WolframInstitute/SyntheticInfrageometry/ref/InfraMeasure", 
+    "WolframInstitute/SyntheticInfrageometry Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "1b409824-0ba8-4139-b710-fa229b40ba20"]
+}], "SeeAlso",ExpressionUUID->"02398f00-f010-4f3f-aaf7-894cd071e8c9"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -136,8 +351,20 @@ Cell[TextData[{
 }], "TechNotesSection",
  CellID->792424486,ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74"],
 
+Cell[CellGroupData[{
+
 Cell["Related Guides", "MoreAboutSection",
  CellID->38303248,ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5"],
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox["EuclideanGeometryGuide",
+  BaseStyle->"Link",
+  ButtonData->
+   "paclet:WolframInstitute/SyntheticInfrageometry/guide/\
+EuclideanGeometryGuide"]], \
+"InlineFormula",ExpressionUUID->"f95522e1-325b-4d02-aa7f-9f023552296e"]], \
+"MoreAbout",ExpressionUUID->"c86ed2e1-940e-4e25-b73d-10ebd41b9a9d"]
+}, Open  ]],
 
 Cell[TextData[{
  "Related Links",
@@ -180,6 +407,8 @@ Cell[BoxData[{
  CellID->1969679695,ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502"]
 }, Open  ]],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
  InterpretationBox[GridBox[{
     {
@@ -193,6 +422,99 @@ Cell[BoxData[
    }],
   $Line = 0; Null]], "PrimaryExamplesSection",
  CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
+
+Cell[TextData[{
+ Cell[BoxData["All"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "78ad8b81-5728-4034-936d-ed906145ad03"],
+ " gives the pool. Two DAGs carry the twelve lines through an interior edge \
+of the grid."
+}], "ExampleText",ExpressionUUID->"5159aaa5-401c-42eb-b0f1-b4708ba5ba88"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"lines", " ", "=", " ", 
+     RowBox[{"FindInfraLine", "[", 
+      RowBox[{
+       RowBox[{"GridGraph", "[", 
+        RowBox[{"{", 
+         RowBox[{"4", ",", " ", "4"}], "}"}], "]"}], ",", " ", "6", ",", " ", 
+       "7", ",", " ", "All"}], "]"}]}], "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"Length", " ", "@", " ", 
+      RowBox[{"lines", "[", "\"\<Graph\>\"", "]"}]}], ",", " ", 
+     RowBox[{"lines", "[", "\"\<Multiplicity\>\"", "]"}], ",", " ", 
+     RowBox[{"lines", "[", "\"\<Length\>\"", "]"}]}], "}"}]}], "]"}]], "Input",\
+
+ CellLabel->"In[1]:= ",ExpressionUUID->"3b864885-01b2-4507-8fc1-b5231ec9a27f"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"2", ",", "12", ",", 
+   RowBox[{"{", 
+    RowBox[{"6", ",", "6"}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[1]= ",ExpressionUUID->"bc9caa2a-9e6e-41d1-b67f-5a4f365a50d1"]
+}, Open  ]],
+
+Cell["A bounded count gives the enumerated form.", "ExampleText",ExpressionUUID->"dd3a1405-f54a-47f3-a7b7-96cdaa63ee58"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"FindInfraLine", "[", 
+  RowBox[{
+   RowBox[{"CycleGraph", "[", "6", "]"}], ",", " ", "1", ",", " ", "2", ",", 
+   " ", "2", ",", " ", 
+   RowBox[{"Method", " ", "->", " ", "\"\<Greedy\>\""}]}], "]"}]], "Input",
+ CellLabel->"In[2]:= ",ExpressionUUID->"fc173b6d-308f-49b2-95a1-0410cd88949c"],
+
+Cell[BoxData[
+ RowBox[{"InfraLine", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"1", ",", "2", ",", "3", ",", "4"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"5", ",", "6", ",", "1", ",", "2"}], "}"}]}], "}"}], 
+  "]"}]], "Output",
+ CellLabel->"Out[2]= ",ExpressionUUID->"9c4033dc-78e4-452f-8ea2-457b8b55202b"]
+}, Open  ]],
+
+Cell["Enumerate the pool on demand.", "ExampleText",ExpressionUUID->"5ee5ca22-6dcb-4dc5-966d-bd52cfbe4af4"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FindInfraLine", "[", 
+   RowBox[{
+    RowBox[{"GridGraph", "[", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", " ", "4"}], "}"}], "]"}], ",", " ", "6", ",", " ", 
+    "7", ",", " ", "All"}], "]"}], "[", 
+  RowBox[{"\"\<Realizations\>\"", ",", " ", 
+   RowBox[{"UpTo", "[", "2", "]"}]}], "]"}]], "Input",
+ CellLabel->"In[3]:= ",ExpressionUUID->"26f062e8-602f-417b-9c39-ccd2089b6179"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "2", ",", "6", ",", "7", ",", "8", ",", "12", ",", "16"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "2", ",", "6", ",", "7", ",", "11", ",", "12", ",", "16"}], 
+    "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[3]= ",ExpressionUUID->"9de612ee-bcd1-4503-b5ed-ef7b95975a7f"]
+}, Open  ]]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -239,12 +561,77 @@ Cell[BoxData[
   $Line = 0; Null]], "ExampleSection",
  CellID->258228157,ExpressionUUID->"1cd6234d-1e3c-431d-9989-71f3025eee95"],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
  InterpretationBox[Cell[
   "Properties & Relations", "ExampleSection",ExpressionUUID->
    "d18b1e1f-4c4c-49a5-bb54-1e5e145ddf4e"],
   $Line = 0; Null]], "ExampleSection",
  CellID->2123667759,ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438"],
+
+Cell["\<\
+The first position across the pool is a measured point: every line starts at \
+one of the two ends 1 and 13, six at each.\
+\>", "ExampleText",ExpressionUUID->"a82cb8e5-ca2c-4482-9dd7-35963b513dd8"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FindInfraLine", "[", 
+   RowBox[{
+    RowBox[{"GridGraph", "[", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", " ", "4"}], "}"}], "]"}], ",", " ", "6", ",", " ", 
+    "7", ",", " ", "All"}], "]"}], "[", 
+  RowBox[{"[", "1", "]"}], "]"}]], "Input",
+ CellLabel->"In[1]:= ",ExpressionUUID->"10351e5e-7af5-4f96-b917-ac4cbd459404"],
+
+Cell[BoxData[
+ RowBox[{"InfraEffectivePoint", "[", 
+  RowBox[{"\[LeftAssociation]", 
+   RowBox[{
+    RowBox[{"1", "\[Rule]", "6"}], ",", 
+    RowBox[{"13", "\[Rule]", "6"}]}], "\[RightAssociation]"}], 
+  "]"}]], "Output",
+ CellLabel->"Out[1]= ",ExpressionUUID->"31c1bfa1-aa3d-4688-93fe-84451c44ddf2"]
+}, Open  ]],
+
+Cell["\<\
+The measure is the fraction of lines through each vertex; the anchors carry \
+all of them.\
+\>", "ExampleText",ExpressionUUID->"aee2f16f-eb3a-4370-8c00-149bfc181115"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", "\n", "  ", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"measure", " ", "=", " ", 
+     RowBox[{
+      RowBox[{"FindInfraLine", "[", 
+       RowBox[{
+        RowBox[{"GridGraph", "[", 
+         RowBox[{"{", 
+          RowBox[{"4", ",", " ", "4"}], "}"}], "]"}], ",", " ", "6", ",", " ",
+         "7", ",", " ", "All"}], "]"}], "[", "\"\<Measure\>\"", "]"}]}], 
+    "}"}], ",", "\n", "  ", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"measure", "[", "6", "]"}], ",", " ", 
+     RowBox[{"measure", "[", "7", "]"}], ",", " ", 
+     RowBox[{"measure", "[", "1", "]"}]}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[2]:= ",ExpressionUUID->"5a5ce6f4-4fff-46f4-9881-a2c35007508f"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "1", ",", 
+   FractionBox["1", "2"]}], "}"}]], "Output",
+ CellLabel->"Out[2]= ",ExpressionUUID->"92761852-4c14-485a-bacb-0fc7faf11ba0"]
+}, Open  ]]
+}, Open  ]],
 
 Cell[BoxData[
  InterpretationBox[Cell[
@@ -317,7 +704,7 @@ Cell["WolframInstitute`SyntheticInfrageometry`", "Categorization",
  CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
 
 Cell["WolframInstitute/SyntheticInfrageometry/ref/InfraLine", "Categorization",
- CellLabel->"URI",ExpressionUUID->"f381d394-58e9-4cb8-92e0-a611f9a5cf3f"]
+ CellLabel->"URI",ExpressionUUID->"ec4e0bc5-360b-43dd-a3c1-056d016e7ecc"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -351,13 +738,15 @@ WindowMargins->{{5, Automatic}, {Automatic, 0}},
 TaggingRules->{
  "Metadata" -> {
    "title" -> "InfraLine", "context" -> 
-    "WolframInstitute`SyntheticInfrageometry`", "keywords" -> {}, "summary" -> 
-    "", "paclet" -> "WolframInstitute/SyntheticInfrageometry", "uri" -> 
-    "WolframInstitute/SyntheticInfrageometry/ref/InfraLine", "type" -> 
+    "WolframInstitute`SyntheticInfrageometry`", 
+    "keywords" -> {
+     "line", "inextensible geodesic", "pool", "wrapper", "geodesic DAG"}, 
+    "summary" -> "", "paclet" -> "WolframInstitute/SyntheticInfrageometry", 
+    "uri" -> "WolframInstitute/SyntheticInfrageometry/ref/InfraLine", "type" -> 
     "Symbol", "index" -> True, "language" -> "en"}},
 CreateCellID->True,
 CellContext->CellGroup,
-FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (July 2, 2026)",
 StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", 
   CharacterEncoding -> "UTF-8"],
 ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
@@ -368,14 +757,14 @@ ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
 (*CellTagsOutline
 CellTagsIndex->{
  "ExtendedExamples"->{
-  Cell[6645, 198, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+  Cell[19362, 520, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
    CellTags->"ExtendedExamples",
    CellID->533848431]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"ExtendedExamples", 12630, 369}
+ {"ExtendedExamples", 27473, 758}
  }
 *)
 (*NotebookFileOutline
@@ -383,81 +772,114 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 107, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[686, 25, 748, 19, 70, "Usage",ExpressionUUID->"5717efc5-75ce-41b7-8e75-8ab54ad7108a"],
-Cell[1437, 46, 203, 3, 70, "Notes",ExpressionUUID->"cd301990-428e-4514-80b0-73cbcc24511d"],
-Cell[1643, 51, 127, 0, 70, "Notes",ExpressionUUID->"e508337f-a133-414c-b9a3-6a48b5a26a52"],
-Cell[1773, 53, 149, 2, 70, "Notes",ExpressionUUID->"131acfa2-cf78-4849-be45-d5508f643ab7"],
-Cell[1925, 57, 309, 4, 70, "Notes",ExpressionUUID->"5d604fd4-6b44-4862-8d5f-8294c321a216"]
+Cell[686, 25, 1538, 40, 70, "Usage",ExpressionUUID->"cf6d9505-dbb8-4b22-83d8-add90cefac7f"],
+Cell[2227, 67, 826, 17, 70, "Notes",ExpressionUUID->"f0a83412-54a1-40a3-9258-befb9a8609ee"],
+Cell[3056, 86, 97, 0, 70, "Notes",ExpressionUUID->"94567940-c0d2-404a-a7bb-bbb82f6cf23f"],
+Cell[3156, 88, 4876, 88, 70, "2ColumnTableMod",ExpressionUUID->"5fb11684-e690-4d29-8e3f-86910f71c383"],
+Cell[8035, 178, 978, 25, 70, "Notes",ExpressionUUID->"ed881e37-a7ee-43c2-8ddc-34b4007e3ef5"],
+Cell[9016, 205, 840, 22, 70, "Notes",ExpressionUUID->"ff757639-380d-4619-a395-fe51790645be"],
+Cell[9859, 229, 935, 27, 70, "Notes",ExpressionUUID->"187c29b3-c7db-44dd-aae8-1cadd873d910"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2271, 66, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+Cell[10831, 261, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
  CellID->1559318232],
-Cell[2733, 81, 1543, 40, 70, "SeeAlso",ExpressionUUID->"a2765fad-d0fd-4f94-9539-78ed28f4fade",
- CellID->173389911]
+Cell[11293, 276, 2259, 60, 70, "SeeAlso",ExpressionUUID->"02398f00-f010-4f3f-aaf7-894cd071e8c9"]
 }, Open  ]],
-Cell[4291, 124, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+Cell[13567, 339, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
  CellID->792424486],
-Cell[4729, 138, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+Cell[CellGroupData[{
+Cell[14027, 355, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
  CellID->38303248],
-Cell[4848, 141, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+Cell[14146, 358, 332, 7, 70, "MoreAbout",ExpressionUUID->"c86ed2e1-940e-4e25-b73d-10ebd41b9a9d"]
+}, Open  ]],
+Cell[14493, 368, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
  CellID->47113304],
 Cell[CellGroupData[{
-Cell[5344, 158, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+Cell[14989, 385, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
  CellID->1718580883],
-Cell[5878, 174, 285, 5, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+Cell[15523, 401, 285, 5, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
  CellID->1969679695]
 }, Open  ]],
-Cell[6178, 182, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
- CellID->880084151],
 Cell[CellGroupData[{
-Cell[6645, 198, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+Cell[15845, 411, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+ CellID->880084151],
+Cell[16290, 425, 306, 6, 70, "ExampleText",ExpressionUUID->"5159aaa5-401c-42eb-b0f1-b4708ba5ba88"],
+Cell[CellGroupData[{
+Cell[16621, 435, 728, 18, 70, "Input",ExpressionUUID->"3b864885-01b2-4507-8fc1-b5231ec9a27f"],
+Cell[17352, 455, 212, 5, 70, "Output",ExpressionUUID->"bc9caa2a-9e6e-41d1-b67f-5a4f365a50d1"]
+}, Open  ]],
+Cell[17579, 463, 120, 0, 70, "ExampleText",ExpressionUUID->"dd3a1405-f54a-47f3-a7b7-96cdaa63ee58"],
+Cell[CellGroupData[{
+Cell[17724, 467, 313, 6, 70, "Input",ExpressionUUID->"fc173b6d-308f-49b2-95a1-0410cd88949c"],
+Cell[18040, 475, 334, 9, 70, "Output",ExpressionUUID->"9c4033dc-78e4-452f-8ea2-457b8b55202b"]
+}, Open  ]],
+Cell[18389, 487, 107, 0, 70, "ExampleText",ExpressionUUID->"5ee5ca22-6dcb-4dc5-966d-bd52cfbe4af4"],
+Cell[CellGroupData[{
+Cell[18521, 491, 414, 10, 70, "Input",ExpressionUUID->"26f062e8-602f-417b-9c39-ccd2089b6179"],
+Cell[18938, 503, 375, 11, 70, "Output",ExpressionUUID->"9de612ee-bcd1-4503-b5ed-ef7b95975a7f"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19362, 520, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
  CellTags->"ExtendedExamples",
  CellID->533848431],
-Cell[7135, 213, 242, 5, 70, "ExampleSection",ExpressionUUID->"6d08f999-4c69-4709-9b28-82906be6ee75",
+Cell[19852, 535, 242, 5, 70, "ExampleSection",ExpressionUUID->"6d08f999-4c69-4709-9b28-82906be6ee75",
  CellID->1293636265],
-Cell[7380, 220, 265, 5, 70, "ExampleSection",ExpressionUUID->"85bb6475-fccb-4f83-9c4c-95411a492aa7",
+Cell[20097, 542, 265, 5, 70, "ExampleSection",ExpressionUUID->"85bb6475-fccb-4f83-9c4c-95411a492aa7",
  CellID->1020263627],
-Cell[7648, 227, 244, 5, 70, "ExampleSection",ExpressionUUID->"3276b1d7-cf51-4f3b-970a-56b0e7c469f0",
+Cell[20365, 549, 244, 5, 70, "ExampleSection",ExpressionUUID->"3276b1d7-cf51-4f3b-970a-56b0e7c469f0",
  CellID->2061341341],
-Cell[7895, 234, 248, 5, 70, "ExampleSection",ExpressionUUID->"1cd6234d-1e3c-431d-9989-71f3025eee95",
+Cell[20612, 556, 248, 5, 70, "ExampleSection",ExpressionUUID->"1cd6234d-1e3c-431d-9989-71f3025eee95",
  CellID->258228157],
-Cell[8146, 241, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
+Cell[CellGroupData[{
+Cell[20885, 565, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
  CellID->2123667759],
-Cell[8408, 248, 252, 5, 70, "ExampleSection",ExpressionUUID->"9397dd0b-9de4-443a-9371-be2b75148f2f",
+Cell[21147, 572, 207, 3, 70, "ExampleText",ExpressionUUID->"a82cb8e5-ca2c-4482-9dd7-35963b513dd8"],
+Cell[CellGroupData[{
+Cell[21379, 579, 358, 9, 70, "Input",ExpressionUUID->"10351e5e-7af5-4f96-b917-ac4cbd459404"],
+Cell[21740, 590, 300, 7, 70, "Output",ExpressionUUID->"31c1bfa1-aa3d-4688-93fe-84451c44ddf2"]
+}, Open  ]],
+Cell[22055, 600, 176, 3, 70, "ExampleText",ExpressionUUID->"aee2f16f-eb3a-4370-8c00-149bfc181115"],
+Cell[CellGroupData[{
+Cell[22256, 607, 704, 18, 70, "Input",ExpressionUUID->"5a5ce6f4-4fff-46f4-9881-a2c35007508f"],
+Cell[22963, 627, 184, 4, 70, "Output",ExpressionUUID->"92761852-4c14-485a-bacb-0fc7faf11ba0"]
+}, Open  ]]
+}, Open  ]],
+Cell[23174, 635, 252, 5, 70, "ExampleSection",ExpressionUUID->"9397dd0b-9de4-443a-9371-be2b75148f2f",
  CellID->1305812373],
-Cell[8663, 255, 257, 5, 70, "ExampleSection",ExpressionUUID->"c5507407-1b71-491f-84b6-3f5747264ef7",
+Cell[23429, 642, 257, 5, 70, "ExampleSection",ExpressionUUID->"c5507407-1b71-491f-84b6-3f5747264ef7",
  CellID->1653164318],
-Cell[8923, 262, 249, 5, 70, "ExampleSection",ExpressionUUID->"ce9d5678-57c6-4712-bdd3-87904919f71e",
+Cell[23689, 649, 249, 5, 70, "ExampleSection",ExpressionUUID->"ce9d5678-57c6-4712-bdd3-87904919f71e",
  CellID->589267740]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[9209, 272, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+Cell[23975, 659, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
  CellID->311882160],
-Cell[9322, 275, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+Cell[24088, 662, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
  CellID->341476719],
 Cell[CellGroupData[{
-Cell[9823, 291, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+Cell[24589, 678, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
  CellID->1755438392],
-Cell[10311, 306, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+Cell[25077, 693, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
  CellID->686433507],
-Cell[10448, 310, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+Cell[25214, 697, 167, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
  CellID->605800465],
-Cell[10618, 314, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+Cell[25384, 701, 164, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[10785, 318, 153, 1, 70, "Categorization",ExpressionUUID->"f381d394-58e9-4cb8-92e0-a611f9a5cf3f"]
+Cell[25551, 705, 153, 1, 70, "Categorization",ExpressionUUID->"ec4e0bc5-360b-43dd-a3c1-056d016e7ecc"]
 }, Closed]],
-Cell[10953, 322, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+Cell[25719, 709, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],
 Cell[CellGroupData[{
-Cell[11088, 327, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+Cell[25854, 714, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
  CellID->1872225408],
-Cell[11211, 330, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+Cell[25977, 717, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
  CellID->1562036412],
-Cell[11363, 334, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+Cell[26129, 721, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
  CellID->158391909],
-Cell[11503, 338, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+Cell[26269, 725, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
  CellID->1360575930],
-Cell[11642, 342, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+Cell[26408, 729, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
  CellID->793782254]
 }, Closed]]
 }, Open  ]]
