@@ -1411,7 +1411,7 @@ VerificationTest[
   TestID -> "FindInfraParallel-RandomGreedy-seeded-reproducible"
 ]
 
-(* ===== FindInfraLine[g, segment] overload (replaces 2-arg ExtendInfraSegment) ===== *)
+(* ===== FindInfraLine[g, segment] overload (the extension pool at kspec Infinity, ExtendInfraSegment[g, seg]) ===== *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
@@ -1500,16 +1500,172 @@ VerificationTest[
 ]
 
 
-(* ===== Tarski A4 (5-arg ExtendInfraSegment, the only surviving form) ===== *)
+(* ===== ExtendInfraSegment: the extension pool on the distance matrix ===== *)
 
-(* Tested in TarskiGeometryTests via the synthetic-extension axiom dashboard;
-   here we just sanity-check the calling-triple shape. *)
+(* kspec Infinity is the line pool: FindInfraLine[g, seg] is ExtendInfraSegment[g, seg, Infinity], on a walk seed and on a geodesic-DAG seed *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = FindInfraSegment[ g, 1, 11, All ] },
+      Sort @ ExtendInfraSegment[ g, { 6, 7 }, Infinity, All ][ "Realizations" ] ===
+        Sort @ FindInfraLine[ g, 6, 7, All ][ "Realizations" ] &&
+      Sort @ ExtendInfraSegment[ g, seg, Infinity, All ][ "Realizations" ] ===
+        Sort @ FindInfraLine[ g, seg, All ][ "Realizations" ]
+    ]
+  ],
+  True,
+  TestID -> "ExtendInfraSegment-Infinity-is-FindInfraLine"
+]
+
+(* kspec 0 is the bundle itself: all six geodesics from 1 to 11 *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = FindInfraSegment[ g, 1, 11, All ] },
+      Sort @ ExtendInfraSegment[ g, seg, 0, All ][ "Realizations" ] === Sort @ seg[ "Realizations" ]
+    ]
+  ],
+  True,
+  TestID -> "ExtendInfraSegment-kspec-0-is-the-bundle"
+]
+
+(* every extension is a geodesic containing the seed, with at most k edges added on each side *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ], seed = { 6, 7 }, k = 2 },
+    AllTrue[ ExtendInfraSegment[ g, seed, k, All ][ "Realizations" ],
+      w |-> InfraSegmentQ[ g, w ] &&
+        With[ { pos = SequencePosition[ w, seed ] },
+          pos =!= { } && pos[[ 1, 1 ]] - 1 <= k && Length[ w ] - pos[[ 1, 2 ]] <= k ] ]
+  ],
+  True,
+  TestID -> "ExtendInfraSegment-extensions-are-geodesics-within-budget"
+]
+
+(* inextensible within the budget: a side still under budget has no neighbour prolonging the geodesic *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ], seed = { 6, 7 }, k = 2 },
+    AllTrue[ ExtendInfraSegment[ g, seed, k, All ][ "Realizations" ],
+      w |-> With[ { pos = First @ SequencePosition[ w, seed ] },
+        ( pos[[ 1 ]] - 1 == k ||
+          NoneTrue[ AdjacencyList[ g, First @ w ], GraphDistance[ g, #, Last @ w ] == Length[ w ] & ] ) &&
+        ( Length[ w ] - pos[[ 2 ]] == k ||
+          NoneTrue[ AdjacencyList[ g, Last @ w ], GraphDistance[ g, First @ w, # ] == Length[ w ] & ] ) ] ]
+  ],
+  True,
+  TestID -> "ExtendInfraSegment-maximal-within-budget"
+]
+
+(* agreement with the walk engine where the two ends never interact -- the interior grid edge and the path -- for a budget k, an exact {k} and a range *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    AllTrue[ { 1, 2, 3, { 2 }, { 1, 2 }, Infinity },
+      k |-> Sort @ ExtendInfraSegment[ g, { 6, 7 }, k, All ][ "Realizations" ] ===
+        Sort @ ExtendInfraGeodesic[ g, { 6, 7 }, Infinity, k, All, Properties -> { "Minimizing" } ][ "Realizations" ] ]
+  ],
+  True,
+  TestID -> "ExtendInfraSegment-equals-walk-engine-GridGraph"
+]
 
 VerificationTest[
-  With[ { g = PathGraph[ Range[ 5 ] ] },
-    ExtendInfraSegment[ g, 1, 2, 1, 2, All ]
+  AllTrue[ { 1, 2, 5, { 2 }, { 2, 5 }, Infinity },
+    k |-> Sort @ ExtendInfraSegment[ PathGraph[ Range[ 5 ] ], { 4, 5 }, k, All ][ "Realizations" ] ===
+      Sort @ ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 4, 5 }, Infinity, k, All,
+        Properties -> { "Minimizing" } ][ "Realizations" ] ],
+  True,
+  TestID -> "ExtendInfraSegment-equals-walk-engine-PathGraph-asymmetric"
+]
+
+(* a geodesic-DAG seed extends as one object, the same set the walk engine gets by spreading over the six geodesics *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { seg = FindInfraSegment[ g, 1, 11, All ] },
+      Sort @ ExtendInfraSegment[ g, seg, 1, All ][ "Realizations" ] ===
+        Sort @ ExtendInfraGeodesic[ g, seg, Infinity, 1, All, Properties -> { "Minimizing" } ][ "Realizations" ]
+    ]
   ],
-  { InfraPoint[3] },
+  True,
+  TestID -> "ExtendInfraSegment-bundle-seed-equals-walk-engine-spread"
+]
+
+(* where the ends interact the global observer sees more: on C_6 through the edge 1-2 a budget of 2 buys all three lines, the ones FindInfraLine finds; the two-sided walk engine, stepping both sides at once, reaches only {6, 1, 2, 3} *)
+VerificationTest[
+  Sort @ ExtendInfraSegment[ CycleGraph[ 6 ], { 1, 2 }, 2, All ][ "Realizations" ],
+  Sort @ { { 6, 1, 2, 3 }, { 1, 2, 3, 4 }, { 5, 6, 1, 2 } },
+  TestID -> "ExtendInfraSegment-C6-compatibility"
+]
+
+(* "Direction" as on FindInfraLine: only past the right end, only past the left end *)
+VerificationTest[
+  { ExtendInfraSegment[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 2, All, "Direction" -> "Forward" ][ "Realizations" ],
+    ExtendInfraSegment[ PathGraph[ Range[ 7 ] ], { 3, 4 }, 2, All, "Direction" -> "Backward" ][ "Realizations" ],
+    ExtendInfraSegment[ PathGraph[ Range[ 7 ] ], { 3, 4 }, Infinity, All, "Direction" -> "Forward" ][ "Realizations" ] },
+  { { { 3, 4, 5, 6 } }, { { 1, 2, 3, 4 } }, { { 3, 4, 5, 6, 7 } } },
+  TestID -> "ExtendInfraSegment-Direction"
+]
+
+(* one class under every Method *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    SameQ @@ ( Sort @ ExtendInfraSegment[ g, { 6, 7 }, 2, All, Method -> # ][ "Realizations" ] & /@
+      { "Exhaustive", "Greedy", "RandomGreedy" } )
+  ],
+  True,
+  TestID -> "ExtendInfraSegment-class-invariant-under-Method"
+]
+
+(* the pool carries the family by DP -- one atom per admissible end pair, count, occupation, lengths and ends without enumeration *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { pool = ExtendInfraSegment[ g, { 6, 7 }, 2, All ] },
+      MatchQ[ pool, InfraSegment[ { _Graph, __Graph } ] ] &&
+      pool[ "Multiplicity" ] === Length @ pool[ "Realizations" ] &&
+      Total @ pool[ "OccupationCount" ] === Total[ Length /@ pool[ "Realizations" ] ] &&
+      Union @ pool[ "Length" ] === Union[ Length[ # ] - 1 & /@ pool[ "Realizations" ] ] &&
+      pool[ "Start" ] === InfraSet[ { 1, 9, 14 } ] && pool[ "End" ] === InfraSet[ { 4, 12, 15 } ]
+    ]
+  ],
+  True,
+  TestID -> "ExtendInfraSegment-pool-DP-counts-match-enumeration"
+]
+
+(* the longest extensions are a selection on the pool, and keep the pool form *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { pool = ExtendInfraSegment[ g, { 6, 7 }, Infinity, All ] },
+      With[ { longest = SelectInfraWalk[ g, pool, All, "From" -> "MaxLength" ] },
+        MatchQ[ longest, InfraSegment[ { __Graph } ] ] &&
+        Sort @ longest[ "Realizations" ] === Sort @ MaximalBy[ pool[ "Realizations" ], Length ]
+      ]
+    ]
+  ],
+  True,
+  TestID -> "ExtendInfraSegment-longest-by-SelectInfraWalk"
+]
+
+(* the count contract: count-less is one witness of the class, UpTo is soft, a strict n fails on under-supply *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { one = ExtendInfraSegment[ g, { 6, 7 }, 2 ], all = ExtendInfraSegment[ g, { 6, 7 }, 2, All ][ "Realizations" ] },
+      Length @ one[ "Realizations" ] == 1 && MemberQ[ all, First @ one[ "Realizations" ] ] &&
+      Length @ ExtendInfraSegment[ g, { 6, 7 }, 2, UpTo[ 3 ] ][ "Realizations" ] == 3 &&
+      ExtendInfraSegment[ PathGraph[ Range[ 5 ] ], { 2, 3 }, Infinity, 99 ] === $Failed
+    ]
+  ],
+  True,
+  TestID -> "ExtendInfraSegment-count-contract"
+]
+
+(* a rule on the extension is a local law: it belongs to ExtendInfraGeodesic *)
+VerificationTest[
+  ExtendInfraSegment[ GridGraph[ { 4, 4 } ], { 6, 7 }, 2, All, Properties -> { "Simple" } ],
+  $Failed,
+  { ExtendInfraSegment::badproperty },
+  TestID -> "ExtendInfraSegment-badproperty"
+]
+
+(* the 6-ary Tarski A4 form is untouched, with and without its count *)
+VerificationTest[
+  { ExtendInfraSegment[ PathGraph[ Range[ 5 ] ], 1, 2, 1, 2 ],
+    ExtendInfraSegment[ PathGraph[ Range[ 5 ] ], 1, 2, 1, 2, All ] },
+  { { InfraPoint[ 3 ] }, { InfraPoint[ 3 ] } },
   TestID -> "ExtendInfraSegment-A4-PathGraph"
 ]
 

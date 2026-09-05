@@ -52,7 +52,7 @@ InfraLine /: Part[ InfraLine[ dags : { __Graph } ], i_Integer ] :=
 
 (* ===================== FindInfraLine ===================== *)
 
-(* a line through p1, p2: an inextensible geodesic s ... p1 ... p2 ... e, with d(s, e) == d(s, p1) + d(p1, p2) + d(p2, e) and no neighbour of s or e prolonging it.  One class under every Method; the longest ones are SelectInfraWalk[graph, lines, All, "From" -> "MaxLength"] *)
+(* a line through p1, p2: an inextensible geodesic s ... p1 ... p2 ... e, with d(s, e) == d(s, p1) + d(p1, p2) + d(p2, e) and no neighbour of s or e prolonging it -- the extension pool of the p1 -> p2 bundle at kspec Infinity (extensionPool, InfraSegment.wl).  One class under every Method; the longest ones are SelectInfraWalk[graph, lines, All, "From" -> "MaxLength"] *)
 
 FindInfraLine::badmethod    = "Method `1` is not supported by FindInfraLine.";
 FindInfraLine::badproperty  = "Property `1` is not supported by FindInfraLine (FindInfraLine accepts only Properties -> {}).";
@@ -69,12 +69,12 @@ FindInfraLine[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] /;
     ( ! ListQ[ p1 ] || VertexQ[ graph, p1 ] ) && Head[ p1 ] =!= InfraSegment :=
   spreadFind[ InfraLine, count,
-    { q1, q2 } |-> linePool[ graph, GeodesicIntervalGraph[ graph, q1, q2 ], count, opts ], p1, p2 ]
+    { q1, q2 } |-> extensionPool[ FindInfraLine, graph, GeodesicIntervalGraph[ graph, q1, q2 ], Infinity, count, opts ], p1, p2 ]
 
 
 FindInfraLine[ graph_Graph, InfraSegment[ dag_Graph ],
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  With[ { pool = linePool[ graph, dag, count, opts ] },
+  With[ { pool = extensionPool[ FindInfraLine, graph, dag, Infinity, count, opts ] },
     If[ pool === $Failed, $Failed, bundleTake[ InfraLine, pool, count ] ] ]
 
 FindInfraLine[ graph_Graph, InfraSegment[{ walk_List, ___ }],
@@ -83,53 +83,8 @@ FindInfraLine[ graph_Graph, InfraSegment[{ walk_List, ___ }],
 
 FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic,
     opts : OptionsPattern[] ] /; Length[ segment ] >= 2 && ! VertexQ[ graph, segment ] :=
-  With[ { pool = linePool[ graph, PathGraph[ segment, DirectedEdges -> True ], count, opts ] },
+  With[ { pool = extensionPool[ FindInfraLine, graph, PathGraph[ segment, DirectedEdges -> True ], Infinity, count, opts ] },
     If[ pool === $Failed, $Failed, bundleTake[ InfraLine, pool, count ] ] ]
-
-
-(* the pool of lines containing a geodesic bundle from p1 to p2 (a DAG with source p1 and sink p2), read off the distance matrix.  The two extension graphs hold the candidate ends; a pair (s, e) is admissible iff jointly geodesic -- d(s, e) == d(s, p1) + d(p1, p2) + d(p2, e), whichever geodesics are used -- and inextensible on each free side, and its atom is I(p1, s) reversed, the bundle, and I(p2, e), cut out of the extension graphs.  "Exhaustive" with All is the pool itself; every bounded count streams geodesics off the admissible pairs in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order, so the class is the same under every Method *)
-
-linePool[ _Graph, bundle_Graph, _, OptionsPattern[ FindInfraLine ] ] /; VertexCount[ bundle ] == 0 := { }
-
-linePool[ graph_Graph, bundle_Graph, count_, opts : OptionsPattern[ FindInfraLine ] ] :=
-  Catch @ With[ {
-      properties = OptionValue[ FindInfraLine, { opts }, Properties ],
-      methodHead = methodName @ resolveMethod[ OptionValue[ FindInfraLine, { opts }, Method ], count ],
-      direction  = OptionValue[ FindInfraLine, { opts }, "Direction" ],
-      p1 = First @ Select[ VertexList @ bundle, VertexInDegree[ bundle, # ] == 0 & ],
-      p2 = First @ Select[ VertexList @ bundle, VertexOutDegree[ bundle, # ] == 0 & ],
-      verts = VertexList @ graph },
-    If[ properties =!= { }, Message[ FindInfraLine::badproperty, properties ]; Throw[ $Failed ] ];
-    If[ ! MatchQ[ direction, "Forward" | "Backward" | "BothSides" ],
-      Message[ FindInfraLine::baddirection, direction ]; Throw[ $Failed ] ];
-    If[ ! MatchQ[ methodHead, "Exhaustive" | "Greedy" | "RandomGreedy" ],
-      Message[ FindInfraLine::badmethod, methodHead ]; Throw[ $Failed ] ];
-    With[ { dm = GraphDistanceMatrix[ graph ], vidx = AssociationThread[ verts, Range @ Length @ verts ],
-            leftExt  = GeodesicExtensionGraph[ graph, { p2, p1 } ],
-            rightExt = GeodesicExtensionGraph[ graph, { p1, p2 } ] },
-      { dist = dm[[ vidx @ #1, vidx @ #2 ]] & },
-      { d = dist[ p1, p2 ],
-        pairs = Tuples[ { If[ direction === "Forward",  { p1 }, VertexList @ leftExt ],
-                          If[ direction === "Backward", { p2 }, VertexList @ rightExt ] } ] },
-      { admissibleQ = { s, e } |-> dist[ s, e ] == dist[ s, p1 ] + d + dist[ p2, e ] &&
-          ( direction === "Forward"  || NoneTrue[ AdjacencyList[ graph, s ], dist[ #, e ] == dist[ s, e ] + 1 & ] ) &&
-          ( direction === "Backward" || NoneTrue[ AdjacencyList[ graph, e ], dist[ s, # ] == dist[ s, e ] + 1 & ] ),
-        atom = { s, e } |-> Graph @ Sort @ Join[
-          EdgeList @ ReverseGraph @ Subgraph[ leftExt,
-            Select[ VertexList @ leftExt, dist[ p1, # ] + dist[ #, s ] == dist[ p1, s ] & ] ],
-          EdgeList @ bundle,
-          EdgeList @ Subgraph[ rightExt,
-            Select[ VertexList @ rightExt, dist[ p2, # ] + dist[ #, e ] == dist[ p2, e ] & ] ] ] },
-      If[ methodHead === "Exhaustive" && count === All,
-        atom @@@ Select[ pairs, admissibleQ @@ # & ],
-        With[ { cap = countLimit @ count, branch = greedyBranch[ methodHead /. "Exhaustive" -> "Greedy" ] },
-          Fold[ { acc, pair } |-> If[ Length @ acc >= cap || ! admissibleQ @@ pair, acc,
-              Join[ acc, greedyFrontierSweep[ atom @@ pair, First @ pair, Last @ pair,
-                { dag, walk } |-> DeleteCases[ VertexOutComponent[ dag, { Last @ walk }, 1 ], Last @ walk ],
-                True &, Infinity, cap - Length @ acc, branch ] ] ],
-            { }, branch @ pairs ] ] ]
-    ]
-  ]
 
 
 (* the LONGEST lines through a segment, kept for FindInfraParallel and FindInfraPerpendicular: each side extended independently, joint geodesicity d(s, e) == d(s, p1) + d + d(p2, e), and only the maxima of d(s, p1) + d(p2, e) kept *)

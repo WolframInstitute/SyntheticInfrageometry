@@ -3,6 +3,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageImport["WolframInstitute`Infrageometry`"]
 
 PackageScope[findSegmentCore]
+PackageScope[extensionPool]
 
 
 (* ===================== InfraSegment wrapper ===================== *)
@@ -14,7 +15,7 @@ InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Length" ] := ( Length[ # ]
 InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Start" ] := InfraSet[ DeleteDuplicates[ First /@ reps ] ]
 InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "End" ]   := InfraSet[ DeleteDuplicates[ Last /@ reps ] ]
 
-InfraSegment /: Part[ InfraSegment[ reps_List ], i_Integer ] := columnInfraPoint[ reps, i ]
+InfraSegment /: Part[ InfraSegment[ reps : Except[ { __Graph }, _List ] ], i_Integer ] := columnInfraPoint[ reps, i ]
 
 
 (* ===== geodesic-DAG form: InfraSegment[dag_Graph] ===== *)
@@ -63,9 +64,45 @@ Options[ FindInfraSegment ] = {
 (* a lone atom collapses to the bare DAG form *)
 InfraSegment[ { dag_Graph } ] := InfraSegment[ dag ]
 
-(* the atoms stay lazy until something actually asks for walks *)
+(* ===== pool form: InfraSegment[{dag_Graph, ...}] ===== *)
+
+(* one geodesic DAG per endpoint pair -- FindInfraSegment spread over wrapper anchors, or ExtendInfraSegment's admissible end pairs.  Count and occupation come from the per-atom DP, as for the InfraLine pool, and ["Length"] is one number per atom: a 20 x 20 grid edge has 9 x 10^9 lines through it, so nothing here is sized by the family.  Anything else enumerates *)
+
+InfraSegment[ dags : { _Graph, __Graph } ][ "Graph" ]              := dags
+InfraSegment[ dags : { _Graph, __Graph } ][ "Vertices" ]           := Union @@ ( VertexList /@ dags )
+InfraSegment[ dags : { _Graph, __Graph } ][ "Length" ]             := ( Max @ Values @ dagLayers @ # & ) /@ dags
+InfraSegment[ dags : { _Graph, __Graph } ][ "Multiplicity" ]       := infraNumReps @ InfraSegment @ dags
+InfraSegment[ dags : { _Graph, __Graph } ][ "OccupationCount" ]    := infraVertexMultiset @ InfraSegment @ dags
+InfraSegment[ dags : { _Graph, __Graph } ][ "OccupationMeasure" ]  := InfraMeasure @ InfraSegment @ dags
+InfraSegment[ dags : { _Graph, __Graph } ][ "Measure" ]            := InfraMeasure @ InfraSegment @ dags
+InfraSegment[ dags : { _Graph, __Graph } ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSegment @ dags, Method -> "Probability" ]
+InfraSegment[ dags : { _Graph, __Graph } ][ "Realizations" ]       := Catenate[ dagGeodesics /@ dags ]
+InfraSegment[ dags : { _Graph, __Graph } ][ "Paths" ]              := Catenate[ dagGeodesics /@ dags ]
+InfraSegment[ dags : { _Graph, __Graph } ][ "First" ]              := First @ dagGeodesics[ First @ dags, 1 ]
+InfraSegment[ dags : { _Graph, __Graph } ][ "Start" ] :=
+  InfraSet[ Union @@ Map[ dag |-> Select[ VertexList @ dag, VertexInDegree[ dag, # ] == 0 & ], dags ] ]
+InfraSegment[ dags : { _Graph, __Graph } ][ "End" ]   :=
+  InfraSet[ Union @@ Map[ dag |-> Select[ VertexList @ dag, VertexOutDegree[ dag, # ] == 0 & ], dags ] ]
+
+(* lazy: atoms are consumed in order, each stopping at the residual budget *)
+InfraSegment[ dags : { _Graph, __Graph } ][ "Realizations", spec_ ] :=
+  infraCap[
+    Fold[ { acc, dag } |-> If[ Length @ acc >= countLimit @ spec, acc,
+        Join[ acc, dagGeodesics[ dag, countLimit @ spec - Length @ acc ] ] ],
+      { }, dags ],
+    spec ]
+
 InfraSegment[ dags : { _Graph, __Graph } ][ args___ ] :=
   InfraSegment[ Join @@ ( dagGeodesics /@ dags ) ][ args ]
+
+(* column i = layer i - 1 of each atom, mass = geodesic occupation: exact, no enumeration *)
+InfraSegment /: Part[ InfraSegment[ dags : { _Graph, __Graph } ], i_Integer ] :=
+  InfraEffectivePoint @ Merge[
+    Map[ dag |-> With[ { layers = dagLayers[ dag ] },
+        { len = Max[ 0, Values @ layers ] },
+        KeyTake[ GeodesicOccupation[ dag ], Keys @ Select[ layers, # === If[ i > 0, i - 1, len + 1 + i ] & ] ] ],
+      dags ],
+    Total ]
 
 FindInfraSegment[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
@@ -111,17 +148,95 @@ findSegmentCore[ graph_Graph, p1_, p2_,
   ]
 
 
-(* ===================== ExtendInfraSegment (Tarski A4) ===================== *)
+(* ===================== ExtendInfraSegment ===================== *)
 
-(* Tarski A4: find x with B(a, b, x) and d(b, x) == d(c, d) *)
+(* the geodesics containing a geodesic bundle from p1 to p2, extended past its ends by at most kspec edges per free side and inextensible within that budget: kspec Infinity gives the lines through the bundle (FindInfraLine), kspec 0 the bundle itself.  The seed is a walk, an InfraSegment DAG or any wrapper spreading to walks; the 6-ary form is Tarski A4 *)
 
-ExtendInfraSegment[ graph_Graph, a_, b_, c_, d_,
+ExtendInfraSegment::badproperty  = "Property `1` is not supported by ExtendInfraSegment; local rules on the extension moved to ExtendInfraGeodesic[graph, seed, scale, kspec].";
+ExtendInfraSegment::badmethod    = "Method `1` is not supported by ExtendInfraSegment.";
+ExtendInfraSegment::baddirection = "Direction `1` is not supported by ExtendInfraSegment.";
+
+Options[ ExtendInfraSegment ] = {
+  Properties  -> { },
+  Method      -> Automatic,
+  "Direction" -> "BothSides"
+};
+
+ExtendInfraSegment[ graph_Graph, seed_,
+    kspec : ( _Integer | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
+  With[ { pools = extensionPool[ ExtendInfraSegment, graph, #, kspec, count, opts ] & /@
+      Replace[ seed, {
+        InfraSegment[ dag_Graph ]          :> { dag },
+        InfraSegment[ dags : { __Graph } ] :> dags,
+        other_ :> ( PathGraph[ #, DirectedEdges -> True ] & /@ infraSpread @ other ) } ] },
+    If[ MemberQ[ pools, $Failed ], $Failed,
+      bundleTake[ InfraSegment, DeleteDuplicates @ Catenate @ pools, count ] ] ]
+
+
+(* Tarski A4: find x with B(a, b, x) and d(b, x) == d(c, d); the last vertex slot excludes rules so an optioned 3-argument call never lands here *)
+
+ExtendInfraSegment[ graph_Graph, a_, b_, c_, d : Except[ _Rule | _RuleDelayed ],
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   With[ { target = GraphDistance[ graph, c, d ] },
     { vs = If[ target === Infinity, { },
         Select[ VertexList[ graph ],
           x |-> BetweennessQ[ graph, a, b, x ] && GraphDistance[ graph, b, x ] === target ] ] },
     bundleTake[ InfraPoint, vs, count ]
+  ]
+
+
+(* ===================== Extension pool ===================== *)
+
+(* the pool of geodesics containing a bundle from p1 to p2 (a DAG with source p1 and sink p2) and extended by at most kmax edges per free side, read off the distance matrix.  The two extension graphs hold the candidate ends, layered by the distance from p1 resp. p2; a pair (s, e) is admissible iff jointly geodesic -- d(s, e) == d(s, p1) + d(p1, p2) + d(p2, e), whichever geodesics are used -- with the larger layer passing kspec (k: at most k, {k}: exactly k, {lo, hi}: in range) and each free side either at the budget or inextensible, and its atom is I(p1, s) reversed, the bundle, and I(p2, e), cut out of the extension graphs.  "Exhaustive" with All is the pool itself; every bounded count streams geodesics off the admissible pairs in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order, so the class is the same under every Method.  head is the calling symbol, read for its options and messages *)
+
+extensionPool[ _, _Graph, bundle_Graph, _, _, OptionsPattern[] ] /; VertexCount[ bundle ] == 0 := { }
+
+extensionPool[ head_, graph_Graph, bundle_Graph, kspec_, count_, opts : OptionsPattern[] ] :=
+  Catch @ With[ {
+      properties = OptionValue[ head, { opts }, Properties ],
+      methodHead = methodName @ resolveMethod[ OptionValue[ head, { opts }, Method ], count ],
+      direction  = OptionValue[ head, { opts }, "Direction" ],
+      kmax   = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
+      stepsQ = Replace[ kspec, { Infinity :> ( True & ), { k_ } :> ( # == k & ),
+                                 { lo_, hi_ } :> ( lo <= # <= hi & ), k_Integer :> ( # <= k & ) } ],
+      p1 = First @ Select[ VertexList @ bundle, VertexInDegree[ bundle, # ] == 0 & ],
+      p2 = First @ Select[ VertexList @ bundle, VertexOutDegree[ bundle, # ] == 0 & ],
+      verts = VertexList @ graph },
+    If[ properties =!= { }, Message[ MessageName[ head, "badproperty" ], properties ]; Throw[ $Failed ] ];
+    If[ ! MatchQ[ direction, "Forward" | "Backward" | "BothSides" ],
+      Message[ MessageName[ head, "baddirection" ], direction ]; Throw[ $Failed ] ];
+    If[ ! MatchQ[ methodHead, "Exhaustive" | "Greedy" | "RandomGreedy" ],
+      Message[ MessageName[ head, "badmethod" ], methodHead ]; Throw[ $Failed ] ];
+    With[ { dm = GraphDistanceMatrix[ graph ], vidx = AssociationThread[ verts, Range @ Length @ verts ],
+            leftExt  = GeodesicExtensionGraph[ graph, { p2, p1 } ],
+            rightExt = GeodesicExtensionGraph[ graph, { p1, p2 } ] },
+      { dist = dm[[ vidx @ #1, vidx @ #2 ]] & },
+      { d = dist[ p1, p2 ],
+        pairs = Tuples[ {
+          If[ direction === "Forward",  { p1 }, Select[ VertexList @ leftExt,  dist[ p1, # ] <= kmax & ] ],
+          If[ direction === "Backward", { p2 }, Select[ VertexList @ rightExt, dist[ p2, # ] <= kmax & ] ] } ] },
+      { admissibleQ = { s, e } |-> dist[ s, e ] == dist[ s, p1 ] + d + dist[ p2, e ] &&
+          stepsQ @ Max[ dist[ p1, s ], dist[ p2, e ] ] &&
+          ( direction === "Forward"  || dist[ p1, s ] == kmax ||
+            NoneTrue[ AdjacencyList[ graph, s ], dist[ #, e ] == dist[ s, e ] + 1 & ] ) &&
+          ( direction === "Backward" || dist[ p2, e ] == kmax ||
+            NoneTrue[ AdjacencyList[ graph, e ], dist[ s, # ] == dist[ s, e ] + 1 & ] ),
+        atom = { s, e } |-> Graph @ Sort @ Join[
+          EdgeList @ ReverseGraph @ Subgraph[ leftExt,
+            Select[ VertexList @ leftExt, dist[ p1, # ] + dist[ #, s ] == dist[ p1, s ] & ] ],
+          EdgeList @ bundle,
+          EdgeList @ Subgraph[ rightExt,
+            Select[ VertexList @ rightExt, dist[ p2, # ] + dist[ #, e ] == dist[ p2, e ] & ] ] ] },
+      If[ methodHead === "Exhaustive" && count === All,
+        atom @@@ Select[ pairs, admissibleQ @@ # & ],
+        With[ { cap = countLimit @ count, branch = greedyBranch[ methodHead /. "Exhaustive" -> "Greedy" ] },
+          Fold[ { acc, pair } |-> If[ Length @ acc >= cap || ! admissibleQ @@ pair, acc,
+              Join[ acc, greedyFrontierSweep[ atom @@ pair, First @ pair, Last @ pair,
+                { dag, walk } |-> DeleteCases[ VertexOutComponent[ dag, { Last @ walk }, 1 ], Last @ walk ],
+                True &, Infinity, cap - Length @ acc, branch ] ] ],
+            { }, branch @ pairs ] ] ]
+    ]
   ]
 
 

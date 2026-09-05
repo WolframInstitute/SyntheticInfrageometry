@@ -45,20 +45,20 @@ SelectInfraWalk[ graph_Graph, walks_List, n_Integer : 1, opts : OptionsPattern[]
   With[ { result = SelectInfraWalk[ graph, walks, UpTo[ n ], opts ] },
     If[ ListQ[ result ] && Length[ result ] < n, $Failed, result ] ]
 
-(* a line pool's atoms are tied in length within and ordered across, so the length selectors pick whole atoms and keep the pool form; every other selector reads the realisations *)
-SelectInfraWalk[ graph_Graph, InfraLine[ dags : { __Graph } ],
+(* a line or segment-extension pool's atoms are tied in length within and ordered across, so the length selectors pick whole atoms and keep the pool form; every other selector reads the realisations *)
+SelectInfraWalk[ graph_Graph, ( head : InfraLine | InfraSegment )[ dags : { __Graph } ],
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
     MatchQ[ OptionValue[ SelectInfraWalk, { opts }, "From" ], "MinLength" | "MaxLength" ] &&
     OptionValue[ SelectInfraWalk, { opts }, "Distance" ] === None :=
   With[ { lengths = ( Max @ Values @ dagLayers @ # & ) /@ dags },
     { picked = Pick[ dags, lengths,
         If[ OptionValue[ SelectInfraWalk, { opts }, "From" ] === "MaxLength", Max, Min ] @ lengths ] },
-    If[ countSpec === All, InfraLine[ picked ],
-      SelectInfraWalk[ graph, InfraLine[ Catenate[ dagGeodesics /@ picked ] ], countSpec, "From" -> All ] ] ]
+    If[ countSpec === All, head[ picked ],
+      SelectInfraWalk[ graph, head[ Catenate[ dagGeodesics /@ picked ] ], countSpec, "From" -> All ] ] ]
 
-SelectInfraWalk[ graph_Graph, InfraLine[ dags : { __Graph } ],
+SelectInfraWalk[ graph_Graph, ( head : InfraLine | InfraSegment )[ dags : { __Graph } ],
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  SelectInfraWalk[ graph, InfraLine[ Catenate[ dagGeodesics /@ dags ] ], countSpec, opts ]
+  SelectInfraWalk[ graph, head[ Catenate[ dagGeodesics /@ dags ] ], countSpec, opts ]
 
 (* a ray pool's rays end at different sinks, so every selector reads the realisations *)
 SelectInfraWalk[ graph_Graph, InfraRay[ dags : { __Graph } ],

@@ -20,7 +20,7 @@ InfraReachableQ::usage = "InfraReachableQ[graph, p1, p2] tests whether p1 and p2
 
 InfraSegment::usage = "InfraSegment[{path1, ...}] is a bundle of alternative geodesics; InfraSegment[dag] is the compact geodesic-DAG form. Accessors \"Graph\", \"Length\", \"Multiplicity\", \"Measure\", \"Realizations\".";
 FindInfraSegment::usage = "FindInfraSegment[graph, p1, p2] gives one geodesic from p1 to p2; a trailing n | UpTo[n] enumerates that many, All the whole interval as an InfraSegment DAG. Option Method.";
-ExtendInfraSegment::usage = "ExtendInfraSegment[graph, a, b, c, d] gives the points x with B(a, b, x) and d(b, x) == d(c, d) (Tarski axiom A4).";
+ExtendInfraSegment::usage = "ExtendInfraSegment[graph, seg, kspec] gives the geodesics containing seg extended by at most kspec edges per side, inextensible within that budget; kspec Infinity gives the lines through seg. ExtendInfraSegment[graph, a, b, c, d] gives the x with B(a, b, x) and d(b, x) == d(c, d) (Tarski A4). Options Method, \"Direction\".";
 InfraWalkQ::usage = "InfraWalkQ[graph, walk] tests whether walk is a walk: consecutive vertices adjacent (revisits allowed).";
 InfraSegmentQ::usage = "InfraSegmentQ[graph, walk] tests whether walk is a geodesic.";
 UniqueInfraSegmentQ::usage = "UniqueInfraSegmentQ[graph, u, v] tests whether the u-v geodesic is unique; UniqueInfraSegmentQ[graph] tests the geodetic property.";
