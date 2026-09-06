@@ -642,6 +642,61 @@ VerificationTest[
   TestID -> "ExtendInfraGeodesic-BothSides-joined-Minimizing-filter"
 ]
 
+(* the two sides move independently: in C4 no joint step survives the joined
+   "Minimizing" filter -- {4, 1, 2, 3} has d(4, 3) = 1 -- and the maximal
+   geodesics through the edge {1, 2} are reached one side at a time *)
+VerificationTest[
+  Sort @ ExtendInfraGeodesic[ CycleGraph[ 4 ], { 1, 2 }, Infinity, Infinity, All ][ "Realizations" ],
+  Sort[ { { 1, 2, 3 }, { 4, 1, 2 } } ],
+  TestID -> "ExtendInfraGeodesic-BothSides-single-side-move"
+]
+
+(* the two L-shaped lines carrying the top row of a 4x4 grid: each needs the
+   row extended on one side only *)
+VerificationTest[
+  Sort @ ExtendInfraGeodesic[ GridGraph[ { 4, 4 } ], { 1, 2, 3, 4 }, Infinity, Infinity,
+    All ][ "Realizations" ],
+  Sort[ { { 1, 2, 3, 4, 8, 12, 16 }, { 13, 9, 5, 1, 2, 3, 4 } } ],
+  TestID -> "ExtendInfraGeodesic-BothSides-grid-row-L-lines"
+]
+
+(* at scale Infinity the extension class is the geodesic-extension class the
+   distance matrix defines: the walk engine and the segment pool agree, here
+   on a torus where the two ends interact *)
+VerificationTest[
+  With[ { g = TorusGraph[ { 4, 5 } ], unoriented = w |-> Sort[ { w, Reverse @ w } ] },
+    Sort[ unoriented /@ ExtendInfraGeodesic[ g, { 1, 2 }, Infinity, Infinity, All ][ "Realizations" ] ] ===
+    Sort[ unoriented /@ ExtendInfraSegment[ g, { 1, 2 }, Infinity, All ][ "Realizations" ] ] ],
+  True,
+  TestID -> "ExtendInfraGeodesic-BothSides-agrees-with-segment-pool"
+]
+
+(* an unbudgeted extension is maximal: re-extending a returned line returns it *)
+VerificationTest[
+  AllTrue[
+    ExtendInfraGeodesic[ CycleGraph[ 6 ], { 1, 2 }, Infinity, Infinity, All ][ "Realizations" ],
+    w |-> ExtendInfraGeodesic[ CycleGraph[ 6 ], w, Infinity, Infinity, All ][ "Realizations" ] === { w } ],
+  True,
+  TestID -> "ExtendInfraGeodesic-BothSides-extension-is-maximal"
+]
+
+(* kspec bounds the edges added per side, not the moves taken: at kspec 1 the
+   only walk both capped and maximal is the symmetric one, the one-sided
+   {3, 4, 5} and {4, 5, 6} still having room to grow *)
+VerificationTest[
+  ExtendInfraGeodesic[ PathGraph[ Range[ 7 ] ], { 4, 5 }, Infinity, 1, All,
+    Properties -> { "Simple", "Minimizing" } ][ "Realizations" ],
+  { { 3, 4, 5, 6 } },
+  TestID -> "ExtendInfraGeodesic-BothSides-budget-caps-each-side"
+]
+
+(* exact kspec on both sides: a budget the graph cannot pay returns nothing *)
+VerificationTest[
+  ExtendInfraWalk[ PathGraph[ Range[ 6 ] ], { 3, 4 }, { 10 }, All ],
+  InfraWalk[ { } ],
+  TestID -> "ExtendInfraWalk-BothSides-exact-kspec-unreachable"
+]
+
 (* exact relative kspec: the branch frozen after one added edge fails {2} *)
 VerificationTest[
   ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 4 }, Infinity, { 2 }, All,
