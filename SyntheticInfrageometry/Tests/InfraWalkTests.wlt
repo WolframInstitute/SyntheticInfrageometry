@@ -913,18 +913,41 @@ VerificationTest[
   TestID -> "FindInfraWalk-RandomGreedy-is-complete"
 ]
 
-(* Method -> Automatic is that random descent under a bounded count, so the
-   witness is drawn from the ambient random state -- SeedRandom reproduces it. *)
+(* Method -> Automatic on a bounded count is the deterministic descent: the
+   default witness is reproducible without a seed and is the explicit "Greedy" one *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    { BlockRandom[ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ][ "Realizations" ],
+    { FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ] === FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ],
+      FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ] ===
+        FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 }, Method -> "Greedy" ] } ],
+  { True, True },
+  TestID -> "FindInfraWalk-Automatic-is-deterministic-Greedy"
+]
+
+(* "RandomGreedy" draws the witness from the ambient random state -- SeedRandom
+   reproduces it, and the seeds disagree *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    { BlockRandom[ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 }, Method -> "RandomGreedy" ][ "Realizations" ],
         RandomSeeding -> 3 ] ===
-      BlockRandom[ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ][ "Realizations" ],
+      BlockRandom[ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 }, Method -> "RandomGreedy" ][ "Realizations" ],
         RandomSeeding -> 3 ],
       Length @ Union @ Table[
-        First @ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ][ "Realizations" ], { 30 } ] > 1 } ],
+        First @ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 }, Method -> "RandomGreedy" ][ "Realizations" ],
+        { 30 } ] > 1 } ],
   { True, True },
-  TestID -> "FindInfraWalk-Automatic-witness-is-ambient-seeded"
+  TestID -> "FindInfraWalk-RandomGreedy-witness-is-ambient-seeded"
+]
+
+(* the count-less two-point default is the canonical witness, a geodesic, and is
+   what "Greedy" means on this signature *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    { w = First @ FindInfraWalk[ g, 1, InfraPoint[ 16 ] ][ "Realizations" ] },
+    { Length[ w ] - 1 == GraphDistance[ g, 1, 16 ],
+      FindInfraWalk[ g, 1, InfraPoint[ 16 ] ] === FindInfraWalk[ g, 1, InfraPoint[ 16 ], Method -> "Greedy" ] } ],
+  { True, True },
+  TestID -> "FindInfraWalk-two-point-countless-default-is-Greedy-geodesic"
 ]
 
 

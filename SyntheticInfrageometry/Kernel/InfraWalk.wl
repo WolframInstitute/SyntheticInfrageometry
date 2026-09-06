@@ -72,8 +72,7 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
           rules  = OptionValue[ FindInfraWalk, { opts }, Properties ],
           events = parseStoppingCondition[
             OptionValue[ FindInfraWalk, { opts }, "StoppingCondition" ], FindInfraWalk ],
-          methodOpt = OptionValue[ FindInfraWalk, { opts }, Method ] },
-        { methodSpec = resolveMethod[ methodOpt, count ] },
+          methodSpec = resolveMethod[ OptionValue[ FindInfraWalk, { opts }, Method ], count ] },
         { methodHead  = methodName @ methodSpec,
           pruning     = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
           kmax        = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
@@ -95,11 +94,11 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
         (* with revisits allowed a local rule alone leaves an infinite class -- a walk can wind a long cycle forever and stay minimizing at every finite scale -- so only an exclusion capping the length or whole-walk "Minimizing" bounds it *)
         If[ kmax === Infinity && ! boundedClassQ[ rules, scale ],
           Message[ FindInfraWalk::unbounded, scale ]; Throw[ $Failed ] ];
-        If[ methodOpt === Automatic && kspec === Infinity && countLimit[ count ] === 1 &&
+        If[ methodHead === "Greedy" && kspec === Infinity && countLimit[ count ] === 1 &&
             events === { } &&
             AllTrue[ rules,
               MatchQ[ #, "Minimizing" | "Simple" | "Immersed" | "Generic" | ( "Exclude" -> _ ) ] & ],
-          (* a geodesic is simple, hence immersed, generic, and minimizing in every window at every scale: the canonical count-less witness *)
+          (* a geodesic is simple, hence immersed, generic, and minimizing in every window at every scale: the canonical count-less witness, which is what "Greedy" -- and so the default -- means on this signature *)
           With[ { path = FindShortestPath[ graph, q1, q2 ] },
             If[ path === { }, { }, { path } ] ],
           Switch[ methodHead,

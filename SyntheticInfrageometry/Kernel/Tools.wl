@@ -54,11 +54,10 @@ methodOptions[ { _String, opts___ } ]   := { opts }
 
 (* ===================== The method ladder ===================== *)
 
-(* Automatic resolves by the count: All asks for the whole class, hence the exhaustive pool, and any bounded count for that many certified instances, which the lazy greedy descent supplies exactly -- so exponential enumeration is opt-in.
-   The bounded branch descends in random order: the class is not canonically ordered, so an always-first witness would be an artefact of the enumeration, not of the geometry. *)
+(* Automatic resolves by the count: All asks for the whole class, hence the exhaustive pool, and any bounded or absent count for that many certified instances, which the deterministic lazy descent supplies exactly and reproducibly -- exponential enumeration and randomness are both opt-in *)
 
 resolveMethod[ Automatic, All ]  = "Exhaustive";
-resolveMethod[ Automatic, _ ]    = "RandomGreedy";
+resolveMethod[ Automatic, _ ]    = "Greedy";
 resolveMethod[ spec_, _ ]        := spec
 
 
@@ -268,21 +267,22 @@ SeparatingSetQ[ graph_Graph, vs_List, center_, radius_ ] :=
 
 (* top-down peel toward inclusion-minimal admissible subsets: both helpers terminate when no admissible single-removal exists, so minimality is automatic at the leaves *)
 
-(* lazy depth-first peel: remove one admissible vertex at a time, backtracking at each leaf, and stop after count distinct inclusion-minimal admissible subsets.  Complete, so a finite count is exact; DeleteCases preserves the order of set, so every leaf is already in canonical form *)
+(* lazy depth-first peel: remove one admissible vertex at a time, backtracking at each leaf, and stop after count distinct inclusion-minimal admissible subsets.  Complete, so a finite count is exact; DeleteCases preserves the order of set, so every state is already in canonical form and doubles as its own visited key -- without the visited set the same subset is re-descended once per peel order, and All ran minutes where the BFS takes a second *)
 
 findGreedyMinimalAdmissible[ graph_Graph, set_List, admissible_, count_,
     branch_ : Identity ] :=
   If[ ! admissible[ set ], { },
     (* admissible and branch are held in Module locals, not inlined into descend's RHS: see the note on greedyFrontierSweep above *)
-    Module[ { cap = countLimit @ count, acc = { }, descend,
+    Module[ { cap = countLimit @ count, acc = { }, seen = <||>, descend,
               admitQ = admissible, pick = branch },
       descend[ T_ ] :=
-        With[ { removable = Select[ T, w |-> admitQ[ DeleteCases[ T, w ] ] ] },
-          If[ removable === { },
-            If[ ! MemberQ[ acc, T ],
+        If[ ! KeyExistsQ[ seen, T ],
+          seen[ T ] = True;
+          With[ { removable = Select[ T, w |-> admitQ[ DeleteCases[ T, w ] ] ] },
+            If[ removable === { },
               AppendTo[ acc, T ];
-              If[ Length @ acc >= cap, Throw[ acc, findGreedyMinimalAdmissible ] ] ],
-            Scan[ descend[ DeleteCases[ T, # ] ] &, pick @ removable ] ] ];
+              If[ Length @ acc >= cap, Throw[ acc, findGreedyMinimalAdmissible ] ],
+              Scan[ descend[ DeleteCases[ T, # ] ] &, pick @ removable ] ] ] ];
       Catch[ descend[ set ]; acc, findGreedyMinimalAdmissible ]
     ]
   ]

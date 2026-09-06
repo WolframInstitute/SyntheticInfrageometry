@@ -34,14 +34,14 @@ VerificationTest[
   TestID -> "FindInfraRay-class-invariant-under-Method"
 ]
 
-(* filed by MethodLadderConsistency T2 (2026-09-06), not yet fixed: "Exhaustive" canonicalises the orientation and keeps only the longest chains through each seed edge, "Greedy" emits every inextensible chain in both orientations *)
+(* the parallels through the centre of the 5 x 5 grid in the level set of its first row: one chain, the middle row *)
 VerificationTest[
   classInvariantQ[ m |-> FindInfraParallel[ GridGraph[ { 5, 5 } ], Range[ 5 ], 13, All, Method -> m ] ],
   True,
   TestID -> "FindInfraParallel-class-invariant-under-Method"
 ]
 
-(* two dead ends 11, 12 hang off 8 at distance 1 from the row 1..5: the chain 11-8-12 is inextensible in the level set but shorter than 6-7-8-11, so the per-seed maximum drops it *)
+(* two dead ends 11, 12 hang off 8 at distance 1 from the row 1..5: the chain 11-8-12 is inextensible in the level set but shorter than 6-7-8-11, so a longest-only sweep would drop it -- the class holds all six *)
 VerificationTest[
   With[ { g = Graph[ Join[
         UndirectedEdge @@@ Partition[ Range[ 5 ], 2, 1 ],
@@ -116,6 +116,39 @@ VerificationTest[
     Properties -> { "Separating" }, Method -> m ], Sort ],
   True,
   TestID -> "FindInfraEllipticShell-class-invariant-under-Method"
+]
+
+(* the peel from the centre of the 5 x 5 grid: sixteen minimal separators, and the lazy peel reaches each subset once -- without its visited set this ran minutes *)
+VerificationTest[
+  With[ { call = m |-> FindInfraShell[ GridGraph[ { 5, 5 } ], 13, { 1, 2 }, All, Properties -> { "Separating" }, Method -> m ] },
+    { classInvariantQ[ call, Sort ], Length @ call[ "Exhaustive" ][ "Realizations" ] } ],
+  { True, 16 },
+  TestID -> "FindInfraShell-5x5-class-invariant-under-Method"
+]
+
+
+(* ===================== Automatic is the deterministic descent ===================== *)
+
+(* on every ladder symbol a count-less call resolves to "Greedy": the same witness twice without a seed, and the explicit "Greedy" witness *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ], t = TorusGraph[ { 4, 5 } ] },
+    AllTrue[
+      { m |-> FindInfraSegment[ g, 1, 16, Method -> m ],
+        m |-> ExtendInfraSegment[ g, { 6, 7 }, 2, Method -> m ],
+        m |-> FindInfraLine[ t, 1, 2, Method -> m ],
+        m |-> FindInfraRay[ g, 6, 7, Method -> m ],
+        m |-> FindInfraParallel[ g, Range[ 4 ], 10, Method -> m ],
+        m |-> FindInfraWalk[ g, 1, 4, Method -> m ],
+        m |-> FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 }, Method -> m ],
+        m |-> ExtendInfraWalk[ g, { 1, 2 }, 2, Method -> m ],
+        m |-> FindInfraGeodesic[ g, 1, 2, 4, Method -> m ],
+        m |-> ExtendInfraGeodesic[ g, { 6, 7 }, Infinity, 2, Method -> m ],
+        m |-> FindInfraShell[ g, 6, { 1, 2 }, Properties -> { "Separating" }, Method -> m ],
+        m |-> FindInfraBisectingHyperplane[ g, 1, 4, { -1, 1 }, Properties -> { "Separating" }, Method -> m ],
+        m |-> FindInfraEllipticShell[ g, { 6, 11 }, { 3, 4 }, Properties -> { "Separating" }, Method -> m ] },
+      call |-> call[ Automatic ] === call[ Automatic ] === call[ "Greedy" ] ] ],
+  True,
+  TestID -> "MethodLadder-Automatic-is-Greedy-on-every-symbol"
 ]
 
 

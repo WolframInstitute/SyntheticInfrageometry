@@ -3,8 +3,6 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageImport["WolframInstitute`Infrageometry`"]
 
 PackageScope[findLineExtensions]
-PackageScope[findLineExtensionsWith]
-PackageScope[findLineExtensionsGreedy]
 PackageScope[canonicalLine]
 PackageScope[allCanonicalLines]
 
@@ -87,20 +85,14 @@ FindInfraLine[ graph_Graph, segment_List, count : ( _Integer | UpTo[ _Integer ] 
     If[ pool === $Failed, $Failed, bundleTake[ InfraLine, pool, count ] ] ]
 
 
-(* the LONGEST lines through a segment, kept for FindInfraParallel and FindInfraPerpendicular: each side extended independently, joint geodesicity d(s, e) == d(s, p1) + d + d(p2, e), and only the maxima of d(s, p1) + d(p2, e) kept *)
+(* the LONGEST lines through a segment, kept for FindInfraPerpendicular: each side extended independently, joint geodesicity d(s, e) == d(s, p1) + d + d(p2, e), and only the maxima of d(s, p1) + d(p2, e) kept *)
+
+findLineExtensions[ graph_Graph, segment_List, pruning_ : Infinity, direction_String : "BothSides",
+    cap : ( _Integer | Infinity ) : Infinity ] /; Length[ segment ] < 2 :=
+  { segment }
 
 findLineExtensions[ graph_Graph, segment_List, pruning_ : Infinity, direction_String : "BothSides",
     cap : ( _Integer | Infinity ) : Infinity ] :=
-  findLineExtensionsWith[ graph, segment, pruning, True &, direction, cap ]
-
-
-findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
-    direction_String : "BothSides", cap : ( _Integer | Infinity ) : Infinity ] /;
-    Length[ segment ] < 2 :=
-  { segment }
-
-findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
-    direction_String : "BothSides", cap : ( _Integer | Infinity ) : Infinity ] :=
   With[ { p1 = First[ segment ], p2 = Last[ segment ], verts = VertexList[ graph ] },
     (* one compiled all-pairs matrix: the pair enumeration is quadratic, and per-pair GraphDistance re-ran a BFS each time *)
     { dm = GraphDistanceMatrix[ graph ],
@@ -108,13 +100,13 @@ findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
     { d1 = dm[[ vidx[ p1 ] ]], d2 = dm[[ vidx[ p2 ] ]] },
     { d = d1[[ vidx[ p2 ] ]] },
     { extendBefore = If[ direction === "Forward", { p1 },
-        Select[ verts, c |-> admissible[ c ] && d1[[ vidx[ c ] ]] + d == d2[[ vidx[ c ] ]] ] ],
+        Select[ verts, c |-> d1[[ vidx[ c ] ]] + d == d2[[ vidx[ c ] ]] ] ],
       extendAfter  = If[ direction === "Backward", { p2 },
-        Select[ verts, c |-> admissible[ c ] && d2[[ vidx[ c ] ]] + d == d1[[ vidx[ c ] ]] ] ] },
+        Select[ verts, c |-> d2[[ vidx[ c ] ]] + d == d1[[ vidx[ c ] ]] ] ] },
     { validPairs = Select[ Tuples[ { extendBefore, extendAfter } ],
         pair |-> dm[[ vidx[ pair[[ 1 ]] ], vidx[ pair[[ 2 ]] ] ]] ==
                  d1[[ vidx[ pair[[ 1 ]] ] ]] + d + d2[[ vidx[ pair[[ 2 ]] ] ]] ] },
-    (* a finite cap may truncate the tied pairs; capped calls have trivial admissibility, so the post-filter cannot starve FindPath *)
+    (* a finite cap may truncate the tied pairs *)
     { maxPairs = With[ { tied = MaximalBy[ validPairs,
           d1[[ vidx[ #[[ 1 ]] ] ]] + d2[[ vidx[ #[[ 2 ]] ] ]] & ] },
         If[ cap === Infinity, tied, Take[ tied, UpTo[ cap ] ] ] ],
@@ -124,13 +116,9 @@ findLineExtensionsWith[ graph_Graph, segment_List, pruning_, admissible_,
           With[ { s = #[[ 1 ]], e = #[[ 2 ]] },
             { db = d1[[ vidx[ s ] ]], da = d2[[ vidx[ e ] ]] },
             { bp = If[ db == 0, { {} },
-                    Most /@ Select[
-                      applyPruning[ cappedGeodesics[ graph, s, p1, db, fpCount ], pruning ],
-                      AllTrue[ #, admissible ] & ] ],
+                    Most /@ applyPruning[ cappedGeodesics[ graph, s, p1, db, fpCount ], pruning ] ],
               ap = If[ da == 0, { {} },
-                    Rest /@ Select[
-                      applyPruning[ cappedGeodesics[ graph, p2, e, da, fpCount ], pruning ],
-                      AllTrue[ #, admissible ] & ] ] },
+                    Rest /@ applyPruning[ cappedGeodesics[ graph, p2, e, da, fpCount ], pruning ] ] },
             Flatten[ Outer[ Join[ #1, segment, #2 ] &, bp, ap, 1 ], 1 ]
           ] & /@ maxPairs,
           1 ] },
@@ -148,47 +136,9 @@ cappedGeodesics[ graph_Graph, u_, v_, len_, n_Integer ] :=
   dagGeodesics[ GeodesicIntervalGraph[ graph, u, v ], n ]
 
 
-(* grow the chain outward one admissible neighbour at a time, backtracking on exhaustion: complete, so a finite count is exact. The two sides cannot grow against the ORIGINAL endpoints, so the cross-distance is re-derived from the live frontiers at every step *)
-
-findLineExtensionsGreedy[ graph_Graph, segment_List, admissible_, direction_String, count_,
-    branch_ : Identity ] /; Length[ segment ] < 2 := { segment }
-
-findLineExtensionsGreedy[ graph_Graph, segment_List, admissible_, direction_String, count_,
-    branch_ : Identity ] :=
-  (* Module locals rather than inlined into the recursive RHS: see greedyFrontierSweep in Tools.wl *)
-  Module[ { cap = countLimit @ count, acc = { }, outward, grow,
-            admitQ = admissible, pick = branch },
-    outward[ h_, other_ ] :=
-      With[ { d = GraphDistance[ graph, h, other ] },
-        Select[ AdjacencyList[ graph, h ],
-          c |-> admitQ[ c ] && GraphDistance[ graph, c, other ] == d + 1 ] ];
-    grow[ left_, right_ ] :=
-      With[ { hL = If[ left === { }, First @ segment, First @ left ],
-              hR = If[ right === { }, Last @ segment, Last @ right ] },
-        { leftCands = If[ direction === "Forward", { }, outward[ hL, hR ] ] },
-        { leftSteps = If[ leftCands === { }, { left },
-            ( Prepend[ left, # ] & ) /@ pick @ leftCands ] },
-        Scan[
-          newLeft |-> With[ { newHL = If[ newLeft === { }, First @ segment, First @ newLeft ] },
-            { rightCands = If[ direction === "Backward", { }, outward[ hR, newHL ] ] },
-            { chain = Join[ newLeft, segment, right ] },
-            Which[
-              leftCands === { } && rightCands === { },
-                If[ ! MemberQ[ acc, chain ],
-                  AppendTo[ acc, chain ];
-                  If[ Length @ acc >= cap, Throw[ acc, findLineExtensionsGreedy ] ] ],
-              rightCands === { },
-                grow[ newLeft, right ],
-              True,
-                Scan[ v |-> grow[ newLeft, Append[ right, v ] ], pick @ rightCands ] ] ],
-          leftSteps ]
-      ];
-    Catch[ grow[ { }, { } ]; acc, findLineExtensionsGreedy ]
-  ]
-
-
 (* ===================== FindInfraParallel ===================== *)
 
+(* a parallel to line through p: an inextensible geodesic s ... p ... e of graph inside the level set L = { v : d(v, line) == r }, r = d(p, line) -- d(s, e) == d(s, p) + d(p, e), every vertex in L, and no neighbour of s or e in L prolonging it.  The pool is one geodesic DAG per admissible end pair (s, e): the s -> p and p -> e intervals cut down to L and glued at p, oriented so that s precedes e in canonical order.  One class under every Method -- "Exhaustive" reads every atom, a bounded count streams geodesics off the atoms in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order *)
 
 FindInfraParallel::badmethod   = "Method `1` is not supported by FindInfraParallel.";
 FindInfraParallel::badproperty = "Property `1` is not supported by FindInfraParallel (FindInfraParallel accepts only Properties -> {}).";
@@ -203,54 +153,31 @@ FindInfraParallel[ graph_Graph, line_, p_,
   spreadFind[ InfraLine, count,
     { line0, p0 } |-> Catch @ With[ {
         properties = OptionValue[ FindInfraParallel, { opts }, Properties ],
-        methodSpec = resolveMethod[ OptionValue[ FindInfraParallel, { opts }, Method ], count ] },
-      If[ properties =!= { },
-        Message[ FindInfraParallel::badproperty, properties ]; Throw[ $Failed ] ];
-      With[ { methodHead = methodName @ methodSpec,
-              pruning    = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-        Switch[ methodHead,
-          "Exhaustive",   findParallelExtensions[ graph, line0, p0, pruning ],
-          "Greedy",       findParallelExtensionsGreedy[ graph, line0, p0, count ],
-          "RandomGreedy", findParallelExtensionsGreedy[ graph, line0, p0, count, RandomSample ],
-          _,              Message[ FindInfraParallel::badmethod, methodSpec ]; Throw[ $Failed ]
-        ]
-      ]
-    ], line, p ]
-
-
-(* every vertex of the result lies at distance r = d(p, line) from line, and the chain is a geodesic in graph *)
-
-findParallelExtensions[ graph_Graph, line_List, p_, pruning_ : Infinity ] :=
-  With[ { lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ] },
-    { r = lineDist[ p ] },
-    If[ r === Infinity, { },
-      With[ { admissible = c |-> lineDist[ c ] == r },
-        { seeds = Select[ AdjacencyList[ graph, p ], admissible ] },
-        { chains = Flatten[
-            findLineExtensionsWith[ graph, { p, # }, pruning, admissible ] & /@ seeds,
-            1 ] },
-        DeleteDuplicates @ Map[ canonicalLine, Select[ chains, Length[ # ] >= 2 & ] ]
-      ]
-    ]
-  ]
-
-
-findParallelExtensionsGreedy[ graph_Graph, line_List, p_, count_, branch_ : Identity ] :=
-  With[ { lineDist = v |-> Min[ GraphDistance[ graph, v, # ] & /@ line ] },
-    { r = lineDist[ p ] },
-    If[ r === Infinity, { },
-      With[ { admissible = c |-> lineDist[ c ] == r },
-        { seeds = Select[ AdjacencyList[ graph, p ], admissible ] },
-        If[ seeds === { }, { { p } },
-          takeUpTo[
-            DeleteDuplicates @ Flatten[
-              ( s |-> findLineExtensionsGreedy[ graph, { p, s }, admissible, "BothSides", count, branch ] ) /@
-                branch @ seeds,
-              1 ],
-            countLimit @ count ] ]
-      ]
-    ]
-  ]
+        methodHead = methodName @ resolveMethod[ OptionValue[ FindInfraParallel, { opts }, Method ], count ],
+        verts = VertexList @ graph },
+      If[ properties =!= { }, Message[ FindInfraParallel::badproperty, properties ]; Throw[ $Failed ] ];
+      If[ ! MatchQ[ methodHead, "Exhaustive" | "Greedy" | "RandomGreedy" ],
+        Message[ FindInfraParallel::badmethod, methodHead ]; Throw[ $Failed ] ];
+      With[ { dm = GraphDistanceMatrix[ graph ], vidx = AssociationThread[ verts, Range @ Length @ verts ] },
+        { dist = dm[[ vidx @ #1, vidx @ #2 ]] &,
+          lineDist = Min @ dm[[ vidx @ #, vidx /@ line0 ]] & },
+        { r = lineDist @ p0 },
+        If[ r === Infinity, { },
+          With[ { level = Select[ verts, lineDist @ # == r & ] },
+            { admissibleQ = { s, e } |-> Order[ s, e ] == 1 && dist[ s, e ] < Infinity &&
+                dist[ s, e ] == dist[ s, p0 ] + dist[ p0, e ] &&
+                NoneTrue[ AdjacencyList[ graph, s ], MemberQ[ level, # ] && dist[ #, e ] == dist[ s, e ] + 1 & ] &&
+                NoneTrue[ AdjacencyList[ graph, e ], MemberQ[ level, # ] && dist[ s, # ] == dist[ s, e ] + 1 & ],
+              (* the glued intervals cut down to L, then to the vertices on some s -> e path: empty when every geodesic through p leaves L.  s and e are listed explicitly, since the cut can strip a side of all its edges *)
+              atom = { s, e } |-> With[ { dag = Graph[ { s, e }, Join[
+                    EdgeList @ Subgraph[ #, Intersection[ VertexList @ #, level ] ] & @ GeodesicIntervalGraph[ graph, s, p0 ],
+                    EdgeList @ Subgraph[ #, Intersection[ VertexList @ #, level ] ] & @ GeodesicIntervalGraph[ graph, p0, e ] ] ] },
+                  Subgraph[ dag, Intersection[ VertexOutComponent[ dag, s ], VertexInComponent[ dag, e ] ] ] ],
+              cap = countLimit @ count,
+              branch = greedyBranch[ methodHead /. "Exhaustive" -> "Greedy" ] },
+            Fold[ { acc, pair } |-> If[ Length @ acc >= cap || ! admissibleQ @@ pair, acc,
+                Join[ acc, dagGeodesics[ atom @@ pair, cap - Length @ acc, branch ] ] ],
+              { }, branch @ Tuples[ { level, level } ] ] ] ] ] ], line, p ]
 
 
 (* ===================== Sketch: Method dispatch (NOT WIRED) =====================
