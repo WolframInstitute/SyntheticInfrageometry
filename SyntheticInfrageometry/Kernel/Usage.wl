@@ -45,7 +45,7 @@ InfraString::usage = "InfraString[{walk1, ...}] is a bundle of closed walks modu
 
 InfraLine::usage = "InfraLine[{line1, ...}] is a bundle of inextensible geodesics; InfraLine[{dag1, ...}] is the pool form, one geodesic DAG per endpoint pair. Accessors \"Graph\", \"Length\", \"Multiplicity\", \"Measure\", \"Realizations\". Inside InfraScene, InfraLine[p, q] is the constructor.";
 FindInfraLine::usage = "FindInfraLine[graph, p1, p2] gives the lines through p1 and p2, the inextensible geodesics containing them; FindInfraLine[graph, segment] those containing segment. Options Method, \"Direction\".";
-FindInfraParallel::usage = "FindInfraParallel[graph, line, p] gives the lines through p that stay at constant distance from line. Option Method.";
+FindInfraParallel::usage = "FindInfraParallel[graph, line, p] gives one parallel to line through p: a geodesic through p inextensible within the level set { v : d(v, line) == d(p, line) }; a trailing n | UpTo[n] | All sets the count. Option Method.";
 FindInfraPerpendicular::usage = "FindInfraPerpendicular[graph, line, point] gives the lines through point perpendicular to line. Options Method, \"Radius\".";
 FindInfraCommonLine::usage = "FindInfraCommonLine[graph, vertices] gives the canonical lines containing every listed vertex.";
 InfraLineQ::usage = "InfraLineQ[graph, walk] tests whether walk is a line: a geodesic that no neighbour of either endpoint prolongs.";
@@ -85,14 +85,14 @@ BallHullQ::usage = "BallHullQ[graph, S] tests whether S is ball-convex, i.e. an 
 (* ===================== InfraCircle ===================== *)
 
 InfraCircle::usage = "InfraCircle[{cycle1, ...}] is a bundle of metric circles, each an open vertex sequence with implicit wrap-around. InfraCircle[{dag1, ...}] is the pool form, one arc-folded geodesic DAG per atom. Accessors \"Realizations\", \"Length\", \"Multiplicity\", \"Measure\".";
-FindInfraCircle::usage = "FindInfraCircle[graph, c, r] gives the shortest separating cycle in the level surface at radius r around c, together with its ties; with count All it gives the circle pool carrying them, falling back to the cycle sweep off the pool's certified class. Option Properties.";
+FindInfraCircle::usage = "FindInfraCircle[graph, c, r] gives one circle around c at radius r: a shortest cycle in the level surface separating c from beyond; r may be a band {rmin, rmax}; All gives the circle pool. Options Properties, Method.";
 FindInfraCycle::usage = "FindInfraCycle[graph, n] gives the n shortest simple cycles of graph; FindInfraCycle[graph, {kmin, kmax}, n] restricts their length.";
 InfraCircleQ::usage = "InfraCircleQ[graph, cycle] tests whether cycle is a cyclic edge chain whose vertex set is a metric shell.";
 
 (* ===================== InfraPolygon ===================== *)
 
 InfraPolygon::usage = "InfraPolygon[{poly1, ...}] is a bundle of closed chains of geodesic InfraSegment sides. Accessors \"Sides\", \"Length\", \"Vertices\".";
-FindInfraPolygon::usage = "FindInfraPolygon[graph, {p1, ..., pn}] gives the polygon with corners p1, ..., pn and a geodesic between each consecutive pair. Option Method.";
+FindInfraPolygon::usage = "FindInfraPolygon[graph, {p1, ..., pn}] gives one polygon with corners p1, ..., pn: a geodesic between each pair of consecutive corners; a trailing n | UpTo[n] | All sets the count. Option Method.";
 FindInfraRegularPolygon::usage = "FindInfraRegularPolygon[graph, As, n] gives the closed n-vertex sequences whose k-th diagonal distances all match As[[k]] (each slot an Integer, {lo, hi}, or Automatic). Options Method, \"From\".";
 InfraPolygonQ::usage = "InfraPolygonQ[graph, poly] tests whether poly is a closed cyclic chain of geodesic sides.";
 InfraRegularPolygonQ::usage = "InfraRegularPolygonQ[graph, cycle, As] tests whether cycle is regular with respect to the diagonal-distance tuple As.";
@@ -100,7 +100,7 @@ InfraRegularPolygonQ::usage = "InfraRegularPolygonQ[graph, cycle, As] tests whet
 (* ===================== InfraTriangle ===================== *)
 
 InfraTriangle::usage = "InfraTriangle[{poly1, ...}] is a bundle of geodesic triangles -- the n = 3 case of InfraPolygon. Accessors \"Sides\", \"Length\", \"Vertices\".";
-FindInfraTriangle::usage = "FindInfraTriangle[graph, {a, b, c}] gives the triangle with corners a, b, c and a geodesic on each side. Option Method.";
+FindInfraTriangle::usage = "FindInfraTriangle[graph, {a, b, c}] gives one triangle with corners a, b, c and a geodesic on each side; a trailing n | UpTo[n] | All sets the count. Option Method.";
 InfraTriangleQ::usage = "InfraTriangleQ[graph, poly] tests whether poly is a closed chain of exactly three geodesic sides.";
 
 (* ===================== InfraEllipticShell ===================== *)

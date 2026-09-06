@@ -34,7 +34,7 @@ The longest lines are a selection on the result, `SelectInfraWalk[g, lines, All,
 
 | Option | Values | Meaning |
 |---|---|---|
-| `Method` | `Automatic` (default), `"Exhaustive"`, `"Greedy"`, `"RandomGreedy"` | `Automatic` resolves by the count: `All` to `"Exhaustive"`, the pool; a bounded count to `"RandomGreedy"`, which takes the admissible pairs and the branches of each DAG in random order — put `SeedRandom` in front of a call whose output goes into a figure. The class is the same under every value. |
+| `Method` | `Automatic` (default), `"Exhaustive"`, `{"Exhaustive", "Pruning" -> spec}`, `"Greedy"`, `"RandomGreedy"` | `Automatic` resolves by the count: `All` to `"Exhaustive"`, the pool; a bounded or absent count to `"Greedy"`, which takes the admissible pairs and the branches of each DAG in candidate order, so the count-less call is deterministic. `"RandomGreedy"` takes them in random order, seeded by an ambient `SeedRandom`. The class is the same under every value; `"Pruning"` is accepted and inert, the pool having no frontier to cap. |
 | `"Direction"` | `"BothSides"` (default), `"Forward"`, `"Backward"` | which ends may move: `"Forward"` keeps *a* and extends past *b* only, `"Backward"` keeps *b* and extends before *a* only. |
 | `Properties` | `{}` | only the empty list; a rule on the extension is a local law and lives on `ExtendInfraGeodesic`. |
 
@@ -62,7 +62,7 @@ Association @ Table[
    {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]
 ```
 
-Three of them on each substrate. A bounded count is one random descent of the pool, so the seed goes in front.
+Three of them on each substrate, drawn off the pool in random order: `"RandomGreedy"` is the explicit random call, and the seed goes in front of it.
 
 ```wl
 SeedRandom[1]; Row[Table[
@@ -72,7 +72,7 @@ SeedRandom[1]; Row[Table[
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Labeled[
        InfraSceneHighlight[g,
-         {FindInfraLine[g, a, b, UpTo[3]] -> $InfraLineColor,
+         {FindInfraLine[g, a, b, UpTo[3], Method -> "RandomGreedy"] -> $InfraLineColor,
           InfraSet[{a, b}] -> $InfraPointColor},
          "PointSizeRange" -> 15,
          VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
@@ -152,7 +152,7 @@ With[
     Sort @ ExtendInfraSegment[g, {6, 7}, Infinity, All]["Realizations"]]
 ```
 
-The longest lines are a selection on the pool. On the irregular mesh the lines through two vertices have four different lengths.
+The longest lines are a selection on the pool. On the irregular mesh the four lines through two vertices have three different lengths.
 
 ```wl
 With[

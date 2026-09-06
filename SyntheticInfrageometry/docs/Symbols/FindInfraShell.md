@@ -14,7 +14,7 @@ RelatedGuides: [EuclideanGeometryGuide]
 
 <code>[FindInfraShell]()[*g*, *c*, *r*]</code> gives the metric shell $\{v : d(c,v) = r\}$ around *c* as an [InfraShell]() wrapper. *r* may be a band `{rmin, rmax}`.
 
-<code>[FindInfraShell]()[*g*, *c*, *r*, *n*]</code> gives exactly *n* realisations or `$Failed`; `UpTo[n]` up to *n*; `All` (the default) all of them.
+<code>[FindInfraShell]()[*g*, *c*, *r*, *n*]</code> gives exactly *n* realisations or `$Failed`; `UpTo[n]` gives up to *n*; `All` gives all of them. Under the default `Properties -> {}` the level set is the one realisation.
 
 ## Details & Options
 
@@ -24,7 +24,7 @@ It is the discrete analogue of a sphere, not of a circle: it is codimension-1 as
 
 The shell is the substrate of the volume-growth invariants. Its cardinality as a function of *r* is the surface-area profile, and on a flat lattice it grows **linearly**, which is the statement that the dimension is 2. The slope is a property of the tiling: 4 per step on the square grid, 3 on the hexagonal.
 
-Option `Properties` takes `{}` (default; the whole level set as one realisation), `{"Separating"}` (inclusion-minimal subsets separating the centre from beyond), or `{"Separating", "Connected"}`. Option `Method` takes `"Exhaustive"` (default) or `"Greedy"`. The `["Volume"]` accessor gives the per-realisation vertex count as a list.
+Option `Properties` takes `{}` (default; the whole level set as one realisation), `{"Separating"}` (inclusion-minimal subsets separating the centre from beyond), or `{"Separating", "Connected"}`. Option `Method` takes `Automatic` (default), `"Exhaustive"`, `{"Exhaustive", "Pruning" -> spec}`, `"Greedy"` or `"RandomGreedy"`, and is read only when `Properties` names a class to search: `Automatic` resolves by the count — `All` to `"Exhaustive"`; a bounded or absent count to `"Greedy"`, the lazy peel, so the count-less call is one minimal subset, deterministic — and the class is the same under every value. `"RandomGreedy"` peels in random order, seeded by an ambient `SeedRandom`; `"Pruning"` caps the removable vertices tried per layer, and the result is then minimal among the survivors. The `["Volume"]` accessor gives the per-realisation vertex count as a list.
 
 Corresponding notions in the classical axiom systems:
 

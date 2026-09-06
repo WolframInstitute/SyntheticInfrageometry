@@ -30,7 +30,7 @@ The longest rays are a selection on the result, `SelectInfraWalk[g, rays, All, "
 
 | Option | Values | Meaning |
 |---|---|---|
-| `Method` | `Automatic` (default), `"Exhaustive"`, `"Greedy"`, `"RandomGreedy"` | `Automatic` resolves by the count: `All` to `"Exhaustive"`, the pool; a bounded count to `"RandomGreedy"`, the DAG descended in random branch order — put `SeedRandom` in front of a call whose output goes into a figure. The class is the same under every value. |
+| `Method` | `Automatic` (default), `"Exhaustive"`, `{"Exhaustive", "Pruning" -> spec}`, `"Greedy"`, `"RandomGreedy"` | `Automatic` resolves by the count: `All` to `"Exhaustive"`, the pool; a bounded or absent count to `"Greedy"`, which takes the branches of the DAG in candidate order, so the count-less call is deterministic. `"RandomGreedy"` takes them in random order, seeded by an ambient `SeedRandom`. The class is the same under every value; `"Pruning"` is accepted and inert, the pool having no frontier to cap. |
 
 Corresponding notions in the classical axiom systems:
 
@@ -55,7 +55,7 @@ Association @ Table[
    {name, {"SquareMeshGraph", "SquareTilingGraph", "HexagonalTilingGraph"}}]
 ```
 
-Three rays from the centre of each substrate. Each starts at the origin and runs to the edge of the patch; a bounded count is a random descent, so the seed goes in front.
+Three rays from the centre of each substrate. Each starts at the origin and runs to the edge of the patch; they are drawn off the pool in random order, `"RandomGreedy"` being the explicit random call, with the seed in front of it.
 
 ```wl
 SeedRandom[1]; Row[Table[
@@ -65,7 +65,7 @@ SeedRandom[1]; Row[Table[
      {b = First @ Sort @ Select[VertexList[g], GraphDistance[g, a, #] == 5 &]},
      Labeled[
        InfraSceneHighlight[g,
-         {FindInfraRay[g, a, b, UpTo[3]] -> $InfraRayColor,
+         {FindInfraRay[g, a, b, UpTo[3], Method -> "RandomGreedy"] -> $InfraRayColor,
           InfraPoint[a] -> $InfraPointColor},
          "PointSizeRange" -> 15,
          VertexShapeFunction -> ({AbsolutePointSize[2.2], Point[#]} &),
@@ -84,10 +84,10 @@ With[
   {rays["Multiplicity"], rays["Length"], rays["Realizations"]}]
 ```
 
-The count-less call is one ray.
+The count-less call is one ray, the same one every time.
 
 ```wl
-SeedRandom[1]; FindInfraRay[GridGraph[{4, 4}], 6, 7]
+FindInfraRay[GridGraph[{4, 4}], 6, 7]
 ```
 
 Both geodesics from 1 to its antipode on the 6-cycle are rays: nothing lies farther from 1 than 4.
