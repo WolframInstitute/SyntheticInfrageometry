@@ -456,7 +456,7 @@ walkCrossingQ[ graph_, core_List, closedQ_, { i_Integer, j_Integer }, r_ ] := Wi
 (* ===================== ExtendInfraWalk ===================== *)
 
 (* continues a seed walk under the Properties rules, each read on the window of the last <= "InfraScale" vertices: Find seeds with points and owns the two-point sugar, Extend seeds with walks and owns "Direction".  kspec is the extension budget, in added edges per growing side, and is mandatory-finite whenever the class is infinite.
-   "BothSides" adds at most one edge per side per step and re-checks the joined step against the monotone whole-walk constraints its sides cannot see alone.  Stopping conditions replay over the seed, so a deadline may already sit inside it and the seed come back unextended; a two-ended walk has no single tip for the event clock, so they require "Forward" or "Backward". *)
+   "BothSides" offers three moves per outer step -- both sides, back only, front only -- and re-checks the joined step against the monotone whole-walk constraints its sides cannot see alone, so the walk freezes only when no side can move and the class is the whole two-sided extension class.  Stopping conditions replay over the seed, so a deadline may already sit inside it and the seed come back unextended; a two-ended walk has no single tip for the event clock, so they require "Forward" or "Backward". *)
 
 ExtendInfraWalk::badproperty  = "Property `1` is not a walk rule; the rules are \"Minimizing\", \"Simple\", \"Immersed\", \"Generic\", \"Exclude\" -> species, \"Straightest\", {\"Minimal\", f}, {\"Maximal\", f}, or a predicate on the window; species are \"SelfIntersections\", \"SelfTangencies\", \"Cusps\", \"TriplePoints\".";
 ExtendInfraWalk::badmethod    = "Method `1` is not supported.";
@@ -494,7 +494,7 @@ ExtendInfraWalk[ graph_Graph, seed_,
           pruning     = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity,
           kmax        = Replace[ absSpec, { { _, hi_ } :> hi, { k_ } :> k } ],
           lengthQ     = walkLengthAdmissibleQ[ absSpec ],
-          (* "BothSides" reads kspec per growing side: the budget counts outer steps, each live side paying one edge per step *)
+          (* "BothSides" reads kspec per growing side: the budget is Max[la, ra], the edges added on the longer of the two sides, which is invariant under the order the moves are taken and equals the outer-step count on the all-joint trajectories *)
           stepsMax    = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
           stepsQ      = Replace[ kspec, {
             Infinity     :> ( True & ),
@@ -572,22 +572,21 @@ ExtendInfraGeodesic[ graph_Graph, seed_,
 
 (* ===================== Two-sided growth engines ===================== *)
 
-(* two-sided siblings of the pointed engines: each outer step grows the walk by at most one edge per side, a side freezing when its candidateFn returns { }, and kmax counts the outer steps.  The BFS honours "Pruning" and its early count stop is exact; the DFS backtracks, in candidateFn order (branch = Identity) or shuffled (RandomSample) *)
+(* two-sided siblings of the pointed engines.  A state is { walk, la, ra } with la, ra the edges added on the back and the front, and an outer step offers three moves -- both sides, back only, front only, the joint move first -- so a side never has to wait for the other and the walk freezes only when no side can move.  kspec is read per side as Max[la, ra]: invariant under the order the moves are taken, and equal to the old outer-step count on the all-joint trajectories.  The BFS honours "Pruning" and its early count stop is exact; the DFS backtracks, in candidateFn order (branch = Identity) or shuffled (RandomSample).  Both memoise the states they have expanded -- the same walk is reachable by every interleaving of the same moves *)
 
 extendBothFrontierSweep[ graph_Graph, seed_List, candidateFn_, stepsQ_, kmax_,
     prune_, count_, stepFilter_ ] :=
-  Module[ { frontier = { seed }, completed = { }, steps = 0, moves },
+  Module[ { frontier = { { seed, 0, 0 } }, completed = { }, seen = <| { seed, 0, 0 } -> True |>, moves },
     While[ frontier =!= { } && Length[ completed ] < count,
-      moves = ( walk |-> { walk,
-          If[ steps >= kmax, { },
-            Select[ stepBothSides[ graph, walk, candidateFn, Identity ], stepFilter ] ] } ) /@
-        frontier;
-      completed = Join[ completed,
-        If[ stepsQ[ steps ], Cases[ moves, { w_, { } } :> w ], { } ] ];
+      moves = ( state |-> { state,
+          Select[ stepBothSides[ graph, state, candidateFn, Identity, kmax ],
+            stepFilter[ First @ # ] & ] } ) /@ frontier;
+      completed = DeleteDuplicates @ Join[ completed,
+        Cases[ moves, { { w_, la_, ra_ }, { } } /; stepsQ[ Max[ la, ra ] ] :> w ] ];
       frontier = applyPruning[
-        DeleteDuplicates @ Flatten[ Cases[ moves, { _, nexts : { __ } } :> nexts ], 1 ],
-        prune ];
-      steps++
+        Select[ DeleteDuplicates @ Flatten[ Cases[ moves, { _, nexts : { __ } } :> nexts ], 1 ],
+          state |-> If[ KeyExistsQ[ seen, state ], False, seen[ state ] = True ] ],
+        prune ]
     ];
     Take[ completed, UpTo[ count ] ]
   ]
@@ -597,30 +596,33 @@ extendBothFrontierSweep[ graph_Graph, seed_List, candidateFn_, stepsQ_, kmax_,
 
 extendBothGreedySweep[ graph_Graph, seed_List, candidateFn_, stepsQ_, kmax_,
     count_, branch_, stepFilter_ ] :=
-  Module[ { cap = countLimit @ count, acc = { }, descend, emit,
+  Module[ { cap = countLimit @ count, acc = { }, kept = <| |>, seen = <| |>, descend, emit,
             cands = candidateFn, keepQ = stepsQ, filterQ = stepFilter, pick = branch },
-    emit[ walk_, steps_ ] := If[ keepQ @ steps,
-      AppendTo[ acc, walk ];
-      If[ Length @ acc >= cap, Throw[ acc, extendBothGreedySweep ] ] ];
-    descend[ walk_, steps_ ] :=
-      If[ steps >= kmax,
-        emit[ walk, steps ],
-        With[ { nexts = Select[ stepBothSides[ graph, walk, cands, pick ], filterQ ] },
-          If[ nexts === { }, emit[ walk, steps ],
-            Scan[ descend[ #, steps + 1 ] &, nexts ] ] ] ];
-    Catch[ descend[ seed, 0 ]; acc, extendBothGreedySweep ]
+    emit[ walk_, la_, ra_ ] :=
+      If[ keepQ[ Max[ la, ra ] ] && ! KeyExistsQ[ kept, walk ],
+        kept[ walk ] = True;
+        AppendTo[ acc, walk ];
+        If[ Length @ acc >= cap, Throw[ acc, extendBothGreedySweep ] ] ];
+    descend[ state : { walk_, la_, ra_ } ] :=
+      If[ ! KeyExistsQ[ seen, state ],
+        seen[ state ] = True;
+        With[ { nexts = Select[ stepBothSides[ graph, state, cands, pick, kmax ],
+                  filterQ[ First @ # ] & ] },
+          If[ nexts === { }, emit[ walk, la, ra ], Scan[ descend, nexts ] ] ] ];
+    Catch[ descend[ { seed, 0, 0 } ]; acc, extendBothGreedySweep ]
   ]
 
 
-stepBothSides[ graph_Graph, walk_List, candidateFn_, branch_ ] :=
-  With[ { backCands = branch @ candidateFn[ graph, Reverse @ walk ],
-          fwdCands  = branch @ candidateFn[ graph, walk ] },
-    Which[
-      backCands === { } && fwdCands === { }, { },
-      backCands === { },                     Append[ walk, # ] & /@ fwdCands,
-      fwdCands  === { },                     Prepend[ walk, # ] & /@ backCands,
-      True, Flatten[ Outer[ Prepend[ Append[ walk, #2 ], #1 ] &,
-              backCands, fwdCands, 1 ], 1 ]
+(* the three moves of one outer step, joint first so a greedy witness keeps the synchronous trajectory.  A side draws candidates only while its own added-edge count is under kmax, so the budget is spent per side and a capped side simply stops offering moves *)
+
+stepBothSides[ graph_Graph, { walk_List, la_, ra_ }, candidateFn_, branch_, kmax_ ] :=
+  With[ { backCands = If[ la < kmax, branch @ candidateFn[ graph, Reverse @ walk ], { } ],
+          fwdCands  = If[ ra < kmax, branch @ candidateFn[ graph, walk ], { } ] },
+    Join[
+      Flatten[ Outer[ { Prepend[ Append[ walk, #2 ], #1 ], la + 1, ra + 1 } &,
+        backCands, fwdCands, 1 ], 1 ],
+      { Append[ walk, # ], la, ra + 1 } & /@ fwdCands,
+      { Prepend[ walk, # ], la + 1, ra } & /@ backCands
     ]
   ]
 
