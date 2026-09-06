@@ -52,6 +52,13 @@ VerificationTest[
   TestID -> "FindInfraTriangle-all-valid"
 ]
 
+VerificationTest[
+  FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, Method -> "Bogus" ],
+  $Failed,
+  { FindInfraTriangle::badmethod },
+  TestID -> "FindInfraTriangle-badmethod"
+]
+
 (* InfraTriangleQ rejects a four-sided chain. *)
 VerificationTest[
   InfraTriangleQ[ GridGraph[ { 4, 4 } ], FindInfraPolygon[ GridGraph[ { 4, 4 } ], { 1, 4, 16, 13 } ][ "Realizations" ][[ 1 ]] ],

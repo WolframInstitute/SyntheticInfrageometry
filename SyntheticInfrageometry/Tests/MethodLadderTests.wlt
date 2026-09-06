@@ -53,6 +53,37 @@ VerificationTest[
   TestID -> "FindInfraParallel-class-invariant-dead-ends"
 ]
 
+(* the corner polygon is the product of its sides' geodesic classes: the diagonal side 9 -> 1 of the 3 x 3 grid has six geodesics, the other two one each *)
+VerificationTest[
+  With[ { call = m |-> FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All, Method -> m ] },
+    { classInvariantQ[ call ], Length @ call[ "Exhaustive" ][ "Realizations" ] } ],
+  { True, 6 },
+  TestID -> "FindInfraPolygon-class-invariant-under-Method"
+]
+
+VerificationTest[
+  classInvariantQ[ m |-> FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All, Method -> m ] ],
+  True,
+  TestID -> "FindInfraTriangle-class-invariant-under-Method"
+]
+
+(* a bounded count streams n geodesics per side and reads the first members of their product: prefixes of length n multiply to at least Min[n, |class|] polygons, so a strict count is exact under every Method and a soft count past the class returns the class *)
+VerificationTest[
+  Table[ Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, n, Method -> m ][ "Realizations" ],
+    { m, { "Exhaustive", "Greedy", "RandomGreedy" } }, { n, { 1, 4, UpTo[ 10 ] } } ],
+  ConstantArray[ { 1, 4, 6 }, 3 ],
+  TestID -> "FindInfraPolygon-bounded-count-is-exact-under-Method"
+]
+
+(* four diagonal sides of the 4 x 4 grid with twenty geodesics each, 160 000 polygons: a strict count streams that many distinct members without forming the product *)
+VerificationTest[
+  Table[ With[ { reps = FindInfraPolygon[ GridGraph[ { 4, 4 } ], { 1, 16, 4, 13 }, 50, Method -> m ][ "Realizations" ] },
+      { Length @ reps, DuplicateFreeQ @ reps, AllTrue[ reps, InfraPolygonQ[ GridGraph[ { 4, 4 } ], # ] & ] } ],
+    { m, { "Exhaustive", "Greedy", "RandomGreedy" } } ],
+  ConstantArray[ { 50, True, True }, 3 ],
+  TestID -> "FindInfraPolygon-strict-count-streams-off-the-product"
+]
+
 
 (* ===================== Walk family ===================== *)
 
@@ -127,6 +158,24 @@ VerificationTest[
 ]
 
 
+(* ===================== Circle family ===================== *)
+
+(* the band {2, 4} around the centre of the 9 x 9 grid: one pool atom carrying sixteen shortest separating circles, the class under every Method *)
+VerificationTest[
+  With[ { call = m |-> FindInfraCircle[ GridGraph[ { 9, 9 } ], 41, { 2, 4 }, All, Method -> m ] },
+    { classInvariantQ[ call ], Length @ call[ "Exhaustive" ][ "Realizations" ] } ],
+  { True, 16 },
+  TestID -> "FindInfraCircle-pool-class-invariant-under-Method"
+]
+
+(* off the default Properties the family comes from the length sweep, which every Method runs alike *)
+VerificationTest[
+  classInvariantQ[ m |-> FindInfraCircle[ GridGraph[ { 4, 4 } ], 6, { 1, 2 }, All, Properties -> { "Separating" }, Method -> m ] ],
+  True,
+  TestID -> "FindInfraCircle-sweep-class-invariant-under-Method"
+]
+
+
 (* ===================== Automatic is the deterministic descent ===================== *)
 
 (* on every ladder symbol a count-less call resolves to "Greedy": the same witness twice without a seed, and the explicit "Greedy" witness *)
@@ -145,7 +194,10 @@ VerificationTest[
         m |-> ExtendInfraGeodesic[ g, { 6, 7 }, Infinity, 2, Method -> m ],
         m |-> FindInfraShell[ g, 6, { 1, 2 }, Properties -> { "Separating" }, Method -> m ],
         m |-> FindInfraBisectingHyperplane[ g, 1, 4, { -1, 1 }, Properties -> { "Separating" }, Method -> m ],
-        m |-> FindInfraEllipticShell[ g, { 6, 11 }, { 3, 4 }, Properties -> { "Separating" }, Method -> m ] },
+        m |-> FindInfraEllipticShell[ g, { 6, 11 }, { 3, 4 }, Properties -> { "Separating" }, Method -> m ],
+        m |-> FindInfraCircle[ g, 6, { 1, 2 }, Method -> m ],
+        m |-> FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, Method -> m ],
+        m |-> FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, Method -> m ] },
       call |-> call[ Automatic ] === call[ Automatic ] === call[ "Greedy" ] ] ],
   True,
   TestID -> "MethodLadder-Automatic-is-Greedy-on-every-symbol"
@@ -169,7 +221,11 @@ VerificationTest[
         m |-> ExtendInfraGeodesic[ g, { 6, 7 }, Infinity, 2, All, Method -> m ],
         m |-> FindInfraShell[ g, 6, { 1, 2 }, All, Properties -> { "Separating" }, Method -> m ],
         m |-> FindInfraBisectingHyperplane[ g, 1, 4, { -1, 1 }, All, Properties -> { "Separating" }, Method -> m ],
-        m |-> FindInfraEllipticShell[ g, { 6, 11 }, { 3, 4 }, All, Properties -> { "Separating" }, Method -> m ] },
+        m |-> FindInfraEllipticShell[ g, { 6, 11 }, { 3, 4 }, All, Properties -> { "Separating" }, Method -> m ],
+        m |-> FindInfraCircle[ g, 6, { 1, 2 }, All, Method -> m ],
+        m |-> FindInfraCircle[ g, 6, { 1, 2 }, All, Properties -> { "Separating" }, Method -> m ],
+        m |-> FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All, Method -> m ],
+        m |-> FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All, Method -> m ] },
       call |-> Sort[ Sort /@ call[ { "Exhaustive", "Pruning" -> Infinity } ][ "Realizations" ] ] ===
                Sort[ Sort /@ call[ "Exhaustive" ][ "Realizations" ] ] ] ],
   True,

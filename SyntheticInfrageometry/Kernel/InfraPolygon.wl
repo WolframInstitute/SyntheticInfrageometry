@@ -22,29 +22,35 @@ InfraPolygon[ reps_List ][ "Vertices" ] :=
 
 (* ===================== FindInfraPolygon ===================== *)
 
-(* each side (p_i, p_{i+1 mod n}) is a geodesic, and the Cartesian product over sides enumerates all polygons *)
+(* each side (p_i, p_{i+1 mod n}) is a geodesic, and the Cartesian product over sides is the class *)
 
-Options[ FindInfraPolygon ] = { Method -> "Exhaustive" };
+FindInfraPolygon::badmethod = "Method `1` is not supported by FindInfraPolygon.";
+
+Options[ FindInfraPolygon ] = { Method -> Automatic };
 
 FindInfraPolygon[ graph_Graph, vertices_List /; Length[ vertices ] >= 3,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
-  With[ { core = findPolygonCore[ graph, vertices, count, opts ] },
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
+  With[ { core = findPolygonCore[ FindInfraPolygon, graph, vertices, count, opts ] },
     If[ core === $Failed, $Failed, InfraPolygon[ core ] ]
   ]
 
 
-findPolygonCore[ graph_Graph, vertices_List, count_, opts : OptionsPattern[ FindInfraSegment ] ] :=
-  With[ { corners = polygonCorner /@ vertices },
-    With[ { sideReals = Function[ pair,
-        findSegmentCore[ graph, pair[[ 1 ]], pair[[ 2 ]], All, opts ] ] /@
-        Partition[ Append[ corners, First @ corners ], 2, 1 ] },
-      If[ MemberQ[ sideReals, $Failed ], $Failed,
+(* "Exhaustive" with All forms the product; a bounded count streams that many geodesics per side, in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order, and reads the first members of their product off its mixed-radix index -- a product of side prefixes of length n holds at least Min[n, |class|] polygons, so the count is exact.  head is the calling symbol, read for its options and messages *)
+
+findPolygonCore[ head_, graph_Graph, vertices_List, count_, opts : OptionsPattern[] ] :=
+  With[ { methodSpec = resolveMethod[ OptionValue[ head, { opts }, Method ], count ],
+          corners = polygonCorner /@ vertices },
+    If[ ! MatchQ[ methodName @ methodSpec, "Exhaustive" | "Greedy" | "RandomGreedy" ],
+      Message[ MessageName[ head, "badmethod" ], methodSpec ]; $Failed,
+      With[ { sides = findSegmentCore[ graph, #1, #2, count, Method -> methodSpec ] & @@@
+              Partition[ Append[ corners, First @ corners ], 2, 1 ] },
+        { sizes = Length /@ sides },
         infraCap[
-          Map[ paths |-> ( InfraSegment[ { # } ] & /@ paths ), Tuples @ sideReals ],
-          count ]
-      ]
-    ]
-  ]
+          Map[ paths |-> ( InfraSegment[ { # } ] & /@ paths ),
+            If[ count === All, Tuples @ sides,
+              Table[ MapThread[ Part, { sides, 1 + IntegerDigits[ j, MixedRadix @ sizes, Length @ sides ] } ],
+                { j, 0, Min[ countLimit @ count, Times @@ sizes ] - 1 } ] ] ],
+          count ] ] ] ]
 
 polygonCorner[ InfraPoint[ v_ ] ] := v
 polygonCorner[ v_ ]                   := v

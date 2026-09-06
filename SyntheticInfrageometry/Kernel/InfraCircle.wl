@@ -37,37 +37,49 @@ InfraCircle[ dags : { __Graph } ][ "Realizations", spec_ ] :=
 (* ===================== FindInfraCircle ===================== *)
 
 (* a circle of radius r around c is a simple cycle in the level surface at distance ~r from c, returned as an open vertex sequence.
-   On the default Properties, a single anchor and an integer band the answer comes from the circle pool, polynomial in |V| however large the family is; otherwise from the FindCycle length sweep, which materialises every shorter cycle first. *)
+   On the default Properties, a single anchor and an integer band the family is carried by the circle pool, polynomial in |V| however large the family is; otherwise by the FindCycle length sweep, which materialises every shorter cycle first.  One class under every Method: "Exhaustive" with All is the pool, a bounded count streams circles off the atoms in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order *)
 
 FindInfraCircle::badproperty = "Property `1` is not supported by FindInfraCircle.";
+FindInfraCircle::badmethod   = "Method `1` is not supported by FindInfraCircle.";
 FindInfraCircle::uncertified = "The circle pool of the band `1` around `2` is not certified exact; the family comes from the cycle sweep instead, so it is enumerated rather than carried.";
 
 Options[ FindInfraCircle ] = {
-  Properties -> { "Separating", "Shortest" }
+  Properties -> { "Separating", "Shortest" },
+  Method     -> Automatic
 };
 
 FindInfraCircle[ graph_Graph, p_, r_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
-  With[
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
+  Catch @ With[
     { properties = OptionValue[ FindInfraCircle, { opts }, Properties ],
+      methodSpec = resolveMethod[ OptionValue[ FindInfraCircle, { opts }, Method ], count ],
       anchors = Tuples[ infraSpread /@ { p, r } ] },
-    { pool = If[ Length @ anchors === 1 && Sort @ properties === { "Separating", "Shortest" },
-        circlePool[ graph, Sequence @@ First @ anchors ], Null ] },
-    Which[
-      pool === Null || pool === $Failed,
-        (* a refusal costs nothing on an empty family, so ::uncertified fires only when circles exist that the carrier could not hold *)
-        With[ { swept = spreadFind[ InfraCircle, count,
-                  findCircleSweep[ graph, ##, properties, count ] &, p, r ] },
-          If[ pool === $Failed && ! MatchQ[ swept, InfraCircle[ { } ] | $Failed ],
-            Message[ FindInfraCircle::uncertified, r, p ] ];
-          swept ],
-      count === All,
-        InfraCircle @ pool,
-      True,
-        bundleTake[ InfraCircle,
-          If[ pool === { }, { }, InfraCircle[ pool ][ "Realizations", UpTo @ countLimit @ count ] ],
-          count ]
-    ] ]
+    { methodHead = methodName @ methodSpec },
+    If[ ! MatchQ[ methodHead, "Exhaustive" | "Greedy" | "RandomGreedy" ],
+      Message[ FindInfraCircle::badmethod, methodSpec ]; Throw[ $Failed ] ];
+    With[
+      { branch = greedyBranch[ methodHead /. "Exhaustive" -> "Greedy" ],
+        pruning = Replace[ methodSpec,
+          { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ), _ :> Infinity } ],
+        pool = If[ Length @ anchors === 1 && Sort @ properties === { "Separating", "Shortest" },
+          circlePool[ graph, Sequence @@ First @ anchors ], Null ] },
+      Which[
+        pool === Null || pool === $Failed,
+          (* a refusal costs nothing on an empty family, so ::uncertified fires only when circles exist that the carrier could not hold *)
+          With[ { swept = spreadFind[ InfraCircle, count,
+                    findCircleSweep[ graph, ##, properties, count, branch, pruning ] &, p, r ] },
+            If[ pool === $Failed && ! MatchQ[ swept, InfraCircle[ { } ] | $Failed ],
+              Message[ FindInfraCircle::uncertified, r, p ] ];
+            swept ],
+        count === All && methodHead === "Exhaustive",
+          InfraCircle @ pool,
+        True,
+          bundleTake[ InfraCircle,
+            Fold[ { acc, dag } |-> If[ Length @ acc >= countLimit @ count, acc,
+                Join[ acc, dagGeodesics[ dag, countLimit @ count - Length @ acc, branch ] ] ],
+              { }, branch @ pool ],
+            count ]
+      ] ] ]
 
 
 (* a radial seam P -- one geodesic from c to just outside the band, kept inside it -- meets every separating cycle and cuts the annulus into a disk; an atom is a contiguous arc S of P with a pair (u, v) of cut-shell vertices flanking its ends, carrying the cycles S ++ (a v-u geodesic of the shell minus P).
@@ -115,9 +127,9 @@ circlePool[ graph_Graph, center_, r_ ] :=
   ]
 
 
-(* FindCycle by ascending length on the level subgraph, filtered by the Properties predicates: exact for every Properties value, exponential in the debris below the minimal separating length *)
+(* FindCycle by ascending length on the level subgraph, filtered by the Properties predicates: exact for every Properties value, exponential in the debris below the minimal separating length.  The first non-empty grade is certified only by exhausting the shorter ones, so every Method runs the same sweep and branch only orders the ties; pruning caps the cycles kept per length *)
 
-findCircleSweep[ graph_Graph, center_, r_, properties_List, count_ ] :=
+findCircleSweep[ graph_Graph, center_, r_, properties_List, count_, branch_, pruning_ ] :=
   Module[ { unknown, range, localG, levelSet, radius, levelGraph,
             vertsTest, tied, needed, k, kMax, batch, matching, accumulated },
     Catch[
@@ -134,12 +146,12 @@ findCircleSweep[ graph_Graph, center_, r_, properties_List, count_ ] :=
       vertsTest  = admissibleCircleVerts[ localG, center, radius,
                      DeleteCases[ properties, "Shortest" ] ];
       tied = MemberQ[ properties, "Shortest" ];
-      needed = Switch[ count, _Integer, count, UpTo[ _Integer ], First @ count, _, Infinity ];
+      needed = countLimit @ count;
       kMax = VertexCount[ levelGraph ];
       accumulated = { };
       k = 3;
       While[ k <= kMax,
-        batch    = cycleToVertexSequence /@ FindCycle[ levelGraph, { k }, All ];
+        batch    = branch @ applyPruning[ cycleToVertexSequence /@ FindCycle[ levelGraph, { k }, All ], pruning ];
         matching = Select[ batch, vertsTest ];
         If[ matching =!= { },
           accumulated = Join[ accumulated, matching ];

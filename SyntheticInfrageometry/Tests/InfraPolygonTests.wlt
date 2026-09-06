@@ -368,6 +368,13 @@ VerificationTest[
   TestID -> "FindInfraPolygon-all-valid"
 ]
 
+VerificationTest[
+  FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, Method -> "Bogus" ],
+  $Failed,
+  { FindInfraPolygon::badmethod },
+  TestID -> "FindInfraPolygon-badmethod"
+]
+
 (* InfraPolygonQ rejects an open (non-closed) leg chain. *)
 VerificationTest[
   InfraPolygonQ[ PathGraph[ Range[ 4 ] ],

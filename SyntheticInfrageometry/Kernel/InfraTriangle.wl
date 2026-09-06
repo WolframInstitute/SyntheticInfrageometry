@@ -17,11 +17,13 @@ InfraTriangle[ reps_List ][ "Vertices" ] :=
 (* ===================== FindInfraTriangle ===================== *)
 
 
-Options[ FindInfraTriangle ] = { Method -> "Exhaustive" };
+FindInfraTriangle::badmethod = "Method `1` is not supported by FindInfraTriangle.";
+
+Options[ FindInfraTriangle ] = { Method -> Automatic };
 
 FindInfraTriangle[ graph_Graph, vertices_List /; Length[ vertices ] === 3,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
-  With[ { core = findPolygonCore[ graph, vertices, count, opts ] },
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
+  With[ { core = findPolygonCore[ FindInfraTriangle, graph, vertices, count, opts ] },
     If[ core === $Failed, $Failed, InfraTriangle[ core ] ]
   ]
 

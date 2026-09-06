@@ -1057,6 +1057,13 @@ VerificationTest[
   TestID -> "FindInfraCircle-badproperty-unknown"
 ]
 
+VerificationTest[
+  FindInfraCircle[GridGraph[{4, 4}], 6, {1, 2}, 1, Method -> "Bogus"],
+  $Failed,
+  {FindInfraCircle::badmethod},
+  TestID -> "FindInfraCircle-badmethod"
+]
+
 
 (* ===== the circle pool: count All / count-less form ===== *)
 
