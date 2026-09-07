@@ -99,6 +99,13 @@ $InfraSceneHighlightPalette := Join[
 
 (* ===================== Per-object style spec ===================== *)
 
+(* True resolves to Arrowheads[Medium], a symbolic size that scales with the plot rather than with the stroke *)
+resolveArrowSpec[ spec_ ] := Replace[ spec, {
+  Automatic | None | False -> None,
+  True :> Arrowheads[ Medium ],
+  a_Arrowheads :> a,
+  other_ :> Arrowheads[ other ] } ]
+
 parseHighlightStyle[ spec_, defaults_Association ] :=
   Replace[
     Fold[
@@ -113,6 +120,8 @@ parseHighlightStyle[ spec_, defaults_Association ] :=
           MapAt[ Append[ #, d ] &, rec, "EdgeDir" ],
         ( d : ( _PointSize | _AbsolutePointSize ) ) :>
           MapAt[ Append[ #, d ] &, rec, "VertexDir" ],
+        (* an object's own arrowhead, True on and False off: caught here so it reaches the stroke instead of being buried in a vertex/edge Directive, where it would do nothing *)
+        ( a : ( _Arrowheads | True | False ) ) :> Append[ rec, "Arrowheads" -> resolveArrowSpec[ a ] ],
         d_ :> MapAt[ Append[ #, d ] &, MapAt[ Append[ #, d ] &, rec, "VertexDir" ], "EdgeDir" ]
       } ],
       Join[ defaults, <|
@@ -160,12 +169,8 @@ InfraSceneHighlight[ graph_Graph, obj : Except[_List], opts : OptionsPattern[] ]
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
   Module[ { triples, knotTriples, ranges, defaultRecord, vEntries, eEntries, objects, arrowSpec, palette },
 
-    (* one head per path object, at its end, the value doubling as the head spec; True resolves to Arrowheads[Medium], a symbolic size that scales with the plot rather than with the stroke *)
-    arrowSpec = Replace[ OptionValue[ "Arrowheads" ], {
-      Automatic | None | False -> None,
-      True :> Arrowheads[ Medium ],
-      a_Arrowheads :> a,
-      other_ :> Arrowheads[ other ] } ];
+    (* one head per path object, at its end, the value doubling as the head spec; the option is the default every object inherits, and an Arrowheads in an object's own style overrides it for that object alone *)
+    arrowSpec = resolveArrowSpec @ OptionValue[ "Arrowheads" ];
 
     (* colour by addition order, None restoring the type-keyed behaviour; an explicit obj -> colour is parsed before this runs, so a caller's own colour still wins *)
     palette = Replace[ OptionValue[ "Palette" ], {
@@ -185,7 +190,8 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
     ranges = <|
       "OpacityRange"   -> OptionValue[ "OpacityRange" ],
       "ThicknessRange" -> OptionValue[ "ThicknessRange" ],
-      "PointSizeRange" -> OptionValue[ "PointSizeRange" ] |>;
+      "PointSizeRange" -> OptionValue[ "PointSizeRange" ],
+      "Arrowheads"     -> arrowSpec |>;
     defaultRecord = parseHighlightStyle[ Automatic, ranges ];
 
     (* the original wrapper rides along as a fifth element so the density computation can read its measure uniformly across bundle, weighted and DAG forms *)
@@ -342,7 +348,8 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                   MapIndexed[
                     { steps, position } |-> { UndirectedEdge @@ Sort @ # & /@ steps,
                                 coords /@ Prepend[ Last /@ steps, First @ First @ steps ],
-                                First[ position ] === Length[ runs ] },
+                                First[ position ] === Length[ runs ],
+                                record[ "Arrowheads" ] },
                     runs ] ],
                 Replace[ Cases[ reps, r_List /; Length[ r ] >= 2 && FreeQ[ r, _Graph ] ],
                   w_ :> If[ type === "Cycles" && Last[ w ] =!= First[ w ], Append[ w, First @ w ], w ], { 1 } ] ] ]
@@ -355,8 +362,8 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                   Join[ First @ state, AssociationThread[ fresh -> True ] ],
                   Join[ Last @ state,
                     { First @ fresh -> ( { JoinForm[ "Round" ],
-                        If[ arrowSpec =!= None && stroke[[ 3 ]],
-                          Sequence @@ { arrowSpec, Arrow @ stroke[[ 2 ]] },
+                        If[ stroke[[ 4 ]] =!= None && stroke[[ 3 ]],
+                          Sequence @@ { stroke[[ 4 ]], Arrow @ stroke[[ 2 ]] },
                           Line @ stroke[[ 2 ]] ] } & ) },
                     ( # -> ( { } & ) ) & /@ Rest @ fresh ] } } ],
             { <| |>, { } },

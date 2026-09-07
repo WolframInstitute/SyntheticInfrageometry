@@ -436,6 +436,32 @@ VerificationTest[
   TestID -> "InfraSceneHighlight-Arrowheads-independent-of-stroke-weight"
 ]
 
+(* an object carries its own head: obj -> True arms that object alone, obj -> False disarms it
+   against an armed option.  One ArrowBox per armed path object. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    With[ { a = FindInfraSegment[ g, 1, 5 ], b = FindInfraSegment[ g, 21, 25 ] },
+      ( heads = ( e |-> Count[ ToBoxes @ e, ArrowBox, Infinity, Heads -> True ] ) );
+      { heads @ InfraSceneHighlight[ g, { a -> True, b } ],
+        heads @ InfraSceneHighlight[ g, { Style[ a, Arrowheads[ 0.09 ] ], b } ],
+        heads @ InfraSceneHighlight[ g, { a, b -> False }, "Arrowheads" -> True ] } ] ],
+  { 1, 1, 1 },
+  TestID -> "InfraSceneHighlight-Arrowheads-per-object"
+]
+
+(* an object's own spec overrides the option's size for that object.  The head spec is read off
+   the EdgeShapeFunction rules, not the boxes: it sits inside the drawing function's body and
+   never surfaces as an ArrowheadsBox. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    With[ { seg = FindInfraSegment[ g, 1, 5 ] },
+      DeleteDuplicates @ Cases[
+        Options[ InfraSceneHighlight[ g, { seg -> Arrowheads[ 0.09 ] }, "Arrowheads" -> True ],
+          EdgeShapeFunction ], _Arrowheads, Infinity ] ] ],
+  { Arrowheads[ 0.09 ] },
+  TestID -> "InfraSceneHighlight-Arrowheads-object-overrides-option"
+]
+
 (* StrikeOutPalette: colour follows ADDITION ORDER, not object type. *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
