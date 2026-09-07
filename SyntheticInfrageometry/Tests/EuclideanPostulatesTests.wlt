@@ -1227,20 +1227,20 @@ VerificationTest[
 (* ===== FindInfraParallel ===== *)
 
 VerificationTest[
-  FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All],
-  InfraLine[{{5, 6, 7, 8}}],
+  FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All]["Realizations"],
+  {{5, 6, 7, 8}},
   TestID -> "FindInfraParallel-GridGraph-row-from-row"
 ]
 
 VerificationTest[
-  FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 6, All],
-  InfraLine[{{5, 6, 7, 8}}],
+  FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 6, All]["Realizations"],
+  {{5, 6, 7, 8}},
   TestID -> "FindInfraParallel-GridGraph-row-interior-vertex"
 ]
 
 VerificationTest[
-  FindInfraParallel[PathGraph[Range[5]], {1, 2, 3, 4, 5}, 3, All],
-  InfraLine[{{1, 2, 3, 4, 5}}],
+  FindInfraParallel[PathGraph[Range[5]], {1, 2, 3, 4, 5}, 3, All]["Realizations"],
+  {{1, 2, 3, 4, 5}},
   TestID -> "FindInfraParallel-self-on-line"
 ]
 
@@ -1260,6 +1260,15 @@ VerificationTest[
   FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, 2],
   $Failed,
   TestID -> "FindInfraParallel-strict-fails-when-too-few"
+]
+
+(* All under "Exhaustive" hands back the pool itself, as FindInfraLine does; its
+   realisations are the parallels -- here the middle row of the 5 x 5 grid *)
+VerificationTest[
+  With[{pa = FindInfraParallel[GridGraph[{5, 5}], Range[5], 13, All]},
+    {MatchQ[First @ pa, {__Graph}], pa["Realizations"]}],
+  {True, {{11, 12, 13, 14, 15}}},
+  TestID -> "FindInfraParallel-All-returns-the-pool"
 ]
 
 VerificationTest[

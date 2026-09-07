@@ -174,7 +174,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6, Method -> "Greedy" ],
+  FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6, Method -> "Embedding" ],
   $Failed,
   { FindInfraRegularPolygon::badmethod },
   TestID -> "FindInfraRegularPolygon-badmethod"
@@ -393,5 +393,54 @@ VerificationTest[
   TestID -> "FindInfraRegularPolygon-segment-sides-valid"
 ]
 
+
+(* ===== the count-less witness is a non-degenerate polygon ===== *)
+
+(* the mixed-radix first member of the 1-3-9 triangle of GridGraph[{3,3}] closes along
+   9-6-3-2-1, walking every edge of the other two sides a second time.  The witness skips
+   it: its closed vertex sequence repeats no edge. *)
+
+polygonClosed[ poly_ ] :=
+  With[ { paths = First @ First @ # & /@ poly },
+    Join @@ Prepend[ Rest /@ Rest @ paths, First @ paths ] ]
+
+polygonRetraces[ poly_ ] :=
+  ! DuplicateFreeQ[ Sort /@ Partition[ polygonClosed @ poly, 2, 1 ] ]
+
+VerificationTest[
+  polygonRetraces @ First @ First @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 } ],
+  False,
+  TestID -> "FindInfraPolygon-witness-does-not-retrace-a-side"
+]
+
+VerificationTest[
+  polygonRetraces @ First @ First @ FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 } ],
+  False,
+  TestID -> "FindInfraTriangle-witness-does-not-retrace-a-side"
+]
+
+(* the class is unchanged: All still holds the four degenerate members *)
+VerificationTest[
+  With[ { all = First @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ] },
+    { Length @ all, Count[ polygonRetraces /@ all, True ] } ],
+  { 6, 4 },
+  TestID -> "FindInfraPolygon-class-keeps-the-degenerate-members"
+]
+
+
+(* ===== FindInfraRegularPolygon on the Method ladder ===== *)
+
+(* a count-less call is one witness, as on every ladder symbol *)
+VerificationTest[
+  Length @ First @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4 ],
+  1,
+  TestID -> "FindInfraRegularPolygon-countless-is-one-witness"
+]
+
+VerificationTest[
+  Length @ First @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All ],
+  16,
+  TestID -> "FindInfraRegularPolygon-All-is-the-whole-class"
+]
 
 EndTestSection[]

@@ -626,7 +626,7 @@ VerificationTest[
   With[{g = GridGraph[{5, 5}]},
     {With[{pa = FindInfraParallel[g, {1, 2, 3, 4, 5}, 6, All]},
        InfraParallelQ[g, InfraLine[{{1, 2, 3, 4, 5}}], pa] ===
-         AllTrue[First @ pa, InfraParallelQ[g, {1, 2, 3, 4, 5}, #] &]],
+         AllTrue[pa["Realizations"], InfraParallelQ[g, {1, 2, 3, 4, 5}, #] &]],
      With[{rp = FindInfraRegularPolygon[g, {1}, 4, 1]},
        InfraRegularPolygonQ[g, rp, {1}] ===
          AllTrue[First @ rp, InfraRegularPolygonQ[g, #, {1}] &]],

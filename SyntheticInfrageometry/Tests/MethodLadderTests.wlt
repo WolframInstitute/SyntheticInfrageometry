@@ -176,6 +176,36 @@ VerificationTest[
 ]
 
 
+
+
+(* ===================== Ellipse family ===================== *)
+
+(* the elliptic level band {4, 8} of the foci 25, 12 on the 7 x 7 grid: the sweep's shortest separating grade, the same class under every Method *)
+VerificationTest[
+  classInvariantQ[ m |-> FindInfraEllipse[ GridGraph[ { 7, 7 } ], { 25, 12 }, { 4, 8 }, All, Method -> m ] ],
+  True,
+  TestID -> "FindInfraEllipse-class-invariant-under-Method"
+]
+
+(* off the "Shortest" tie the sweep runs every grade: six cycles in the level set of 2, 15 at c = 4 *)
+VerificationTest[
+  With[ { call = m |-> FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, All, Properties -> { }, Method -> m ] },
+    { classInvariantQ[ call ], Length @ call[ "Exhaustive" ][ "Realizations" ] } ],
+  { True, 6 },
+  TestID -> "FindInfraEllipse-sweep-class-invariant-under-Method"
+]
+
+
+(* ===================== Regular polygon ===================== *)
+
+(* the sixteen unit squares of the 5 x 5 grid: the candidate sweep is not lazy, so Method only orders what the count takes *)
+VerificationTest[
+  With[ { call = m |-> FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, Method -> m ] },
+    { classInvariantQ[ call ], Length @ call[ "Exhaustive" ][ "Realizations" ] } ],
+  { True, 16 },
+  TestID -> "FindInfraRegularPolygon-class-invariant-under-Method"
+]
+
 (* ===================== Automatic is the deterministic descent ===================== *)
 
 (* on every ladder symbol a count-less call resolves to "Greedy": the same witness twice without a seed, and the explicit "Greedy" witness *)
@@ -197,7 +227,9 @@ VerificationTest[
         m |-> FindInfraEllipticShell[ g, { 6, 11 }, { 3, 4 }, Properties -> { "Separating" }, Method -> m ],
         m |-> FindInfraCircle[ g, 6, { 1, 2 }, Method -> m ],
         m |-> FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, Method -> m ],
-        m |-> FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, Method -> m ] },
+        m |-> FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, Method -> m ],
+        m |-> FindInfraEllipse[ GridGraph[ { 7, 7 } ], { 25, 12 }, { 4, 8 }, Method -> m ],
+        m |-> FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, Method -> m ] },
       call |-> call[ Automatic ] === call[ Automatic ] === call[ "Greedy" ] ] ],
   True,
   TestID -> "MethodLadder-Automatic-is-Greedy-on-every-symbol"
@@ -225,7 +257,9 @@ VerificationTest[
         m |-> FindInfraCircle[ g, 6, { 1, 2 }, All, Method -> m ],
         m |-> FindInfraCircle[ g, 6, { 1, 2 }, All, Properties -> { "Separating" }, Method -> m ],
         m |-> FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All, Method -> m ],
-        m |-> FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All, Method -> m ] },
+        m |-> FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All, Method -> m ],
+        m |-> FindInfraEllipse[ GridGraph[ { 7, 7 } ], { 25, 12 }, { 4, 8 }, All, Method -> m ],
+        m |-> FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, Method -> m ] },
       call |-> Sort[ Sort /@ call[ { "Exhaustive", "Pruning" -> Infinity } ][ "Realizations" ] ] ===
                Sort[ Sort /@ call[ "Exhaustive" ][ "Realizations" ] ] ] ],
   True,

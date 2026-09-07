@@ -138,7 +138,7 @@ cappedGeodesics[ graph_Graph, u_, v_, len_, n_Integer ] :=
 
 (* ===================== FindInfraParallel ===================== *)
 
-(* a parallel to line through p: an inextensible geodesic s ... p ... e of graph inside the level set L = { v : d(v, line) == r }, r = d(p, line) -- d(s, e) == d(s, p) + d(p, e), every vertex in L, and no neighbour of s or e in L prolonging it.  The pool is one geodesic DAG per admissible end pair (s, e): the s -> p and p -> e intervals cut down to L and glued at p, oriented so that s precedes e in canonical order.  One class under every Method -- "Exhaustive" reads every atom, a bounded count streams geodesics off the atoms in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order *)
+(* a parallel to line through p: an inextensible geodesic s ... p ... e of graph inside the level set L = { v : d(v, line) == r }, r = d(p, line) -- d(s, e) == d(s, p) + d(p, e), every vertex in L, and no neighbour of s or e in L prolonging it.  The pool is one geodesic DAG per admissible end pair (s, e): the s -> p and p -> e intervals cut down to L and glued at p, oriented so that s precedes e in canonical order.  One class under every Method -- "Exhaustive" with All returns the pool itself, as FindInfraLine does, and a bounded count streams geodesics off the atoms in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order *)
 
 FindInfraParallel::badmethod   = "Method `1` is not supported by FindInfraParallel.";
 FindInfraParallel::badproperty = "Property `1` is not supported by FindInfraParallel (FindInfraParallel accepts only Properties -> {}).";
@@ -175,9 +175,13 @@ FindInfraParallel[ graph_Graph, line_, p_,
                   Subgraph[ dag, Intersection[ VertexOutComponent[ dag, s ], VertexInComponent[ dag, e ] ] ] ],
               cap = countLimit @ count,
               branch = greedyBranch[ methodHead /. "Exhaustive" -> "Greedy" ] },
-            Fold[ { acc, pair } |-> If[ Length @ acc >= cap || ! admissibleQ @@ pair, acc,
-                Join[ acc, dagGeodesics[ atom @@ pair, cap - Length @ acc, branch ] ] ],
-              { }, branch @ Tuples[ { level, level } ] ] ] ] ] ], line, p ]
+            If[ methodHead === "Exhaustive" && count === All,
+              (* the atoms themselves, as FindInfraLine returns them: an atom whose cut leaves no s -> e path carries no parallel and is dropped, so the pool's realisations are exactly the enumerated family *)
+              Select[ atom @@@ Select[ Tuples[ { level, level } ], admissibleQ @@ # & ],
+                VertexCount[ # ] > 0 & ],
+              Fold[ { acc, pair } |-> If[ Length @ acc >= cap || ! admissibleQ @@ pair, acc,
+                  Join[ acc, dagGeodesics[ atom @@ pair, cap - Length @ acc, branch ] ] ],
+                { }, branch @ Tuples[ { level, level } ] ] ] ] ] ] ], line, p ]
 
 
 (* ===================== Sketch: Method dispatch (NOT WIRED) =====================
@@ -354,8 +358,9 @@ InfraParallelQ[ graph_Graph,
     l1 : _InfraLine | _InfraSegment | _InfraWalk | _InfraRay | _List,
     l2 : _InfraLine | _InfraSegment | _InfraWalk | _InfraRay | _List,
     threshold_ : 0 ] /; ! MatchQ[ { l1, l2 }, { _List, _List } ] :=
-  With[ { reps1 = If[ ListQ @ l1, { l1 }, First @ l1 ],
-          reps2 = If[ ListQ @ l2, { l2 }, First @ l2 ] },
+  (* "Realizations", not First: a wrapper may carry a pool of DAGs rather than walks *)
+  With[ { reps1 = If[ ListQ @ l1, { l1 }, l1[ "Realizations" ] ],
+          reps2 = If[ ListQ @ l2, { l2 }, l2[ "Realizations" ] ] },
     AllTrue[ Tuples[ { reps1, reps2 } ],
       pair |-> InfraParallelQ[ graph, pair[[ 1 ]], pair[[ 2 ]], threshold ] ]
   ]

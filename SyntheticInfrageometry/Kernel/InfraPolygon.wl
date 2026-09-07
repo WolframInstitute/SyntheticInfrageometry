@@ -35,22 +35,44 @@ FindInfraPolygon[ graph_Graph, vertices_List /; Length[ vertices ] >= 3,
   ]
 
 
-(* "Exhaustive" with All forms the product; a bounded count streams that many geodesics per side, in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order, and reads the first members of their product off its mixed-radix index -- a product of side prefixes of length n holds at least Min[n, |class|] polygons, so the count is exact.  head is the calling symbol, read for its options and messages *)
+(* "Exhaustive" with All forms the product; a bounded count streams that many geodesics per side, in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order, and reads members of their product off its mixed-radix index.  head is the calling symbol, read for its options and messages *)
 
 findPolygonCore[ head_, graph_Graph, vertices_List, count_, opts : OptionsPattern[] ] :=
   With[ { methodSpec = resolveMethod[ OptionValue[ head, { opts }, Method ], count ],
           corners = polygonCorner /@ vertices },
     If[ ! MatchQ[ methodName @ methodSpec, "Exhaustive" | "Greedy" | "RandomGreedy" ],
       Message[ MessageName[ head, "badmethod" ], methodSpec ]; $Failed,
-      With[ { sides = findSegmentCore[ graph, #1, #2, count, Method -> methodSpec ] & @@@
-              Partition[ Append[ corners, First @ corners ], 2, 1 ] },
-        { sizes = Length /@ sides },
-        infraCap[
-          Map[ paths |-> ( InfraSegment[ { # } ] & /@ paths ),
-            If[ count === All, Tuples @ sides,
-              Table[ MapThread[ Part, { sides, 1 + IntegerDigits[ j, MixedRadix @ sizes, Length @ sides ] } ],
-                { j, 0, Min[ countLimit @ count, Times @@ sizes ] - 1 } ] ] ],
-          count ] ] ] ]
+      (* a bounded count streams more geodesics per side than it needs: with one per side the product is a single tuple, and a witness has no room to avoid degeneracy *)
+      With[ { sideCount = If[ count === All, All, UpTo[ Max[ 8, 2 countLimit @ count ] ] ] },
+        With[ { sides = findSegmentCore[ graph, #1, #2, sideCount, Method -> methodSpec ] & @@@
+                Partition[ Append[ corners, First @ corners ], 2, 1 ] },
+          infraCap[
+            Map[ paths |-> ( InfraSegment[ { # } ] & /@ paths ),
+              If[ count === All, Tuples @ sides, nonDegenerateFirst[ sides, countLimit @ count ] ] ],
+            count ] ] ] ] ]
+
+
+(* a bounded count takes the product's members in mixed-radix order, but a degenerate polygon -- one whose closed side sequence walks an edge twice, the 1-3-9 triangle of GridGraph[{3,3}] closing along 9-6-3-2-1 -- is a poor witness for a class that also holds honest ones.  The scan window is wide enough to pass over the degenerate prefix and still exact: it yields Min[n, |class|] polygons, degenerate ones only once the window is spent *)
+
+nonDegenerateFirst[ sides_List, n_Integer ] :=
+  With[ { sizes = Length /@ sides },
+    { total = Times @@ sizes },
+    { scanned = Table[
+        MapThread[ Part, { sides, 1 + IntegerDigits[ j, MixedRadix @ sizes, Length @ sides ] } ],
+        { j, 0, Min[ total, Max[ 200, 20 n ] ] - 1 } ] },
+    Take[ Join[ Select[ scanned, ! polygonRetracesQ @ # & ], Select[ scanned, polygonRetracesQ ] ],
+      UpTo[ Min[ n, total ] ] ]
+  ]
+
+nonDegenerateFirst[ sides_List, Infinity ] := Tuples @ sides
+
+
+(* the closed vertex sequence of the polygon, and whether it repeats an edge *)
+
+polygonRetracesQ[ tuple_List ] :=
+  With[ { closed = Join @@ Prepend[ Rest /@ Rest @ tuple, First @ tuple ] },
+    ! DuplicateFreeQ[ Sort /@ Partition[ closed, 2, 1 ] ]
+  ]
 
 polygonCorner[ InfraPoint[ v_ ] ] := v
 polygonCorner[ v_ ]                   := v
@@ -73,7 +95,9 @@ InfraPolygonQ[ _Graph, _ ] := False
 
 (* ===================== FindInfraRegularPolygon ===================== *)
 
-(* a regular n-gon w.r.t. the metric tuple As is a cyclic sequence v_1, ..., v_n with d(v_i, v_{i+k mod n}) satisfying As[[k]] for every i and k; a slot is an exact integer, a range {lo, hi} constant across i, or Automatic *)
+(* a regular n-gon w.r.t. the metric tuple As is a cyclic sequence v_1, ..., v_n with d(v_i, v_{i+k mod n}) satisfying As[[k]] for every i and k; a slot is an exact integer, a range {lo, hi} constant across i, or Automatic.
+
+   The family is carried by the FindCycle candidate sweep, filtered by the slot predicates.  The sweep is not lazy -- every n-cycle of the candidate graph is materialised before any is tested -- so "Greedy" and "RandomGreedy" here only order what the count takes, in candidate and random order respectively; the class is the same under all three *)
 
 FindInfraRegularPolygon::badproperty = "Property `1` is not supported by FindInfraRegularPolygon.";
 FindInfraRegularPolygon::badmethod   = "Method `1` is not supported by FindInfraRegularPolygon.";
@@ -81,16 +105,16 @@ FindInfraRegularPolygon::badcount    = "Diagonal tuple `1` has length exceeding 
 
 Options[ FindInfraRegularPolygon ] = {
   Properties -> { },
-  Method     -> "Exhaustive",
+  Method     -> Automatic,
   "From"     -> All
 };
 
 FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
   With[ { core = Module[ { properties, methodSpec, dm, idx, vs, candidates, pruning, methodHead,
               fromSpec, anchor, radius, workGraph, workVs, workDm },
       properties = OptionValue[ FindInfraRegularPolygon, { opts }, Properties ];
-      methodSpec = OptionValue[ FindInfraRegularPolygon, { opts }, Method ];
+      methodSpec = resolveMethod[ OptionValue[ FindInfraRegularPolygon, { opts }, Method ], count ];
       fromSpec   = OptionValue[ FindInfraRegularPolygon, { opts }, "From" ];
       Catch[
         If[ properties =!= { },
@@ -98,7 +122,7 @@ FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
         If[ Length[ As ] < 1 || Length[ As ] > Floor[ n / 2 ],
           Message[ FindInfraRegularPolygon::badcount, As, n ]; Throw[ $Failed ] ];
         methodHead = methodName @ methodSpec;
-        If[ methodHead =!= "Exhaustive",
+        If[ ! MatchQ[ methodHead, "Exhaustive" | "Greedy" | "RandomGreedy" ],
           Message[ FindInfraRegularPolygon::badmethod, methodSpec ]; Throw[ $Failed ] ];
         { anchor, radius } = parseFromSpec @ fromSpec;
         pruning = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity;
@@ -111,7 +135,8 @@ FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
         workDm = If[ workGraph === graph, dm, dm[[ idx /@ workVs, idx /@ workVs ]] ];
         candidates = cycleToVertexSequence /@
           FindCycle[ candidateSourceGraph[ workGraph, First @ As, workDm, workVs ], { n }, All ];
-        candidates = applyPruning[ candidates, pruning ];
+        candidates = greedyBranch[ methodHead /. "Exhaustive" -> "Greedy" ] @
+          applyPruning[ candidates, pruning ];
         If[ anchor =!= None && radius === All,
           candidates = Select[ candidates, anchorContainedQ[ #, anchor ] & ] ];
         DeleteDuplicates @ Select[ candidates,

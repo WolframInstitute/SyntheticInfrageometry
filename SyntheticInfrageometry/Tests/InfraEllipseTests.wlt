@@ -156,4 +156,21 @@ VerificationTest[
   TestID -> "InfraEllipseQ-too-short-false"
 ]
 
+(* ===== FindInfraEllipse on the Method ladder ===== *)
+
+(* a count-less call is one witness, as on every ladder symbol; All is the whole grade *)
+VerificationTest[
+  { Length @ First @ FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, Properties -> { } ],
+    Length @ First @ FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, All, Properties -> { } ] },
+  { 1, 6 },
+  TestID -> "FindInfraEllipse-countless-is-one-witness"
+]
+
+VerificationTest[
+  FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, Method -> "Embedding" ],
+  $Failed,
+  { FindInfraEllipse::badmethod },
+  TestID -> "FindInfraEllipse-badmethod"
+]
+
 EndTestSection[]

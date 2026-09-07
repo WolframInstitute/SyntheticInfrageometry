@@ -413,8 +413,9 @@ VerificationTest[
 (* ===== FindInfraParallel: Method scaffolding ===== *)
 
 VerificationTest[
-  FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All, Method -> "Exhaustive"],
-  InfraLine[{{5, 6, 7, 8}}],
+  FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All,
+    Method -> "Exhaustive"]["Realizations"],
+  {{5, 6, 7, 8}},
   TestID -> "FindInfraParallel-explicit-exhaustive"
 ]
 

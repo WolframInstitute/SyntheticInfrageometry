@@ -45,7 +45,7 @@ InfraString::usage = "InfraString[{walk1, ...}] is a bundle of closed walks modu
 
 InfraLine::usage = "InfraLine[{line1, ...}] is a bundle of inextensible geodesics; InfraLine[{dag1, ...}] is the pool form, one geodesic DAG per endpoint pair. Accessors \"Graph\", \"Length\", \"Multiplicity\", \"Measure\", \"Realizations\". Inside InfraScene, InfraLine[p, q] is the constructor.";
 FindInfraLine::usage = "FindInfraLine[graph, p1, p2] gives the lines through p1 and p2, the inextensible geodesics containing them; FindInfraLine[graph, segment] those containing segment. Options Method, \"Direction\".";
-FindInfraParallel::usage = "FindInfraParallel[graph, line, p] gives one parallel to line through p: a geodesic through p inextensible within the level set { v : d(v, line) == d(p, line) }; a trailing n | UpTo[n] | All sets the count. Option Method.";
+FindInfraParallel::usage = "FindInfraParallel[graph, line, p] gives one parallel to line through p: a geodesic through p inextensible within the level set { v : d(v, line) == d(p, line) }; a trailing n | UpTo[n] | All sets the count, All giving the pool. Option Method.";
 FindInfraPerpendicular::usage = "FindInfraPerpendicular[graph, line, point] gives the lines through point perpendicular to line. Options Method, \"Radius\".";
 FindInfraCommonLine::usage = "FindInfraCommonLine[graph, vertices] gives the canonical lines containing every listed vertex.";
 InfraLineQ::usage = "InfraLineQ[graph, walk] tests whether walk is a line: a geodesic that no neighbour of either endpoint prolongs.";
@@ -93,7 +93,7 @@ InfraCircleQ::usage = "InfraCircleQ[graph, cycle] tests whether cycle is a cycli
 
 InfraPolygon::usage = "InfraPolygon[{poly1, ...}] is a bundle of closed chains of geodesic InfraSegment sides. Accessors \"Sides\", \"Length\", \"Vertices\".";
 FindInfraPolygon::usage = "FindInfraPolygon[graph, {p1, ..., pn}] gives one polygon with corners p1, ..., pn: a geodesic between each pair of consecutive corners; a trailing n | UpTo[n] | All sets the count. Option Method.";
-FindInfraRegularPolygon::usage = "FindInfraRegularPolygon[graph, As, n] gives the closed n-vertex sequences whose k-th diagonal distances all match As[[k]] (each slot an Integer, {lo, hi}, or Automatic). Options Method, \"From\".";
+FindInfraRegularPolygon::usage = "FindInfraRegularPolygon[graph, As, n] gives one closed n-vertex sequence whose k-th diagonal distances all match As[[k]] (each slot an Integer, {lo, hi}, or Automatic); a trailing n | UpTo[n] | All sets the count. Options Method, \"From\".";
 InfraPolygonQ::usage = "InfraPolygonQ[graph, poly] tests whether poly is a closed cyclic chain of geodesic sides.";
 InfraRegularPolygonQ::usage = "InfraRegularPolygonQ[graph, cycle, As] tests whether cycle is regular with respect to the diagonal-distance tuple As.";
 
@@ -116,7 +116,7 @@ FindInfraQuadric::usage = "FindInfraQuadric[graph, {p1, ..., pk}, c] gives the s
 (* ===================== InfraEllipse ===================== *)
 
 InfraEllipse::usage = "InfraEllipse[{cycle1, ...}] is a bundle of metric ellipses -- cycles lying on an elliptic shell.";
-FindInfraEllipse::usage = "FindInfraEllipse[graph, {p1, p2}, c] gives the shortest separating cycle in the level surface { v : d(p1, v) + d(p2, v) == c }. Option Properties.";
+FindInfraEllipse::usage = "FindInfraEllipse[graph, {p1, p2}, c] gives one shortest separating cycle in the level surface { v : d(p1, v) + d(p2, v) == c }; a trailing n | UpTo[n] | All sets the count. Options Properties, Method.";
 InfraEllipseQ::usage = "InfraEllipseQ[graph, cycle] tests whether cycle is a cyclic edge chain whose vertex set is an elliptic shell.";
 
 (* ===================== InfraPlane ===================== *)
