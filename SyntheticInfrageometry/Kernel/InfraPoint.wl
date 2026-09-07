@@ -28,7 +28,8 @@ InfraPoint[ v_ ][ "ProbabilityMeasure" ] := <| v -> 1 |>
 
 
 InfraPoint[ v_ ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, v, rest ]
-InfraPoint[ v_ ][ "ShellAreas", g_, rest___ ]             := ShellAreas[ g, v, rest ]
+InfraPoint[ v_ ][ "TubeVolumes", g_, rest___ ]            := TubeVolumes[ g, v, rest ]
+InfraPoint[ v_ ][ "IntervalVolumes", g_, rest___ ]        := IntervalVolumes[ g, v, rest ]
 InfraPoint[ v_ ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients @ BallVolumes[ g, v, rest ]
 InfraPoint[ v_ ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, v, rest ]
 InfraPoint[ v_ ][ "Dimension", g_, rest___ ]              := VolumeGrowthObservables[ g, v, rest ][ "BallDimension" ]
@@ -36,7 +37,8 @@ InfraPoint[ v_ ][ "ScalarCurvature", g_, rest___ ]        := VolumeGrowthObserva
 InfraPoint[ v_ ][ "CurvatureByRadius", g_, rest___ ]      := VolumeGrowthObservables[ g, v, rest ][ "BallCurvatureByRadius" ]
 
 InfraPoint /: BallVolumes[ g_, p_InfraPoint, rest___ ]             := BallVolumes[ g, p[ "Vertex" ], rest ]
-InfraPoint /: ShellAreas[ g_, p_InfraPoint, rest___ ]              := ShellAreas[ g, p[ "Vertex" ], rest ]
+InfraPoint /: TubeVolumes[ g_, p_InfraPoint, rest___ ]             := TubeVolumes[ g, p[ "Vertex" ], rest ]
+InfraPoint /: IntervalVolumes[ g_, p_InfraPoint, rest___ ]         := IntervalVolumes[ g, p[ "Vertex" ], rest ]
 InfraPoint /: VolumeGrowthObservables[ g_, p_InfraPoint, rest___ ] := VolumeGrowthObservables[ g, p[ "Vertex" ], rest ]
 
 
