@@ -3,10 +3,10 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== Pointwise predicates ===================== *)
 
-(* v, w lie in the same pencil-direction at O: some maximal geodesic through O contains both *)
+(* v, w lie in the same direction at O: some ray from O through v contains w.  On lines this was CollinearQ[graph, {O, v, w}] under another name, and it called the two sides of O one direction *)
 
 SameDirectionQ[ graph_Graph, O_, v_, w_ ] :=
-  v === w || AnyTrue[ FindInfraLine[ graph, O, v, All ][ "Realizations" ], MemberQ[ #, w ] & ]
+  v === w || AnyTrue[ FindInfraRay[ graph, O, v, All ][ "Realizations" ], MemberQ[ #, w ] & ]
 
 
 (* some canonical line contains every listed vertex *)
@@ -22,12 +22,6 @@ ConcurrentQ[ graph_Graph, lines_List ] :=
   Length[ lines ] <= 1 ||
     Length[ FindInfraCommonPoint[ graph, lines, UpTo[ 1 ] ] ] > 0
 
-
-(* every direction at O is single-valued: exactly one maximal geodesic through O ending at v *)
-
-UniquePencilQ[ graph_Graph, O_ ] :=
-  AllTrue[ DeleteCases[ VertexList[ graph ], O ],
-    Length[ FindInfraLine[ graph, O, #, All ][ "Realizations" ] ] == 1 & ]
 
 
 (* exactly one canonical line contains every listed vertex *)

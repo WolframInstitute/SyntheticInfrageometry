@@ -238,10 +238,9 @@ FindTarskiCounterexample::usage = "FindTarskiCounterexample[graph, predQ] gives 
 
 (* ===================== ProjectiveGeometry ===================== *)
 
-SameDirectionQ::usage = "SameDirectionQ[graph, O, v, w] tests whether v and w lie in the same direction at O, i.e. on a common maximal geodesic through O.";
+SameDirectionQ::usage = "SameDirectionQ[graph, O, v, w] tests whether v and w lie in the same direction at O, i.e. whether some ray from O through v contains w.";
 CollinearQ::usage = "CollinearQ[graph, vertices] tests whether all listed vertices lie on a common line.";
 ConcurrentQ::usage = "ConcurrentQ[graph, lines] tests whether all listed lines share a common vertex.";
-UniquePencilQ::usage = "UniquePencilQ[graph, O] tests whether every direction at O is single-valued.";
 UniqueCollinearQ::usage = "UniqueCollinearQ[graph, vertices] tests whether the listed vertices lie on a unique common line.";
 UniqueConcurrentQ::usage = "UniqueConcurrentQ[graph, lines] tests whether the listed lines share exactly one common vertex.";
 WhiteheadW1Q::usage = "WhiteheadW1Q[graph] tests Whitehead axiom W1: every line has at least three vertices.";

@@ -148,22 +148,32 @@ VerificationTest[
 
 (* ===== SameDirectionQ ===== *)
 
+(* the direction at O is oriented: a ray from O through v, not a line through both.
+   1 and 7 lie on opposite sides of 4 on the path, so they are opposite directions,
+   and no ray from 4 through 1 reaches 7. *)
 VerificationTest[
   SameDirectionQ[PathGraph[Range[7]], 4, 1, 7],
+  False,
+  TestID -> "SameDirectionQ-PathGraph-opposite-sides"
+]
+
+VerificationTest[
+  SameDirectionQ[PathGraph[Range[7]], 4, 1, 2],
   True,
-  TestID -> "SameDirectionQ-PathGraph-line-spans"
+  TestID -> "SameDirectionQ-PathGraph-same-side"
 ]
 
 VerificationTest[
   SameDirectionQ[CycleGraph[6], 1, 3, 5],
   False,
-  TestID -> "SameDirectionQ-Cycle6-no-common-line"
+  TestID -> "SameDirectionQ-Cycle6-no-common-ray"
 ]
 
+(* 2 and 5 lie on one line through 1 but on its two sides; on rays they part *)
 VerificationTest[
   SameDirectionQ[CycleGraph[6], 1, 2, 5],
-  True,
-  TestID -> "SameDirectionQ-Cycle6-line-through-O-with-both-sides"
+  False,
+  TestID -> "SameDirectionQ-Cycle6-two-sides-are-two-directions"
 ]
 
 VerificationTest[
@@ -228,20 +238,6 @@ VerificationTest[
   ConcurrentQ[PathGraph[Range[5]], {{1, 2, 3}}],
   True,
   TestID -> "ConcurrentQ-singleton-trivial"
-]
-
-(* ===== UniquePencilQ ===== *)
-
-VerificationTest[
-  UniquePencilQ[PathGraph[Range[7]], 4],
-  True,
-  TestID -> "UniquePencilQ-PathGraph"
-]
-
-VerificationTest[
-  UniquePencilQ[CycleGraph[6], 1],
-  False,
-  TestID -> "UniquePencilQ-Cycle6-antipode-multivalued"
 ]
 
 (* ===== UniqueCollinearQ ===== *)
