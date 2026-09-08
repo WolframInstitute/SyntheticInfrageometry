@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     13723,        294]
-NotebookOptionsPosition[      8648,        230]
-NotebookOutlinePosition[      8965,        244]
-CellTagsIndexPosition[      8922,        241]
+NotebookDataLength[     13533,        291]
+NotebookOptionsPosition[      8549,        228]
+NotebookOutlinePosition[      8866,        242]
+CellTagsIndexPosition[      8823,        239]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -224,9 +224,7 @@ Cell["See also", "Section",ExpressionUUID->"d6c06dfb-3d44-4627-b9e2-2b126f5d573b
 
 Cell["PathSpaceGuide", "Item",ExpressionUUID->"a339138f-eb2f-4c9e-8d6e-21b5c65af274"],
 
-Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"707d1016-62d0-4165-86b5-428b509d6ee4"],
-
-Cell["TropicalConvexityTutorial", "Item",ExpressionUUID->"191bcf9b-fcc0-4935-a542-5ba5a65b1e7b"]
+Cell["EuclideanGeometryTutorial", "Item",ExpressionUUID->"707d1016-62d0-4165-86b5-428b509d6ee4"]
 },
 FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
 StyleDefinitions->"Default.nb",
@@ -294,8 +292,7 @@ Cell[8011, 215, 95, 0, 70, "CodeText",ExpressionUUID->"e7b01639-0251-41d3-8092-6
 Cell[8109, 217, 164, 3, 70, "Input",ExpressionUUID->"11bd51ae-e94c-4abe-aeed-62a83026b25f"],
 Cell[8276, 222, 82, 0, 70, "Section",ExpressionUUID->"d6c06dfb-3d44-4627-b9e2-2b126f5d573b"],
 Cell[8361, 224, 85, 0, 70, "Item",ExpressionUUID->"a339138f-eb2f-4c9e-8d6e-21b5c65af274"],
-Cell[8449, 226, 96, 0, 70, "Item",ExpressionUUID->"707d1016-62d0-4165-86b5-428b509d6ee4"],
-Cell[8548, 228, 96, 0, 70, "Item",ExpressionUUID->"191bcf9b-fcc0-4935-a542-5ba5a65b1e7b"]
+Cell[8449, 226, 96, 0, 70, "Item",ExpressionUUID->"707d1016-62d0-4165-86b5-428b509d6ee4"]
 }
 ]
 *)

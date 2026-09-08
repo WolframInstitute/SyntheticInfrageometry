@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     19584,        410]
-NotebookOptionsPosition[     13994,        339]
-NotebookOutlinePosition[     14311,        353]
-CellTagsIndexPosition[     14268,        350]
+NotebookDataLength[     18835,        397]
+NotebookOptionsPosition[     13522,        329]
+NotebookOutlinePosition[     13839,        343]
+CellTagsIndexPosition[     13796,        340]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -25,10 +25,10 @@ Cell["[LLM Generated]", "Subtitle",ExpressionUUID->"e2f20821-8378-4654-bbf8-3f9c
 Cell["\<\
 SyntheticInfrageometry organises Euclidean (metric), path-space (selectors), \
 coordinatisation, Tarski (betweenness + equidistance), projective \
-(incidence), tropical convexity (graph-only), Alexandrov / \
-comparison-triangle, metric algebra, and visualisation layers around \
-multivalued constructions on graphs and hypergraphs. Every direction has a \
-Guide (categorical overview) and a Tutorial (worked walkthrough).\
+(incidence), Alexandrov / comparison-triangle, metric algebra, and \
+visualisation layers around multivalued constructions on graphs and \
+hypergraphs. Every direction has a Guide (categorical overview) and a \
+Tutorial (worked walkthrough).\
 \>", "Text",ExpressionUUID->"28058d83-00cb-4367-ab90-7fae666a3a24"],
 
 Cell["Setup", "Section",ExpressionUUID->"4bea9d52-7fcf-4700-98f0-9d5fe787d1c6"],
@@ -233,8 +233,6 @@ Cell["TarskiGeometryGuide", "Item",ExpressionUUID->"726ef03c-84e5-414f-8bdd-2e80
 
 Cell["ProjectiveGeometryGuide", "Item",ExpressionUUID->"2b5891be-17ba-4c16-bae9-48355110327e"],
 
-Cell["TropicalConvexityGuide", "Item",ExpressionUUID->"72ef35f8-d7f9-4d19-99e0-98deb3b2d44a"],
-
 Cell["MetricAlgebraGuide", "Item",ExpressionUUID->"e77c2152-ee62-454b-9616-086eb3646222"],
 
 Cell["VisualizationGuide", "Item",ExpressionUUID->"39535b8b-373b-4645-a689-ff6aa4c7cd78"],
@@ -250,8 +248,6 @@ Cell["CoordinatizationTutorial", "Item",ExpressionUUID->"e1c3d965-7922-4094-8922
 Cell["TarskiGeometryTutorial", "Item",ExpressionUUID->"1c7dd841-1f7d-48d4-8622-fdb7825f2485"],
 
 Cell["ProjectiveGeometryTutorial", "Item",ExpressionUUID->"399123d3-1a29-4595-a566-7f6da5b55dce"],
-
-Cell["TropicalConvexityTutorial", "Item",ExpressionUUID->"c50a87fe-4672-4622-a082-86e0a1cbfa80"],
 
 Cell["MetricAlgebraTutorial", "Item",ExpressionUUID->"d81fcfe2-20f2-4c11-ae58-4e2ca9a456cf"],
 
@@ -322,12 +318,6 @@ https://www.cs.huji.ac.il/~nati/PAPERS/ge_ge_gr.pdf\
 \>", "Item",ExpressionUUID->"0acb0d54-a714-4843-823e-f6e987bf5e67"],
 
 Cell["\<\
-Maclagan and Sturmfels, Introduction to Tropical Geometry, AMS GSM 161, 2015, \
-https://janos.cs.technion.ac.il/COURSES/238900-13/Tropical/MaclaganSturmfels.\
-pdf\
-\>", "Item",ExpressionUUID->"efe00e3e-6f55-41b1-8b67-417e7fc83db7"],
-
-Cell["\<\
 Whitehead, The Axioms of Projective Geometry, Cambridge University Press \
 1906, https://archive.org/details/cu31924001520455\
 \>", "Item",ExpressionUUID->"00bc3b5c-4e42-47a9-be27-9cd1fae7b17d"],
@@ -354,64 +344,61 @@ CellTagsIndex->{}
 Notebook[{
 Cell[554, 20, 94, 0, 70, "Title",ExpressionUUID->"c83a1b14-bdb2-41bb-99ca-6c968a5d386c"],
 Cell[651, 22, 90, 0, 70, "Subtitle",ExpressionUUID->"e2f20821-8378-4654-bbf8-3f9c4760feba"],
-Cell[744, 24, 500, 7, 70, "Text",ExpressionUUID->"28058d83-00cb-4367-ab90-7fae666a3a24"],
-Cell[1247, 33, 79, 0, 70, "Section",ExpressionUUID->"4bea9d52-7fcf-4700-98f0-9d5fe787d1c6"],
-Cell[1329, 35, 91, 0, 70, "CodeText",ExpressionUUID->"5553760a-15a4-49b1-be5a-0da593146c6b"],
-Cell[1423, 37, 192, 4, 70, "Code",ExpressionUUID->"2263eb54-ded3-4b6d-9ede-33829328f9ce",
+Cell[744, 24, 467, 7, 70, "Text",ExpressionUUID->"28058d83-00cb-4367-ab90-7fae666a3a24"],
+Cell[1214, 33, 79, 0, 70, "Section",ExpressionUUID->"4bea9d52-7fcf-4700-98f0-9d5fe787d1c6"],
+Cell[1296, 35, 91, 0, 70, "CodeText",ExpressionUUID->"5553760a-15a4-49b1-be5a-0da593146c6b"],
+Cell[1390, 37, 192, 4, 70, "Code",ExpressionUUID->"2263eb54-ded3-4b6d-9ede-33829328f9ce",
  InitializationCell->True],
-Cell[1618, 43, 98, 0, 70, "Section",ExpressionUUID->"84728906-635e-4df1-bae1-bc01c356d183"],
-Cell[1719, 45, 346, 5, 70, "Text",ExpressionUUID->"839e1069-a0cc-474a-8143-f6469e4983d6"],
-Cell[2068, 52, 192, 3, 70, "CodeText",ExpressionUUID->"81b4e46c-be12-41b8-9da1-f61bc41c097b"],
-Cell[2263, 57, 4553, 112, 70, "Code",ExpressionUUID->"b44fca84-78e6-4048-940b-f8c37a41adb3",
+Cell[1585, 43, 98, 0, 70, "Section",ExpressionUUID->"84728906-635e-4df1-bae1-bc01c356d183"],
+Cell[1686, 45, 346, 5, 70, "Text",ExpressionUUID->"839e1069-a0cc-474a-8143-f6469e4983d6"],
+Cell[2035, 52, 192, 3, 70, "CodeText",ExpressionUUID->"81b4e46c-be12-41b8-9da1-f61bc41c097b"],
+Cell[2230, 57, 4553, 112, 70, "Code",ExpressionUUID->"b44fca84-78e6-4048-940b-f8c37a41adb3",
  InitializationCell->True],
-Cell[6819, 171, 150, 2, 70, "CodeText",ExpressionUUID->"fd2f29b5-d621-4e7e-91a9-dda3ccee6cbe"],
-Cell[6972, 175, 1876, 46, 70, "Input",ExpressionUUID->"a11111e3-ea0b-4346-9c7a-b6528a8d59db"],
-Cell[8851, 223, 80, 0, 70, "Section",ExpressionUUID->"71dbbeae-936e-469e-a6d0-e6259130c629"],
-Cell[8934, 225, 93, 0, 70, "Item",ExpressionUUID->"98ffe7e1-b8d5-4d79-8dcf-55849e3a29e1"],
-Cell[9030, 227, 85, 0, 70, "Item",ExpressionUUID->"05b8c90c-bddd-43b7-9da6-528a81f39552"],
-Cell[9118, 229, 92, 0, 70, "Item",ExpressionUUID->"1383f1e9-589d-4854-b2af-e30cf274a739"],
-Cell[9213, 231, 90, 0, 70, "Item",ExpressionUUID->"726ef03c-84e5-414f-8bdd-2e80777d8ebe"],
-Cell[9306, 233, 94, 0, 70, "Item",ExpressionUUID->"2b5891be-17ba-4c16-bae9-48355110327e"],
-Cell[9403, 235, 93, 0, 70, "Item",ExpressionUUID->"72ef35f8-d7f9-4d19-99e0-98deb3b2d44a"],
-Cell[9499, 237, 89, 0, 70, "Item",ExpressionUUID->"e77c2152-ee62-454b-9616-086eb3646222"],
-Cell[9591, 239, 89, 0, 70, "Item",ExpressionUUID->"39535b8b-373b-4645-a689-ff6aa4c7cd78"],
-Cell[9683, 241, 83, 0, 70, "Section",ExpressionUUID->"8ace975d-2d0f-4705-8085-0f8f9a54820e"],
-Cell[9769, 243, 96, 0, 70, "Item",ExpressionUUID->"6cae9f79-88f3-4d65-8bf8-3410c50ac82d"],
-Cell[9868, 245, 88, 0, 70, "Item",ExpressionUUID->"3edeb85f-c96a-4ce7-9beb-1b7369a11f20"],
-Cell[9959, 247, 95, 0, 70, "Item",ExpressionUUID->"e1c3d965-7922-4094-8922-cb3816e14f64"],
-Cell[10057, 249, 93, 0, 70, "Item",ExpressionUUID->"1c7dd841-1f7d-48d4-8622-fdb7825f2485"],
-Cell[10153, 251, 97, 0, 70, "Item",ExpressionUUID->"399123d3-1a29-4595-a566-7f6da5b55dce"],
-Cell[10253, 253, 96, 0, 70, "Item",ExpressionUUID->"c50a87fe-4672-4622-a082-86e0a1cbfa80"],
-Cell[10352, 255, 92, 0, 70, "Item",ExpressionUUID->"d81fcfe2-20f2-4c11-ae58-4e2ca9a456cf"],
-Cell[10447, 257, 92, 0, 70, "Item",ExpressionUUID->"43e81b2e-3d2f-455a-bfc6-e72342792899"],
-Cell[10542, 259, 89, 0, 70, "Section",ExpressionUUID->"feffdc5d-3965-49a9-b9da-b3d5ea572992"],
-Cell[10634, 261, 90, 0, 70, "Item",ExpressionUUID->"61fba487-f2d3-4391-af2b-064a5bd08b2a"],
-Cell[10727, 263, 87, 0, 70, "Item",ExpressionUUID->"629b22c5-5a68-41bc-a280-eb1a4582e4fa"],
-Cell[10817, 265, 88, 0, 70, "Item",ExpressionUUID->"ac7bb975-2b1d-4f56-bbdd-e612609b8073"],
-Cell[10908, 267, 99, 0, 70, "Item",ExpressionUUID->"b3196151-9ba5-4750-b415-04ea7beacf97"],
-Cell[11010, 269, 86, 0, 70, "Item",ExpressionUUID->"8953f9cc-33a3-46cf-82c3-f67c709f1cba"],
-Cell[11099, 271, 87, 0, 70, "Item",ExpressionUUID->"1f315e64-e898-487b-b338-d5350235b598"],
-Cell[11189, 273, 83, 0, 70, "Item",ExpressionUUID->"a5478260-f8b7-41ef-8dfe-eecec3f5df80"],
-Cell[11275, 275, 87, 0, 70, "Item",ExpressionUUID->"718d52c9-e1c2-4615-917b-a4b128d38e23"],
-Cell[11365, 277, 90, 0, 70, "Item",ExpressionUUID->"71ad86e8-d2a4-481b-ad61-b222aa8cb4a0"],
-Cell[11458, 279, 92, 0, 70, "Item",ExpressionUUID->"69624191-dd5f-40c1-930a-ef05eff663f8"],
-Cell[11553, 281, 89, 0, 70, "Item",ExpressionUUID->"48cbf6f1-f22a-4756-854a-29685906c84f"],
-Cell[11645, 283, 81, 0, 70, "Item",ExpressionUUID->"6a08d8cb-53f8-49df-8e27-648419f747f6"],
-Cell[11729, 285, 85, 0, 70, "Item",ExpressionUUID->"ee869881-16cc-435a-a3e8-73addb28cc82"],
-Cell[11817, 287, 93, 0, 70, "Section",ExpressionUUID->"4e480ad2-fcb6-415e-9c7c-4b04e4ddd92c"],
-Cell[11913, 289, 89, 0, 70, "Item",ExpressionUUID->"52a3f316-e47d-4522-ae29-9810b344b049"],
-Cell[12005, 291, 85, 0, 70, "Item",ExpressionUUID->"197ce3f4-5354-4d58-a868-369091e60af9"],
-Cell[12093, 293, 91, 0, 70, "Item",ExpressionUUID->"cf56b9c9-ab5b-441e-92a7-5449d87b218c"],
-Cell[12187, 295, 97, 0, 70, "Item",ExpressionUUID->"98065dcc-8946-4106-b8ef-020e749747a2"],
-Cell[12287, 297, 85, 0, 70, "Item",ExpressionUUID->"407a5346-f062-4798-a38d-823d164547a1"],
-Cell[12375, 299, 84, 0, 70, "Section",ExpressionUUID->"a4ab377c-dc99-4961-8ba3-070f6ce86024"],
-Cell[12462, 301, 196, 3, 70, "Item",ExpressionUUID->"71557fb6-a213-4a41-9568-9903c42bd467"],
-Cell[12661, 306, 292, 5, 70, "Item",ExpressionUUID->"7629b1e7-33c9-41a7-87e1-11b4029c593e"],
-Cell[12956, 313, 220, 3, 70, "Item",ExpressionUUID->"4e59fb4c-783a-4757-8158-2375c61bd2ba"],
-Cell[13179, 318, 169, 3, 70, "Item",ExpressionUUID->"0acb0d54-a714-4843-823e-f6e987bf5e67"],
-Cell[13351, 323, 241, 4, 70, "Item",ExpressionUUID->"efe00e3e-6f55-41b1-8b67-417e7fc83db7"],
-Cell[13595, 329, 204, 3, 70, "Item",ExpressionUUID->"00bc3b5c-4e42-47a9-be27-9cd1fae7b17d"],
-Cell[13802, 334, 188, 3, 70, "Item",ExpressionUUID->"a8a1831c-8274-4d9d-9b5d-1e5c10fa31c8"]
+Cell[6786, 171, 150, 2, 70, "CodeText",ExpressionUUID->"fd2f29b5-d621-4e7e-91a9-dda3ccee6cbe"],
+Cell[6939, 175, 1876, 46, 70, "Input",ExpressionUUID->"a11111e3-ea0b-4346-9c7a-b6528a8d59db"],
+Cell[8818, 223, 80, 0, 70, "Section",ExpressionUUID->"71dbbeae-936e-469e-a6d0-e6259130c629"],
+Cell[8901, 225, 93, 0, 70, "Item",ExpressionUUID->"98ffe7e1-b8d5-4d79-8dcf-55849e3a29e1"],
+Cell[8997, 227, 85, 0, 70, "Item",ExpressionUUID->"05b8c90c-bddd-43b7-9da6-528a81f39552"],
+Cell[9085, 229, 92, 0, 70, "Item",ExpressionUUID->"1383f1e9-589d-4854-b2af-e30cf274a739"],
+Cell[9180, 231, 90, 0, 70, "Item",ExpressionUUID->"726ef03c-84e5-414f-8bdd-2e80777d8ebe"],
+Cell[9273, 233, 94, 0, 70, "Item",ExpressionUUID->"2b5891be-17ba-4c16-bae9-48355110327e"],
+Cell[9370, 235, 89, 0, 70, "Item",ExpressionUUID->"e77c2152-ee62-454b-9616-086eb3646222"],
+Cell[9462, 237, 89, 0, 70, "Item",ExpressionUUID->"39535b8b-373b-4645-a689-ff6aa4c7cd78"],
+Cell[9554, 239, 83, 0, 70, "Section",ExpressionUUID->"8ace975d-2d0f-4705-8085-0f8f9a54820e"],
+Cell[9640, 241, 96, 0, 70, "Item",ExpressionUUID->"6cae9f79-88f3-4d65-8bf8-3410c50ac82d"],
+Cell[9739, 243, 88, 0, 70, "Item",ExpressionUUID->"3edeb85f-c96a-4ce7-9beb-1b7369a11f20"],
+Cell[9830, 245, 95, 0, 70, "Item",ExpressionUUID->"e1c3d965-7922-4094-8922-cb3816e14f64"],
+Cell[9928, 247, 93, 0, 70, "Item",ExpressionUUID->"1c7dd841-1f7d-48d4-8622-fdb7825f2485"],
+Cell[10024, 249, 97, 0, 70, "Item",ExpressionUUID->"399123d3-1a29-4595-a566-7f6da5b55dce"],
+Cell[10124, 251, 92, 0, 70, "Item",ExpressionUUID->"d81fcfe2-20f2-4c11-ae58-4e2ca9a456cf"],
+Cell[10219, 253, 92, 0, 70, "Item",ExpressionUUID->"43e81b2e-3d2f-455a-bfc6-e72342792899"],
+Cell[10314, 255, 89, 0, 70, "Section",ExpressionUUID->"feffdc5d-3965-49a9-b9da-b3d5ea572992"],
+Cell[10406, 257, 90, 0, 70, "Item",ExpressionUUID->"61fba487-f2d3-4391-af2b-064a5bd08b2a"],
+Cell[10499, 259, 87, 0, 70, "Item",ExpressionUUID->"629b22c5-5a68-41bc-a280-eb1a4582e4fa"],
+Cell[10589, 261, 88, 0, 70, "Item",ExpressionUUID->"ac7bb975-2b1d-4f56-bbdd-e612609b8073"],
+Cell[10680, 263, 99, 0, 70, "Item",ExpressionUUID->"b3196151-9ba5-4750-b415-04ea7beacf97"],
+Cell[10782, 265, 86, 0, 70, "Item",ExpressionUUID->"8953f9cc-33a3-46cf-82c3-f67c709f1cba"],
+Cell[10871, 267, 87, 0, 70, "Item",ExpressionUUID->"1f315e64-e898-487b-b338-d5350235b598"],
+Cell[10961, 269, 83, 0, 70, "Item",ExpressionUUID->"a5478260-f8b7-41ef-8dfe-eecec3f5df80"],
+Cell[11047, 271, 87, 0, 70, "Item",ExpressionUUID->"718d52c9-e1c2-4615-917b-a4b128d38e23"],
+Cell[11137, 273, 90, 0, 70, "Item",ExpressionUUID->"71ad86e8-d2a4-481b-ad61-b222aa8cb4a0"],
+Cell[11230, 275, 92, 0, 70, "Item",ExpressionUUID->"69624191-dd5f-40c1-930a-ef05eff663f8"],
+Cell[11325, 277, 89, 0, 70, "Item",ExpressionUUID->"48cbf6f1-f22a-4756-854a-29685906c84f"],
+Cell[11417, 279, 81, 0, 70, "Item",ExpressionUUID->"6a08d8cb-53f8-49df-8e27-648419f747f6"],
+Cell[11501, 281, 85, 0, 70, "Item",ExpressionUUID->"ee869881-16cc-435a-a3e8-73addb28cc82"],
+Cell[11589, 283, 93, 0, 70, "Section",ExpressionUUID->"4e480ad2-fcb6-415e-9c7c-4b04e4ddd92c"],
+Cell[11685, 285, 89, 0, 70, "Item",ExpressionUUID->"52a3f316-e47d-4522-ae29-9810b344b049"],
+Cell[11777, 287, 85, 0, 70, "Item",ExpressionUUID->"197ce3f4-5354-4d58-a868-369091e60af9"],
+Cell[11865, 289, 91, 0, 70, "Item",ExpressionUUID->"cf56b9c9-ab5b-441e-92a7-5449d87b218c"],
+Cell[11959, 291, 97, 0, 70, "Item",ExpressionUUID->"98065dcc-8946-4106-b8ef-020e749747a2"],
+Cell[12059, 293, 85, 0, 70, "Item",ExpressionUUID->"407a5346-f062-4798-a38d-823d164547a1"],
+Cell[12147, 295, 84, 0, 70, "Section",ExpressionUUID->"a4ab377c-dc99-4961-8ba3-070f6ce86024"],
+Cell[12234, 297, 196, 3, 70, "Item",ExpressionUUID->"71557fb6-a213-4a41-9568-9903c42bd467"],
+Cell[12433, 302, 292, 5, 70, "Item",ExpressionUUID->"7629b1e7-33c9-41a7-87e1-11b4029c593e"],
+Cell[12728, 309, 220, 3, 70, "Item",ExpressionUUID->"4e59fb4c-783a-4757-8158-2375c61bd2ba"],
+Cell[12951, 314, 169, 3, 70, "Item",ExpressionUUID->"0acb0d54-a714-4843-823e-f6e987bf5e67"],
+Cell[13123, 319, 204, 3, 70, "Item",ExpressionUUID->"00bc3b5c-4e42-47a9-be27-9cd1fae7b17d"],
+Cell[13330, 324, 188, 3, 70, "Item",ExpressionUUID->"a8a1831c-8274-4d9d-9b5d-1e5c10fa31c8"]
 }
 ]
 *)
