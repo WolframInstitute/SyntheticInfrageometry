@@ -82,7 +82,7 @@ propertyPredicate[ _, _, _, _, other_ ] :=
 (* h sits inside the bisector slab and separates p1 from p2; the three-argument form is the inert scene assertion *)
 
 InfraPlaneQ[ graph_Graph, h : _InfraPlane | _InfraSet, p1_, p2_, window_ : 0 ] :=
-  AllTrue[ If[ Head[ h ] === InfraSet, { First @ h }, First @ h ],
+  AllTrue[ If[ Head[ h ] === InfraSet, { h[ "Vertices" ] }, First @ h ],
     InfraPlaneQ[ graph, #, p1, p2, window ] & ]
 
 InfraPlaneQ[ graph_Graph, h_List, p1_, p2_, window_ : 0 ] :=

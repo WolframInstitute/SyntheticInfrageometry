@@ -8,7 +8,6 @@ PackageExport[$InfraBallColor]
 PackageExport[$InfraPlaneColor]
 PackageExport[$InfraCircleColor]
 PackageExport[$InfraRayColor]
-PackageExport[$InfraObjectColor]
 PackageExport[$InfraTopologyColor]
 PackageExport[$InfraPalette]
 PackageExport[$InfraStrikeOutPalette]
@@ -39,13 +38,12 @@ $infraColors = <|
   "Circle"   -> RGBColor[ 0.20, 0.55, 0.65 ],
   "Ray"      -> RGBColor[ 0.95, 0.65, 0.45 ],
   "Path"     -> RGBColor[ 0.85, 0.62, 0.32 ],
-  "Object"   -> RGBColor[ 0.55, 0.70, 0.85 ],
   "Topology" -> RGBColor[ 0.85, 0.55, 0.75 ]
 |>;
 
 (* which colour each wrapper head is drawn in; several wrappers deliberately share one *)
 $infraHeadColors = <|
-  InfraPoint -> "Point", InfraEffectivePoint -> "Point",
+  InfraPoint -> "Point",
   InfraSegment -> "Segment", InfraPolyline -> "Segment",
   InfraLine -> "Line",
   InfraWalk -> "Path", InfraLoop -> "Path", InfraString -> "Path",
@@ -53,8 +51,7 @@ $infraHeadColors = <|
   InfraBall -> "Ball",
   InfraPlane -> "Plane",
   InfraCircle -> "Circle", InfraEllipse -> "Circle", InfraPolygon -> "Circle", InfraTriangle -> "Circle",
-  InfraRay -> "Ray",
-  InfraObject -> "Object"
+  InfraRay -> "Ray"
 |>;
 
 $InfraPointColor    = $infraColors[ "Point" ];
@@ -66,7 +63,6 @@ $InfraPlaneColor    = $infraColors[ "Plane" ];
 $InfraCircleColor   = $infraColors[ "Circle" ];
 $InfraRayColor      = $infraColors[ "Ray" ];
 $InfraWalkColor     = $infraColors[ "Path" ];
-$InfraObjectColor   = $infraColors[ "Object" ];
 $InfraTopologyColor = $infraColors[ "Topology" ];
 
 $InfraPalette := Dataset @ KeyValueMap[
@@ -199,7 +195,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
       { item, idx } |-> With[ {
           obj    = If[ MatchQ[ item, _Rule ], First @ item, item ],
           record = parseHighlightStyle[ If[ MatchQ[ item, _Rule ], Last @ item, Automatic ], ranges ] },
-        Append[ If[ MatchQ[ Head @ obj, InfraPoint | InfraEffectivePoint | InfraObject | InfraSet | $infraBundleHeads ], obj, None ] ] @
+        Append[ If[ MatchQ[ Head @ obj, InfraPoint | InfraSet | Association | $infraBundleHeads ], obj, None ] ] @
         Replace[
           { obj, If[ palette === None,
               Lookup[ $infraColors, Lookup[ $infraHeadColors, Head @ obj, None ],
@@ -208,9 +204,9 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
               palette[[ 1 + Mod[ First @ idx - 1, Length @ palette ] ]] ],
             record },
           {
-            (* density = mass / total mass, so a sharp effective point draws full size and a spread one fades *)
-            { InfraEffectivePoint[ m_Association ], c_, u_ } :> { Keys @ m, c, "Points", u },
-            { InfraPoint   [ v_ ], c_, u_ } :> { { v }, c, "Points", u },
+            (* density = mass / total mass, so a sharp point draws full size and a spread one fades *)
+            { fam_Association, c_, u_ } /; MatchQ[ Keys @ fam, { ___InfraPoint } ] :> { First /@ Keys @ fam, c, "Points", u },
+            { InfraPoint   [ v_, ___ ], c_, u_ } :> { { v }, c, "Points", u },
             (* a plain List of atoms is what the point finders return: it must flow into the scene with no glue *)
             { list : { __InfraPoint }, c_, u_ } :> { #[[ 1 ]] & /@ list, c, "Points", u },
             { InfraSegment [ dag_Graph ], c_, u_ } :> { { dag }, c, "Paths" , u },
@@ -229,9 +225,8 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             { InfraPolygon      [ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Cycles", u },
             { InfraTriangle     [ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Cycles", u },
             { InfraRay     [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
-            { InfraObject  [ b_List ], c_, u_ } :> { { b }, c, "Sets", u },
             { InfraPolyline[ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Paths", u },
-            { InfraSet      [ b_List ], c_, u_ } :> { { b }, c, "Sets", u },
+            { InfraSet      [ b_List, ___ ], c_, u_ } :> { { b }, c, "Sets", u },
             (* a bare vertex is a legal highlight object: wrap it as a one-vertex point *)
             { b_, c_, u_ } /; MemberQ[ VertexList @ graph, b ] :> { { b }, c, "Points", u },
             { b_, c_, u_ }                      :> { b, c, Automatic, u }

@@ -9,32 +9,35 @@ PackageScope[infraPointVertices]
 
 (* ===================== InfraPoint wrapper ===================== *)
 
-(* the ATOM of the point ontology: one vertex of the substrate, nothing more.  On a graph whose vertices are lists no guard can separate the atom from a bundle at arity 1, which is why the family layer (InfraSet) and the measure layer (InfraEffectivePoint) are distinct heads *)
+(* the ATOM of the point ontology: one vertex of the substrate, nothing more.  A trailing meta_Association carries "Label" / "Style" / "Kind" and nothing mathematical, so every rule here ignores it; a set of points is InfraSet, a weighted collection of them a density *)
 
 (* idempotency: re-wrapping an atom is the identity *)
 InfraPoint[ inner_InfraPoint ] := inner
+InfraPoint[ InfraPoint[ v_, ___ ], meta_Association ] := InfraPoint[ v, meta ]
 
 
-InfraPoint[ v_ ][ "Vertex" ]   := v
-InfraPoint[ v_ ][ "First" ]    := v
-InfraPoint[ v_ ][ "Vertices" ] := { v }
-InfraPoint[ v_ ][ "Mass" ]     := 1
+InfraPoint[ v_, ___ ][ "Vertex" ]   := v
+InfraPoint[ v_, ___ ][ "First" ]    := v
+InfraPoint[ v_, ___ ][ "Vertices" ] := { v }
+InfraPoint[ v_, ___ ][ "Mass" ]     := 1
+InfraPoint[ _ ][ "Meta" ]           := <| |>
+InfraPoint[ _, meta_Association ][ "Meta" ] := meta
 
 (* an atom is the unit mass at its vertex *)
-InfraPoint[ v_ ][ "OccupationCount" ]    := <| v -> 1 |>
-InfraPoint[ v_ ][ "OccupationMeasure" ]  := <| v -> 1 |>
-InfraPoint[ v_ ][ "Measure" ]            := <| v -> 1 |>
-InfraPoint[ v_ ][ "ProbabilityMeasure" ] := <| v -> 1 |>
+InfraPoint[ v_, ___ ][ "OccupationCount" ]    := <| v -> 1 |>
+InfraPoint[ v_, ___ ][ "OccupationMeasure" ]  := <| v -> 1 |>
+InfraPoint[ v_, ___ ][ "Measure" ]            := <| v -> 1 |>
+InfraPoint[ v_, ___ ][ "ProbabilityMeasure" ] := <| v -> 1 |>
 
 
-InfraPoint[ v_ ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, v, rest ]
-InfraPoint[ v_ ][ "TubeVolumes", g_, rest___ ]            := TubeVolumes[ g, v, rest ]
-InfraPoint[ v_ ][ "IntervalVolumes", g_, rest___ ]        := IntervalVolumes[ g, v, rest ]
-InfraPoint[ v_ ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients @ BallVolumes[ g, v, rest ]
-InfraPoint[ v_ ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, v, rest ]
-InfraPoint[ v_ ][ "Dimension", g_, rest___ ]              := VolumeGrowthObservables[ g, v, rest ][ "BallDimension" ]
-InfraPoint[ v_ ][ "ScalarCurvature", g_, rest___ ]        := VolumeGrowthObservables[ g, v, rest ][ "BallScalarCurvature" ]
-InfraPoint[ v_ ][ "CurvatureByRadius", g_, rest___ ]      := VolumeGrowthObservables[ g, v, rest ][ "BallCurvatureByRadius" ]
+InfraPoint[ v_, ___ ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, v, rest ]
+InfraPoint[ v_, ___ ][ "TubeVolumes", g_, rest___ ]            := TubeVolumes[ g, v, rest ]
+InfraPoint[ v_, ___ ][ "IntervalVolumes", g_, rest___ ]        := IntervalVolumes[ g, v, rest ]
+InfraPoint[ v_, ___ ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients @ BallVolumes[ g, v, rest ]
+InfraPoint[ v_, ___ ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, v, rest ]
+InfraPoint[ v_, ___ ][ "Dimension", g_, rest___ ]              := VolumeGrowthObservables[ g, v, rest ][ "BallDimension" ]
+InfraPoint[ v_, ___ ][ "ScalarCurvature", g_, rest___ ]        := VolumeGrowthObservables[ g, v, rest ][ "BallScalarCurvature" ]
+InfraPoint[ v_, ___ ][ "CurvatureByRadius", g_, rest___ ]      := VolumeGrowthObservables[ g, v, rest ][ "BallCurvatureByRadius" ]
 
 InfraPoint /: BallVolumes[ g_, p_InfraPoint, rest___ ]             := BallVolumes[ g, p[ "Vertex" ], rest ]
 InfraPoint /: TubeVolumes[ g_, p_InfraPoint, rest___ ]             := TubeVolumes[ g, p[ "Vertex" ], rest ]
@@ -46,7 +49,7 @@ InfraPoint /: VolumeGrowthObservables[ g_, p_InfraPoint, rest___ ] := VolumeGrow
 
 (* "Distance" constrains which points: r fixes the mutual distance exactly, {dMin, dMax} a range, "Max" maximises the minimum pairwise gap, "Spread" breaks the "Max" ties toward minimal variance of the pairwise distances *)
 
-FindInfraPoint::badfrom = "\"From\" specification `1` is not supported by FindInfraPoint. Supported: All, \"Random\", \"Center\", \"Periphery\", {\"Center\", cap}, anchor -> spec, a vertex, a vertex list, InfraPoint, InfraEffectivePoint, InfraSet.";
+FindInfraPoint::badfrom = "\"From\" specification `1` is not supported by FindInfraPoint. Supported: All, \"Random\", \"Center\", \"Periphery\", {\"Center\", cap}, anchor -> spec, a vertex, a vertex list, InfraPoint, InfraSet, a density.";
 
 Options[ FindInfraPoint ] = { "From" -> "Random", "Distance" -> None, "MaxCliques" -> All };
 
@@ -109,7 +112,7 @@ FindInfraPoint[ graph_Graph, opts : OptionsPattern[] ] :=
 
 fromPointSpecQ[ graph_Graph, spec_ ] :=
   MatchQ[ spec, All | "Random" | "Center" | "Periphery" | { "Center", _Integer | Infinity }
-                | _InfraPoint | _InfraEffectivePoint | _InfraSet | _Rule | _List ] ||
+                | _InfraPoint | _InfraSet | _Association | _Rule | _List ] ||
   MemberQ[ VertexList @ graph, spec ]
 
 
@@ -126,9 +129,9 @@ findPointPool[ graph_Graph, { "Center", _ } ] := VertexList[ graph ]
 
 findPointPool[ graph_Graph, _String ]     := VertexList[ graph ]
 
-findPointPool[ graph_Graph, InfraPoint[ v_ ] ] := { v }
-findPointPool[ graph_Graph, InfraEffectivePoint[ m_Association ] ] := Keys @ m
-findPointPool[ graph_Graph, InfraSet[ vs_List ] ] := vs
+findPointPool[ graph_Graph, InfraPoint[ v_, ___ ] ] := { v }
+findPointPool[ graph_Graph, fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := First /@ Keys @ fam
+findPointPool[ graph_Graph, InfraSet[ vs_List, ___ ] ] := vs
 
 findPointPool[ graph_Graph, ( origin_ -> spec_ ) ] :=
   With[ { anchors = infraSpread[ origin ],
@@ -183,14 +186,14 @@ indexBandMasses[ frac_, tol_ ][ walk_List ] :=
 
 FindInfraMidpoint[ graph_Graph, InfraSegment[ dag_Graph ], opts : OptionsPattern[] ] :=
   If[ methodName @ OptionValue[ FindInfraMidpoint, { opts }, Method ] === "Metric",
-    InfraEffectivePoint @ indexBandMasses[ 1/2, OptionValue[ FindInfraMidpoint, { opts }, "Tolerance" ] ][ dag ],
+    KeySort @ KeyMap[ InfraPoint, indexBandMasses[ 1/2, OptionValue[ FindInfraMidpoint, { opts }, "Tolerance" ] ][ dag ] ],
     FindInfraMidpoint[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ] ]
 
 FindInfraMidpoint[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        InfraEffectivePoint @ Merge[ indexBandMasses[ 1/2, tol ] /@ First @ seg, Total ],
+        KeySort @ KeyMap[ InfraPoint, Merge[ indexBandMasses[ 1/2, tol ] /@ First @ seg, Total ] ],
       "Embedding",
         (* closest vertex to the coord-space midpoint of the endpoints *)
         With[ { walks = First[ seg ], embOpts = parseEmbeddingMethod @ OptionValue[ Method ] },
@@ -200,8 +203,8 @@ FindInfraMidpoint[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
                        coords[[ vertexIndex[ Last @ First @ walks ] ]] ) / 2,
             pool = If[ embOpts[ "Pool" ] === "AllPaths",
                      VertexList[ graph ], DeleteDuplicates @ Catenate @ walks ] },
-          InfraEffectivePoint[ <| First @
-            SortBy[ pool, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ] -> 1 |> ] ]
+          <| InfraPoint[ First @
+            SortBy[ pool, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ] ] -> 1 |> ]
     ]
   ]
 
@@ -220,15 +223,15 @@ Options[ FindInfraGoldenSection ] = { Method -> "Metric", "Tolerance" -> 0 };
 
 FindInfraGoldenSection[ graph_Graph, InfraSegment[ dag_Graph ], opts : OptionsPattern[] ] :=
   If[ methodName @ OptionValue[ FindInfraGoldenSection, { opts }, Method ] === "Metric",
-    InfraEffectivePoint @ indexBandMasses[ N[ 1 / GoldenRatio ],
-      OptionValue[ FindInfraGoldenSection, { opts }, "Tolerance" ] ][ dag ],
+    KeySort @ KeyMap[ InfraPoint, indexBandMasses[ N[ 1 / GoldenRatio ],
+      OptionValue[ FindInfraGoldenSection, { opts }, "Tolerance" ] ][ dag ] ],
     FindInfraGoldenSection[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ] ]
 
 FindInfraGoldenSection[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        InfraEffectivePoint @ Merge[ indexBandMasses[ N[ 1 / GoldenRatio ], tol ] /@ First @ seg, Total ],
+        KeySort @ KeyMap[ InfraPoint, Merge[ indexBandMasses[ N[ 1 / GoldenRatio ], tol ] /@ First @ seg, Total ] ],
       "Embedding",
         (* closest vertex to the coord-space golden point p1 + (p2 - p1)/phi *)
         With[ { walks = First[ seg ], embOpts = parseEmbeddingMethod @ OptionValue[ Method ] },
@@ -239,8 +242,8 @@ FindInfraGoldenSection[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ]
                        coords[[ vertexIndex[ First @ First @ walks ] ]] ) / N[ GoldenRatio ],
             pool = If[ embOpts[ "Pool" ] === "AllPaths",
                      VertexList[ graph ], DeleteDuplicates @ Catenate @ walks ] },
-          InfraEffectivePoint[ <| First @
-            SortBy[ pool, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ] -> 1 |> ] ]
+          <| InfraPoint[ First @
+            SortBy[ pool, v |-> EuclideanDistance[ coords[[ vertexIndex[ v ] ]], target ] ] ] -> 1 |> ]
     ]
   ]
 
@@ -311,7 +314,7 @@ FindClosestInfraPoint[ graph_Graph, line_, point_,
 (* ===================== SelectInfraPoint ===================== *)
 
 
-SelectInfraPoint::badfrom = "\"From\" specification `1` is not supported by SelectInfraPoint. Supported: All, \"Random\", \"Center\", \"Periphery\", anchor -> spec, a vertex, a vertex list, InfraPoint, InfraEffectivePoint, InfraSet.";
+SelectInfraPoint::badfrom = "\"From\" specification `1` is not supported by SelectInfraPoint. Supported: All, \"Random\", \"Center\", \"Periphery\", anchor -> spec, a vertex, a vertex list, InfraPoint, InfraSet, a density.";
 
 Options[ SelectInfraPoint ] = { "From" -> All, "Distance" -> None, "MaxCliques" -> All };
 
@@ -337,7 +340,7 @@ SelectInfraPoint[ graph_Graph, list : { __InfraPoint },
   SelectInfraPoint[ graph, #[[ 1 ]] & /@ list, countSpec, opts ]
 
 SelectInfraPoint[ graph_Graph,
-                  bundle : ( InfraBall | InfraShell | InfraEllipticShell | InfraPlane | InfraSet | InfraObject | InfraCircle | InfraEllipse )[ _List ] | _InfraEffectivePoint,
+                  bundle : ( InfraBall | InfraShell | InfraEllipticShell | InfraPlane | InfraSet | InfraCircle | InfraEllipse )[ _List ] | _Association,
                   countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
   SelectInfraPoint[ graph, infraVertexSet[ bundle ], countSpec, opts ]
 
@@ -434,9 +437,9 @@ pointPoolPositions[ _, vertices_List, _, _ ] := Range @ Length @ vertices
 InfraReachableQ[ graph_Graph, p1_, p2_ ] :=
   IntersectingQ[ VertexComponent[ graph, infraPointVertices @ p1 ], infraPointVertices @ p2 ]
 
-infraPointVertices[ InfraPoint[ v_ ] ]        := { v }
-infraPointVertices[ InfraSet[ vs_List ] ]     := vs
-infraPointVertices[ InfraEffectivePoint[ m_Association ] ] := Keys @ m
+infraPointVertices[ InfraPoint[ v_, ___ ] ]   := { v }
+infraPointVertices[ InfraSet[ vs_List, ___ ] ] := vs
+infraPointVertices[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := First /@ Keys @ fam
 infraPointVertices[ list : { __InfraPoint } ] := #[[ 1 ]] & /@ list
 infraPointVertices[ list_List ]               := list
 infraPointVertices[ v_ ]                     := { v }
@@ -447,10 +450,10 @@ infraPointVertices[ v_ ]                     := { v }
 dispatchConstruction[ graph_Graph, InfraPoint[ ] ] :=
   VertexList @ graph
 
-dispatchConstruction[ graph_Graph, InfraPoint[ v_ ] ] /; MemberQ[ VertexList @ graph, v ] :=
+dispatchConstruction[ graph_Graph, InfraPoint[ v_, ___ ] ] /; MemberQ[ VertexList @ graph, v ] :=
   { v }
 
-dispatchConstruction[ graph_Graph, InfraSet[ vs_List ] ] /;
+dispatchConstruction[ graph_Graph, InfraSet[ vs_List, ___ ] ] /;
     vs =!= { } && SubsetQ[ VertexList @ graph, vs ] :=
   vs
 

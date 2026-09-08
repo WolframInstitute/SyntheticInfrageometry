@@ -73,14 +73,14 @@ VerificationTest[
   TestID -> "InfraMeasure-both-shape"
 ]
 
-(* a effective point has two distinct normalisations: the default "Occupation" is
+(* a density has two distinct normalisations: the default "Occupation" is
    membership relative to the heaviest mass (max 1, what the renderer draws),
    "Probability" is the distribution summing to 1 *)
 VerificationTest[
-  { Max @ Values @ InfraMeasure[ InfraEffectivePoint[<|1 -> 3, 2 -> 1|>] ],
-    Total @ Values @ InfraMeasure[ InfraEffectivePoint[<|1 -> 3, 2 -> 1|>], Method -> "Probability" ] },
+  { Max @ Values @ InfraMeasure[ <| InfraPoint[ 1 ] -> 3, InfraPoint[ 2 ] -> 1 |> ],
+    Total @ Values @ InfraMeasure[ <| InfraPoint[ 1 ] -> 3, InfraPoint[ 2 ] -> 1 |>, Method -> "Probability" ] },
   { 1, 1 },
-  TestID -> "InfraMeasure-effectivepoint-two-normalisations"
+  TestID -> "InfraMeasure-density-two-normalisations"
 ]
 
 (* the ["Measure"] accessor delegates to the engine, across all wrapper shapes *)
@@ -89,11 +89,17 @@ VerificationTest[
     { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
       InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ],
       InfraCircle[ { { 1, 2, 3 } } ],
-      InfraEffectivePoint[<|1 -> 3, 2 -> 1|>],
       InfraSet[ { 1, 2, 3 } ] },
     w |-> w[ "Measure" ] === InfraMeasure[ w ] ],
   True,
   TestID -> "InfraMeasure-accessor-agrees-with-engine"
+]
+
+(* a density carries no head, so it has no accessors: the engine measures it directly, unkeying the InfraPoint keys to bare vertices *)
+VerificationTest[
+  InfraMeasure[ <| InfraPoint[ 1 ] -> 3, InfraPoint[ 2 ] -> 1 |> ],
+  <| 1 -> 1, 2 -> 1/3 |>,
+  TestID -> "InfraMeasure-density-unkeys-to-vertices"
 ]
 
 (* the accessor is the normalized vertex measure: set-like values in (0,1], single realisation all 1 *)
@@ -110,7 +116,6 @@ VerificationTest[
     { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
       InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ],
       InfraCircle[ { { 1, 2, 3 } } ],
-      InfraEffectivePoint[<|1 -> 3, 2 -> 1|>],
       InfraSet[ { 1, 2, 3 } ] },
     w |-> And[
       w[ "OccupationMeasure" ] === w[ "Measure" ],
@@ -121,7 +126,14 @@ VerificationTest[
   TestID -> "InfraMeasure-occupation-probability-accessors"
 ]
 
-(* ===== InfraPoint is the only measured head; bundles are sets ===== *)
+(* ===== instances, families and densities ===== *)
+
+(* the anchor rule and the family constructor are internal, so the tests reach them
+   by their PackageScope context *)
+toDensity = WolframInstitute`SyntheticInfrageometry`PackageScope`toDensity;
+toFamily  = WolframInstitute`SyntheticInfrageometry`PackageScope`toFamily;
+
+(* ===== bundles are sets of realisations ===== *)
 
 (* a bundle is a SET of alternative realisations: duplicates collapse, no mass *)
 VerificationTest[
@@ -141,28 +153,44 @@ VerificationTest[
   TestID -> "Bundle-has-no-mass-channel"
 ]
 
-(* the measure layer is InfraEffectivePoint: the canonical form is the association,
-   repetition in an atom list reads as mass, parallel lists are input sugar,
-   and the all-ones measure STAYS a measure (layers never cross silently) *)
+(* the family layer is a headless <| instance -> weight |> Association: repetition in
+   an instance list reads as mass, and the all-ones family stays a family (layers
+   never cross silently -- taking the support is the explicit InfraSet step) *)
 VerificationTest[
-  { InfraEffectivePoint[ { InfraPoint[1], InfraPoint[1], InfraPoint[2] } ],
-    InfraEffectivePoint[ { 1, 2 }, { 3, 1 } ],
-    InfraEffectivePoint[ InfraSet[ { 1, 2 } ] ],
+  { Counts[ { InfraPoint[1], InfraPoint[1], InfraPoint[2] } ],
+    toFamily[ { InfraPoint[1], InfraPoint[1], InfraPoint[2] } ],
+    toFamily[ InfraWalk[ { { 1, 2 } } ] ],
     InfraSet[ { 1, 1, 2 } ] },
-  { InfraEffectivePoint[ <| 1 -> 2, 2 -> 1 |> ],
-    InfraEffectivePoint[ <| 1 -> 3, 2 -> 1 |> ],
-    InfraEffectivePoint[ <| 1 -> 1, 2 -> 1 |> ],
+  { <| InfraPoint[ 1 ] -> 2, InfraPoint[ 2 ] -> 1 |>,
+    <| InfraPoint[ 1 ] -> 2, InfraPoint[ 2 ] -> 1 |>,
+    <| InfraWalk[ { { 1, 2 } } ] -> 1 |>,
     InfraSet[ { 1, 2 } ] },
-  TestID -> "measure-layer-is-InfraEffectivePoint"
+  TestID -> "family-layer-is-a-headless-association"
 ]
 
+(* the ANCHOR RULE: a vertex, a point, a set, a point list and a density all coerce
+   to one 0-d density on InfraPoint keys, so every construction reads its anchors
+   through a single step *)
 VerificationTest[
-  With[ { p = InfraEffectivePoint[ <| 1 -> 3, 2 -> 1 |> ] },
-    { p[ "Support" ], p[ "Weights" ], p[ "Mass" ], p[ "OccupationCount" ], p[ "Measure" ] } ],
-  (* ["Measure"] is membership relative to the heaviest mass;
-     ["ProbabilityMeasure"] is the distribution summing to 1 *)
-  { InfraSet[ { 1, 2 } ], { 3, 1 }, 4, <| 1 -> 3, 2 -> 1 |>, <| 1 -> 1, 2 -> 1/3 |> },
-  TestID -> "InfraEffectivePoint-measure-accessors"
+  { toDensity[ 1 ], toDensity[ InfraPoint[ 1 ] ], toDensity[ InfraPoint[ 1, <| "Label" -> "p" |> ] ],
+    toDensity[ InfraSet[ { 1, 2 } ] ], toDensity[ { InfraPoint[1], InfraPoint[1], InfraPoint[2] } ],
+    toDensity[ <| InfraPoint[ 1 ] -> 3 |> ] },
+  { <| InfraPoint[ 1 ] -> 1 |>, <| InfraPoint[ 1 ] -> 1 |>, <| InfraPoint[ 1 ] -> 1 |>,
+    <| InfraPoint[ 1 ] -> 1, InfraPoint[ 2 ] -> 1 |>,
+    <| InfraPoint[ 1 ] -> 2, InfraPoint[ 2 ] -> 1 |>,
+    <| InfraPoint[ 1 ] -> 3 |> },
+  TestID -> "anchor-rule-coerces-everything-to-a-density"
+]
+
+(* the family algebra is the Association's own; the measures come off the engine *)
+VerificationTest[
+  With[ { p = <| InfraPoint[ 1 ] -> 3, InfraPoint[ 2 ] -> 1 |> },
+    { InfraSet @ p, Values @ p, Total @ p,
+      InfraMeasure[ p, Method -> "Probability" ], InfraMeasure @ p } ],
+  (* InfraMeasure is membership relative to the heaviest mass;
+     Method -> "Probability" is the distribution summing to 1 *)
+  { InfraSet[ { 1, 2 } ], { 3, 1 }, 4, <| 1 -> 3/4, 2 -> 1/4 |>, <| 1 -> 1, 2 -> 1/3 |> },
+  TestID -> "density-algebra-and-measures"
 ]
 
 (* the measure is CONSTRUCTED at a projection off a bundle, never carried by
@@ -173,8 +201,8 @@ VerificationTest[
     { s[[ 2 ]], s[ "Start" ], FindInfraMidpoint[ g, s ] } ],
   (* ["Start"] is a set-level fact (every geodesic of a family shares it), so it
      is an InfraSet; the position and midpoint projections are measures *)
-  { InfraEffectivePoint[ <| 2 -> 3, 4 -> 3 |> ], InfraSet[ { 1 } ],
-    InfraEffectivePoint[ <| 3 -> 1, 5 -> 4, 7 -> 1 |> ] },
+  { <| InfraPoint[ 2 ] -> 3, InfraPoint[ 4 ] -> 3 |>, InfraSet[ { 1 } ],
+    <| InfraPoint[ 3 ] -> 1, InfraPoint[ 5 ] -> 4, InfraPoint[ 7 ] -> 1 |> },
   TestID -> "Measure-constructed-at-projection"
 ]
 
@@ -182,7 +210,7 @@ VerificationTest[
    so the family (and its measure) is the same weighted or not *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraEffectivePoint[<|1 -> 2, 3 -> 1|>], 9 , All] ===
+    KeySort @ InfraMeasure @ FindInfraSegment[ g, <| InfraPoint[ 1 ] -> 2, InfraPoint[ 3 ] -> 1 |>, 9 , All] ===
     KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraSet[ { 1, 3 } ], 9 , All] ],
   True,
   TestID -> "Anchor-masses-do-not-propagate"

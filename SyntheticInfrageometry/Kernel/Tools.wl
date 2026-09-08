@@ -34,6 +34,8 @@ PackageScope[infraRepSeqs]
 PackageScope[infraRepVerts]
 PackageScope[infraRepEdges]
 PackageScope[infraNumReps]
+PackageScope[toDensity]
+PackageScope[toFamily]
 PackageScope[linePointSet]
 PackageScope[cycleToVertexSequence]
 PackageScope[methodName]
@@ -351,15 +353,15 @@ Scan[ defineInfraBundleRules,
 
 (* a multi-realisation wrapper or a list of unary wrappers spreads into its bare realisations -- an InfraPoint over its support, since the measure is not an anchor property but is reconstructed at the projection; anything else becomes a singleton *)
 
-infraSpread[ InfraPoint[ v_ ] ] := { v }
+infraSpread[ InfraPoint[ v_, ___ ] ] := { v }
 infraSpread[ list : { __InfraPoint } ] := #[[ 1 ]] & /@ list
 With[ { heads = $infraBundleHeads },
   infraSpread[ heads[ reps_List ] ] := reps;
   infraSpread[ list_List ] /; AllTrue[ list, MatchQ[ heads[ { _ } ] ] ] :=
     #[[ 1, 1 ]] & /@ list
 ]
-infraSpread[ InfraEffectivePoint[ m_Association ] ] := Keys @ m
-infraSpread[ InfraSet[ vs_List ] ] := vs
+infraSpread[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := First /@ Keys @ fam
+infraSpread[ InfraSet[ vs_List, ___ ] ] := vs
 infraSpread[ InfraSegment[ dag_Graph ] ] := dagGeodesics[ dag ]
 infraSpread[ InfraSegment[ dags : { _Graph, __Graph } ] ] := Join @@ ( dagGeodesics /@ dags )
 infraSpread[ InfraCircle[ dags : { __Graph } ] ] := Catenate[ dagGeodesics /@ dags ]
@@ -373,7 +375,7 @@ infraSpread[ other_ ] := { other }
 PackageScope[columnInfraPoint]
 
 columnInfraPoint[ reps_List, i_Integer ] :=
-  InfraEffectivePoint @ Counts[ ( #[[ i ]] & ) /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] ]
+  KeySort @ Counts[ InfraPoint[ #[[ i ]] ] & /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] ]
 
 
 (* all source -> sink directed paths, the one exponential step, materialised on demand; dagGeodesics[dag, limit] is the lazy form, a DFS stopping as soon as limit geodesics are collected *)
@@ -462,9 +464,9 @@ bundleTake[ head_, reps_, n_Integer ]         :=
 
 (* the raw occupation count c(v) = total appearances across realisations, the association InfraMeasure normalises and InfraEqualQ compares.  For an InfraPoint the measure IS the point, for every other head a lossy projection; a compact geodesic-DAG atom contributes its whole family's occupation by DP, exactly as the enumerated family would *)
 
-infraVertexMultiset[ InfraEffectivePoint[ m_Association ] ] := m
-infraVertexMultiset[ InfraPoint[ v_ ] ] := <| v -> 1 |>
-infraVertexMultiset[ ( InfraObject | InfraSet )[ vs_List ] ] := Counts @ vs
+infraVertexMultiset[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := KeyMap[ First, fam ]
+infraVertexMultiset[ InfraPoint[ v_, ___ ] ] := <| v -> 1 |>
+infraVertexMultiset[ InfraSet[ vs_List, ___ ] ] := Counts @ vs
 infraVertexMultiset[ InfraSegment[ dag_Graph ] ]   := GeodesicOccupation[ dag ]
 With[ { heads = $infraBundleHeads },
   infraVertexMultiset[ obj : ( head : heads )[ _List ] ] :=
@@ -505,6 +507,27 @@ infraEdgeMultiset[ g_, obj_ ] :=
   Merge[ atomEdgeMasses[ g ][ infraRepType @ Head @ obj ] /@ infraRepSeqs @ obj, Total ]
 
 
+(* ===================== Instances, families, densities ===================== *)
+
+(* A FAMILY is a finitely supported measure on instances, <| instance -> weight |>, and carries no head: Counts, Merge, KeyMap, Total and KeySelect are its algebra.  A List is the family with uniform weight, one Counts away.
+   A DENSITY is the 0-d case, a family on InfraPoint keys -- the marginal of anything to the vertex set, with respect to the counting measure. *)
+
+toFamily[ fam_Association ] := fam
+toFamily[ inst : ( InfraPoint | InfraWalk | InfraSet )[ __ ] ] := <| inst -> 1 |>
+toFamily[ list_List ] := Counts @ list
+toFamily[ x_ ] := <| x -> 1 |>
+
+
+(* the ANCHOR RULE: every anchor argument of every construction is read as a 0-d density, so effective points, sets and objects all work in every construction under one coercion.  A bare vertex and an InfraPoint are the unit mass, an InfraSet is uniform on its vertices, a density is already one *)
+
+(* keys sorted, so densities built by different routes compare SameQ; this was the one guarantee the old measure head carried *)
+toDensity[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := KeySort @ fam
+toDensity[ InfraPoint[ v_, ___ ] ] := <| InfraPoint[ v ] -> 1 |>
+toDensity[ InfraSet[ vs_List, ___ ] ] := KeySort @ AssociationMap[ 1 &, InfraPoint /@ vs ]
+toDensity[ list : { __InfraPoint } ] := KeySort @ Counts[ InfraPoint[ First @ # ] & /@ list ]
+toDensity[ v_ ] := <| InfraPoint[ v ] -> 1 |>
+
+
 (* ===================== Visit measure ===================== *)
 
 (* c(v) = total appearances across realisations, normalised either as "Occupation" m(v) = c(v) / N -- the mean occupation per realisation, the opacity InfraSceneHighlight draws -- or as "Probability" p(v) = c(v) / Total[c].  A lossy view of the bundle: order and co-occurrence are discarded *)
@@ -536,7 +559,7 @@ normalizeMeasure[ method_, counts_, obj_ ] := Switch[ method,
 (* the single source of truth shared with InfraSceneHighlight's repVerts / repEdges dispatch *)
 
 infraRepType[ InfraPoint ]         = "Points";
-infraRepType[ InfraEffectivePoint ]     = "Points";
+infraRepType[ Association ]        = "Points";
 infraRepType[ InfraSegment ]       = "Paths";
 infraRepType[ InfraLine ]          = "Paths";
 infraRepType[ InfraWalk ]          = "Paths";
@@ -552,14 +575,13 @@ infraRepType[ InfraShell ]         = "Sets";
 infraRepType[ InfraBall ]          = "Sets";
 infraRepType[ InfraEllipticShell ] = "Sets";
 infraRepType[ InfraPlane ]         = "Sets";
-infraRepType[ InfraObject ]        = "Sets";
 infraRepType[ InfraSet ]           = "Sets";
 
 
 infraRepSeqs[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] := polylineToVertexSeqs @ reps
-infraRepSeqs[ ( InfraObject | InfraSet )[ vs_List ] ]                        := { vs }
-infraRepSeqs[ InfraPoint[ v_ ] ]                                             := { v }
-infraRepSeqs[ InfraEffectivePoint[ m_Association ] ]                              := Keys @ m
+infraRepSeqs[ InfraSet[ vs_List, ___ ] ]                                     := { vs }
+infraRepSeqs[ InfraPoint[ v_, ___ ] ]                                        := { v }
+infraRepSeqs[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ]    := First /@ Keys @ fam
 infraRepSeqs[ head_[ reps_List, ___ ] ]                                      := reps
 
 (* a point realisation is a bare vertex (wrapped to a singleton), path / cycle / set realisations are vertex lists; edges are sorted lists {a, b}, which InfraMeasure remaps to UndirectedEdge *)
@@ -569,10 +591,10 @@ infraRepVerts[ _, rep_ ]        := rep
 
 (* N = the number of realisations the marginal was summed over: a measured InfraPoint's total mass, a bundle's sum of per-slot family sizes (1 for an explicit realisation, the whole geodesic count for a compact DAG atom), 1 for a single set *)
 
-infraNumReps[ InfraPoint[ _ ] ]                     := 1
+infraNumReps[ InfraPoint[ _, ___ ] ]                := 1
 (* a measure normalises by its HEAVIEST mass, not its total: the channel encodes RELATIVE mass within the object, so the modal vertex draws full and lighter ones fade.  Normalising by the total would render a uniform ball of n vertices at 1/n and make it vanish, and it is what separates ["Measure"] from ["ProbabilityMeasure"] *)
-infraNumReps[ InfraEffectivePoint[ m_Association ] ]      := If[ Length @ m === 0, 1, Max @ m ]
-infraNumReps[ ( InfraObject | InfraSet )[ _List ] ] := 1
+infraNumReps[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := If[ Length @ fam === 0, 1, Max @ fam ]
+infraNumReps[ InfraSet[ _List, ___ ] ]              := 1
 infraNumReps[ InfraSegment[ dag_Graph ] ]           := atomFamilySize[ dag ]
 infraNumReps[ head_[ reps_List, ___ ] ]             := Max[ Total[ atomFamilySize /@ reps ], 1 ]
 

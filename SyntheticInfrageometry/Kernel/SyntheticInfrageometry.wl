@@ -3,9 +3,6 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* Tools.wl *)
 PackageExport[InfraMeasure]
 
-(* InfraEffectivePoint.wl *)
-PackageExport[InfraEffectivePoint]
-
 (* InfraPoint.wl *)
 PackageExport[InfraPoint]
 PackageExport[FindInfraPoint]
@@ -126,7 +123,6 @@ PackageExport[FindInfraPolylineSubdivision]
 PackageExport[InfraPolylineQ]
 
 (* InfraRevolution.wl *)
-PackageExport[InfraObject]
 PackageExport[InfraRevolution]
 PackageExport[FindInfraRevolution]
 PackageExport[FindInfraCylinder]
@@ -186,7 +182,7 @@ PackageExport[InfraBoundary]
 PackageExport[InfraInterior]
 PackageExport[InfraVolume]
 
-(* Coordinatization.wl -- RadarCoordinates / ResistanceCoordinates live in the Infrageometry paclet; the InfraObject overloads and the deprecation aliases stay here *)
+(* Coordinatization.wl -- RadarCoordinates / ResistanceCoordinates live in the Infrageometry paclet; the InfraPoint / InfraSet overloads and the deprecation aliases stay here *)
 PackageExport[FindInfraRadarBasis]
 PackageExport[InfraRadarBasisQ]
 PackageExport[OrthogonalCoordinates]
@@ -251,7 +247,6 @@ PackageExport[$InfraCircleColor]
 PackageExport[$InfraRayColor]
 PackageExport[$InfraWalkColor]
 PackageExport[$InfraLineColor]
-PackageExport[$InfraObjectColor]
 
 (* InfraSceneInteractive.wl *)
 PackageExport[PointViewer]

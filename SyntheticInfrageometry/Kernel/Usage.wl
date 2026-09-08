@@ -4,11 +4,10 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== InfraPoint ===================== *)
 
-InfraEffectivePoint::usage = "InfraEffectivePoint[<|v -> m, ...|>] is a finitely supported measure on the vertex set -- the measure layer of the point ontology. Accessors \"Support\", \"Vertices\", \"Weights\", \"Mass\", \"Entropy\".";
-InfraPoint::usage = "InfraPoint[v] is the point atom: one vertex of the substrate, carrying its label verbatim. Accessors \"Vertex\", \"Vertices\", \"Mass\", and graph-keyed invariants such as [\"BallVolumes\", g] and [\"Dimension\", g].";
+InfraPoint::usage = "InfraPoint[v] is the point atom: one vertex of the substrate, carrying its label verbatim. InfraPoint[v, meta] carries a trailing metadata Association (\"Label\", \"Style\", \"Kind\"), read back by [\"Meta\"] and ignored by everything else. Accessors \"Vertex\", \"Vertices\", \"Mass\", \"Meta\", and graph-keyed invariants such as [\"BallVolumes\", g] and [\"Dimension\", g].";
 FindInfraPoint::usage = "FindInfraPoint[graph] draws a point from the candidate pool; a trailing n | UpTo[n] | All sets the count. Options \"From\", \"Distance\", \"MaxCliques\".";
-FindInfraMidpoint::usage = "FindInfraMidpoint[graph, p1, p2] gives the InfraEffectivePoint of the middle vertices of every geodesic from p1 to p2 (one vertex at even distance, two at odd). Option Method.";
-FindInfraGoldenSection::usage = "FindInfraGoldenSection[graph, p1, p2] gives the InfraEffectivePoint at the golden-ratio index along every geodesic from p1 to p2. Option Method.";
+FindInfraMidpoint::usage = "FindInfraMidpoint[graph, p1, p2] gives the density <|InfraPoint[v] -> m, ...|> of the middle vertices of every geodesic from p1 to p2 (one vertex at even distance, two at odd). Option Method.";
+FindInfraGoldenSection::usage = "FindInfraGoldenSection[graph, p1, p2] gives the density <|InfraPoint[v] -> m, ...|> at the golden-ratio index along every geodesic from p1 to p2. Option Method.";
 FindInfraReflection::usage = "FindInfraReflection[graph, x, a] gives the reflections x' of x through a: the vertices with B(x, a, x') and d(a, x) == d(a, x').";
 CompleteInfraEquilateralTriangle::usage = "CompleteInfraEquilateralTriangle[graph, p1, p2] gives the apexes equidistant from p1 and p2 at distance d(p1, p2) (Euclid I.1).";
 FindInfraCommonPoint::usage = "FindInfraCommonPoint[graph, lines] gives the points lying on every listed line.";
@@ -138,7 +137,6 @@ InfraPolylineQ::usage = "InfraPolylineQ[graph, poly] tests whether every leg is 
 
 (* ===================== InfraRevolution ===================== *)
 
-InfraObject::usage = "InfraObject[vs] wraps a bare vertex set as a single graph-geometric object.";
 InfraRevolution::usage = "InfraRevolution[axis, profile] is the InfraScene constructor for a solid of revolution.";
 FindInfraRevolution::usage = "FindInfraRevolution[graph, axis, profile] gives the rotational vertex set around axis with the given radius profile, a constant, list, association, or function. Options \"Form\", Method.";
 FindInfraCylinder::usage = "FindInfraCylinder[graph, axis, r] gives the constant-radius solid of revolution around axis, by default the r-neighbourhood of the axis.";
@@ -201,7 +199,7 @@ InfraMeasure::usage = "InfraMeasure[obj] gives the occupation measure <|v -> app
 
 (* ===================== InfraSet ===================== *)
 
-InfraSet::usage = "InfraSet[vs] wraps a vertex list as a set, coercing any Infra* wrapper to its underlying vertex set. Accessors \"Vertices\", \"Length\".";
+InfraSet::usage = "InfraSet[vs] is the set instance over a bare vertex list, coercing any Infra* wrapper or density to its underlying vertex set. InfraSet[vs, meta] carries a trailing metadata Association (\"Label\", \"Style\", \"Kind\"). set[[k]] is the k-th vertex as an InfraPoint. Accessors \"Vertices\", \"Length\", \"Meta\".";
 FindInfraEquidistantSet::usage = "FindInfraEquidistantSet[graph, {p1, ..., pn}] gives { v : d(p1, v) == ... == d(pn, v) }; a trailing {lo, hi} thickens each bisector to a slab.";
 InfraBoundary::usage = "InfraBoundary[graph, s] gives the boundary of a vertex set or Infra* object. Option Method (\"Combinatorial\", \"Alexandrov\").";
 InfraInterior::usage = "InfraInterior[graph, s] gives the interior of a vertex set or Infra* object. Option Method (\"Combinatorial\", \"Alexandrov\").";
@@ -275,7 +273,6 @@ $InfraPlaneColor::usage   = "Default highlight color for InfraPlane objects.";
 $InfraCircleColor::usage  = "Default highlight color for InfraCircle objects.";
 $InfraRayColor::usage     = "Default highlight color for InfraRay objects.";
 $InfraWalkColor::usage    = "Default highlight color for InfraWalk, InfraLoop and InfraString objects.";
-$InfraObjectColor::usage  = "Default highlight color for InfraObject objects.";
 $InfraTopologyColor::usage = "Default highlight color for topology overlays.";
 $InfraPalette::usage = "$InfraPalette is the Dataset of default object colors, one row per primitive; the source both the $Infra*Color symbols and InfraSceneHighlight read from.";
 

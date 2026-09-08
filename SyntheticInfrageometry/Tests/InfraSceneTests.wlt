@@ -493,14 +493,14 @@ VerificationTest[
   TestID -> "InfraDistance-InfraEllipticShell-InfraPoint"
 ]
 
-(* InfraSet is the bare-vertex-set alias of InfraObject.  On PathGraph[Range[5]]
+(* InfraSet is the bare-vertex-set alias of InfraSet.  On PathGraph[Range[5]]
    the pair ({2,3}, {4,5}) has pairwise distances (2, 3, 1, 2); Min = 1. *)
 VerificationTest[
   InfraDistance[ PathGraph @ Range @ 5,
-    InfraObject[ { 2, 3 } ],
+    InfraSet[ { 2, 3 } ],
     InfraSet[ { 4, 5 } ] ],
   1,
-  TestID -> "InfraDistance-InfraObject-InfraSet"
+  TestID -> "InfraDistance-InfraSet-InfraSet"
 ]
 
 (* Symmetry: InfraDistance[g, p, q] == InfraDistance[g, q, p] for any two

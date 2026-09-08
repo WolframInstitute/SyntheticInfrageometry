@@ -843,8 +843,8 @@ VerificationTest[
    occupation measure of where the walks terminate. *)
 VerificationTest[
   With[ { reps = { { 1, 2, 4 }, { 5, 6, 4 }, { 7, 8, 9 } } },
-    KeySort @ InfraWalk[ reps ][ "End" ][ "OccupationCount" ] === KeySort @ Counts[ Last /@ reps ] &&
-    KeySort @ InfraWalk[ reps ][ "Start" ][ "OccupationCount" ] === KeySort @ Counts[ First /@ reps ]
+    KeyMap[ First, InfraWalk[ reps ][ "End" ] ] === KeySort @ Counts[ Last /@ reps ] &&
+    KeyMap[ First, InfraWalk[ reps ][ "Start" ] ] === KeySort @ Counts[ First /@ reps ]
   ],
   True,
   TestID -> "InfraWalk-endpoint-accessors-keep-multiplicity"

@@ -152,7 +152,7 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
       With[ { d = dm[[ idx @ #[[ 1 ]], idx @ #[[ 2 ]] ]] },
         Switch[ parity, All, True, "Even", EvenQ[ d ], "Odd", OddQ[ d ] ] ] & ];
     radiiBins = GroupBy[ Catenate[ chordMidpointRadii[ dm, idx, # ] & /@ kept ], Last -> First ];
-    KeyValueMap[ { r, vlist } |-> With[ { ct = Counts @ vlist }, { InfraEffectivePoint[ ct ], r } ], KeySort @ radiiBins ]
+    KeyValueMap[ { r, vlist } |-> { KeySort @ Counts[ InfraPoint /@ vlist ], r }, KeySort @ radiiBins ]
   ]
 
 (* centers equidistant from vs, binned by their common radius r = d(c, vs) > 0 *)
@@ -160,7 +160,7 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
 equidistantShellPoints[ graph_Graph, vs_List ] :=
   With[ { ds = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, First @ vs ] ] },
     { centers = Select[ FindInfraEquidistantSet[ graph, vs ][ "Vertices" ], c |-> 0 < ds[ c ] < Infinity ] },
-    KeyValueMap[ { r, cs } |-> { InfraEffectivePoint[ cs, ConstantArray[ 1, Length @ cs ] ], r }, KeySort @ GroupBy[ centers, ds ] ] ]
+    KeyValueMap[ { r, cs } |-> { KeySort @ AssociationMap[ 1 &, InfraPoint /@ cs ], r }, KeySort @ GroupBy[ centers, ds ] ] ]
 
 (* vertices on some a-b geodesic at a middle distance r in { Floor[d/2], Ceil[d/2] }: an even chord yields r = d/2, an odd chord splits into Floor (nearer a) and Ceil (nearer b) *)
 
@@ -178,7 +178,7 @@ chordMidpointRadii[ dm_, idx_, chord_ ] :=
 (* vs is a metric shell iff some c is equidistant from all of vs at a common finite radius r and vs is exactly { v : d(c, v) == r } *)
 
 InfraShellQ[ graph_Graph, s : _InfraShell | _InfraSet ] :=
-  AllTrue[ If[ Head[ s ] === InfraSet, { First @ s }, First @ s ], InfraShellQ[ graph, # ] & ]
+  AllTrue[ If[ Head[ s ] === InfraSet, { s[ "Vertices" ] }, First @ s ], InfraShellQ[ graph, # ] & ]
 
 InfraShellQ[ graph_Graph, vs_List ] :=
   AnyTrue[ VertexList[ graph ],

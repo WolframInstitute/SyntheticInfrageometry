@@ -1,3 +1,5 @@
+toDensity = WolframInstitute`SyntheticInfrageometry`PackageScope`toDensity;
+
 BeginTestSection["InfraSet"]
 
 (* The Alexandrov-topology operators (BallTopology / Topological* / ContinuousMapQ)
@@ -255,29 +257,18 @@ VerificationTest[
 
 (* ===== the two projections of a bundle: support and occupation ===== *)
 
-(* a set-like wrapper: InfraSet reads the support, InfraEffectivePoint the
-   occupation, which for a set is the all-ones measure on that same support *)
+(* a set-like bundle projects two ways: InfraSet reads the support, the anchor rule
+   reads the density, which for a set is the all-ones measure on that same support
+   and agrees with the engine's own occupation count *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     With[ { ball = FindInfraBall[ g, 13, 2 ] },
-      InfraEffectivePoint[ ball ][ "Support" ] === InfraSet[ ball ] &&
-        InfraEffectivePoint[ ball ][ "Weights" ] === ConstantArray[ 1, Length @ InfraSet[ ball ][ "Vertices" ] ] ]
+      { InfraSet @ toDensity @ InfraSet[ ball ] === InfraSet[ ball ],
+        Values @ toDensity @ InfraSet[ ball ] === ConstantArray[ 1, Length @ InfraSet[ ball ][ "Vertices" ] ],
+        KeyMap[ First, toDensity @ InfraSet[ ball ] ] === KeySort @ ball[ "OccupationCount" ] } ]
   ],
-  True,
-  TestID -> "InfraEffectivePoint-coerces-InfraBall-to-occupation"
-]
-
-(* a multi-realisation bundle keeps the occupation multiplicities *)
-(* KeySort both sides: the claim is that the two measures agree, not that they
-   enumerate their support in the same order.  InfraEffectivePoint canonicalises key
-   order; the bundle accessor keeps discovery order. *)
-VerificationTest[
-  With[ { g = GridGraph[ { 4, 4 } ] },
-    With[ { seg = FindInfraSegment[ g, 1, 16, All ] },
-      KeySort @ InfraEffectivePoint[ seg ][ "OccupationCount" ] === KeySort @ seg[ "OccupationCount" ] ]
-  ],
-  True,
-  TestID -> "InfraEffectivePoint-coerces-bundle-to-occupation-measure"
+  { True, True, True },
+  TestID -> "set-density-is-all-ones-on-the-support"
 ]
 
 (* the coerced point is a legal anchor and re-wrapping is the identity *)
@@ -326,35 +317,37 @@ VerificationTest[
   TestID -> "InfraSet-DAG-inside-realisation-list"
 ]
 
-(* ===== InfraEffectivePoint canonical form ===== *)
+(* ===== density canonical form ===== *)
 
-(* Multiplicities survive the DAG -> measure conversion, and the compact and
-   enumerated forms of the same segment give the SAME measure -- they used to
+(* Multiplicities survive the DAG -> density conversion: the compact DAG and the
+   enumerated family of the same segment give the SAME density.  They used to
    differ by association key order alone, which broke SameQ equality. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    InfraEffectivePoint[FindInfraSegment[g, 1, 16, All]] ===
-      InfraEffectivePoint[FindInfraSegment[g, 1, 16, All]]],
+    With[{seg = FindInfraSegment[g, 1, 16, All]},
+      toDensity[InfraSet[seg]] === toDensity[InfraSet[InfraSegment[seg["Realizations"]]]]]],
   True,
-  TestID -> "InfraEffectivePoint-DAG-and-enumerated-forms-are-SameQ"
+  TestID -> "density-DAG-and-enumerated-supports-are-SameQ"
 ]
 
 (* The weights are the true geodesic occupation: counted by brute force over the
    whole enumerated family, they agree with the DP on the DAG. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    {m = InfraEffectivePoint[FindInfraSegment[g, 1, 16, All]]},
+    {m = KeySort @ KeyMap[InfraPoint, FindInfraSegment[g, 1, 16, All]["OccupationCount"]]},
     {paths = FindInfraSegment[g, 1, 16, All]["Realizations"]},
-    AllTrue[m["Vertices"], m[[1]][#] == Count[paths, p_ /; MemberQ[p, #]] &]],
+    AllTrue[Keys[m], m[#] == Count[paths, p_ /; MemberQ[p, First @ #]] &]],
   True,
-  TestID -> "InfraEffectivePoint-DAG-weights-are-true-occupation"
+  TestID -> "density-DAG-weights-are-true-occupation"
 ]
 
-(* Keys are sorted, so equal measures entered in any order are SameQ. *)
+(* Densities come out key-sorted, so equal ones built by different routes are SameQ
+   even when their supports were discovered in different orders. *)
 VerificationTest[
-  InfraEffectivePoint[<|9 -> 2, 1 -> 5|>] === InfraEffectivePoint[<|1 -> 5, 9 -> 2|>],
+  toDensity[InfraSet[{9, 1}]] === toDensity[{InfraPoint[1], InfraPoint[9]}] ===
+    <| InfraPoint[ 1 ] -> 1, InfraPoint[ 9 ] -> 1 |>,
   True,
-  TestID -> "InfraEffectivePoint-key-order-canonicalised"
+  TestID -> "density-key-order-canonicalised"
 ]
 
 EndTestSection[]

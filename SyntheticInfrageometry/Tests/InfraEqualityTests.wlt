@@ -46,7 +46,7 @@ VerificationTest[
 
 VerificationTest[
   InfraEqualQ[ PathGraph[ Range[ 7 ] ],
-    InfraEffectivePoint[ <| 3 -> 1, 4 -> 2 |> ], InfraEffectivePoint[ <| 3 -> 1, 4 -> 1 |> ], Method -> "Multiset" ],
+    <| InfraPoint[ 3 ] -> 1, InfraPoint[ 4 ] -> 2 |>, <| InfraPoint[ 3 ] -> 1, InfraPoint[ 4 ] -> 1 |>, Method -> "Multiset" ],
   False,
   TestID -> "InfraEqualQ-effectivepoint-multiplicity-mismatch-Multiset-False"
 ]
@@ -121,7 +121,7 @@ VerificationTest[
   TestID -> "InfraEqualQ-Ball-boundary-tie-Diffuse-False"
 ]
 
-(* ===== InfraShell, InfraObject ===== *)
+(* ===== InfraShell, InfraSet ===== *)
 
 VerificationTest[
   InfraEqualQ[ PathGraph[ Range[ 7 ] ], InfraShell[ { { 2, 4 } } ], InfraShell[ { { 2, 4 } } ] ],
@@ -130,7 +130,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraEqualQ[ PathGraph[ Range[ 5 ] ], InfraObject[ { 1, 2, 3 } ], InfraObject[ { 1, 2, 3 } ] ],
+  InfraEqualQ[ PathGraph[ Range[ 5 ] ], InfraSet[ { 1, 2, 3 } ], InfraSet[ { 1, 2, 3 } ] ],
   True,
   TestID -> "InfraEqualQ-Object-identical"
 ]

@@ -6,50 +6,61 @@ PackageImport["WolframInstitute`Infrageometry`"]
 (* ===================== InfraSet ===================== *)
 
 
+(* the payload is bare vertices; a trailing meta_Association carries "Label" / "Style" / "Kind" and nothing mathematical, so every rule here ignores it *)
+
 InfraSet[ inner_InfraSet ] := inner
+InfraSet[ InfraSet[ vs_List, ___ ], meta_Association ] := InfraSet[ vs, meta ]
 
 (* canonical form: sorted and duplicate-free.  The FreeQ guard keeps DownValues from rewriting a rule-author's pattern, which would silently bind the wrong element *)
-InfraSet[ vs_List ] /;
+InfraSet[ vs_List, meta___ ] /;
     FreeQ[ vs, _Blank | _BlankSequence | _BlankNullSequence | _Pattern ] &&
-    ! MemberQ[ vs, _InfraPoint | _InfraSet | _InfraEffectivePoint ] &&
+    ! MemberQ[ vs, _InfraPoint | _InfraSet ] &&
     ( ! DuplicateFreeQ[ vs ] || vs =!= Sort[ vs ] ) :=
-  InfraSet[ Sort @ DeleteDuplicates @ vs ]
+  InfraSet[ Sort @ DeleteDuplicates @ vs, meta ]
 
-InfraSet[ vs_List ] /; MemberQ[ vs, _InfraSet ] :=
-  InfraSet[ Union @@ Replace[ vs, s_InfraSet :> s[ "Vertices" ], {1} ] ]
+InfraSet[ vs_List, meta___ ] /; MemberQ[ vs, _InfraSet ] :=
+  InfraSet[ Union @@ Replace[ vs, s_InfraSet :> s[ "Vertices" ], {1} ], meta ]
 
-(* an atom IS a vertex (possibly a list label like {i, j}), so no flattening applies; a measure contributes its support and loses its masses *)
-InfraSet[ InfraPoint[ v_ ] ] := InfraSet[ { v } ]
-InfraSet[ list : { __InfraPoint } ] := InfraSet[ Sort @ DeleteDuplicates[ #[[ 1 ]] & /@ list ] ]
-InfraSet[ InfraEffectivePoint[ m_Association ] ] := InfraSet[ Sort @ Keys @ m ]
+(* an atom IS a vertex (possibly a list label like {i, j}), so no flattening applies; a density contributes its support and loses its masses *)
+InfraSet[ InfraPoint[ v_, ___ ] ] := InfraSet[ { v } ]
+InfraSet[ list : { __InfraPoint }, meta___ ] := InfraSet[ Sort @ DeleteDuplicates[ First /@ list ], meta ]
+InfraSet[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := InfraSet[ Sort[ First /@ Keys @ fam ] ]
 
 (* read the vertices off the DAG (VertexList == MetricInterval), never by enumerating the geodesic family, which is exponential in general *)
 InfraSet[ InfraSegment[ dag_Graph ] ] := InfraSet[ VertexList @ dag ]
+
+(* the k-th element of a set is a point instance, so [[k]] never leaves the ontology; a non-integer spec keeps the set head *)
+InfraSet /: Part[ InfraSet[ vs_List, ___ ], k_Integer ] := InfraPoint[ vs[[ k ]] ]
+InfraSet /: Part[ InfraSet[ vs_List, ___ ], spec : Except[ _Integer ] ] := InfraSet[ vs[[ spec ]] ]
+InfraSet /: First[ InfraSet[ vs_List, ___ ] ] := InfraPoint[ First @ vs ]
+InfraSet /: Last[ InfraSet[ vs_List, ___ ] ]  := InfraPoint[ Last @ vs ]
 
 InfraSet[ wrapper_Symbol[ rs_List ] ] /;
     wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
   InfraSet[ Sort @ DeleteDuplicates @ Flatten[ Replace[ rs, d_Graph :> VertexList[ d ], { 1 } ], 1 ] ]
 
-InfraSet[ vs_List ][ "Vertices" ] := vs
-InfraSet[ vs_List ][ "Weights" ]  := ConstantArray[ 1, Length @ vs ]
-InfraSet[ vs_List ][ "Length" ]   := Length[ vs ]
+InfraSet[ vs_List, ___ ][ "Vertices" ] := vs
+InfraSet[ vs_List, ___ ][ "Weights" ]  := ConstantArray[ 1, Length @ vs ]
+InfraSet[ vs_List, ___ ][ "Length" ]   := Length[ vs ]
+InfraSet[ _List ][ "Meta" ]            := <| |>
+InfraSet[ _List, meta_Association ][ "Meta" ] := meta
 
-InfraSet[ vs_List ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, vs, rest ]
-InfraSet[ vs_List ][ "TubeVolumes", g_, rest___ ]            := TubeVolumes[ g, vs, rest ]
-InfraSet[ vs_List ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients /@ BallVolumes[ g, vs, rest ]
-InfraSet[ vs_List ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, vs, rest ]
-InfraSet[ vs_List ][ "Dimension", g_, rest___ ]              := ( #[ "BallDimension" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
-InfraSet[ vs_List ][ "ScalarCurvature", g_, rest___ ]        := ( #[ "BallScalarCurvature" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
-InfraSet[ vs_List ][ "CurvatureByRadius", g_, rest___ ]      := ( #[ "BallCurvatureByRadius" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
+InfraSet[ vs_List, ___ ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, vs, rest ]
+InfraSet[ vs_List, ___ ][ "TubeVolumes", g_, rest___ ]            := TubeVolumes[ g, vs, rest ]
+InfraSet[ vs_List, ___ ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients /@ BallVolumes[ g, vs, rest ]
+InfraSet[ vs_List, ___ ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, vs, rest ]
+InfraSet[ vs_List, ___ ][ "Dimension", g_, rest___ ]              := ( #[ "BallDimension" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
+InfraSet[ vs_List, ___ ][ "ScalarCurvature", g_, rest___ ]        := ( #[ "BallScalarCurvature" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
+InfraSet[ vs_List, ___ ][ "CurvatureByRadius", g_, rest___ ]      := ( #[ "BallCurvatureByRadius" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
 
 InfraSet /: BallVolumes[ g_, s_InfraSet, rest___ ]             := BallVolumes[ g, s[ "Vertices" ], rest ]
 InfraSet /: TubeVolumes[ g_, s_InfraSet, rest___ ]             := TubeVolumes[ g, s[ "Vertices" ], rest ]
 InfraSet /: VolumeGrowthObservables[ g_, s_InfraSet, rest___ ] := VolumeGrowthObservables[ g, s[ "Vertices" ], rest ]
 
-InfraSet[ vs_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraSet[ vs ] ]
-InfraSet[ vs_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraSet[ vs ] ]
-InfraSet[ vs_List ][ "Measure" ] := InfraMeasure[ InfraSet[ vs ] ]
-InfraSet[ vs_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSet[ vs ], Method -> "Probability" ]
+InfraSet[ vs_List, ___ ][ "OccupationCount" ] := infraVertexMultiset[ InfraSet[ vs ] ]
+InfraSet[ vs_List, ___ ][ "OccupationMeasure" ] := InfraMeasure[ InfraSet[ vs ] ]
+InfraSet[ vs_List, ___ ][ "Measure" ] := InfraMeasure[ InfraSet[ vs ] ]
+InfraSet[ vs_List, ___ ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSet[ vs ], Method -> "Probability" ]
 
 
 (* ===================== FindInfraEquidistantSet ===================== *)

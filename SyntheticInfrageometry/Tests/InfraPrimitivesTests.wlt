@@ -25,36 +25,29 @@ VerificationTest[
 ]
 
 
-(* ----- weighted InfraPoint (mass) ----- *)
+(* ----- the family layer: <| instance -> weight |> ----- *)
 
-(* a set deduplicates; repetition becomes mass only in the measure layer *)
+(* a set deduplicates; repetition becomes mass only in the family, and a List is one Counts away *)
 VerificationTest[
-  { InfraSet[ { a, a, b } ], InfraEffectivePoint[ { InfraPoint[a], InfraPoint[a], InfraPoint[b] } ] },
-  { InfraSet[ { a, b } ], InfraEffectivePoint[<|a -> 2, b -> 1|>] },
-  TestID -> "set-dedups-measure-counts"
+  { InfraSet[ { a, a, b } ], Counts[ { InfraPoint[a], InfraPoint[a], InfraPoint[b] } ] },
+  { InfraSet[ { a, b } ], <| InfraPoint[ a ] -> 2, InfraPoint[ b ] -> 1 |> },
+  TestID -> "set-dedups-family-counts"
 ]
 
-(* the all-ones measure STAYS a effective point -- layers never cross silently *)
+(* the all-ones density is still a density: nothing collapses it to its support, and taking the support is the explicit InfraSet step, which drops the masses *)
 VerificationTest[
-  Head @ InfraEffectivePoint[<|a -> 1, b -> 1|>],
-  InfraEffectivePoint,
-  TestID -> "InfraEffectivePoint-all-ones-stays-meso"
+  With[ { fam = <| InfraPoint[ a ] -> 1, InfraPoint[ b ] -> 1 |> },
+    { Head @ fam, InfraSet @ fam } ],
+  { Association, InfraSet[ { a, b } ] },
+  TestID -> "all-ones-density-stays-a-density"
 ]
 
+(* the family algebra is the Association's own: Keys, Values, Total *)
 VerificationTest[
-  { InfraEffectivePoint[<|a -> 2, b -> 1|>][ "Support" ],
-    InfraEffectivePoint[<|a -> 2, b -> 1|>][ "Weights" ],
-    InfraEffectivePoint[<|a -> 2, b -> 1|>][ "Mass" ],
-    InfraSet[ { a, b } ][ "Weights" ] },
+  With[ { fam = <| InfraPoint[ a ] -> 2, InfraPoint[ b ] -> 1 |> },
+    { InfraSet @ fam, Values @ fam, Total @ fam, InfraSet[ { a, b } ][ "Weights" ] } ],
   { InfraSet[ { a, b } ], { 2, 1 }, 3, { 1, 1 } },
-  TestID -> "point-layer-weight-accessors"
-]
-
-(* repetition in an atom list is mass: the counting measure *)
-VerificationTest[
-  InfraEffectivePoint[ { InfraPoint[a], InfraPoint[a], InfraPoint[b] } ],
-  InfraEffectivePoint[<|a -> 2, b -> 1|>],
-  TestID -> "InfraEffectivePoint-counts-atom-list"
+  TestID -> "family-weight-algebra-is-the-association"
 ]
 
 
@@ -93,11 +86,23 @@ VerificationTest[
   TestID -> "InfraPoint-Dimension-accessor-numeric"
 ]
 
+(* [[k]] never leaves the ontology: the k-th element of a set is a point instance, a non-integer spec keeps the set head *)
 VerificationTest[
-  { First @ InfraEffectivePoint[<|a -> 2, b -> 1|>], First @ InfraSet[ { a, b } ],
-    InfraEffectivePoint[<|a -> 2, b -> 1|>][ "Support" ], InfraPoint[a][ "Vertex" ] },
-  { <| a -> 2, b -> 1 |>, { a, b }, InfraSet[ { a, b } ], a },
-  TestID -> "point-layer-First-is-the-stored-argument"
+  { InfraSet[ { a, b, c } ][[ 2 ]], First @ InfraSet[ { a, b, c } ],
+    InfraSet[ { a, b, c } ][[ ;; 2 ]], InfraPoint[a][ "Vertex" ] },
+  { InfraPoint[ b ], InfraPoint[ a ], InfraSet[ { a, b } ], a },
+  TestID -> "InfraSet-Part-is-a-point-instance"
+]
+
+(* the metadata slot is inert: it rides along and every accessor ignores it *)
+VerificationTest[
+  With[ { p = InfraPoint[ a, <| "Label" -> "P" |> ],
+          s = InfraSet[ { b, a }, <| "Style" -> Red |> ] },
+    { p[ "Vertex" ], p[ "Meta" ], InfraPoint[ a ][ "Meta" ],
+      s[ "Vertices" ], s[ "Length" ], s[ "Meta" ], s[[ 1 ]] } ],
+  { a, <| "Label" -> "P" |>, <| |>,
+    { a, b }, 2, <| "Style" -> Red |>, InfraPoint[ a ] },
+  TestID -> "instance-metadata-slot-is-inert"
 ]
 
 
@@ -105,19 +110,19 @@ VerificationTest[
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ 1 ]],
-  InfraEffectivePoint[ <| 1 -> 2 |> ],
+  <| InfraPoint[ 1 ] -> 2 |>,
   TestID -> "InfraSegment-column-start-weighted"
 ]
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ -1 ]],
-  InfraEffectivePoint[ <| 3 -> 2 |> ],
+  <| InfraPoint[ 3 ] -> 2 |>,
   TestID -> "InfraSegment-column-end-weighted"
 ]
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ 2 ]],
-  InfraEffectivePoint[ <| 2 -> 1, 4 -> 1 |> ],
+  <| InfraPoint[ 2 ] -> 1, InfraPoint[ 4 ] -> 1 |>,
   TestID -> "InfraSegment-column-middle-spread"
 ]
 
@@ -129,7 +134,7 @@ VerificationTest[
 
 VerificationTest[
   InfraLine[ { { 1, 2, 3 }, { 1, 2, 5 } } ][[ 2 ]],
-  InfraEffectivePoint[ <| 2 -> 2 |> ],
+  <| InfraPoint[ 2 ] -> 2 |>,
   TestID -> "InfraLine-column-weighted"
 ]
 
@@ -259,10 +264,11 @@ VerificationTest[
   TestID -> "InfraEllipticShell-Volume-vertex-count"
 ]
 
+(* a set is one instance, so its size is the instance accessor "Length", not the per-realisation "Volume" of the bundle heads *)
 VerificationTest[
-  InfraObject[ { 1, 2, 3, 4 } ][ "Volume" ],
-  { 4 },
-  TestID -> "InfraObject-Volume-vertex-count-singleton"
+  InfraSet[ { 1, 2, 3, 4 } ][ "Length" ],
+  4,
+  TestID -> "InfraSet-Length-vertex-count"
 ]
 
 

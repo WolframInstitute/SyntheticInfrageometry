@@ -40,12 +40,12 @@ InfraLine[ dags : { __Graph } ][ "Realizations", spec_ ] :=
 
 (* column i = layer i - 1 of each atom, mass = geodesic occupation: exact, no enumeration *)
 InfraLine /: Part[ InfraLine[ dags : { __Graph } ], i_Integer ] :=
-  InfraEffectivePoint @ Merge[
+  KeySort @ KeyMap[ InfraPoint, Merge[
     Map[ dag |-> With[ { layers = dagLayers[ dag ] },
         { len = Max[ 0, Values @ layers ] },
         KeyTake[ GeodesicOccupation[ dag ], Keys @ Select[ layers, # === If[ i > 0, i - 1, len + 1 + i ] & ] ] ],
       dags ],
-    Total ]
+    Total ] ]
 
 
 (* ===================== FindInfraLine ===================== *)

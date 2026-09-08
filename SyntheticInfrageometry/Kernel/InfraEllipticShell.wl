@@ -92,7 +92,7 @@ propertyPredicateEllipticShell[ _, _, _, other_ ] :=
 (* vs is an elliptic shell iff there are foci p1, p2 and a constant c with vs == { v : d(p1, v) + d(p2, v) == c } *)
 
 InfraEllipticShellQ[ graph_Graph, s : _InfraEllipticShell | _InfraSet ] :=
-  AllTrue[ If[ Head[ s ] === InfraSet, { First @ s }, First @ s ], InfraEllipticShellQ[ graph, # ] & ]
+  AllTrue[ If[ Head[ s ] === InfraSet, { s[ "Vertices" ] }, First @ s ], InfraEllipticShellQ[ graph, # ] & ]
 
 InfraEllipticShellQ[ graph_Graph, vs_List ] :=
   Module[ { verts, idx, dm },

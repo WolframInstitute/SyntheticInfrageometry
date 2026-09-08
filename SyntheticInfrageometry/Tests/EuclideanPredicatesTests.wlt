@@ -108,25 +108,26 @@ VerificationTest[
 (* even chord d(1,7)=6: one estimate, exact midpoint 4 at radius 3 *)
 VerificationTest[
   FindInfraShellCenter[PathGraph[Range[7]], {1, 7}],
-  {{InfraEffectivePoint[<|4 -> 1|>], 3}},
+  {{<| InfraPoint[ 4 ] -> 1 |>, 3}},
   TestID -> "FindInfraShellCenter-path-even-exact-midpoint"
 ]
 
 VerificationTest[
   FindInfraShellCenter[CycleGraph[8], {1, 5}],
-  {{InfraEffectivePoint[<|3 -> 1, 7 -> 1|>], 2}},
+  {{<| InfraPoint[ 3 ] -> 1, InfraPoint[ 7 ] -> 1 |>, 2}},
   TestID -> "FindInfraShellCenter-cycle-two-antipodal-midpoints"
 ]
 
 VerificationTest[
-  MatchQ[FindInfraShellCenter[PetersenGraph[], {2, 5, 10, 9, 8, 7}], {{_InfraEffectivePoint, _Integer} ..}],
+  MatchQ[FindInfraShellCenter[PetersenGraph[], {2, 5, 10, 9, 8, 7}],
+    {{_Association ? (MatchQ[Keys @ #, {___InfraPoint}] &), _Integer} ..}],
   True,
   TestID -> "FindInfraShellCenter-returns-estimate-list"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{5, 5}], shell = Select[VertexList[GridGraph[{5, 5}]], GraphDistance[GridGraph[{5, 5}], 13, #] == 2 &]},
-    MemberQ[FindInfraShellCenter[g, shell][[1, 1]]["Vertices"], 13]
+    MemberQ[Keys @ FindInfraShellCenter[g, shell][[1, 1]], InfraPoint[13]]
   ],
   True,
   TestID -> "FindInfraShellCenter-blob-contains-true-center"
@@ -142,8 +143,8 @@ VerificationTest[
 (* ... Odd parity keeps it, the effective point splits across radii 2 and 3 *)
 VerificationTest[
   FindInfraShellCenter[PathGraph[Range[6]], {1, 6}, Method -> {"MaximalChordsBisectors", "Parity" -> "Odd"}],
-  {{InfraEffectivePoint[<|3 -> 1|>], 2}, {InfraEffectivePoint[<|4 -> 1|>], 3}},
-  TestID -> "FindInfraShellCenter-Odd-splits-effectivepoint-by-radius"
+  {{<| InfraPoint[ 3 ] -> 1 |>, 2}, {<| InfraPoint[ 4 ] -> 1 |>, 3}},
+  TestID -> "FindInfraShellCenter-Odd-splits-density-by-radius"
 ]
 
 (* "Diameter" keeps only the globally longest chord {1,10} (odd, splits
@@ -152,8 +153,8 @@ VerificationTest[
 VerificationTest[
   { FindInfraShellCenter[PathGraph[Range[10]], {1, 4, 10}, Method -> {"MaximalChordsBisectors", "Maximality" -> "Diameter"}],
     FindInfraShellCenter[PathGraph[Range[10]], {1, 4, 10}, Method -> {"MaximalChordsBisectors", "Maximality" -> "PerVertex"}] },
-  { {{InfraEffectivePoint[<|5 -> 1|>], 4}, {InfraEffectivePoint[<|6 -> 1|>], 5}},
-    {{InfraEffectivePoint[<|7 -> 1|>], 3}, {InfraEffectivePoint[<|5 -> 1|>], 4}, {InfraEffectivePoint[<|6 -> 1|>], 5}} },
+  { {{<| InfraPoint[ 5 ] -> 1 |>, 4}, {<| InfraPoint[ 6 ] -> 1 |>, 5}},
+    {{<| InfraPoint[ 7 ] -> 1 |>, 3}, {<| InfraPoint[ 5 ] -> 1 |>, 4}, {<| InfraPoint[ 6 ] -> 1 |>, 5}} },
   TestID -> "FindInfraShellCenter-Maximality-Diameter-vs-PerVertex"
 ]
 
@@ -162,13 +163,13 @@ VerificationTest[
    {2,5,10,9,8,7} is centered exactly at vertex 1. *)
 VerificationTest[
   FindInfraShellCenter[PetersenGraph[], {2, 5, 10, 9, 8, 7}, Method -> "EquidistantPoints"],
-  {{InfraEffectivePoint[<|1 -> 1|>], 2}},
+  {{<| InfraPoint[ 1 ] -> 1 |>, 2}},
   TestID -> "FindInfraShellCenter-EquidistantPoints-Petersen-true-center"
 ]
 
 VerificationTest[
   FindInfraShellCenter[CycleGraph[8], {1, 5}, Method -> "EquidistantPoints"],
-  {{InfraEffectivePoint[<|3 -> 1, 7 -> 1|>], 2}},
+  {{<| InfraPoint[ 3 ] -> 1, InfraPoint[ 7 ] -> 1 |>, 2}},
   TestID -> "FindInfraShellCenter-EquidistantPoints-cycle-two-centers"
 ]
 
@@ -199,7 +200,7 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{5, 5}], shell = Select[VertexList[GridGraph[{5, 5}]], GraphDistance[GridGraph[{5, 5}], 13, #] == 2 &]},
     With[{center = FindInfraShellCenter[g, shell][[1, 1]]},
-      MemberQ[Pick[center["Vertices"], center["Weights"], Max @ center["Weights"]], 13]
+      MemberQ[Pick[Keys @ center, Values @ center, Max @ center], InfraPoint[13]]
     ]
   ],
   True,
@@ -632,7 +633,7 @@ VerificationTest[
          AllTrue[First @ rp, InfraRegularPolygonQ[g, #, {1}] &]],
      With[{rv = FindInfraRevolution[g, {1, 2, 3}, 1]},
        InfraRevolutionQ[g, rv, {1, 2, 3}, 1] ===
-         InfraRevolutionQ[g, First @ rv, {1, 2, 3}, 1]]}],
+         InfraRevolutionQ[g, rv["Vertices"], {1, 2, 3}, 1]]}],
   {True, True, True},
   TestID -> "wrapper-verdict-is-conjunction-over-realisations"
 ]
@@ -664,7 +665,7 @@ VerificationTest[
     {InfraShellQ[g, InfraShell[{{1, 2, 3}}]], InfraLineQ[g, InfraLine[{{1, 2, 3}}]],
      InfraParallelQ[g, InfraLine[{{1, 2, 3}}], InfraLine[{{1, 6, 11}}]],
      InfraRegularPolygonQ[g, InfraPolygon[{{InfraSegment[{{1, 2, 3}}]}}], {1}],
-     InfraRevolutionQ[g, InfraObject[{1, 2}], {1, 2, 3}, 1]}],
+     InfraRevolutionQ[g, InfraSet[{1, 2}], {1, 2, 3}, 1]}],
   ConstantArray[False, 5],
   TestID -> "wrapped-non-instances-are-False"
 ]

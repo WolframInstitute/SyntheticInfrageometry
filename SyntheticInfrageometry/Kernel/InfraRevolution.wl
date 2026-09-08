@@ -1,15 +1,6 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 
-(* ===================== InfraObject wrapper ===================== *)
-
-
-InfraObject[ vs_List ][ "Volume" ] := { Length @ vs }
-
-InfraObject[ vs_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraObject[ vs ] ]
-InfraObject[ vs_List ][ "OccupationMeasure" ] := InfraMeasure[ InfraObject[ vs ] ]
-InfraObject[ vs_List ][ "Measure" ] := InfraMeasure[ InfraObject[ vs ] ]
-InfraObject[ vs_List ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraObject[ vs ], Method -> "Probability" ]
 (* ===================== FindInfraRevolution ===================== *)
 
 (* each axis path is extended by the vertices v adjacent to its endpoint with d(v, path[[k]]) = k (left) or n - k + 1 (right) for every k, i.e. those prolonging the axis as a geodesic *)
@@ -29,7 +20,7 @@ FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] /;
         { posVerts, r } |-> Min[ GraphDistance[ graph, v, # ] & /@ posVerts ] - r,
         { positions, radii } ] },
     (* constant radius: the r-neighborhood of the axis IS the union of balls, so the candidate set is already the answer *)
-    InfraObject @ Sort @ If[ ! surface && Equal @@ radii,
+    InfraSet @ Sort @ If[ ! surface && Equal @@ radii,
       candidates,
       Select[ candidates, If[ surface, slack[ # ] == 0, slack[ # ] <= 0 ] & ] ]
   ]
@@ -43,7 +34,7 @@ FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
     { radii = profileRadii[ profile, n ],
       positions = First @ ext,
       origRange = Last @ ext },
-    InfraObject[ Sort[ Union @@ MapThread[
+    InfraSet[ Sort[ Union @@ MapThread[
       { posVerts, r, i } |->
         Select[ VertexList @ NeighborhoodGraph[ graph, posVerts, r ],
           v |-> With[ { dists = Min[ GraphDistance[ graph, v, # ] & /@ # ] & /@ positions },
@@ -128,11 +119,11 @@ FindInfraCone[ graph_Graph, axis_, slope_, opts : OptionsPattern[ ] ] :=
 (* ===================== InfraRevolutionQ ===================== *)
 
 InfraRevolutionQ[ graph_Graph, vs_List, axis_, profile_, opts : OptionsPattern[ FindInfraRevolution ] ] :=
-  Sort @ vs === FindInfraRevolution[ graph, axis, profile, opts ][[ 1 ]]
+  Sort @ vs === FindInfraRevolution[ graph, axis, profile, opts ][ "Vertices" ]
 
-InfraRevolutionQ[ graph_Graph, o : _InfraObject | _InfraSet, axis_, profile_,
+InfraRevolutionQ[ graph_Graph, o_InfraSet, axis_, profile_,
     opts : OptionsPattern[ FindInfraRevolution ] ] :=
-  InfraRevolutionQ[ graph, First @ o, axis, profile, opts ]
+  InfraRevolutionQ[ graph, o[ "Vertices" ], axis, profile, opts ]
 
 
 (* ===================== Scene-DSL constructor ===================== *)
@@ -141,7 +132,7 @@ dispatchConstruction[ graph_Graph, InfraRevolution[ axis_, profile_, opts___Rule
   capBranches[
     applySelectOption[ graph,
       { FindInfraRevolution[ graph, axis, profile,
-          Sequence @@ FilterRules[ { opts }, Options[ FindInfraRevolution ] ] ][[ 1 ]] },
+          Sequence @@ FilterRules[ { opts }, Options[ FindInfraRevolution ] ] ][ "Vertices" ] },
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Axis" -> axis, "Profile" -> profile |> ],
     extractBranches[ { opts } ] ]

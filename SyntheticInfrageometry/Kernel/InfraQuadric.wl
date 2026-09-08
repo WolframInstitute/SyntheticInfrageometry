@@ -9,7 +9,7 @@ FindInfraQuadric[ graph_Graph, foci_List, c_ ] :=
   FindInfraQuadric[ graph, foci, c, ConstantArray[ 1, Length @ foci ] ]
 
 FindInfraQuadric[ graph_Graph, foci_List, c_, weights_List ] :=
-  InfraObject @ With[
+  InfraSet @ With[
     { foci0 = Replace[ foci, { InfraPoint[ v_ ] :> v, InfraSet[ vs_List ] :> First[ vs ] }, { 1 } ] },
     { dm   = GraphDistanceMatrix @ graph,
       idxs = VertexIndex[ graph, # ] & /@ foci0,

@@ -1,3 +1,5 @@
+toDensity = WolframInstitute`SyntheticInfrageometry`PackageScope`toDensity;
+
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Head @ InfraSceneHighlight[ g, { FindInfraSegment[ g, 1, 16, All ] } ]
@@ -66,7 +68,7 @@ VerificationTest[
     With[ {
         pts  = Take[ VertexList @ g, 2 ],
         opts = Options @
-          InfraSceneHighlight[ g, { InfraEffectivePoint[ InfraSet[ Take[ VertexList @ g, 2 ] ] ] -> Red } ] },
+          InfraSceneHighlight[ g, { toDensity[ InfraSet[ Take[ VertexList @ g, 2 ] ] ] -> Red } ] },
       Length @ Flatten @ Cases[ opts,
         HoldPattern[ VertexShapeFunction -> rules_ ] :>
           Cases[ rules, ( v_ -> _ ) /; MemberQ[ pts, v ] ], Infinity ] > 0 &&
@@ -315,14 +317,14 @@ VerificationTest[
   With[ { g = GridGraph[ { 7, 7 } ] },
     { (* a UNIFORM effective point (here a ball) is uniformly bright: its diffuseness
          is its extent, not a per-vertex fade *)
-      Union @ Cases[ Options @ InfraSceneHighlight[ g, { InfraEffectivePoint[ FindInfraBall[ g, 25, 2 ] ] } ],
+      Union @ Cases[ Options @ InfraSceneHighlight[ g, { toDensity @ InfraSet @ FindInfraBall[ g, 25, 2 ] } ],
         AbsolutePointSize[ s_ ] :> s, Infinity ],
       (* a NON-uniform effective point draws its heaviest vertex full and the rest smaller *)
       With[ { sizes = Cases[ Options @ InfraSceneHighlight[ g, { FindInfraMidpoint[ g, 1, 49 ] } ],
                 AbsolutePointSize[ s_ ] :> s, Infinity ] },
         { Max @ sizes, Max @ sizes > Min @ sizes } ] } ],
   { { 6 }, { 6, True } },
-  TestID -> "InfraSceneHighlight-effectivepoint-relative-mass"
+  TestID -> "InfraSceneHighlight-density-relative-mass"
 ]
 
 (* A highlighted walk is drawn as ONE joined stroke through its vertices, not as a

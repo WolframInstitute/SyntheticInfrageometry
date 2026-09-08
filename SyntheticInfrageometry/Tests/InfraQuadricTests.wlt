@@ -6,25 +6,25 @@ BeginTestSection["InfraQuadric"]
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2 ],
-  InfraObject[ { 1, 2, 3 } ],
+  InfraSet[ { 1, 2, 3 } ],
   TestID -> "FindInfraQuadric-PathGraph-ellipsoid-c2"
 ]
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 3 ],
-  InfraObject[ { 1, 2, 3 } ],
+  InfraSet[ { 1, 2, 3 } ],
   TestID -> "FindInfraQuadric-PathGraph-ellipsoid-c3"
 ]
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 4 ],
-  InfraObject[ { 1, 2, 3, 4 } ],
+  InfraSet[ { 1, 2, 3, 4 } ],
   TestID -> "FindInfraQuadric-PathGraph-ellipsoid-c4"
 ]
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 6 ],
-  InfraObject[ { 1, 2, 3, 4, 5 } ],
+  InfraSet[ { 1, 2, 3, 4, 5 } ],
   TestID -> "FindInfraQuadric-PathGraph-ellipsoid-c6-all"
 ]
 
@@ -32,13 +32,13 @@ VerificationTest[
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ], { 1, 3 }, { 4, 6 } ],
-  InfraObject[ { 4, 5 } ],
+  InfraSet[ { 4, 5 } ],
   TestID -> "FindInfraQuadric-PathGraph-band-4-6"
 ]
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ], { 1, 3 }, { 2, 2 } ],
-  InfraObject[ { 1, 2, 3 } ],
+  InfraSet[ { 1, 2, 3 } ],
   TestID -> "FindInfraQuadric-PathGraph-band-2-2-level-set"
 ]
 
@@ -55,19 +55,19 @@ VerificationTest[
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ], { 1, 5 }, 0, { 1, -1 } ],
-  InfraObject[ { 1, 2, 3 } ],
+  InfraSet[ { 1, 2, 3 } ],
   TestID -> "FindInfraQuadric-PathGraph-hyperboloid-half-c0"
 ]
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ], { 1, 5 }, { -1, 1 }, { 1, -1 } ],
-  InfraObject[ { 3 } ],
+  InfraSet[ { 3 } ],
   TestID -> "FindInfraQuadric-PathGraph-hyperboloid-twosided-c1"
 ]
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ], { 1, 5 }, { -2, 2 }, { 1, -1 } ],
-  InfraObject[ { 2, 3, 4 } ],
+  InfraSet[ { 2, 3, 4 } ],
   TestID -> "FindInfraQuadric-PathGraph-hyperboloid-twosided-c2"
 ]
 
@@ -76,14 +76,14 @@ VerificationTest[
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ],
     { InfraPoint[1], InfraPoint[3] }, 2 ],
-  InfraObject[ { 1, 2, 3 } ],
+  InfraSet[ { 1, 2, 3 } ],
   TestID -> "FindInfraQuadric-PathGraph-InfraPoint-foci"
 ]
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ],
     { InfraSet[ { 1, 4 } ], 3 }, 2 ],
-  InfraObject[ { 1, 2, 3 } ],
+  InfraSet[ { 1, 2, 3 } ],
   TestID -> "FindInfraQuadric-PathGraph-multirealisation-first-only"
 ]
 
@@ -92,13 +92,13 @@ VerificationTest[
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ], { 1, 3, 5 }, 4 ],
-  InfraObject[ { 3 } ],
+  InfraSet[ { 3 } ],
   TestID -> "FindInfraQuadric-PathGraph-three-foci-c4"
 ]
 
 VerificationTest[
   FindInfraQuadric[ PathGraph[ Range[ 5 ] ], { 1, 3, 5 }, 5 ],
-  InfraObject[ { 2, 3, 4 } ],
+  InfraSet[ { 2, 3, 4 } ],
   TestID -> "FindInfraQuadric-PathGraph-three-foci-c5"
 ]
 
@@ -107,7 +107,7 @@ VerificationTest[
    anti-diagonal strip; solid c = 6 covers the whole graph. *)
 
 VerificationTest[
-  Length @ First @ FindInfraQuadric[ GridGraph[ { 4, 4 } ], { 1, 16 }, 6 ],
+  FindInfraQuadric[ GridGraph[ { 4, 4 } ], { 1, 16 }, 6 ][ "Length" ],
   16,
   TestID -> "FindInfraQuadric-GridGraph-corner-corner-solid"
 ]

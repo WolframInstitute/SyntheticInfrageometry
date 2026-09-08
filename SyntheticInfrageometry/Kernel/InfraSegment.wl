@@ -41,7 +41,7 @@ InfraSegment /: Part[ InfraSegment[ dag_Graph ], i_Integer ] :=
   With[ { layers = dagLayers[ dag ] },
     { len = Max[ 0, Values @ layers ] },
     { vs = Keys @ Select[ layers, # === If[ i > 0, i - 1, len + 1 + i ] & ] },
-    InfraEffectivePoint @ KeyTake[ GeodesicOccupation[ dag ], vs ] ]
+    KeySort @ KeyMap[ InfraPoint, KeyTake[ GeodesicOccupation[ dag ], vs ] ] ]
 
 InfraSegment[ dag_Graph ][ "Start" ] := InfraSet[ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ]
 InfraSegment[ dag_Graph ][ "End" ]   := InfraSet[ Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] ]
@@ -97,12 +97,12 @@ InfraSegment[ dags : { _Graph, __Graph } ][ args___ ] :=
 
 (* column i = layer i - 1 of each atom, mass = geodesic occupation: exact, no enumeration *)
 InfraSegment /: Part[ InfraSegment[ dags : { _Graph, __Graph } ], i_Integer ] :=
-  InfraEffectivePoint @ Merge[
+  KeySort @ KeyMap[ InfraPoint, Merge[
     Map[ dag |-> With[ { layers = dagLayers[ dag ] },
         { len = Max[ 0, Values @ layers ] },
         KeyTake[ GeodesicOccupation[ dag ], Keys @ Select[ layers, # === If[ i > 0, i - 1, len + 1 + i ] & ] ] ],
       dags ],
-    Total ]
+    Total ] ]
 
 FindInfraSegment[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
