@@ -17,5 +17,5 @@ Options:
 
 | Option | Values |
 |---|---|
-| `"Volume"` | "Hausdorff" (default; \|s\| minus its boundary), "Counting", "Boundary" |
+| `"Measure"` | "FullCount" (default; \|s\|), "WithoutBoundary" (\|s\| minus its inner boundary), "HalfBoundary" (the boundary at weight one half), "Boundary" (the boundary itself) |
 | `Method` | "Combinatorial" (default), {"Alexandrov", "Radius" -> r} |

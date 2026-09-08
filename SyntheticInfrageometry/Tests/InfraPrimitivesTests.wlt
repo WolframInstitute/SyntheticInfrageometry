@@ -69,19 +69,21 @@ VerificationTest[
   TestID -> "point-layer-BallVolumes-accessor"
 ]
 
-(* the accessor respects BallVolumes (counting) == Accumulate[ShellAreas] *)
+(* the tube accessor: the pair form thickens the metric interval, and a set is its own core --
+   a one-vertex set gives the ball *)
 VerificationTest[
-  With[ { g = CycleGraph[ 10 ], p = InfraPoint[1] },
-    p[ "BallVolumes", g ] === Accumulate[ p[ "ShellAreas", g ] ] ],
-  True,
-  TestID -> "InfraPoint-BallVolumes-accumulates-ShellAreas"
+  With[ { g = GridGraph[ { 5, 5 } ], p = InfraPoint[13] },
+    { p[ "TubeVolumes", g, 25, 1 ] === TubeVolumes[ g, 13, 25, 1 ],
+      InfraSet[ { 13 } ][ "TubeVolumes", g ] === p[ "BallVolumes", g ] } ],
+  { True, True },
+  TestID -> "InfraPoint-TubeVolumes-accessor"
 ]
 
-(* multi-support point: one row per support vertex *)
+(* the interval accessor at slack 0 counts the metric interval *)
 VerificationTest[
-  Length @ InfraSet[ { 1, 5 } ][ "ShellAreas", PathGraph @ Range[ 7 ], { 0, 2 } ],
-  2,
-  TestID -> "InfraSet-ShellAreas-per-vertex"
+  InfraPoint[1][ "IntervalVolumes", PathGraph @ Range[ 7 ], 4, 0 ],
+  4,
+  TestID -> "InfraPoint-IntervalVolumes-accessor"
 ]
 
 (* dimension readout projects VolumeGrowthObservables["BallDimension"]: one numeric per support *)

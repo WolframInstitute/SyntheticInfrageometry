@@ -97,15 +97,22 @@ VerificationTest[
 (* Set-like: Count - Boundary == Interior (a partition of the vertex set). *)
 VerificationTest[
   With[ { g = GridGraph[ {5, 5} ], ball = FindInfraBall[ GridGraph[ {5, 5} ], 13, 2 ] },
-    InfraVolume[ g, ball, "Volume" -> "Counting" ] - InfraVolume[ g, ball, "Volume" -> "Boundary" ]
-      == InfraVolume[ g, ball, "Volume" -> "Hausdorff" ] ],
+    InfraVolume[ g, ball, "Measure" -> "FullCount" ] - InfraVolume[ g, ball, "Measure" -> "Boundary" ]
+      == InfraVolume[ g, ball, "Measure" -> "WithoutBoundary" ] ],
   True,
   TestID -> "InfraVolume-count-minus-boundary-equals-interior"
 ]
 
+(* HalfBoundary weights the boundary by one half: on a radius-2 ball of the grid, 13 - 8/2 = 9 *)
+VerificationTest[
+  InfraVolume[ GridGraph[ {5, 5} ], FindInfraBall[ GridGraph[ {5, 5} ], 13, 2 ], "Measure" -> "HalfBoundary" ],
+  9,
+  TestID -> "InfraVolume-half-boundary"
+]
+
 (* A thin geodesic line (top row of a grid) is 1-D in a 2-D graph: empty interior. *)
 VerificationTest[
-  InfraVolume[ GridGraph[ {4, 4} ], InfraLine[ {{1, 2, 3, 4}} ], "Volume" -> "Hausdorff" ],
+  InfraVolume[ GridGraph[ {4, 4} ], InfraLine[ {{1, 2, 3, 4}} ], "Measure" -> "WithoutBoundary" ],
   0,
   TestID -> "InfraVolume-thin-line-empty-interior"
 ]
@@ -116,10 +123,10 @@ VerificationTest[
   With[
     { g = GridGraph[ {4, 4} ],
       snake = Catenate @ Table[ With[ { row = Range[ 4 (i - 1) + 1, 4 i ] }, If[ OddQ[ i ], row, Reverse[ row ] ] ], { i, 4 } ] },
-    { InfraVolume[ g, InfraLine[ {snake} ], "Volume" -> "Hausdorff" ],
-      InfraVolume[ g, InfraSet[ snake ], "Volume" -> "Hausdorff" ],
-      InfraVolume[ g, InfraLine[ {snake} ], "Volume" -> "Counting" ]
-        === InfraVolume[ g, InfraSet[ snake ], "Volume" -> "Counting" ] } ],
+    { InfraVolume[ g, InfraLine[ {snake} ], "Measure" -> "WithoutBoundary" ],
+      InfraVolume[ g, InfraSet[ snake ], "Measure" -> "WithoutBoundary" ],
+      InfraVolume[ g, InfraLine[ {snake} ], "Measure" -> "FullCount" ]
+        === InfraVolume[ g, InfraSet[ snake ], "Measure" -> "FullCount" ] } ],
   { 2, 16, True },
   TestID -> "InfraVolume-line-vs-set-spanning-curve"
 ]
@@ -127,7 +134,7 @@ VerificationTest[
 (* The line graph is the union of the walks, NOT the induced subgraph: two parallel
    grid rows stay disconnected, so neither row gains interior from the other. *)
 VerificationTest[
-  InfraVolume[ GridGraph[ {4, 4} ], InfraLine[ {{1, 2, 3, 4}, {5, 6, 7, 8}} ], "Volume" -> "Hausdorff" ],
+  InfraVolume[ GridGraph[ {4, 4} ], InfraLine[ {{1, 2, 3, 4}, {5, 6, 7, 8}} ], "Measure" -> "WithoutBoundary" ],
   0,
   TestID -> "InfraVolume-line-union-not-induced"
 ]

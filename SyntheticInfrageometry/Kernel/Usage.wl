@@ -205,7 +205,7 @@ InfraSet::usage = "InfraSet[vs] wraps a vertex list as a set, coercing any Infra
 FindInfraEquidistantSet::usage = "FindInfraEquidistantSet[graph, {p1, ..., pn}] gives { v : d(p1, v) == ... == d(pn, v) }; a trailing {lo, hi} thickens each bisector to a slab.";
 InfraBoundary::usage = "InfraBoundary[graph, s] gives the boundary of a vertex set or Infra* object. Option Method (\"Combinatorial\", \"Alexandrov\").";
 InfraInterior::usage = "InfraInterior[graph, s] gives the interior of a vertex set or Infra* object. Option Method (\"Combinatorial\", \"Alexandrov\").";
-InfraVolume::usage = "InfraVolume[graph, s] gives the volume of a vertex set or Infra* object. Options \"Volume\" (\"Hausdorff\", \"Counting\", \"Boundary\"), Method.";
+InfraVolume::usage = "InfraVolume[graph, s] gives the volume of a vertex set or Infra* object. Options \"Measure\" (\"FullCount\", \"WithoutBoundary\", \"HalfBoundary\", \"Boundary\"), Method.";
 
 (* ===================== Coordinatization ===================== *)
 

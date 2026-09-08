@@ -35,7 +35,7 @@ InfraSet[ vs_List ][ "Weights" ]  := ConstantArray[ 1, Length @ vs ]
 InfraSet[ vs_List ][ "Length" ]   := Length[ vs ]
 
 InfraSet[ vs_List ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, vs, rest ]
-InfraSet[ vs_List ][ "ShellAreas", g_, rest___ ]             := ShellAreas[ g, vs, rest ]
+InfraSet[ vs_List ][ "TubeVolumes", g_, rest___ ]            := TubeVolumes[ g, vs, rest ]
 InfraSet[ vs_List ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients /@ BallVolumes[ g, vs, rest ]
 InfraSet[ vs_List ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, vs, rest ]
 InfraSet[ vs_List ][ "Dimension", g_, rest___ ]              := ( #[ "BallDimension" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
@@ -43,7 +43,7 @@ InfraSet[ vs_List ][ "ScalarCurvature", g_, rest___ ]        := ( #[ "BallScalar
 InfraSet[ vs_List ][ "CurvatureByRadius", g_, rest___ ]      := ( #[ "BallCurvatureByRadius" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
 
 InfraSet /: BallVolumes[ g_, s_InfraSet, rest___ ]             := BallVolumes[ g, s[ "Vertices" ], rest ]
-InfraSet /: ShellAreas[ g_, s_InfraSet, rest___ ]              := ShellAreas[ g, s[ "Vertices" ], rest ]
+InfraSet /: TubeVolumes[ g_, s_InfraSet, rest___ ]             := TubeVolumes[ g, s[ "Vertices" ], rest ]
 InfraSet /: VolumeGrowthObservables[ g_, s_InfraSet, rest___ ] := VolumeGrowthObservables[ g, s[ "Vertices" ], rest ]
 
 InfraSet[ vs_List ][ "OccupationCount" ] := infraVertexMultiset[ InfraSet[ vs ] ]
@@ -127,29 +127,33 @@ InfraInterior[ g_Graph, s_, OptionsPattern[] ] :=
 (* ===================== InfraVolume ===================== *)
 
 
-InfraVolume::badvolume = "Volume measure `1` is not supported by InfraVolume; use \"Hausdorff\", \"Counting\", or \"Boundary\".";
+InfraVolume::badmeasure = "Measure `1` is not supported by InfraVolume; use \"FullCount\", \"WithoutBoundary\", \"HalfBoundary\", or \"Boundary\".";
 
-Options[ InfraVolume ] = { "Volume" -> "Hausdorff", Method -> "Combinatorial" };
+(* the measures of Infrageometry's BallVolumes on an arbitrary set S with boundary dS = GraphBoundary[g, S]:
+   "FullCount" = |S|, "WithoutBoundary" = |S| - |dS|, "HalfBoundary" = |S| - |dS|/2, and "Boundary" = |dS| itself *)
+Options[ InfraVolume ] = { "Measure" -> "FullCount", Method -> "Combinatorial" };
 
 (* line-like objects realise the union of their walks as path graphs -- only their own consecutive edges, so distinct lines are not joined and a line never gains the chords of its induced subgraph.  A vertex is then interior iff every g-edge at it is a line edge, so a 1-D curve has nearly empty interior *)
 InfraVolume[ g_Graph, (InfraLine | InfraSegment | InfraWalk | InfraRay)[ walks_List ], opts : OptionsPattern[] ] :=
   With[
     { h = Graph[ Union @@ walks,
         DeleteDuplicates[ Sort /@ Catenate[ (UndirectedEdge @@@ Partition[ #, 2, 1 ] &) /@ walks ] ] ] },
-    Switch[ OptionValue[ "Volume" ],
-      "Counting",  VertexCount[ h ],
-      "Hausdorff", Length @ GraphInterior[ g, h ],
-      "Boundary",  Length @ GraphBoundary[ g, h ],
-      _, Message[ InfraVolume::badvolume, OptionValue[ "Volume" ] ]; $Failed
+    Switch[ OptionValue[ "Measure" ],
+      "FullCount",       VertexCount[ h ],
+      "WithoutBoundary", Length @ GraphInterior[ g, h ],
+      "HalfBoundary",    VertexCount[ h ] - Length[ GraphBoundary[ g, h ] ] / 2,
+      "Boundary",        Length @ GraphBoundary[ g, h ],
+      _, Message[ InfraVolume::badmeasure, OptionValue[ "Measure" ] ]; $Failed
     ]
   ]
 
 InfraVolume[ g_Graph, s_, opts : OptionsPattern[] ] :=
   With[ { vs = infraVertexSet @ If[ ListQ[ s ], InfraSet[ s ], s ] },
-    Switch[ OptionValue[ "Volume" ],
-      "Counting",  Length[ vs ],
-      "Hausdorff", Length[ InfraInterior[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
-      "Boundary",  Length[ InfraBoundary[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
-      _, Message[ InfraVolume::badvolume, OptionValue[ "Volume" ] ]; $Failed
+    Switch[ OptionValue[ "Measure" ],
+      "FullCount",       Length[ vs ],
+      "WithoutBoundary", Length[ InfraInterior[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
+      "HalfBoundary",    Length[ vs ] - Length[ InfraBoundary[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ] / 2,
+      "Boundary",        Length[ InfraBoundary[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
+      _, Message[ InfraVolume::badmeasure, OptionValue[ "Measure" ] ]; $Failed
     ]
   ]
