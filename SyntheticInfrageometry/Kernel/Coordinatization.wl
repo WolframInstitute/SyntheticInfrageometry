@@ -13,13 +13,13 @@ InfraRadarBasisQ[ args___ ] := ResolvingSetQ[ args ]
 
 (* ===================== RadarCoordinates ===================== *)
 
-(* the distance vector (d(v, b1), ..., d(v, bk)); a multiset anchor contributes Min | Mean | Max over its support *)
+(* the distance vector (d(v, b1), ..., d(v, bk)); every anchor is read by the anchor rule, so a set, a density, a walk graph or a bundle contributes Min | Mean | Max over its support *)
 
 
 Options[ RadarCoordinates ] = { "AnchorAggregation" -> Min }
 
-(* more specific than the crisp Infrageometry pattern b_List, so this is tried first *)
-RadarCoordinates[ g_Graph, b : { ___, _Association, ___ }, v : Except[ _Rule | _RuleDelayed | _Association ], opts : OptionsPattern[] ] :=
+(* more specific than the crisp Infrageometry pattern b_List, so this is tried first.  A basis of bare vertices stays with the crisp definition; one carrying a density or a walk graph is a shape basis and comes here *)
+RadarCoordinates[ g_Graph, b : { ___, _Association | _Graph, ___ }, v : Except[ _Rule | _RuleDelayed | _Association ], opts : OptionsPattern[] ] :=
   With[ { agg = OptionValue[ "AnchorAggregation" ] },
     infraAnchorDistance[ g, v, #, agg ] & /@ b
   ]
@@ -41,9 +41,9 @@ DownValues[ RadarCoordinates ] = SortBy[ DownValues[ RadarCoordinates ], FreeQ[ 
 Options[ OrthogonalCoordinates ] = { "SelectCoordinate" -> "Centered" };
 
 OrthogonalCoordinates[ g_Graph, c_, axes_List, v_, opts : OptionsPattern[] ] /;
-    MemberQ[ VertexList[ g ], v ] :=
+    pointQ[ g, v ] :=
   With[ {
-      centerVs  = Replace[ c, { fam_Association :> Keys @ fam, x_ :> { x } } ],
+      centerVs  = infraVertexSet[ g, c ],
       axisPaths = Replace[ #, w_Graph :> First @ walkRealisations @ w ] & /@ axes,
       sel       = OptionValue[ "SelectCoordinate" ]
     },
@@ -72,18 +72,18 @@ Options[ FindInfraOrthogonalFrame ] = {
 
 axisLengthPattern = All | _Integer | _UpTo | { _, _ };
 
-FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; pointQ[ g, c ] :=
   With[ { result = findOrthogonalFrameCore[ g, c, axisLength, 1, { opts } ] },
     If[ result =!= { }, wrapFrame @ First @ result, $Failed ]
   ]
 
-FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; pointQ[ g, c ] :=
   wrapFrame /@ findOrthogonalFrameCore[ g, c, axisLength, All, { opts } ]
 
-FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; pointQ[ g, c ] :=
   wrapFrame /@ Take[ findOrthogonalFrameCore[ g, c, axisLength, n, { opts } ], UpTo[ n ] ]
 
-FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], c ] :=
+FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; pointQ[ g, c ] :=
   With[ { result = findOrthogonalFrameCore[ g, c, axisLength, n, { opts } ] },
     If[ Length[ result ] >= n, wrapFrame /@ Take[ result, n ], $Failed ]
   ]
@@ -145,11 +145,10 @@ ResistanceCoordinates[ g_Graph, fam_Association, opts : OptionsPattern[] ] /; Su
 
 (* ===================== Helpers: anchor distance ===================== *)
 
-infraAnchorDistance[ g_, v_, fam_Association, agg_ ] :=
-  agg[ GraphDistance[ g, v, # ] & /@ Keys @ fam ]
+(* one row, not two: toDensity already sends a bare vertex to <| v -> 1 |>, on which every aggregation is the distance itself *)
 
-infraAnchorDistance[ g_, v_, u_, _ ] :=
-  GraphDistance[ g, v, u ]
+infraAnchorDistance[ g_Graph, v_, anchor_, agg_ ] :=
+  agg[ GraphDistance[ g, v, # ] & /@ Keys @ toDensity[ g, anchor ] ]
 
 
 (* ===================== Helpers: orthogonal coordinates ===================== *)
@@ -325,7 +324,7 @@ predicateSubOpts[ subOpts_List ] :=
   ]
 
 
-findOrthogonalFrameCore[ g_Graph, c_, axisLength_, count_, opts_List ] /; MemberQ[ VertexList[ g ], c ] :=
+findOrthogonalFrameCore[ g_Graph, c_, axisLength_, count_, opts_List ] /; pointQ[ g, c ] :=
   Module[ { minLength, maxDepth, localG },
     { minLength, maxDepth } = parseAxisLengthSpec[ axisLength ];
     (* Localize: every distance the search needs lies in B(c, 2 maxDepth). *)

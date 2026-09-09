@@ -828,4 +828,39 @@ VerificationTest[
 ]
 
 
+(* ===== Anchors on shapes: the anchor rule, not a per-head coercion ===== *)
+
+(* every anchor of RadarCoordinates is read through toDensity, so a set, a density
+   and a walk graph with the same support give the same distance -- the aggregation
+   runs over the support in each case *)
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    { RadarCoordinates[g, {<| 1 -> 1, 2 -> 1 |>, 9}, 5],
+      RadarCoordinates[g, {geodesicGraph @ {1, 2}, 9}, 5],
+      RadarCoordinates[g, {<| 1 -> 1, 2 -> 1 |>, 9}, 5, "AnchorAggregation" -> Max] }],
+  { {1, 2}, {1, 2}, {2, 2} },
+  TestID -> "RadarCoordinates-anchors-read-by-the-anchor-rule"
+]
+
+(* a bare vertex anchor is the unit mass, so every aggregation is the distance
+   itself and the shape rule agrees with the crisp one *)
+VerificationTest[
+  With[{g = GridGraph[{3, 3}]},
+    RadarCoordinates[g, {<| 1 -> 1 |>, 9}, 5] === RadarCoordinates[g, {1, 9}, 5]],
+  True,
+  TestID -> "RadarCoordinates-vertex-anchor-agrees-with-the-crisp-rule"
+]
+
+(* the centre of OrthogonalCoordinates is an anchor too: a set centre reads as its
+   support, where the wrapper-era coercion took only an Association *)
+VerificationTest[
+  With[{g = GridGraph[{3, 3}], axis = geodesicGraph @ {1, 2, 3}},
+    { OrthogonalCoordinates[g, 2, {axis}, 3],
+      OrthogonalCoordinates[g, {1, 2}, {axis}, 3],
+      OrthogonalCoordinates[g, <| 2 -> 1 |>, {axis}, 3] }],
+  { {1}, {2}, {1} },
+  TestID -> "OrthogonalCoordinates-centre-is-an-anchor"
+]
+
+
 EndTestSection[]

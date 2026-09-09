@@ -528,7 +528,7 @@ poolPositions[ _, paths_List, _, _, _, _ ] := Range @ Length @ paths
 (* agg = Total picks the max total occupation ("MostVisited"), agg = Min the max-min bottleneck, the widest continuous corridor ("Bottleneck") *)
 
 visitPoolPositions[ paths_List, cyclic_, agg_ ] :=
-  With[ { edgeSeqs = infraRepEdges[ None, If[ cyclic, "Cycles", "Paths" ], # ] & /@ paths },
+  With[ { edgeSeqs = If[ cyclic, cycleEdges, walkEdges ] /@ paths },
     { vCounts = Counts @ Catenate @ paths,
       eCounts = Counts @ Catenate @ edgeSeqs },
     { scores = MapThread[

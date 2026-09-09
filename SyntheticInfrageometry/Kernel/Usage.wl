@@ -173,10 +173,9 @@ InfraDeformationSize::usage = "InfraDeformationSize[ref, walk] gives the number 
 
 (* ===================== Homotopy ===================== *)
 
-InfraHomotopy::usage = "InfraHomotopy[{chain1, ...}] is a bundle of homotopy chains, each a sequence of walks related by elementary moves.";
 FindInfraHomotopyRepresentative::usage = "FindInfraHomotopyRepresentative[graph, walk] gives the length-shortest walks in the homotopy class of walk -- an open walk with its endpoints fixed, a cycle graph a loop with its base point fixed, \"FreeHomotopy\" -> True freeing either. Options Method, \"FreeHomotopy\", \"NullHomotopicCycles\", \"MaxLength\", \"MaxMoves\".";
 FindInfraHomotopyRepresentativeHomotopy::usage = "FindInfraHomotopyRepresentativeHomotopy[graph, obj] gives the chain of elementary moves reducing obj to a shortest representative. Options as FindInfraHomotopyRepresentative.";
-FindInfraHomotopy::usage = "FindInfraHomotopy[graph, a, b] gives a chain of elementary moves from a to b; both open walks or both closed. Options as FindInfraHomotopyRepresentative.";
+FindInfraHomotopy::usage = "FindInfraHomotopy[graph, a, b] gives one chain of elementary moves from a to b as the List of walk graphs it passes through, { } when there is none; a bounded count or All gives a List of chains. Both walks must be open or both closed. Options as FindInfraHomotopyRepresentative.";
 HomotopicQ::usage = "HomotopicQ[graph, a, b] tests whether a and b lie in the same homotopy class.";
 NullHomotopicQ::usage = "NullHomotopicQ[graph, cycle] tests whether a closed walk -- a vertex list read cyclically, or a cycle graph -- is null-homotopic.";
 HomotopyMoveType::usage = "HomotopyMoveType[walk1, walk2] classifies an elementary move as \"Contract\", \"Extend\", or \"Lateral\".";
@@ -193,7 +192,7 @@ SegmentHullQ::usage = "SegmentHullQ[graph, S] tests whether S is geodesically co
 
 (* ===================== Visit measure ===================== *)
 
-InfraMeasure::usage = "InfraMeasure[obj] gives the occupation measure <|v -> appearances|> of an Infra* bundle; InfraMeasure[graph, obj] also unlocks the edge measure. Options \"On\", Method.";
+InfraDensity::usage = "InfraDensity[graph, x] gives the marginal of any shape to the vertex set, <|v -> m|>, with respect to the counting measure: a vertex gives <|v -> 1|>, a vertex list its Counts, a density itself, a walk graph or a bundle its vertex occupation. It is the one coercion in the API -- Keys demotes it back to the set, Counts promotes a list to one.";
 
 (* ===================== Sets ===================== *)
 
@@ -254,8 +253,8 @@ InfraScene::usage = "InfraScene[objects, hypotheses] builds a scene descriptor f
 FindInfraScene::usage = "FindInfraScene[scene, graph] solves a scene on a graph and gives the resulting InfraInstance bindings. Option \"PruneProbability\".";
 InfraInstance::usage = "InfraInstance[bindings] wraps a solved binding association; InfraInstance[bindings, sym] reads one object out of it.";
 InfraGeometricStep::usage = "InfraGeometricStep[{hyp1, ...}] groups hypotheses into one construction step of a scene; a second argument labels it.";
-InfraIntersection::usage = "InfraIntersection[obj1, obj2, ...] gives the vertex-set intersection of Infra* objects as the multiset <|v -> 1, ...|>.";
-InfraUnion::usage = "InfraUnion[obj1, obj2, ...] gives the vertex-set union of Infra* objects as the multiset <|v -> 1, ...|>.";
+InfraIntersection::usage = "InfraIntersection[graph, obj1, obj2, ...] gives the vertex-set intersection of shapes on graph -- vertex lists, densities, walk graphs, bundles -- as a sorted List. Inside InfraScene it is the token InfraIntersection[c1, c2], the engine supplying the graph.";
+InfraUnion::usage = "InfraUnion[graph, obj1, obj2, ...] gives the vertex-set union of shapes on graph as a sorted List. Inside InfraScene it is the token InfraUnion[c1, c2], the engine supplying the graph.";
 InfraDistance::usage = "InfraDistance[graph, p, q] gives the graph distance between two Infra* objects, aggregated over their vertex sets. Option \"Aggregation\".";
 InfraPlaneQ::usage = "InfraPlaneQ[graph, h, p1, p2] tests whether h lies in the bisector slab of p1, p2 and separates them; a trailing window widens the slab. The graph-free InfraPlaneQ[h, p1, p2] is the inert InfraScene assertion.";
 InfraIntersectQ::usage = "InfraIntersectQ[s1, s2] asserts inside an InfraScene that two sets intersect; it stays inert until bindings resolve, which is why it exists rather than the built-in IntersectingQ.";

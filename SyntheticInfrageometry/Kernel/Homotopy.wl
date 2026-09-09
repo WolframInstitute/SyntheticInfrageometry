@@ -12,19 +12,11 @@ PackageScope[resolveFaces]
 PackageScope[walkModeFor]
 
 
-(* ===================== InfraHomotopy wrapper ===================== *)
+(* ===================== The chain shape ===================== *)
 
+(* a homotopy is a CHAIN of walks, and a walk is a Graph, so a chain is { w1, ..., wm } -- a List of directed path graphs for an open homotopy, of directed cycles for a closed one.  HighlightGraph takes it directly, Length is the number of moves plus one, First and Last are its ends.  The InfraHomotopy head is gone with the other payload wrappers: ["Realizations"] is the List a bounded count or All already returns, ["Mass"] is Length, and ["Weights"] was always all-ones *)
 
-InfraHomotopy[ reps_List ] /; AnyTrue[ reps, MatchQ[ InfraHomotopy[ _List ] ] ] :=
-  InfraHomotopy[ Flatten[ reps /. InfraHomotopy[ xs_List ] :> xs, 1 ] ]
-
-InfraHomotopy[ inner_InfraHomotopy ]                    := inner
-InfraHomotopy[ reps_List ][ "Realizations" ]   := reps
-InfraHomotopy[ reps_List ][ "First" ]          := First @ reps
-InfraHomotopy[ reps_List ][ "Weights" ]                 := ConstantArray[ 1, Length @ reps ]
-InfraHomotopy[ reps_List, ws_List ][ "Weights" ]        := ws
-InfraHomotopy[ reps_List ][ "Mass" ]                    := Length @ reps
-InfraHomotopy[ reps_List, ws_List ][ "Mass" ]           := Total @ ws
+chainShape[ closedQ_ ][ chain_List ] := walkShape[ closedQ ] /@ chain
 
 
 (* ===================== Shared options ===================== *)
@@ -78,14 +70,13 @@ FindInfraHomotopyRepresentative[ graph_Graph, obj_,
 Options[ FindInfraHomotopyRepresentativeHomotopy ] = $infraHomotopyOptions;
 
 FindInfraHomotopyRepresentativeHomotopy[ graph_Graph, obj_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : Automatic, opts : OptionsPattern[] ] :=
   With[ { closedQ = closedWalkArgQ @ obj,
           freeHom = freeWalkArgQ[ obj, OptionValue[ FindInfraHomotopyRepresentativeHomotopy, { opts }, "FreeHomotopy" ] ] },
-    Replace[ spreadFind[ Identity, count,
-        walk |-> With[ { parent = First @ runWalkBFS[ graph, walk, closedQ, freeHom, ( False & ), opts ] },
-          reconstructChain[ parent, # ] & /@ minimalReached[ parent ] ],
-        obj ],
-      chains_List :> InfraHomotopy[ chains ] ] ]
+    spreadFind[ chainShape @ closedQ, count,
+      walk |-> With[ { parent = First @ runWalkBFS[ graph, walk, closedQ, freeHom, ( False & ), opts ] },
+        reconstructChain[ parent, # ] & /@ minimalReached[ parent ] ],
+      obj ] ]
 
 
 (* ===================== FindInfraHomotopy ===================== *)
@@ -97,15 +88,14 @@ FindInfraHomotopy::badmethod = "Method `1` is not supported by FindInfraHomotopy
 Options[ FindInfraHomotopy ] = $infraHomotopyOptions;
 
 FindInfraHomotopy[ graph_Graph, a_, b_,
-    count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
+    count : ( _Integer | UpTo[ _Integer ] | All ) : Automatic, opts : OptionsPattern[] ] :=
   With[ { closedQ = closedWalkArgQ @ a,
           freeHom = freeWalkArgQ[ a, OptionValue[ FindInfraHomotopy, { opts }, "FreeHomotopy" ] ] ||
                     freeWalkArgQ[ b, False ] },
     If[ closedQ =!= closedWalkArgQ @ b,
       Message[ FindInfraHomotopy::mismatch, openOrClosed @ closedQ, openOrClosed @ ! closedQ ]; $Failed,
-      Replace[ spreadFind[ Identity, count,
-          homotopyCore[ graph, ##, closedQ, freeHom, opts ] &, a, b ],
-        chains_List :> InfraHomotopy[ chains ] ] ] ]
+      spreadFind[ chainShape @ closedQ, count,
+        homotopyCore[ graph, ##, closedQ, freeHom, opts ] &, a, b ] ] ]
 
 openOrClosed[ True ]  = "closed";
 openOrClosed[ False ] = "open";
@@ -213,12 +203,16 @@ HomotopyMoveType[ walk1_List, walk2_List ] :=
     True,                              "Lateral"
   ]
 
-HomotopyMoveTypes[ chain_List ] /; AllTrue[ chain, MatchQ[ _List ] ] :=
-  MapThread[ HomotopyMoveType, { Most @ chain, Rest @ chain } ]
+(* a walk graph is measured through its sequence -- the cyclic core when it is closed, which shifts both lengths by one and so leaves the comparison alone *)
+HomotopyMoveType[ w1_Graph, w2_Graph ] :=
+  HomotopyMoveType[ walkSequence @ w1, walkSequence @ w2 ]
 
-HomotopyMoveTypes[ InfraHomotopy[ { chain_List } ] ] := HomotopyMoveTypes[ chain ]
-
-HomotopyMoveTypes[ InfraHomotopy[ reps_List ] ] := HomotopyMoveTypes /@ reps
+(* one chain -- of walk graphs, or of bare vertex lists -- gives its move sequence; a List of chains gives one sequence each.  The rows are ordered rather than left to DownValue sorting: a List of chains is itself a List of Lists, so it satisfies the vertex-list row too *)
+HomotopyMoveTypes[ arg_List ] := Which[
+  MatchQ[ arg, { __Graph } ],           MapThread[ HomotopyMoveType, { Most @ arg, Rest @ arg } ],
+  MatchQ[ arg, { { __Graph } .. } ],    HomotopyMoveTypes /@ arg,
+  AllTrue[ arg, MatchQ[ _List ] ],      MapThread[ HomotopyMoveType, { Most @ arg, Rest @ arg } ],
+  True,                                 $Failed ]
 
 
 (* ===================== Walk-space search engines ===================== *)

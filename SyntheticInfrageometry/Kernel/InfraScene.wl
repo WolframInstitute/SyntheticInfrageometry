@@ -1,6 +1,5 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
-PackageScope[toVertexSet]
 PackageScope[sceneAssertionRules]
 PackageScope[resolveExpression]
 PackageScope[extractBranches]
@@ -12,9 +11,6 @@ PackageScope[evaluateConstruction]
 
 
 (* ===================== Helpers ===================== *)
-
-toVertexSet[ v_ ] /; AtomQ[ v ] := { v }
-toVertexSet[ vs_List ] := vs
 
 (* every scene assertion, as (inert user-facing form :> the named predicate the graph is injected into); the guard below decides admissibility by this table, so no head and no arity is accepted without a rule *)
 sceneAssertionRules[ graph_ ] :=
@@ -87,15 +83,15 @@ InfraDistance[ g_Graph, p_, q_, OptionsPattern[] ] :=
 
 (* ===================== InfraIntersection / InfraUnion ===================== *)
 
-(* the vertex set of an intersection or union of shapes -- vertex lists, densities, walk graphs, bundles -- as a sorted List.  Guarded on the shape: InfraCircle[c, r] is a scene constructor whose vertex set is unknown until dispatched, and a symbol stays inert so scene hypotheses are not perturbed *)
+(* the vertex set of an intersection or union of shapes -- vertex lists, densities, walk graphs, bundles -- as a sorted List.  Graph-first, like every other public function here, because the anchor rule needs the substrate: without it a set of list-labelled vertices and a family of sets are the same expression, and the graphless reading returned the coordinates.  A symbol or an undispatched construction stays inert, so scene hypotheses are not perturbed *)
 
 $infraRealisationPattern = _List | _Association | _Graph;
 
-InfraIntersection[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
-  Intersection @@ ( infraVertexSet /@ { args } )
+InfraIntersection[ graph_Graph, args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
+  Intersection @@ ( infraVertexSet[ graph, # ] & /@ { args } )
 
-InfraUnion[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
-  Union @@ ( infraVertexSet /@ { args } )
+InfraUnion[ graph_Graph, args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
+  Union @@ ( infraVertexSet[ graph, # ] & /@ { args } )
 
 
 (* ===================== Scene ===================== *)
@@ -212,8 +208,8 @@ evaluateConstruction[ graph_Graph, sym_, InfraIntersection[ objs__ ], bindings_A
       obj |-> With[ { resolved = resolveExpression[ obj, bindings, graph ] },
         { realisations = dispatchConstruction[ graph, resolved ] },
         If[ ListQ[ realisations ],
-          Union @@ ( toVertexSet /@ realisations ),
-          toVertexSet[ resolved ] ] ],
+          Union @@ ( infraVertexSet[ graph, # ] & /@ realisations ),
+          infraVertexSet[ graph, resolved ] ] ],
       { objs } ]
 
 evaluateConstruction[ graph_Graph, sym_, rhs_, bindings_Association ] :=

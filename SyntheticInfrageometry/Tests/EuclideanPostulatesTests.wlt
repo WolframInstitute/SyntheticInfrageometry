@@ -6,6 +6,7 @@ geodesicCycleGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`geodes
 walkSequence       = WolframInstitute`SyntheticInfrageometry`PackageScope`walkSequence;
 infraSpread        = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
 infraNumReps       = WolframInstitute`SyntheticInfrageometry`PackageScope`infraNumReps;
+infraEdgeMultiset  = WolframInstitute`SyntheticInfrageometry`PackageScope`infraEdgeMultiset;
 toDensity          = WolframInstitute`SyntheticInfrageometry`PackageScope`toDensity;
 closedWalkGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`closedWalkGraph;
 walkSeq[ w_Graph ] := Last /@ VertexList[ w ]
@@ -364,13 +365,14 @@ VerificationTest[
   TestID -> "FindInfraSegment-default-is-geodesic-dag"
 ]
 
-(* the DAG-form occupation measure equals the measure of the enumerated family *)
+(* the DAG-form density equals the density of the enumerated family *)
 VerificationTest[
-  With[{s = FindInfraSegment[GridGraph[{3, 3}], 1, 9, All]},
-    KeySort[InfraMeasure[s]] === KeySort[InfraMeasure[geodesicGraph /@ infraSpread @ s]]
+  With[{g = GridGraph[{3, 3}]},
+    {s = FindInfraSegment[g, 1, 9, All]},
+    InfraDensity[g, s] === InfraDensity[g, geodesicGraph /@ infraSpread @ s]
   ],
   True,
-  TestID -> "FindInfraSegment-dag-measure-matches-enumeration"
+  TestID -> "FindInfraSegment-dag-density-matches-enumeration"
 ]
 
 (* the DAG stands for the whole family, and a bounded count is a prefix of it *)
@@ -1139,11 +1141,12 @@ VerificationTest[
    dynamic programming and agree with the enumerated ones. *)
 
 VerificationTest[
-  With[{pool = FindInfraCircle[GridGraph[{11, 11}], 61, {2, 4}, All]},
+  With[{g = GridGraph[{11, 11}]},
+    {pool = FindInfraCircle[g, 61, {2, 4}, All]},
     {enumerated = geodesicCycleGraph /@ infraSpread @ pool},
     infraNumReps @ pool === Length[infraSpread @ pool] &&
-    KeySort[InfraMeasure[pool]] === KeySort[InfraMeasure[enumerated]] &&
-    KeySort[InfraMeasure[pool, "On" -> "Edges"]] === KeySort[InfraMeasure[enumerated, "On" -> "Edges"]]
+    InfraDensity[g, pool] === InfraDensity[g, enumerated] &&
+    KeySort[infraEdgeMultiset[g, pool]] === KeySort[infraEdgeMultiset[g, enumerated]]
   ],
   True,
   TestID -> "FindInfraCircle-pool-marginals-agree-with-enumeration"

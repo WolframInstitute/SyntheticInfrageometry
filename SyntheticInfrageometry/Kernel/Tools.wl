@@ -29,9 +29,10 @@ PackageScope[vertexSet]
 PackageScope[infraVertexSet]
 PackageScope[infraVertexMultiset]
 PackageScope[infraEdgeMultiset]
-PackageScope[infraRepVerts]
-PackageScope[infraRepEdges]
 PackageScope[infraNumReps]
+PackageScope[walkEdges]
+PackageScope[cycleEdges]
+PackageScope[setEdges]
 PackageScope[pointQ]
 PackageScope[multisetQ]
 PackageScope[walkQ]
@@ -498,7 +499,7 @@ hullVertices[ s_ ] := infraVertexSet[ s ]
 
 (* ===================== Occupation of shapes ===================== *)
 
-(* the raw occupation count c(v) = total appearances across realisations, the association InfraMeasure normalises and InfraEqualQ compares.  For a density the multiset IS the object, for every other shape a lossy projection; a substrate DAG contributes its whole family's occupation by the Brandes DP, exactly as the enumerated family would *)
+(* the raw occupation count c(v) = total appearances across realisations, the association InfraDensity publishes and InfraEqualQ compares.  For a density the multiset IS the object, for every other shape a lossy projection; a substrate DAG contributes its whole family's occupation by the Brandes DP, exactly as the enumerated family would *)
 
 infraVertexMultiset[ fam_Association ]  := fam
 infraVertexMultiset[ w_Graph ] := Which[
@@ -515,13 +516,13 @@ infraVertexMultiset[ vs_List ]           := Counts @ vs
 
 infraEdgeMultiset[ _, _Association ] := <||>
 infraEdgeMultiset[ g_, w_Graph ] := Which[
-  closedWalkQ @ w,      Counts @ infraRepEdges[ g, "Cycles", walkSequence @ w ],
-  positionSpelledQ @ w, Merge[ Counts[ infraRepEdges[ g, "Paths", # ] ] & /@ walkRealisations @ w, Total ],
+  closedWalkQ @ w,      Counts @ cycleEdges @ walkSequence @ w,
+  positionSpelledQ @ w, Merge[ Counts[ walkEdges @ # ] & /@ walkRealisations @ w, Total ],
   True,                 KeyMap[ Sort[ List @@ # ] &, GeodesicEdgeOccupation[ w ] ] ]
 infraEdgeMultiset[ g_, ws : { __Graph } ]  := Merge[ infraEdgeMultiset[ g, # ] & /@ ws, Total ]
 infraEdgeMultiset[ _, { } ]                := <||>
-infraEdgeMultiset[ g_, sets : { __List } ] := Merge[ Counts[ infraRepEdges[ g, "Sets", # ] ] & /@ sets, Total ]
-infraEdgeMultiset[ g_, vs_List ]           := Counts @ infraRepEdges[ g, "Sets", vs ]
+infraEdgeMultiset[ g_, sets : { __List } ] := Merge[ Counts[ setEdges[ g, # ] ] & /@ sets, Total ]
+infraEdgeMultiset[ g_, vs_List ]           := Counts @ setEdges[ g, vs ]
 
 
 (* N = the number of realisations the marginal was summed over: a density's largest mass, a walk's 1, a DAG's geodesic count, a list's sum over its members.  A measure normalises by its HEAVIEST mass, not its total: the channel encodes RELATIVE mass within the object, so the modal vertex draws full and lighter ones fade *)
@@ -554,50 +555,23 @@ toDensity[ graph_Graph, x_ ] := Which[
   True,                                                 <| x -> 1 |> ]
 
 
-(* ===================== Visit measure ===================== *)
+(* ===================== InfraDensity ===================== *)
 
-(* c(v) = total appearances across realisations, normalised either as "Occupation" m(v) = c(v) / N -- the mean occupation per realisation, the opacity InfraSceneHighlight draws -- or as "Probability" p(v) = c(v) / Total[c].  A lossy view of the bundle: order and co-occurrence are discarded *)
+(* the marginal of any shape to the vertex set, <| v -> m |>, with respect to the counting measure: the anchor rule made public, and the ONE coercion in the API.  Counts promotes a List to a density, Keys demotes it back to the set, and Merge / KeyMap / Total / KeySelect are the rest of its algebra -- so no normalisation belongs here.  Vertex-only: the renderer computes its edge weights internally, off infraEdgeMultiset *)
 
-InfraMeasure::badmethod = "Method `1` is not one of \"Occupation\", \"Probability\".";
-
-Options[ InfraMeasure ] = { "On" -> "Vertices", Method -> "Occupation" };
-
-InfraMeasure[ g_Graph, obj_, opts:OptionsPattern[] ] :=
-  visitMeasure[ g, obj, OptionValue[ "On" ], OptionValue[ Method ] ]
-InfraMeasure[ obj_, opts:OptionsPattern[] ] :=
-  visitMeasure[ None, obj, OptionValue[ "On" ], OptionValue[ Method ] ]
-
-visitMeasure[ g_, obj_, on_, method_ ] :=
-  With[ { vm = infraVertexMultiset[ obj ],
-          em = If[ on === "Vertices", <||>,
-                   KeyMap[ UndirectedEdge @@ # &, infraEdgeMultiset[ g, obj ] ] ] },
-    Switch[ on,
-      "Vertices", normalizeMeasure[ method, vm, obj ],
-      "Edges",    normalizeMeasure[ method, em, obj ],
-      "Both",     <| "Vertices" -> normalizeMeasure[ method, vm, obj ],
-                     "Edges"    -> normalizeMeasure[ method, em, obj ] |> ] ]
-
-normalizeMeasure[ method_, counts_, obj_ ] := Switch[ method,
-  "Occupation",  counts / infraNumReps[ obj ],
-  "Probability", If[ Length @ counts === 0, counts, counts / Total[ counts ] ],
-  _,             Message[ InfraMeasure::badmethod, method ]; counts ]
+InfraDensity[ graph_Graph, x_ ] := toDensity[ graph, x ]
 
 
-(* the per-type vertex / edge readers shared with InfraSceneHighlight: a point realisation is a bare vertex (wrapped to a singleton), path / cycle / set realisations are vertex lists; edges are sorted lists {a, b}, which InfraMeasure remaps to UndirectedEdge *)
+(* the edges of one realisation: a vertex sequence read as a walk, as a closed walk, or as a set with its induced edges.  Keyed by sorted pair {a, b}, which the renderer remaps to UndirectedEdge *)
 
-infraRepVerts[ "Points", rep_ ] := { rep }
-infraRepVerts[ _, rep_ ]        := rep
+walkEdges[ seq_List ] :=
+  If[ Length @ seq >= 2, Sort /@ Partition[ seq, 2, 1 ], { } ]
 
-infraRepEdges[ _, "Points", _ ]   := { }
-infraRepEdges[ _, "PointSet", _ ] := { }
-infraRepEdges[ _, "Paths", rep_ ] :=
-  If[ Length @ rep >= 2, Sort /@ Partition[ rep, 2, 1 ], { } ]
-infraRepEdges[ _, "Cycles", rep_ ] :=
-  With[ { closed = If[ Length @ rep >= 2 && First @ rep === Last @ rep, rep, Append[ rep, First @ rep ] ] },
-    If[ Length @ closed >= 2, Sort /@ Partition[ closed, 2, 1 ], { } ] ]
-infraRepEdges[ None, "Sets", rep_ ] := { }
-infraRepEdges[ g_, "Sets", rep_ ] :=
-  Sort /@ ( List @@@ EdgeList @ Subgraph[ g, rep ] )
+cycleEdges[ seq_List ] :=
+  walkEdges @ If[ Length @ seq >= 2 && First @ seq === Last @ seq, seq, Append[ seq, First @ seq ] ]
+
+setEdges[ None, _ ]           := { }
+setEdges[ g_Graph, vs_List ]  := Sort /@ ( List @@@ EdgeList @ Subgraph[ g, vs ] )
 
 
 (* the vertex set of a line-like shape: a walk graph, a bundle, or a bare vertex sequence *)

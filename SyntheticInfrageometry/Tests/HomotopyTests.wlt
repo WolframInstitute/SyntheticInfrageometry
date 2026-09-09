@@ -7,13 +7,20 @@ infraSpread        = WolframInstitute`SyntheticInfrageometry`PackageScope`infraS
 walkSeq[ w_Graph ] := Last /@ VertexList[ w ]
 walkSeqs[ w_Graph ] := { walkSeq @ w }
 walkSeqs[ ws_List ] := walkSeq /@ ws
+walkSequence = WolframInstitute`SyntheticInfrageometry`PackageScope`walkSequence;
+(* a chain is a List of walk graphs; read it as the sequences it passes through.
+   walkSequence, not walkSeq: a closed chain's members are cycles on position pairs *)
+chainSeqs[ chain_List ] := walkSequence /@ chain
 
-(* ===== Wrapper auto-flatten ===== *)
+(* ===== The chain shape: a List of walk graphs, no head ===== *)
 
+(* the guard-rail on the homotopy layer: a chain is a legal HighlightGraph argument,
+   which the InfraHomotopy wrapper never was *)
 VerificationTest[
-  InfraHomotopy[{InfraHomotopy[{{{1, 2}, {1, 3, 2}}}], InfraHomotopy[{{{1}, {1, 2, 1}}}]}],
-  InfraHomotopy[{{{1, 2}, {1, 3, 2}}, {{1}, {1, 2, 1}}}],
-  TestID -> "InfraHomotopy-auto-flatten"
+  With[{chain = FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}]},
+    {MatchQ[chain, {__Graph}], Head @ HighlightGraph[CompleteGraph[3], chain]}],
+  {True, Graph},
+  TestID -> "Homotopy-chain-is-a-list-of-walk-graphs"
 ]
 
 (* ===== Tree case: every two paths with same endpoints are homotopic ===== *)
@@ -53,10 +60,12 @@ VerificationTest[
   TestID -> "Triangle-move-blocked-without-cycles"
 ]
 
+(* count-less is ONE chain: the triangle contracts in a single move, so the chain
+   has two walks and one move *)
 VerificationTest[
-  Length @ First @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}],
-  1,
-  TestID -> "Triangle-chain-singleton-wrapper"
+  chainSeqs @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}],
+  {{1, 2, 3}, {1, 3}},
+  TestID -> "Triangle-chain-count-less-is-one-chain"
 ]
 
 (* ===== Backtrack reduction ===== *)
@@ -145,7 +154,7 @@ VerificationTest[
 VerificationTest[
   Module[{grid23 = GridGraph[{2, 3}], paths},
     paths = walkGraph /@ infraSpread @ FindInfraSegment[grid23, 1, 6, All];
-    Length @ FindInfraHomotopy[grid23, paths, paths, All, "NullHomotopicCycles" -> {3, 4}]["Realizations"]
+    Length @ FindInfraHomotopy[grid23, paths, paths, All, "NullHomotopicCycles" -> {3, 4}]
   ],
   9,
   TestID -> "FindInfraHomotopy-cartesian-3x3-pairs"
@@ -160,24 +169,26 @@ VerificationTest[
   TestID -> "HomotopicQ-multi-AllTrue-conjunction"
 ]
 
-(* ===== Wrapper shape: Find* returns one InfraHomotopy carrying all chains ===== *)
+(* ===== The count contract on chains ===== *)
 
+(* count-less one chain, All the List of chains -- the same contract every other
+   Find* obeys since T5 *)
 VerificationTest[
-  MatchQ[
-    FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}],
-    InfraHomotopy[{ _List }]
-  ],
-  True,
-  TestID -> "Find-returns-list-of-unary-wrappers"
+  With[{args = Sequence[CompleteGraph[3], {1, 2, 3}, {1, 3}]},
+    {MatchQ[FindInfraHomotopy[args, "NullHomotopicCycles" -> {3}], {__Graph}],
+     MatchQ[FindInfraHomotopy[args, All, "NullHomotopicCycles" -> {3}], {{__Graph} ..}],
+     FindInfraHomotopy[CycleGraph[4], {1, 2, 3}, {1, 4, 3}, "NullHomotopicCycles" -> {}]}],
+  {True, True, {}},
+  TestID -> "Homotopy-count-contract"
 ]
 
 (* ===== Null-homotopy via the polymorphic FindInfraHomotopy: loop to constant loop ===== *)
 
 VerificationTest[
-  Length @ FindInfraHomotopy[CompleteGraph[3],
+  chainSeqs @ FindInfraHomotopy[CompleteGraph[3],
     closedWalkGraph @ {1, 2, 3, 1}, closedWalkGraph @ {1},
-    "NullHomotopicCycles" -> {3}]["Realizations"],
-  1,
+    "NullHomotopicCycles" -> {3}],
+  {{1, 2, 3}, {1}},
   TestID -> "Null-homotopy-triangle-loop"
 ]
 
@@ -244,13 +255,13 @@ VerificationTest[
 (* ===== FindInfraHomotopyRepresentativeHomotopy ===== *)
 
 VerificationTest[
-  FindInfraHomotopyRepresentativeHomotopy[CompleteGraph[3], {1, 2, 3}],
-  InfraHomotopy[{{{1, 2, 3}, {1, 3}}}],
+  chainSeqs @ FindInfraHomotopyRepresentativeHomotopy[CompleteGraph[3], {1, 2, 3}],
+  {{1, 2, 3}, {1, 3}},
   TestID -> "RepresentativeHomotopy-K3-triangle-chain"
 ]
 
 VerificationTest[
-  With[{chain = First @ First @ FindInfraHomotopyRepresentativeHomotopy[PathGraph[Range[5]], walkGraph @ {1, 2, 3, 2, 3}]},
+  With[{chain = chainSeqs @ FindInfraHomotopyRepresentativeHomotopy[PathGraph[Range[5]], walkGraph @ {1, 2, 3, 2, 3}]},
     {First[chain], Last[chain]}],
   {{1, 2, 3, 2, 3}, {1, 2, 3}},
   TestID -> "RepresentativeHomotopy-spur-endpoints"
@@ -259,13 +270,13 @@ VerificationTest[
 (* ===== FindInfraHomotopy Method dispatch ===== *)
 
 VerificationTest[
-  Length @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, 1, Method -> "Exhaustive", "NullHomotopicCycles" -> {3}]["Realizations"],
+  Length @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, 1, Method -> "Exhaustive", "NullHomotopicCycles" -> {3}],
   1,
   TestID -> "FindInfraHomotopy-Exhaustive-triangle"
 ]
 
 VerificationTest[
-  Length @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, 1, Method -> "Greedy", "NullHomotopicCycles" -> {3}]["Realizations"],
+  Length @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, 1, Method -> "Greedy", "NullHomotopicCycles" -> {3}],
   1,
   TestID -> "FindInfraHomotopy-Greedy-triangle"
 ]
@@ -297,9 +308,18 @@ VerificationTest[
 ]
 
 VerificationTest[
-  HomotopyMoveTypes[FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}]["Realizations"][[1]]],
+  HomotopyMoveTypes @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}],
   {"Contract"},
   TestID -> "HomotopyMoveTypes-from-FindInfraHomotopy"
+]
+
+(* a List of chains gives one move sequence each, and a bare vertex-list chain is
+   still read -- a walk written as a vertex list is a walk *)
+VerificationTest[
+  {HomotopyMoveTypes @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, All, "NullHomotopicCycles" -> {3}],
+   HomotopyMoveTypes[{{1, 3}, {1, 2, 3}}]},
+  {{{"Contract"}}, {"Extend"}},
+  TestID -> "HomotopyMoveTypes-chains-and-vertex-lists"
 ]
 
 (* ===================== Free loop homotopy: a cycle graph under "FreeHomotopy" ===================== *)

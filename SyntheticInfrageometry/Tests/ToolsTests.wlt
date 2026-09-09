@@ -9,6 +9,10 @@ walkQ               = WolframInstitute`SyntheticInfrageometry`PackageScope`walkQ
 geodesicGraph       = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
 infraSpread         = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
 infraVertexMultiset = WolframInstitute`SyntheticInfrageometry`PackageScope`infraVertexMultiset;
+infraEdgeMultiset   = WolframInstitute`SyntheticInfrageometry`PackageScope`infraEdgeMultiset;
+closedWalkGraph     = WolframInstitute`SyntheticInfrageometry`PackageScope`closedWalkGraph;
+
+g33 = GridGraph[ { 3, 3 } ];
 
 (* The distance metrics, centrality helpers, separating-cycle predicates, and
    path-selection routines in Tools.wl are now package-scope (internal). They
@@ -21,85 +25,91 @@ VerificationTest[
   TestID -> "Tools-placeholder"
 ]
 
-(* ===================== InfraMeasure ===================== *)
+(* ===================== InfraDensity ===================== *)
 
-(* InfraMeasure reads every shape: a density, a set, a family of sets, a walk graph
-   and a bundle of them.  A family of two sets: every value is a frequency in (0, 1] *)
+(* InfraDensity is the marginal of any shape to the vertex set with respect to the
+   counting measure -- the anchor rule made public.  Raw masses, not a normalisation:
+   Total, Merge, KeyMap and KeySelect are the density's own algebra, and dividing by
+   Total is the caller's one-liner.  A family of two sets: the shared vertices carry 2 *)
 VerificationTest[
-  AllTrue[ Values @ InfraMeasure[ { { 1, 2, 3 }, { 2, 3, 4 } } ], 0 < # <= 1 & ],
-  True,
-  TestID -> "InfraMeasure-set-values-in-unit-interval"
+  InfraDensity[ g33, { { 1, 2, 3 }, { 2, 3, 4 } } ],
+  <| 1 -> 1, 2 -> 2, 3 -> 2, 4 -> 1 |>,
+  TestID -> "InfraDensity-family-of-sets-sums-multiplicities"
 ]
 
-(* the two vertices common to both sets carry full measure 1 *)
+(* one walk: every vertex visited exactly once maps to 1 *)
 VerificationTest[
-  Lookup[ InfraMeasure[ { { 1, 2, 3 }, { 2, 3, 4 } } ], { 2, 3 } ],
-  { 1, 1 },
-  TestID -> "InfraMeasure-set-common-vertices"
-]
-
-(* one walk: every vertex visited exactly once per realisation maps to 1 *)
-VerificationTest[
-  KeySort @ InfraMeasure[ geodesicGraph @ { 1, 2, 3 } ],
+  InfraDensity[ g33, geodesicGraph @ { 1, 2, 3 } ],
   <| 1 -> 1, 2 -> 1, 3 -> 1 |>,
-  TestID -> "InfraMeasure-single-realisation-all-one"
+  TestID -> "InfraDensity-single-realisation-all-one"
 ]
 
-(* occupation: sum over vertices equals mean realisation length *)
+(* a bundle: the total mass is the total length of its realisations, since every
+   realisation contributes each of its vertices once *)
 VerificationTest[
   With[ { reps = { { 1, 2, 3, 6, 9 }, { 1, 4, 7, 8, 9 }, { 1, 2, 5, 8, 9 } } },
-    Total @ Values @ InfraMeasure[ geodesicGraph /@ reps ] ==
-      Total[ Length /@ reps ] / Length[ reps ] ],
+    Total @ Values @ InfraDensity[ g33, geodesicGraph /@ reps ] === Total[ Length /@ reps ] ],
   True,
-  TestID -> "InfraMeasure-occupation-sum-equals-mean-length"
+  TestID -> "InfraDensity-total-mass-is-total-length"
 ]
 
-(* probability: the node distribution sums to 1 and is occupation renormalised *)
+(* the empty class yields the empty density *)
 VerificationTest[
-  With[ { obj = geodesicGraph /@ { { 1, 2, 3, 6, 9 }, { 1, 4, 7, 8, 9 }, { 1, 2, 5, 8, 9 } } },
-    With[ { p = InfraMeasure[ obj, Method -> "Probability" ], occ = InfraMeasure[ obj ] },
-      Total @ Values @ p == 1 && p == occ / Total[ occ ] ] ],
-  True,
-  TestID -> "InfraMeasure-probability-sums-to-one"
-]
-
-(* the empty class yields the empty measure *)
-VerificationTest[
-  InfraMeasure[ { } ],
+  InfraDensity[ g33, { } ],
   <||>,
-  TestID -> "InfraMeasure-empty-class"
+  TestID -> "InfraDensity-empty-class"
 ]
 
-(* edge measure: keys are sorted UndirectedEdges of the walk's steps *)
+(* a density is already the marginal, so InfraDensity is the identity on it up to
+   key order -- the guarantee that two built by different routes compare SameQ *)
 VerificationTest[
-  Sort @ Keys @ InfraMeasure[ PathGraph @ Range[ 4 ], geodesicGraph @ { 1, 2, 3, 4 }, "On" -> "Edges" ],
-  { UndirectedEdge[ 1, 2 ], UndirectedEdge[ 2, 3 ], UndirectedEdge[ 3, 4 ] },
-  TestID -> "InfraMeasure-edge-keys-undirected"
+  InfraDensity[ g33, <| 2 -> 3, 1 -> 1 |> ],
+  <| 1 -> 1, 2 -> 3 |>,
+  TestID -> "InfraDensity-density-is-key-sorted-identity"
 ]
 
-(* "Both" returns the two marginals keyed by name *)
+(* Counts promotes a list, Keys demotes a density: the two steps InfraDensity sits
+   between, and the reason there is no second coercion in the API *)
 VerificationTest[
-  Keys @ InfraMeasure[ PathGraph @ Range[ 4 ], geodesicGraph @ { 1, 2, 3, 4 }, "On" -> "Both" ],
-  { "Vertices", "Edges" },
-  TestID -> "InfraMeasure-both-shape"
+  With[ { ball = FindInfraBall[ g33, 5, 1 ] },
+    Keys @ InfraDensity[ g33, ball ] === ball &&
+      InfraDensity[ g33, ball ] === KeySort @ Counts @ ball ],
+  True,
+  TestID -> "InfraDensity-Counts-promotes-Keys-demotes"
 ]
 
-(* a density has two distinct normalisations: the default "Occupation" is
-   membership relative to the heaviest mass (max 1, what the renderer draws),
-   "Probability" is the distribution summing to 1 *)
+(* a bare vertex is the unit mass, even where the label is itself a List: only the
+   graph tells a list-labelled vertex from a two-element set *)
 VerificationTest[
-  { Max @ Values @ InfraMeasure[ <| 1 -> 3, 2 -> 1 |> ],
-    Total @ Values @ InfraMeasure[ <| 1 -> 3, 2 -> 1 |>, Method -> "Probability" ] },
+  With[ { g = GridGraph[ { 2, 2 }, VertexLabels -> None ] },
+    { InfraDensity[ g33, 5 ],
+      InfraDensity[ TessellationGraph[ { 4, 4 }, 1 ], { 1, 1 } ] } ],
+  { <| 5 -> 1 |>, <| { 1, 1 } -> 1 |> },
+  TestID -> "InfraDensity-vertex-is-unit-mass"
+]
+
+(* normalising is the caller's, and both readings the old measure head carried are
+   one division away *)
+VerificationTest[
+  With[ { d = InfraDensity[ g33, <| 1 -> 3, 2 -> 1 |> ] },
+    { Max @ Values[ d / Max @ Values @ d ], Total @ Values[ d / Total @ Values @ d ] } ],
   { 1, 1 },
-  TestID -> "InfraMeasure-density-two-normalisations"
+  TestID -> "InfraDensity-normalisations-are-one-division-away"
 ]
 
-(* a density carries no head, so it has no accessors: the engine measures it
-   directly, on the bare vertices that are its keys *)
+(* edges are internal now: the renderer reads infraEdgeMultiset, keyed by the sorted
+   vertex pair, and remaps it to UndirectedEdge itself *)
 VerificationTest[
-  InfraMeasure[ <| 1 -> 3, 2 -> 1 |> ],
-  <| 1 -> 1, 2 -> 1/3 |>,
-  TestID -> "InfraMeasure-density-unkeys-to-vertices"
+  Sort @ Keys @ infraEdgeMultiset[ PathGraph @ Range[ 4 ], geodesicGraph @ { 1, 2, 3, 4 } ],
+  { { 1, 2 }, { 2, 3 }, { 3, 4 } },
+  TestID -> "infraEdgeMultiset-keys-are-sorted-pairs"
+]
+
+(* a closed walk closes: the cycle 1-2-3 carries its three edges, the wrap included *)
+VerificationTest[
+  Sort @ Keys @ infraEdgeMultiset[ CycleGraph @ 3, closedWalkGraph @ { 1, 2, 3, 1 } ],
+  { { 1, 2 }, { 1, 3 }, { 2, 3 } },
+  TestID -> "infraEdgeMultiset-closed-walk-wraps"
 ]
 
 
@@ -189,15 +199,13 @@ VerificationTest[
   TestID -> "anchor-rule-coerces-everything-to-a-density"
 ]
 
-(* the family algebra is the Association's own; the measures come off the engine *)
+(* the density algebra is the Association's own -- Keys, Values, Total, and division
+   for either normalisation.  No engine call is involved, which is the point *)
 VerificationTest[
   With[ { p = <| 1 -> 3, 2 -> 1 |> },
-    { Keys @ p, Values @ p, Total @ p,
-      InfraMeasure[ p, Method -> "Probability" ], InfraMeasure @ p } ],
-  (* InfraMeasure is membership relative to the heaviest mass;
-     Method -> "Probability" is the distribution summing to 1 *)
+    { Keys @ p, Values @ p, Total @ p, p / Total @ p, p / Max @ Values @ p } ],
   { { 1, 2 }, { 3, 1 }, 4, <| 1 -> 3/4, 2 -> 1/4 |>, <| 1 -> 1, 2 -> 1/3 |> },
-  TestID -> "density-algebra-and-measures"
+  TestID -> "density-algebra-is-the-Association-s-own"
 ]
 
 (* the measure is CONSTRUCTED at a projection off a bundle, never carried by it:
@@ -216,22 +224,21 @@ VerificationTest[
    so the family (and its measure) is the same weighted or not *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    KeySort @ InfraMeasure @ FindInfraSegment[ g, <| 1 -> 2, 3 -> 1 |>, 9, All ] ===
-    KeySort @ InfraMeasure @ FindInfraSegment[ g, <| 1 -> 1, 3 -> 1 |>, 9, All ] ],
+    InfraDensity[ g, FindInfraSegment[ g, <| 1 -> 2, 3 -> 1 |>, 9, All ] ] ===
+    InfraDensity[ g, FindInfraSegment[ g, <| 1 -> 1, 3 -> 1 |>, 9, All ] ] ],
   True,
   TestID -> "Anchor-masses-do-not-propagate"
 ]
 
 (* ===== the DAG carries the family it stands for ===== *)
 
-(* the compact DAG and the enumerated family carry the same measure *)
+(* the compact DAG and the enumerated family carry the same density *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     With[ { dag = FindInfraSegment[ g, 1, 9, All ] },
-      KeySort @ InfraMeasure[ dag ] ===
-        KeySort @ InfraMeasure[ geodesicGraph /@ infraSpread @ dag ] ] ],
+      InfraDensity[ g, dag ] === InfraDensity[ g, geodesicGraph /@ infraSpread @ dag ] ] ],
   True,
-  TestID -> "DAG-equals-enumerated-measure"
+  TestID -> "DAG-equals-enumerated-density"
 ]
 
 (* a multi-source family is the plain union of the per-source families: its raw

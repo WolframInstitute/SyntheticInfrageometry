@@ -1,7 +1,7 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* Tools.wl *)
-PackageExport[InfraMeasure]
+PackageExport[InfraDensity]
 
 (* InfraPoint.wl -- InfraPoint is a scene-language token only, never a payload wrapper *)
 PackageExport[InfraPoint]
@@ -150,7 +150,6 @@ PackageExport[PathSubgraph]
 PackageExport[InfraDeformationSize]
 
 (* Homotopy.wl *)
-PackageExport[InfraHomotopy]
 PackageExport[FindInfraHomotopy]
 PackageExport[FindInfraHomotopyRepresentative]
 PackageExport[FindInfraHomotopyRepresentativeHomotopy]

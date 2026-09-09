@@ -37,14 +37,14 @@ VerificationTest[
 
 (* a set is already its support, and InfraUnion sorts it *)
 VerificationTest[
-  Sort @ InfraUnion[ FindInfraBall[ PathGraph @ Range[7], 4, 2 ] ],
+  With[ { g = PathGraph @ Range[ 7 ] }, Sort @ InfraUnion[ g, FindInfraBall[ g, 4, 2 ] ] ],
   {2, 3, 4, 5, 6},
   TestID -> "set-from-InfraBall-support"
 ]
 
 (* the set operators return the sorted List, so unions of unions stay one shape *)
 VerificationTest[
-  Sort @ InfraUnion[ <| 1 -> 1, 2 -> 1 |>, <| 2 -> 1, 3 -> 1 |> ],
+  Sort @ InfraUnion[ PathGraph @ Range[ 7 ], <| 1 -> 1, 2 -> 1 |>, <| 2 -> 1, 3 -> 1 |> ],
   {1, 2, 3},
   TestID -> "InfraUnion-of-multisets"
 ]
@@ -296,7 +296,7 @@ VerificationTest[
    metric interval -- read without enumerating the family. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    Sort @ InfraUnion[ FindInfraSegment[g, 1, 16, All] ] === Sort @ MetricInterval[g, 1, 16]],
+    Sort @ InfraUnion[ g, FindInfraSegment[g, 1, 16, All] ] === Sort @ MetricInterval[g, 1, 16]],
   True,
   TestID -> "DAG-support-is-MetricInterval"
 ]
@@ -305,7 +305,7 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     With[{dag = FindInfraSegment[g, 1, 16, All]},
-      InfraUnion[ dag ] === InfraUnion @@ ( geodesicGraph /@ infraSpread @ dag )]],
+      InfraUnion[ g, dag ] === InfraUnion[ g, ## ] & @@ ( geodesicGraph /@ infraSpread @ dag )]],
   True,
   TestID -> "DAG-support-equals-its-family's"
 ]

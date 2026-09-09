@@ -228,17 +228,19 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           Automatic :> If[ MatchQ[ type, "Points" | "PointSet" ], $InfraPointSize, None ] ] ], obj },
       triples, { 1 } ];
 
-    (* the per-type dispatch is shared with InfraMeasure (Tools.wl); only the Automatic-type branch stays local, since it needs the graph *)
+    (* the fallback used only where the object is not itself a shape infraVertexMultiset reads -- a bare vertex, a vertex list, a family of sets, or an expression the reader left at Automatic.  A "Points" realisation is one vertex, every other is a vertex sequence *)
     With[ {
         repVerts = { type, rep } |-> Switch[ type,
-          "Points" | "Paths" | "Cycles" | "Sets" | "PointSet", infraRepVerts[ type, rep ],
-          _, If[ MemberQ[ VertexList @ graph, rep ], { rep }, rep ]
+          "Points",                                  { rep },
+          "Paths" | "Cycles" | "Sets" | "PointSet",  rep,
+          _, If[ pointQ[ graph, rep ], { rep }, rep ]
         ],
         repEdges = { type, rep } |-> Switch[ type,
-          "Points" | "PointSet",        { },
-          "Paths" | "Cycles" | "Sets",  infraRepEdges[ graph, type, rep ],
-          _, If[ MemberQ[ VertexList @ graph, rep ], { },
-                Sort /@ ( List @@@ EdgeList @ Subgraph[ graph, rep ] ) ]
+          "Points" | "PointSet", { },
+          "Paths",               walkEdges @ rep,
+          "Cycles",              cycleEdges @ rep,
+          "Sets",                setEdges[ graph, rep ],
+          _, If[ pointQ[ graph, rep ], { }, setEdges[ graph, rep ] ]
         ] },
 
       vEntries = MapThread[

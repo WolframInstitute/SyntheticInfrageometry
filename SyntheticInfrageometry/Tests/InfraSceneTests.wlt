@@ -516,10 +516,11 @@ VerificationTest[
 
 (* ===== InfraIntersection / InfraUnion (standalone) ===== *)
 
-(* the operators return the sorted vertex List, on every shape *)
+(* the operators are graph-first, like every other public function here, and return
+   the sorted vertex List on every shape *)
 
 VerificationTest[
-  InfraIntersection[
+  InfraIntersection[ CompleteGraph @ 7,
     geodesicGraph @ { 1, 2, 3, 4 },
     geodesicGraph @ { 1, 5, 6, 3, 7 } ],
   { 1, 3 },
@@ -527,7 +528,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraIntersection[
+  InfraIntersection[ CompleteGraph @ 6,
     geodesicGraph /@ { { 1, 2, 3 }, { 1, 4, 3 } },
     geodesicGraph @ { 3, 5, 6 } ],
   { 3 },
@@ -535,7 +536,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraIntersection[
+  InfraIntersection[ CompleteGraph @ 5,
     <| 1 -> 1, 2 -> 1, 3 -> 1 |>,
     geodesicGraph @ { 2, 3, 4 },
     { 3, 4, 5 } ],
@@ -544,7 +545,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraUnion[
+  InfraUnion[ CompleteGraph @ 4,
     <| 1 -> 1, 2 -> 1 |>,
     geodesicGraph @ { 3, 4 } ],
   { 1, 2, 3, 4 },
@@ -721,6 +722,34 @@ VerificationTest[
             SymbolName[ # ] ] & ] } ],
   { { }, { } },
   TestID -> "InfraScene-assertion-rules-delegate-to-named-predicates"
+]
+
+
+(* ===== The scene reads vertex sets by shape, not by AtomQ ===== *)
+
+(* InfraIntersection inside a scene resolves each operand to its vertex set through
+   the anchor rule.  On a list-labelled substrate the wrapper-era reading -- a bare
+   vertex is AtomQ -- split every vertex into its coordinates *)
+VerificationTest[
+  With[{g = TessellationGraph[{4, 4}, 2]},
+    {c = First @ VertexList @ g},
+    Sort @ InfraIntersection[ g, FindInfraBall[g, c, 1], FindInfraBall[g, c, 2] ] ===
+      Sort @ FindInfraBall[g, c, 1]],
+  True,
+  TestID -> "InfraIntersection-on-a-list-labelled-substrate"
+]
+
+(* the same through the scene engine: the intersection of two balls about one
+   centre is the smaller ball, and every binding is a substrate vertex *)
+VerificationTest[
+  With[{g = TessellationGraph[{4, 4}, 2]},
+    {c = First @ VertexList @ g},
+    {scene = InfraScene[{p}, {p == InfraIntersection[InfraBall[c, 1], InfraBall[c, 2]]}]},
+    {instances = FindInfraScene[scene, g]},
+    AllTrue[instances, VertexQ[g, InfraInstance[#, p]] &] &&
+      Sort[InfraInstance[#, p] & /@ instances] === Sort @ FindInfraBall[g, c, 1]],
+  True,
+  TestID -> "InfraScene-intersection-binds-substrate-vertices"
 ]
 
 

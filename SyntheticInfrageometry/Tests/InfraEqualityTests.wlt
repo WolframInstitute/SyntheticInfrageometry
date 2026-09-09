@@ -60,12 +60,20 @@ VerificationTest[
   TestID -> "InfraEqualQ-repeated-vertex-collapses-to-the-same-multiset"
 ]
 
-(* ===== Cross-shape: shapes must match ===== *)
+(* ===== Cross-shape: the method says what is compared, so nothing is refused ===== *)
 
+(* the wrapper-era guard refused two objects with different heads.  Under the shape
+   ontology the head is Integer against Graph for a vertex and its own one-vertex
+   walk, and against List for two integer-labelled vertices -- so the guard is gone
+   and every shape is read through the anchor rule *)
 VerificationTest[
-  InfraEqualQ[ PathGraph[ Range[ 5 ] ], 1, geodesicGraph @ { 1 } ],
-  False,
-  TestID -> "InfraEqualQ-shape-mismatch-False"
+  With[ { g = PathGraph @ Range[ 5 ] },
+    { InfraEqualQ[ g, 1, geodesicGraph @ { 1 } ],
+      InfraEqualQ[ g, geodesicGraph @ { 1, 2, 3 }, { 1, 2, 3 }, Method -> "Set" ],
+      InfraEqualQ[ g, 3, { 2, 3, 4 }, Method -> "Overlap" ],
+      InfraEqualQ[ g, 1, { 3, 4 }, Method -> "Overlap" ] } ],
+  { True, True, True, False },
+  TestID -> "InfraEqualQ-compares-across-shapes"
 ]
 
 (* ===== Bad method ===== *)

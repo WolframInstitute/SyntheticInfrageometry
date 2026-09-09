@@ -7,9 +7,7 @@ InfraEqualQ::badmethod = "Method `1` is not one of \"Overlap\", \"Diffuse\", \"S
 
 Options[ InfraEqualQ ] = { Method -> "Diffuse" }
 
-InfraEqualQ[ _Graph, a_, b_, OptionsPattern[] ] /; Head[ a ] =!= Head[ b ] := False
-
-(* raw visit measures: every shape goes through the anchor rule, a walk graph or bundle contributing its occupation *)
+(* raw visit measures: every shape goes through the anchor rule, a walk graph or bundle contributing its occupation.  There is no cross-kind refusal: the method names what is compared, so a point and a set do overlap when the point lies in the set, and a walk graph equals the vertex list of its support under "Set".  The wrapper-era guard read Head, which under the shape ontology separates an integer-labelled vertex from a list-labelled one *)
 InfraEqualQ[ graph_Graph, a_, b_, OptionsPattern[] ] :=
   With[ { ma = equalityMultiset[ graph, a ], mb = equalityMultiset[ graph, b ] },
     Switch[ OptionValue @ Method,
