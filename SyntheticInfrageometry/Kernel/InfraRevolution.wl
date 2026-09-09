@@ -45,7 +45,9 @@ FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
   ]
 
 
-parseAxes[ ( InfraSegment | InfraLine | InfraWalk )[ paths_List ] ] := paths
+parseAxes[ ( InfraSegment | InfraLine )[ paths_List ] ] := paths
+parseAxes[ w_Graph ]                    := walkRealisations @ w
+parseAxes[ ws : { __Graph } ]           := Catenate[ walkRealisations /@ ws ]
 parseAxes[ paths : { _List, ___List } ] := paths
 parseAxes[ path_List ]                  := { path }
 

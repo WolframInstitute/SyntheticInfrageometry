@@ -1,5 +1,10 @@
 BeginTestSection["EuclideanPostulates"]
 
+walkGraph       = WolframInstitute`SyntheticInfrageometry`PackageScope`walkGraph;
+closedWalkGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`closedWalkGraph;
+walkSeq[ w_Graph ] := Last /@ VertexList[ w ]
+walkSeqs[ ws_List ] := walkSeq /@ ws
+
 (* ===== FindInfraPoint ===== *)
 
 VerificationTest[
@@ -409,8 +414,8 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{3, 3}],
         degSum = w |-> VertexDegree[GridGraph[{3, 3}], w[[-2]]] + VertexDegree[GridGraph[{3, 3}], w[[-1]]]},
-    With[{paths = FindInfraGeodesic[g, 1, 9, Infinity, Infinity, All,
-            Properties -> {"Minimizing", {"Minimal", degSum}}]["Realizations"]},
+    With[{paths = walkSeqs @ FindInfraGeodesic[g, 1, 9, Infinity, Infinity, All,
+            Properties -> {"Minimizing", {"Minimal", degSum}}]},
       Length[paths] >= 1 &&
         AllTrue[paths, Length[#] - 1 == GraphDistance[g, 1, 9] &]
     ]
@@ -423,9 +428,9 @@ VerificationTest[
   With[{g = GridGraph[{4, 4}],
         degSum = w |-> VertexDegree[GridGraph[{4, 4}], w[[-2]]] + VertexDegree[GridGraph[{4, 4}], w[[-1]]]},
     BlockRandom[
-      Length @ FindInfraGeodesic[g, 1, 16, Infinity, Infinity, All,
+      Length @ walkSeqs @ FindInfraGeodesic[g, 1, 16, Infinity, Infinity, All,
         Properties -> {"Minimizing", {"Minimal", degSum}},
-        Method -> {"Exhaustive", "Pruning" -> 1}]["Realizations"] <= 1,
+        Method -> {"Exhaustive", "Pruning" -> 1}] <= 1,
       RandomSeeding -> 42
     ]
   ],
@@ -436,8 +441,8 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{3, 3}],
         degSum = w |-> VertexDegree[GridGraph[{3, 3}], w[[-2]]] + VertexDegree[GridGraph[{3, 3}], w[[-1]]]},
-    Length @ FindInfraGeodesic[g, 1, 9, Infinity, Infinity, UpTo[2],
-      Properties -> {"Minimizing", {"Minimal", degSum}}]["Realizations"]
+    Length @ walkSeqs @ FindInfraGeodesic[g, 1, 9, Infinity, Infinity, UpTo[2],
+      Properties -> {"Minimizing", {"Minimal", degSum}}]
   ],
   _Integer?(# <= 2 &),
   SameTest -> MatchQ,
@@ -461,8 +466,8 @@ VerificationTest[
    "Generic" widens to the generic immersed walks. *)
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    {w = First @ FindInfraWalk[g, 1, 9, Infinity, 1,
-       Properties -> {"Simple"}]["Realizations"]},
+    {w = First @ walkSeqs @ FindInfraWalk[g, 1, 9, Infinity, 1,
+       Properties -> {"Simple"}]},
     InfraWalkQ[g, w] && DuplicateFreeQ[w]],
   True,
   TestID -> "FindInfraWalk-simple-properties-class"
@@ -470,7 +475,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    AllTrue[FindInfraWalk[g, 1, 9, 8, All]["Realizations"], DuplicateFreeQ]],
+    AllTrue[walkSeqs @ FindInfraWalk[g, 1, 9, UpTo[ 8 ], All], DuplicateFreeQ]],
   True,
   TestID -> "FindInfraWalk-default-simple"
 ]
@@ -488,7 +493,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    With[{walks = FindInfraWalk[g, 1, 9, {4}, All]["Realizations"]},
+    With[{walks = walkSeqs @ FindInfraWalk[g, 1, 9, {4}, All]},
       Length[walks] >= 1 && AllTrue[walks, DuplicateFreeQ]
     ]
   ],
@@ -501,8 +506,8 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{3, 3}]},
-    Sort @ FindInfraGeodesic[g, 1, 9, Infinity, Infinity, All,
-        Properties -> {"Simple", "Minimizing"}]["Realizations"] ===
+    Sort @ walkSeqs @ FindInfraGeodesic[g, 1, 9, Infinity, Infinity, All,
+        Properties -> {"Simple", "Minimizing"}] ===
       Sort @ FindInfraSegment[g, 1, 9, All]["Realizations"]
   ],
   True,
@@ -511,8 +516,8 @@ VerificationTest[
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ FindInfraGeodesic[g, 1, 4, 2, Infinity, All,
-        Properties -> {"Simple", "Minimizing"}]["Realizations"]
+    Sort @ walkSeqs @ FindInfraGeodesic[g, 1, 4, 2, Infinity, All,
+        Properties -> {"Simple", "Minimizing"}]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
   TestID -> "FindInfraGeodesic-Minimizing-scale-2-cycle-geodesics"
@@ -521,8 +526,8 @@ VerificationTest[
 
 VerificationTest[
   With[{g = CycleGraph[6]},
-    Sort @ FindInfraGeodesic[g, 1, 4, 2, Infinity, All,
-        Properties -> {"Simple", "Straightest"}]["Realizations"]
+    Sort @ walkSeqs @ FindInfraGeodesic[g, 1, 4, 2, Infinity, All,
+        Properties -> {"Simple", "Straightest"}]
   ],
   Sort[{{1, 2, 3, 4}, {1, 6, 5, 4}}],
   TestID -> "FindInfraGeodesic-Straightest-scale-2-cycle-symmetric"
@@ -531,9 +536,9 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     BlockRandom[
-      Length @ FindInfraGeodesic[g, 1, 16, 2, Infinity, All,
+      Length @ walkSeqs @ FindInfraGeodesic[g, 1, 16, 2, Infinity, All,
         Properties -> {"Simple", "Straightest"},
-        Method -> {"Exhaustive", "Pruning" -> 1}]["Realizations"] == 1,
+        Method -> {"Exhaustive", "Pruning" -> 1}] == 1,
       RandomSeeding -> 42
     ]
   ],
@@ -546,8 +551,8 @@ VerificationTest[
 VerificationTest[
   With[{g = GridGraph[{3, 3}],
         degSum = w |-> VertexDegree[GridGraph[{3, 3}], w[[-2]]] + VertexDegree[GridGraph[{3, 3}], w[[-1]]]},
-    With[{walks = FindInfraGeodesic[g, 1, 9, 1, {4}, All,
-            Properties -> {"Simple", {"Minimal", degSum}}]["Realizations"]},
+    With[{walks = walkSeqs @ FindInfraGeodesic[g, 1, 9, 1, {4}, All,
+            Properties -> {"Simple", {"Minimal", degSum}}]},
       AllTrue[walks, DuplicateFreeQ]
     ]
   ],
@@ -900,16 +905,16 @@ VerificationTest[
 
 
 VerificationTest[
-  FindInfraOsculatingShell[CompleteGraph[5], InfraWalk[{{1, 2, 3}}], 2, 3, All],
+  FindInfraOsculatingShell[CompleteGraph[5], walkGraph @ {1, 2, 3}, 2, 3, All],
   FindInfraOsculatingShell[CompleteGraph[5], {1, 2, 3}, 2, 3, All],
-  TestID -> "FindInfraOsculatingShell-InfraWalk-equiv-bare-list"
+  TestID -> "FindInfraOsculatingShell-walk-graph-equiv-bare-list"
 ]
 
-(* Multi-realisation InfraWalk: centers union across walks. *)
+(* a bundle of walk graphs: centers union across walks. *)
 
 VerificationTest[
   Length @ FindInfraOsculatingShell[CompleteGraph[5],
-    InfraWalk[{{1, 2, 3}, {1, 4, 5}}], 2, 3, All]["Realizations"],
+    walkGraph /@ {{1, 2, 3}, {1, 4, 5}}, 2, 3, All]["Realizations"],
   4,
   TestID -> "FindInfraOsculatingShell-multi-realisation-union"
 ]
@@ -1576,7 +1581,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     AllTrue[ { 1, 2, 3, { 2 }, { 1, 2 }, Infinity },
       k |-> Sort @ ExtendInfraSegment[ g, { 6, 7 }, k, All ][ "Realizations" ] ===
-        Sort @ ExtendInfraGeodesic[ g, { 6, 7 }, Infinity, k, All, Properties -> { "Minimizing" } ][ "Realizations" ] ]
+        Sort @ walkSeqs @ ExtendInfraGeodesic[ g, { 6, 7 }, Infinity, Replace[ k, n_Integer :> UpTo[ n ] ], All, Properties -> { "Minimizing" } ] ]
   ],
   True,
   TestID -> "ExtendInfraSegment-equals-walk-engine-GridGraph"
@@ -1585,8 +1590,8 @@ VerificationTest[
 VerificationTest[
   AllTrue[ { 1, 2, 5, { 2 }, { 2, 5 }, Infinity },
     k |-> Sort @ ExtendInfraSegment[ PathGraph[ Range[ 5 ] ], { 4, 5 }, k, All ][ "Realizations" ] ===
-      Sort @ ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 4, 5 }, Infinity, k, All,
-        Properties -> { "Minimizing" } ][ "Realizations" ] ],
+      Sort @ walkSeqs @ ExtendInfraGeodesic[ PathGraph[ Range[ 5 ] ], { 4, 5 }, Infinity, Replace[ k, n_Integer :> UpTo[ n ] ], All,
+        Properties -> { "Minimizing" } ] ],
   True,
   TestID -> "ExtendInfraSegment-equals-walk-engine-PathGraph-asymmetric"
 ]
@@ -1596,7 +1601,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { seg = FindInfraSegment[ g, 1, 11, All ] },
       Sort @ ExtendInfraSegment[ g, seg, 1, All ][ "Realizations" ] ===
-        Sort @ ExtendInfraGeodesic[ g, seg, Infinity, 1, All, Properties -> { "Minimizing" } ][ "Realizations" ]
+        Sort @ walkSeqs @ ExtendInfraGeodesic[ g, seg, Infinity, UpTo[ 1 ], All, Properties -> { "Minimizing" } ]
     ]
   ],
   True,

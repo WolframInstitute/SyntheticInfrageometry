@@ -609,7 +609,7 @@ VerificationTest[
      InfraCircleQ[g, FindInfraCircle[g, 13, 2]],
      InfraEllipseQ[g, FindInfraEllipse[g, {11, 15}, 6]],
      InfraEllipticShellQ[g, FindInfraEllipticShell[g, {11, 15}, 6]],
-     InfraWalkQ[g, FindInfraWalk[g, 1, 13, 6, All]],
+     InfraWalkQ[g, FindInfraWalk[g, 1, 13, UpTo[ 6 ], All]],
      InfraPlaneQ[g, FindInfraBisectingHyperplane[g, 11, 15], 11, 15],
      InfraRayQ[g, FindInfraRay[g, 1, 13, All]],
      InfraParallelQ[g, InfraLine[{{1, 2, 3, 4, 5}}],

@@ -41,11 +41,11 @@ $infraColors = <|
   "Topology" -> RGBColor[ 0.85, 0.55, 0.75 ]
 |>;
 
-(* which colour each wrapper head is drawn in; several wrappers deliberately share one.  The point shape wears no head, so its colour is looked up by shape below *)
+(* which colour each wrapper head is drawn in; several wrappers deliberately share one.  The point shape wears no head, so its colour is looked up by shape below; a walk is a Graph and takes the path colour *)
 $infraHeadColors = <|
   InfraSegment -> "Segment", InfraPolyline -> "Segment",
   InfraLine -> "Line",
-  InfraWalk -> "Path", InfraLoop -> "Path", InfraString -> "Path",
+  Graph -> "Path",
   InfraShell -> "Shell", InfraEllipticShell -> "Shell",
   InfraBall -> "Ball",
   InfraPlane -> "Plane",
@@ -210,9 +210,12 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
             { InfraSegment [ b : { __Graph } ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
             { InfraLine    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
-            { InfraWalk    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
-            { InfraLoop    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
-            { InfraString  [ b_List ], c_, u_ } :> { b, c, "Cycles", u },
+            (* a walk graph on position pairs is drawn as its vertex sequence, a closed one as a cycle; a substrate DAG stays the compact atom *)
+            { w_Graph, c_, u_ } /; closedWalkQ[ w ] :> { { walkSequence @ w }, c, "Cycles", u },
+            { w_Graph, c_, u_ } /; positionSpelledQ[ w ] :> { walkRealisations @ w, c, "Paths", u },
+            { w_Graph, c_, u_ } :> { { w }, c, "Paths", u },
+            { ws : { __Graph }, c_, u_ } /; AllTrue[ ws, closedWalkQ ] :> { walkSequence /@ ws, c, "Cycles", u },
+            { ws : { __Graph }, c_, u_ } :> { Catenate[ walkRealisations /@ ws ], c, "Paths", u },
             { InfraShell        [ b_List ], c_, u_ } :> { b, c, "Sets"  , u },
             { InfraBall         [ b_List ], c_, u_ } :> { b, c, "Sets"  , u },
             { InfraEllipticShell[ b_List ], c_, u_ } :> { b, c, "Sets"  , u },

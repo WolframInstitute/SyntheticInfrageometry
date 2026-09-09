@@ -1,5 +1,10 @@
 BeginTestSection["WalkSpace"]
 
+walkGraph       = WolframInstitute`SyntheticInfrageometry`PackageScope`walkGraph;
+closedWalkGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`closedWalkGraph;
+walkSeq[ w_Graph ] := Last /@ VertexList[ w ]
+walkSeqs[ ws_List ] := walkSeq /@ ws
+
 (* ===== Sublist invariants under default n = All ===== *)
 
 VerificationTest[
@@ -51,23 +56,24 @@ VerificationTest[
   TestID -> "EmbeddingClosest-curve-list-returns-sublist"
 ]
 
-(* Curve reference preserves the wrapper head (Line curve, InfraWalk bundle). *)
+(* a bundle of walk graphs selects on its vertex sequences and comes back as the graphs picked *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ], bare = (FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9, All ][ "Realizations" ]) },
-    Head @ EmbeddingClosest[ g, InfraWalk[ bare ], Line[ { { 0, 0 }, { 1, 1 }, { 2, 2 } } ] ]
+    { picked = EmbeddingClosest[ g, walkGraph /@ bare, Line[ { { 0, 0 }, { 1, 1 }, { 2, 2 } } ] ] },
+    MatchQ[ picked, { __Graph } ] && SubsetQ[ bare, walkSeqs @ picked ]
   ],
-  InfraWalk,
-  TestID -> "EmbeddingClosest-curve-preserves-wrapper"
+  True,
+  TestID -> "EmbeddingClosest-walk-graphs-return-graphs"
 ]
 
-(* FindEmbeddingClosestPath: generative snap of a curve to a walk.  Returns an
-   InfraWalk whose single realisation is a connected walk (consecutive vertices
-   adjacent), tracing the curve under the embedding. *)
+(* FindEmbeddingClosestPath: generative snap of a curve to a walk graph whose
+   vertex sequence is a connected walk (consecutive vertices adjacent), tracing
+   the curve under the embedding. *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     With[ { p = FindEmbeddingClosestPath[ g, Line[ GraphEmbedding[ g ][[ { 1, 13, 25 } ]] ] ] },
-      MatchQ[ p, InfraWalk[ { { __ } } ] ] &&
-      AllTrue[ Partition[ p[[ 1, 1 ]], 2, 1 ], EdgeQ[ g, UndirectedEdge @@ # ] & ]
+      GraphQ[ p ] &&
+      AllTrue[ Partition[ walkSeq @ p, 2, 1 ], EdgeQ[ g, UndirectedEdge @@ # ] & ]
     ]
   ],
   True,
@@ -597,7 +603,7 @@ VerificationTest[
 (* bundle form: one number per realisation *)
 VerificationTest[
   InfraDeformationSize[ { 1, 2, 5 },
-    InfraWalk[ { { 1, 3, 5 }, { 1, 4, 2, 5 }, { 1, 2, 4, 2, 5 } } ] ],
+    walkGraph /@ { { 1, 3, 5 }, { 1, 4, 2, 5 }, { 1, 2, 4, 2, 5 } } ],
   { 2, 1, 0 },
   TestID -> "InfraDeformationSize-maps-over-a-bundle"
 ]
@@ -606,7 +612,7 @@ VerificationTest[
    happen at the call site, not through an option *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ], ref = { 1, 2, 3, 6, 9 },
-          ws = InfraWalk[ { { 1, 2, 3, 6, 9 }, { 1, 2, 5, 6, 9 }, { 1, 4, 7, 8, 9 } } ] },
+          ws = walkGraph /@ { { 1, 2, 3, 6, 9 }, { 1, 2, 5, 6, 9 }, { 1, 4, 7, 8, 9 } } },
     { InfraDeformationSize[ ref, ws ],
       With[ { picked = SelectInfraWalk[ g, ws, All,
                 "From" -> { "Min", w |-> InfraDeformationSize[ ref, w ] } ] },
@@ -661,7 +667,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
-    SelectInfraWalk[ g, FindInfraWalk[ g, 1, 13, 6, All ][ "Realizations" ], All,
+    SelectInfraWalk[ g, walkSeqs @ FindInfraWalk[ g, 1, 13, UpTo[ 6 ], All ], All,
       "From" -> "MinCurvature" ] ],
   $Failed,
   { SelectInfraWalk::badfrom },
@@ -687,7 +693,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
-    { paths = FindInfraWalk[ g, 1, 13, 6, All ][ "Realizations" ] },
+    { paths = walkSeqs @ FindInfraWalk[ g, 1, 13, UpTo[ 6 ], All ] },
     FreeQ[
       SelectInfraWalk[ g, paths, All, "From" -> # ] & /@
         { All, "Center", "Periphery", "MostVisited", "Bottleneck", "MinLength", "MaxLength",

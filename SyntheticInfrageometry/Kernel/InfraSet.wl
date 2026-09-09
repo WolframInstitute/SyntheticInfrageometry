@@ -95,7 +95,10 @@ InfraVolume::badmeasure = "Measure `1` is not supported by InfraVolume; use \"Fu
 Options[ InfraVolume ] = { "Measure" -> "FullCount", Method -> "Combinatorial" };
 
 (* line-like objects realise the union of their walks as path graphs -- only their own consecutive edges, so distinct lines are not joined and a line never gains the chords of its induced subgraph.  A vertex is then interior iff every g-edge at it is a line edge, so a 1-D curve has nearly empty interior *)
-InfraVolume[ g_Graph, (InfraLine | InfraSegment | InfraWalk | InfraRay)[ walks_List ], opts : OptionsPattern[] ] :=
+InfraVolume[ g_Graph, w : ( _Graph | { __Graph } ), opts : OptionsPattern[] ] :=
+  InfraVolume[ g, InfraLine[ infraSpread @ w ], opts ]
+
+InfraVolume[ g_Graph, (InfraLine | InfraSegment | InfraRay)[ walks_List ], opts : OptionsPattern[] ] :=
   With[
     { h = Graph[ Union @@ walks,
         DeleteDuplicates[ Sort /@ Catenate[ (UndirectedEdge @@@ Partition[ #, 2, 1 ] &) /@ walks ] ] ] },

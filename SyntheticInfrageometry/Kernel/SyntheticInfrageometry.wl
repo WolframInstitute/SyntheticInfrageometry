@@ -36,12 +36,6 @@ PackageExport[ExtendInfraWalk]
 PackageExport[ExtendInfraGeodesic]
 PackageExport[ConcatenateInfraWalk]
 
-(* InfraLoop.wl *)
-PackageExport[InfraLoop]
-
-(* InfraString.wl *)
-PackageExport[InfraString]
-
 (* InfraLine.wl *)
 PackageExport[FindInfraLine]
 PackageExport[FindInfraParallel]

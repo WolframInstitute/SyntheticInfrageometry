@@ -185,9 +185,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraWalk[ { { 1, 2, 3, 2, 1 } } ][ "Length" ],
-  { 4 },
-  TestID -> "InfraWalk-Length-edge-count"
+  EdgeCount @ walkGraph @ { 1, 2, 3, 2, 1 },
+  4,
+  TestID -> "walk-graph-EdgeCount-is-length"
 ]
 
 VerificationTest[

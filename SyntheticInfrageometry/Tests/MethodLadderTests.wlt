@@ -5,7 +5,12 @@ BeginTestSection["MethodLadder"]
 (* Method never changes the class: "Exhaustive", "Greedy" and "RandomGreedy" enumerate the same realisation set under All.  canon normalises a realisation whose order carries no information (a vertex set); a walk keeps its sequence *)
 
 classInvariantQ[ call_, canon_ : Identity ] :=
-  SameQ @@ ( Sort[ canon /@ call[ # ][ "Realizations" ] ] & /@ { "Exhaustive", "Greedy", "RandomGreedy" } )
+  SameQ @@ ( Sort[ canon /@ reps @ call[ # ] ] & /@ { "Exhaustive", "Greedy", "RandomGreedy" } )
+
+(* a walk family returns its realisations as a bare List of walk graphs; every other family still wraps them *)
+reps[ x_List ] := x
+reps[ x_ ]     := x[ "Realizations" ]
+sortReps[ x_ ] := Sort @ Replace[ reps @ x, l_List :> Sort @ l, { 1 } ]
 
 
 (* ===================== Distance-matrix family ===================== *)
@@ -88,38 +93,38 @@ VerificationTest[
 (* ===================== Walk family ===================== *)
 
 VerificationTest[
-  classInvariantQ[ m |-> FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 6, All,
+  classInvariantQ[ m |-> FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, UpTo[ 6 ], All,
     Properties -> { "Immersed" }, "StoppingCondition" -> 1, Method -> m ] ],
   True,
   TestID -> "FindInfraWalk-pointed-class-invariant-under-Method"
 ]
 
 VerificationTest[
-  classInvariantQ[ m |-> FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, 6, All, Properties -> { "Generic" }, Method -> m ] ],
+  classInvariantQ[ m |-> FindInfraWalk[ GridGraph[ { 3, 3 } ], 1, 9, UpTo[ 6 ], All, Properties -> { "Generic" }, Method -> m ] ],
   True,
   TestID -> "FindInfraWalk-two-point-class-invariant-under-Method"
 ]
 
 VerificationTest[
-  classInvariantQ[ m |-> ExtendInfraWalk[ GridGraph[ { 3, 3 } ], { 1, 2 }, 3, All, Method -> m ] ],
+  classInvariantQ[ m |-> ExtendInfraWalk[ GridGraph[ { 3, 3 } ], { 1, 2 }, UpTo[ 3 ], All, Method -> m ] ],
   True,
   TestID -> "ExtendInfraWalk-class-invariant-under-Method"
 ]
 
 VerificationTest[
-  classInvariantQ[ m |-> FindInfraGeodesic[ GridGraph[ { 4, 4 } ], 1, 2, 4, All, Method -> m ] ],
+  classInvariantQ[ m |-> FindInfraGeodesic[ GridGraph[ { 4, 4 } ], 1, 2, UpTo[ 4 ], All, Method -> m ] ],
   True,
   TestID -> "FindInfraGeodesic-pointed-class-invariant-under-Method"
 ]
 
 VerificationTest[
-  classInvariantQ[ m |-> FindInfraGeodesic[ TorusGraph[ { 4, 5 } ], 1, 8, 2, 6, All, Method -> m ] ],
+  classInvariantQ[ m |-> FindInfraGeodesic[ TorusGraph[ { 4, 5 } ], 1, 8, 2, UpTo[ 6 ], All, Method -> m ] ],
   True,
   TestID -> "FindInfraGeodesic-two-point-class-invariant-under-Method"
 ]
 
 VerificationTest[
-  classInvariantQ[ m |-> ExtendInfraGeodesic[ TorusGraph[ { 4, 5 } ], { 1, 2 }, 2, 3, All, Method -> m ] ],
+  classInvariantQ[ m |-> ExtendInfraGeodesic[ TorusGraph[ { 4, 5 } ], { 1, 2 }, 2, UpTo[ 3 ], All, Method -> m ] ],
   True,
   TestID -> "ExtendInfraGeodesic-class-invariant-under-Method"
 ]
@@ -217,11 +222,11 @@ VerificationTest[
         m |-> FindInfraLine[ t, 1, 2, Method -> m ],
         m |-> FindInfraRay[ g, 6, 7, Method -> m ],
         m |-> FindInfraParallel[ g, Range[ 4 ], 10, Method -> m ],
-        m |-> FindInfraWalk[ g, 1, 4, Method -> m ],
+        m |-> FindInfraWalk[ g, 1, UpTo[ 4 ], Method -> m ],
         m |-> FindInfraWalk[ g, 1, 16, { 6 }, Method -> m ],
-        m |-> ExtendInfraWalk[ g, { 1, 2 }, 2, Method -> m ],
-        m |-> FindInfraGeodesic[ g, 1, 2, 4, Method -> m ],
-        m |-> ExtendInfraGeodesic[ g, { 6, 7 }, Infinity, 2, Method -> m ],
+        m |-> ExtendInfraWalk[ g, { 1, 2 }, UpTo[ 2 ], Method -> m ],
+        m |-> FindInfraGeodesic[ g, 1, 2, UpTo[ 4 ], Method -> m ],
+        m |-> ExtendInfraGeodesic[ g, { 6, 7 }, Infinity, UpTo[ 2 ], Method -> m ],
         m |-> FindInfraShell[ g, 6, { 1, 2 }, Properties -> { "Separating" }, Method -> m ],
         m |-> FindInfraBisectingHyperplane[ g, 1, 4, { -1, 1 }, Properties -> { "Separating" }, Method -> m ],
         m |-> FindInfraEllipticShell[ g, { 6, 11 }, { 3, 4 }, Properties -> { "Separating" }, Method -> m ],
@@ -247,10 +252,10 @@ VerificationTest[
         m |-> FindInfraLine[ g, 1, 2, All, Method -> m ],
         m |-> FindInfraRay[ g, 6, 7, All, Method -> m ],
         m |-> FindInfraParallel[ g, Range[ 4 ], 10, All, Method -> m ],
-        m |-> FindInfraWalk[ g, 1, 4, All, Method -> m ],
-        m |-> ExtendInfraWalk[ g, { 1, 2 }, 2, All, Method -> m ],
-        m |-> FindInfraGeodesic[ g, 1, 2, 4, All, Method -> m ],
-        m |-> ExtendInfraGeodesic[ g, { 6, 7 }, Infinity, 2, All, Method -> m ],
+        m |-> FindInfraWalk[ g, 1, UpTo[ 4 ], All, Method -> m ],
+        m |-> ExtendInfraWalk[ g, { 1, 2 }, UpTo[ 2 ], All, Method -> m ],
+        m |-> FindInfraGeodesic[ g, 1, 2, UpTo[ 4 ], All, Method -> m ],
+        m |-> ExtendInfraGeodesic[ g, { 6, 7 }, Infinity, UpTo[ 2 ], All, Method -> m ],
         m |-> FindInfraShell[ g, 6, { 1, 2 }, All, Properties -> { "Separating" }, Method -> m ],
         m |-> FindInfraBisectingHyperplane[ g, 1, 4, { -1, 1 }, All, Properties -> { "Separating" }, Method -> m ],
         m |-> FindInfraEllipticShell[ g, { 6, 11 }, { 3, 4 }, All, Properties -> { "Separating" }, Method -> m ],
@@ -260,8 +265,7 @@ VerificationTest[
         m |-> FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All, Method -> m ],
         m |-> FindInfraEllipse[ GridGraph[ { 7, 7 } ], { 25, 12 }, { 4, 8 }, All, Method -> m ],
         m |-> FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, Method -> m ] },
-      call |-> Sort[ Sort /@ call[ { "Exhaustive", "Pruning" -> Infinity } ][ "Realizations" ] ] ===
-               Sort[ Sort /@ call[ "Exhaustive" ][ "Realizations" ] ] ] ],
+      call |-> sortReps @ call[ { "Exhaustive", "Pruning" -> Infinity } ] === sortReps @ call[ "Exhaustive" ] ] ],
   True,
   TestID -> "MethodLadder-Pruning-Infinity-is-the-whole-class"
 ]

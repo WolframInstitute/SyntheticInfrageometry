@@ -355,12 +355,12 @@ InfraParallelQ[ graph_Graph, l1_List, l2_List, threshold_ : 0 ] :=
   ]
 
 InfraParallelQ[ graph_Graph,
-    l1 : _InfraLine | _InfraSegment | _InfraWalk | _InfraRay | _List,
-    l2 : _InfraLine | _InfraSegment | _InfraWalk | _InfraRay | _List,
+    l1 : _InfraLine | _InfraSegment | _InfraRay | _Graph | _List,
+    l2 : _InfraLine | _InfraSegment | _InfraRay | _Graph | _List,
     threshold_ : 0 ] /; ! MatchQ[ { l1, l2 }, { _List, _List } ] :=
   (* "Realizations", not First: a wrapper may carry a pool of DAGs rather than walks *)
-  With[ { reps1 = If[ ListQ @ l1, { l1 }, l1[ "Realizations" ] ],
-          reps2 = If[ ListQ @ l2, { l2 }, l2[ "Realizations" ] ] },
+  With[ { reps1 = Which[ ListQ @ l1, { l1 }, GraphQ @ l1, walkRealisations @ l1, True, l1[ "Realizations" ] ],
+          reps2 = Which[ ListQ @ l2, { l2 }, GraphQ @ l2, walkRealisations @ l2, True, l2[ "Realizations" ] ] },
     AllTrue[ Tuples[ { reps1, reps2 } ],
       pair |-> InfraParallelQ[ graph, pair[[ 1 ]], pair[[ 2 ]], threshold ] ]
   ]
@@ -398,7 +398,8 @@ InfraPerpendicularQ[ graph_Graph, l1_, l2_, OptionsPattern[] ] :=
   ]
 
 
-lineSequence[ ( InfraLine | InfraSegment | InfraWalk | InfraRay )[ reps_List ] ] := First @ reps
+lineSequence[ ( InfraLine | InfraSegment | InfraRay )[ reps_List ] ] := First @ reps
+lineSequence[ w_Graph ] := walkSequence @ w
 lineSequence[ line_List ] := line
 
 

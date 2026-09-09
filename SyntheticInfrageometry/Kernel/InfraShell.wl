@@ -74,7 +74,7 @@ Options[ FindInfraOsculatingShell ] = Options[ FindInfraShell ];
 FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[ ] ] :=
   Module[ { walks, vlist, vidx, dm, pairs, sets, capped },
-    walks = infraSpread @ If[ ListQ @ path, InfraWalk[ { path } ], path ];
+    walks = infraSpread @ path;
     vlist = VertexList @ graph;
     vidx  = AssociationThread[ vlist -> Range @ Length @ vlist ];
     dm    = GraphDistanceMatrix @ graph;

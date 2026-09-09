@@ -1,5 +1,10 @@
 BeginTestSection["Homotopy"]
 
+walkGraph       = WolframInstitute`SyntheticInfrageometry`PackageScope`walkGraph;
+closedWalkGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`closedWalkGraph;
+walkSeq[ w_Graph ] := Last /@ VertexList[ w ]
+walkSeqs[ ws_List ] := walkSeq /@ ws
+
 (* ===== Wrapper auto-flatten ===== *)
 
 VerificationTest[
@@ -11,7 +16,7 @@ VerificationTest[
 (* ===== Tree case: every two paths with same endpoints are homotopic ===== *)
 
 VerificationTest[
-  HomotopicQ[PathGraph[Range[5]], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 2, 3}}]],
+  HomotopicQ[PathGraph[Range[5]], {1, 2, 3}, {1, 2, 3}],
   True,
   TestID -> "Tree-equal-paths-homotopic"
 ]
@@ -22,22 +27,31 @@ VerificationTest[
   TestID -> "Tree-backtrack-loop-null"
 ]
 
+(* ===== A walk is read the same as a vertex list and as a path graph ===== *)
+
+VerificationTest[
+  { HomotopicQ[PathGraph[Range[5]], walkGraph @ {1, 2, 3, 2, 3}, {1, 2, 3}],
+    HomotopicQ[PathGraph[Range[5]], {1, 2, 3, 2, 3}, walkGraph @ {1, 2, 3}] },
+  { True, True },
+  TestID -> "Walk-graph-and-vertex-list-agree"
+]
+
 (* ===== Triangle move ===== *)
 
 VerificationTest[
-  HomotopicQ[CompleteGraph[3], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 3}}], "NullHomotopicCycles" -> {3}],
+  HomotopicQ[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}],
   True,
   TestID -> "Triangle-move-with-NullHomotopicCycles3"
 ]
 
 VerificationTest[
-  HomotopicQ[CompleteGraph[3], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 3}}], "NullHomotopicCycles" -> {}],
+  HomotopicQ[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {}],
   False,
   TestID -> "Triangle-move-blocked-without-cycles"
 ]
 
 VerificationTest[
-  Length @ First @ FindInfraHomotopy[CompleteGraph[3], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 3}}], "NullHomotopicCycles" -> {3}],
+  Length @ First @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}],
   1,
   TestID -> "Triangle-chain-singleton-wrapper"
 ]
@@ -45,33 +59,35 @@ VerificationTest[
 (* ===== Backtrack reduction ===== *)
 
 VerificationTest[
-  HomotopicQ[PathGraph[Range[5]], InfraWalk[{{1, 2, 3, 2, 3}}], InfraWalk[{{1, 2, 3}}]],
+  HomotopicQ[PathGraph[Range[5]], {1, 2, 3, 2, 3}, {1, 2, 3}],
   True,
   TestID -> "Backtrack-collapse"
 ]
 
+(* the representative comes back in the shape the input had: a path graph *)
 VerificationTest[
-  FindInfraHomotopyRepresentative[PathGraph[Range[5]], InfraWalk[{{1, 2, 3, 2, 3, 4}}]],
-  InfraWalk[{{1, 2, 3, 4}}],
+  With[{reps = FindInfraHomotopyRepresentative[PathGraph[Range[5]], walkGraph @ {1, 2, 3, 2, 3, 4}]},
+    {MatchQ[reps, {_Graph}], PathGraphQ @ First @ reps, walkSeqs @ reps}],
+  {True, True, {{1, 2, 3, 4}}},
   TestID -> "Representative-spur-collapse"
 ]
 
 VerificationTest[
-  FindInfraHomotopyRepresentative[CompleteGraph[3], InfraWalk[{{1, 2, 3}}], "NullHomotopicCycles" -> {2, 3}],
-  InfraWalk[{{1, 3}}],
+  walkSeqs @ FindInfraHomotopyRepresentative[CompleteGraph[3], {1, 2, 3}, "NullHomotopicCycles" -> {2, 3}],
+  {{1, 3}},
   TestID -> "Representative-triangle-shortcut"
 ]
 
 (* ===== Rectangle (4-cycle) ===== *)
 
 VerificationTest[
-  HomotopicQ[CycleGraph[4], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 4, 3}}], "NullHomotopicCycles" -> {4}],
+  HomotopicQ[CycleGraph[4], {1, 2, 3}, {1, 4, 3}, "NullHomotopicCycles" -> {4}],
   True,
   TestID -> "Rectangle-move-with-Cycles4"
 ]
 
 VerificationTest[
-  HomotopicQ[CycleGraph[4], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 4, 3}}], "NullHomotopicCycles" -> {3}],
+  HomotopicQ[CycleGraph[4], {1, 2, 3}, {1, 4, 3}, "NullHomotopicCycles" -> {3}],
   False,
   TestID -> "Rectangle-blocked-without-Cycles4"
 ]
@@ -88,6 +104,14 @@ VerificationTest[
   NullHomotopicQ[CycleGraph[6], {1, 2, 3, 4, 5, 6, 1}, "NullHomotopicCycles" -> {6}],
   True,
   TestID -> "C6-loop-null-when-its-the-cycle"
+]
+
+(* a cycle graph is the closed walk itself *)
+VerificationTest[
+  { NullHomotopicQ[CycleGraph[6], closedWalkGraph @ {1, 2, 3, 4, 5, 6}],
+    NullHomotopicQ[CycleGraph[6], closedWalkGraph @ {1, 2, 3, 4, 5, 6}, "NullHomotopicCycles" -> {6}] },
+  { False, True },
+  TestID -> "NullHomotopicQ-on-cycle-graph"
 ]
 
 (* ===== Hole obstruction (3x3 grid) ===== *)
@@ -108,19 +132,17 @@ VerificationTest[
 (* ===== Endpoints must match ===== *)
 
 VerificationTest[
-  HomotopicQ[CycleGraph[4], InfraWalk[{{1, 2, 3}}], InfraWalk[{{2, 3, 4}}]],
+  HomotopicQ[CycleGraph[4], {1, 2, 3}, {2, 3, 4}],
   False,
   TestID -> "Different-endpoints-not-homotopic"
 ]
 
-(* ===== Multi-realisation propagation ===== *)
+(* ===== Multi-realisation propagation: a list of walk graphs ===== *)
 
 VerificationTest[
   Module[{grid23 = GridGraph[{2, 3}], paths},
-    paths = FindInfraSegment[grid23, 1, 6, All]["Realizations"];
-    Length @ FindInfraHomotopy[grid23,
-      InfraWalk[paths], InfraWalk[paths], All,
-      "NullHomotopicCycles" -> {3, 4}]["Realizations"]
+    paths = walkGraph /@ FindInfraSegment[grid23, 1, 6, All]["Realizations"];
+    Length @ FindInfraHomotopy[grid23, paths, paths, All, "NullHomotopicCycles" -> {3, 4}]["Realizations"]
   ],
   9,
   TestID -> "FindInfraHomotopy-cartesian-3x3-pairs"
@@ -128,10 +150,8 @@ VerificationTest[
 
 VerificationTest[
   Module[{grid23 = GridGraph[{2, 3}], paths},
-    paths = FindInfraSegment[grid23, 1, 6, All]["Realizations"];
-    HomotopicQ[grid23,
-      InfraWalk[paths], InfraWalk[paths],
-      "NullHomotopicCycles" -> {3, 4}]
+    paths = walkGraph /@ FindInfraSegment[grid23, 1, 6, All]["Realizations"];
+    HomotopicQ[grid23, paths, paths, "NullHomotopicCycles" -> {3, 4}]
   ],
   True,
   TestID -> "HomotopicQ-multi-AllTrue-conjunction"
@@ -141,18 +161,18 @@ VerificationTest[
 
 VerificationTest[
   MatchQ[
-    FindInfraHomotopy[CompleteGraph[3], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 3}}], "NullHomotopicCycles" -> {3}],
+    FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}],
     InfraHomotopy[{ _List }]
   ],
   True,
   TestID -> "Find-returns-list-of-unary-wrappers"
 ]
 
-(* ===== Null-homotopy via the polymorphic FindInfraHomotopy ===== *)
+(* ===== Null-homotopy via the polymorphic FindInfraHomotopy: loop to constant loop ===== *)
 
 VerificationTest[
   Length @ FindInfraHomotopy[CompleteGraph[3],
-    InfraLoop[{{1, 2, 3, 1}}], InfraLoop[{{1}}],
+    closedWalkGraph @ {1, 2, 3, 1}, closedWalkGraph @ {1},
     "NullHomotopicCycles" -> {3}]["Realizations"],
   1,
   TestID -> "Null-homotopy-triangle-loop"
@@ -161,19 +181,19 @@ VerificationTest[
 (* ===== NullHomotopicCycles option parsing ===== *)
 
 VerificationTest[
-  HomotopicQ[CompleteGraph[3], InfraWalk[{{1, 2}}], InfraWalk[{{1, 3, 2}}], "NullHomotopicCycles" -> 3],
+  HomotopicQ[CompleteGraph[3], {1, 2}, {1, 3, 2}, "NullHomotopicCycles" -> 3],
   True,
   TestID -> "NullHomotopicCycles-integer-shorthand"
 ]
 
 VerificationTest[
-  HomotopicQ[CompleteGraph[3], InfraWalk[{{1, 2}}], InfraWalk[{{1, 3, 2}}]],
+  HomotopicQ[CompleteGraph[3], {1, 2}, {1, 3, 2}],
   True,
   TestID -> "NullHomotopicCycles-default-is-{1,2,3}"
 ]
 
 VerificationTest[
-  HomotopicQ[CompleteGraph[3], InfraWalk[{{1, 2}}], InfraWalk[{{1, 3, 2}}], "NullHomotopicCycles" -> {{1, 2, 3}}],
+  HomotopicQ[CompleteGraph[3], {1, 2}, {1, 3, 2}, "NullHomotopicCycles" -> {{1, 2, 3}}],
   True,
   TestID -> "NullHomotopicCycles-explicit-cycle-list"
 ]
@@ -181,19 +201,19 @@ VerificationTest[
 (* ===== Consecutive-duplicate (length-1) reduction ===== *)
 
 VerificationTest[
-  FindInfraHomotopyRepresentative[PathGraph[Range[5]], InfraWalk[{{1, 2, 2, 3}}]],
-  InfraWalk[{{1, 2, 3}}],
+  walkSeqs @ FindInfraHomotopyRepresentative[PathGraph[Range[5]], {1, 2, 2, 3}],
+  {{1, 2, 3}},
   TestID -> "Representative-consecutive-duplicate-default"
 ]
 
 VerificationTest[
-  HomotopicQ[PathGraph[Range[5]], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 2, 2, 3}}]],
+  HomotopicQ[PathGraph[Range[5]], {1, 2, 3}, {1, 2, 2, 3}],
   True,
   TestID -> "ConsecutiveDuplicate-homotopic-default"
 ]
 
 VerificationTest[
-  HomotopicQ[PathGraph[Range[5]], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 2, 2, 3}}], "NullHomotopicCycles" -> {2, 3}],
+  HomotopicQ[PathGraph[Range[5]], {1, 2, 3}, {1, 2, 2, 3}, "NullHomotopicCycles" -> {2, 3}],
   False,
   TestID -> "ConsecutiveDuplicate-blocked-without-1"
 ]
@@ -201,19 +221,19 @@ VerificationTest[
 (* ===== FindInfraHomotopyRepresentative ===== *)
 
 VerificationTest[
-  FindInfraHomotopyRepresentative[CompleteGraph[3], InfraWalk[{{1, 2, 3}}]],
-  InfraWalk[{{1, 3}}],
+  walkSeqs @ FindInfraHomotopyRepresentative[CompleteGraph[3], {1, 2, 3}],
+  {{1, 3}},
   TestID -> "Representative-K3-triangle-to-edge"
 ]
 
 VerificationTest[
-  FindInfraHomotopyRepresentative[PathGraph[Range[5]], InfraWalk[{{1, 2, 3, 2, 3}}]],
-  InfraWalk[{{1, 2, 3}}],
+  walkSeqs @ FindInfraHomotopyRepresentative[PathGraph[Range[5]], {1, 2, 3, 2, 3}],
+  {{1, 2, 3}},
   TestID -> "Representative-spur-reduction"
 ]
 
 VerificationTest[
-  Sort @ FindInfraHomotopyRepresentative[CycleGraph[4], InfraWalk[{{1, 2, 3}}], All, "NullHomotopicCycles" -> {4}]["Realizations"],
+  Sort @ walkSeqs @ FindInfraHomotopyRepresentative[CycleGraph[4], {1, 2, 3}, All, "NullHomotopicCycles" -> {4}],
   Sort @ {{1, 2, 3}, {1, 4, 3}},
   TestID -> "Representative-C4-two-minimal-forms-with-4-cycle"
 ]
@@ -221,13 +241,13 @@ VerificationTest[
 (* ===== FindInfraHomotopyRepresentativeHomotopy ===== *)
 
 VerificationTest[
-  FindInfraHomotopyRepresentativeHomotopy[CompleteGraph[3], InfraWalk[{{1, 2, 3}}]],
+  FindInfraHomotopyRepresentativeHomotopy[CompleteGraph[3], {1, 2, 3}],
   InfraHomotopy[{{{1, 2, 3}, {1, 3}}}],
   TestID -> "RepresentativeHomotopy-K3-triangle-chain"
 ]
 
 VerificationTest[
-  With[{chain = First @ First @ FindInfraHomotopyRepresentativeHomotopy[PathGraph[Range[5]], InfraWalk[{{1, 2, 3, 2, 3}}]]},
+  With[{chain = First @ First @ FindInfraHomotopyRepresentativeHomotopy[PathGraph[Range[5]], walkGraph @ {1, 2, 3, 2, 3}]},
     {First[chain], Last[chain]}],
   {{1, 2, 3, 2, 3}, {1, 2, 3}},
   TestID -> "RepresentativeHomotopy-spur-endpoints"
@@ -236,19 +256,19 @@ VerificationTest[
 (* ===== FindInfraHomotopy Method dispatch ===== *)
 
 VerificationTest[
-  Length @ FindInfraHomotopy[CompleteGraph[3], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 3}}], 1, Method -> "Exhaustive", "NullHomotopicCycles" -> {3}]["Realizations"],
+  Length @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, 1, Method -> "Exhaustive", "NullHomotopicCycles" -> {3}]["Realizations"],
   1,
   TestID -> "FindInfraHomotopy-Exhaustive-triangle"
 ]
 
 VerificationTest[
-  Length @ FindInfraHomotopy[CompleteGraph[3], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 3}}], 1, Method -> "Greedy", "NullHomotopicCycles" -> {3}]["Realizations"],
+  Length @ FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, 1, Method -> "Greedy", "NullHomotopicCycles" -> {3}]["Realizations"],
   1,
   TestID -> "FindInfraHomotopy-Greedy-triangle"
 ]
 
 VerificationTest[
-  FindInfraHomotopy[CycleGraph[4], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 4, 3}}], 1, "NullHomotopicCycles" -> {}],
+  FindInfraHomotopy[CycleGraph[4], {1, 2, 3}, {1, 4, 3}, 1, "NullHomotopicCycles" -> {}],
   $Failed,
   TestID -> "FindInfraHomotopy-disjoint-no-faces-fails"
 ]
@@ -274,103 +294,113 @@ VerificationTest[
 ]
 
 VerificationTest[
-  HomotopyMoveTypes[FindInfraHomotopy[CompleteGraph[3], InfraWalk[{{1, 2, 3}}], InfraWalk[{{1, 3}}], "NullHomotopicCycles" -> {3}]["Realizations"][[1]]],
+  HomotopyMoveTypes[FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, {1, 3}, "NullHomotopicCycles" -> {3}]["Realizations"][[1]]],
   {"Contract"},
   TestID -> "HomotopyMoveTypes-from-FindInfraHomotopy"
 ]
 
-(* ===================== Free loop homotopy via InfraString ===================== *)
+(* ===================== Free loop homotopy: a cycle graph under "FreeHomotopy" ===================== *)
 
 VerificationTest[
-  HomotopicQ[CompleteGraph[3], InfraString[{{1, 2, 3, 1}}], InfraString[{{2, 3, 1, 2}}]],
+  HomotopicQ[CompleteGraph[3], closedWalkGraph @ {1, 2, 3}, closedWalkGraph @ {2, 3, 1}, "FreeHomotopy" -> True],
   True,
-  TestID -> "InfraString-triangle-rotation"
+  TestID -> "FreeLoop-triangle-rotation"
 ]
 
+(* the same rotation is not a based homotopy: the base point moved *)
 VerificationTest[
-  HomotopicQ[CycleGraph[6], InfraString[{{1, 2, 3, 4, 5, 6, 1}}], InfraString[{{3, 4, 5, 6, 1, 2, 3}}],
-    "NullHomotopicCycles" -> {}],
-  True,
-  TestID -> "InfraString-C6-loop-rotation"
-]
-
-VerificationTest[
-  HomotopicQ[CycleGraph[6], InfraString[{{1, 2, 3, 4, 5, 6, 1}}], InfraString[{{1, 6, 5, 4, 3, 2, 1}}],
+  HomotopicQ[CycleGraph[6], closedWalkGraph @ {1, 2, 3, 4, 5, 6}, closedWalkGraph @ {3, 4, 5, 6, 1, 2},
     "NullHomotopicCycles" -> {}],
   False,
-  TestID -> "InfraString-C6-orientation-matters"
+  TestID -> "BasedLoop-C6-rotation-not-based-homotopic"
 ]
 
 VerificationTest[
-  HomotopicQ[CycleGraph[6], InfraString[{{1, 2, 3, 4, 5, 6, 1}}], InfraString[{{1, 6, 5, 4, 3, 2, 1}}],
-    "NullHomotopicCycles" -> {6}],
+  HomotopicQ[CycleGraph[6], closedWalkGraph @ {1, 2, 3, 4, 5, 6}, closedWalkGraph @ {3, 4, 5, 6, 1, 2},
+    "FreeHomotopy" -> True, "NullHomotopicCycles" -> {}],
   True,
-  TestID -> "InfraString-C6-orientation-trivial-when-contractible"
+  TestID -> "FreeLoop-C6-loop-rotation"
 ]
 
 VerificationTest[
-  HomotopicQ[CompleteGraph[3], InfraString[{{1, 2, 3, 1}}], InfraString[{{2}}]],
+  HomotopicQ[CycleGraph[6], closedWalkGraph @ {1, 2, 3, 4, 5, 6}, closedWalkGraph @ {1, 6, 5, 4, 3, 2},
+    "FreeHomotopy" -> True, "NullHomotopicCycles" -> {}],
+  False,
+  TestID -> "FreeLoop-C6-orientation-matters"
+]
+
+VerificationTest[
+  HomotopicQ[CycleGraph[6], closedWalkGraph @ {1, 2, 3, 4, 5, 6}, closedWalkGraph @ {1, 6, 5, 4, 3, 2},
+    "FreeHomotopy" -> True, "NullHomotopicCycles" -> {6}],
   True,
-  TestID -> "InfraString-triangle-to-constant-at-rotated-base"
+  TestID -> "FreeLoop-C6-orientation-trivial-when-contractible"
+]
+
+VerificationTest[
+  HomotopicQ[CompleteGraph[3], closedWalkGraph @ {1, 2, 3}, closedWalkGraph @ {2}, "FreeHomotopy" -> True],
+  True,
+  TestID -> "FreeLoop-triangle-to-constant-at-rotated-base"
 ]
 
 VerificationTest[
   HomotopicQ[
     Graph[{1 <-> 2, 2 <-> 3, 3 <-> 1, 4 <-> 5, 5 <-> 6, 6 <-> 4}],
-    InfraString[{{1, 2, 3, 1}}], InfraString[{{4, 5, 6, 4}}]],
+    closedWalkGraph @ {1, 2, 3}, closedWalkGraph @ {4, 5, 6}, "FreeHomotopy" -> True],
   False,
-  TestID -> "InfraString-disjoint-vertex-sets-false"
+  TestID -> "FreeLoop-disjoint-vertex-sets-false"
 ]
 
 VerificationTest[
-  HomotopicQ[CycleGraph[6], InfraString[{{1, 2, 3, 4, 5, 6, 1}}], InfraString[{{1, 2, 3, 4, 5, 6, 1}}],
-    "NullHomotopicCycles" -> {}],
+  HomotopicQ[CycleGraph[6], closedWalkGraph @ {1, 2, 3, 4, 5, 6}, closedWalkGraph @ {1, 2, 3, 4, 5, 6},
+    "FreeHomotopy" -> True, "NullHomotopicCycles" -> {}],
   True,
-  TestID -> "InfraString-reflexive"
+  TestID -> "FreeLoop-reflexive"
+]
+
+(* the representative of a closed walk is a cycle graph; the constant loop is one vertex with a self-loop *)
+VerificationTest[
+  With[{reps = FindInfraHomotopyRepresentative[CompleteGraph[3], closedWalkGraph @ {1, 2, 3}, "NullHomotopicCycles" -> {3}]},
+    {MatchQ[reps, {__Graph}], AllTrue[reps, ! AcyclicGraphQ[#] || ! LoopFreeGraphQ[#] &], walkSeqs @ reps}],
+  {True, True, {{1}}},
+  TestID -> "Representative-closed-walk-is-cycle-graph"
 ]
 
 (* ===================== Free path homotopy ===================== *)
 
 VerificationTest[
-  FindInfraHomotopyRepresentative[PathGraph[Range[5]], InfraWalk[{{1, 2, 3, 4, 5}}], "FreeHomotopy" -> True],
-  InfraWalk[{{1}, {2}, {3}, {4}, {5}}],
+  Sort @ walkSeqs @ FindInfraHomotopyRepresentative[PathGraph[Range[5]], {1, 2, 3, 4, 5}, "FreeHomotopy" -> True],
+  {{1}, {2}, {3}, {4}, {5}},
   TestID -> "FreeHomotopy-path-collapse-to-vertex"
 ]
 
 VerificationTest[
-  HomotopicQ[CompleteGraph[3], InfraWalk[{{1, 2}}], InfraWalk[{{1, 3}}], "FreeHomotopy" -> True, "NullHomotopicCycles" -> {3}],
+  HomotopicQ[CompleteGraph[3], {1, 2}, {1, 3}, "FreeHomotopy" -> True, "NullHomotopicCycles" -> {3}],
   True,
   TestID -> "FreeHomotopy-different-endpoints-homotopic"
 ]
 
-(* ===================== Bare-list rejection ===================== *)
+(* ===================== Open against closed is refused ===================== *)
 
 VerificationTest[
-  Quiet @ FindInfraHomotopyRepresentative[CompleteGraph[3], {1, 2, 3}],
+  FindInfraHomotopy[CompleteGraph[3], {1, 2, 3}, closedWalkGraph @ {1, 2, 3}],
   $Failed,
-  TestID -> "Bare-list-rejected-FindInfraHomotopyRepresentative"
+  {FindInfraHomotopy::mismatch},
+  TestID -> "Open-vs-closed-rejected"
 ]
 
 VerificationTest[
-  Quiet @ FindInfraHomotopy[CompleteGraph[3], {1, 2}, {1, 3, 2}],
+  HomotopicQ[CompleteGraph[3], walkGraph @ {1, 2, 3, 1}, closedWalkGraph @ {1, 2, 3}],
   $Failed,
-  TestID -> "Bare-list-rejected-FindInfraHomotopy"
+  {HomotopicQ::mismatch},
+  TestID -> "Open-walk-returning-to-start-is-not-a-loop"
 ]
 
-(* ===================== Mismatched wrapper heads ===================== *)
+(* ===================== InfraCircle coercion: the circle is the free loop ===================== *)
 
 VerificationTest[
-  Quiet @ FindInfraHomotopy[CompleteGraph[3], InfraWalk[{{1, 2, 3}}], InfraLoop[{{1, 2, 3, 1}}]],
-  $Failed,
-  TestID -> "Mismatched-heads-rejected"
-]
-
-(* ===================== InfraCircle coercion ===================== *)
-
-VerificationTest[
-  FindInfraHomotopyRepresentative[CycleGraph[4], InfraCircle[{{1, 2, 3, 4}}], "NullHomotopicCycles" -> {4}],
-  InfraString[{{1}, {2}, {3}, {4}}],
-  TestID -> "InfraCircle-coerces-to-InfraString"
+  Sort @ walkSeqs @ FindInfraHomotopyRepresentative[CycleGraph[4], InfraCircle[{{1, 2, 3, 4}}], "NullHomotopicCycles" -> {4}],
+  {{1}, {2}, {3}, {4}},
+  TestID -> "InfraCircle-coerces-to-free-loop"
 ]
 
 VerificationTest[

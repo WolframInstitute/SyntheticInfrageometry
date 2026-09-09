@@ -26,19 +26,17 @@ UniqueInfraSegmentQ::usage = "UniqueInfraSegmentQ[graph, u, v] tests whether the
 
 (* ===================== InfraWalk ===================== *)
 
-InfraWalk::usage = "InfraWalk[{walk1, ...}] is a bundle of walks, not necessarily simple. Inside InfraScene, InfraWalk[p1, ..., pk] is the step-wise constructor.";
-FindInfraWalk::usage = "FindInfraWalk[graph, p1, kspec] grows the walks from p1 in the class cut by the Properties rules (default {\"Simple\"}) until a stopping condition or the budget kspec stops them; FindInfraWalk[graph, p1, p2, kspec] keeps those ending at p2. Options \"InfraScale\", Properties, \"StoppingCondition\", Method.";
+InfraWalk::usage = "InfraWalk[p1, ..., pk] inside InfraScene is the literal walk through p1, ..., pk. A walk itself is a Graph: a directed path on the position pairs {i, v}, a closed walk a directed cycle on them; Last /@ VertexList gives the vertex sequence.";
+FindInfraWalk::usage = "FindInfraWalk[graph, p1, kspec] grows the walks from p1 in the class cut by the Properties rules (default {\"Simple\"}) until a stopping condition or the budget kspec (UpTo[k], {k}, {lo, hi}, Infinity) stops them; FindInfraWalk[graph, p1, p2, kspec] keeps those ending at p2. Each walk is a path graph on position pairs. Options \"InfraScale\", Properties, \"StoppingCondition\", Method.";
 FindInfraGeodesic::usage = "FindInfraGeodesic[graph, p1, scale, kspec] grows the geodesics at infra-scale scale from p1 -- FindInfraWalk at \"InfraScale\" -> scale with \"Minimizing\" among the rules; FindInfraGeodesic[graph, p1, p2, scale, kspec] keeps those ending at p2. Options Properties, \"StoppingCondition\", Method.";
 InfraGeodesicQ::usage = "InfraGeodesicQ[graph, walk, scale] tests whether every window of scale consecutive vertices of walk plus the next one is a shortest path; scale 1 gives InfraWalkQ and Infinity gives InfraSegmentQ.";
-WalkSingularities::usage = "WalkSingularities[walk] gives the singularities of walk as parameter data: \"SelfIntersections\" (position groups sharing a vertex), \"SelfTangencies\" (oriented interval groups sharing an arc), \"Cusps\" (mirrored blocks).";
+WalkSingularities::usage = "WalkSingularities[walk] gives the singularities of a walk (a vertex list or a walk graph; a cycle graph is read on its cyclic core) as parameter data: \"SelfIntersections\" (position groups sharing a vertex), \"SelfTangencies\" (oriented interval groups sharing an arc), \"Cusps\" (mirrored blocks).";
 InfraImmersedQ::usage = "InfraImmersedQ[graph, walk] tests whether walk is an immersed walk: a walk with no cusp (no backtrack).";
 InfraGenericQ::usage = "InfraGenericQ[graph, walk] tests whether walk is a generic immersed curve: no cusps, no self-tangencies, every self-intersection a double point off the endpoints.";
 InfraWalkCrossingQ::usage = "InfraWalkCrossingQ[graph, walk, v, r] tests whether the double visit of walk at v is a transverse crossing at scale r: the two passes separate each other's exits on the shell {r, r+1}; {i, j} names two positions instead.";
-ExtendInfraWalk::usage = "ExtendInfraWalk[graph, seed, kspec] continues a seed walk in the class cut by the Properties rules (default {\"Simple\"}) until a stopping condition or the budget kspec (edges added per growing side) stops it. Options \"InfraScale\", Properties, \"StoppingCondition\", Method, \"Direction\".";
+ExtendInfraWalk::usage = "ExtendInfraWalk[graph, seed, kspec] continues a seed walk -- a vertex list or a walk graph -- in the class cut by the Properties rules (default {\"Simple\"}) until a stopping condition or the budget kspec (UpTo[k], {k}, {lo, hi}, Infinity; edges added per growing side) stops it. Options \"InfraScale\", Properties, \"StoppingCondition\", Method, \"Direction\".";
 ExtendInfraGeodesic::usage = "ExtendInfraGeodesic[graph, seed, scale, kspec] continues a seed walk as a geodesic at infra-scale scale -- ExtendInfraWalk at \"InfraScale\" -> scale with \"Minimizing\" among the rules. Options Properties, \"StoppingCondition\", Method, \"Direction\".";
 ConcatenateInfraWalk::usage = "ConcatenateInfraWalk[path1, path2] joins every compatible walk pair, those with Last[walk1] === First[walk2].";
-InfraLoop::usage = "InfraLoop[{walk1, ...}] is a bundle of closed walks with a fixed base point; open realisations are auto-closed.";
-InfraString::usage = "InfraString[{walk1, ...}] is a bundle of closed walks modulo cyclic rotation -- the free-loop wrapper, stored in lex-least rotation.";
 
 (* ===================== InfraLine ===================== *)
 
@@ -165,9 +163,9 @@ InfraCurvature::usage = "InfraCurvature[graph, v] gives the local Alexandrov upp
 
 (* ===================== WalkSpace ===================== *)
 
-SelectInfraWalk::usage = "SelectInfraWalk[graph, walks] draws a walk (or cycle, for a closed-head bundle) from a bundle treated as a metric space. Options \"From\", \"Distance\", \"Metric\", \"MaxCliques\", \"Cyclic\".";
+SelectInfraWalk::usage = "SelectInfraWalk[graph, walks] draws a walk from a bundle -- vertex lists or walk graphs, cycle graphs selecting as closed walks -- treated as a metric space. Options \"From\", \"Distance\", \"Metric\", \"MaxCliques\", \"Cyclic\".";
 EmbeddingClosest::usage = "EmbeddingClosest[graph, bundle, ref] keeps the bundle elements drawn closest to a Euclidean reference under GraphEmbedding; ref is {p1, p2}, {center, radius}, or a curve.";
-FindEmbeddingClosestPath::usage = "FindEmbeddingClosestPath[graph, curve] snaps an embedded curve to a walk, mapping sampled points to nearest vertices and joining them by geodesics.";
+FindEmbeddingClosestPath::usage = "FindEmbeddingClosestPath[graph, curve] snaps an embedded curve to a walk graph, mapping sampled points to nearest vertices and joining them by geodesics.";
 GeodesicSprayGraph::usage = "GeodesicSprayGraph[graph, c] gives the BFS DAG rooted at c, whose directed source-to-sink paths are exactly the maximal geodesics from c; GeodesicSprayGraph[graph, pairs] gives the union of geodesics between listed pairs.";
 GeodesicExtensionGraph::usage = "GeodesicExtensionGraph[graph, {p1, p2}] gives the DAG of geodesic extensions of the segment p1 -> p2 beyond p2: the vertices e with d(p1, e) == d(p1, p2) + d(p2, e), edges along increasing distance from p1; wrapper anchors give one DAG per pair.";
 PathSubgraph::usage = "PathSubgraph[graph, u, v] gives the union of all shortest u-v paths; a trailing length cap or All widens it to longer simple paths.";
@@ -176,11 +174,11 @@ InfraDeformationSize::usage = "InfraDeformationSize[ref, walk] gives the number 
 (* ===================== Homotopy ===================== *)
 
 InfraHomotopy::usage = "InfraHomotopy[{chain1, ...}] is a bundle of homotopy chains, each a sequence of walks related by elementary moves.";
-FindInfraHomotopyRepresentative::usage = "FindInfraHomotopyRepresentative[graph, obj] gives a length-shortest walk in obj's homotopy class. Options Method, \"FreeHomotopy\", \"NullHomotopicCycles\", \"MaxLength\", \"MaxMoves\".";
+FindInfraHomotopyRepresentative::usage = "FindInfraHomotopyRepresentative[graph, walk] gives the length-shortest walks in the homotopy class of walk -- an open walk with its endpoints fixed, a cycle graph a loop with its base point fixed, \"FreeHomotopy\" -> True freeing either. Options Method, \"FreeHomotopy\", \"NullHomotopicCycles\", \"MaxLength\", \"MaxMoves\".";
 FindInfraHomotopyRepresentativeHomotopy::usage = "FindInfraHomotopyRepresentativeHomotopy[graph, obj] gives the chain of elementary moves reducing obj to a shortest representative. Options as FindInfraHomotopyRepresentative.";
-FindInfraHomotopy::usage = "FindInfraHomotopy[graph, a, b] gives a chain of elementary moves from a to b; both must share a wrapper head. Options as FindInfraHomotopyRepresentative.";
+FindInfraHomotopy::usage = "FindInfraHomotopy[graph, a, b] gives a chain of elementary moves from a to b; both open walks or both closed. Options as FindInfraHomotopyRepresentative.";
 HomotopicQ::usage = "HomotopicQ[graph, a, b] tests whether a and b lie in the same homotopy class.";
-NullHomotopicQ::usage = "NullHomotopicQ[graph, cycle] tests whether a closed walk is null-homotopic.";
+NullHomotopicQ::usage = "NullHomotopicQ[graph, cycle] tests whether a closed walk -- a vertex list read cyclically, or a cycle graph -- is null-homotopic.";
 HomotopyMoveType::usage = "HomotopyMoveType[walk1, walk2] classifies an elementary move as \"Contract\", \"Extend\", or \"Lateral\".";
 HomotopyMoveTypes::usage = "HomotopyMoveTypes[chain] applies HomotopyMoveType to each consecutive pair of a homotopy chain.";
 
@@ -272,7 +270,7 @@ $InfraBallColor::usage    = "Default highlight color for InfraBall objects.";
 $InfraPlaneColor::usage   = "Default highlight color for InfraPlane objects.";
 $InfraCircleColor::usage  = "Default highlight color for InfraCircle objects.";
 $InfraRayColor::usage     = "Default highlight color for InfraRay objects.";
-$InfraWalkColor::usage    = "Default highlight color for InfraWalk, InfraLoop and InfraString objects.";
+$InfraWalkColor::usage    = "Default highlight color for walk graphs.";
 $InfraTopologyColor::usage = "Default highlight color for topology overlays.";
 $InfraPalette::usage = "$InfraPalette is the Dataset of default object colors, one row per primitive; the source both the $Infra*Color symbols and InfraSceneHighlight read from.";
 

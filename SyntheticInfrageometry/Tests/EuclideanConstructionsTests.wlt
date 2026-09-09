@@ -1,5 +1,10 @@
 BeginTestSection["EuclideanConstructions"]
 
+walkGraph       = WolframInstitute`SyntheticInfrageometry`PackageScope`walkGraph;
+closedWalkGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`closedWalkGraph;
+walkSeq[ w_Graph ] := Last /@ VertexList[ w ]
+walkSeqs[ ws_List ] := walkSeq /@ ws
+
 (* ===== FindInfraMidpoint ===== *)
 
 (* Even distance -> single centre vertex. *)
@@ -208,9 +213,9 @@ VerificationTest[
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraWalk[{{1, 2, 3, 4, 5}}], 13, All],
+    walkGraph @ {1, 2, 3, 4, 5}, 13, All],
   { 3 },
-  TestID -> "FindClosestInfraPoint-InfraWalk"
+  TestID -> "FindClosestInfraPoint-walk-graph"
 ]
 
 VerificationTest[

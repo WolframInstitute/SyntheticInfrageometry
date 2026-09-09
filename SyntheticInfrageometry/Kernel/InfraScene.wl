@@ -78,8 +78,10 @@ selectFromName[ name_String  ] := name
 
 
 infraVertexSet[ fam_Association ] := Keys @ fam
+infraVertexSet[ w_Graph ] := walkVertexSet @ w
+infraVertexSet[ ws : { __Graph } ] := Union @@ ( walkVertexSet /@ ws )
 infraVertexSet[ InfraLine[ dags : { __Graph } ] ] := Union @@ ( VertexList /@ dags )
-infraVertexSet[ ( InfraSegment | InfraWalk | InfraLoop | InfraString | InfraLine | InfraRay
+infraVertexSet[ ( InfraSegment | InfraLine | InfraRay
                 | InfraCircle | InfraEllipse
                 | InfraShell | InfraEllipticShell | InfraPlane | InfraBall )[ reps_List ] ] :=
   Union @@ reps
@@ -88,7 +90,7 @@ infraVertexSet[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] 
   Union @@ polylineToVertexSeqs[ reps ]
 infraVertexSet[ list_List ] /;
     list =!= { } && AllTrue[ list,
-      MatchQ[ ( InfraSegment | InfraWalk | InfraLoop | InfraString | InfraLine | InfraRay |
+      MatchQ[ ( InfraSegment | InfraLine | InfraRay |
                 InfraCircle | InfraEllipse | InfraShell | InfraEllipticShell | InfraPlane | InfraBall |
                 InfraPolyline | InfraPolygon | InfraTriangle )[ { _ } ] ] ] :=
   infraVertexSet[ Head[ First @ list ] @ ( #[[ 1, 1 ]] & /@ list ) ]
@@ -108,10 +110,9 @@ InfraDistance[ g_Graph, p_, q_, OptionsPattern[] ] :=
 (* guarded on the realisation shape -- a single list payload -- not merely on the head: InfraCircle[c, r] is a scene constructor whose vertex set is unknown until dispatched, and matching it here collapsed scene hypotheses to the empty set *)
 
 $infraRealisationPattern =
-  ( InfraSegment | InfraWalk | InfraLoop |
-    InfraString | InfraLine | InfraRay | InfraCircle | InfraEllipse | InfraShell |
+  ( InfraSegment | InfraLine | InfraRay | InfraCircle | InfraEllipse | InfraShell |
     InfraEllipticShell | InfraPlane | InfraBall | InfraPolyline | InfraPolygon |
-    InfraTriangle )[ _List ] | InfraSegment[ _Graph ] | _Association;
+    InfraTriangle )[ _List ] | InfraSegment[ _Graph ] | _Association | _Graph | { __Graph };
 
 InfraIntersection[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
   KeySort @ AssociationMap[ 1 &, Intersection @@ ( infraVertexSet /@ { args } ) ]

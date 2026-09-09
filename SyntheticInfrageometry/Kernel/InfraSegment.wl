@@ -257,8 +257,9 @@ dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
 
 (* consecutive vertices adjacent, revisits allowed: InfraWalkQ superset InfraSegmentQ superset InfraLineQ *)
 
-InfraWalkQ[ graph_Graph, w : _InfraWalk | _InfraLoop | _InfraString ] :=
-  AllTrue[ First @ w, InfraWalkQ[ graph, # ] & ]
+InfraWalkQ[ graph_Graph, ws : { __Graph } ] := AllTrue[ ws, InfraWalkQ[ graph, # ] & ]
+
+InfraWalkQ[ graph_Graph, w_Graph ] := AllTrue[ walkRealisations @ w, InfraWalkQ[ graph, # ] & ]
 
 InfraWalkQ[ graph_Graph, path_List ] /; Length[ path ] >= 2 :=
   AllTrue[ Partition[ path, 2, 1 ], EdgeQ[ graph, UndirectedEdge @@ # ] & ]

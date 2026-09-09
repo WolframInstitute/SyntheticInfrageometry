@@ -4,6 +4,7 @@ PackageScope[walkSpaceBFS]
 PackageScope[walkSpaceGreedyDFS]
 PackageScope[hausdorffMove]
 PackageScope[closeWalk]
+PackageScope[canonicalString]
 PackageScope[loopRotations]
 PackageScope[faceMoves]
 PackageScope[applyMove]
@@ -39,122 +40,85 @@ $infraHomotopyOptions = {
 
 (* ===================== Walk-mode dispatch ===================== *)
 
-(* { addSlides, canonicalize }: free path homotopy slides the endpoints, free loop and string homotopy quotient by rotation *)
+(* the homotopy class is read off the shape and one option.  An open walk -- a vertex list or a path graph -- is a path with its endpoints fixed, slid by "FreeHomotopy"; a closed walk -- a cycle graph -- is a loop with its base point fixed, quotiented by rotation into the free loop by "FreeHomotopy".  An InfraCircle has no base point and is always the free loop.  Both arguments of a two-walk question must be open or both closed *)
 
-walkModeFor[ InfraWalk,   freeHom_ ] := { freeHom === True, False }
-walkModeFor[ InfraLoop,   freeHom_ ] := { False, freeHom === True }
-walkModeFor[ InfraString, _ ]        := { False, True }
-walkModeFor[ InfraCircle, _ ]        := { False, True }
+(* { addSlides, canonicalize } *)
+walkModeFor[ closedQ_, freeHom_ ] := { ! closedQ && TrueQ @ freeHom, closedQ && TrueQ @ freeHom }
 
+closedWalkArgQ[ w_Graph ]              := closedWalkQ @ w
+closedWalkArgQ[ ws : { __Graph } ]     := closedWalkQ @ First @ ws
+closedWalkArgQ[ InfraCircle[ _List ] ] := True
+closedWalkArgQ[ _ ]                    := False
 
-(* InfraCircle coerces to InfraString: the geometric circle has no preferred base point *)
+freeWalkArgQ[ InfraCircle[ _List ], _ ] := True
+freeWalkArgQ[ _, freeHom_ ]             := TrueQ @ freeHom
 
-representativeHeadFor[ InfraWalk ]   := InfraWalk
-representativeHeadFor[ InfraLoop ]   := InfraLoop
-representativeHeadFor[ InfraString ] := InfraString
-representativeHeadFor[ InfraCircle ] := InfraString
-representativeHeadFor[ _ ]           := $Failed
+(* the internal spelling of a realisation: a closed walk carries its base point repeated at the end, a free loop its lex-least rotation; the result takes the shape the input had *)
+coerceRealisation[ closedQ_, canonicalize_, walk_List ] :=
+  Which[ canonicalize, canonicalString @ walk, closedQ, closeWalk @ walk, True, walk ]
 
-
-coerceRealisation[ InfraWalk,   walk_List ] := walk
-coerceRealisation[ InfraLoop,   walk_List ] := closeWalk @ walk
-coerceRealisation[ InfraString, walk_List ] := canonicalString @ walk
-coerceRealisation[ InfraCircle, walk_List ] := canonicalString @ closeWalk @ walk
+walkShape[ closedQ_ ] := If[ closedQ, Map[ closedWalkGraph ], Map[ walkGraph ] ]
 
 
 (* ===================== FindInfraHomotopyRepresentative ===================== *)
 
 
-FindInfraHomotopyRepresentative::wrap = "First argument must be wrapped in InfraWalk, InfraLoop, InfraString, or InfraCircle, not `1`.";
-
 Options[ FindInfraHomotopyRepresentative ] = $infraHomotopyOptions;
 
 FindInfraHomotopyRepresentative[ graph_Graph, obj_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
-  With[ { inHead = Head[ obj ], outHead = representativeHeadFor @ Head[ obj ] },
-    If[ outHead === $Failed,
-      Message[ FindInfraHomotopyRepresentative::wrap, inHead ]; $Failed,
-      spreadFind[ outHead, count,
-        representativeCore[ graph, ##, inHead, opts ] &, obj ]
-    ]
-  ]
-
-
-representativeCore[ graph_Graph, walk_List, inHead_, opts___ ] :=
-  With[ { parent = First @ runWalkBFS[ graph, walk, inHead, ( False & ), opts ] },
-    minimalReached @ parent
-  ]
+  With[ { closedQ = closedWalkArgQ @ obj,
+          freeHom = freeWalkArgQ[ obj, OptionValue[ FindInfraHomotopyRepresentative, { opts }, "FreeHomotopy" ] ] },
+    spreadFind[ walkShape @ closedQ, count,
+      walk |-> minimalReached @ First @ runWalkBFS[ graph, walk, closedQ, freeHom, ( False & ), opts ],
+      obj ] ]
 
 
 (* ===================== FindInfraHomotopyRepresentativeHomotopy ===================== *)
 
 
-FindInfraHomotopyRepresentativeHomotopy::wrap =
-  "First argument must be wrapped in InfraWalk, InfraLoop, InfraString, or InfraCircle, not `1`.";
-
 Options[ FindInfraHomotopyRepresentativeHomotopy ] = $infraHomotopyOptions;
 
 FindInfraHomotopyRepresentativeHomotopy[ graph_Graph, obj_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
-  With[ { inHead = Head[ obj ], outHead = representativeHeadFor @ Head[ obj ] },
-    If[ outHead === $Failed,
-      Message[ FindInfraHomotopyRepresentativeHomotopy::wrap, inHead ]; $Failed,
-      spreadFind[ InfraHomotopy, count,
-        reductionCore[ graph, ##, inHead, opts ] &, obj ]
-    ]
-  ]
-
-
-reductionCore[ graph_Graph, walk_List, inHead_, opts___ ] :=
-  With[ { parent = First @ runWalkBFS[ graph, walk, inHead, ( False & ), opts ] },
-    reconstructChain[ parent, # ] & /@ minimalReached[ parent ]
-  ]
+  With[ { closedQ = closedWalkArgQ @ obj,
+          freeHom = freeWalkArgQ[ obj, OptionValue[ FindInfraHomotopyRepresentativeHomotopy, { opts }, "FreeHomotopy" ] ] },
+    spreadFind[ InfraHomotopy, count,
+      walk |-> With[ { parent = First @ runWalkBFS[ graph, walk, closedQ, freeHom, ( False & ), opts ] },
+        reconstructChain[ parent, # ] & /@ minimalReached[ parent ] ],
+      obj ] ]
 
 
 (* ===================== FindInfraHomotopy ===================== *)
 
 
-FindInfraHomotopy::wrap     = "First two object arguments must be wrapped in InfraWalk, InfraLoop, InfraString, or InfraCircle, not `1` and `2`.";
-FindInfraHomotopy::mismatch = "Endpoint wrapper heads must match: got `1` and `2`.";
+FindInfraHomotopy::mismatch  = "The first walk is `1` and the second `2`; both must be open or both closed.";
 FindInfraHomotopy::badmethod = "Method `1` is not supported by FindInfraHomotopy.";
 
 Options[ FindInfraHomotopy ] = $infraHomotopyOptions;
 
 FindInfraHomotopy[ graph_Graph, a_, b_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
-  Module[ { aHead = Head[ a ], bHead = Head[ b ], inHead },
-    inHead = unifyHomotopyHeads[ aHead, bHead ];
-    If[ inHead === $Failed,
-      If[ representativeHeadFor[ aHead ] === $Failed || representativeHeadFor[ bHead ] === $Failed,
-        Message[ FindInfraHomotopy::wrap, aHead, bHead ],
-        Message[ FindInfraHomotopy::mismatch, aHead, bHead ] ];
-      $Failed,
+  With[ { closedQ = closedWalkArgQ @ a,
+          freeHom = freeWalkArgQ[ a, OptionValue[ FindInfraHomotopy, { opts }, "FreeHomotopy" ] ] ||
+                    freeWalkArgQ[ b, False ] },
+    If[ closedQ =!= closedWalkArgQ @ b,
+      Message[ FindInfraHomotopy::mismatch, openOrClosed @ closedQ, openOrClosed @ ! closedQ ]; $Failed,
       spreadFind[ InfraHomotopy, count,
-        homotopyCore[ graph, ##, inHead, opts ] &, a, b ]
-    ]
-  ]
+        homotopyCore[ graph, ##, closedQ, freeHom, opts ] &, a, b ] ] ]
+
+openOrClosed[ True ]  = "closed";
+openOrClosed[ False ] = "open";
 
 
-(* InfraCircle and InfraString coerce together; InfraWalk and InfraLoop stay distinct -- paths have endpoints, loops are closed *)
-
-unifyHomotopyHeads[ InfraWalk,   InfraWalk ]   := InfraWalk
-unifyHomotopyHeads[ InfraLoop,   InfraLoop ]   := InfraLoop
-unifyHomotopyHeads[ InfraString, InfraString ] := InfraString
-unifyHomotopyHeads[ InfraString, InfraCircle ] := InfraString
-unifyHomotopyHeads[ InfraCircle, InfraString ] := InfraString
-unifyHomotopyHeads[ InfraCircle, InfraCircle ] := InfraString
-unifyHomotopyHeads[ _, _ ]                     := $Failed
-
-
-homotopyCore[ graph_Graph, walkA_List, walkB_List, inHead_, opts___ ] :=
-  Module[ { freeHom, modeInfo, canonicalize, slides, startW, targetW, methodSpec, methodHead, pruning,
+homotopyCore[ graph_Graph, walkA_List, walkB_List, closedQ_, freeHom_, opts___ ] :=
+  Module[ { modeInfo, canonicalize, slides, startW, targetW, methodSpec, methodHead, pruning,
             rules, maxMoves, maxLen },
-    freeHom      = OptionValue[ FindInfraHomotopy, { opts }, "FreeHomotopy" ];
-    modeInfo     = walkModeFor[ inHead, freeHom ];
+    modeInfo     = walkModeFor[ closedQ, freeHom ];
     slides       = modeInfo[[ 1 ]];
     canonicalize = modeInfo[[ 2 ]];
-    startW       = If[ canonicalize, canonicalString @ walkA, walkA ];
-    targetW      = If[ canonicalize, canonicalString @ walkB, walkB ];
+    startW       = coerceRealisation[ closedQ, canonicalize, walkA ];
+    targetW      = coerceRealisation[ closedQ, canonicalize, walkB ];
     rules        = resolveFaces[ graph, OptionValue[ FindInfraHomotopy, { opts }, "NullHomotopicCycles" ] ];
     maxMoves     = OptionValue[ FindInfraHomotopy, { opts }, "MaxMoves" ];
     maxLen       = OptionValue[ FindInfraHomotopy, { opts }, "MaxLength" ] /.
@@ -163,9 +127,8 @@ homotopyCore[ graph_Graph, walkA_List, walkB_List, inHead_, opts___ ] :=
     methodHead   = methodName @ methodSpec;
     pruning      = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity;
     If[ startW === targetW, Return[ { { startW } } ] ];
-    If[ inHead === InfraWalk && First[ walkA ] =!= First[ walkB ] && ! freeHom, Return[ { } ] ];
-    If[ inHead === InfraWalk && Last[ walkA ]  =!= Last[ walkB ]  && ! freeHom, Return[ { } ] ];
-    If[ inHead === InfraLoop && First[ walkA ] =!= First[ walkB ] && ! freeHom, Return[ { } ] ];
+    If[ ! freeHom && First[ startW ] =!= First[ targetW ], Return[ { } ] ];
+    If[ ! closedQ && ! freeHom && Last[ startW ] =!= Last[ targetW ], Return[ { } ] ];
     Switch[ methodHead,
       "Exhaustive",
         With[ { result = walkSpaceBFS[ graph, startW, rules, maxLen, maxMoves,
@@ -188,37 +151,30 @@ homotopyCore[ graph_Graph, walkA_List, walkB_List, inHead_, opts___ ] :=
 (* ===================== HomotopicQ ===================== *)
 
 
-HomotopicQ::wrap     = FindInfraHomotopy::wrap;
 HomotopicQ::mismatch = FindInfraHomotopy::mismatch;
 
 Options[ HomotopicQ ] = $infraHomotopyOptions;
 
 HomotopicQ[ graph_Graph, a_, b_, opts : OptionsPattern[] ] :=
-  Module[ { aHead = Head[ a ], bHead = Head[ b ], inHead },
-    inHead = unifyHomotopyHeads[ aHead, bHead ];
-    If[ inHead === $Failed,
-      If[ representativeHeadFor[ aHead ] === $Failed || representativeHeadFor[ bHead ] === $Failed,
-        Message[ HomotopicQ::wrap, aHead, bHead ],
-        Message[ HomotopicQ::mismatch, aHead, bHead ] ];
-      $Failed,
+  With[ { closedQ = closedWalkArgQ @ a,
+          freeHom = freeWalkArgQ[ a, OptionValue[ HomotopicQ, { opts }, "FreeHomotopy" ] ] ||
+                    freeWalkArgQ[ b, False ] },
+    If[ closedQ =!= closedWalkArgQ @ b,
+      Message[ HomotopicQ::mismatch, openOrClosed @ closedQ, openOrClosed @ ! closedQ ]; $Failed,
       AllTrue[ Tuples[ { infraSpread @ a, infraSpread @ b } ],
-        pair |-> homotopicQCore[ graph, pair[[ 1 ]], pair[[ 2 ]], inHead, opts ] ]
-    ]
-  ]
+        pair |-> homotopicQCore[ graph, pair[[ 1 ]], pair[[ 2 ]], closedQ, freeHom, opts ] ] ] ]
 
 
-homotopicQCore[ graph_Graph, walkA_List, walkB_List, inHead_, opts___ ] :=
-  Module[ { freeHom, modeInfo, canonicalize, slides, startW, targetW, rules, maxMoves, maxLen, result },
-    freeHom      = OptionValue[ HomotopicQ, { opts }, "FreeHomotopy" ];
-    modeInfo     = walkModeFor[ inHead, freeHom ];
+homotopicQCore[ graph_Graph, walkA_List, walkB_List, closedQ_, freeHom_, opts___ ] :=
+  Module[ { modeInfo, canonicalize, slides, startW, targetW, rules, maxMoves, maxLen, result },
+    modeInfo     = walkModeFor[ closedQ, freeHom ];
     slides       = modeInfo[[ 1 ]];
     canonicalize = modeInfo[[ 2 ]];
-    startW       = If[ canonicalize, canonicalString @ walkA, walkA ];
-    targetW      = If[ canonicalize, canonicalString @ walkB, walkB ];
+    startW       = coerceRealisation[ closedQ, canonicalize, walkA ];
+    targetW      = coerceRealisation[ closedQ, canonicalize, walkB ];
     If[ startW === targetW, Return[ True ] ];
-    If[ inHead === InfraWalk && First[ walkA ] =!= First[ walkB ] && ! freeHom, Return[ False ] ];
-    If[ inHead === InfraWalk && Last[ walkA ]  =!= Last[ walkB ]  && ! freeHom, Return[ False ] ];
-    If[ inHead === InfraLoop && First[ walkA ] =!= First[ walkB ] && ! freeHom, Return[ False ] ];
+    If[ ! freeHom && First[ startW ] =!= First[ targetW ], Return[ False ] ];
+    If[ ! closedQ && ! freeHom && Last[ startW ] =!= Last[ targetW ], Return[ False ] ];
     rules        = resolveFaces[ graph, OptionValue[ HomotopicQ, { opts }, "NullHomotopicCycles" ] ];
     maxMoves     = OptionValue[ HomotopicQ, { opts }, "MaxMoves" ];
     maxLen       = OptionValue[ HomotopicQ, { opts }, "MaxLength" ] /.
@@ -231,31 +187,22 @@ homotopicQCore[ graph_Graph, walkA_List, walkB_List, inHead_, opts___ ] :=
 
 (* ===================== NullHomotopicQ ===================== *)
 
-(* a closed walk is null-homotopic iff it is homotopic, under whatever equivalence its head encodes, to a constant walk *)
-
-NullHomotopicQ::wrap = "Argument must be wrapped in InfraLoop, InfraString, or InfraCircle, or a bare closed walk.";
+(* a closed walk is null-homotopic iff it is homotopic, as a based loop, to the constant walk at its base point; a vertex list or an open walk graph is read as closed, an InfraCircle as the free loop *)
 
 Options[ NullHomotopicQ ] = $infraHomotopyOptions;
 
 NullHomotopicQ[ graph_Graph, cycle_List, opts : OptionsPattern[] ] :=
   With[ { closed = closeWalk @ cycle },
-    HomotopicQ[ graph, InfraLoop[ { closed } ], InfraLoop[ { { First @ closed } } ], opts ]
-  ]
+    HomotopicQ[ graph, closedWalkGraph @ closed, closedWalkGraph @ { First @ closed }, opts ] ]
 
-NullHomotopicQ[ graph_Graph, InfraLoop[ reps_List ], opts : OptionsPattern[] ] :=
-  AllTrue[ reps, NullHomotopicQ[ graph, #, opts ] & ]
+NullHomotopicQ[ graph_Graph, ws : { __Graph }, opts : OptionsPattern[] ] :=
+  AllTrue[ ws, NullHomotopicQ[ graph, #, opts ] & ]
 
-NullHomotopicQ[ graph_Graph, InfraString[ reps_List ], opts : OptionsPattern[] ] :=
-  AllTrue[ reps,
-    HomotopicQ[ graph, InfraString[ { # } ], InfraString[ { { First @ # } } ], opts ] & ]
+NullHomotopicQ[ graph_Graph, w_Graph, opts : OptionsPattern[] ] :=
+  AllTrue[ walkRealisations @ w, NullHomotopicQ[ graph, #, opts ] & ]
 
 NullHomotopicQ[ graph_Graph, InfraCircle[ reps_List ], opts : OptionsPattern[] ] :=
-  AllTrue[ reps,
-    HomotopicQ[ graph, InfraString[ { canonicalString @ closeWalk @ # } ],
-      InfraString[ { { First @ # } } ], opts ] & ]
-
-NullHomotopicQ[ _Graph, _, OptionsPattern[] ] :=
-  ( Message[ NullHomotopicQ::wrap ]; $Failed )
+  AllTrue[ reps, HomotopicQ[ graph, InfraCircle[ { # } ], InfraCircle[ { { First @ # } } ], opts ] & ]
 
 
 (* ===================== Move classification ===================== *)
@@ -280,13 +227,12 @@ HomotopyMoveTypes[ InfraHomotopy[ reps_List ] ] := HomotopyMoveTypes /@ reps
 (* ===================== Walk-space search engines ===================== *)
 
 
-runWalkBFS[ graph_Graph, walk_List, inHead_, stopWhen_, opts___ ] :=
-  Module[ { freeHom, modeInfo, canonicalize, slides, startW, rules, maxMoves, maxLen },
-    freeHom      = OptionValue[ FindInfraHomotopyRepresentative, { opts }, "FreeHomotopy" ];
-    modeInfo     = walkModeFor[ inHead, freeHom ];
+runWalkBFS[ graph_Graph, walk_List, closedQ_, freeHom_, stopWhen_, opts___ ] :=
+  Module[ { modeInfo, canonicalize, slides, startW, rules, maxMoves, maxLen },
+    modeInfo     = walkModeFor[ closedQ, freeHom ];
     slides       = modeInfo[[ 1 ]];
     canonicalize = modeInfo[[ 2 ]];
-    startW       = If[ canonicalize, canonicalString @ walk, walk ];
+    startW       = coerceRealisation[ closedQ, canonicalize, walk ];
     rules        = resolveFaces[ graph,
                      OptionValue[ FindInfraHomotopyRepresentative, { opts }, "NullHomotopicCycles" ] ];
     maxMoves     = OptionValue[ FindInfraHomotopyRepresentative, { opts }, "MaxMoves" ];
@@ -519,6 +465,16 @@ maxCycleLengthOf[ rules_Association ] :=
 
 closeWalk[ cycle_List ] :=
   If[ First[ cycle ] === Last[ cycle ], cycle, Append[ cycle, First[ cycle ] ] ]
+
+
+(* the free loop's canonical form: the lex-least cyclic rotation of the core Most @ closeWalk @ walk *)
+
+canonicalString[ { } ]      := { }
+canonicalString[ { v_ } ]   := { v }
+canonicalString[ walk_List ] /; Length[ walk ] >= 2 :=
+  With[ { core = If[ First @ walk === Last @ walk, Most @ walk, walk ] },
+    First @ SortBy[ Table[ RotateLeft[ core, k ], { k, 0, Length[ core ] - 1 } ], Identity ]
+  ]
 
 
 loopRotations[ c_List ] /; Length[ c ] <= 1 := { c }

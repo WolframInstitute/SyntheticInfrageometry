@@ -666,14 +666,15 @@ VerificationTest[
 
 (* An exported symbol with no definitions of any kind can only be a scene token:
    an assertion head, a construction constructor, or the step container.  The
-   three below are exactly those; a fourth means a symbol was exported with a
-   usage message and no meaning, which is how InfraPlaneQ hid. *)
+   symbols below are exactly those (InfraWalk since walks became graphs, 2026-09-09);
+   one more means a symbol was exported with a usage message and no meaning, which
+   is how InfraPlaneQ hid. *)
 VerificationTest[
   Select[ Names[ "WolframInstitute`SyntheticInfrageometry`*" ],
     n |-> AllTrue[
       { DownValues, UpValues, SubValues, OwnValues, FormatValues, NValues },
       f |-> ReleaseHold @ Map[ f, ToExpression[ n, InputForm, Hold ] ] === { } ] ],
-  { "InfraGeometricStep", "InfraIntersectQ", "InfraPoint", "InfraRevolution" },
+  { "InfraGeometricStep", "InfraIntersectQ", "InfraPoint", "InfraRevolution", "InfraWalk" },
   TestID -> "InfraScene-valueless-exports-are-scene-tokens"
 ]
 

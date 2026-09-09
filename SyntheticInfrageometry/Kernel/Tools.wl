@@ -37,6 +37,13 @@ PackageScope[infraNumReps]
 PackageScope[pointQ]
 PackageScope[multisetQ]
 PackageScope[walkQ]
+PackageScope[walkGraph]
+PackageScope[closedWalkGraph]
+PackageScope[closedWalkQ]
+PackageScope[positionSpelledQ]
+PackageScope[walkSequence]
+PackageScope[walkRealisations]
+PackageScope[walkVertexSet]
 PackageScope[toDensity]
 PackageScope[linePointSet]
 PackageScope[cycleToVertexSequence]
@@ -66,6 +73,48 @@ pointQ[ graph_Graph, x_ ] := VertexQ[ graph, x ]
 multisetQ[ graph_Graph, x_ ] := AssociationQ[ x ] || ( ListQ[ x ] && ! VertexQ[ graph, x ] )
 
 walkQ[ _Graph, x_ ] := GraphQ[ x ]
+
+
+(* the two spellings of a walk graph.  The general walk family writes a walk on the POSITION PAIRS {i, v}: PathGraph marks it open, a directed cycle marks it closed (a constant loop is one vertex with a self-loop) -- a walk revisits, and only positions carry the singularity census.  The geodesic class writes its path graphs and DAGs on SUBSTRATE vertices, where nothing repeats.  Last /@ VertexList converts the first spelling to the second; nothing converts back.  A graph is read as position-spelled by its vertex labels alone, so a substrate whose vertices are themselves {i, v} pairs visited in position order is misread -- accepted, since the paclet never writes such a graph *)
+
+walkGraph[ walk_List ] := PathGraph[ MapIndexed[ { First @ #2, #1 } &, walk ], DirectedEdges -> True ]
+
+closedWalkGraph[ walk_List ] :=
+  With[ { core = MapIndexed[ { First @ #2, #1 } &,
+            If[ Length[ walk ] >= 2 && First @ walk === Last @ walk, Most @ walk, walk ] ] },
+    Graph[ core, DirectedEdge @@@ Partition[ core, 2, 1, 1 ] ] ]
+
+closedWalkQ[ w_Graph ] := ! LoopFreeGraphQ[ w ] || ! AcyclicGraphQ[ w ]
+
+positionSpelledQ[ w_Graph ] :=
+  AllTrue[ VertexList @ w, MatchQ[ { _Integer, _ } ] ] &&
+  Sort[ First /@ VertexList @ w ] === Range @ VertexCount @ w
+
+(* the vertex sequence of one walk graph, the cyclic core of a closed one; a substrate path or cycle is read by following its edges from an end, or from its first vertex when it has none *)
+walkSequence[ w_Graph ] := Which[
+  positionSpelledQ @ w, Last /@ SortBy[ VertexList @ w, First ],
+  EdgeCount[ w ] == 0,  VertexList @ w,
+  True,
+    With[ { start = SelectFirst[ VertexList @ w,
+              If[ DirectedGraphQ @ w, VertexInDegree[ w, # ] == 0, VertexDegree[ w, # ] == 1 ] &,
+              First @ VertexList @ w ],
+            nextOf = If[ DirectedGraphQ @ w,
+              { u, _ } |-> First[ VertexOutComponent[ w, { u }, { 1 } ], None ],
+              { u, prev } |-> First[ DeleteCases[ AdjacencyList[ w, u ], prev ], None ] ] },
+      { seq = TakeWhile[
+          First /@ NestList[ { nextOf @@ #, First @ # } &, { start, None }, VertexCount @ w ],
+          # =!= None & ] },
+      If[ closedWalkQ @ w, Most @ seq, seq ] ] ]
+
+(* the walks a graph stands for, as vertex sequences: one for a path graph or a cycle (closed, first vertex repeated at the end), the source -> sink paths for a DAG *)
+walkRealisations[ w_Graph ] := Which[
+  closedWalkQ @ w,      { closeWalk @ walkSequence @ w },
+  positionSpelledQ @ w, Map[ Last, dagGeodesics @ w, { 2 } ],
+  DirectedGraphQ @ w,   dagGeodesics @ w,
+  True,                 { walkSequence @ w } ]
+
+walkVertexSet[ w_Graph ] :=
+  Sort @ DeleteDuplicates @ If[ positionSpelledQ @ w, Last /@ VertexList @ w, VertexList @ w ]
 
 
 (* ===================== The method ladder ===================== *)
@@ -339,7 +388,7 @@ findAllMinimalAdmissible[ graph_Graph, set_List, admissible_, pruning_ ] :=
    A realisation slot holds either an explicit realisation or a compact atom (a geodesic-DAG Graph, InfraSegment only) standing for its whole family. *)
 
 (* the single source of truth for the canonicalisation rules and measure dispatch *)
-$infraBundleHeads = InfraSegment | InfraLine | InfraWalk | InfraLoop | InfraString |
+$infraBundleHeads = InfraSegment | InfraLine |
   InfraShell | InfraBall | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse |
   InfraPolygon | InfraTriangle | InfraRay | InfraPolyline;
 
@@ -365,7 +414,7 @@ Scan[ defineInfraBundleRules,
   List @@ $infraBundleHeads ]
 
 
-(* a multi-realisation wrapper spreads into its bare realisations and a multiset over its support; anything else -- a bare vertex, and a walk still written as a vertex list -- is one anchor.  This is the REALISATION spread, not the anchor rule: a List here is a single realisation, and toDensity is where a List is read as a multiset *)
+(* a multi-realisation wrapper spreads into its bare realisations, a multiset over its support, and a walk graph into the vertex sequences it stands for; anything else -- a bare vertex, and a walk written as a vertex list -- is one anchor.  This is the REALISATION spread, not the anchor rule: a List here is a single realisation, and toDensity is where a List is read as a multiset *)
 
 With[ { heads = $infraBundleHeads },
   infraSpread[ heads[ reps_List ] ] := reps;
@@ -373,6 +422,8 @@ With[ { heads = $infraBundleHeads },
     #[[ 1, 1 ]] & /@ list
 ]
 infraSpread[ fam_Association ] := Keys @ fam
+infraSpread[ w_Graph ] := walkRealisations @ w
+infraSpread[ ws : { __Graph } ] := Catenate[ walkRealisations /@ ws ]
 infraSpread[ InfraSegment[ dag_Graph ] ] := dagGeodesics[ dag ]
 infraSpread[ InfraSegment[ dags : { _Graph, __Graph } ] ] := Join @@ ( dagGeodesics /@ dags )
 infraSpread[ InfraCircle[ dags : { __Graph } ] ] := Catenate[ dagGeodesics /@ dags ]
@@ -518,11 +569,13 @@ infraEdgeMultiset[ g_, obj_ ] :=
    keys sorted, so densities built by different routes compare SameQ; this was the one guarantee the old measure head carried *)
 
 toDensity[ graph_Graph, x_ ] := Which[
-  pointQ[ graph, x ], <| x -> 1 |>,
-  AssociationQ[ x ],  KeySort @ x,
-  GraphQ[ x ],        KeySort @ GeodesicOccupation @ x,
-  ListQ[ x ],         KeySort @ Counts @ x,
-  True,               <| x -> 1 |> ]
+  pointQ[ graph, x ],                     <| x -> 1 |>,
+  AssociationQ[ x ],                      KeySort @ x,
+  GraphQ[ x ] && closedWalkQ[ x ],        KeySort @ Counts @ walkSequence @ x,
+  GraphQ[ x ] && positionSpelledQ[ x ],   KeySort @ Counts @ Catenate @ walkRealisations @ x,
+  GraphQ[ x ],                            KeySort @ GeodesicOccupation @ x,
+  ListQ[ x ],                             KeySort @ Counts @ x,
+  True,                                   <| x -> 1 |> ]
 
 
 (* ===================== Visit measure ===================== *)
@@ -558,11 +611,8 @@ normalizeMeasure[ method_, counts_, obj_ ] := Switch[ method,
 infraRepType[ Association ]        = "Points";
 infraRepType[ InfraSegment ]       = "Paths";
 infraRepType[ InfraLine ]          = "Paths";
-infraRepType[ InfraWalk ]          = "Paths";
-infraRepType[ InfraLoop ]          = "Paths";
 infraRepType[ InfraRay ]           = "Paths";
 infraRepType[ InfraPolyline ]      = "Paths";
-infraRepType[ InfraString ]        = "Cycles";
 infraRepType[ InfraCircle ]        = "Cycles";
 infraRepType[ InfraEllipse ]       = "Cycles";
 infraRepType[ InfraPolygon ]       = "Cycles";
@@ -605,7 +655,8 @@ infraRepEdges[ g_, "Sets", rep_ ] :=
 (* bare list = vertex sequence; line wrappers unwrap to the union of their realisations *)
 
 (* a realisation slot may be a compact geodesic-DAG atom standing for its family *)
-linePointSet[ ( InfraLine | InfraSegment | InfraWalk | InfraRay )[ reps_List ] ] :=
+linePointSet[ ( InfraLine | InfraSegment | InfraRay )[ reps_List ] ] :=
   Union @@ Replace[ reps, d_Graph :> VertexList[ d ], { 1 } ]
 linePointSet[ InfraSegment[ dag_Graph ] ] := VertexList[ dag ]
+linePointSet[ w_Graph ] := walkVertexSet[ w ]
 linePointSet[ line_List ] := line
