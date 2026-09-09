@@ -1,5 +1,9 @@
 BeginTestSection["EuclideanPredicates"]
 
+geodesicGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+infraSpread   = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
+toDensity     = WolframInstitute`SyntheticInfrageometry`PackageScope`toDensity;
+
 (* ===== InfraWalkQ ===== *)
 
 VerificationTest[
@@ -396,10 +400,10 @@ VerificationTest[
 ]
 
 VerificationTest[
-  InfraPerpendicularQ[CycleGraph[5], InfraLine[{{1, 2, 3, 4}}], InfraSegment[{{5, 1, 2}}],
+  InfraPerpendicularQ[CycleGraph[5], geodesicGraph @ {1, 2, 3, 4}, geodesicGraph @ {5, 1, 2},
                       Method -> {"Projection", "Equality" -> "Overlap"}],
   True,
-  TestID -> "InfraPerpendicularQ-wrapper-input"
+  TestID -> "InfraPerpendicularQ-walk-graph-input"
 ]
 
 (* Empty intersection still False even with Method override. *)
@@ -438,7 +442,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    AllTrue[FindInfraBisectingHyperplane[g, 1, 5, All]["Realizations"], h |-> SeparatesQ[g, h, 1, 5]]
+    AllTrue[FindInfraBisectingHyperplane[g, 1, 5, All], h |-> SeparatesQ[g, h, 1, 5]]
   ],
   True,
   TestID -> "SeparatesQ-bisecting-hyperplane-path"
@@ -481,7 +485,7 @@ VerificationTest[
 (* The bisector FindInfraBisectingHyperplane returns must satisfy its own predicate. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    InfraPlaneQ[g, FindInfraBisectingHyperplane[g, 11, 15][[1, 1]], 11, 15]],
+    InfraPlaneQ[g, FindInfraBisectingHyperplane[g, 11, 15], 11, 15]],
   True,
   TestID -> "InfraPlaneQ-roundtrip-grid-bisector"
 ]
@@ -489,7 +493,7 @@ VerificationTest[
 (* Every vertex of a bisector is equidistant from the two foci. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    AllTrue[FindInfraBisectingHyperplane[g, 11, 15][[1, 1]],
+    AllTrue[FindInfraBisectingHyperplane[g, 11, 15],
       GraphDistance[g, 11, #] == GraphDistance[g, 15, #] &]],
   True,
   TestID -> "InfraPlaneQ-bisector-is-equidistant"
@@ -498,7 +502,7 @@ VerificationTest[
 (* Dropping a vertex breaks separation, so the remainder is not a hyperplane. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    InfraPlaneQ[g, Rest @ FindInfraBisectingHyperplane[g, 11, 15][[1, 1]], 11, 15]],
+    InfraPlaneQ[g, Rest @ FindInfraBisectingHyperplane[g, 11, 15], 11, 15]],
   False,
   TestID -> "InfraPlaneQ-punctured-bisector-false"
 ]
@@ -549,7 +553,7 @@ VerificationTest[
 (* Every ray FindInfraRay produces satisfies its own predicate. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    AllTrue[FindInfraRay[g, 1, 13, All]["Realizations"], InfraRayQ[g, #] &]],
+    AllTrue[infraSpread @ FindInfraRay[g, 1, 13, All], InfraRayQ[g, #] &]],
   True,
   TestID -> "InfraRayQ-FindInfraRay-roundtrip-grid"
 ]
@@ -557,7 +561,7 @@ VerificationTest[
 (* Truncating a ray leaves its far end extensible, so it is no longer a ray. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    InfraRayQ[g, Most @ First @ FindInfraRay[g, 1, 13, All]["Realizations"]]],
+    InfraRayQ[g, Most @ First @ infraSpread @ FindInfraRay[g, 1, 13, All]]],
   False,
   TestID -> "InfraRayQ-truncated-far-end-false"
 ]
@@ -592,13 +596,10 @@ VerificationTest[
   TestID -> "InfraRayQ-singleton-false"
 ]
 
-(* ===== Predicates accept the wrappers their constructors return ===== *)
+(* ===== Predicates accept the shapes their constructors return ===== *)
 
 (* The family invariant: feeding a Find* result straight back into its own *Q
-   must answer, not return unevaluated.  Before 0.13.6 every one of these
-   returned unevaluated, which reads as a False that never came.  The last
-   three are the residue that pass missed: their Find* returns a wrapper the
-   0.13.6 sweep did not enumerate. *)
+   must answer, not return unevaluated. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
     {InfraSegmentQ[g, FindInfraSegment[g, 1, 13, All]],
@@ -606,68 +607,80 @@ VerificationTest[
      InfraLineQ[g, FindInfraLine[g, 1, 21, All]],
      InfraShellQ[g, FindInfraShell[g, 13, 2]],
      InfraBallQ[g, FindInfraBall[g, 13, 2]],
-     InfraCircleQ[g, FindInfraCircle[g, 13, 2]],
-     InfraEllipseQ[g, FindInfraEllipse[g, {11, 15}, 6]],
      InfraEllipticShellQ[g, FindInfraEllipticShell[g, {11, 15}, 6]],
      InfraWalkQ[g, FindInfraWalk[g, 1, 13, UpTo[ 6 ], All]],
      InfraPlaneQ[g, FindInfraBisectingHyperplane[g, 11, 15], 11, 15],
      InfraRayQ[g, FindInfraRay[g, 1, 13, All]],
-     InfraParallelQ[g, InfraLine[{{1, 2, 3, 4, 5}}],
+     InfraParallelQ[g, geodesicGraph @ {1, 2, 3, 4, 5},
        FindInfraParallel[g, {1, 2, 3, 4, 5}, 6, All]],
      InfraRegularPolygonQ[g, FindInfraRegularPolygon[g, {1}, 4, 1], {1}],
      InfraRevolutionQ[g, FindInfraRevolution[g, {1, 2, 3}, 1], {1, 2, 3}, 1]}],
-  ConstantArray[True, 14],
+  ConstantArray[True, 12],
   TestID -> "predicates-accept-their-own-constructor-output"
 ]
 
-(* Presentation-independence: a wrapper's verdict is the conjunction over its
-   realisations, so wrapping cannot change the answer.  This is what makes
-   reaching in with [[1, 1]] unnecessary rather than merely inconvenient. *)
+(* An empty class is the empty List, and no predicate accepts it: on the square
+   grid no exact-radius metric circle or ellipse exists, so those two finders
+   return { } here rather than an instance.  (A banded FindInfraCircle does
+   return a separating cycle, but its vertex set spans the band and so is not a
+   metric shell -- InfraCircleQ and FindInfraCircle do not round-trip off an
+   exact radius.  Pre-existing; the wrappers hid it by answering vacuously.) *)
+VerificationTest[
+  With[{g = GridGraph[{5, 5}]},
+    {FindInfraCircle[g, 13, 2], InfraCircleQ[g, FindInfraCircle[g, 13, 2]],
+     FindInfraEllipse[g, {11, 15}, 6], InfraEllipseQ[g, FindInfraEllipse[g, {11, 15}, 6]]}],
+  {{ }, False, { }, False},
+  TestID -> "an-empty-class-is-the-empty-List"
+]
+
+(* Presentation-independence: a bundle's verdict is the conjunction over its
+   realisations, so the compact carrier cannot change the answer, and a set and
+   the density over it agree. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
     {With[{pa = FindInfraParallel[g, {1, 2, 3, 4, 5}, 6, All]},
-       InfraParallelQ[g, InfraLine[{{1, 2, 3, 4, 5}}], pa] ===
-         AllTrue[pa["Realizations"], InfraParallelQ[g, {1, 2, 3, 4, 5}, #] &]],
+       InfraParallelQ[g, geodesicGraph @ {1, 2, 3, 4, 5}, pa] ===
+         AllTrue[infraSpread @ pa, InfraParallelQ[g, {1, 2, 3, 4, 5}, #] &]],
      With[{rp = FindInfraRegularPolygon[g, {1}, 4, 1]},
        InfraRegularPolygonQ[g, rp, {1}] ===
-         AllTrue[First @ rp, InfraRegularPolygonQ[g, #, {1}] &]],
+         AllTrue[rp, InfraRegularPolygonQ[g, #, {1}] &]],
      With[{rv = FindInfraRevolution[g, {1, 2, 3}, 1]},
        InfraRevolutionQ[g, rv, {1, 2, 3}, 1] ===
-         InfraRevolutionQ[g, Keys @ rv, {1, 2, 3}, 1]]}],
+         InfraRevolutionQ[g, toDensity[g, rv], {1, 2, 3}, 1]]}],
   {True, True, True},
-  TestID -> "wrapper-verdict-is-conjunction-over-realisations"
+  TestID -> "bundle-verdict-is-conjunction-over-realisations"
 ]
 
-(* A mixed call is legal on the two-line predicates: either side may arrive
-   wrapped or bare, and the verdict is the same. *)
+(* A mixed call is legal on the two-line predicates: either side may arrive as a
+   path graph or as a bare vertex list, and the verdict is the same. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}], l = {1, 2, 3, 4, 5}, m = {6, 7, 8, 9, 10}},
-    {InfraParallelQ[g, InfraLine[{l}], m], InfraParallelQ[g, l, InfraLine[{m}]],
-     InfraParallelQ[g, InfraLine[{l}], InfraLine[{m}]], InfraParallelQ[g, l, m]}],
+    {InfraParallelQ[g, geodesicGraph @ l, m], InfraParallelQ[g, l, geodesicGraph @ m],
+     InfraParallelQ[g, geodesicGraph @ l, geodesicGraph @ m], InfraParallelQ[g, l, m]}],
   ConstantArray[True, 4],
-  TestID -> "InfraParallelQ-mixed-wrapper-and-bare"
+  TestID -> "InfraParallelQ-mixed-graph-and-list"
 ]
 
-(* the multiset is the set shape, so the set-shaped predicates
-   must accept it too. *)
+(* a set is a sorted List, and the density over it says the same thing, so the
+   set-shaped predicates must accept both. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    {InfraShellQ[g, KeySort @ AssociationMap[1 &, FindInfraShell[g, 13, 2][[1, 1]]]],
-     InfraBallQ[g, KeySort @ AssociationMap[1 &, FindInfraBall[g, 13, 2][[1, 1]]]]}],
+    {InfraShellQ[g, toDensity[g, FindInfraShell[g, 13, 2]]],
+     InfraBallQ[g, toDensity[g, FindInfraBall[g, 13, 2]]]}],
   {True, True},
-  TestID -> "set-predicates-accept-multisets"
+  TestID -> "set-predicates-accept-densities"
 ]
 
-(* A wrapper holding something that is not of its kind answers False rather
-   than passing by virtue of being wrapped. *)
+(* A shape holding something that is not of the kind asked about answers False
+   rather than passing by virtue of its shape. *)
 VerificationTest[
   With[{g = GridGraph[{5, 5}]},
-    {InfraShellQ[g, InfraShell[{{1, 2, 3}}]], InfraLineQ[g, InfraLine[{{1, 2, 3}}]],
-     InfraParallelQ[g, InfraLine[{{1, 2, 3}}], InfraLine[{{1, 6, 11}}]],
-     InfraRegularPolygonQ[g, InfraPolygon[{{InfraSegment[{{1, 2, 3}}]}}], {1}],
+    {InfraShellQ[g, {1, 2, 3}], InfraLineQ[g, geodesicGraph @ {1, 2, 3}],
+     InfraParallelQ[g, geodesicGraph @ {1, 2, 3}, geodesicGraph @ {1, 6, 11}],
+     InfraRegularPolygonQ[g, { geodesicGraph @ {1, 2, 3} }, {1}],
      InfraRevolutionQ[g, <| 1 -> 1, 2 -> 1 |>, {1, 2, 3}, 1]}],
   ConstantArray[False, 5],
-  TestID -> "wrapped-non-instances-are-False"
+  TestID -> "non-instances-are-False"
 ]
 
 EndTestSection[]

@@ -1,6 +1,8 @@
 BeginTestSection["EuclideanConstructions"]
 
 walkGraph       = WolframInstitute`SyntheticInfrageometry`PackageScope`walkGraph;
+geodesicGraph   = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+infraSpread     = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
 closedWalkGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`closedWalkGraph;
 walkSeq[ w_Graph ] := Last /@ VertexList[ w ]
 walkSeqs[ ws_List ] := walkSeq /@ ws
@@ -46,29 +48,29 @@ VerificationTest[
   TestID -> "FindInfraMidpoint-union-matches-geodesic-midpoints"
 ]
 
-(* ===== FindInfraMidpoint on InfraSegment wrappers ===== *)
+(* ===== FindInfraMidpoint on walk graphs ===== *)
 
 VerificationTest[
-  FindInfraMidpoint[PathGraph[Range[5]], InfraSegment[{{1, 2, 3, 4, 5}}]],
+  FindInfraMidpoint[PathGraph[Range[5]], geodesicGraph @ {1, 2, 3, 4, 5}],
   <| 3 -> 1 |>,
-  TestID -> "FindInfraMidpoint-InfraSegment-single-walk"
+  TestID -> "FindInfraMidpoint-walk-graph-single"
 ]
 
 (* Walks with different centres union into one effective point. *)
 VerificationTest[
   Keys @ FindInfraMidpoint[ PathGraph[ Range[ 7 ] ],
-    InfraSegment[ { { 1, 2, 3, 4, 5, 6, 7 }, { 1, 2, 3, 4, 5 } } ] ],
+    geodesicGraph /@ { { 1, 2, 3, 4, 5, 6, 7 }, { 1, 2, 3, 4, 5 } } ],
   { 3, 4 },
-  TestID -> "FindInfraMidpoint-InfraSegment-multi-walk-union"
+  TestID -> "FindInfraMidpoint-walk-graphs-multi-union"
 ]
 
 (* both reversed walks pass through 3, so the midpoint projection gives it
    mass 2 -- a measure whose occupation normalises to 1 *)
 VerificationTest[
   FindInfraMidpoint[ PathGraph[ Range[ 5 ] ],
-    InfraSegment[ { { 1, 2, 3, 4, 5 }, { 5, 4, 3, 2, 1 } } ] ],
+    geodesicGraph /@ { { 1, 2, 3, 4, 5 }, { 5, 4, 3, 2, 1 } } ],
   <| 3 -> 2 |>,
-  TestID -> "FindInfraMidpoint-InfraSegment-mass-of-shared-middle"
+  TestID -> "FindInfraMidpoint-walk-graphs-mass-of-shared-middle"
 ]
 
 (* ===== FindInfraPerpendicular ===== *)
@@ -77,60 +79,61 @@ VerificationTest[
    geodesic {5, 1, 2} (canonical orientation: lex-min of seq and reverse). *)
 
 VerificationTest[
-  Sort /@ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All][ "Realizations" ],
+  Sort /@ infraSpread @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All],
   { { 1, 2, 5 } },
   TestID -> "FindInfraPerpendicular-CycleGraph5-Metric"
 ]
 
 VerificationTest[
-  Head @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All],
-  InfraLine,
-  TestID -> "FindInfraPerpendicular-returns-InfraLine"
+  GraphQ @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All],
+  True,
+  TestID -> "FindInfraPerpendicular-returns-a-graph"
 ]
 
 VerificationTest[
   (* every returned perp line must pass through both `point` and at least one
      vertex of `line` (a foot). *)
   With[{lines = FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All]},
-    AllTrue[lines[ "Realizations" ], MemberQ[#, 5] && IntersectingQ[#, {1, 2, 3, 4}] &]
+    AllTrue[infraSpread @ lines, MemberQ[#, 5] && IntersectingQ[#, {1, 2, 3, 4}] &]
   ],
   True,
   TestID -> "FindInfraPerpendicular-through-point-and-foot"
 ]
 
 VerificationTest[
-  Length @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, 1][ "Realizations" ],
+  Length @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, 1],
   1,
   TestID -> "FindInfraPerpendicular-strict-1"
 ]
 
-(* Q-side dispatch on C5: result is one InfraLine wrapper (smoke test).  C5 is
+(* Q-side dispatch on C5: the metric branch gives one path graph, the Alexandrov
+   branch nothing at all (smoke test).  C5 is
    a degenerate configuration -- the metric perpendicular shares two vertices
    with `line`, so Q-side tests legitimately reject it.  Substantive Q-side
    tests live in the mesh-graph notebook demo. *)
 
 VerificationTest[
-  Head @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All,
+  GraphQ @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All,
     Method -> "Projection"],
-  InfraLine,
+  True,
   TestID -> "FindInfraPerpendicular-CycleGraph5-Projection-shape"
 ]
 
 VerificationTest[
-  Head @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All,
+  FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All,
     Method -> {"Alexandrov", "Curvature" -> 0, "Tolerance" -> 0.5}],
-  InfraLine,
+  { },
   TestID -> "FindInfraPerpendicular-CycleGraph5-Alexandrov0-shape"
 ]
 
 (* Radius option: same setup, restrict to NeighborhoodGraph[g, 5, 1].  The
    1-ball around 5 in C5 is {5, 1, 4}; line {1, 2, 3, 4} restricted is {1, 4}.
    Foot recipe finds... no equidistant pair with the right parity, so should
-   return empty.  Just check it does not crash and returns an InfraLine. *)
+   return empty.  Just check it does not crash and returns a walk graph. *)
 
 VerificationTest[
-  Head @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All, "Radius" -> 1],
-  InfraLine,
+  GraphQ @ FindInfraPerpendicular[CycleGraph[5], {1, 2, 3, 4}, 5, All, "Radius" -> 1],
+  True,
   TestID -> "FindInfraPerpendicular-Radius-1"
 ]
 
@@ -138,14 +141,14 @@ VerificationTest[
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], 13, All],
+    geodesicGraph @ {1, 2, 3, 4, 5}, 13, All],
   { 3 },
   TestID -> "FindClosestInfraPoint-grid-InfraSegment"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraLine[{{1, 2, 3, 4, 5}}], 13, All],
+    geodesicGraph @ {1, 2, 3, 4, 5}, 13, All],
   { 3 },
   TestID -> "FindClosestInfraPoint-grid-InfraLine"
 ]
@@ -160,7 +163,7 @@ VerificationTest[
 (* Point already on the segment: closest is itself. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], 3, All],
+    geodesicGraph @ {1, 2, 3, 4, 5}, 3, All],
   { 3 },
   TestID -> "FindClosestInfraPoint-point-on-line"
 ]
@@ -168,7 +171,7 @@ VerificationTest[
 (* Cartesian spread: two segment realisations, one point -> one closest per realisation. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}, {1, 6, 11, 16, 21}}],
+    geodesicGraph /@ {{1, 2, 3, 4, 5}, {1, 6, 11, 16, 21}},
     13, All],
   { 3, 11 },
   TestID -> "FindClosestInfraPoint-multi-segment-Cartesian"
@@ -177,28 +180,28 @@ VerificationTest[
 (* Cartesian spread: one segment, two point realisations. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], <| 11 -> 1, 15 -> 1 |>, All],
+    geodesicGraph @ {1, 2, 3, 4, 5}, <| 11 -> 1, 15 -> 1 |>, All],
   { 1, 5 },
   TestID -> "FindClosestInfraPoint-multi-point-Cartesian"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], 13],
+    geodesicGraph @ {1, 2, 3, 4, 5}, 13],
   { 3 },
   TestID -> "FindClosestInfraPoint-default-count-1"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], 13, 5],
+    geodesicGraph @ {1, 2, 3, 4, 5}, 13, 5],
   $Failed,
   TestID -> "FindClosestInfraPoint-strict-count-too-large-fails"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], 13, UpTo[5]],
+    geodesicGraph @ {1, 2, 3, 4, 5}, 13, UpTo[5]],
   { 3 },
   TestID -> "FindClosestInfraPoint-UpTo-caps"
 ]
@@ -206,7 +209,7 @@ VerificationTest[
 (* Tied minimisers (CycleGraph[5], point 1 to opposite arc {3, 4}: both at distance 2). *)
 VerificationTest[
   FindClosestInfraPoint[CycleGraph[5],
-    InfraSegment[{{3, 4}}], 1, All],
+    geodesicGraph @ {3, 4}, 1, All],
   { 3, 4 },
   TestID -> "FindClosestInfraPoint-ties-symmetric"
 ]
@@ -219,10 +222,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraRay[{{1, 2, 3, 4, 5}}], 13, All],
+  FindClosestInfraPoint[GridGraph[{5, 5}], geodesicGraph @ {1, 2, 3, 4, 5}, 13, All],
   { 3 },
-  TestID -> "FindClosestInfraPoint-InfraRay"
+  TestID -> "FindClosestInfraPoint-ray-graph"
 ]
 
 (* ===== FindInfraBisectingHyperplane ===== *)
@@ -231,7 +233,7 @@ VerificationTest[
    realisation. PathGraph[5], 1 to 5: slab = {3}. *)
 VerificationTest[
   FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5],
-  InfraPlane[{{3}}],
+  {3},
   TestID -> "FindInfraBisectingHyperplane-LevelSet-path-center"
 ]
 
@@ -244,28 +246,28 @@ VerificationTest[
 (* GridGraph[3,3]: slab is the antidiagonal {3, 5, 7}. *)
 VerificationTest[
   FindInfraBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All],
-  InfraPlane[{{3, 5, 7}}],
+  {{3, 5, 7}},
   TestID -> "FindInfraBisectingHyperplane-LevelSet-grid-antidiagonal"
 ]
 
 (* PathGraph[6], 1 to 6 (odd distance): strict slab is empty. *)
 VerificationTest[
   FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, All],
-  InfraPlane[{{}}],
+  {{ }},
   TestID -> "FindInfraBisectingHyperplane-LevelSet-odd-distance-empty"
 ]
 
 (* Widening to {-1, 1} thickens the slab to {3, 4}. *)
 VerificationTest[
   FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, All],
-  InfraPlane[{{3, 4}}],
+  {{3, 4}},
   TestID -> "FindInfraBisectingHyperplane-LevelSet-thickened-path"
 ]
 
 (* Properties -> {"Separating"}: on PathGraph[6] each of {3}, {4} is a
    minimal separator within the thickened slab. *)
 VerificationTest[
-  Sort @ FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, All, Properties -> {"Separating"}][ "Realizations" ],
+  Sort @ FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, All, Properties -> {"Separating"}],
   {{3}, {4}},
   TestID -> "FindInfraBisectingHyperplane-Separating-thickened-path"
 ]
@@ -274,13 +276,13 @@ VerificationTest[
    arc requires one vertex from {2, 3} and one from {5, 6}; four minimal
    separators. *)
 VerificationTest[
-  Sort @ ( Sort /@ FindInfraBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, All, Properties -> {"Separating"}][ "Realizations" ] ),
+  Sort @ ( Sort /@ FindInfraBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, All, Properties -> {"Separating"}] ),
   {{2, 5}, {2, 6}, {3, 5}, {3, 6}},
   TestID -> "FindInfraBisectingHyperplane-Separating-cycle-thickened"
 ]
 
 VerificationTest[
-  Length @ FindInfraBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, UpTo[2], Properties -> {"Separating"}][ "Realizations" ],
+  Length @ FindInfraBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, UpTo[2], Properties -> {"Separating"}],
   2,
   TestID -> "FindInfraBisectingHyperplane-Separating-upto-soft"
 ]
@@ -292,15 +294,16 @@ VerificationTest[
 ]
 
 VerificationTest[
-  MatchQ[ FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5], InfraPlane[ { _ } ] ],
+  ListQ @ FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5],
   True,
-  TestID -> "FindInfraBisectingHyperplane-wraps-as-InfraPlane"
+  TestID -> "FindInfraBisectingHyperplane-returns-a-set"
 ]
 
-(* Method -> "Greedy", no count: the DFS peel returns one certified minimal. *)
+(* Method -> "Greedy", no count: the DFS peel returns one certified minimal, and
+   count-less is ONE instance, so the instance is the set itself. *)
 VerificationTest[
-  With[{realizations = FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, Properties -> {"Separating"}, Method -> "Greedy"][ "Realizations" ]},
-    Length[realizations] == 1 && MemberQ[{{3}, {4}}, First @ realizations]],
+  MemberQ[{{3}, {4}},
+    FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, Properties -> {"Separating"}, Method -> "Greedy"]],
   True,
   TestID -> "FindInfraBisectingHyperplane-Greedy-returns-one-minimal"
 ]
@@ -308,15 +311,15 @@ VerificationTest[
 (* The peel backtracks, so a finite count is exact: both minimals of the
    {3} / {4} bisector come back under count 2. *)
 VerificationTest[
-  Sort @ FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, 2, Properties -> {"Separating"}, Method -> "Greedy"]["Realizations"],
+  Sort @ FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, {-1, 1}, 2, Properties -> {"Separating"}, Method -> "Greedy"],
   {{3}, {4}},
   TestID -> "FindInfraBisectingHyperplane-Greedy-count-is-exact"
 ]
 
-(* Greedy on a slab that itself does not separate: empty wrapper. *)
+(* Greedy on a slab that itself does not separate: the empty class. *)
 VerificationTest[
   FindInfraBisectingHyperplane[PathGraph[Range[6]], 1, 6, Properties -> {"Separating"}, Method -> "Greedy"],
-  InfraPlane[{}],
+  { },
   TestID -> "FindInfraBisectingHyperplane-Greedy-empty-when-slab-does-not-separate"
 ]
 
@@ -330,21 +333,21 @@ VerificationTest[
 (* Properties -> {"Separating", "Connected"} rejects the disconnected antidiagonal. *)
 VerificationTest[
   FindInfraBisectingHyperplane[GridGraph[{3, 3}], 1, 9, All, Properties -> {"Separating", "Connected"}],
-  InfraPlane[{}],
+  { },
   TestID -> "FindInfraBisectingHyperplane-Connected-rejects-disconnected"
 ]
 
 (* 4-cycle + chord: only minimal separator is the connected {1, 3}. *)
 VerificationTest[
   With[{g = Graph[{1, 2, 3, 4}, {1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 1 <-> 3}]},
-    Sort @ ( Sort /@ FindInfraBisectingHyperplane[g, 2, 4, All, Properties -> {"Separating", "Connected"}][ "Realizations" ] )],
+    Sort @ ( Sort /@ FindInfraBisectingHyperplane[g, 2, 4, All, Properties -> {"Separating", "Connected"}] )],
   {{1, 3}},
   TestID -> "FindInfraBisectingHyperplane-Connected-accepts-chord"
 ]
 
 VerificationTest[
   With[{g = Graph[{1, 2, 3, 4}, {1 <-> 2, 2 <-> 3, 3 <-> 4, 4 <-> 1, 1 <-> 3}]},
-    Sort @ First @ FindInfraBisectingHyperplane[g, 2, 4, Properties -> {"Separating", "Connected"}, Method -> "Greedy"][ "Realizations" ]],
+    Sort @ FindInfraBisectingHyperplane[g, 2, 4, Properties -> {"Separating", "Connected"}, Method -> "Greedy"]],
   {1, 3},
   TestID -> "FindInfraBisectingHyperplane-Greedy-Connected"
 ]
@@ -353,9 +356,8 @@ VerificationTest[
    subsets are single vertices. The greedy peel can drop everything from the slab
    one vertex at a time until one remains. *)
 VerificationTest[
-  With[{g = PathGraph[Range[5]],
-        realizations = FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, {-1, 1}, Properties -> {"Connected"}, Method -> "Greedy"][ "Realizations" ]},
-    Length[realizations] == 1 && Length[First @ realizations] == 1],
+  Length @ FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, {-1, 1},
+    Properties -> {"Connected"}, Method -> "Greedy"] == 1,
   True,
   TestID -> "FindInfraBisectingHyperplane-Connected-alone-singleton"
 ]
@@ -365,7 +367,7 @@ VerificationTest[
 VerificationTest[
   With[{n = BlockRandom[SeedRandom[7];
     Length @ FindInfraBisectingHyperplane[CycleGraph[6], 1, 4, {-1, 1}, All,
-      Properties -> {"Separating"}, Method -> {"Exhaustive", "Pruning" -> 1}][ "Realizations" ]]},
+      Properties -> {"Separating"}, Method -> {"Exhaustive", "Pruning" -> 1}]]},
     1 <= n <= 4],
   True,
   TestID -> "FindInfraBisectingHyperplane-Pruning-bounded"
@@ -375,7 +377,7 @@ VerificationTest[
 VerificationTest[
   With[{g = CycleGraph[6]},
     AllTrue[
-      FindInfraBisectingHyperplane[g, 1, 4, {-1, 1}, All, Properties -> {"Separating"}][ "Realizations" ],
+      FindInfraBisectingHyperplane[g, 1, 4, {-1, 1}, All, Properties -> {"Separating"}],
       sep |-> SeparatesQ[g, sep, 1, 4]]],
   True,
   TestID -> "FindInfraBisectingHyperplane-Separating-results-actually-separate"
@@ -418,8 +420,8 @@ VerificationTest[
 (* ===== FindInfraParallel: Method scaffolding ===== *)
 
 VerificationTest[
-  FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All,
-    Method -> "Exhaustive"]["Realizations"],
+  infraSpread @ FindInfraParallel[GridGraph[{4, 4}], {1, 2, 3, 4}, 5, All,
+    Method -> "Exhaustive"],
   {{5, 6, 7, 8}},
   TestID -> "FindInfraParallel-explicit-exhaustive"
 ]
@@ -468,7 +470,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindInfraGoldenSection[PathGraph[Range[11]], InfraSegment[{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}}]],
+  FindInfraGoldenSection[PathGraph[Range[11]], geodesicGraph @ Range[11]],
   <| 7 -> 1 |>,
   TestID -> "FindInfraGoldenSection-InfraSegment"
 ]

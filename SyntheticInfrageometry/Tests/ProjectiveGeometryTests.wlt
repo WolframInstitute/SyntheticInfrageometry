@@ -1,5 +1,9 @@
 BeginTestSection["ProjectiveGeometry"]
 
+geodesicGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+walkSequence  = WolframInstitute`SyntheticInfrageometry`PackageScope`walkSequence;
+infraSpread   = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
+
 (* ===== LineCount ===== *)
 
 VerificationTest[
@@ -22,21 +26,25 @@ VerificationTest[
 
 (* ===== FindInfraCommonLine ===== *)
 
+(* count-less is the one line as a path graph; All is the lone bundle, here the
+   same carrier since the path has exactly one line; a bounded count is a List *)
+
 VerificationTest[
-  FindInfraCommonLine[PathGraph[Range[5]], {1, 3}],
-  InfraLine[{{1, 2, 3, 4, 5}}],
+  walkSequence @ FindInfraCommonLine[PathGraph[Range[5]], {1, 3}],
+  {1, 2, 3, 4, 5},
   TestID -> "FindInfraCommonLine-PathGraph-default-1"
 ]
 
 VerificationTest[
-  FindInfraCommonLine[PathGraph[Range[5]], {1, 3}, All],
-  InfraLine[{{1, 2, 3, 4, 5}}],
+  infraSpread @ FindInfraCommonLine[PathGraph[Range[5]], {1, 3}, All],
+  {{1, 2, 3, 4, 5}},
   TestID -> "FindInfraCommonLine-PathGraph-All"
 ]
 
 VerificationTest[
-  FindInfraCommonLine[PathGraph[Range[5]], {1, 3}, UpTo[3]],
-  InfraLine[{{1, 2, 3, 4, 5}}],
+  { MatchQ[#, {_Graph}], walkSequence /@ # } & @
+    FindInfraCommonLine[PathGraph[Range[5]], {1, 3}, UpTo[3]],
+  { True, {{1, 2, 3, 4, 5}} },
   TestID -> "FindInfraCommonLine-PathGraph-UpTo-soft"
 ]
 
@@ -47,36 +55,36 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindInfraCommonLine[PathGraph[Range[5]], {1, 5, 3}],
-  InfraLine[{{1, 2, 3, 4, 5}}],
+  walkSequence @ FindInfraCommonLine[PathGraph[Range[5]], {1, 5, 3}],
+  {1, 2, 3, 4, 5},
   TestID -> "FindInfraCommonLine-three-collinear-vertices"
 ]
 
 VerificationTest[
-  Length @ FindInfraCommonLine[CycleGraph[6], {1, 4}, All][ "Realizations" ],
+  Length @ infraSpread @ FindInfraCommonLine[CycleGraph[6], {1, 4}, All],
   2,
   TestID -> "FindInfraCommonLine-CycleGraph6-antipode-two-lines"
 ]
 
 VerificationTest[
-  With[{result = FindInfraCommonLine[GridGraph[{3, 3}], {1, 9, 5}, All][ "Realizations" ]},
+  With[{result = infraSpread @ FindInfraCommonLine[GridGraph[{3, 3}], {1, 9, 5}, All]},
     Length @ result >= 1 && AllTrue[result, SubsetQ[#, {1, 9, 5}] &]
   ],
   True,
   TestID -> "FindInfraCommonLine-GridGraph-diagonal"
 ]
 
-(* ===== FindInfraCommonLine multi-anchor (wrapped entries) ===== *)
+(* ===== FindInfraCommonLine multi-anchor (density entries) ===== *)
 
 VerificationTest[
-  FindInfraCommonLine[PathGraph[Range[5]], {<| 1 -> 1, 3 -> 1 |>}, All],
-  InfraLine[{{1, 2, 3, 4, 5}}],
-  TestID -> "FindInfraCommonLine-InfraPoint-anchor"
+  infraSpread @ FindInfraCommonLine[PathGraph[Range[5]], {<| 1 -> 1, 3 -> 1 |>}, All],
+  {{1, 2, 3, 4, 5}},
+  TestID -> "FindInfraCommonLine-density-anchor"
 ]
 
 VerificationTest[
-  FindInfraCommonLine[PathGraph[Range[5]], {<| 1 -> 1, 3 -> 1 |>, 5}, All],
-  InfraLine[{{1, 2, 3, 4, 5}}],
+  infraSpread @ FindInfraCommonLine[PathGraph[Range[5]], {<| 1 -> 1, 3 -> 1 |>, 5}, All],
+  {{1, 2, 3, 4, 5}},
   TestID -> "FindInfraCommonLine-mixed-anchor"
 ]
 
@@ -112,38 +120,19 @@ VerificationTest[
   TestID -> "FindInfraCommonPoint-UpTo-soft"
 ]
 
-(* ===== FindInfraCommonPoint with wrapped lines ===== *)
+(* ===== FindInfraCommonPoint on walk graphs ===== *)
 
 VerificationTest[
-  FindInfraCommonPoint[PathGraph[Range[5]], {InfraSegment[{{1, 2, 3}}], InfraSegment[{{2, 3, 4}}]}, All],
+  FindInfraCommonPoint[PathGraph[Range[5]], geodesicGraph /@ {{1, 2, 3}, {2, 3, 4}}, All],
   { 2, 3 },
-  TestID -> "FindInfraCommonPoint-InfraSegment-wrapped"
+  TestID -> "FindInfraCommonPoint-walk-graphs"
 ]
 
 VerificationTest[
-  Length[ FindInfraCommonPoint[CycleGraph[6], FindInfraCommonLine[CycleGraph[6], {1, 4}, All][ "Realizations" ], All] ],
+  Length[ FindInfraCommonPoint[CycleGraph[6],
+    infraSpread @ FindInfraCommonLine[CycleGraph[6], {1, 4}, All], All] ],
   2,
   TestID -> "FindInfraCommonPoint-from-FindInfraCommonLine"
-]
-
-(* ===== InfraRay wrapper boilerplate ===== *)
-
-VerificationTest[
-  InfraRay[{InfraRay[{{1, 2}}], InfraRay[{{1, 3}}]}],
-  InfraRay[{{1, 2}, {1, 3}}],
-  TestID -> "InfraRay-auto-flatten"
-]
-
-VerificationTest[
-  InfraRay[{{1, 2}, {1, 3}}][[1]],
-  {{1, 2}, {1, 3}},
-  TestID -> "InfraRay-Part-first-arg"
-]
-
-VerificationTest[
-  Length @ First @ InfraRay[{{1, 2}, {1, 3}}],
-  2,
-  TestID -> "InfraRay-Length-of-inner"
 ]
 
 (* ===== SameDirectionQ ===== *)

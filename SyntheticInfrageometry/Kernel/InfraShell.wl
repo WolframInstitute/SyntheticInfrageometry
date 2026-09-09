@@ -153,7 +153,7 @@ maximalChordsBisectors[ graph_Graph, vs_List, mopts_List ] :=
 
 equidistantShellPoints[ graph_Graph, vs_List ] :=
   With[ { ds = AssociationThread[ VertexList[ graph ], GraphDistance[ graph, First @ vs ] ] },
-    { centers = Select[ Keys @ FindInfraEquidistantSet[ graph, vs ], c |-> 0 < ds[ c ] < Infinity ] },
+    { centers = Select[ FindInfraEquidistantSet[ graph, vs ], c |-> 0 < ds[ c ] < Infinity ] },
     KeyValueMap[ { r, cs } |-> { KeySort @ AssociationMap[ 1 &, cs ], r }, KeySort @ GroupBy[ centers, ds ] ] ]
 
 (* vertices on some a-b geodesic at a middle distance r in { Floor[d/2], Ceil[d/2] }: an even chord yields r = d/2, an odd chord splits into Floor (nearer a) and Ceil (nearer b) *)
