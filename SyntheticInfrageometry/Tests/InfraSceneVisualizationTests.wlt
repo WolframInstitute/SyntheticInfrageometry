@@ -386,16 +386,109 @@ VerificationTest[
 
 (* ===== point-layer highlight objects ===== *)
 
-(* the point finders return a plain List of vertices; it must flow into the scene
-   with no glue, and distribute the point-size measure like any bundle *)
+(* the ink table keys on shape, and a vertex List is a SET: it draws as a region --
+   its induced edges, no dots.  On the 4x4 grid the ball of radius 1 about 6 is
+   { 2, 5, 6, 7, 10 }, whose induced subgraph is the four spokes. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    { Cases[ Options @ InfraSceneHighlight[ g, { { 3, 9 } -> Red } ],
-        AbsolutePointSize[ s_ ] :> s, Infinity ],
-      Cases[ Options @ InfraSceneHighlight[ g, { 3 } ],
-        AbsolutePointSize[ s_ ] :> s, Infinity ] } ],
-  { { 3, 3 }, { 6 } },
-  TestID -> "InfraSceneHighlight-vertex-list-distributes-size"
+    With[ { opts = Options @ InfraSceneHighlight[ g, { FindInfraBall[ g, 6, 1 ] -> Red } ] },
+      { Length @ Cases[ EdgeStyle /. opts, _UndirectedEdge -> _, Infinity ],
+        Cases[ opts, AbsolutePointSize[ s_ ] :> s, Infinity ] } ] ],
+  { 4, { } },
+  TestID -> "InfraSceneHighlight-vertex-list-is-a-region"
+]
+
+(* and its DENSITY is the point family: dots, no edges.  InfraDensity is the one
+   coercion, so promoting a set to points needs no new option. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { opts = Options @ InfraSceneHighlight[ g, { InfraDensity[ g, { 3, 9 } ] -> Red } ] },
+      { Length @ Cases[ EdgeStyle /. opts, _UndirectedEdge -> _, Infinity ],
+        Cases[ opts, AbsolutePointSize[ s_ ] :> s, Infinity ] } ] ],
+  { 0, { 6, 6 } },
+  TestID -> "InfraSceneHighlight-density-is-a-point-family"
+]
+
+(* A CHAIN of open walks is a polyline, read off the shape: consecutive legs share
+   their endpoint.  It draws as ONE joined stroke through the concatenated sequence,
+   with the knots as points on top so the subdivision is visible.  Four legs over
+   Range[11] give five knots. *)
+VerificationTest[
+  With[ { g = PathGraph @ Range[ 11 ] },
+    With[ { legs = FindInfraPolylineSubdivision[ g, Range[ 11 ], "MaxLength" -> 3 ] },
+      { Length @ legs,
+        Cases[ Options @ InfraSceneHighlight[ g, { legs } ], Line[ q_ ] :> q, Infinity ] ===
+          { GraphEmbedding[ g ] },
+        Cases[ Options @ InfraSceneHighlight[ g, { legs } ], AbsolutePointSize[ s_ ] :> s, Infinity ] } ] ],
+  { 4, True, { 6, 6, 6, 6, 6 } },
+  TestID -> "InfraSceneHighlight-polyline-is-one-stroke-with-knots"
+]
+
+(* a CLOSED chain is a polygon: its corner set drops the repeated closing knot,
+   so a triangle draws three corner dots, not four *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    With[ { sides = FindInfraTriangle[ g, { 1, 4, 13 } ] },
+      Length @ Cases[ Options @ InfraSceneHighlight[ g, { sides } ],
+        AbsolutePointSize[ s_ ] :> s, Infinity ] ] ],
+  3,
+  TestID -> "InfraSceneHighlight-polygon-corners-drop-the-closure"
+]
+
+(* a bundle of geodesics between the same two points does NOT chain -- every leg
+   runs p -> q -- so it inks as a walk bundle and gets no knots *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    Cases[ Options @ InfraSceneHighlight[ g, { FindInfraSegment[ g, 1, 16, UpTo[ 3 ] ] } ],
+      AbsolutePointSize[ s_ ] :> s, Infinity ] ],
+  { },
+  TestID -> "InfraSceneHighlight-same-endpoint-bundle-is-not-a-polyline"
+]
+
+(* no weight exceeds 1, whatever the shape: a fraction above 1 would lerp the
+   opacity past opaque.  The degenerate triangle 1 -> 5 -> 25 on the 5x5 grid
+   retraces its third side, so its vertices carry mass 2. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    With[ { objects = { FindInfraTriangle[ g, { 1, 5, 25 } ],
+              FindInfraTriangle[ g, { 1, 5, 25 }, UpTo[ 4 ] ],
+              FindInfraSegment[ g, 1, 25, All ],
+              FindInfraShell[ g, 13, 2, All ],
+              FindInfraBall[ g, 13, 2 ] } },
+      Union @ Cases[ Options @ InfraSceneHighlight[ g, objects ],
+        Opacity[ x_ ] :> x <= 1, Infinity ] ] ],
+  { True },
+  TestID -> "InfraSceneHighlight-no-weight-exceeds-one"
+]
+
+(* the named palette records which SHAPE class defaults to each colour.  Seven of the
+   ten name a construction, which no carrier remembers, so no shape claims them. *)
+VerificationTest[
+  Normal[ $InfraPalette ][[ All, { "Primitive", "Shapes" } ]],
+  { <| "Primitive" -> "Point",    "Shapes" -> { "Point", "Density" } |>,
+    <| "Primitive" -> "Segment",  "Shapes" -> { } |>,
+    <| "Primitive" -> "Line",     "Shapes" -> { } |>,
+    <| "Primitive" -> "Shell",    "Shapes" -> { } |>,
+    <| "Primitive" -> "Ball",     "Shapes" -> { "Set", "SetFamily" } |>,
+    <| "Primitive" -> "Plane",    "Shapes" -> { } |>,
+    <| "Primitive" -> "Circle",   "Shapes" -> { } |>,
+    <| "Primitive" -> "Ray",      "Shapes" -> { } |>,
+    <| "Primitive" -> "Path",     "Shapes" -> { "Walk", "Polyline", "PolylineFamily" } |>,
+    <| "Primitive" -> "Topology", "Shapes" -> { } |> },
+  TestID -> "InfraPalette-shapes-not-heads"
+]
+
+(* with the addition-order palette off, the colour is looked up by shape *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    ( { obj, colour } |-> MemberQ[
+        Cases[ ToBoxes @ InfraSceneHighlight[ g, { obj }, "Palette" -> None ], _RGBColor, Infinity ],
+        colour ] ) @@@ {
+      { 6,                            $InfraPointColor },
+      { FindInfraBall[ g, 6, 1 ],     $InfraBallColor  },
+      { FindInfraSegment[ g, 1, 16 ], $InfraWalkColor  } } ],
+  { True, True, True },
+  TestID -> "InfraSceneHighlight-shape-keyed-colour-when-palette-off"
 ]
 
 (* a bare vertex is a legal highlight object *)

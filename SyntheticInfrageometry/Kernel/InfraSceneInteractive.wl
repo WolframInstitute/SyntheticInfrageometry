@@ -19,7 +19,8 @@ PointViewer[ g_Graph, sym_: None ] :=
       With[ { pts = FindInfraPoint[ g, UpTo[ n ], "From" -> from, "MaxCliques" -> 100,
           "Distance" -> Switch[ separation, "None", None, "Max", "Max", "Range", distRange ] ] },
         If[ sym =!= None, sym = pts ];
-        InfraSceneHighlight[ g, { pts -> $InfraPointColor }, ImageSize -> 600 ] ],
+        (* a point family is a density, not a set: the ink table reads a bare vertex List as a region *)
+        InfraSceneHighlight[ g, { InfraDensity[ g, pts ] -> $InfraPointColor }, ImageSize -> 600 ] ],
       Grid[ {
         { Control[ { { n, 1, "Points" }, ControlType -> InputField } ],
           Control[ { { from, "Random", "From" }, { "Random", "Center", "Periphery" } } ] },
@@ -164,18 +165,7 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init : _Association : <||>, opt
       imgW    = OptionValue[ InfraSceneViewer, { opts }, ImageSize ],
       hlOpts  = FilterRules[ Join[ { opts }, Options[ InfraSceneViewer ] ], Options[ InfraSceneHighlight ] ],
       objStep = Association @@ Flatten[ MapIndexed[
-        { syms, i } |-> ( ( # -> First[ i ] ) & /@ Flatten[ { syms } ] ), scene[ "Steps" ] ] ],
-      wrap    = AssociationMap[
-        Switch[ Head @ Lookup[ scene[ "Constructions" ], #, None ],
-          InfraSegment | InfraLine, InfraSegment,
-          InfraShell,               InfraShell,
-          InfraPlane,               InfraPlane,
-          InfraCircle,              InfraCircle,
-          InfraPolygon,             InfraPolygon,
-          InfraTriangle,            InfraTriangle,
-          InfraPolyline,            InfraPolyline,
-          _,                        ( KeySort @ Counts @ # & ) ] &,
-        scene[ "Objects" ] ] },
+        { syms, i } |-> ( ( # -> First[ i ] ) & /@ Flatten[ { syms } ] ), scene[ "Steps" ] ] ] },
     DynamicModule[ {
         step = 1, branch = 1, mode = "Branch",
         fixStack = { }, hiddenSteps = { },
@@ -236,13 +226,12 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init : _Association : <||>, opt
             InfraSceneHighlight[ graph, { }, Sequence @@ hlOpts, ImageSize -> imgW ],
             InfraSceneHighlight[ graph,
               If[ mode === "Diffuse",
+                (* a binding is already a shape, so the realisations of one object across the shown branches are its bundle or its family; only a point needs promoting, its realisations being bare vertices that as a bare List would ink as one region *)
                 With[ { boundKeys = Keys @ First[ shown ][[ 1 ]] },
-                  ( obj |-> wrap[ obj ][
-                      DeleteDuplicates[ #[[ 1 ]][ obj ] & /@ shown ] ] ) /@
+                  ( obj |-> With[ { reps = DeleteDuplicates[ #[[ 1 ]][ obj ] & /@ shown ] },
+                      If[ AllTrue[ reps, pointQ[ graph, # ] & ], KeySort @ Counts @ reps, reps ] ] ) /@
                   Select[ objects, MemberQ[ boundKeys, # ] && shownQ[ # ] & ] ],
-                KeyValueMap[
-                  wrap[ #1 ][ { #2 } ] &,
-                  KeySelect[ shown[[ Min[ branch, Length @ shown ], 1 ]], shownQ ] ] ],
+                Values @ KeySelect[ shown[[ Min[ branch, Length @ shown ], 1 ]], shownQ ] ],
               Sequence @@ hlOpts, ImageSize -> imgW ] ]
         }, Alignment -> Center ], ImageSize -> imgW ]
       ]

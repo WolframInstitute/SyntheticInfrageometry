@@ -36,6 +36,10 @@ PackageScope[setEdges]
 PackageScope[pointQ]
 PackageScope[multisetQ]
 PackageScope[walkQ]
+PackageScope[bundleQ]
+PackageScope[chainedWalksQ]
+PackageScope[inkClass]
+PackageScope[walkGraphs]
 PackageScope[walkGraph]
 PackageScope[closedWalkGraph]
 PackageScope[closedWalkQ]
@@ -72,6 +76,34 @@ pointQ[ graph_Graph, x_ ] := VertexQ[ graph, x ]
 multisetQ[ graph_Graph, x_ ] := AssociationQ[ x ] || ( ListQ[ x ] && ! VertexQ[ graph, x ] )
 
 walkQ[ _Graph, x_ ] := GraphQ[ x ]
+
+
+(* THE INK TABLE KEYS ON SHAPE.  inkClass names the class the renderer inks an object in, read off the shape alone -- no head is consulted, because no head is left.  Two readings the shape cannot separate, both settled by the Spec: a vertex List is a SET, so a point family is written as its density (`InfraDensity` promotes, `Keys` demotes); and a chain of open walks is a POLYLINE, so a bundle of open geodesics that happens to chain end to end is misread as one -- it needs last(w_i) === first(w_{i+1}) at every i, which a same-endpoints bundle never satisfies *)
+
+inkClass[ graph_Graph, x_ ] := Which[
+  pointQ[ graph, x ],                                              "Point",
+  AssociationQ[ x ],                                               "Density",
+  GraphQ[ x ],                                                     "Walk",
+  chainedWalksQ[ x ],                                              "Polyline",
+  MatchQ[ x, { __Graph } ],                                        "Walk",
+  MatchQ[ x, { { __Graph } .. } ] && AllTrue[ x, chainedWalksQ ],  "PolylineFamily",
+  MatchQ[ x, { { __Graph } .. } ],                                 "Walk",
+  ListQ[ x ] && SubsetQ[ VertexList @ graph, x ],                  "Set",
+  MatchQ[ x, { __List } ],                                         "SetFamily",
+  True,                                                            "Set" ]
+
+(* a branching DAG stands for many walks with no single stroke; a path graph, a directed cycle and a position-spelled walk each stand for one *)
+bundleQ[ w_Graph ] := ! closedWalkQ[ w ] && ! positionSpelledQ[ w ] && ! PathGraphQ[ w ]
+
+(* consecutive legs of a polyline share their knot, and a leg is an open geodesic -- the closure of a polygon is the chain closing, not a leg *)
+chainedWalksQ[ legs : { _Graph, __Graph } ] :=
+  NoneTrue[ legs, closedWalkQ ] &&
+  AllTrue[ Partition[ walkSequence /@ legs, 2, 1 ], Last @ First @ # === First @ Last @ # & ]
+chainedWalksQ[ _ ] := False
+
+walkGraphs[ w_Graph ]                 := { w }
+walkGraphs[ ws : { __Graph } ]        := ws
+walkGraphs[ ws : { { __Graph } .. } ] := Catenate @ ws
 
 
 (* the two spellings of a walk graph.  The general walk family writes a walk on the POSITION PAIRS {i, v}: PathGraph marks it open, a directed cycle marks it closed (a constant loop is one vertex with a self-loop) -- a walk revisits, and only positions carry the singularity census.  The geodesic class writes its path graphs and DAGs on SUBSTRATE vertices, where nothing repeats.  Last /@ VertexList converts the first spelling to the second; nothing converts back.  A graph is read as position-spelled by its vertex labels alone, so a substrate whose vertices are themselves {i, v} pairs visited in position order is misread -- accepted, since the paclet never writes such a graph *)

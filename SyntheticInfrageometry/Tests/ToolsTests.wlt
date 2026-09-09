@@ -6,7 +6,12 @@ toDensity           = WolframInstitute`SyntheticInfrageometry`PackageScope`toDen
 pointQ              = WolframInstitute`SyntheticInfrageometry`PackageScope`pointQ;
 multisetQ           = WolframInstitute`SyntheticInfrageometry`PackageScope`multisetQ;
 walkQ               = WolframInstitute`SyntheticInfrageometry`PackageScope`walkQ;
+inkClass            = WolframInstitute`SyntheticInfrageometry`PackageScope`inkClass;
+bundleQ             = WolframInstitute`SyntheticInfrageometry`PackageScope`bundleQ;
+chainedWalksQ       = WolframInstitute`SyntheticInfrageometry`PackageScope`chainedWalksQ;
 geodesicGraph       = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+geodesicCycleGraph  = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicCycleGraph;
+walkGraph           = WolframInstitute`SyntheticInfrageometry`PackageScope`walkGraph;
 infraSpread         = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
 infraVertexMultiset = WolframInstitute`SyntheticInfrageometry`PackageScope`infraVertexMultiset;
 infraEdgeMultiset   = WolframInstitute`SyntheticInfrageometry`PackageScope`infraEdgeMultiset;
@@ -289,6 +294,59 @@ VerificationTest[
       FindInfraSegment[ g, 1, 9, 7 ] === $Failed } ],
   { True, True, True, True, True, True },
   TestID -> "FindInfraSegment-count-contract"
+]
+
+(* ===================== the ink table keys on shape ===================== *)
+
+(* inkClass is the renderer's reading of the shape, and of nothing else -- there is no
+   head left to consult.  One row per class, on the 5x5 grid. *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    inkClass[ g, # ] & /@ {
+      7,                                        (* a vertex *)
+      <| 1 -> 2, 7 -> 1 |>,                     (* a density *)
+      FindInfraBall[ g, 13, 1 ],                (* a 2-d construction: one sorted vertex List *)
+      FindInfraShell[ g, 1, 2, All ],           (* a family of them *)
+      FindInfraSegment[ g, 1, 25 ],             (* one walk: a substrate path graph *)
+      FindInfraSegment[ g, 1, 25, All ],        (* the bundle: the interval DAG *)
+      FindInfraSegment[ g, 1, 25, UpTo[ 3 ] ],  (* a List of walks *)
+      FindInfraTriangle[ g, { 1, 4, 21 } ],     (* a closed chain of legs *)
+      FindInfraTriangle[ g, { 1, 4, 21 }, UpTo[ 3 ] ] } ],
+  { "Point", "Density", "Set", "SetFamily", "Walk", "Walk", "Walk", "Polyline", "PolylineFamily" },
+  TestID -> "inkClass-one-row-per-shape"
+]
+
+(* the substrate is an argument: on a graph whose vertex labels are lists, { 1, 1 } is a
+   point on one graph and a two-element set on another -- the same distinction toDensity
+   makes, and the reason inkClass is not a set of DownValues *)
+VerificationTest[
+  With[ { listLabelled = MeshConnectivityGraph @ DiscretizeRegion[ Rectangle[], MaxCellMeasure -> 0.1 ] },
+    { inkClass[ listLabelled, First @ VertexList @ listLabelled ],
+      inkClass[ GridGraph[ { 5, 5 } ], { 1, 2 } ] } ],
+  { "Point", "Set" },
+  TestID -> "inkClass-substrate-separates-point-from-set"
+]
+
+(* a chain of open walks sharing consecutive endpoints is a polyline; a bundle of
+   geodesics between the SAME two points never chains, since every leg runs p -> q *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    { chainedWalksQ @ FindInfraTriangle[ g, { 1, 4, 21 } ],
+      chainedWalksQ @ FindInfraSegment[ g, 1, 25, UpTo[ 4 ] ],
+      chainedWalksQ @ { FindInfraSegment[ g, 1, 25 ] },
+      chainedWalksQ @ FindInfraCircle[ g, 13, 2, UpTo[ 2 ] ] } ],
+  { True, False, False, False },
+  TestID -> "chainedWalksQ-polyline-versus-bundle"
+]
+
+(* a branching DAG stands for many walks with no single stroke; a path graph, a directed
+   cycle and a position-spelled walk each stand for one *)
+VerificationTest[
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    bundleQ /@ { FindInfraSegment[ g, 1, 25, All ], FindInfraSegment[ g, 1, 25 ],
+      geodesicCycleGraph @ { 1, 2, 7, 6 }, walkGraph @ { 1, 2, 7, 2, 3 } } ],
+  { True, False, False, False },
+  TestID -> "bundleQ-only-a-branching-dag"
 ]
 
 EndTestSection[]

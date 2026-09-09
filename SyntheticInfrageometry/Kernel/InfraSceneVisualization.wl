@@ -14,12 +14,12 @@ PackageExport[$InfraStrikeOutPalette]
 PackageExport[$InfraPointSizes]
 PackageExport[$InfraAccentPointSize]
 PackageScope[$infraColors]
-PackageScope[$infraHeadColors]
-PackageScope[$InfraSceneHighlightPalette]
+PackageScope[$infraShapeColors]
 PackageScope[$InfraOpacityRange]
 PackageScope[$InfraEdgeThickness]
 PackageScope[$InfraPointSize]
 PackageScope[$InfraSceneImageSize]
+PackageScope[infraInk]
 PackageScope[parseHighlightStyle]
 PackageScope[normalizeHighlightSpec]
 
@@ -41,16 +41,11 @@ $infraColors = <|
   "Topology" -> RGBColor[ 0.85, 0.55, 0.75 ]
 |>;
 
-(* which colour each wrapper head is drawn in; several wrappers deliberately share one.  The point shape wears no head, so its colour is looked up by shape below; a walk is a Graph and takes the path colour *)
-$infraHeadColors = <|
-  InfraSegment -> "Segment", InfraPolyline -> "Segment",
-  InfraLine -> "Line",
-  Graph -> "Path",
-  InfraShell -> "Shell", InfraEllipticShell -> "Shell",
-  InfraBall -> "Ball",
-  InfraPlane -> "Plane",
-  InfraCircle -> "Circle", InfraEllipse -> "Circle", InfraPolygon -> "Circle", InfraTriangle -> "Circle",
-  InfraRay -> "Ray"
+(* which colour each SHAPE class is drawn in when the addition-order palette is switched off.  Seven of the ten named colours are unreachable this way: they name a construction, and a construction is not recoverable from its carrier -- a ball and a bisecting hyperplane are the same vertex list.  They stay in $infraColors as the palette a caller cites by name *)
+$infraShapeColors = <|
+  "Point" -> "Point", "Density" -> "Point",
+  "Set" -> "Ball", "SetFamily" -> "Ball",
+  "Walk" -> "Path", "Polyline" -> "Path", "PolylineFamily" -> "Path"
 |>;
 
 $InfraPointColor    = $infraColors[ "Point" ];
@@ -69,7 +64,7 @@ $InfraPalette := Dataset @ KeyValueMap[
     "Primitive" -> name,
     "Color" -> color,
     "Symbol" -> "$Infra" <> name <> "Color",
-    "Heads" -> Keys @ Select[ $infraHeadColors, # === name & ] |>,
+    "Shapes" -> Keys @ Select[ $infraShapeColors, # === name & ] |>,
   $infraColors ]
 
 $InfraOpacityRange  = { 0.40, 1.0 };
@@ -85,11 +80,6 @@ $InfraSceneImageSize = Medium;
 
 (* colours belong to the ORDER objects are added to a scene, not to object types *)
 $InfraStrikeOutPalette := ColorData[ 112, "ColorList" ];
-
-$InfraSceneHighlightPalette := Join[
-  { $InfraSegmentColor, $InfraShellColor, $InfraCircleColor, $InfraPointColor, $InfraRayColor },
-  Table[ ColorData[ "DarkRainbow" ][ k / 5 ], { k, 1, 5 } ]
-];
 
 
 (* ===================== Per-object style spec ===================== *)
@@ -142,10 +132,42 @@ normalizeHighlightSpec[ Directive[ d___ ] ]  := { d }
 normalizeHighlightSpec[ x_ ]                 := { x }
 
 
+(* ===================== The ink table ===================== *)
+
+(* ONE ROW PER SHAPE CLASS -- what an object contributes to each rendering channel, read off its shape by inkClass and off nothing else.  "Verts" / "Edges" are raw occupation counts and "Norm" the heaviest mass they are divided by, so a channel encodes relative mass within the object; "Strokes" are the vertex sequences drawn as one joined line, "Dots" whether the point-size channel is on, "Knots" the vertices drawn as points on top of the sides *)
+
+infraInk[ graph_Graph, obj_ ] := With[ { class = inkClass[ graph, obj ] },
+  Join[
+    <| "Class" -> class, "Verts" -> toDensity[ graph, obj ], "Edges" -> <||>,
+       "Norm" -> 1, "Strokes" -> { }, "Dots" -> False, "Knots" -> { } |>,
+    Switch[ class,
+      "Point",
+        <| "Dots" -> True |>,
+      "Density",
+        <| "Dots" -> True, "Norm" -> infraNumReps @ obj |>,
+      "Set" | "SetFamily",
+        <| "Edges" -> infraEdgeMultiset[ graph, obj ], "Norm" -> infraNumReps @ obj |>,
+      "Walk",
+        <| "Edges"   -> infraEdgeMultiset[ graph, walkGraphs @ obj ],
+           "Norm"    -> infraNumReps @ walkGraphs @ obj,
+           "Strokes" -> Catenate[ If[ bundleQ @ #, { }, walkRealisations @ # ] & /@ walkGraphs @ obj ] |>,
+      "Polyline" | "PolylineFamily",
+        With[ { chains = If[ MatchQ[ obj, { { __Graph } .. } ], obj, { obj } ] },
+          { verts = Merge[ Counts /@ polylineToVertexSeqs @ chains, Total ] },
+          <| "Verts"   -> verts,
+             "Edges"   -> Merge[ infraEdgeMultiset[ graph, # ] & /@ chains, Total ],
+             (* the heaviest mass, not the number of chains: a polyline that retraces a side visits its vertices twice, and a fraction above 1 lerps the opacity past opaque *)
+             "Norm"    -> Max[ 1, Max @ Values @ verts ],
+             "Strokes" -> polylineToVertexSeqs @ chains,
+             (* a closed chain repeats its first knot at the end, so the corner set drops the repeat *)
+             "Knots"   -> Catenate[
+               Replace[ polylineToKnots @ #, ks_List /; First @ ks === Last @ ks :> Most @ ks ] & /@ chains ] |> ] ] ] ]
+
+
 (* ===================== InfraSceneHighlight ===================== *)
 
 
-(* a channel value is None, a scalar base measure t -- a fuzzy object distributes it as t * count/numReps, conserving the total measure across realisations -- or a {min, max} envelope interpolated by weight, whose floor keeps rare elements visible *)
+(* a channel value is None, a scalar base measure t -- a fuzzy object distributes it as t * count/norm, conserving the total measure across realisations -- or a {min, max} envelope interpolated by weight, whose floor keeps rare elements visible *)
 Options[ InfraSceneHighlight ] = Join[
   {
     "OpacityRange"   :> $InfraOpacityRange,
@@ -162,24 +184,20 @@ InfraSceneHighlight[ graph_Graph, obj : Except[_List], opts : OptionsPattern[] ]
   InfraSceneHighlight[ graph, { obj }, opts ]
 
 InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :=
-  Module[ { triples, knotTriples, ranges, defaultRecord, vEntries, eEntries, objects, arrowSpec, palette },
+  Module[ { entries, ranges, vEntries, eEntries, objects, arrowSpec, palette },
 
     (* one head per path object, at its end, the value doubling as the head spec; the option is the default every object inherits, and an Arrowheads in an object's own style overrides it for that object alone *)
     arrowSpec = resolveArrowSpec @ OptionValue[ "Arrowheads" ];
 
-    (* colour by addition order, None restoring the type-keyed behaviour; an explicit obj -> colour is parsed before this runs, so a caller's own colour still wins *)
+    (* colour by addition order, None restoring the shape-keyed behaviour; an explicit obj -> colour is parsed before this runs, so a caller's own colour still wins *)
     palette = Replace[ OptionValue[ "Palette" ], {
       Automatic :> $InfraStrikeOutPalette,
       None -> None,
       list_List /; Length[ list ] > 0 :> list,
       other_ :> { other } } ];
 
-    (* a family of polygons -- a List of leg Lists -- draws as the bundle of its legs *)
     objects = DeleteCases[
-      Replace[ #, {
-        Style[ obj_, dirs__ ] :> ( obj -> Directive[ dirs ] ),
-        polys : { { __Graph } .. } :> Catenate @ polys,
-        ( polys : { { __Graph } .. } -> c_ ) :> ( Catenate @ polys -> c ) } ] & /@ multiObjects,
+      Replace[ #, Style[ obj_, dirs__ ] :> ( obj -> Directive[ dirs ] ) ] & /@ multiObjects,
       $Failed | ( $Failed -> _ ) | ( _ -> $Failed ) | { } ];
 
     ranges = <|
@@ -187,85 +205,43 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
       "ThicknessRange" -> OptionValue[ "ThicknessRange" ],
       "PointSizeRange" -> OptionValue[ "PointSizeRange" ],
       "Arrowheads"     -> arrowSpec |>;
-    defaultRecord = parseHighlightStyle[ Automatic, ranges ];
 
-    (* the object rides along as a fifth element so the density computation can read its occupation uniformly across densities, walk graphs and bundles *)
-    triples = MapIndexed[
+    entries = MapIndexed[
       { item, idx } |-> With[ {
           obj    = If[ MatchQ[ item, _Rule ], First @ item, item ],
           record = parseHighlightStyle[ If[ MatchQ[ item, _Rule ], Last @ item, Automatic ], ranges ] },
-        Append[ If[ MatchQ[ obj, _Association | _Graph | { __Graph } ], obj, None ] ] @
-        Replace[
-          { obj, If[ palette === None,
-              Lookup[ $infraColors,
-                Lookup[ $infraHeadColors, Head @ obj, If[ pointQ[ graph, obj ], "Point", None ] ],
-                $InfraSceneHighlightPalette[[
-                  1 + Mod[ First @ idx - 1, Length @ $InfraSceneHighlightPalette ] ]] ],
-              palette[[ 1 + Mod[ First @ idx - 1, Length @ palette ] ]] ],
-            record },
-          {
-            (* density = mass / total mass, so a sharp point draws full size and a spread one fades *)
-            { fam_Association, c_, u_ } :> { Keys @ fam, c, "Points", u },
-            (* a walk graph on position pairs is drawn as its vertex sequence, a closed one as a cycle; a substrate DAG stays the compact atom *)
-            { w_Graph, c_, u_ } /; closedWalkQ[ w ] :> { { walkSequence @ w }, c, "Cycles", u },
-            { w_Graph, c_, u_ } /; positionSpelledQ[ w ] :> { walkRealisations @ w, c, "Paths", u },
-            { w_Graph, c_, u_ } :> { { w }, c, "Paths", u },
-            { ws : { __Graph }, c_, u_ } /; AllTrue[ ws, closedWalkQ ] :> { walkSequence /@ ws, c, "Cycles", u },
-            { ws : { __Graph }, c_, u_ } :> { Catenate[ walkRealisations /@ ws ], c, "Paths", u },
-            (* a bare vertex is a legal highlight object: wrap it as a one-vertex point *)
-            { b_, c_, u_ } /; pointQ[ graph, b ] :> { { b }, c, "Points", u },
-            (* a plain vertex List is a set or a point family: it flows into the scene with no glue *)
-            { list_List, c_, u_ } /; SubsetQ[ VertexList @ graph, list ] :> { list, c, "Points", u },
-            (* a List of vertex sets is a family of sets, each drawn with its induced edges *)
-            { sets : { __List }, c_, u_ } /; SubsetQ[ VertexList @ graph, Catenate @ sets ] :> { sets, c, "Sets", u },
-            { b_, c_, u_ }                      :> { b, c, Automatic, u }
-          } ] ],
+        { ink = infraInk[ graph, obj ] },
+        Join[ ink, <|
+          "Color" -> If[ palette === None,
+            $infraColors @ $infraShapeColors @ ink[ "Class" ],
+            palette[[ 1 + Mod[ First @ idx - 1, Length @ palette ] ]] ],
+          "Record" -> Append[ record, "PointSizeRange" -> Replace[ record[ "PointSizeRange" ],
+            Automatic :> If[ ink[ "Dots" ], $InfraPointSize, None ] ] ] |> ] ],
       objects ];
 
-    triples = Apply[
-      { reps, color, type, record, obj } |-> { reps, color, type,
-        Append[ record, "PointSizeRange" -> Replace[ record[ "PointSizeRange" ],
-          Automatic :> If[ MatchQ[ type, "Points" | "PointSet" ], $InfraPointSize, None ] ] ], obj },
-      triples, { 1 } ];
+    (* the knots of a polyline and the corners of a polygon ride on top of the sides as ordinary point ink, so the subdivision and the defining corners stay visible; appended last, so no earlier object's palette slot moves *)
+    entries = Join[ entries,
+      Cases[ entries, e_Association /; e[ "Knots" ] =!= { } :>
+        With[ { record = parseHighlightStyle[ $InfraPointColor, ranges ] },
+          { knots = KeySort @ Counts @ e[ "Knots" ] },
+          <| "Class" -> "Density", "Verts" -> knots, "Edges" -> <||>,
+             (* a family shares its corners, so the knot masses are counts over the members like any other density *)
+             "Norm" -> Max @ Values @ knots, "Strokes" -> { }, "Dots" -> True, "Knots" -> { },
+             "Color" -> $InfraPointColor,
+             "Record" -> Append[ record,
+               "PointSizeRange" -> Replace[ record[ "PointSizeRange" ], Automatic :> $InfraPointSize ] ] |> ] ] ];
 
-    (* the fallback used only where the object is not itself a shape infraVertexMultiset reads -- a bare vertex, a vertex list, a family of sets, or an expression the reader left at Automatic.  A "Points" realisation is one vertex, every other is a vertex sequence *)
-    With[ {
-        repVerts = { type, rep } |-> Switch[ type,
-          "Points",                                  { rep },
-          "Paths" | "Cycles" | "Sets" | "PointSet",  rep,
-          _, If[ pointQ[ graph, rep ], { rep }, rep ]
-        ],
-        repEdges = { type, rep } |-> Switch[ type,
-          "Points" | "PointSet", { },
-          "Paths",               walkEdges @ rep,
-          "Cycles",              cycleEdges @ rep,
-          "Sets",                setEdges[ graph, rep ],
-          _, If[ pointQ[ graph, rep ], { }, setEdges[ graph, rep ] ]
-        ] },
+    vEntries = Map[
+      e |-> AssociationMap[
+        v |-> { e[ "Color" ], e[ "Verts" ][ v ] / e[ "Norm" ], e[ "Record" ] },
+        Keys @ e[ "Verts" ] ],
+      entries ];
 
-      vEntries = MapThread[
-        { reps, color, type, record, obj } |-> With[ {
-            counts  = If[ obj =!= None, infraVertexMultiset[ obj ],
-                          Counts @ Catenate[ repVerts[ type, # ] & /@ reps ] ],
-            numReps = If[ obj =!= None, infraNumReps[ obj ], Max[ Length @ reps, 1 ] ],
-            wts     = record[ "Weights" ] },
-          { norm = If[ AssociationQ @ wts, Max @ Values @ wts, numReps ] },
-          AssociationMap[
-            v |-> { color, ( If[ AssociationQ @ wts, wts[ v ], counts[ v ] ] ) / norm, record },
-            Keys @ counts ] ],
-        { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]], triples[[ All, 5 ]] } ];
-
-      eEntries = MapThread[
-        (* DAG segments read their edge occupation off GeodesicEdgeOccupation: no enumeration *)
-        { reps, color, type, record, obj } |-> With[ {
-            counts  = If[ obj =!= None, infraEdgeMultiset[ graph, obj ],
-                          Counts @ Catenate[ repEdges[ type, # ] & /@ reps ] ],
-            numReps = If[ obj =!= None, infraNumReps[ obj ], Max[ Length @ reps, 1 ] ] },
-          AssociationMap[
-            e |-> { color, counts[ e ] / numReps, record },
-            Keys @ counts ] ],
-        { triples[[ All, 1 ]], triples[[ All, 2 ]], triples[[ All, 3 ]], triples[[ All, 4 ]], triples[[ All, 5 ]] } ];
-    ];
+    eEntries = Map[
+      e |-> AssociationMap[
+        edge |-> { e[ "Color" ], e[ "Edges" ][ edge ] / e[ "Norm" ], e[ "Record" ] },
+        Keys @ e[ "Edges" ] ],
+      entries ];
 
     (* colour and opacity ride per-element Style[] specs; thickness and point size are rerouted to top-level EdgeStyle / VertexShapeFunction, which HighlightGraph silently ignores inside Style[] *)
     With[ { lerp = { spec, w } |-> If[ ListQ @ spec, spec[[ 1 ]] + ( spec[[ 2 ]] - spec[[ 1 ]] ) w, spec w ] },
@@ -310,10 +286,10 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           coords    = AssociationThread[ VertexList @ graph -> GraphEmbedding @ graph ],
           edgeStyle = Association @ Cases[ edgeData, kv_Association :> kv[ "EdgeStyle" ] ]
         },
-        (* a walk is one stroke: HighlightGraph draws each edge separately with a butt cap and ignores a CapForm / JoinForm in the edge directive, so a bend leaves a wedge of background bitten out of the ribbon.  A substrate path graph is ONE walk, so it is spelled out here by walkSequence -- cheap, no enumeration -- and gets its stroke and its end arrowhead like a position-spelled walk; a branching DAG stands for many walks with no single stroke, and stays the compact atom.  Each maximal run of equal-styled consecutive steps is redrawn as one joined Line, carried by the EdgeShapeFunction of its first unclaimed edge; each edge takes at most one rule, since Graph keeps only the first *)
+        (* a walk is one stroke: HighlightGraph draws each edge separately with a butt cap and ignores a CapForm / JoinForm in the edge directive, so a bend leaves a wedge of background bitten out of the ribbon.  The ink table hands over the vertex sequences to stroke -- closed ones already closed, a branching DAG contributing none, since it stands for many walks with no single stroke.  Each maximal run of equal-styled consecutive steps is redrawn as one joined Line, carried by the EdgeShapeFunction of its first unclaimed edge; each edge takes at most one rule, since Graph keeps only the first *)
         {
-          strokes = Catenate @ Cases[ triples,
-            { reps_, _, type : "Paths" | "Cycles", record_, _ } /; record[ "EdgeShapeFunction" ] === None :>
+          strokes = Catenate @ Cases[ entries,
+            e_Association /; e[ "Record" ][ "EdgeShapeFunction" ] === None :>
               Catenate @ Map[
                 walk |-> With[ {
                     runs = Select[ SplitBy[ Partition[ walk, 2, 1 ], edgeStyle[ UndirectedEdge @@ Sort @ # ] & ],
@@ -322,12 +298,9 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                     { steps, position } |-> { UndirectedEdge @@ Sort @ # & /@ steps,
                                 coords /@ Prepend[ Last /@ steps, First @ First @ steps ],
                                 First[ position ] === Length[ runs ],
-                                record[ "Arrowheads" ] },
+                                e[ "Record" ][ "Arrowheads" ] },
                     runs ] ],
-                Replace[
-                  Cases[ Replace[ reps, w_Graph /; PathGraphQ[ w ] :> walkSequence @ w, { 1 } ],
-                    r_List /; Length[ r ] >= 2 && FreeQ[ r, _Graph ] ],
-                  w_ :> If[ type === "Cycles" && Last[ w ] =!= First[ w ], Append[ w, First @ w ], w ], { 1 } ] ] ]
+                Select[ e[ "Strokes" ], Length[ # ] >= 2 & ] ] ]
         },
         {
           joinRules = Last @ Fold[

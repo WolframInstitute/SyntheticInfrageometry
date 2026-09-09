@@ -2,7 +2,6 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageScope[polylineToVertexSeqs]
 PackageScope[polylineToVertexSeq]
-PackageScope[polylineToKnotVertices]
 PackageScope[polylineToKnots]
 
 
@@ -41,11 +40,9 @@ polylineToVertexSeq[ legs : { __Graph } ] :=
   Fold[ Join[ #1, Rest @ walkSequence @ #2 ] &, walkSequence @ First @ legs, Rest @ legs ]
 
 
-(* ===================== polylineToKnotVertices ===================== *)
+(* ===================== polylineToKnots ===================== *)
 
 (* the knots are { First[leg_1], Last[leg_1], ..., Last[leg_k] } *)
-
-polylineToKnotVertices[ polys_List ] := polylineToKnots /@ polys
 
 polylineToKnots[ { } ] := { }
 polylineToKnots[ legs : { __Graph } ] :=
