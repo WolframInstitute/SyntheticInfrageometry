@@ -25,67 +25,37 @@ Options[ SelectInfraWalk ] = {
 };
 
 
-(* a bundle of walk graphs selects on its vertex sequences and comes back as the graphs picked; closed walks are cycle graphs, so "Cyclic" is read off the shape *)
-SelectInfraWalk[ graph_Graph, walks : { __Graph },
-            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  With[ { seqs = walkSequence /@ walks },
-    { result = SelectInfraWalk[ graph, seqs, countSpec, "Cyclic" -> closedWalkQ @ First @ walks, opts ] },
-    If[ result === $Failed, $Failed, Lookup[ AssociationThread[ seqs -> walks ], result ] ] ]
+(* the walks a shape stands for, as substrate path graphs: a closed or position-spelled walk graph is one walk, a substrate DAG spreads into its geodesics *)
+PackageScope[walkCarriers]
 
-SelectInfraWalk[ graph_Graph, walks_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] /;
-    walks === { } || ! AllTrue[ walks,
-      MatchQ[ ( InfraSegment | InfraLine | InfraRay | InfraCircle )[ { _ } ] ] ] :=
-  With[ { from = OptionValue[ "From" ] },
-    If[ ! fromWalkSpecQ[ from ],
-      Message[ SelectInfraWalk::badfrom, from ]; $Failed,
-      selectFromWalkSpace[ graph, walks, n, TrueQ @ OptionValue[ "Cyclic" ], from, OptionValue[ "Distance" ],
-        OptionValue[ "Metric" ], OptionValue[ "MaxCliques" ] ] ] ]
+walkCarriers[ w_Graph ] :=
+  If[ closedWalkQ @ w || positionSpelledQ @ w, { w }, geodesicGraph /@ dagGeodesics @ w ]
 
-SelectInfraWalk[ graph_Graph, walks_List, All, opts : OptionsPattern[] ] /;
-    walks === { } || ! AllTrue[ walks,
-      MatchQ[ ( InfraSegment | InfraLine | InfraRay | InfraCircle )[ { _ } ] ] ] :=
-  SelectInfraWalk[ graph, walks, UpTo[ Length[ walks ] ], opts ]
-
-SelectInfraWalk[ graph_Graph, walks_List, n_Integer : 1, opts : OptionsPattern[] ] /;
-    walks === { } || ! AllTrue[ walks,
-      MatchQ[ ( InfraSegment | InfraLine | InfraRay | InfraCircle )[ { _ } ] ] ] :=
-  With[ { result = SelectInfraWalk[ graph, walks, UpTo[ n ], opts ] },
-    If[ ListQ[ result ] && Length[ result ] < n, $Failed, result ] ]
 
 (* a line or segment-extension pool's atoms are tied in length within and ordered across, so the length selectors pick whole atoms and keep the pool form; every other selector reads the realisations *)
-SelectInfraWalk[ graph_Graph, ( head : InfraLine | InfraSegment )[ dags : { __Graph } ],
+SelectInfraWalk[ graph_Graph, dags : { __Graph },
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
+    NoneTrue[ dags, closedWalkQ @ # || positionSpelledQ @ # & ] &&
     MatchQ[ OptionValue[ SelectInfraWalk, { opts }, "From" ], "MinLength" | "MaxLength" ] &&
     OptionValue[ SelectInfraWalk, { opts }, "Distance" ] === None :=
   With[ { lengths = ( Max @ Values @ dagLayers @ # & ) /@ dags },
     { picked = Pick[ dags, lengths,
         If[ OptionValue[ SelectInfraWalk, { opts }, "From" ] === "MaxLength", Max, Min ] @ lengths ] },
-    If[ countSpec === All, head[ picked ],
-      SelectInfraWalk[ graph, head[ Catenate[ dagGeodesics /@ picked ] ], countSpec, "From" -> All ] ] ]
+    If[ countSpec === All, loneBundle @ picked,
+      SelectInfraWalk[ graph, Catenate[ walkCarriers /@ picked ], countSpec, "From" -> All ] ] ]
 
-SelectInfraWalk[ graph_Graph, ( head : InfraLine | InfraSegment )[ dags : { __Graph } ],
+(* a bundle of walk graphs selects on its vertex sequences and comes back as the graphs picked; closed walks are cycle graphs, so "Cyclic" is read off the shape *)
+SelectInfraWalk[ graph_Graph, walks : { __Graph },
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  SelectInfraWalk[ graph, head[ Catenate[ dagGeodesics /@ dags ] ], countSpec, opts ]
+  With[ { carriers = Catenate[ walkCarriers /@ walks ] },
+    { seqs = walkSequence /@ carriers },
+    { result = SelectInfraWalk[ graph, seqs, countSpec, "Cyclic" -> closedWalkQ @ First @ carriers, opts ] },
+    If[ result === $Failed, $Failed, Lookup[ AssociationThread[ seqs -> carriers ], result ] ] ]
 
-(* a ray pool's rays end at different sinks, so every selector reads the realisations *)
-SelectInfraWalk[ graph_Graph, InfraRay[ dags : { __Graph } ],
-            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  SelectInfraWalk[ graph, InfraRay[ Catenate[ dagGeodesics /@ dags ] ], countSpec, opts ]
-
-SelectInfraWalk[ graph_Graph, ( head : InfraSegment | InfraLine | InfraRay )[ walks_List ],
-            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  With[ { result = SelectInfraWalk[ graph, walks, countSpec, "Cyclic" -> False, opts ] },
-    If[ result === $Failed, $Failed, head[ result ] ] ]
-
-(* closed-walk wrapper: unwrap, select with circumference-as-length, rewrap *)
-SelectInfraWalk[ graph_Graph, ( head : InfraCircle )[ cycles_List ],
-            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  With[ { result = SelectInfraWalk[ graph, cycles, countSpec, "Cyclic" -> True, opts ] },
-    If[ result === $Failed, $Failed, head[ result ] ] ]
-
-(* the most-visited geodesics are the longest additive-weight source -> sink paths of the DAG under node weight c(v) and edge weight w -> x = f(w) b(x), the forward / backward path counts, so only the optimal geodesics are ever enumerated *)
-SelectInfraWalk[ graph_Graph, InfraSegment[ dag_Graph ],
+(* the most-visited geodesics of a DAG are the longest additive-weight source -> sink paths under node weight c(v) and edge weight w -> x = f(w) b(x), the forward / backward path counts, so only the optimal geodesics are ever enumerated *)
+SelectInfraWalk[ graph_Graph, dag_Graph,
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
+    ! closedWalkQ[ dag ] && ! positionSpelledQ[ dag ] &&
     OptionValue[ SelectInfraWalk, { opts }, "From" ] === "MostVisited" &&
     OptionValue[ SelectInfraWalk, { opts }, "Distance" ] === None :=
   Module[ { topo = TopologicalSort @ dag, edges = List @@@ EdgeList @ dag,
@@ -114,28 +84,26 @@ SelectInfraWalk[ graph_Graph, InfraSegment[ dag_Graph ],
         Scan[ x |-> tightDFS[ Append[ path, x ] ], tight[ Last @ path ] ] ] ];
     tightDFS[ { source } ];
     With[ { result = SelectInfraWalk[ graph, out, countSpec, "From" -> All ] },
-      If[ result === $Failed, $Failed, InfraSegment[ result ] ] ]
+      If[ result === $Failed, $Failed, geodesicGraph /@ result ] ]
   ]
 
-SelectInfraWalk[ graph_Graph, InfraSegment[ dag_Graph ],
+SelectInfraWalk[ graph_Graph, w_Graph,
             countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  SelectInfraWalk[ graph, InfraSegment[ dagGeodesics[ dag ] ], countSpec, opts ]
+  SelectInfraWalk[ graph, walkCarriers @ w, countSpec, opts ]
 
+SelectInfraWalk[ graph_Graph, walks_List, UpTo[ n_Integer ], opts : OptionsPattern[] ] :=
+  With[ { from = OptionValue[ "From" ] },
+    If[ ! fromWalkSpecQ[ from ],
+      Message[ SelectInfraWalk::badfrom, from ]; $Failed,
+      selectFromWalkSpace[ graph, walks, n, TrueQ @ OptionValue[ "Cyclic" ], from, OptionValue[ "Distance" ],
+        OptionValue[ "Metric" ], OptionValue[ "MaxCliques" ] ] ] ]
 
-SelectInfraWalk[ graph_Graph, list_List,
-            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
-    list =!= { } && AllTrue[ list, MatchQ[ ( InfraSegment | InfraLine | InfraRay )[ { _ } ] ] ] :=
-  With[ { head = Head @ First @ list,
-          result = SelectInfraWalk[ graph, #[[ 1, 1 ]] & /@ list, countSpec, "Cyclic" -> False, opts ] },
-    If[ result === $Failed, $Failed, head[ { # } ] & /@ result ] ]
+SelectInfraWalk[ graph_Graph, walks_List, All, opts : OptionsPattern[] ] :=
+  SelectInfraWalk[ graph, walks, UpTo[ Length[ walks ] ], opts ]
 
-
-SelectInfraWalk[ graph_Graph, list_List,
-            countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] /;
-    list =!= { } && AllTrue[ list, MatchQ[ InfraCircle[ { _ } ] ] ] :=
-  With[ { head = Head @ First @ list,
-          result = SelectInfraWalk[ graph, #[[ 1, 1 ]] & /@ list, countSpec, "Cyclic" -> True, opts ] },
-    If[ result === $Failed, $Failed, head[ { # } ] & /@ result ] ]
+SelectInfraWalk[ graph_Graph, walks_List, n_Integer : 1, opts : OptionsPattern[] ] :=
+  With[ { result = SelectInfraWalk[ graph, walks, UpTo[ n ], opts ] },
+    If[ ListQ[ result ] && Length[ result ] < n, $Failed, result ] ]
 
 SelectInfraWalk[ graph_Graph, countSpec : ( _Integer | UpTo[ _Integer ] | All ), opts : OptionsPattern[] ] :=
   SelectInfraWalk[ graph, #, countSpec, opts ] &
@@ -143,21 +111,24 @@ SelectInfraWalk[ graph_Graph, countSpec : ( _Integer | UpTo[ _Integer ] | All ),
 
 (* ===================== EmbeddingClosest ===================== *)
 
-(* --- walk graphs: select on the vertex sequences, return the graphs picked --- *)
+(* --- walk graphs: select on the vertex sequences, return the graphs picked; a DAG spreads into its geodesics, a cycle graph ranks as a cycle --- *)
+
+EmbeddingClosest[ graph_Graph, w_Graph, ref_ ] := EmbeddingClosest[ graph, walkCarriers @ w, ref ]
 
 EmbeddingClosest[ graph_Graph, paths : { __Graph }, ref_ ] :=
-  With[ { seqs = walkSequence /@ paths },
-    Lookup[ AssociationThread[ seqs -> paths ], EmbeddingClosest[ graph, seqs, ref ] ] ]
+  With[ { carriers = Catenate[ walkCarriers /@ paths ] },
+    { seqs = walkSequence /@ carriers },
+    Lookup[ AssociationThread[ seqs -> carriers ],
+      If[ AllTrue[ carriers, closedWalkQ ] && MatchQ[ ref, { _, _?NumericQ } ],
+        embeddingClosestCycles[ graph, seqs, First @ ref, Last @ ref ],
+        EmbeddingClosest[ graph, seqs, ref ] ] ] ]
 
 
 (* --- segment-shape: bundle of paths, reference {p1, p2} --- *)
 
-EmbeddingClosest[ graph_Graph, paths_List, { p1_, p2_ } ] /;
-    Length[ paths ] <= 1 &&
-    ( paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraLine | InfraRay )[ { _ } ] ] ] ) := paths
+EmbeddingClosest[ graph_Graph, paths_List, { p1_, p2_ } ] /; Length[ paths ] <= 1 := paths
 
-EmbeddingClosest[ graph_Graph, paths_List, { p1_, p2_ } ] /;
-    paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraLine | InfraRay )[ { _ } ] ] ] :=
+EmbeddingClosest[ graph_Graph, paths_List, { p1_, p2_ } ] :=
   With[ { coords = resolveEmbeddingCoords[ graph, Automatic ],
           vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
     { ep = Lookup[ vertexIndex, { p1, p2 } ] },
@@ -165,26 +136,14 @@ EmbeddingClosest[ graph_Graph, paths_List, { p1_, p2_ } ] /;
       path |-> EmbeddingHausdorffDistance[ coords, Lookup[ vertexIndex, path ], ep ] ]
   ]
 
-EmbeddingClosest[ graph_Graph, ( head : InfraSegment | InfraLine | InfraRay )[ paths_List ], { p1_, p2_ } ] :=
-  head[ EmbeddingClosest[ graph, paths, { p1, p2 } ] ]
 
-EmbeddingClosest[ graph_Graph, InfraSegment[ dag_Graph ], ref_ ] :=
-  EmbeddingClosest[ graph, InfraSegment[ dagGeodesics[ dag ] ], ref ]
+(* --- circle-shape: cycles as open vertex sequences, reference {center, radius} --- *)
 
-EmbeddingClosest[ graph_Graph, list_List, { p1_, p2_ } ] /;
-    list =!= { } && AllTrue[ list, MatchQ[ ( InfraSegment | InfraLine | InfraRay )[ { _ } ] ] ] :=
-  With[ { head = Head @ First @ list },
-    head[ { # } ] & /@ EmbeddingClosest[ graph, #[[ 1, 1 ]] & /@ list, { p1, p2 } ] ]
+PackageScope[embeddingClosestCycles]
 
+embeddingClosestCycles[ graph_Graph, cycles_List, center_, radius_ ] /; Length[ cycles ] <= 1 := cycles
 
-(* --- circle-shape: bundle of cycles, reference {center, radius_?NumericQ} --- *)
-
-EmbeddingClosest[ graph_Graph, cycles_List, { center_, radius_?NumericQ } ] /;
-    Length[ cycles ] <= 1 &&
-    ( cycles === { } || ! AllTrue[ cycles, MatchQ[ InfraCircle[ { _ } ] ] ] ) := cycles
-
-EmbeddingClosest[ graph_Graph, cycles_List, { center_, radius_?NumericQ } ] /;
-    cycles === { } || ! AllTrue[ cycles, MatchQ[ InfraCircle[ { _ } ] ] ] :=
+embeddingClosestCycles[ graph_Graph, cycles_List, center_, radius_ ] :=
   With[ { coords = resolveEmbeddingCoords[ graph, Automatic ],
           vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
     { centerIdx = vertexIndex[ center ] },
@@ -192,25 +151,11 @@ EmbeddingClosest[ graph_Graph, cycles_List, { center_, radius_?NumericQ } ] /;
       cycle |-> EmbeddingCircleDistance[ coords, Lookup[ vertexIndex, cycle ], centerIdx, radius ] ]
   ]
 
-EmbeddingClosest[ graph_Graph, InfraCircle[ cycles_List ], { center_, radius_?NumericQ } ] :=
-  InfraCircle[ EmbeddingClosest[ graph, cycles, { center, radius } ] ]
 
-EmbeddingClosest[ graph_Graph, list_List, { center_, radius_?NumericQ } ] /;
-    list =!= { } && AllTrue[ list, MatchQ[ InfraCircle[ { _ } ] ] ] :=
-  InfraCircle[ { # } ] & /@
-    EmbeddingClosest[ graph, #[[ 1, 1 ]] & /@ list, { center, radius } ]
+(* --- shell-shape: a List of vertex sets ranked by the directed Hausdorff distance to the Euclidean sphere of radius r, Max over set vertices of |EuclideanDistance(v, c) - r| --- *)
 
-
-(* --- shell-shape: sets ranked by the directed Hausdorff distance to the Euclidean sphere of radius r, Max over set vertices of |EuclideanDistance(v, c) - r| --- *)
-
-EmbeddingClosest[ graph_Graph, InfraShell[ sets_List ], { center_, radius_?NumericQ } ] :=
-  InfraShell[ embeddingRankShellSets[ graph, sets, center, radius ] ]
-
-EmbeddingClosest[ graph_Graph, list_List, { center_, radius_?NumericQ } ] /;
-    list =!= { } && AllTrue[ list, MatchQ[ InfraShell[ { _ } ] ] ] :=
-  InfraShell[ { # } ] & /@
-    embeddingRankShellSets[ graph, #[[ 1, 1 ]] & /@ list, center, radius ]
-
+EmbeddingClosest[ graph_Graph, sets_List, { center_, radius_?NumericQ } ] :=
+  embeddingRankShellSets[ graph, sets, center, radius ]
 
 embeddingRankShellSets[ graph_Graph, sets_List, center_, radius_ ] :=
   With[ { coords = resolveEmbeddingCoords[ graph, Automatic ],
@@ -225,29 +170,15 @@ embeddingRankShellSets[ graph_Graph, sets_List, center_, radius_ ] :=
 
 (* --- curve-shape: a length-2 bare list stays a {p1, p2} vertex reference, so explicit coordinates must be wrapped in Line[...] --- *)
 
-EmbeddingClosest[ graph_Graph, paths_List, crv_ ] /;
-    embeddingCurveQ[ crv ] && Length[ paths ] <= 1 &&
-    ( paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraLine | InfraRay )[ { _ } ] ] ] ) := paths
+EmbeddingClosest[ graph_Graph, paths_List, crv_ ] /; embeddingCurveQ[ crv ] && Length[ paths ] <= 1 := paths
 
-EmbeddingClosest[ graph_Graph, paths_List, crv_ ] /;
-    embeddingCurveQ[ crv ] &&
-    ( paths === { } || ! AllTrue[ paths, MatchQ[ ( InfraSegment | InfraLine | InfraRay )[ { _ } ] ] ] ) :=
+EmbeddingClosest[ graph_Graph, paths_List, crv_ ] /; embeddingCurveQ[ crv ] :=
   With[ { coords = resolveEmbeddingCoords[ graph, Automatic ],
           vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ],
           curvePts = embeddingCurvePoints[ crv ] },
     MinimalBy[ paths,
       path |-> EmbeddingCurveDistance[ coords, Lookup[ vertexIndex, path ], curvePts ] ]
   ]
-
-EmbeddingClosest[ graph_Graph, ( head : InfraSegment | InfraLine | InfraRay )[ paths_List ], crv_ ] /;
-    embeddingCurveQ[ crv ] :=
-  head[ EmbeddingClosest[ graph, paths, crv ] ]
-
-EmbeddingClosest[ graph_Graph, list_List, crv_ ] /;
-    embeddingCurveQ[ crv ] && list =!= { } &&
-    AllTrue[ list, MatchQ[ ( InfraSegment | InfraLine | InfraRay )[ { _ } ] ] ] :=
-  With[ { head = Head @ First @ list },
-    head[ { # } ] & /@ EmbeddingClosest[ graph, #[[ 1, 1 ]] & /@ list, crv ] ]
 
 
 (* --- operator form --- *)
@@ -373,7 +304,6 @@ InfraDeformationSize[ ref_, ws : { __Graph } ] := InfraDeformationSize[ ref, # ]
 InfraDeformationSize[ ref_, def_Graph ]         := InfraDeformationSize[ ref, walkSequence @ def ]
 
 InfraDeformationSize[ ref_Graph, def_List ]                    := InfraDeformationSize[ walkSequence @ ref, def ]
-InfraDeformationSize[ InfraSegment[ rs_List, ___ ], def_List ] := InfraDeformationSize[ First @ rs, def ]
 
 InfraDeformationSize[ ref_List, def_List ] := With[
   { m = Min[ Length @ ref, Length @ def ] },
@@ -610,7 +540,6 @@ visitPoolPositions[ paths_List, cyclic_, agg_ ] :=
 
 anchorDistancePool[ graph_Graph, paths_List, anchor_, spec_, baseDist_, cyclic_ ] :=
   With[ { anchors = Replace[ anchor, {
-            ( InfraSegment | InfraRay | InfraCircle )[ reps_List ] :> reps,
             w_Graph :> { walkSequence @ w },
             ws : { __Graph } :> walkSequence /@ ws,
             seq_List /; AllTrue[ seq, ListQ ] :> seq,

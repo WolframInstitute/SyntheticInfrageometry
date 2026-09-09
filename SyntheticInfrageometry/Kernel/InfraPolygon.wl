@@ -5,24 +5,9 @@ PackageScope[kDiagonals]
 PackageScope[findPolygonCore]
 
 
-(* ===================== InfraPolygon wrapper ===================== *)
-
-
-InfraPolygon[ reps_List ][ "Sides" ] := reps
-
-InfraPolygon[ reps_List ][ "Length" ] :=
-  Replace[ reps,
-    { { }              -> 0,
-      segs : { _InfraSegment .. } :> Total[ ( Length[ #[[ 1, 1 ]] ] - 1 ) & /@ segs ] },
-    { 1 } ]
-
-InfraPolygon[ reps_List ][ "Vertices" ] :=
-  Map[ poly |-> Most @ polylineToKnots[ poly ], reps ]
-
-
 (* ===================== FindInfraPolygon ===================== *)
 
-(* each side (p_i, p_{i+1 mod n}) is a geodesic, and the Cartesian product over sides is the class *)
+(* a polygon through the listed corners is its sides: one geodesic (p_i, p_{i+1 mod n}) per consecutive pair, each a directed path graph on the substrate vertices, consecutive sides sharing their corner and the last closing on the first.  The instance is the List of sides, since a corner is a fact about the polygon and not about the closed walk, which may even retrace a side; the count-less call is one polygon, a bounded count and All a List of them, and the Cartesian product over sides is the class *)
 
 FindInfraPolygon::badmethod = "Method `1` is not supported by FindInfraPolygon.";
 
@@ -30,9 +15,7 @@ Options[ FindInfraPolygon ] = { Method -> Automatic };
 
 FindInfraPolygon[ graph_Graph, vertices_List /; Length[ vertices ] >= 3,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  With[ { core = findPolygonCore[ FindInfraPolygon, graph, vertices, count, opts ] },
-    If[ core === $Failed, $Failed, InfraPolygon[ core ] ]
-  ]
+  findPolygonCore[ FindInfraPolygon, graph, vertices, count, opts ]
 
 
 (* "Exhaustive" with All forms the product; a bounded count streams that many geodesics per side, in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order, and reads members of their product off its mixed-radix index.  head is the calling symbol, read for its options and messages *)
@@ -46,9 +29,8 @@ findPolygonCore[ head_, graph_Graph, vertices_List, count_, opts : OptionsPatter
       With[ { sideCount = If[ count === All, All, UpTo[ Max[ 8, 2 countLimit @ count ] ] ] },
         With[ { sides = findSegmentCore[ graph, #1, #2, sideCount, Method -> methodSpec ] & @@@
                 Partition[ Append[ corners, First @ corners ], 2, 1 ] },
-          infraCap[
-            Map[ paths |-> ( InfraSegment[ { # } ] & /@ paths ),
-              If[ count === All, Tuples @ sides, nonDegenerateFirst[ sides, countLimit @ count ] ] ],
+          countTake[
+            Map[ geodesicGraph, If[ count === All, Tuples @ sides, nonDegenerateFirst[ sides, countLimit @ count ] ], { 2 } ],
             count ] ] ] ] ]
 
 
@@ -79,22 +61,22 @@ polygonCorner[ v_ ]                   := v
 
 (* ===================== InfraPolygonQ ===================== *)
 
-(* every leg a geodesic and consecutive legs, cyclically, sharing their endpoint *)
+(* every side a geodesic and consecutive sides, cyclically, sharing their endpoint *)
 
-InfraPolygonQ[ graph_Graph, InfraPolygon[ reps_List ] ] :=
-  AllTrue[ reps, InfraPolygonQ[ graph, # ] & ]
+InfraPolygonQ[ graph_Graph, polys : { { __Graph } .. } ] :=
+  AllTrue[ polys, InfraPolygonQ[ graph, # ] & ]
 
-InfraPolygonQ[ graph_Graph, poly : { _InfraSegment .. } ] :=
-  AllTrue[ poly, InfraSegmentQ[ graph, #[[ 1, 1 ]] ] & ] &&
-  AllTrue[ Partition[ Append[ poly, First @ poly ], 2, 1 ],
-    pair |-> Last[ pair[[ 1, 1, 1 ]] ] === First[ pair[[ 2, 1, 1 ]] ] ]
+InfraPolygonQ[ graph_Graph, sides : { __Graph } ] :=
+  With[ { seqs = walkSequence /@ sides },
+    AllTrue[ seqs, InfraSegmentQ[ graph, # ] & ] &&
+    AllTrue[ Partition[ Append[ seqs, First @ seqs ], 2, 1 ], pair |-> Last[ pair[[ 1 ]] ] === First[ pair[[ 2 ]] ] ] ]
 
 InfraPolygonQ[ _Graph, _ ] := False
 
 
 (* ===================== FindInfraRegularPolygon ===================== *)
 
-(* a regular n-gon w.r.t. the metric tuple As is a cyclic sequence v_1, ..., v_n with d(v_i, v_{i+k mod n}) satisfying As[[k]] for every i and k; a slot is an exact integer, a range {lo, hi} constant across i, or Automatic.
+(* a regular n-gon w.r.t. the metric tuple As is a cyclic sequence v_1, ..., v_n with d(v_i, v_{i+k mod n}) satisfying As[[k]] for every i and k; a slot is an exact integer, a range {lo, hi} constant across i, or Automatic.  The instance is the polygon on those corners: its sides, one shortest path each.
 
    The family is carried by the FindCycle candidate sweep, filtered by the slot predicates.  The sweep is not lazy -- every n-cycle of the candidate graph is materialised before any is tested -- so "Greedy" and "RandomGreedy" here only order what the count takes, in candidate and random order respectively; the class is the same under all three *)
 
@@ -144,14 +126,11 @@ FindInfraRegularPolygon[ graph_Graph, As_List, n_Integer /; n >= 3,
       ]
     ] },
     If[ core === $Failed, $Failed,
-      With[ { capped = infraCap[ core, count ] },
-        If[ capped === $Failed, $Failed,
-          InfraPolygon @ Map[
-            cyc |-> MapThread[ { a, b } |-> InfraSegment[ { FindShortestPath[ graph, a, b ] } ],
-              { cyc, RotateLeft @ cyc } ],
-            capped ] ]
-      ]
-    ]
+      countTake[
+        Map[ cyc |-> MapThread[ { a, b } |-> geodesicGraph @ FindShortestPath[ graph, a, b ],
+            { cyc, RotateLeft @ cyc } ],
+          core ],
+        count ] ]
   ]
 
 
@@ -212,9 +191,10 @@ matchPolygonSlot[ k_Integer, Automatic, cyc_List, dm_, idx_Association ] :=
 
 (* ===================== InfraRegularPolygonQ ===================== *)
 
+(* the corner cycle carries the test; a polygon is read at its corners, a cycle graph as its closed walk *)
 
 InfraRegularPolygonQ[ graph_Graph, cycle_List, As_List ] /;
-    Length[ cycle ] >= 3 && ! MatchQ[ cycle, { _InfraSegment .. } ] :=
+    Length[ cycle ] >= 3 && ! MatchQ[ cycle, { __Graph } | { { __Graph } .. } ] :=
   With[ { open = If[ First @ cycle === Last @ cycle, Most @ cycle, cycle ] },
     With[ {
         n   = Length @ open,
@@ -230,29 +210,34 @@ InfraRegularPolygonQ[ graph_Graph, cycle_List, As_List ] /;
     ]
   ]
 
-InfraRegularPolygonQ[ _Graph, cycle_List, _List ] /; Length[ cycle ] < 3 := False
+InfraRegularPolygonQ[ _Graph, cycle_List, _List ] /;
+    Length[ cycle ] < 3 && ! MatchQ[ cycle, { __Graph } | { { __Graph } .. } ] := False
 
-InfraRegularPolygonQ[ graph_Graph, InfraPolygon[ reps_List ], As_List ] :=
-  AllTrue[ polylineToVertexSeqs @ reps, InfraRegularPolygonQ[ graph, #, As ] & ]
+InfraRegularPolygonQ[ graph_Graph, polys : { { __Graph } .. }, As_List ] :=
+  AllTrue[ polys, InfraRegularPolygonQ[ graph, #, As ] & ]
 
-InfraRegularPolygonQ[ graph_Graph, poly : { _InfraSegment .. }, As_List ] :=
-  InfraRegularPolygonQ[ graph, First @ polylineToVertexSeqs @ { poly }, As ]
+InfraRegularPolygonQ[ graph_Graph, sides : { __Graph }, As_List ] :=
+  InfraRegularPolygonQ[ graph, Most @ polylineToKnots @ sides, As ]
+
+InfraRegularPolygonQ[ graph_Graph, w_Graph, As_List ] :=
+  InfraRegularPolygonQ[ graph, walkSequence @ w, As ]
 
 
 (* ===================== Scene-DSL constructors ===================== *)
 
+(* the scene engine binds the closed corner sequence of a regular polygon and the closed vertex sequence of a polygon through corners *)
 
 dispatchConstruction[ graph_Graph, InfraPolygon[ As_List, n_Integer, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      FindInfraRegularPolygon[ graph, As, n, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindInfraRegularPolygon ] ] ][ "Realizations" ],
+      Most @* polylineToVertexSeq /@ FindInfraRegularPolygon[ graph, As, n, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraRegularPolygon ] ] ],
       "Select" /. { opts } /. "Select" -> None,
       True, <||> ],
     extractBranches[ { opts } ] ]
 
 dispatchConstruction[ graph_Graph, InfraPolygon[ verts_List, opts___Rule ] ] :=
   capBranches[
-    FindInfraPolygon[ graph, verts, All,
-      Sequence @@ FilterRules[ { opts }, Options[ FindInfraPolygon ] ] ][ "Realizations" ],
+    polylineToVertexSeq /@ FindInfraPolygon[ graph, verts, All,
+      Sequence @@ FilterRules[ { opts }, Options[ FindInfraPolygon ] ] ],
     extractBranches[ { opts } ] ]

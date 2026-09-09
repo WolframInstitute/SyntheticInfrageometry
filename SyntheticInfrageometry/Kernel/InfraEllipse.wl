@@ -1,13 +1,9 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 
-(* ===================== InfraEllipse wrapper ===================== *)
-
-
-InfraEllipse[ reps_List ][ "Length" ] := Length /@ reps
 (* ===================== FindInfraEllipse ===================== *)
 
-(* an ellipse for foci {p1, p2} is a simple cycle in the induced subgraph on { v : cMin <= d(p1, v) + d(p2, v) <= cMax }.  The family is carried by the FindCycle length sweep, which materialises every shorter cycle first; there is no elliptic pool, the circle's carrier having no two-focus analogue.  One class under every Method: branch orders the ties within a length grade, pruning caps the cycles kept per grade *)
+(* an ellipse for foci {p1, p2} is a simple cycle in the induced subgraph on { v : cMin <= d(p1, v) + d(p2, v) <= cMax }, returned as a directed cycle graph on the substrate vertices; the count-less call is one ellipse, a bounded count and All a List of them -- closed walks have no acyclic union to carry them.  The family is carried by the FindCycle length sweep, which materialises every shorter cycle first; there is no elliptic pool, the circle's carrier having no two-focus analogue.  One class under every Method: branch orders the ties within a length grade, pruning caps the cycles kept per grade *)
 
 FindInfraEllipse::badproperty = "Property `1` is not supported by FindInfraEllipse.";
 FindInfraEllipse::badmethod   = "Method `1` is not supported by FindInfraEllipse.";
@@ -27,7 +23,7 @@ FindInfraEllipse[ graph_Graph, foci : { _, _ }, c_,
       Message[ FindInfraEllipse::badmethod, methodSpec ]; Throw[ $Failed ] ];
     With[ { branch  = greedyBranch[ methodHead /. "Exhaustive" -> "Greedy" ],
             pruning = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
-      spreadFind[ InfraEllipse, count,
+      spreadFind[ geodesicCycleGraph, count,
         findEllipseSweep[ graph, ##, properties, count, branch, pruning ] &,
         foci, c ] ]
   ]
@@ -88,8 +84,9 @@ propertyPredicateEllipticCycle[ _, _, _, other_ ] :=
 
 (* cycle is an ellipse iff it is a cyclic path whose vertex set is an elliptic shell. *)
 
-InfraEllipseQ[ graph_Graph, e_InfraEllipse ] :=
-  AllTrue[ First @ e, InfraEllipseQ[ graph, # ] & ]
+InfraEllipseQ[ graph_Graph, ws : { __Graph } ] := AllTrue[ ws, InfraEllipseQ[ graph, # ] & ]
+
+InfraEllipseQ[ graph_Graph, w_Graph ] := AllTrue[ walkRealisations @ w, InfraEllipseQ[ graph, # ] & ]
 
 InfraEllipseQ[ graph_Graph, cycle_List ] /; Length[ cycle ] >= 3 :=
   With[ {

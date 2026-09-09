@@ -44,7 +44,7 @@ OrthogonalCoordinates[ g_Graph, c_, axes_List, v_, opts : OptionsPattern[] ] /;
     MemberQ[ VertexList[ g ], v ] :=
   With[ {
       centerVs  = Replace[ c, { fam_Association :> Keys @ fam, x_ :> { x } } ],
-      axisPaths = Replace[ #, InfraSegment[ reps_List ] :> First @ reps ] & /@ axes,
+      axisPaths = Replace[ #, w_Graph :> First @ walkRealisations @ w ] & /@ axes,
       sel       = OptionValue[ "SelectCoordinate" ]
     },
     Map[
@@ -356,7 +356,7 @@ findOrthogonalFrameCore[ g_Graph, fam_Association, axisLength_, count_, opts_Lis
   ]
 
 
-wrapFrame[ frame_List ] := InfraSegment[ { # } ] & /@ frame
+wrapFrame[ frame_List ] := geodesicGraph /@ frame
 
 
 (* ===================== Helpers: longest paths / spanning axes ===================== *)

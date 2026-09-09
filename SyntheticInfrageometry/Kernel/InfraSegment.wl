@@ -4,53 +4,12 @@ PackageImport["WolframInstitute`Infrageometry`"]
 
 PackageScope[findSegmentCore]
 PackageScope[extensionPool]
-
-
-(* ===================== InfraSegment wrapper ===================== *)
-
-
-InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
-
-(* the distinct first / last vertices across realisations, deduplicated rather than a measure: every geodesic of one family shares its endpoints *)
-(* the ends are a set-level fact -- every realisation of a family shares them -- so the multiset is all-ones on them, not the column count *)
-InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Start" ] := KeySort @ AssociationMap[ 1 &, DeleteDuplicates[ First /@ reps ] ]
-InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "End" ]   := KeySort @ AssociationMap[ 1 &, DeleteDuplicates[ Last /@ reps ] ]
-
-InfraSegment /: Part[ InfraSegment[ reps : Except[ { __Graph }, _List ] ], i_Integer ] := columnDensity[ reps, i ]
-
-
-(* ===== geodesic-DAG form: InfraSegment[dag_Graph] ===== *)
-
-(* the whole geodesic family stored as the geodesic interval DAG: occupation comes from the Brandes count DP, never from enumerating the (possibly astronomically many) geodesics *)
-
-InfraSegment[ dag_Graph ][ "Graph" ]              := dag
-InfraSegment[ dag_Graph ][ "Vertices" ]           := VertexList[ dag ]
-InfraSegment[ dag_Graph ][ "Length" ]             :=
-  If[ VertexCount[ dag ] == 0, 0,
-    Max @ GraphDistance[ dag, First @ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ] ]
-InfraSegment[ dag_Graph ][ "Multiplicity" ]       := infraNumReps[ InfraSegment[ dag ] ]
-InfraSegment[ dag_Graph ][ "OccupationCount" ]    := GeodesicOccupation[ dag ]
-InfraSegment[ dag_Graph ][ "OccupationMeasure" ]  := InfraMeasure[ InfraSegment[ dag ] ]
-InfraSegment[ dag_Graph ][ "Measure" ]            := InfraMeasure[ InfraSegment[ dag ] ]
-InfraSegment[ dag_Graph ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSegment[ dag ], Method -> "Probability" ]
-InfraSegment[ dag_Graph ][ "Realizations" ]               := dagGeodesics[ dag ]
-(* lazy: the bounded DFS stops at spec geodesics, never enumerating the family *)
-InfraSegment[ dag_Graph ][ "Realizations", spec_ ]        := infraCap[ dagGeodesics[ dag, spec ], spec ]
-InfraSegment[ dag_Graph ][ "Paths" ]                      := dagGeodesics[ dag ]
-(* column i = layer i - 1 (the DAG is layer-aligned), mass = geodesic occupation: exact, no enumeration *)
-InfraSegment /: Part[ InfraSegment[ dag_Graph ], i_Integer ] :=
-  With[ { layers = dagLayers[ dag ] },
-    { len = Max[ 0, Values @ layers ] },
-    { vs = Keys @ Select[ layers, # === If[ i > 0, i - 1, len + 1 + i ] & ] },
-    KeySort @ KeyTake[ GeodesicOccupation[ dag ], vs ] ]
-
-InfraSegment[ dag_Graph ][ "Start" ] := KeySort @ AssociationMap[ 1 &, Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ]
-InfraSegment[ dag_Graph ][ "End" ]   := KeySort @ AssociationMap[ 1 &, Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] ]
+PackageScope[seedBundles]
 
 
 (* ===================== FindInfraSegment ===================== *)
 
-(* a geodesic sequence (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2).  No Properties axis: a rule narrowing the geodesic bundle is a local law at an infra-scale, hence a FindInfraGeodesic call *)
+(* a geodesic (p1 = v0, v1, ..., vk = p2) with k = d(p1, p2), returned as a directed path graph on the substrate vertices.  The count-less call is one geodesic, a bounded count a List of them, and All the geodesic interval DAG: the bundle IS the union of its walks, so it is not a separate return type.  Anchors spreading to several endpoint pairs give one DAG per pair -- a multi-source / multi-sink union of intervals is not acyclic in general.  No Properties axis: a rule narrowing the geodesic bundle is a local law at an infra-scale, hence a FindInfraGeodesic call *)
 
 FindInfraSegment::badproperty = "Property `1` is not supported by FindInfraSegment; local rules on the geodesic bundle moved to FindInfraGeodesic[graph, p1, p2, scale].";
 FindInfraSegment::badmethod   = "Method `1` is not supported by FindInfraSegment.";
@@ -59,51 +18,7 @@ Options[ FindInfraSegment ] = {
   Method -> Automatic
 };
 
-(* count = All with the exhaustive method gives the compact geodesic-DAG form, one GeodesicIntervalGraph atom per endpoint pair; any bounded count gives the enumerated paths, lazily via the DAG's bounded DFS.
-   A multi-source / multi-sink union of geodesic intervals is not acyclic in general, so multi-endpoint families stay a set of per-pair atoms rather than one DAG *)
-
-(* a lone atom collapses to the bare DAG form *)
-InfraSegment[ { dag_Graph } ] := InfraSegment[ dag ]
-
-(* ===== pool form: InfraSegment[{dag_Graph, ...}] ===== *)
-
-(* one geodesic DAG per endpoint pair -- FindInfraSegment spread over wrapper anchors, or ExtendInfraSegment's admissible end pairs.  Count and occupation come from the per-atom DP, as for the InfraLine pool, and ["Length"] is one number per atom: a 20 x 20 grid edge has 9 x 10^9 lines through it, so nothing here is sized by the family.  Anything else enumerates *)
-
-InfraSegment[ dags : { _Graph, __Graph } ][ "Graph" ]              := dags
-InfraSegment[ dags : { _Graph, __Graph } ][ "Vertices" ]           := Union @@ ( VertexList /@ dags )
-InfraSegment[ dags : { _Graph, __Graph } ][ "Length" ]             := ( Max @ Values @ dagLayers @ # & ) /@ dags
-InfraSegment[ dags : { _Graph, __Graph } ][ "Multiplicity" ]       := infraNumReps @ InfraSegment @ dags
-InfraSegment[ dags : { _Graph, __Graph } ][ "OccupationCount" ]    := infraVertexMultiset @ InfraSegment @ dags
-InfraSegment[ dags : { _Graph, __Graph } ][ "OccupationMeasure" ]  := InfraMeasure @ InfraSegment @ dags
-InfraSegment[ dags : { _Graph, __Graph } ][ "Measure" ]            := InfraMeasure @ InfraSegment @ dags
-InfraSegment[ dags : { _Graph, __Graph } ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSegment @ dags, Method -> "Probability" ]
-InfraSegment[ dags : { _Graph, __Graph } ][ "Realizations" ]       := Catenate[ dagGeodesics /@ dags ]
-InfraSegment[ dags : { _Graph, __Graph } ][ "Paths" ]              := Catenate[ dagGeodesics /@ dags ]
-InfraSegment[ dags : { _Graph, __Graph } ][ "First" ]              := First @ dagGeodesics[ First @ dags, 1 ]
-InfraSegment[ dags : { _Graph, __Graph } ][ "Start" ] :=
-  KeySort @ AssociationMap[ 1 &, Union @@ Map[ dag |-> Select[ VertexList @ dag, VertexInDegree[ dag, # ] == 0 & ], dags ] ]
-InfraSegment[ dags : { _Graph, __Graph } ][ "End" ]   :=
-  KeySort @ AssociationMap[ 1 &, Union @@ Map[ dag |-> Select[ VertexList @ dag, VertexOutDegree[ dag, # ] == 0 & ], dags ] ]
-
-(* lazy: atoms are consumed in order, each stopping at the residual budget *)
-InfraSegment[ dags : { _Graph, __Graph } ][ "Realizations", spec_ ] :=
-  infraCap[
-    Fold[ { acc, dag } |-> If[ Length @ acc >= countLimit @ spec, acc,
-        Join[ acc, dagGeodesics[ dag, countLimit @ spec - Length @ acc ] ] ],
-      { }, dags ],
-    spec ]
-
-InfraSegment[ dags : { _Graph, __Graph } ][ args___ ] :=
-  InfraSegment[ Join @@ ( dagGeodesics /@ dags ) ][ args ]
-
-(* column i = layer i - 1 of each atom, mass = geodesic occupation: exact, no enumeration *)
-InfraSegment /: Part[ InfraSegment[ dags : { _Graph, __Graph } ], i_Integer ] :=
-  KeySort @ Merge[
-    Map[ dag |-> With[ { layers = dagLayers[ dag ] },
-        { len = Max[ 0, Values @ layers ] },
-        KeyTake[ GeodesicOccupation[ dag ], Keys @ Select[ layers, # === If[ i > 0, i - 1, len + 1 + i ] & ] ] ],
-      dags ],
-    Total ]
+(* count = All with the exhaustive method gives the DAG form, one GeodesicIntervalGraph atom per endpoint pair; any bounded count gives the enumerated paths, lazily via the DAG's bounded DFS.  The endpoints are point-shaped anchors, so each is read through the anchor rule: a vertex, a vertex list, a density or a walk all spread over their support *)
 
 FindInfraSegment[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
@@ -111,10 +26,11 @@ FindInfraSegment[ graph_Graph, p1_, p2_,
     Message[ FindInfraSegment::badproperty, Properties /. { opts } ]; $Failed,
     If[ count === All &&
         methodName[ resolveMethod[ OptionValue[ FindInfraSegment, { opts }, Method ], count ] ] === "Exhaustive",
-      InfraSegment[ DeleteDuplicates[ GeodesicIntervalGraph[ graph, #[[ 1 ]], #[[ 2 ]] ] & /@
-        Select[ Tuples[ infraSpread /@ { p1, p2 } ],
-          #[[ 1 ]] =!= #[[ 2 ]] && VertexQ[ graph, #[[ 1 ]] ] && VertexQ[ graph, #[[ 2 ]] ] & ] ] ],
-      spreadFind[ InfraSegment, count, findSegmentCore[ graph, ##, count, opts ] &, p1, p2 ]
+      loneBundle @ DeleteDuplicates[ GeodesicIntervalGraph[ graph, #[[ 1 ]], #[[ 2 ]] ] & /@
+        Select[ Tuples[ Keys @ toDensity[ graph, # ] & /@ { p1, p2 } ],
+          #[[ 1 ]] =!= #[[ 2 ]] && VertexQ[ graph, #[[ 1 ]] ] && VertexQ[ graph, #[[ 2 ]] ] & ] ],
+      geodesicFind[ count, findSegmentCore[ graph, ##, count, opts ] &,
+        toDensity[ graph, p1 ], toDensity[ graph, p2 ] ]
     ]
   ]
 
@@ -151,7 +67,7 @@ findSegmentCore[ graph_Graph, p1_, p2_,
 
 (* ===================== ExtendInfraSegment ===================== *)
 
-(* the geodesics containing a geodesic bundle from p1 to p2, extended past its ends by at most kspec edges per free side and inextensible within that budget: kspec Infinity gives the lines through the bundle (FindInfraLine), kspec 0 the bundle itself.  The seed is a walk, an InfraSegment DAG or any wrapper spreading to walks; the 6-ary form is Tarski A4 *)
+(* the geodesics containing a geodesic bundle from p1 to p2, extended past its ends by at most kspec edges per free side and inextensible within that budget: kspec Infinity gives the lines through the bundle (FindInfraLine), kspec 0 the bundle itself.  The seed is a walk, a geodesic DAG extended as one object, or anything spreading to walks; the 6-ary form is Tarski A4 *)
 
 ExtendInfraSegment::badproperty  = "Property `1` is not supported by ExtendInfraSegment; local rules on the extension moved to ExtendInfraGeodesic[graph, seed, scale, kspec].";
 ExtendInfraSegment::badmethod    = "Method `1` is not supported by ExtendInfraSegment.";
@@ -164,15 +80,17 @@ Options[ ExtendInfraSegment ] = {
 };
 
 ExtendInfraSegment[ graph_Graph, seed_,
-    kspec : ( _Integer | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
+    kspec : ( _Integer | UpTo[ _Integer ] | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  With[ { pools = extensionPool[ ExtendInfraSegment, graph, #, kspec, count, opts ] & /@
-      Replace[ seed, {
-        InfraSegment[ dag_Graph ]          :> { dag },
-        InfraSegment[ dags : { __Graph } ] :> dags,
-        other_ :> ( PathGraph[ #, DirectedEdges -> True ] & /@ infraSpread @ other ) } ] },
-    If[ MemberQ[ pools, $Failed ], $Failed,
-      bundleTake[ InfraSegment, DeleteDuplicates @ Catenate @ pools, count ] ] ]
+  With[ { pools = extensionPool[ ExtendInfraSegment, graph, #, kspec, count, opts ] & /@ seedBundles @ seed },
+    If[ MemberQ[ pools, $Failed ], $Failed, geodesicTake[ Catenate @ pools, count ] ] ]
+
+
+(* the bundles a seed stands for, one DAG each: a substrate DAG or path graph is one bundle, a list of them several, and anything else -- a vertex list, a density, a position-spelled walk -- spreads to its walks *)
+
+seedBundles[ dag_Graph ] /; ! positionSpelledQ[ dag ]                 := { dag }
+seedBundles[ dags : { __Graph } ] /; NoneTrue[ dags, positionSpelledQ ] := dags
+seedBundles[ other_ ]                                                  := geodesicGraph /@ infraSpread @ other
 
 
 (* Tarski A4: find x with B(a, b, x) and d(b, x) == d(c, d); the last vertex slot excludes rules so an optioned 3-argument call never lands here *)
@@ -183,13 +101,13 @@ ExtendInfraSegment[ graph_Graph, a_, b_, c_, d : Except[ _Rule | _RuleDelayed ],
     { vs = If[ target === Infinity, { },
         Select[ VertexList[ graph ],
           x |-> BetweennessQ[ graph, a, b, x ] && GraphDistance[ graph, b, x ] === target ] ] },
-    bundleTake[ Identity, vs, count ]
+    countTake[ vs, count ]
   ]
 
 
 (* ===================== Extension pool ===================== *)
 
-(* the pool of geodesics containing a bundle from p1 to p2 (a DAG with source p1 and sink p2) and extended by at most kmax edges per free side, read off the distance matrix.  The two extension graphs hold the candidate ends, layered by the distance from p1 resp. p2; a pair (s, e) is admissible iff jointly geodesic -- d(s, e) == d(s, p1) + d(p1, p2) + d(p2, e), whichever geodesics are used -- with the larger layer passing kspec (k: at most k, {k}: exactly k, {lo, hi}: in range) and each free side either at the budget or inextensible, and its atom is I(p1, s) reversed, the bundle, and I(p2, e), cut out of the extension graphs.  "Exhaustive" with All is the pool itself; every bounded count streams geodesics off the admissible pairs in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order, so the class is the same under every Method.  head is the calling symbol, read for its options and messages *)
+(* the pool of geodesics containing a bundle from p1 to p2 (a DAG with source p1 and sink p2) and extended by at most kmax edges per free side, read off the distance matrix.  The two extension graphs hold the candidate ends, layered by the distance from p1 resp. p2; a pair (s, e) is admissible iff jointly geodesic -- d(s, e) == d(s, p1) + d(p1, p2) + d(p2, e), whichever geodesics are used -- with the larger layer passing kspec (k or UpTo[k]: at most k, {k}: exactly k, {lo, hi}: in range) and each free side either at the budget or inextensible, and its atom is I(p1, s) reversed, the bundle, and I(p2, e), cut out of the extension graphs.  "Exhaustive" with All is the pool itself; every bounded count streams geodesics off the admissible pairs in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order, so the class is the same under every Method.  head is the calling symbol, read for its options and messages *)
 
 extensionPool[ _, _Graph, bundle_Graph, _, _, OptionsPattern[] ] /; VertexCount[ bundle ] == 0 := { }
 
@@ -198,9 +116,10 @@ extensionPool[ head_, graph_Graph, bundle_Graph, kspec_, count_, opts : OptionsP
       properties = OptionValue[ head, { opts }, Properties ],
       methodHead = methodName @ resolveMethod[ OptionValue[ head, { opts }, Method ], count ],
       direction  = OptionValue[ head, { opts }, "Direction" ],
-      kmax   = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k } ],
+      kmax   = Replace[ kspec, { { _, hi_ } :> hi, { k_ } :> k, UpTo[ k_ ] :> k } ],
       stepsQ = Replace[ kspec, { Infinity :> ( True & ), { k_ } :> ( # == k & ),
-                                 { lo_, hi_ } :> ( lo <= # <= hi & ), k_Integer :> ( # <= k & ) } ],
+                                 { lo_, hi_ } :> ( lo <= # <= hi & ), UpTo[ k_ ] :> ( # <= k & ),
+                                 k_Integer :> ( # <= k & ) } ],
       p1 = First @ Select[ VertexList @ bundle, VertexInDegree[ bundle, # ] == 0 & ],
       p2 = First @ Select[ VertexList @ bundle, VertexOutDegree[ bundle, # ] == 0 & ],
       verts = VertexList @ graph },
@@ -243,10 +162,12 @@ extensionPool[ head_, graph_Graph, bundle_Graph, kspec_, count_, opts : OptionsP
 
 (* ===================== Scene-DSL constructor ===================== *)
 
+(* InfraSegment survives only here, as the scene-language token; the scene engine binds the vertex sequences *)
+
 dispatchConstruction[ graph_Graph, InfraSegment[ p1_, p2_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      segReps @ FindInfraSegment[ graph, p1, p2, All,
+      infraSpread @ FindInfraSegment[ graph, p1, p2, All,
         Sequence @@ FilterRules[ { opts }, Options[ FindInfraSegment ] ] ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],
@@ -269,10 +190,11 @@ InfraWalkQ[ _Graph, path_List ] /; Length[ path ] < 2 := False
 
 (* ===================== InfraSegmentQ ===================== *)
 
-(* consecutive vertices adjacent and the total edge count equal to d(v0, vk) *)
+(* consecutive vertices adjacent and the total edge count equal to d(v0, vk); a graph -- one path or a DAG -- passes iff every walk it stands for does *)
 
-InfraSegmentQ[ graph_Graph, seg_InfraSegment ] :=
-  AllTrue[ segReps @ seg, InfraSegmentQ[ graph, # ] & ]
+InfraSegmentQ[ graph_Graph, ws : { __Graph } ] := AllTrue[ ws, InfraSegmentQ[ graph, # ] & ]
+
+InfraSegmentQ[ graph_Graph, w_Graph ] := AllTrue[ walkRealisations @ w, InfraSegmentQ[ graph, # ] & ]
 
 InfraSegmentQ[ graph_Graph, segment_List ] /; Length[ segment ] >= 2 :=
   GraphDistance[ graph, First[ segment ], Last[ segment ] ] == Length[ segment ] - 1 &&

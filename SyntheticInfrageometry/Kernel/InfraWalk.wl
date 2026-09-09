@@ -31,7 +31,7 @@ FindInfraWalk[ graph_Graph, p1_, opts : OptionsPattern[] ] :=
 FindInfraWalk[ graph_Graph, p1_,
     kspec : ( UpTo[ _Integer ] | { _Integer } | { _Integer, _Integer } | Infinity ),
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  spreadFind[ Map[ walkGraph ], count,
+  spreadFind[ walkGraph, count,
     q1 |-> Catch @ With[ {
         scale  = OptionValue[ FindInfraWalk, { opts }, "InfraScale" ],
         rules  = OptionValue[ FindInfraWalk, { opts }, Properties ],
@@ -62,7 +62,7 @@ FindInfraWalk[ graph_Graph, p1_, p2_,
     kspec : ( UpTo[ _Integer ] | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] /;
     pointQ[ graph, p2 ] || AssociationQ[ p2 ] :=
-  spreadFind[ Map[ walkGraph ], count,
+  spreadFind[ walkGraph, count,
     { q1, q2 } |-> If[ q1 === q2, { },
       Catch @ With[ {
           scale  = OptionValue[ FindInfraWalk, { opts }, "InfraScale" ],
@@ -490,7 +490,7 @@ Options[ ExtendInfraWalk ] = {
 ExtendInfraWalk[ graph_Graph, seed_,
     kspec : ( UpTo[ _Integer ] | { _Integer } | { _Integer, _Integer } | Infinity ) : Infinity,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  spreadFind[ Map[ walkGraph ], count,
+  spreadFind[ walkGraph, count,
     walk0 |-> If[ walk0 === { } || ! AllTrue[ walk0, VertexQ[ graph, # ] & ], { },
       Catch @ With[ {
           scale  = OptionValue[ ExtendInfraWalk, { opts }, "InfraScale" ],
@@ -646,7 +646,7 @@ stepBothSides[ graph_Graph, { walk_List, la_, ra_ }, candidateFn_, branch_, kmax
 
 ConcatenateInfraWalk[ path1_, path2_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
-  spreadFind[ Map[ walkGraph ], count,
+  spreadFind[ walkGraph, count,
     { walk1, walk2 } |->
       If[ Last[ walk1 ] === First[ walk2 ], { Join[ walk1, Rest @ walk2 ] }, { } ],
     path1, path2 ]

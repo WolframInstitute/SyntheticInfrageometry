@@ -4,13 +4,9 @@ PackageScope[ellipticLevelSet]
 PackageScope[ellipticNearFar]
 
 
-(* ===================== InfraEllipticShell wrapper ===================== *)
-
-
-InfraEllipticShell[ reps_List ][ "Volume" ] := Length /@ reps
 (* ===================== FindInfraEllipticShell ===================== *)
 
-(* the level set { v : cMin <= d(p1, v) + d(p2, v) <= cMax } *)
+(* the level set { v : cMin <= d(p1, v) + d(p2, v) <= cMax }, a sorted vertex list; under Properties its minimal admissible subsets, one per instance *)
 
 FindInfraEllipticShell::badmethod   = "Method `1` is not supported by FindInfraEllipticShell.";
 FindInfraEllipticShell::badproperty = "Property `1` is not supported by FindInfraEllipticShell.";
@@ -22,7 +18,7 @@ Options[ FindInfraEllipticShell ] = {
 
 FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  spreadFind[ InfraEllipticShell, count,
+  spreadFind[ vertexSet, count,
     { foci0, c0 } |-> Module[ { properties, methodSpec, methodHead, pruning, range, verts, idx, dm, row1, row2,
               levelSet, admissible },
       properties = OptionValue[ FindInfraEllipticShell, { opts }, Properties ];
@@ -91,10 +87,10 @@ propertyPredicateEllipticShell[ _, _, _, other_ ] :=
 
 (* vs is an elliptic shell iff there are foci p1, p2 and a constant c with vs == { v : d(p1, v) + d(p2, v) == c } *)
 
-InfraEllipticShellQ[ graph_Graph, s_InfraEllipticShell ] :=
-  AllTrue[ First @ s, InfraEllipticShellQ[ graph, # ] & ]
-
 InfraEllipticShellQ[ graph_Graph, fam_Association ] := InfraEllipticShellQ[ graph, Keys @ fam ]
+
+InfraEllipticShellQ[ graph_Graph, sets : { __List } ] /; ! AllTrue[ sets, VertexQ[ graph, # ] & ] :=
+  AllTrue[ sets, InfraEllipticShellQ[ graph, # ] & ]
 
 InfraEllipticShellQ[ graph_Graph, vs_List ] :=
   Module[ { verts, idx, dm },

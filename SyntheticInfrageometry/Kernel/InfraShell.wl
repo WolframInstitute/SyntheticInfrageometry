@@ -1,13 +1,9 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 
-(* ===================== InfraShell wrapper ===================== *)
-
-
-InfraShell[ reps_List ][ "Volume" ] := Length /@ reps
 (* ===================== FindInfraShell ===================== *)
 
-(* a vertex subset of the level surface { v : rmin <= d(c, v) <= rmax } *)
+(* a vertex subset of the level surface { v : rmin <= d(c, v) <= rmax }, a sorted vertex list; the count-less call is one shell, a bounded count and All a List of them -- the level set itself without Properties, the minimal admissible subsets under them *)
 
 FindInfraShell::badmethod   = "Method `1` is not supported by FindInfraShell.";
 FindInfraShell::badproperty = "Property `1` is not supported by FindInfraShell.";
@@ -19,7 +15,7 @@ Options[ FindInfraShell ] = {
 
 FindInfraShell[ graph_Graph, p_, r_,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  spreadFind[ InfraShell, count,
+  spreadFind[ vertexSet, count,
     { p0, r0 } |-> Module[ { properties, methodSpec, methodHead, pruning, range, localG, levelSet, radius, admissible },
       properties = OptionValue[ FindInfraShell, { opts }, Properties ];
       methodSpec = resolveMethod[ OptionValue[ FindInfraShell, { opts }, Method ], count ];
@@ -46,7 +42,7 @@ FindInfraShell[ graph_Graph, p_, r_,
           ]
         ]
       ]
-    ], p, r ]
+    ], toDensity[ graph, p ], r ]
 
 
 admissibleShell[ localG_Graph, center_, radius_, properties_List ] :=
@@ -92,10 +88,8 @@ FindInfraOsculatingShell[ graph_Graph, path_, i_Integer, k_Integer,
           walks ],
         1 ],
       { Last, First } ];
-    sets = Flatten[
-      ( FindInfraShell[ graph, #[[ 1 ]], #[[ 2 ]], All, opts ][ "Realizations" ] & ) /@ pairs,
-      1 ];
-    bundleTake[ InfraShell, sets, count ]
+    sets = Catenate[ FindInfraShell[ graph, #[[ 1 ]], #[[ 2 ]], All, opts ] & /@ pairs ];
+    countTake[ DeleteDuplicates @ sets, count ]
   ]
 
 
@@ -111,8 +105,8 @@ FindInfraShellCenter::badparity     = "Parity `1` is not All, Even, or Odd.";
 
 Options[ FindInfraShellCenter ] = { Method -> "MaximalChordsBisectors" };
 
-FindInfraShellCenter[ graph_Graph, shell_InfraShell, opts : OptionsPattern[] ] :=
-  FindInfraShellCenter[ graph, Union @@ First[ shell ], opts ]
+FindInfraShellCenter[ graph_Graph, fam_Association, opts : OptionsPattern[] ] :=
+  FindInfraShellCenter[ graph, Keys @ fam, opts ]
 
 FindInfraShellCenter[ graph_Graph, vs_List, OptionsPattern[] ] :=
   With[ { spec = OptionValue[ Method ] },
@@ -177,10 +171,10 @@ chordMidpointRadii[ dm_, idx_, chord_ ] :=
 
 (* vs is a metric shell iff some c is equidistant from all of vs at a common finite radius r and vs is exactly { v : d(c, v) == r } *)
 
-InfraShellQ[ graph_Graph, s_InfraShell ] :=
-  AllTrue[ First @ s, InfraShellQ[ graph, # ] & ]
-
 InfraShellQ[ graph_Graph, fam_Association ] := InfraShellQ[ graph, Keys @ fam ]
+
+InfraShellQ[ graph_Graph, sets : { __List } ] /; ! AllTrue[ sets, VertexQ[ graph, # ] & ] :=
+  AllTrue[ sets, InfraShellQ[ graph, # ] & ]
 
 InfraShellQ[ graph_Graph, vs_List ] :=
   AnyTrue[ VertexList[ graph ],
@@ -206,7 +200,7 @@ dispatchConstruction[ graph_Graph, InfraShell[ center_, r_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
       FindInfraShell[ graph, center, r, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindInfraShell ] ] ][ "Realizations" ],
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraShell ] ] ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Center" -> center,
                 "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],

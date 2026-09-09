@@ -45,12 +45,12 @@ SegmentViewer[ g_Graph ] :=
       With[ {
           segments = If[ p1 === p2 || GraphDistance[ g, p1, p2 ] === Infinity, {},
             Take[
-              applySelectOption[ g, segReps @ FindInfraSegment[ g, p1, p2, All ],
+              applySelectOption[ g, infraSpread @ FindInfraSegment[ g, p1, p2, All ],
                 sel, False, <| "Endpoints" -> { p1, p2 } |> ],
               UpTo[ n ] ] ] },
         EventHandler[
           HighlightGraph[
-            InfraSceneHighlight[ g, { InfraSegment[ segments ] -> $InfraSegmentColor } ],
+            InfraSceneHighlight[ g, { geodesicGraph /@ segments -> $InfraSegmentColor } ],
             { Style[ p1, Directive[ $InfraPointColor, AbsolutePointSize[ 16 ] ] ],
               Style[ p2, Directive[ $InfraPointColor, AbsolutePointSize[ 16 ] ] ] },
             ImageSize -> 600 ],
@@ -83,10 +83,10 @@ ShellViewer[ g_Graph ] :=
       seed;
       With[ {
           shells = If[ r < 1, {},
-            Take[ FindInfraShell[ g, p, r, All, Properties -> properties ][ "Realizations" ], UpTo[ n ] ] ] },
+            Take[ FindInfraShell[ g, p, r, All, Properties -> properties ], UpTo[ n ] ] ] },
         EventHandler[
           HighlightGraph[
-            InfraSceneHighlight[ g, { InfraShell[ shells ] -> $InfraShellColor } ],
+            InfraSceneHighlight[ g, { shells -> $InfraShellColor } ],
             { Style[ p, Directive[ $InfraPointColor, AbsolutePointSize[ 16 ] ] ] },
             ImageSize -> 600 ],
           { "MouseClicked" :> With[ { mp = MousePosition[ "Graphics" ] },
@@ -120,12 +120,12 @@ CircleViewer[ g_Graph ] :=
       With[ {
           circles = If[ r < 1, {},
             Take[
-              applySelectOption[ g, FindInfraCircle[ g, p, r, All ][ "Realizations" ],
+              applySelectOption[ g, walkSequence /@ FindInfraCircle[ g, p, r, All ],
                 sel, True, <| "Center" -> p, "Radius" -> r |> ],
               UpTo[ n ] ] ] },
         EventHandler[
           HighlightGraph[
-            InfraSceneHighlight[ g, { InfraCircle[ circles ] -> $InfraCircleColor } ],
+            InfraSceneHighlight[ g, { geodesicCycleGraph /@ circles -> $InfraCircleColor } ],
             { Style[ p, Directive[ $InfraPointColor, AbsolutePointSize[ 16 ] ] ] },
             ImageSize -> 600 ],
           { "MouseClicked" :> With[ { mp = MousePosition[ "Graphics" ] },

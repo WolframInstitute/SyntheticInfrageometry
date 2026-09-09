@@ -1,5 +1,8 @@
 BeginTestSection["InfraCurveGeometry"]
 
+geodesicGraph      = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+geodesicCycleGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicCycleGraph;
+
 (* ===== TurningAngles: open paths ===== *)
 
 VerificationTest[
@@ -40,6 +43,16 @@ VerificationTest[
   TestID -> "TurningAngles-closed-grid-3x3-boundary-alternates"
 ]
 
+(* ===== TurningAngles: walk graphs ===== *)
+
+(* a path graph is read as its vertex sequence, a cycle graph as its closed walk *)
+VerificationTest[
+  { TurningAngles[GridGraph[{3, 3}], geodesicGraph @ {2, 1, 4}],
+    TurningAngles[CycleGraph[6], geodesicCycleGraph @ Range[6]] },
+  { {Pi - 2}, ConstantArray[Pi - 4, 6] },
+  TestID -> "TurningAngles-walk-graphs"
+]
+
 (* ===== TotalCurvature ===== *)
 
 VerificationTest[
@@ -64,6 +77,12 @@ VerificationTest[
   Simplify @ TotalCurvature[CycleGraph[6], {1, 2, 3}],
   Pi - 4,
   TestID -> "TotalCurvature-open-single-corner"
+]
+
+VerificationTest[
+  Simplify @ TotalCurvature[CycleGraph[6], geodesicCycleGraph @ Range[6]],
+  6 (Pi - 4),
+  TestID -> "TotalCurvature-cycle-graph"
 ]
 
 (* ===== TotalAbsoluteCurvature ===== *)
@@ -106,27 +125,22 @@ VerificationTest[
   TestID -> "TurningNumber-grid-boundary-matches-total-over-2-pi"
 ]
 
-(* ===== TurningAngles: polyline overload (knot vertices only) ===== *)
+(* ===== TurningAngles: polylines turn only at their knots ===== *)
 
 (* Two-leg open polyline 1-2-3 then 3-6-9 on the 3x3 grid: one corner at
    the knot 3 with arms 1 and 9.  Radius = Min[d(3, 1), d(3, 9)] = 2; the
    punched-out ball B(3, 2) deletes {2, 3, 6}, leaving d(1, 9) = 4 in the
    residual graph.  Angle = 4 / 2 = 2, turning = Pi - 2. *)
 VerificationTest[
-  TurningAngles[GridGraph[{3, 3}], InfraPolyline[{{
-    InfraSegment[{{1, 2, 3}}],
-    InfraSegment[{{3, 6, 9}}]
-  }}]],
-  {{Pi - 2}},
+  TurningAngles[GridGraph[{3, 3}], geodesicGraph /@ {{1, 2, 3}, {3, 6, 9}}],
+  {Pi - 2},
   TestID -> "TurningAngles-polyline-open-two-legs-on-grid"
 ]
 
 (* Single-leg polyline has no interior knot. *)
 VerificationTest[
-  TurningAngles[GridGraph[{3, 3}], InfraPolyline[{{
-    InfraSegment[{{1, 2, 3}}]
-  }}]],
-  {{}},
+  TurningAngles[GridGraph[{3, 3}], { geodesicGraph @ {1, 2, 3} }],
+  {},
   TestID -> "TurningAngles-polyline-single-leg-empty"
 ]
 
@@ -134,39 +148,26 @@ VerificationTest[
    Knot vertex list {1, 3, 9, 7, 1} is closed (first === last); each of the
    four corner triples is a 90-degree grid corner giving angle 2. *)
 VerificationTest[
-  TurningAngles[GridGraph[{3, 3}], InfraPolyline[{{
-    InfraSegment[{{1, 2, 3}}],
-    InfraSegment[{{3, 6, 9}}],
-    InfraSegment[{{9, 8, 7}}],
-    InfraSegment[{{7, 4, 1}}]
-  }}]],
-  {ConstantArray[Pi - 2, 4]},
+  TurningAngles[GridGraph[{3, 3}], geodesicGraph /@ {{1, 2, 3}, {3, 6, 9}, {9, 8, 7}, {7, 4, 1}}],
+  ConstantArray[Pi - 2, 4],
   TestID -> "TurningAngles-polyline-closed-grid-boundary"
 ]
 
-(* Multi-realisation polyline: result is one list of knot angles per
-   realisation, matching polylineToVertexSeqs / polylineToKnotVertices. *)
+(* a family of polylines is read one at a time *)
 VerificationTest[
-  TurningAngles[GridGraph[{3, 3}], InfraPolyline[{
-    {InfraSegment[{{1, 2, 3}}], InfraSegment[{{3, 6, 9}}]},
-    {InfraSegment[{{1, 4, 7}}], InfraSegment[{{7, 8, 9}}]}
-  }]],
+  TurningAngles[GridGraph[{3, 3}], #] & /@ {
+    geodesicGraph /@ {{1, 2, 3}, {3, 6, 9}},
+    geodesicGraph /@ {{1, 4, 7}, {7, 8, 9}} },
   {{Pi - 2}, {Pi - 2}},
-  TestID -> "TurningAngles-polyline-multi-realisation"
+  TestID -> "TurningAngles-polyline-family"
 ]
 
+(* the polyline reading agrees with the knot sequence read bare *)
 VerificationTest[
-  TurningAngles[GridGraph[{3, 3}], InfraPolyline[{{}}]],
-  {{}},
-  TestID -> "TurningAngles-polyline-empty-realisation"
-]
-
-(* ===== TurningAngles accepts InfraPoint-wrapped path vertices ===== *)
-
-VerificationTest[
-  TurningAngles[CycleGraph[6], {1, 2, 3}],
-  TurningAngles[CycleGraph[6], {1, 2, 3}],
-  TestID -> "TurningAngles-accepts-InfraPoint-wrappers"
+  TurningAngles[GridGraph[{3, 3}], FindInfraPolylineSubdivision[GridGraph[{3, 3}], {1, 2, 3, 6, 9}]] ===
+    TurningAngles[GridGraph[{3, 3}], {1, 3, 9}],
+  True,
+  TestID -> "TurningAngles-polyline-equals-knot-sequence"
 ]
 
 EndTestSection[]

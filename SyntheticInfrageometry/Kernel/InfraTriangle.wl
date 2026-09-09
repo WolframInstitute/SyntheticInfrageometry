@@ -1,21 +1,9 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 
-(* ===================== InfraTriangle wrapper ===================== *)
-
-
-InfraTriangle[ reps_List ][ "Sides" ] := reps
-
-InfraTriangle[ reps_List ][ "Length" ] :=
-  Replace[ reps,
-    { { }              -> 0,
-      segs : { _InfraSegment .. } :> Total[ ( Length[ #[[ 1, 1 ]] ] - 1 ) & /@ segs ] },
-    { 1 } ]
-
-InfraTriangle[ reps_List ][ "Vertices" ] :=
-  Map[ poly |-> Most @ polylineToKnots[ poly ], reps ]
 (* ===================== FindInfraTriangle ===================== *)
 
+(* the polygon on three corners: its three geodesic sides, one directed path graph each *)
 
 FindInfraTriangle::badmethod = "Method `1` is not supported by FindInfraTriangle.";
 
@@ -23,18 +11,16 @@ Options[ FindInfraTriangle ] = { Method -> Automatic };
 
 FindInfraTriangle[ graph_Graph, vertices_List /; Length[ vertices ] === 3,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  With[ { core = findPolygonCore[ FindInfraTriangle, graph, vertices, count, opts ] },
-    If[ core === $Failed, $Failed, InfraTriangle[ core ] ]
-  ]
+  findPolygonCore[ FindInfraTriangle, graph, vertices, count, opts ]
 
 
 (* ===================== InfraTriangleQ ===================== *)
 
-InfraTriangleQ[ graph_Graph, InfraTriangle[ reps_List ] ] :=
-  AllTrue[ reps, InfraTriangleQ[ graph, # ] & ]
+InfraTriangleQ[ graph_Graph, polys : { { __Graph } .. } ] :=
+  AllTrue[ polys, InfraTriangleQ[ graph, # ] & ]
 
-InfraTriangleQ[ graph_Graph, poly : { _InfraSegment, _InfraSegment, _InfraSegment } ] :=
-  InfraPolygonQ[ graph, poly ]
+InfraTriangleQ[ graph_Graph, sides : { _Graph, _Graph, _Graph } ] :=
+  InfraPolygonQ[ graph, sides ]
 
 InfraTriangleQ[ _Graph, _ ] := False
 
@@ -43,6 +29,6 @@ InfraTriangleQ[ _Graph, _ ] := False
 
 dispatchConstruction[ graph_Graph, InfraTriangle[ verts_List, opts___Rule ] ] :=
   capBranches[
-    FindInfraTriangle[ graph, verts, All,
-      Sequence @@ FilterRules[ { opts }, Options[ FindInfraTriangle ] ] ][ "Realizations" ],
+    polylineToVertexSeq /@ FindInfraTriangle[ graph, verts, All,
+      Sequence @@ FilterRules[ { opts }, Options[ FindInfraTriangle ] ] ],
     extractBranches[ { opts } ] ]

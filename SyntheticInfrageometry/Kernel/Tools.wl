@@ -4,7 +4,6 @@ PackageImport["WolframInstitute`Infrageometry`"]
 
 PackageScope[dagGeodesics]
 PackageScope[dagLayers]
-PackageScope[segReps]
 PackageScope[SeparatingSetQ]
 PackageScope[findAllMinimalAdmissible]
 PackageScope[findGreedyMinimalAdmissible]
@@ -19,18 +18,17 @@ PackageScope[applyPruning]
 PackageScope[resolveMethod]
 PackageScope[greedyBranch]
 PackageScope[infraSpread]
-PackageScope[infraCap]
 PackageScope[spreadFind]
-PackageScope[bundleTake]
-PackageScope[$infraBundleHeads]
-PackageScope[defineInfraBundleRules]
+PackageScope[geodesicFind]
+PackageScope[geodesicTake]
+PackageScope[countTake]
+PackageScope[loneBundle]
+PackageScope[geodesicGraph]
+PackageScope[geodesicCycleGraph]
+PackageScope[vertexSet]
+PackageScope[infraVertexSet]
 PackageScope[infraVertexMultiset]
 PackageScope[infraEdgeMultiset]
-PackageScope[atomVertexMasses]
-PackageScope[atomEdgeMasses]
-PackageScope[atomFamilySize]
-PackageScope[infraRepType]
-PackageScope[infraRepSeqs]
 PackageScope[infraRepVerts]
 PackageScope[infraRepEdges]
 PackageScope[infraNumReps]
@@ -99,7 +97,7 @@ walkSequence[ w_Graph ] := Which[
               If[ DirectedGraphQ @ w, VertexInDegree[ w, # ] == 0, VertexDegree[ w, # ] == 1 ] &,
               First @ VertexList @ w ],
             nextOf = If[ DirectedGraphQ @ w,
-              { u, _ } |-> First[ VertexOutComponent[ w, { u }, { 1 } ], None ],
+              { u, prev } |-> First[ VertexOutComponent[ w, { u }, { 1 } ], None ],
               { u, prev } |-> First[ DeleteCases[ AdjacencyList[ w, u ], prev ], None ] ] },
       { seq = TakeWhile[
           First /@ NestList[ { nextOf @@ #, First @ # } &, { start, None }, VertexCount @ w ],
@@ -382,62 +380,63 @@ findAllMinimalAdmissible[ graph_Graph, set_List, admissible_, pruning_ ] :=
   ]
 
 
-(* ===================== Multi-realisation wrapper helpers ===================== *)
+(* ===================== The geodesic class ===================== *)
 
-(* a multi-object is a SET of realisations, canonical iff duplicate-free: realisations are alternative witnesses of one construction, all equally admissible, so no invariant distinguishes them and there is no mass channel here.  The vertex / edge measure of a bundle is a lossy PROJECTION off it (InfraMeasure), never stored state.
-   A realisation slot holds either an explicit realisation or a compact atom (a geodesic-DAG Graph, InfraSegment only) standing for its whole family. *)
+(* THE SHAPE IS THE KIND, so a construction returns its carrier bare.  An open geodesic is a directed path graph on the substrate vertices and a closed one a directed cycle on them; a Graph passes through, so a pool atom -- a geodesic DAG -- is already in shape.  The general walk family spells its walks on position pairs instead (walkGraph / closedWalkGraph above), since a walk revisits and a geodesic never does.  A set is the sorted, duplicate-free List, the shape Wolfram's own set algebra takes; the Association is reserved for densities, where multiplicity is real *)
 
-(* the single source of truth for the canonicalisation rules and measure dispatch *)
-$infraBundleHeads = InfraSegment | InfraLine |
-  InfraShell | InfraBall | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse |
-  InfraPolygon | InfraTriangle | InfraRay | InfraPolyline;
+geodesicGraph[ seq_List ] := PathGraph[ seq, DirectedEdges -> True ]
+geodesicGraph[ w_Graph ]  := w
 
+geodesicCycleGraph[ seq_List ] :=
+  With[ { core = If[ Length[ seq ] >= 2 && First @ seq === Last @ seq, Most @ seq, seq ] },
+    Graph[ core, DirectedEdge @@@ Partition[ core, 2, 1, 1 ] ] ]
+geodesicCycleGraph[ w_Graph ] := w
 
-(* the AllTrue[.., ListQ || GraphQ] realisation guard keeps scene-language forms (InfraShell[c, r]) inert; on graphs whose vertices are themselves lists a scene form is indistinguishable from a bundle *)
-
-defineInfraBundleRules[ head_Symbol ] := (
-  (* idempotency: re-wrapping a wrapper is the identity *)
-  head[ inner_head ] := inner;
-  head[ reps_List ] /; AnyTrue[ reps, MatchQ[ head[ _List ] ] ] :=
-    head[ Flatten[ reps /. head[ xs_List ] :> xs, 1 ] ];
-  head[ reps_List ] /; AllTrue[ reps, ListQ[ # ] || GraphQ[ # ] & ] && ! DuplicateFreeQ[ reps ] :=
-    head[ DeleteDuplicates @ reps ];
-  head[ reps : Except[ { __Graph }, _List ] ][ "Realizations" ] := reps;
-  head[ reps : Except[ { __Graph }, _List ] ][ "First" ]        := First @ reps;
-  head[ reps : Except[ { __Graph }, _List ] ][ "OccupationCount" ]    := infraVertexMultiset[ head[ reps ] ];
-  head[ reps : Except[ { __Graph }, _List ] ][ "OccupationMeasure" ]  := InfraMeasure[ head[ reps ] ];
-  head[ reps : Except[ { __Graph }, _List ] ][ "Measure" ]            := InfraMeasure[ head[ reps ] ];
-  head[ reps : Except[ { __Graph }, _List ] ][ "ProbabilityMeasure" ] := InfraMeasure[ head[ reps ], Method -> "Probability" ];
-)
-
-Scan[ defineInfraBundleRules,
-  List @@ $infraBundleHeads ]
+vertexSet[ vs_List ] := Sort @ DeleteDuplicates @ vs
 
 
-(* a multi-realisation wrapper spreads into its bare realisations, a multiset over its support, and a walk graph into the vertex sequences it stands for; anything else -- a bare vertex, and a walk written as a vertex list -- is one anchor.  This is the REALISATION spread, not the anchor rule: a List here is a single realisation, and toDensity is where a List is read as a multiset *)
+(* ===================== The count contract ===================== *)
 
-With[ { heads = $infraBundleHeads },
-  infraSpread[ heads[ reps_List ] ] := reps;
-  infraSpread[ list_List ] /; AllTrue[ list, MatchQ[ heads[ { _ } ] ] ] :=
-    #[[ 1, 1 ]] & /@ list
-]
-infraSpread[ fam_Association ] := Keys @ fam
-infraSpread[ w_Graph ] := walkRealisations @ w
-infraSpread[ ws : { __Graph } ] := Catenate[ walkRealisations /@ ws ]
-infraSpread[ InfraSegment[ dag_Graph ] ] := dagGeodesics[ dag ]
-infraSpread[ InfraSegment[ dags : { _Graph, __Graph } ] ] := Join @@ ( dagGeodesics /@ dags )
-infraSpread[ InfraCircle[ dags : { __Graph } ] ] := Catenate[ dagGeodesics /@ dags ]
-infraSpread[ InfraLine[ dags : { __Graph } ] ]   := Catenate[ dagGeodesics /@ dags ]
-infraSpread[ InfraRay[ dags : { __Graph } ] ]    := Catenate[ dagGeodesics /@ dags ]
-infraSpread[ other_ ] := { other }
+(* count-less is ONE instance -- a witness, { } when there is none; a bounded count a List of them, a strict n failing when fewer exist; All the whole List.  Points are their own shape, so a point finder's instance is the bare vertex *)
+
+countTake[ reps_List, Automatic ]         := First[ reps, { } ]
+countTake[ reps_List, All ]               := reps
+countTake[ reps_List, UpTo[ n_Integer ] ] := Take[ reps, UpTo[ n ] ]
+countTake[ reps_List, n_Integer ]         := If[ Length @ reps < n, $Failed, Take[ reps, n ] ]
+
+(* a geodesic bundle is the union of its walks, so a bundle of one carrier under All stands alone: a lone DAG is the bundle, a lone path graph its own bundle.  Closed families and set families have no acyclic union and stay Lists *)
+loneBundle[ { one_Graph } ] := one
+loneBundle[ other_ ]        := other
 
 
-(* support = the i-th vertices of the realisations long enough to have one, masses = their multiplicities: one of the projections at which a density is constructed.  i may be negative *)
+(* ===================== The realisation spread ===================== *)
 
-PackageScope[columnDensity]
+(* the REALISATION spread, not the anchor rule: an Association spreads over its support, a walk graph into the vertex sequences it stands for, a list of graphs into all of theirs; anything else -- a bare vertex, and a walk or a set written as a vertex list -- is one realisation.  toDensity is where a List is read as a multiset *)
 
-columnDensity[ reps_List, i_Integer ] :=
-  KeySort @ Counts[ #[[ i ]] & /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] ]
+infraSpread[ fam_Association ]       := Keys @ fam
+infraSpread[ w_Graph ]               := walkRealisations @ w
+infraSpread[ ws : { __Graph } ]      := Catenate[ walkRealisations /@ ws ]
+infraSpread[ { } ]                   := { }
+infraSpread[ other_ ]                := { other }
+
+
+(* spread each anchor, run the single-tuple core over the Cartesian product, put every realisation into its shape, union-deduplicate and apply the count contract.  shape is the per-realisation carrier: geodesicGraph, geodesicCycleGraph, vertexSet, walkGraph, closedWalkGraph, or Identity *)
+
+spreadFind[ shape_, count_, core_, anchors__ ] :=
+  With[ { results = core @@@ Tuples[ infraSpread /@ { anchors } ] },
+    If[ MemberQ[ results, $Failed ], $Failed,
+      countTake[ DeleteDuplicates[ shape /@ DeleteDuplicates @ Flatten[ results, 1 ] ], count ] ] ]
+
+
+(* the geodesic class: open walks as substrate path graphs, pool atoms passing through, and a lone carrier under All standing alone *)
+
+geodesicTake[ reps_List, count_ ] :=
+  Replace[ countTake[ DeleteDuplicates[ geodesicGraph /@ DeleteDuplicates @ reps ], count ],
+    l_List /; count === All :> loneBundle @ l ]
+
+geodesicFind[ count_, core_, anchors__ ] :=
+  Replace[ spreadFind[ geodesicGraph, count, core, anchors ],
+    l_List /; count === All :> loneBundle @ l ]
 
 
 (* all source -> sink directed paths, the one exponential step, materialised on demand; dagGeodesics[dag, limit] is the lazy form, a DFS stopping as soon as limit geodesics are collected *)
@@ -477,105 +476,82 @@ dagLayers[ dag_Graph ] :=
       AssociationThread[ VertexList[ dag ], GraphDistance[ dag, s ] ] ] ]
 
 
-segReps[ InfraSegment[ dag_Graph ] ]        := dagGeodesics[ dag ]
-segReps[ InfraSegment[ reps_List, ___ ] ]   :=
-  Catenate[ If[ GraphQ[ # ], dagGeodesics[ # ], { # } ] & /@ reps ]
-segReps[ ws : { ___InfraSegment } ]         := Catenate[ segReps /@ ws ]
+(* ===================== Vertex sets of shapes ===================== *)
+
+(* the support of any shape, without the graph: a density's keys, a walk graph's vertices (substrate-spelled through the position pairs), the union over a list of graphs or of vertex lists, a vertex list itself.  With the graph in hand, Keys @ toDensity[graph, x] is the anchor-rule reading and tells a list-labelled vertex from a set *)
+
+infraVertexSet[ fam_Association ]  := Keys @ fam
+infraVertexSet[ w_Graph ]          := walkVertexSet @ w
+infraVertexSet[ ws : { __Graph } ] := Union @@ ( walkVertexSet /@ ws )
+infraVertexSet[ { } ]              := { }
+infraVertexSet[ sets : { __List } ] := Union @@ ( infraVertexSet /@ sets )
+infraVertexSet[ list_List ]        := vertexSet @ list
+infraVertexSet[ v_ ]               := { v }
+
+infraVertexSet[ graph_Graph, x_ ]  := Keys @ toDensity[ graph, x ]
 
 
 PackageScope[hullVertices]
 
-hullVertices[ s_List ] /; AnyTrue[ s, StringStartsQ[ SymbolName @ Head @ #, "Infra" ] & ] :=
-  infraVertexSet[ s ]
-hullVertices[ s_List ] := s
 hullVertices[ s_ ] := infraVertexSet[ s ]
 
 
-(* $Failed is the mathematical "fewer than n exist" case; the count-less Automatic is soft, one witness if there is one *)
+(* ===================== Occupation of shapes ===================== *)
 
-infraCap[ list_List, All ]                              := list
-infraCap[ list_List, Automatic ]                        := Take[ list, UpTo[ 1 ] ]
-infraCap[ list_List, UpTo[ n_Integer ] ]                := Take[ list, UpTo[ n ] ]
-infraCap[ list_List, n_Integer ] /; n <= Length[ list ] := Take[ list, n ]
-infraCap[ _List, _Integer ]                             := $Failed
+(* the raw occupation count c(v) = total appearances across realisations, the association InfraMeasure normalises and InfraEqualQ compares.  For a density the multiset IS the object, for every other shape a lossy projection; a substrate DAG contributes its whole family's occupation by the Brandes DP, exactly as the enumerated family would *)
 
-
-(* spread each anchor, run the single-tuple core over the Cartesian product, union-deduplicate, and apply the count contract; returns ONE wrapper *)
-
-spreadFind[ wrapHead_, count_, core_, anchors__ ] :=
-  With[ { results = core @@@ Tuples[ infraSpread /@ { anchors } ] },
-    If[ MemberQ[ results, $Failed ], $Failed,
-      bundleTake[ wrapHead, DeleteDuplicates @ Flatten[ results, 1 ], count ] ] ]
+infraVertexMultiset[ fam_Association ]  := fam
+infraVertexMultiset[ w_Graph ] := Which[
+  closedWalkQ @ w,      Counts @ walkSequence @ w,
+  positionSpelledQ @ w, Counts @ Catenate @ walkRealisations @ w,
+  True,                 GeodesicOccupation @ w ]
+infraVertexMultiset[ ws : { __Graph } ]  := Merge[ infraVertexMultiset /@ ws, Total ]
+infraVertexMultiset[ { } ]               := <||>
+infraVertexMultiset[ sets : { __List } ] := Merge[ Counts /@ sets, Total ]
+infraVertexMultiset[ vs_List ]           := Counts @ vs
 
 
-(* the count contract on a realisation set: strict n fails on under-supply.  Points are not wrapped, so a point finder passes Identity as its head and the generic rules return the bare List of vertices *)
+(* the raw count of appearances across realisations, keyed by sorted vertex pair; a set's edges are the induced subgraph's, hence the graph *)
 
-bundleTake[ head_, reps_, All ]               := head[ reps ]
-bundleTake[ head_, reps_, Automatic ]         := head[ Take[ reps, UpTo @ 1 ] ]
-bundleTake[ head_, reps_, UpTo[ n_Integer ] ] := head[ Take[ reps, UpTo @ n ] ]
-bundleTake[ head_, reps_, n_Integer ]         :=
-  If[ Length @ reps < n, $Failed, head[ Take[ reps, n ] ] ]
-
-
-(* the raw occupation count c(v) = total appearances across realisations, the association InfraMeasure normalises and InfraEqualQ compares.  For a density the multiset IS the object, for every head a lossy projection; a compact geodesic-DAG atom contributes its whole family's occupation by DP, exactly as the enumerated family would *)
-
-infraVertexMultiset[ fam_Association ] := fam
-infraVertexMultiset[ InfraSegment[ dag_Graph ] ]   := GeodesicOccupation[ dag ]
-With[ { heads = $infraBundleHeads },
-  infraVertexMultiset[ obj : ( head : heads )[ _List ] ] :=
-    Merge[ atomVertexMasses[ infraRepType @ head ] /@ infraRepSeqs @ obj, Total ]
-]
+infraEdgeMultiset[ _, _Association ] := <||>
+infraEdgeMultiset[ g_, w_Graph ] := Which[
+  closedWalkQ @ w,      Counts @ infraRepEdges[ g, "Cycles", walkSequence @ w ],
+  positionSpelledQ @ w, Merge[ Counts[ infraRepEdges[ g, "Paths", # ] ] & /@ walkRealisations @ w, Total ],
+  True,                 KeyMap[ Sort[ List @@ # ] &, GeodesicEdgeOccupation[ w ] ] ]
+infraEdgeMultiset[ g_, ws : { __Graph } ]  := Merge[ infraEdgeMultiset[ g, # ] & /@ ws, Total ]
+infraEdgeMultiset[ _, { } ]                := <||>
+infraEdgeMultiset[ g_, sets : { __List } ] := Merge[ Counts[ infraRepEdges[ g, "Sets", # ] ] & /@ sets, Total ]
+infraEdgeMultiset[ g_, vs_List ]           := Counts @ infraRepEdges[ g, "Sets", vs ]
 
 
-(* a Graph atom stands for its whole geodesic family (occupation by the Brandes DP), anything else for itself; familySize is that slot's contribution to the normalisation divisor *)
+(* N = the number of realisations the marginal was summed over: a density's largest mass, a walk's 1, a DAG's geodesic count, a list's sum over its members.  A measure normalises by its HEAVIEST mass, not its total: the channel encodes RELATIVE mass within the object, so the modal vertex draws full and lighter ones fade *)
 
-atomVertexMasses[ _ ][ dag_Graph ] := GeodesicOccupation[ dag ]
-atomVertexMasses[ type_ ][ rep_ ]  := Counts[ infraRepVerts[ type, rep ] ]
-
-atomEdgeMasses[ _ ][ _ ][ dag_Graph ] := KeyMap[ Sort[ List @@ # ] &, GeodesicEdgeOccupation[ dag ] ]
-atomEdgeMasses[ g_ ][ type_ ][ rep_ ] := Counts[ infraRepEdges[ g, type, rep ] ]
-
-atomFamilySize[ dag_Graph ] :=
-  With[ { occ = GeodesicOccupation[ dag ] }, If[ Length @ occ === 0, 1, Max @ Values @ occ ] ]
-atomFamilySize[ _ ] := 1
-
-
-(* the raw count of appearances across realisations, keyed by sorted vertex pair; the graph is needed only for Sets-type realisations, whose edges are the induced subgraph's *)
-
-infraEdgeMultiset[ _, InfraSegment[ dag_Graph ] ] :=
-  KeyMap[ Sort[ List @@ # ] &, GeodesicEdgeOccupation[ dag ] ]
-
-(* a circle-pool atom is an open DAG whose paths close: the wrap-around edge sink - source lies on every realisation of the atom and so carries its whole family *)
-infraEdgeMultiset[ _, InfraCircle[ dags : { __Graph } ] ] :=
-  Merge[
-    Map[
-      dag |-> With[
-        { src = First @ Select[ VertexList @ dag, VertexInDegree[ dag, # ] == 0 & ],
-          snk = First @ Select[ VertexList @ dag, VertexOutDegree[ dag, # ] == 0 & ] },
-        Join[ KeyMap[ Sort[ List @@ # ] &, GeodesicEdgeOccupation[ dag ] ],
-          <| Sort @ { snk, src } -> atomFamilySize[ dag ] |> ] ],
-      dags ],
-    Total ]
-infraEdgeMultiset[ g_, obj_ ] :=
-  Merge[ atomEdgeMasses[ g ][ infraRepType @ Head @ obj ] /@ infraRepSeqs @ obj, Total ]
+infraNumReps[ fam_Association ] := If[ Length @ fam === 0, 1, Max @ fam ]
+infraNumReps[ w_Graph ] :=
+  If[ closedWalkQ @ w || positionSpelledQ @ w, 1,
+    With[ { occ = GeodesicOccupation[ w ] }, If[ Length @ occ === 0, 1, Max @ Values @ occ ] ] ]
+infraNumReps[ ws : { __Graph } ]  := Max[ Total[ infraNumReps /@ ws ], 1 ]
+infraNumReps[ { } ]               := 1
+infraNumReps[ sets : { __List } ] := Length @ sets
+infraNumReps[ _List ]             := 1
 
 
 (* ===================== Instances, families, densities ===================== *)
 
 (* A MULTISET is a finitely supported measure, <| atom -> weight |>, and carries no head: Counts, Merge, KeyMap, Total and KeySelect are its algebra, Keys its support.  A List is the multiset with uniform weight, one Counts away.  A DENSITY is the 0-d case, a multiset on bare vertices -- the marginal of anything to the vertex set, with respect to the counting measure.
 
-   the ANCHOR RULE: every anchor argument of every construction is read through toDensity, so points, sets and objects all work in every construction under one coercion.  A vertex is the unit mass, a List its Counts, an Association itself, a graph its vertex occupation.  The branches are ordered rather than left to DownValue sorting, since a vertex label may itself be a List and only pointQ tells the two rows apart.
+   the ANCHOR RULE: every anchor argument of every construction is read through toDensity, so points, sets and objects all work in every construction under one coercion.  A vertex is the unit mass, a List its Counts, an Association itself, a graph its vertex occupation, a list of graphs or of vertex lists the sum over its members.  The branches are ordered rather than left to DownValue sorting, since a vertex label may itself be a List and only pointQ tells the two rows apart.
 
    keys sorted, so densities built by different routes compare SameQ; this was the one guarantee the old measure head carried *)
 
 toDensity[ graph_Graph, x_ ] := Which[
-  pointQ[ graph, x ],                     <| x -> 1 |>,
-  AssociationQ[ x ],                      KeySort @ x,
-  GraphQ[ x ] && closedWalkQ[ x ],        KeySort @ Counts @ walkSequence @ x,
-  GraphQ[ x ] && positionSpelledQ[ x ],   KeySort @ Counts @ Catenate @ walkRealisations @ x,
-  GraphQ[ x ],                            KeySort @ GeodesicOccupation @ x,
-  ListQ[ x ],                             KeySort @ Counts @ x,
-  True,                                   <| x -> 1 |> ]
+  pointQ[ graph, x ],                                   <| x -> 1 |>,
+  AssociationQ[ x ],                                    KeySort @ x,
+  GraphQ[ x ],                                          KeySort @ infraVertexMultiset @ x,
+  ListQ[ x ] && AllTrue[ x, VertexQ[ graph, # ] & ],    KeySort @ Counts @ x,
+  MatchQ[ x, { ( _Graph | _List ) .. } ],               KeySort @ Merge[ toDensity[ graph, # ] & /@ x, Total ],
+  ListQ[ x ],                                           KeySort @ Counts @ x,
+  True,                                                 <| x -> 1 |> ]
 
 
 (* ===================== Visit measure ===================== *)
@@ -606,40 +582,11 @@ normalizeMeasure[ method_, counts_, obj_ ] := Switch[ method,
   "Probability", If[ Length @ counts === 0, counts, counts / Total[ counts ] ],
   _,             Message[ InfraMeasure::badmethod, method ]; counts ]
 
-(* the single source of truth shared with InfraSceneHighlight's repVerts / repEdges dispatch *)
 
-infraRepType[ Association ]        = "Points";
-infraRepType[ InfraSegment ]       = "Paths";
-infraRepType[ InfraLine ]          = "Paths";
-infraRepType[ InfraRay ]           = "Paths";
-infraRepType[ InfraPolyline ]      = "Paths";
-infraRepType[ InfraCircle ]        = "Cycles";
-infraRepType[ InfraEllipse ]       = "Cycles";
-infraRepType[ InfraPolygon ]       = "Cycles";
-infraRepType[ InfraTriangle ]      = "Cycles";
-infraRepType[ InfraShell ]         = "Sets";
-infraRepType[ InfraBall ]          = "Sets";
-infraRepType[ InfraEllipticShell ] = "Sets";
-infraRepType[ InfraPlane ]         = "Sets";
-
-
-infraRepSeqs[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] := polylineToVertexSeqs @ reps
-infraRepSeqs[ fam_Association ]                                              := Keys @ fam
-infraRepSeqs[ head_[ reps_List, ___ ] ]                                      := reps
-
-(* a point realisation is a bare vertex (wrapped to a singleton), path / cycle / set realisations are vertex lists; edges are sorted lists {a, b}, which InfraMeasure remaps to UndirectedEdge *)
+(* the per-type vertex / edge readers shared with InfraSceneHighlight: a point realisation is a bare vertex (wrapped to a singleton), path / cycle / set realisations are vertex lists; edges are sorted lists {a, b}, which InfraMeasure remaps to UndirectedEdge *)
 
 infraRepVerts[ "Points", rep_ ] := { rep }
 infraRepVerts[ _, rep_ ]        := rep
-
-(* N = the number of realisations the marginal was summed over: a density's largest mass, a bundle's sum of per-slot family sizes (1 for an explicit realisation, the whole geodesic count for a compact DAG atom), 1 for a single set *)
-
-(* a measure normalises by its HEAVIEST mass, not its total: the channel encodes RELATIVE mass within the object, so the modal vertex draws full and lighter ones fade.  Normalising by the total would render a uniform ball of n vertices at 1/n and make it vanish, and it is what separates ["Measure"] from ["ProbabilityMeasure"] *)
-infraNumReps[ fam_Association ]                     := If[ Length @ fam === 0, 1, Max @ fam ]
-infraNumReps[ InfraSegment[ dag_Graph ] ]           := atomFamilySize[ dag ]
-infraNumReps[ head_[ reps_List, ___ ] ]             := Max[ Total[ atomFamilySize /@ reps ], 1 ]
-
-(* Sets-type edges are the induced subgraph's, hence the graph dependency *)
 
 infraRepEdges[ _, "Points", _ ]   := { }
 infraRepEdges[ _, "PointSet", _ ] := { }
@@ -648,15 +595,13 @@ infraRepEdges[ _, "Paths", rep_ ] :=
 infraRepEdges[ _, "Cycles", rep_ ] :=
   With[ { closed = If[ Length @ rep >= 2 && First @ rep === Last @ rep, rep, Append[ rep, First @ rep ] ] },
     If[ Length @ closed >= 2, Sort /@ Partition[ closed, 2, 1 ], { } ] ]
+infraRepEdges[ None, "Sets", rep_ ] := { }
 infraRepEdges[ g_, "Sets", rep_ ] :=
   Sort /@ ( List @@@ EdgeList @ Subgraph[ g, rep ] )
 
 
-(* bare list = vertex sequence; line wrappers unwrap to the union of their realisations *)
+(* the vertex set of a line-like shape: a walk graph, a bundle, or a bare vertex sequence *)
 
-(* a realisation slot may be a compact geodesic-DAG atom standing for its family *)
-linePointSet[ ( InfraLine | InfraSegment | InfraRay )[ reps_List ] ] :=
-  Union @@ Replace[ reps, d_Graph :> VertexList[ d ], { 1 } ]
-linePointSet[ InfraSegment[ dag_Graph ] ] := VertexList[ dag ]
-linePointSet[ w_Graph ] := walkVertexSet[ w ]
-linePointSet[ line_List ] := line
+linePointSet[ w_Graph ]          := walkVertexSet[ w ]
+linePointSet[ ws : { __Graph } ] := Union @@ ( walkVertexSet /@ ws )
+linePointSet[ line_List ]        := line

@@ -1,24 +1,24 @@
 BeginTestSection["InfraEllipticShell"]
 
-(* ===== FindInfraEllipticShell: basic level sets ===== *)
+(* ===== FindInfraEllipticShell: basic level sets, each a sorted vertex list ===== *)
 
 (* PathGraph 1-2-3-4-5, foci {1, 3}:
    d(1,v)+d(3,v) = 2,2,2,4,6 for v=1..5 *)
 
 VerificationTest[
-  Sort @ First @ First @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2 ],
+  FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2 ],
   { 1, 2, 3 },
   TestID -> "FindInfraEllipticShell-PathGraph-c2-metric-interval"
 ]
 
 VerificationTest[
-  First @ First @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 4 ],
+  FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 4 ],
   { 4 },
   TestID -> "FindInfraEllipticShell-PathGraph-c4-singleton"
 ]
 
 VerificationTest[
-  First @ First @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 6 ],
+  FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 6 ],
   { 5 },
   TestID -> "FindInfraEllipticShell-PathGraph-c6-endpoint"
 ]
@@ -26,8 +26,7 @@ VerificationTest[
 (* ===== Range form {cMin, cMax} ===== *)
 
 VerificationTest[
-  Sort @ First @ First @
-    FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, { 4, 6 } ],
+  FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, { 4, 6 } ],
   { 4, 5 },
   TestID -> "FindInfraEllipticShell-PathGraph-range-c4-c6"
 ]
@@ -38,24 +37,23 @@ VerificationTest[
    d(2,v)+d(15,v) = 4 for vertices in the 2-column inner strip *)
 
 VerificationTest[
-  Sort @ First @ First @
-    FindInfraEllipticShell[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4 ],
+  FindInfraEllipticShell[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4 ],
   Sort[ { 2, 3, 6, 7, 10, 11, 14, 15 } ],
   TestID -> "FindInfraEllipticShell-Grid4x4-inner-strip"
 ]
 
 (* ===== Count forms ===== *)
 
+(* All is the List of level sets; without Properties there is exactly one *)
 VerificationTest[
-  Length @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2, All ][ "Realizations" ] >= 1,
-  True,
-  TestID -> "FindInfraEllipticShell-PathGraph-All-nonempty"
+  FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2, All ],
+  { { 1, 2, 3 } },
+  TestID -> "FindInfraEllipticShell-PathGraph-All-is-the-one-level-set"
 ]
 
-(* Properties empty → Method ignored, returns single level set *)
 VerificationTest[
   Length @ FindInfraEllipticShell[ PathGraph[ Range[ 5 ] ], { 1, 3 }, 2, All,
-    Properties -> { } ][ "Realizations" ],
+    Properties -> { } ],
   1,
   TestID -> "FindInfraEllipticShell-empty-properties-one-realisation"
 ]
@@ -83,26 +81,12 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Length @ DeleteDuplicates @ Table[
-      BlockRandom[ FindInfraEllipticShell[ g, { 1, 16 }, { 5, 8 }, 1, Properties -> { "Connected" }, Method -> "RandomGreedy" ][ "First" ], RandomSeeding -> s ],
+      BlockRandom[ FindInfraEllipticShell[ g, { 1, 16 }, { 5, 8 }, Properties -> { "Connected" }, Method -> "RandomGreedy" ], RandomSeeding -> s ],
       { s, 1, 8 } ]
   ],
   _Integer?( # > 1 & ),
   SameTest -> MatchQ,
   TestID -> "FindInfraEllipticShell-RandomGreedy-varies-across-seeds"
-]
-
-(* ===== InfraEllipticShell wrapper ===== *)
-
-VerificationTest[
-  InfraEllipticShell[ { InfraEllipticShell[ { { 1, 2 } } ], InfraEllipticShell[ { { 3, 4 } } ] } ],
-  InfraEllipticShell[ { { 1, 2 }, { 3, 4 } } ],
-  TestID -> "InfraEllipticShell-auto-flatten-nested"
-]
-
-VerificationTest[
-  InfraEllipticShell[ { { 1, 2, 3 } } ],
-  InfraEllipticShell[ { { 1, 2, 3 } } ],
-  TestID -> "InfraEllipticShell-unary-no-flatten"
 ]
 
 (* ===== InfraEllipticShellQ ===== *)
@@ -126,6 +110,15 @@ VerificationTest[
   InfraEllipticShellQ[ GridGraph[ { 4, 4 } ], { 2, 3, 6, 7, 10, 11, 14, 15 } ],
   True,
   TestID -> "InfraEllipticShellQ-Grid4x4-inner-strip-true"
+]
+
+(* the constructor's output passes its own predicate, as a set and as a family *)
+VerificationTest[
+  With[ { g = GridGraph[ { 4, 4 } ] },
+    { InfraEllipticShellQ[ g, FindInfraEllipticShell[ g, { 2, 15 }, 4 ] ],
+      InfraEllipticShellQ[ g, FindInfraEllipticShell[ g, { 2, 15 }, 4, All ] ] } ],
+  { True, True },
+  TestID -> "InfraEllipticShellQ-accepts-constructor-output"
 ]
 
 EndTestSection[]

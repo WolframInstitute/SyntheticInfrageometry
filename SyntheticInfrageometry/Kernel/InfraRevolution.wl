@@ -20,9 +20,9 @@ FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] /;
         { posVerts, r } |-> Min[ GraphDistance[ graph, v, # ] & /@ posVerts ] - r,
         { positions, radii } ] },
     (* constant radius: the r-neighborhood of the axis IS the union of balls, so the candidate set is already the answer *)
-    toDensity[ graph, If[ ! surface && Equal @@ radii,
+    vertexSet @ If[ ! surface && Equal @@ radii,
       candidates,
-      Select[ candidates, If[ surface, slack[ # ] == 0, slack[ # ] <= 0 ] & ] ] ]
+      Select[ candidates, If[ surface, slack[ # ] == 0, slack[ # ] <= 0 ] & ] ]
   ]
 
 FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
@@ -34,7 +34,7 @@ FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
     { radii = profileRadii[ profile, n ],
       positions = First @ ext,
       origRange = Last @ ext },
-    toDensity[ graph, Union @@ MapThread[
+    vertexSet[ Union @@ MapThread[
       { posVerts, r, i } |->
         Select[ VertexList @ NeighborhoodGraph[ graph, posVerts, r ],
           v |-> With[ { dists = Min[ GraphDistance[ graph, v, # ] & /@ # ] & /@ positions },
@@ -45,7 +45,6 @@ FindInfraRevolution[ graph_Graph, axis_, profile_, opts : OptionsPattern[ ] ] :=
   ]
 
 
-parseAxes[ ( InfraSegment | InfraLine )[ paths_List ] ] := paths
 parseAxes[ w_Graph ]                    := walkRealisations @ w
 parseAxes[ ws : { __Graph } ]           := Catenate[ walkRealisations /@ ws ]
 parseAxes[ paths : { _List, ___List } ] := paths
@@ -121,7 +120,7 @@ FindInfraCone[ graph_Graph, axis_, slope_, opts : OptionsPattern[ ] ] :=
 (* ===================== InfraRevolutionQ ===================== *)
 
 InfraRevolutionQ[ graph_Graph, vs_List, axis_, profile_, opts : OptionsPattern[ FindInfraRevolution ] ] :=
-  Sort @ vs === Keys @ FindInfraRevolution[ graph, axis, profile, opts ]
+  vertexSet @ vs === FindInfraRevolution[ graph, axis, profile, opts ]
 
 InfraRevolutionQ[ graph_Graph, o_Association, axis_, profile_,
     opts : OptionsPattern[ FindInfraRevolution ] ] :=
@@ -133,7 +132,7 @@ InfraRevolutionQ[ graph_Graph, o_Association, axis_, profile_,
 dispatchConstruction[ graph_Graph, InfraRevolution[ axis_, profile_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      { Keys @ FindInfraRevolution[ graph, axis, profile,
+      { FindInfraRevolution[ graph, axis, profile,
           Sequence @@ FilterRules[ { opts }, Options[ FindInfraRevolution ] ] ] },
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Axis" -> axis, "Profile" -> profile |> ],

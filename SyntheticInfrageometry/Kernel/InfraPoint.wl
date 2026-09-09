@@ -130,7 +130,7 @@ mostEquidistantSubset[ cliques_List, distMatrix_, pool_List, n_Integer ] :=
 
 Options[ FindInfraMidpoint ] = { Method -> "Metric", "Tolerance" -> 0 };
 
-(* occupation of the central index band, vertex -> mass: a walk contributes 1 per band vertex, a geodesic-DAG atom reads the band off its layers weighted by geodesic occupation *)
+(* occupation of the central index band, vertex -> mass: a walk contributes 1 per band vertex, a substrate DAG -- a path graph included -- reads the band off its layers weighted by geodesic occupation, exactly as the enumerated family would *)
 
 indexBandMasses[ frac_, tol_ ][ dag_Graph ] :=
   With[ { layers = dagLayers[ dag ] },
@@ -143,19 +143,24 @@ indexBandMasses[ frac_, tol_ ][ walk_List ] :=
   With[ { offsets = Abs[ Range[ Length @ walk ] - ( 1 + frac ( Length @ walk - 1 ) ) ] },
     Counts @ Pick[ walk, Thread[ offsets <= Min[ offsets ] + tol ], True ] ]
 
-FindInfraMidpoint[ graph_Graph, InfraSegment[ dag_Graph ], opts : OptionsPattern[] ] :=
-  If[ methodName @ OptionValue[ FindInfraMidpoint, { opts }, Method ] === "Metric",
-    KeySort @ indexBandMasses[ 1/2, OptionValue[ FindInfraMidpoint, { opts }, "Tolerance" ] ][ dag ],
-    FindInfraMidpoint[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ] ]
+(* the carriers a shape marginalises over: a substrate DAG or path graph is one carrier read by DP, a closed or position-spelled walk graph its vertex sequences, a list of graphs or of walks their union, a vertex list one walk *)
 
-FindInfraMidpoint[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
+bandCarriers[ w_Graph ]            := If[ closedWalkQ @ w || positionSpelledQ @ w, walkRealisations @ w, { w } ]
+bandCarriers[ ws : { __Graph } ]   := Catenate[ bandCarriers /@ ws ]
+bandCarriers[ { } ]                := { }
+bandCarriers[ walks : { __List } ] := walks
+bandCarriers[ walk_List ]          := { walk }
+
+bandMasses[ frac_, tol_, x_ ] := KeySort @ Merge[ indexBandMasses[ frac, tol ] /@ bandCarriers @ x, Total ]
+
+FindInfraMidpoint[ graph_Graph, x : ( _Graph | _List ), opts : OptionsPattern[] ] /; ! pointQ[ graph, x ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        KeySort @ Merge[ indexBandMasses[ 1/2, tol ] /@ First @ seg, Total ],
+        bandMasses[ 1/2, tol, x ],
       "Embedding",
         (* closest vertex to the coord-space midpoint of the endpoints *)
-        With[ { walks = First[ seg ], embOpts = parseEmbeddingMethod @ OptionValue[ Method ] },
+        With[ { walks = infraSpread @ x, embOpts = parseEmbeddingMethod @ OptionValue[ Method ] },
           { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
             vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
           { target = ( coords[[ vertexIndex[ First @ First @ walks ] ]] +
@@ -167,10 +172,7 @@ FindInfraMidpoint[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
     ]
   ]
 
-FindInfraMidpoint[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Length[ walk ] >= 2 :=
-  FindInfraMidpoint[ graph, InfraSegment[ { walk } ], opts ]
-
-FindInfraMidpoint[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
+FindInfraMidpoint[ graph_Graph, p1_, p2 : Except[ _Rule | _RuleDelayed ], opts : OptionsPattern[] ] :=
   FindInfraMidpoint[ graph, FindInfraSegment[ graph, p1, p2, All ], opts ]
 
 
@@ -180,20 +182,14 @@ FindInfraMidpoint[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
 
 Options[ FindInfraGoldenSection ] = { Method -> "Metric", "Tolerance" -> 0 };
 
-FindInfraGoldenSection[ graph_Graph, InfraSegment[ dag_Graph ], opts : OptionsPattern[] ] :=
-  If[ methodName @ OptionValue[ FindInfraGoldenSection, { opts }, Method ] === "Metric",
-    KeySort @ indexBandMasses[ N[ 1 / GoldenRatio ],
-      OptionValue[ FindInfraGoldenSection, { opts }, "Tolerance" ] ][ dag ],
-    FindInfraGoldenSection[ graph, InfraSegment[ dagGeodesics[ dag ] ], opts ] ]
-
-FindInfraGoldenSection[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ] :=
+FindInfraGoldenSection[ graph_Graph, x : ( _Graph | _List ), opts : OptionsPattern[] ] /; ! pointQ[ graph, x ] :=
   With[ { method = methodName @ OptionValue[ Method ], tol = OptionValue[ "Tolerance" ] },
     Switch[ method,
       "Metric",
-        KeySort @ Merge[ indexBandMasses[ N[ 1 / GoldenRatio ], tol ] /@ First @ seg, Total ],
+        bandMasses[ N[ 1 / GoldenRatio ], tol, x ],
       "Embedding",
         (* closest vertex to the coord-space golden point p1 + (p2 - p1)/phi *)
-        With[ { walks = First[ seg ], embOpts = parseEmbeddingMethod @ OptionValue[ Method ] },
+        With[ { walks = infraSpread @ x, embOpts = parseEmbeddingMethod @ OptionValue[ Method ] },
           { coords = resolveEmbeddingCoords[ graph, embOpts[ "Coordinates" ] ],
             vertexIndex = AssociationThread[ VertexList[ graph ], Range @ VertexCount[ graph ] ] },
           { target = coords[[ vertexIndex[ First @ First @ walks ] ]] +
@@ -206,10 +202,7 @@ FindInfraGoldenSection[ graph_Graph, seg_InfraSegment, opts : OptionsPattern[] ]
     ]
   ]
 
-FindInfraGoldenSection[ graph_Graph, walk_List, opts : OptionsPattern[] ] /; Length[ walk ] >= 3 :=
-  FindInfraGoldenSection[ graph, InfraSegment[ { walk } ], opts ]
-
-FindInfraGoldenSection[ graph_Graph, p1_, p2_, opts : OptionsPattern[] ] :=
+FindInfraGoldenSection[ graph_Graph, p1_, p2 : Except[ _Rule | _RuleDelayed ], opts : OptionsPattern[] ] :=
   FindInfraGoldenSection[ graph, FindInfraSegment[ graph, p1, p2, All ], opts ]
 
 
@@ -227,7 +220,7 @@ FindInfraReflection[ graph_Graph, x_, a_,
           Select[ VertexList[ localG ],
             y |-> BetweennessQ[ localG, x0, a0, y ] && GraphDistance[ localG, a0, y ] === r ] ]
       ]
-    ], x, a ]
+    ], toDensity[ graph, x ], toDensity[ graph, a ] ]
 
 
 (* ===================== CompleteInfraEquilateralTriangle ===================== *)
@@ -245,7 +238,7 @@ CompleteInfraEquilateralTriangle[ graph_Graph, p1_, p2_,
           Select[ VertexList[ graph ], GraphDistance[ graph, q1, # ] == r & ],
           Select[ VertexList[ graph ], GraphDistance[ graph, q2, # ] == r & ] ]
       ]
-    ], p1, p2 ]
+    ], toDensity[ graph, p1 ], toDensity[ graph, p2 ] ]
 
 
 (* ===================== FindInfraCommonPoint ===================== *)
@@ -256,7 +249,7 @@ FindInfraCommonPoint[ graph_Graph, lines_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   With[ { vs = If[ Length[ lines ] == 0, {},
         Apply[ Intersection, linePointSet /@ lines ] ] },
-    bundleTake[ Identity, vs, count ]
+    countTake[ vs, count ]
   ]
 
 
@@ -267,7 +260,7 @@ FindInfraCommonPoint[ graph_Graph, lines_List,
 FindClosestInfraPoint[ graph_Graph, line_, point_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   spreadFind[ Identity, count,
-    { line0, point0 } |-> MinimalBy[ line0, GraphDistance[ graph, point0, # ] & ], line, point ]
+    { line0, point0 } |-> MinimalBy[ line0, GraphDistance[ graph, point0, # ] & ], line, toDensity[ graph, point ] ]
 
 
 (* ===================== SelectInfraPoint ===================== *)
@@ -291,10 +284,10 @@ SelectInfraPoint[ graph_Graph, vertices_List, n_Integer : 1, opts : OptionsPatte
   With[ { result = SelectInfraPoint[ graph, vertices, UpTo[ n ], opts ] },
     If[ ListQ[ result ] && Length[ result ] < n, $Failed, result ] ]
 
-SelectInfraPoint[ graph_Graph,
-                  bundle : ( InfraBall | InfraShell | InfraEllipticShell | InfraPlane | InfraCircle | InfraEllipse )[ _List ] | _Association,
+(* a density or a walk graph selects from its support; a set is a vertex list already *)
+SelectInfraPoint[ graph_Graph, shape : _Association | _Graph | { __Graph },
                   countSpec : ( _Integer | UpTo[ _Integer ] | All ) : 1, opts : OptionsPattern[] ] :=
-  SelectInfraPoint[ graph, infraVertexSet[ bundle ], countSpec, opts ]
+  SelectInfraPoint[ graph, infraVertexSet[ graph, shape ], countSpec, opts ]
 
 SelectInfraPoint[ graph_Graph, countSpec : ( _Integer | UpTo[ _Integer ] | All ), opts : OptionsPattern[] ] :=
   SelectInfraPoint[ graph, #, countSpec, opts ] &

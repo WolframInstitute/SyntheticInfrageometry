@@ -1,5 +1,9 @@
 BeginTestSection["InfraRay"]
 
+realisations = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
+walkSequence = WolframInstitute`SyntheticInfrageometry`PackageScope`walkSequence;
+infraNumReps = WolframInstitute`SyntheticInfrageometry`PackageScope`infraNumReps;
+
 (* ===== FindInfraRay: the class ===== *)
 
 (* A ray from o through v is a geodesic from o containing v that cannot be prolonged past its
@@ -11,7 +15,7 @@ VerificationTest[
         Select[FindPath[g, 1, e, {d[[1, e]]}, All],
           path |-> MemberQ[path, 2] && NoneTrue[AdjacencyList[g, e], d[[1, #]] == d[[1, e]] + 1 &]],
         {e, DeleteCases[VertexList[g], 1]}]},
-    Sort @ FindInfraRay[g, 1, 2, All]["Realizations"] === Sort @ rays],
+    Sort @ realisations @ FindInfraRay[g, 1, 2, All] === Sort @ rays],
   True,
   TestID -> "FindInfraRay-class-equals-brute-force-grid-neighbour"
 ]
@@ -23,7 +27,7 @@ VerificationTest[
         Select[FindPath[g, 1, e, {d[[1, e]]}, All],
           path |-> MemberQ[path, 6] && NoneTrue[AdjacencyList[g, e], d[[1, #]] == d[[1, e]] + 1 &]],
         {e, DeleteCases[VertexList[g], 1]}]},
-    Sort @ FindInfraRay[g, 1, 6, All]["Realizations"] === Sort @ rays],
+    Sort @ realisations @ FindInfraRay[g, 1, 6, All] === Sort @ rays],
   True,
   TestID -> "FindInfraRay-class-equals-brute-force-grid-diagonal"
 ]
@@ -35,7 +39,7 @@ VerificationTest[
         Select[FindPath[g, 1, e, {d[[1, e]]}, All],
           path |-> MemberQ[path, 2] && NoneTrue[AdjacencyList[g, e], d[[1, #]] == d[[1, e]] + 1 &]],
         {e, DeleteCases[VertexList[g], 1]}]},
-    Sort @ FindInfraRay[g, 1, 2, All]["Realizations"] === Sort @ rays],
+    Sort @ realisations @ FindInfraRay[g, 1, 2, All] === Sort @ rays],
   True,
   TestID -> "FindInfraRay-class-equals-brute-force-petersen"
 ]
@@ -48,7 +52,7 @@ VerificationTest[
      PetersenGraph[], HypercubeGraph[3]},
     g |-> AllTrue[
       Join[List @@@ EdgeList[g], Reverse /@ List @@@ EdgeList[g]],
-      pair |-> AllTrue[FindInfraRay[g, pair[[1]], pair[[2]], All]["Realizations"], InfraRayQ[g, #] &]]],
+      pair |-> InfraRayQ[g, FindInfraRay[g, pair[[1]], pair[[2]], All]]]],
   True,
   TestID -> "FindInfraRay-InfraRayQ-agree-on-spread-table"
 ]
@@ -56,7 +60,7 @@ VerificationTest[
 (* One class under every Method. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    SameQ @@ (Sort @ FindInfraRay[g, 6, 7, All, Method -> #]["Realizations"] & /@
+    SameQ @@ (Sort @ realisations @ FindInfraRay[g, 6, 7, All, Method -> #] & /@
       {"Exhaustive", "Greedy", "RandomGreedy"})],
   True,
   TestID -> "FindInfraRay-class-invariant-under-Method"
@@ -64,47 +68,48 @@ VerificationTest[
 
 (* Rays from o through o are all the rays from o: the pool is the spray of o. *)
 VerificationTest[
-  Sort @ FindInfraRay[CycleGraph[6], 1, 1, All]["Realizations"],
+  Sort @ realisations @ FindInfraRay[CycleGraph[6], 1, 1, All],
   Sort @ PencilDirections[CycleGraph[6], 1],
   TestID -> "FindInfraRay-origin-as-direction-gives-the-pencil"
 ]
 
-(* ===== FindInfraRay: counts and witnesses ===== *)
+(* ===== FindInfraRay: the shapes ===== *)
 
+(* the count-less call is one ray, a directed path graph on the substrate starting at the origin *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]}, {r = FindInfraRay[g, 6, 7]},
-    Length @ r["Realizations"] == 1 && InfraRayQ[g, First @ r["Realizations"]] &&
-      First @ First @ r["Realizations"] === 6 && MemberQ[First @ r["Realizations"], 7]],
+    GraphQ[r] && InfraRayQ[g, r] &&
+      First @ walkSequence @ r === 6 && MemberQ[VertexList @ r, 7]],
   True,
   TestID -> "FindInfraRay-count-less-is-one-ray"
 ]
 
-(* The pool's DP counts agree with enumeration: multiplicity and the length multiset. *)
+(* All is the pool, one DAG with source o whose o -> sink paths are the rays; its DP count is the family size *)
 VerificationTest[
   With[{r = FindInfraRay[GridGraph[{4, 4}], 6, 7, All]},
-    {r["Multiplicity"], Sort @ r["Length"]} ===
-      {Length @ r["Realizations"], Sort[Length[#] - 1 & /@ r["Realizations"]]}],
+    GraphQ[r] && AcyclicGraphQ[r] &&
+      infraNumReps[r] === Length @ realisations @ r &&
+      Pick[VertexList @ r, VertexInDegree @ r, 0] === {6}],
   True,
-  TestID -> "FindInfraRay-pool-counts-agree-with-enumeration"
+  TestID -> "FindInfraRay-pool-is-a-DAG-from-the-origin"
 ]
 
 VerificationTest[
-  With[{r = FindInfraRay[PathGraph[Range[7]], 4, 7, All]},
-    Length @ r["Realizations"] == 1 && First @ r["Realizations"] === {4, 5, 6, 7}],
-  True,
+  realisations @ FindInfraRay[PathGraph[Range[7]], 4, 7, All],
+  {{4, 5, 6, 7}},
   TestID -> "FindInfraRay-PathGraph-toward-end"
 ]
 
 VerificationTest[
-  Sort @ FindInfraRay[CycleGraph[6], 1, 4, All]["Realizations"],
+  Sort @ realisations @ FindInfraRay[CycleGraph[6], 1, 4, All],
   {{1, 2, 3, 4}, {1, 6, 5, 4}},
   TestID -> "FindInfraRay-CycleGraph6-antipode-two-realisations"
 ]
 
 VerificationTest[
   With[{r = FindInfraRay[GridGraph[{3, 3}], 1, 9, 1]},
-    Length @ r["Realizations"] == 1 && First @ First @ r["Realizations"] === 1 &&
-      Last @ First @ r["Realizations"] === 9],
+    MatchQ[r, {_Graph}] && First @ walkSequence @ First @ r === 1 &&
+      Last @ walkSequence @ First @ r === 9],
   True,
   TestID -> "FindInfraRay-GridGraph-strict-1"
 ]
@@ -116,14 +121,14 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Length @ FindInfraRay[CycleGraph[6], 1, 4, UpTo[10]]["Realizations"],
+  Length @ FindInfraRay[CycleGraph[6], 1, 4, UpTo[10]],
   2,
   TestID -> "FindInfraRay-UpTo-soft"
 ]
 
-(* From 2 the ray through 4 runs on to 5: d(2, 5) == 3 == d(2, 4) + 1, and 6 is no farther. *)
+(* From 2 the ray through 4 runs on to 5: d(2, 5) == 3 == d(2, 4) + 1, and 6 is no farther.  Two origins give two pools. *)
 VerificationTest[
-  Sort @ FindInfraRay[CycleGraph[6], <| 1 -> 1, 2 -> 1 |>, 4, All]["Realizations"],
+  Sort @ realisations @ FindInfraRay[CycleGraph[6], <| 1 -> 1, 2 -> 1 |>, 4, All],
   {{1, 2, 3, 4}, {1, 6, 5, 4}, {2, 3, 4, 5}},
   TestID -> "FindInfraRay-multi-anchor-spreads-over-origins"
 ]

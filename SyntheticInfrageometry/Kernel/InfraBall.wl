@@ -3,27 +3,24 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageImport["WolframInstitute`Infrageometry`"]
 
 
-(* ===================== InfraBall wrapper ===================== *)
-
-
-InfraBall[ reps_List ][ "Volume" ] := Length /@ reps
 (* ===================== FindInfraBall ===================== *)
 
+(* the closed ball { v : d(c, v) <= r }, a sorted vertex list.  The centre goes through the anchor rule, and an anchor of several vertices weights one carrier rather than multiplying objects: the ball of a set is its closed r-neighbourhood, the union of the balls around its members *)
 
-(* the centre goes through the anchor rule, so a vertex, a vertex list and a density all spread *)
 FindInfraBall[ graph_Graph, c_, r_ ] :=
-  InfraBall[ ( center |-> Select[ VertexList[ graph ], GraphDistance[ graph, center, # ] <= r & ] ) /@
-    Keys @ toDensity[ graph, c ] ]
+  With[ { centers = Keys @ toDensity[ graph, c ] },
+    vertexSet @ Select[ VertexList[ graph ],
+      v |-> AnyTrue[ centers, GraphDistance[ graph, #, v ] <= r & ] ] ]
 
 
 (* ===================== InfraBallQ ===================== *)
 
-(* vs is a closed ball iff some c in vs has { v : d(c, v) <= max_{w in vs} d(c, w) } == vs *)
-
-InfraBallQ[ graph_Graph, b_InfraBall ] :=
-  AllTrue[ First @ b, InfraBallQ[ graph, # ] & ]
+(* vs is a closed ball iff some c in vs has { v : d(c, v) <= max_{w in vs} d(c, w) } == vs; a family of sets passes iff each does *)
 
 InfraBallQ[ graph_Graph, fam_Association ] := InfraBallQ[ graph, Keys @ fam ]
+
+InfraBallQ[ graph_Graph, sets : { __List } ] /; ! AllTrue[ sets, VertexQ[ graph, # ] & ] :=
+  AllTrue[ sets, InfraBallQ[ graph, # ] & ]
 
 InfraBallQ[ graph_Graph, vs_List ] :=
   vs =!= { } &&
@@ -39,7 +36,7 @@ InfraBallQ[ graph_Graph, vs_List ] :=
 (* the intersection of all closed balls containing S: the smallest ball-convex (Mazur) superset *)
 
 FindBallHull[ graph_Graph, s_ ] :=
-  toDensity[ graph, BallHull[ graph, hullVertices @ s ] ]
+  vertexSet @ BallHull[ graph, hullVertices @ s ]
 
 (* S is ball-convex: it equals its own ball hull (an intersection of balls). *)
 
@@ -52,5 +49,5 @@ BallHullQ[ graph_Graph, s_ ] :=
 
 dispatchConstruction[ graph_Graph, InfraBall[ center_, r_ ] ] :=
   applySelectOption[ graph,
-    FindInfraBall[ graph, center, r ][ "Realizations" ],
+    { FindInfraBall[ graph, center, r ] },
     None, False, <| "Center" -> center, "Radius" -> r |> ]

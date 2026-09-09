@@ -145,7 +145,7 @@ findInfraScale[ graph_Graph, o_, u_, 1, "Line" ] := { u }
 findInfraScale[ graph_Graph, o_, u_, lambda_, "Line" ] :=
   With[ { r = GraphDistance[ graph, o, u ] },
     If[ r === Infinity, { },
-      With[ { lines = FindInfraLine[ graph, o, u, All ][ "Realizations" ] },
+      With[ { lines = infraSpread @ FindInfraLine[ graph, o, u, All ] },
         DeleteDuplicates @ Flatten @ ( ( line |->
           With[ { oIdx = First @ FirstPosition[ line, o, { 0 } ],
                   uIdx = First @ FirstPosition[ line, u, { 0 } ] },
@@ -196,12 +196,10 @@ findInfraSum[ graph_Graph, o_, u_, v_, "Metric" ] :=
   ]
 
 findInfraSum[ graph_Graph, o_, u_, v_, "Parallel" ] :=
-  With[ { linesOV = FindInfraLine[ graph, o, v, All ][ "Realizations" ],
-          linesOU = FindInfraLine[ graph, o, u, All ][ "Realizations" ] },
-    { parallelsAtU = Flatten[
-        ( FindInfraParallel[ graph, #, u, All ][ "Realizations" ] ) & /@ linesOV, 1 ],
-      parallelsAtV = Flatten[
-        ( FindInfraParallel[ graph, #, v, All ][ "Realizations" ] ) & /@ linesOU, 1 ] },
+  With[ { linesOV = infraSpread @ FindInfraLine[ graph, o, v, All ],
+          linesOU = infraSpread @ FindInfraLine[ graph, o, u, All ] },
+    { parallelsAtU = Catenate[ infraSpread @ FindInfraParallel[ graph, #, u, All ] & /@ linesOV ],
+      parallelsAtV = Catenate[ infraSpread @ FindInfraParallel[ graph, #, v, All ] & /@ linesOU ] },
     DeleteDuplicates @ DeleteCases[
       Flatten @ Outer[ Intersection, parallelsAtU, parallelsAtV, 1 ],
       o | u | v ]

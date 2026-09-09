@@ -3,43 +3,9 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageImport["WolframInstitute`Infrageometry`"]
 
 
-(* ===================== InfraRay wrapper ===================== *)
-
-
-InfraRay[ reps : Except[ { __Graph }, _List ] ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
-
-
-(* ===== pool form: InfraRay[{dag_Graph, ...}] ===== *)
-
-(* one DAG per anchor pair (o, v) with the single source o: the o -> v geodesic bundle glued at v to the extension graph beyond v, so the o -> sink paths are exactly the rays -- a sink has no neighbour one step farther from o, which is InfraRayQ's far-end test.  Rays to different sinks differ in length, so ["Length"] is one number per ray, read off the sink layers and the path counts, never by enumeration *)
-
-InfraRay[ dags : { __Graph } ][ "Graph" ]              := dags
-InfraRay[ dags : { __Graph } ][ "Vertices" ]           := Union @@ ( VertexList /@ dags )
-InfraRay[ dags : { __Graph } ][ "Length" ]             :=
-  Catenate @ Map[ dag |-> With[ { layers = dagLayers @ dag, occupation = GeodesicOccupation @ dag },
-      Catenate @ Map[ sink |-> ConstantArray[ layers @ sink, occupation @ sink ],
-        Select[ VertexList @ dag, VertexOutDegree[ dag, # ] == 0 & ] ] ],
-    dags ]
-InfraRay[ dags : { __Graph } ][ "Multiplicity" ]       := infraNumReps @ InfraRay @ dags
-InfraRay[ dags : { __Graph } ][ "OccupationCount" ]    := infraVertexMultiset @ InfraRay @ dags
-InfraRay[ dags : { __Graph } ][ "OccupationMeasure" ]  := InfraMeasure @ InfraRay @ dags
-InfraRay[ dags : { __Graph } ][ "Measure" ]            := InfraMeasure @ InfraRay @ dags
-InfraRay[ dags : { __Graph } ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraRay @ dags, Method -> "Probability" ]
-InfraRay[ dags : { __Graph } ][ "Realizations" ]       := Catenate[ dagGeodesics /@ dags ]
-InfraRay[ dags : { __Graph } ][ "First" ]              := First @ dagGeodesics[ First @ dags, 1 ]
-
-(* lazy: atoms are consumed in order, each stopping at the residual budget *)
-InfraRay[ dags : { __Graph } ][ "Realizations", spec_ ] :=
-  infraCap[
-    Fold[ { acc, dag } |-> If[ Length @ acc >= countLimit @ spec, acc,
-        Join[ acc, dagGeodesics[ dag, countLimit @ spec - Length @ acc ] ] ],
-      { }, dags ],
-    spec ]
-
-
 (* ===================== FindInfraRay ===================== *)
 
-(* a ray from o through v: a geodesic o ... v ... e with d(o, e) == d(o, v) + d(v, e) and no neighbour of e one step farther from o -- the InfraRayQ class under every Method; the longest ones are SelectInfraWalk[graph, rays, All, "From" -> "MaxLength"].  The pool is one DAG with source o; "Exhaustive" with All is the pool itself, and every bounded count streams rays off it in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order *)
+(* a ray from o through v: a geodesic o ... v ... e with d(o, e) == d(o, v) + d(v, e) and no neighbour of e one step farther from o -- the InfraRayQ class under every Method; the longest ones are SelectInfraWalk[graph, rays, All, "From" -> "MaxLength"].  The count-less call is one ray as a substrate path graph, a bounded count a List of them, All the pool: one DAG with source o, the o -> v geodesic bundle glued at v to the extension graph beyond v, whose o -> sink paths are exactly the rays -- a sink has no neighbour one step farther from o, which is InfraRayQ's far-end test.  "Exhaustive" with All is the pool itself, and every bounded count streams rays off it in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order *)
 
 FindInfraRay::badmethod = "Method `1` is not supported by FindInfraRay.";
 
@@ -47,7 +13,7 @@ Options[ FindInfraRay ] = { Method -> Automatic };
 
 FindInfraRay[ graph_Graph, origin_, v_,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  spreadFind[ InfraRay, count,
+  geodesicFind[ count,
     { o, w } |-> Catch @ With[ {
         methodHead = methodName @ resolveMethod[ OptionValue[ FindInfraRay, { opts }, Method ], count ] },
       If[ ! MatchQ[ methodHead, "Exhaustive" | "Greedy" | "RandomGreedy" ],
@@ -58,7 +24,7 @@ FindInfraRay[ graph_Graph, origin_, v_,
           EdgeCount @ pool == 0,                        { },
           methodHead === "Exhaustive" && count === All, { pool },
           True, dagGeodesics[ pool, count, greedyBranch[ methodHead /. "Exhaustive" -> "Greedy" ] ] ] ] ],
-    origin, v ]
+    toDensity[ graph, origin ], toDensity[ graph, v ] ]
 
 
 (* ===================== InfraRayQ ===================== *)
@@ -72,19 +38,22 @@ InfraRayQ[ graph_Graph, ray_List ] /; Length[ ray ] >= 2 :=
 
 InfraRayQ[ _Graph, ray_List ] /; Length[ ray ] < 2 := False
 
-InfraRayQ[ graph_Graph, rays_InfraRay ] :=
-  AllTrue[ rays[ "Realizations" ], InfraRayQ[ graph, # ] & ]
+InfraRayQ[ graph_Graph, w_Graph ] := AllTrue[ walkRealisations @ w, InfraRayQ[ graph, # ] & ]
+
+InfraRayQ[ graph_Graph, ws : { __Graph } ] := AllTrue[ ws, InfraRayQ[ graph, # ] & ]
 
 
 (* ===================== PencilDirections / PencilCardinality ===================== *)
 
-(* the pencil at O is the set of rays from O; a ray leaves O through exactly one neighbour, so the ray pools over the neighbours partition it, and the cardinality is their path count *)
+(* the pencil at O is the set of rays from O; a ray leaves O through exactly one neighbour, so the ray pools over the neighbours partition it, and the cardinality is their path count, read off the DP without enumeration *)
 
 PencilDirections[ graph_Graph, origin_ ] :=
-  Catenate[ FindInfraRay[ graph, origin, #, All ][ "Realizations" ] & /@ AdjacencyList[ graph, origin ] ]
+  Catenate[ infraSpread @ FindInfraRay[ graph, origin, #, All ] & /@ AdjacencyList[ graph, origin ] ]
 
 PencilCardinality[ graph_Graph, origin_ ] :=
-  Total[ FindInfraRay[ graph, origin, #, All ][ "Multiplicity" ] & /@ AdjacencyList[ graph, origin ] ]
+  Total[ Replace[ FindInfraRay[ graph, origin, #, All ],
+      { { } -> 0, dag_Graph :> infraNumReps @ dag, dags_List :> Total[ infraNumReps /@ dags ] } ] & /@
+    AdjacencyList[ graph, origin ] ]
 
 
 (* ===================== Scene-DSL constructor ===================== *)
@@ -92,8 +61,8 @@ PencilCardinality[ graph_Graph, origin_ ] :=
 dispatchConstruction[ graph_Graph, InfraRay[ origin_, v_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      FindInfraRay[ graph, origin, v, All,
-        Sequence @@ FilterRules[ { opts }, Options[ FindInfraRay ] ] ][ "Realizations" ],
+      infraSpread @ FindInfraRay[ graph, origin, v, All,
+        Sequence @@ FilterRules[ { opts }, Options[ FindInfraRay ] ] ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { origin, v } |> ],
     extractBranches[ { opts } ] ]

@@ -174,13 +174,13 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
       list_List /; Length[ list ] > 0 :> list,
       other_ :> { other } } ];
 
+    (* a family of polygons -- a List of leg Lists -- draws as the bundle of its legs *)
     objects = DeleteCases[
       Replace[ #, {
         Style[ obj_, dirs__ ] :> ( obj -> Directive[ dirs ] ),
-        list_List /; Length[ list ] > 0 && SameQ @@ (Head /@ list) &&
-            MatchQ[ First @ list, _[ _List ] ] :>
-          Head[ First @ list ][ Join @@ list[[ All, 1 ]] ] } ] & /@ multiObjects,
-      _[ $Failed ] | ( _[ $Failed ] -> _ ) | ( _ -> _[ $Failed ] ) | { } ];
+        polys : { { __Graph } .. } :> Catenate @ polys,
+        ( polys : { { __Graph } .. } -> c_ ) :> ( Catenate @ polys -> c ) } ] & /@ multiObjects,
+      $Failed | ( $Failed -> _ ) | ( _ -> $Failed ) | { } ];
 
     ranges = <|
       "OpacityRange"   -> OptionValue[ "OpacityRange" ],
@@ -189,12 +189,12 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
       "Arrowheads"     -> arrowSpec |>;
     defaultRecord = parseHighlightStyle[ Automatic, ranges ];
 
-    (* the original wrapper rides along as a fifth element so the density computation can read its measure uniformly across bundle, weighted and DAG forms *)
+    (* the object rides along as a fifth element so the density computation can read its occupation uniformly across densities, walk graphs and bundles *)
     triples = MapIndexed[
       { item, idx } |-> With[ {
           obj    = If[ MatchQ[ item, _Rule ], First @ item, item ],
           record = parseHighlightStyle[ If[ MatchQ[ item, _Rule ], Last @ item, Automatic ], ranges ] },
-        Append[ If[ MatchQ[ Head @ obj, Association | $infraBundleHeads ], obj, None ] ] @
+        Append[ If[ MatchQ[ obj, _Association | _Graph | { __Graph } ], obj, None ] ] @
         Replace[
           { obj, If[ palette === None,
               Lookup[ $infraColors,
@@ -206,46 +206,21 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           {
             (* density = mass / total mass, so a sharp point draws full size and a spread one fades *)
             { fam_Association, c_, u_ } :> { Keys @ fam, c, "Points", u },
-            { InfraSegment [ dag_Graph ], c_, u_ } :> { { dag }, c, "Paths" , u },
-            { InfraSegment [ b : { __Graph } ], c_, u_ } :> { b, c, "Paths" , u },
-            { InfraSegment [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
-            { InfraLine    [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
             (* a walk graph on position pairs is drawn as its vertex sequence, a closed one as a cycle; a substrate DAG stays the compact atom *)
             { w_Graph, c_, u_ } /; closedWalkQ[ w ] :> { { walkSequence @ w }, c, "Cycles", u },
             { w_Graph, c_, u_ } /; positionSpelledQ[ w ] :> { walkRealisations @ w, c, "Paths", u },
             { w_Graph, c_, u_ } :> { { w }, c, "Paths", u },
             { ws : { __Graph }, c_, u_ } /; AllTrue[ ws, closedWalkQ ] :> { walkSequence /@ ws, c, "Cycles", u },
             { ws : { __Graph }, c_, u_ } :> { Catenate[ walkRealisations /@ ws ], c, "Paths", u },
-            { InfraShell        [ b_List ], c_, u_ } :> { b, c, "Sets"  , u },
-            { InfraBall         [ b_List ], c_, u_ } :> { b, c, "Sets"  , u },
-            { InfraEllipticShell[ b_List ], c_, u_ } :> { b, c, "Sets"  , u },
-            { InfraPlane        [ b_List ], c_, u_ } :> { b, c, "Sets"  , u },
-            { InfraCircle       [ b_List ], c_, u_ } :> { b, c, "Cycles", u },
-            { InfraEllipse      [ b_List ], c_, u_ } :> { b, c, "Cycles", u },
-            { InfraPolygon      [ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Cycles", u },
-            { InfraTriangle     [ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Cycles", u },
-            { InfraRay     [ b_List ], c_, u_ } :> { b, c, "Paths" , u },
-            { InfraPolyline[ b_List ], c_, u_ } :> { polylineToVertexSeqs[ b ], c, "Paths", u },
             (* a bare vertex is a legal highlight object: wrap it as a one-vertex point *)
             { b_, c_, u_ } /; pointQ[ graph, b ] :> { { b }, c, "Points", u },
-            (* a plain vertex List is what the point finders return: it must flow into the scene with no glue *)
+            (* a plain vertex List is a set or a point family: it flows into the scene with no glue *)
             { list_List, c_, u_ } /; SubsetQ[ VertexList @ graph, list ] :> { list, c, "Points", u },
+            (* a List of vertex sets is a family of sets, each drawn with its induced edges *)
+            { sets : { __List }, c_, u_ } /; SubsetQ[ VertexList @ graph, Catenate @ sets ] :> { sets, c, "Sets", u },
             { b_, c_, u_ }                      :> { b, c, Automatic, u }
           } ] ],
       objects ];
-
-    (* the knots are drawn on top of the path so the subdivision is visible *)
-    knotTriples = Cases[ objects,
-      ( InfraPolyline[ b_List ] | ( InfraPolyline[ b_List ] -> _ ) ) :>
-        { polylineToKnotVertices[ b ], $InfraPointColor, "PointSet", defaultRecord, None } ];
-
-    (* corner vertices as points, so the defining corners stand out from the geodesic sides *)
-    knotTriples = Join[ knotTriples, Cases[ objects,
-      ( ( InfraPolygon | InfraTriangle )[ b_List ] |
-        ( ( InfraPolygon | InfraTriangle )[ b_List ] -> _ ) ) :>
-        { Map[ Most @ polylineToKnots[ # ] &, b ], $InfraPointColor, "PointSet", defaultRecord, None } ] ];
-
-    triples = Join[ triples, knotTriples ];
 
     triples = Apply[
       { reps, color, type, record, obj } |-> { reps, color, type,

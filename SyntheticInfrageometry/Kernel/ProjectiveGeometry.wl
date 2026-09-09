@@ -6,14 +6,14 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* v, w lie in the same direction at O: some ray from O through v contains w.  On lines this was CollinearQ[graph, {O, v, w}] under another name, and it called the two sides of O one direction *)
 
 SameDirectionQ[ graph_Graph, O_, v_, w_ ] :=
-  v === w || AnyTrue[ FindInfraRay[ graph, O, v, All ][ "Realizations" ], MemberQ[ #, w ] & ]
+  v === w || AnyTrue[ infraSpread @ FindInfraRay[ graph, O, v, All ], MemberQ[ #, w ] & ]
 
 
 (* some canonical line contains every listed vertex *)
 
 CollinearQ[ graph_Graph, verts_List ] :=
   Length[ DeleteDuplicates @ verts ] <= 1 ||
-    Length[ FindInfraCommonLine[ graph, verts, UpTo[ 1 ] ][ "Realizations" ] ] > 0
+    Length[ infraSpread @ FindInfraCommonLine[ graph, verts, UpTo[ 1 ] ] ] > 0
 
 
 (* the listed lines share a common vertex: the dual of collinearity *)
@@ -27,7 +27,7 @@ ConcurrentQ[ graph_Graph, lines_List ] :=
 (* exactly one canonical line contains every listed vertex *)
 
 UniqueCollinearQ[ graph_Graph, verts_List ] :=
-  Length[ FindInfraCommonLine[ graph, verts, All ][ "Realizations" ] ] == 1
+  Length[ infraSpread @ FindInfraCommonLine[ graph, verts, All ] ] == 1
 
 
 (* the listed lines share exactly one common vertex *)
@@ -56,12 +56,12 @@ WhiteheadW3Q[ graph_Graph ] :=
     AllTrue[ Tuples[ verts, 4 ],
       abcd |-> If[ Length @ DeleteDuplicates @ abcd < 4, True,
         With[ { A = abcd[[ 1 ]], B = abcd[[ 2 ]], C = abcd[[ 3 ]], D = abcd[[ 4 ]] },
-          { abLines = FindInfraLine[ graph, A, B, All ][ "Realizations" ],
-            cdLines = FindInfraLine[ graph, C, D, All ][ "Realizations" ] },
+          { abLines = infraSpread @ FindInfraLine[ graph, A, B, All ],
+            cdLines = infraSpread @ FindInfraLine[ graph, C, D, All ] },
           If[ ! AnyTrue[ Tuples[ { abLines, cdLines } ], IntersectingQ @@ # & ],
             True,
-            With[ { acLines = FindInfraLine[ graph, A, C, All ][ "Realizations" ],
-                    bdLines = FindInfraLine[ graph, B, D, All ][ "Realizations" ] },
+            With[ { acLines = infraSpread @ FindInfraLine[ graph, A, C, All ],
+                    bdLines = infraSpread @ FindInfraLine[ graph, B, D, All ] },
               AnyTrue[ Tuples[ { acLines, bdLines } ], IntersectingQ @@ # & ]
             ]
           ]

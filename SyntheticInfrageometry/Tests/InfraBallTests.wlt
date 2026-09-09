@@ -1,79 +1,74 @@
 BeginTestSection["InfraBall"]
 
-(* ===== FindInfraBall ===== *)
+(* ===== FindInfraBall: a ball is its sorted vertex list ===== *)
 
 VerificationTest[
   FindInfraBall[PathGraph[Range[5]], 3, 1],
-  InfraBall[{{2, 3, 4}}],
+  {2, 3, 4},
   TestID -> "FindInfraBall-PathGraph-interior-r1"
 ]
 
 VerificationTest[
-  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], 1, 2],
-  {{1, 2, 3}},
+  FindInfraBall[PathGraph[Range[5]], 1, 2],
+  {1, 2, 3},
   TestID -> "FindInfraBall-PathGraph-endpoint-r2"
 ]
 
 VerificationTest[
-  Sort /@ First @ FindInfraBall[CycleGraph[6], 1, 1],
-  {{1, 2, 6}},
+  FindInfraBall[CycleGraph[6], 1, 1],
+  {1, 2, 6},
   TestID -> "FindInfraBall-CycleGraph6-r1"
 ]
 
 VerificationTest[
-  Sort /@ First @ FindInfraBall[CompleteGraph[4], 1, 1],
-  {{1, 2, 3, 4}},
+  FindInfraBall[CompleteGraph[4], 1, 1],
+  {1, 2, 3, 4},
   TestID -> "FindInfraBall-CompleteGraph4-r1"
 ]
 
 VerificationTest[
-  Sort /@ First @ FindInfraBall[StarGraph[5], 1, 1],
-  {{1, 2, 3, 4, 5}},
+  FindInfraBall[StarGraph[5], 1, 1],
+  {1, 2, 3, 4, 5},
   TestID -> "FindInfraBall-StarGraph5-hub"
 ]
 
 VerificationTest[
-  Sort /@ First @ FindInfraBall[StarGraph[5], 2, 1],
-  {{1, 2}},
+  FindInfraBall[StarGraph[5], 2, 1],
+  {1, 2},
   TestID -> "FindInfraBall-StarGraph5-leaf"
 ]
 
 VerificationTest[
   FindInfraBall[PathGraph[Range[5]], 3, 0],
-  InfraBall[{{3}}],
+  {3},
   TestID -> "FindInfraBall-r0-singleton"
 ]
 
+(* an anchor of several vertices weights one carrier: the ball of a set is its closed r-neighbourhood, the union of the balls around its members *)
 VerificationTest[
-  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], <| 1 -> 1, 5 -> 1 |>, 1],
-  {{1, 2}, {4, 5}},
+  FindInfraBall[PathGraph[Range[5]], <| 1 -> 1, 5 -> 1 |>, 1],
+  {1, 2, 4, 5},
   TestID -> "FindInfraBall-multi-anchor"
 ]
 
 VerificationTest[
-  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], {1, 5}, 1],
-  {{1, 2}, {4, 5}},
+  FindInfraBall[PathGraph[Range[5]], {1, 5}, 1],
+  {1, 2, 4, 5},
   TestID -> "FindInfraBall-multi-anchor-vertex-list"
 ]
 
+(* the ball of a walk is the tube around it *)
 VerificationTest[
-  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], 3, 1],
-  {{2, 3, 4}},
-  TestID -> "FindInfraBall-bare-vertex"
+  FindInfraBall[GridGraph[{3, 3}], FindInfraSegment[GridGraph[{3, 3}], 1, 3], 1],
+  {1, 2, 3, 4, 5, 6},
+  TestID -> "FindInfraBall-walk-anchor-is-the-tube"
 ]
 
-(* ===== InfraBall wrapper auto-flatten ===== *)
-
+(* a ball is a legal HighlightGraph argument *)
 VerificationTest[
-  InfraBall[{InfraBall[{{1, 2}}], InfraBall[{{2, 3}}]}],
-  InfraBall[{{1, 2}, {2, 3}}],
-  TestID -> "InfraBall-auto-flatten-nested"
-]
-
-VerificationTest[
-  InfraBall[{{1, 2, 3}}],
-  InfraBall[{{1, 2, 3}}],
-  TestID -> "InfraBall-unary-no-flatten"
+  Head @ HighlightGraph[PathGraph[Range[5]], FindInfraBall[PathGraph[Range[5]], 3, 1]],
+  Graph,
+  TestID -> "FindInfraBall-is-a-HighlightGraph-argument"
 ]
 
 (* ===== InfraBallQ ===== *)
@@ -126,12 +121,19 @@ VerificationTest[
   TestID -> "InfraBallQ-empty-false"
 ]
 
-(* ===== infraVertexSet for InfraBall ===== *)
+(* a family of sets passes iff every member does *)
+VerificationTest[
+  { InfraBallQ[PathGraph[Range[5]], {{2, 3, 4}, {1, 2}}], InfraBallQ[PathGraph[Range[5]], {{2, 3, 4}, {1, 5}}] },
+  { True, False },
+  TestID -> "InfraBallQ-family-is-the-conjunction"
+]
+
+(* ===== InfraDistance between balls ===== *)
 
 VerificationTest[
-  InfraDistance[PathGraph[Range[7]], InfraBall[{{2, 3}}], InfraBall[{{6, 7}}]],
+  InfraDistance[PathGraph[Range[7]], FindInfraBall[PathGraph[Range[7]], 2, 1], FindInfraBall[PathGraph[Range[7]], 7, 1]],
   3,
-  TestID -> "InfraDistance-InfraBall-InfraBall"
+  TestID -> "InfraDistance-ball-ball"
 ]
 
 EndTestSection[]

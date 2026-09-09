@@ -3,7 +3,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageImport["WolframInstitute`Infrageometry`"]
 
 
-(* the set instance is gone: a set IS the multiset <| v -> m |>, key-sorted so two built by different routes compare SameQ, with a List its uniform-weight sugar.  Keys is the support, Length the size, and Merge / KeyMap / KeySelect the algebra.  Everything below returns one.
+(* the set instance is gone: a set IS the sorted, duplicate-free vertex List, the shape Wolfram's own set algebra takes -- Union, Intersection, Complement, SubsetQ, Subgraph and HighlightGraph all read it directly.  Everything below returns one; the Association is reserved for densities, where multiplicity is real.
    The head is gone outright, scene language included: every other Infra head names a construction and survives as its token, but a literal vertex set is dispatched by shape *)
 
 
@@ -18,11 +18,11 @@ FindInfraEquidistantSet[ graph_Graph, pts_List, { lo_Integer, hi_Integer } ] /; 
   With[
     { rows  = GraphDistance[ graph, # ] & /@ pts },
     { diffs = Transpose @ MapThread[ Subtract, { Most[ rows ], Rest[ rows ] } ] },
-    toDensity[ graph, Pick[ VertexList[ graph ], AllTrue[ #, lo <= # <= hi & ] & /@ diffs ] ]
+    vertexSet @ Pick[ VertexList[ graph ], AllTrue[ #, lo <= # <= hi & ] & /@ diffs ]
   ]
 
 FindInfraEquidistantSet[ graph_Graph, pts_List /; Length[ pts ] <= 1, { _Integer, _Integer } ] :=
-  toDensity[ graph, VertexList[ graph ] ]
+  vertexSet @ VertexList[ graph ]
 
 
 (* ===================== FindAdvancingInfraFront ===================== *)
@@ -45,7 +45,7 @@ FindAdvancingInfraFront[ graph_Graph, origin_, steps_Integer ] :=
               { out = Select[ adj @ u, dp[ # ] == dp[ u ] + 1 & ],
                 in  = Select[ adj @ u, dp[ # ] == dp[ u ] - 1 & ] },
               Which[ out =!= { }, out, in =!= { }, in, True, { u } ] ] ) /@ cur ] } ] },
-    toDensity[ graph, # ] & /@ NestList[ step, { src, src }, steps ][[ All, 2 ]]
+    vertexSet /@ NestList[ step, { src, src }, steps ][[ All, 2 ]]
   ]
 
 
@@ -61,9 +61,9 @@ Options[ InfraInterior ] = { Method -> "Combinatorial" };
 InfraBoundary[ g_Graph, s_, OptionsPattern[] ] :=
   With[ { vs = infraSetVertices[ g, s ] },
     Switch[ methodName @ OptionValue[ Method ],
-      "Combinatorial", toDensity[ g, GraphBoundary[ g, vs ] ],
-      "Alexandrov",    toDensity[ g, TopologicalBoundary[
-        BallTopology[ g, Lookup[ methodOptions @ OptionValue[ Method ], "Radius", 1 ] ], vs ] ],
+      "Combinatorial", vertexSet @ GraphBoundary[ g, vs ],
+      "Alexandrov",    vertexSet @ TopologicalBoundary[
+        BallTopology[ g, Lookup[ methodOptions @ OptionValue[ Method ], "Radius", 1 ] ], vs ],
       _, Message[ InfraBoundary::badmethod, OptionValue[ Method ] ]; $Failed
     ]
   ]
@@ -71,18 +71,17 @@ InfraBoundary[ g_Graph, s_, OptionsPattern[] ] :=
 InfraInterior[ g_Graph, s_, OptionsPattern[] ] :=
   With[ { vs = infraSetVertices[ g, s ] },
     Switch[ methodName @ OptionValue[ Method ],
-      "Combinatorial", toDensity[ g, GraphInterior[ g, vs ] ],
-      "Alexandrov",    toDensity[ g, TopologicalInterior[
-        BallTopology[ g, Lookup[ methodOptions @ OptionValue[ Method ], "Radius", 1 ] ], vs ] ],
+      "Combinatorial", vertexSet @ GraphInterior[ g, vs ],
+      "Alexandrov",    vertexSet @ TopologicalInterior[
+        BallTopology[ g, Lookup[ methodOptions @ OptionValue[ Method ], "Radius", 1 ] ], vs ],
       _, Message[ InfraInterior::badmethod, OptionValue[ Method ] ]; $Failed
     ]
   ]
 
 
-(* a bare vertex list is the uniform multiset, so it is its own support; every other shape and every surviving wrapper goes through infraVertexSet *)
+(* the support of any shape, read by the anchor rule: a vertex, a vertex list, a density, a walk graph or a family all marginalise to their vertices *)
 
-infraSetVertices[ g_Graph, s_ ] :=
-  Which[ pointQ[ g, s ], { s }, ListQ[ s ], s, True, infraVertexSet @ s ]
+infraSetVertices[ g_Graph, s_ ] := infraVertexSet[ g, s ]
 
 
 (* ===================== InfraVolume ===================== *)
@@ -94,12 +93,10 @@ InfraVolume::badmeasure = "Measure `1` is not supported by InfraVolume; use \"Fu
    "FullCount" = |S|, "WithoutBoundary" = |S| - |dS|, "HalfBoundary" = |S| - |dS|/2, and "Boundary" = |dS| itself *)
 Options[ InfraVolume ] = { "Measure" -> "FullCount", Method -> "Combinatorial" };
 
-(* line-like objects realise the union of their walks as path graphs -- only their own consecutive edges, so distinct lines are not joined and a line never gains the chords of its induced subgraph.  A vertex is then interior iff every g-edge at it is a line edge, so a 1-D curve has nearly empty interior *)
+(* a walk graph or a bundle realises the union of its walks as path graphs -- only their own consecutive edges, so distinct lines are not joined and a line never gains the chords of its induced subgraph.  A vertex is then interior iff every g-edge at it is a line edge, so a 1-D curve has nearly empty interior *)
 InfraVolume[ g_Graph, w : ( _Graph | { __Graph } ), opts : OptionsPattern[] ] :=
-  InfraVolume[ g, InfraLine[ infraSpread @ w ], opts ]
-
-InfraVolume[ g_Graph, (InfraLine | InfraSegment | InfraRay)[ walks_List ], opts : OptionsPattern[] ] :=
   With[
+    { walks = infraSpread @ w },
     { h = Graph[ Union @@ walks,
         DeleteDuplicates[ Sort /@ Catenate[ (UndirectedEdge @@@ Partition[ #, 2, 1 ] &) /@ walks ] ] ] },
     Switch[ OptionValue[ "Measure" ],

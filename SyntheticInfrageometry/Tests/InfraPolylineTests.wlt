@@ -1,24 +1,23 @@
-(* ===================== InfraPolyline auto-flatten ===================== *)
+BeginTestSection["InfraPolyline"]
 
-VerificationTest[
-  InfraPolyline[ { InfraPolyline[ { { InfraSegment[ { { 1, 2 } } ] } } ],
-                   InfraPolyline[ { { InfraSegment[ { { 2, 3 } } ] } } ] } ],
-  InfraPolyline[ { { InfraSegment[ { { 1, 2 } } ] }, { InfraSegment[ { { 2, 3 } } ] } } ],
-  TestID -> "InfraPolyline-auto-flatten"
-]
+geodesicGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+walkSequence  = WolframInstitute`SyntheticInfrageometry`PackageScope`walkSequence;
+polylineToKnots = WolframInstitute`SyntheticInfrageometry`PackageScope`polylineToKnots;
+
+(* a polyline is its geodesic legs: a List of directed path graphs on the substrate, consecutive legs sharing their knot *)
 
 
 (* ===================== FindInfraPolylineSubdivision: trivial cases ===================== *)
 
 VerificationTest[
   FindInfraPolylineSubdivision[ PathGraph @ Range[ 5 ], { } ],
-  InfraPolyline[ { { } } ],
+  { },
   TestID -> "FindInfraPolylineSubdivision-empty-path"
 ]
 
 VerificationTest[
   FindInfraPolylineSubdivision[ PathGraph @ Range[ 5 ], { 3 } ],
-  InfraPolyline[ { { } } ],
+  { },
   TestID -> "FindInfraPolylineSubdivision-single-vertex-path"
 ]
 
@@ -29,8 +28,8 @@ VerificationTest[
    path when MaxLength = Infinity, so one leg. *)
 
 VerificationTest[
-  FindInfraPolylineSubdivision[ PathGraph @ Range[ 6 ], Range[ 6 ] ],
-  InfraPolyline[ { { InfraSegment[ { Range[ 6 ] } ] } } ],
+  walkSequence /@ FindInfraPolylineSubdivision[ PathGraph @ Range[ 6 ], Range[ 6 ] ],
+  { Range[ 6 ] },
   TestID -> "FindInfraPolylineSubdivision-infinite-maxlength"
 ]
 
@@ -41,14 +40,15 @@ VerificationTest[
    lengths 3, 3, 3, 1 (knots at indices 1, 4, 7, 10, 11). *)
 
 VerificationTest[
-  FindInfraPolylineSubdivision[ PathGraph @ Range[ 11 ], Range[ 11 ], "MaxLength" -> 3 ],
-  InfraPolyline[ { {
-    InfraSegment[ { { 1, 2, 3, 4 } } ],
-    InfraSegment[ { { 4, 5, 6, 7 } } ],
-    InfraSegment[ { { 7, 8, 9, 10 } } ],
-    InfraSegment[ { { 10, 11 } } ]
-  } } ],
+  walkSequence /@ FindInfraPolylineSubdivision[ PathGraph @ Range[ 11 ], Range[ 11 ], "MaxLength" -> 3 ],
+  { { 1, 2, 3, 4 }, { 4, 5, 6, 7 }, { 7, 8, 9, 10 }, { 10, 11 } },
   TestID -> "FindInfraPolylineSubdivision-maxlength-3-on-PathGraph-11"
+]
+
+VerificationTest[
+  polylineToKnots @ FindInfraPolylineSubdivision[ PathGraph @ Range[ 11 ], Range[ 11 ], "MaxLength" -> 3 ],
+  { 1, 4, 7, 10, 11 },
+  TestID -> "FindInfraPolylineSubdivision-knots-are-the-leg-ends"
 ]
 
 
@@ -56,10 +56,9 @@ VerificationTest[
    on their joining vertex.  *)
 
 VerificationTest[
-  With[ { poly = First @ First @ FindInfraPolylineSubdivision[
+  With[ { legs = walkSequence /@ FindInfraPolylineSubdivision[
       PathGraph @ Range[ 11 ], Range[ 11 ], "MaxLength" -> 3 ] },
-    AllTrue[ Partition[ poly, 2, 1 ],
-      pair |-> Last[ pair[[ 1, 1, 1 ]] ] === First[ pair[[ 2, 1, 1 ]] ] ] ],
+    AllTrue[ Partition[ legs, 2, 1 ], pair |-> Last[ pair[[ 1 ]] ] === First[ pair[[ 2 ]] ] ] ],
   True,
   TestID -> "FindInfraPolylineSubdivision-shared-endpoints"
 ]
@@ -69,11 +68,8 @@ VerificationTest[
    shortest path past index 4, so a break is forced at the apex.        *)
 
 VerificationTest[
-  FindInfraPolylineSubdivision[ PathGraph @ Range[ 4 ], { 1, 2, 3, 4, 3, 2, 1 } ],
-  InfraPolyline[ { {
-    InfraSegment[ { { 1, 2, 3, 4 } } ],
-    InfraSegment[ { { 4, 3, 2, 1 } } ]
-  } } ],
+  walkSequence /@ FindInfraPolylineSubdivision[ PathGraph @ Range[ 4 ], { 1, 2, 3, 4, 3, 2, 1 } ],
+  { { 1, 2, 3, 4 }, { 4, 3, 2, 1 } },
   TestID -> "FindInfraPolylineSubdivision-detour-break"
 ]
 
@@ -84,30 +80,27 @@ VerificationTest[
   InfraPolylineQ[ PathGraph @ Range[ 11 ],
     FindInfraPolylineSubdivision[ PathGraph @ Range[ 11 ], Range[ 11 ], "MaxLength" -> 3 ] ],
   True,
-  TestID -> "InfraPolylineQ-wrapped-true"
+  TestID -> "InfraPolylineQ-constructor-output-true"
 ]
 
 VerificationTest[
-  InfraPolylineQ[ PathGraph @ Range[ 5 ],
-    { InfraSegment[ { { 1, 2 } } ], InfraSegment[ { { 2, 3, 4 } } ], InfraSegment[ { { 4, 5 } } ] } ],
+  InfraPolylineQ[ PathGraph @ Range[ 5 ], geodesicGraph /@ { { 1, 2 }, { 2, 3, 4 }, { 4, 5 } } ],
   True,
-  TestID -> "InfraPolylineQ-bare-list-true"
+  TestID -> "InfraPolylineQ-legs-true"
 ]
 
 (* Inconsistent: shared-endpoint invariant violated. *)
 
 VerificationTest[
-  InfraPolylineQ[ PathGraph @ Range[ 5 ],
-    { InfraSegment[ { { 1, 2 } } ], InfraSegment[ { { 3, 4 } } ] } ],
+  InfraPolylineQ[ PathGraph @ Range[ 5 ], geodesicGraph /@ { { 1, 2 }, { 3, 4 } } ],
   False,
   TestID -> "InfraPolylineQ-broken-share"
 ]
 
-(* Inconsistent: a leg whose stored vertex sequence is not a path in graph. *)
+(* Inconsistent: a leg whose vertex sequence is not a path in graph. *)
 
 VerificationTest[
-  InfraPolylineQ[ PathGraph @ Range[ 5 ],
-    { InfraSegment[ { { 1, 3 } } ] } ],
+  InfraPolylineQ[ PathGraph @ Range[ 5 ], { geodesicGraph @ { 1, 3 } } ],
   False,
   TestID -> "InfraPolylineQ-leg-not-in-graph"
 ]
@@ -121,10 +114,14 @@ VerificationTest[
 
 (* ===================== Visualisation ===================== *)
 
+(* a polyline is a legal HighlightGraph argument and draws through InfraSceneHighlight *)
 
 VerificationTest[
-  Head @ InfraSceneHighlight[ PathGraph @ Range[ 11 ],
-    { FindInfraPolylineSubdivision[ PathGraph @ Range[ 11 ], Range[ 11 ], "MaxLength" -> 3 ] } ],
-  Graph,
-  TestID -> "InfraSceneHighlight-accepts-InfraPolyline"
+  With[ { poly = FindInfraPolylineSubdivision[ PathGraph @ Range[ 11 ], Range[ 11 ], "MaxLength" -> 3 ] },
+    { Head @ HighlightGraph[ PathGraph @ Range[ 11 ], poly ],
+      Head @ InfraSceneHighlight[ PathGraph @ Range[ 11 ], { poly } ] } ],
+  { Graph, Graph },
+  TestID -> "InfraSceneHighlight-accepts-polyline"
 ]
+
+EndTestSection[]

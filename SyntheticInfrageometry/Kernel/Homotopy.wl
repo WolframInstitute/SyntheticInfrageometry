@@ -40,24 +40,22 @@ $infraHomotopyOptions = {
 
 (* ===================== Walk-mode dispatch ===================== *)
 
-(* the homotopy class is read off the shape and one option.  An open walk -- a vertex list or a path graph -- is a path with its endpoints fixed, slid by "FreeHomotopy"; a closed walk -- a cycle graph -- is a loop with its base point fixed, quotiented by rotation into the free loop by "FreeHomotopy".  An InfraCircle has no base point and is always the free loop.  Both arguments of a two-walk question must be open or both closed *)
+(* the homotopy class is read off the shape and one option.  An open walk -- a vertex list or a path graph -- is a path with its endpoints fixed, slid by "FreeHomotopy"; a closed walk -- a cycle graph, a circle included -- is a loop with its base point fixed, quotiented by rotation into the free loop by "FreeHomotopy".  Both arguments of a two-walk question must be open or both closed *)
 
 (* { addSlides, canonicalize } *)
 walkModeFor[ closedQ_, freeHom_ ] := { ! closedQ && TrueQ @ freeHom, closedQ && TrueQ @ freeHom }
 
 closedWalkArgQ[ w_Graph ]              := closedWalkQ @ w
 closedWalkArgQ[ ws : { __Graph } ]     := closedWalkQ @ First @ ws
-closedWalkArgQ[ InfraCircle[ _List ] ] := True
 closedWalkArgQ[ _ ]                    := False
 
-freeWalkArgQ[ InfraCircle[ _List ], _ ] := True
 freeWalkArgQ[ _, freeHom_ ]             := TrueQ @ freeHom
 
 (* the internal spelling of a realisation: a closed walk carries its base point repeated at the end, a free loop its lex-least rotation; the result takes the shape the input had *)
 coerceRealisation[ closedQ_, canonicalize_, walk_List ] :=
   Which[ canonicalize, canonicalString @ walk, closedQ, closeWalk @ walk, True, walk ]
 
-walkShape[ closedQ_ ] := If[ closedQ, Map[ closedWalkGraph ], Map[ walkGraph ] ]
+walkShape[ closedQ_ ] := If[ closedQ, closedWalkGraph, walkGraph ]
 
 
 (* ===================== FindInfraHomotopyRepresentative ===================== *)
@@ -83,10 +81,11 @@ FindInfraHomotopyRepresentativeHomotopy[ graph_Graph, obj_,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   With[ { closedQ = closedWalkArgQ @ obj,
           freeHom = freeWalkArgQ[ obj, OptionValue[ FindInfraHomotopyRepresentativeHomotopy, { opts }, "FreeHomotopy" ] ] },
-    spreadFind[ InfraHomotopy, count,
-      walk |-> With[ { parent = First @ runWalkBFS[ graph, walk, closedQ, freeHom, ( False & ), opts ] },
-        reconstructChain[ parent, # ] & /@ minimalReached[ parent ] ],
-      obj ] ]
+    Replace[ spreadFind[ Identity, count,
+        walk |-> With[ { parent = First @ runWalkBFS[ graph, walk, closedQ, freeHom, ( False & ), opts ] },
+          reconstructChain[ parent, # ] & /@ minimalReached[ parent ] ],
+        obj ],
+      chains_List :> InfraHomotopy[ chains ] ] ]
 
 
 (* ===================== FindInfraHomotopy ===================== *)
@@ -104,8 +103,9 @@ FindInfraHomotopy[ graph_Graph, a_, b_,
                     freeWalkArgQ[ b, False ] },
     If[ closedQ =!= closedWalkArgQ @ b,
       Message[ FindInfraHomotopy::mismatch, openOrClosed @ closedQ, openOrClosed @ ! closedQ ]; $Failed,
-      spreadFind[ InfraHomotopy, count,
-        homotopyCore[ graph, ##, closedQ, freeHom, opts ] &, a, b ] ] ]
+      Replace[ spreadFind[ Identity, count,
+          homotopyCore[ graph, ##, closedQ, freeHom, opts ] &, a, b ],
+        chains_List :> InfraHomotopy[ chains ] ] ] ]
 
 openOrClosed[ True ]  = "closed";
 openOrClosed[ False ] = "open";
@@ -187,7 +187,7 @@ homotopicQCore[ graph_Graph, walkA_List, walkB_List, closedQ_, freeHom_, opts___
 
 (* ===================== NullHomotopicQ ===================== *)
 
-(* a closed walk is null-homotopic iff it is homotopic, as a based loop, to the constant walk at its base point; a vertex list or an open walk graph is read as closed, an InfraCircle as the free loop *)
+(* a closed walk is null-homotopic iff it is homotopic, as a based loop, to the constant walk at its base point; a vertex list or an open walk graph is read as closed *)
 
 Options[ NullHomotopicQ ] = $infraHomotopyOptions;
 
@@ -200,9 +200,6 @@ NullHomotopicQ[ graph_Graph, ws : { __Graph }, opts : OptionsPattern[] ] :=
 
 NullHomotopicQ[ graph_Graph, w_Graph, opts : OptionsPattern[] ] :=
   AllTrue[ walkRealisations @ w, NullHomotopicQ[ graph, #, opts ] & ]
-
-NullHomotopicQ[ graph_Graph, InfraCircle[ reps_List ], opts : OptionsPattern[] ] :=
-  AllTrue[ reps, HomotopicQ[ graph, InfraCircle[ { # } ], InfraCircle[ { { First @ # } } ], opts ] & ]
 
 
 (* ===================== Move classification ===================== *)

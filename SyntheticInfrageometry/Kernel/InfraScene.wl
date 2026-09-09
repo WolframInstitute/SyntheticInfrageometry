@@ -1,7 +1,6 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 PackageScope[toVertexSet]
-PackageScope[infraVertexSet]
 PackageScope[sceneAssertionRules]
 PackageScope[resolveExpression]
 PackageScope[extractBranches]
@@ -61,7 +60,7 @@ applySelectOption[ _Graph, paths_, None, _, _ ] := paths
 applySelectOption[ graph_Graph, paths_, list_List, cyclic_, ctx_ ] :=
   Fold[ applySelectOption[ graph, #1, #2, cyclic, ctx ] &, paths, list ]
 applySelectOption[ graph_Graph, paths_, "EmbeddingClosest", True,  ctx_ ] :=
-  EmbeddingClosest[ graph, paths, { ctx[ "Center" ], ctx[ "Radius" ] } ]
+  embeddingClosestCycles[ graph, paths, ctx[ "Center" ], ctx[ "Radius" ] ]
 applySelectOption[ graph_Graph, paths_, "EmbeddingClosest", False, ctx_ ] :=
   EmbeddingClosest[ graph, paths, ctx[ "Endpoints" ] ]
 applySelectOption[ graph_Graph, paths_, name_String, True,  _ ] :=
@@ -76,49 +75,27 @@ selectFromName[ name_String  ] := name
 
 (* ===================== InfraDistance ===================== *)
 
-
-infraVertexSet[ fam_Association ] := Keys @ fam
-infraVertexSet[ w_Graph ] := walkVertexSet @ w
-infraVertexSet[ ws : { __Graph } ] := Union @@ ( walkVertexSet /@ ws )
-infraVertexSet[ InfraLine[ dags : { __Graph } ] ] := Union @@ ( VertexList /@ dags )
-infraVertexSet[ ( InfraSegment | InfraLine | InfraRay
-                | InfraCircle | InfraEllipse
-                | InfraShell | InfraEllipticShell | InfraPlane | InfraBall )[ reps_List ] ] :=
-  Union @@ reps
-infraVertexSet[ InfraSegment[ dag_Graph ] ] := VertexList[ dag ]
-infraVertexSet[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] :=
-  Union @@ polylineToVertexSeqs[ reps ]
-infraVertexSet[ list_List ] /;
-    list =!= { } && AllTrue[ list,
-      MatchQ[ ( InfraSegment | InfraLine | InfraRay |
-                InfraCircle | InfraEllipse | InfraShell | InfraEllipticShell | InfraPlane | InfraBall |
-                InfraPolyline | InfraPolygon | InfraTriangle )[ { _ } ] ] ] :=
-  infraVertexSet[ Head[ First @ list ] @ ( #[[ 1, 1 ]] & /@ list ) ]
-infraVertexSet[ v_ ] := { v }
-
+(* the distance between the supports of two shapes, read by the anchor rule *)
 
 Options[ InfraDistance ] = { "Aggregation" -> Min }
 
 InfraDistance[ g_Graph, p_, q_, OptionsPattern[] ] :=
   OptionValue[ "Aggregation" ] @
     Flatten @ Outer[ GraphDistance[ g, #1, #2 ] &,
-      infraVertexSet[ p ], infraVertexSet[ q ], 1 ]
+      infraVertexSet[ g, p ], infraVertexSet[ g, q ], 1 ]
 
 
 (* ===================== InfraIntersection / InfraUnion ===================== *)
 
-(* guarded on the realisation shape -- a single list payload -- not merely on the head: InfraCircle[c, r] is a scene constructor whose vertex set is unknown until dispatched, and matching it here collapsed scene hypotheses to the empty set *)
+(* the vertex set of an intersection or union of shapes -- vertex lists, densities, walk graphs, bundles -- as a sorted List.  Guarded on the shape: InfraCircle[c, r] is a scene constructor whose vertex set is unknown until dispatched, and a symbol stays inert so scene hypotheses are not perturbed *)
 
-$infraRealisationPattern =
-  ( InfraSegment | InfraLine | InfraRay | InfraCircle | InfraEllipse | InfraShell |
-    InfraEllipticShell | InfraPlane | InfraBall | InfraPolyline | InfraPolygon |
-    InfraTriangle )[ _List ] | InfraSegment[ _Graph ] | _Association | _Graph | { __Graph };
+$infraRealisationPattern = _List | _Association | _Graph;
 
 InfraIntersection[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
-  KeySort @ AssociationMap[ 1 &, Intersection @@ ( infraVertexSet /@ { args } ) ]
+  Intersection @@ ( infraVertexSet /@ { args } )
 
 InfraUnion[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
-  KeySort @ AssociationMap[ 1 &, Union @@ ( infraVertexSet /@ { args } ) ]
+  Union @@ ( infraVertexSet /@ { args } )
 
 
 (* ===================== Scene ===================== *)

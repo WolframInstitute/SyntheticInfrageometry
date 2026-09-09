@@ -1,13 +1,9 @@
 Package["WolframInstitute`SyntheticInfrageometry`"]
 
 
-(* ===================== InfraPlane wrapper ===================== *)
-
-
-InfraPlane[ reps_List ][ "Volume" ] := Length /@ reps
 (* ===================== FindInfraBisectingHyperplane ===================== *)
 
-(* the bisector slab B = { v : lo <= d(p1, v) - d(p2, v) <= hi }.  On a non-bipartite graph the strict equidistant set may fail to separate, so widen the window to {-1, 1} to recover the parity-stranded band. *)
+(* the bisector slab B = { v : lo <= d(p1, v) - d(p2, v) <= hi }, a sorted vertex list; under Properties the minimal admissible subsets of the slab, one per instance.  On a non-bipartite graph the strict equidistant set may fail to separate, so widen the window to {-1, 1} to recover the parity-stranded band. *)
 
 FindInfraBisectingHyperplane::badmethod   = "Method `1` is not supported by FindInfraBisectingHyperplane.";
 FindInfraBisectingHyperplane::badproperty = "Property `1` is not supported by FindInfraBisectingHyperplane.";
@@ -24,7 +20,7 @@ FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
 FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
     window : { _Integer, _Integer },
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
-  spreadFind[ InfraPlane, count,
+  spreadFind[ vertexSet, count,
     { q1, q2 } |-> Module[ { properties, methodSpec, methodHead, pruning, bisector, aux, admissible },
       properties = OptionValue[ FindInfraBisectingHyperplane, { opts }, Properties ];
       methodSpec = resolveMethod[ OptionValue[ FindInfraBisectingHyperplane, { opts }, Method ], count ];
@@ -60,7 +56,7 @@ FindInfraBisectingHyperplane[ graph_Graph, p1_, p2_,
           ]
         ]
       ]
-    ], p1, p2 ]
+    ], toDensity[ graph, p1 ], toDensity[ graph, p2 ] ]
 
 admissibleBisectingHyperplane[ graph_Graph, aux_Graph, p1_, p2_, properties_List ] :=
   With[ { tests = propertyPredicate[ graph, aux, p1, p2, # ] & /@ properties },
@@ -84,9 +80,8 @@ propertyPredicate[ _, _, _, _, other_ ] :=
 InfraPlaneQ[ graph_Graph, fam_Association, p1_, p2_, window_ : 0 ] :=
   InfraPlaneQ[ graph, Keys @ fam, p1, p2, window ]
 
-InfraPlaneQ[ graph_Graph, h_InfraPlane, p1_, p2_, window_ : 0 ] :=
-  AllTrue[ First @ h,
-    InfraPlaneQ[ graph, #, p1, p2, window ] & ]
+InfraPlaneQ[ graph_Graph, sets : { __List }, p1_, p2_, window_ : 0 ] /; ! AllTrue[ sets, VertexQ[ graph, # ] & ] :=
+  AllTrue[ sets, InfraPlaneQ[ graph, #, p1, p2, window ] & ]
 
 InfraPlaneQ[ graph_Graph, h_List, p1_, p2_, window_ : 0 ] :=
   With[ { bounds = If[ ListQ @ window, window, { -window, window } ] },
@@ -105,7 +100,7 @@ dispatchConstruction[ graph_Graph, InfraPlane[ p1_, p2_,
     window : { _Integer, _Integer }, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      FindInfraBisectingHyperplane[ graph, p1, p2, window, All, Properties -> { "Separating" } ][ "Realizations" ],
+      FindInfraBisectingHyperplane[ graph, p1, p2, window, All, Properties -> { "Separating" } ],
       "Select" /. { opts } /. "Select" -> None,
       False, <| "Endpoints" -> { p1, p2 } |> ],
     extractBranches[ { opts } ] ]

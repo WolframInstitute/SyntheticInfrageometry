@@ -3,41 +3,13 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageImport["WolframInstitute`Infrageometry`"]
 
 
-(* ===================== InfraCircle wrapper ===================== *)
+PackageScope[circlePool]
 
 
-InfraCircle[ reps : Except[ { __Graph }, _List ] ][ "Length" ] := Length /@ reps
-
-InfraCircle[ reps : Except[ { __Graph }, _List ] ][ "Multiplicity" ] := Length @ reps
-
-
-(* ===== pool form: InfraCircle[{dag_Graph, ...}] ===== *)
-
-(* one arc-folded geodesic DAG per pool atom: the seam arc s1 -> ... -> sm -> v forced, then the cut-shell geodesic interval v -> ... -> u, so the source -> sink paths are exactly that atom's circles.
-   Atoms carry disjoint families, so the per-slot DP gives the family's count and occupation without enumeration.  ["Length"] is one number: a pool's realisations are all tied at the minimum circumference. *)
-
-InfraCircle[ dags : { __Graph } ][ "Graph" ]              := dags
-InfraCircle[ dags : { __Graph } ][ "Vertices" ]           := Union @@ ( VertexList /@ dags )
-InfraCircle[ dags : { __Graph } ][ "Length" ]             := 1 + Max @ Values @ dagLayers @ First @ dags
-InfraCircle[ dags : { __Graph } ][ "Multiplicity" ]       := infraNumReps @ InfraCircle @ dags
-InfraCircle[ dags : { __Graph } ][ "OccupationCount" ]    := infraVertexMultiset @ InfraCircle @ dags
-InfraCircle[ dags : { __Graph } ][ "OccupationMeasure" ]  := InfraMeasure @ InfraCircle @ dags
-InfraCircle[ dags : { __Graph } ][ "Measure" ]            := InfraMeasure @ InfraCircle @ dags
-InfraCircle[ dags : { __Graph } ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraCircle @ dags, Method -> "Probability" ]
-InfraCircle[ dags : { __Graph } ][ "Realizations" ]       := Catenate[ dagGeodesics /@ dags ]
-InfraCircle[ dags : { __Graph } ][ "First" ]              := First @ dagGeodesics[ First @ dags, 1 ]
-
-(* lazy: atoms are consumed in order, each stopping at the residual budget *)
-InfraCircle[ dags : { __Graph } ][ "Realizations", spec_ ] :=
-  infraCap[
-    Fold[ { acc, dag } |-> If[ Length @ acc >= countLimit @ spec, acc,
-        Join[ acc, dagGeodesics[ dag, countLimit @ spec - Length @ acc ] ] ],
-      { }, dags ],
-    spec ]
 (* ===================== FindInfraCircle ===================== *)
 
-(* a circle of radius r around c is a simple cycle in the level surface at distance ~r from c, returned as an open vertex sequence.
-   On the default Properties, a single anchor and an integer band the family is carried by the circle pool, polynomial in |V| however large the family is; otherwise by the FindCycle length sweep, which materialises every shorter cycle first.  One class under every Method: "Exhaustive" with All is the pool, a bounded count streams circles off the atoms in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order *)
+(* a circle of radius r around c is a simple cycle in the level surface at distance ~r from c, returned as a directed cycle graph on the substrate vertices; the count-less call is one circle, a bounded count and All a List of them -- closed walks have no acyclic union to carry them, so All enumerates.
+   On the default Properties, a single anchor and an integer band the family is carried internally by the circle pool (circlePool), polynomial in |V| however large the family is, and a bounded count streams circles off its atoms in candidate ("Greedy", "Exhaustive") or random ("RandomGreedy") order; otherwise by the FindCycle length sweep, which materialises every shorter cycle first.  One class under every Method *)
 
 FindInfraCircle::badproperty = "Property `1` is not supported by FindInfraCircle.";
 FindInfraCircle::badmethod   = "Method `1` is not supported by FindInfraCircle.";
@@ -53,7 +25,7 @@ FindInfraCircle[ graph_Graph, p_, r_,
   Catch @ With[
     { properties = OptionValue[ FindInfraCircle, { opts }, Properties ],
       methodSpec = resolveMethod[ OptionValue[ FindInfraCircle, { opts }, Method ], count ],
-      anchors = Tuples[ infraSpread /@ { p, r } ] },
+      anchors = Tuples[ { Keys @ toDensity[ graph, p ], infraSpread @ r } ] },
     { methodHead = methodName @ methodSpec },
     If[ ! MatchQ[ methodHead, "Exhaustive" | "Greedy" | "RandomGreedy" ],
       Message[ FindInfraCircle::badmethod, methodSpec ]; Throw[ $Failed ] ];
@@ -63,22 +35,18 @@ FindInfraCircle[ graph_Graph, p_, r_,
           { { "Exhaustive", subs___ } :> ( "Pruning" /. { subs } /. "Pruning" -> Infinity ), _ :> Infinity } ],
         pool = If[ Length @ anchors === 1 && Sort @ properties === { "Separating", "Shortest" },
           circlePool[ graph, Sequence @@ First @ anchors ], Null ] },
-      Which[
-        pool === Null || pool === $Failed,
-          (* a refusal costs nothing on an empty family, so ::uncertified fires only when circles exist that the carrier could not hold *)
-          With[ { swept = spreadFind[ InfraCircle, count,
-                    findCircleSweep[ graph, ##, properties, count, branch, pruning ] &, p, r ] },
-            If[ pool === $Failed && ! MatchQ[ swept, InfraCircle[ { } ] | $Failed ],
-              Message[ FindInfraCircle::uncertified, r, p ] ];
-            swept ],
-        count === All && methodHead === "Exhaustive",
-          InfraCircle @ pool,
-        True,
-          bundleTake[ InfraCircle,
-            Fold[ { acc, dag } |-> If[ Length @ acc >= countLimit @ count, acc,
-                Join[ acc, dagGeodesics[ dag, countLimit @ count - Length @ acc, branch ] ] ],
-              { }, branch @ pool ],
-            count ]
+      If[ pool === Null || pool === $Failed,
+        (* a refusal costs nothing on an empty family, so ::uncertified fires only when circles exist that the carrier could not hold *)
+        With[ { swept = spreadFind[ geodesicCycleGraph, count,
+                  findCircleSweep[ graph, ##, properties, count, branch, pruning ] &, toDensity[ graph, p ], r ] },
+          If[ pool === $Failed && swept =!= { } && swept =!= $Failed,
+            Message[ FindInfraCircle::uncertified, r, p ] ];
+          swept ],
+        countTake[
+          geodesicCycleGraph /@ Fold[ { acc, dag } |-> If[ Length @ acc >= countLimit @ count, acc,
+              Join[ acc, dagGeodesics[ dag, countLimit @ count - Length @ acc, branch ] ] ],
+            { }, branch @ pool ],
+          count ]
       ] ] ]
 
 
@@ -190,25 +158,23 @@ FindInfraCycle[ graph_Graph, n : ( _Integer | UpTo[ _Integer ] | All ) : All ] :
 FindInfraCycle[ graph_Graph, { k_Integer },
     n : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   With[ { cycles = cycleToVertexSequence /@ FindCycle[ graph, { k }, All ] },
-    bundleTake[ InfraCircle, cycles, n ] ]
+    countTake[ geodesicCycleGraph /@ cycles, n ] ]
 
 FindInfraCycle[ graph_Graph, { kMin_Integer, kMax_ },
     n : ( _Integer | UpTo[ _Integer ] | All ) : All ] :=
   With[ { cycles = SortBy[ Length ] @ Flatten[
         cycleToVertexSequence /@ FindCycle[ graph, { # }, All ] & /@
           Range[ kMin, Min[ kMax, VertexCount[ graph ] ] ], 1 ] },
-    bundleTake[ InfraCircle, cycles, n ] ]
+    countTake[ geodesicCycleGraph /@ cycles, n ] ]
 
 
 (* ===================== InfraCircleQ ===================== *)
 
-(* a metric circle iff consecutive vertices and the wrap-around are adjacent and the vertex set is a metric shell *)
+(* a metric circle iff consecutive vertices and the wrap-around are adjacent and the vertex set is a metric shell; a cycle graph is read as its closed walk *)
 
-InfraCircleQ[ graph_Graph, InfraCircle[ dags : { __Graph } ] ] :=
-  AllTrue[ Catenate[ dagGeodesics /@ dags ], InfraCircleQ[ graph, # ] & ]
+InfraCircleQ[ graph_Graph, ws : { __Graph } ] := AllTrue[ ws, InfraCircleQ[ graph, # ] & ]
 
-InfraCircleQ[ graph_Graph, c_InfraCircle ] :=
-  AllTrue[ First @ c, InfraCircleQ[ graph, # ] & ]
+InfraCircleQ[ graph_Graph, w_Graph ] := AllTrue[ walkRealisations @ w, InfraCircleQ[ graph, # ] & ]
 
 InfraCircleQ[ graph_Graph, cycle_List ] /; Length[ cycle ] >= 3 :=
   With[ {
@@ -228,7 +194,7 @@ InfraCircleQ[ _Graph, cycle_List ] /; Length[ cycle ] < 3 := False
 dispatchConstruction[ graph_Graph, InfraCircle[ center_, r_, opts___Rule ] ] :=
   capBranches[
     applySelectOption[ graph,
-      FindInfraCircle[ graph, center, r, All ][ "Realizations" ],
+      walkSequence /@ FindInfraCircle[ graph, center, r, All ],
       "Select" /. { opts } /. "Select" -> None,
       True, <| "Center" -> center,
                "Radius" -> If[ NumericQ[ r ], r, Mean[ r ] ] |> ],

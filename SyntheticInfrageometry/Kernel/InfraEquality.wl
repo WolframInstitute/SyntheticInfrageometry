@@ -9,7 +9,7 @@ Options[ InfraEqualQ ] = { Method -> "Diffuse" }
 
 InfraEqualQ[ _Graph, a_, b_, OptionsPattern[] ] /; Head[ a ] =!= Head[ b ] := False
 
-(* raw visit measures: a bundle keeps its own occupation, every shape goes through the anchor rule *)
+(* raw visit measures: every shape goes through the anchor rule, a walk graph or bundle contributing its occupation *)
 InfraEqualQ[ graph_Graph, a_, b_, OptionsPattern[] ] :=
   With[ { ma = equalityMultiset[ graph, a ], mb = equalityMultiset[ graph, b ] },
     Switch[ OptionValue @ Method,
@@ -21,8 +21,7 @@ InfraEqualQ[ graph_Graph, a_, b_, OptionsPattern[] ] :=
     ]
   ]
 
-equalityMultiset[ graph_Graph, obj_ ] :=
-  If[ MatchQ[ Head @ obj, $infraBundleHeads ], infraVertexMultiset @ obj, toDensity[ graph, obj ] ]
+equalityMultiset[ graph_Graph, obj_ ] := toDensity[ graph, obj ]
 
 multisetCapMass[ a_Association, b_Association ] :=
   Total @ KeyValueMap[ { k, v } |-> Min[ v, Lookup[ b, k, 0 ] ], a ]
