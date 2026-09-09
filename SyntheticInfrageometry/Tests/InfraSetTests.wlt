@@ -1,17 +1,21 @@
 toDensity = WolframInstitute`SyntheticInfrageometry`PackageScope`toDensity;
 pointQ    = WolframInstitute`SyntheticInfrageometry`PackageScope`pointQ;
 multisetQ = WolframInstitute`SyntheticInfrageometry`PackageScope`multisetQ;
+walkQ     = WolframInstitute`SyntheticInfrageometry`PackageScope`walkQ;
+geodesicGraph        = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+infraSpread          = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
+infraVertexMultiset  = WolframInstitute`SyntheticInfrageometry`PackageScope`infraVertexMultiset;
 
 BeginTestSection["InfraSet"]
 
 (* The Alexandrov-topology operators (BallTopology / Topological* / ContinuousMapQ)
    now live in the Infrageometry paclet and are tested there.  A set carries no head:
-   it IS the multiset <| v -> m |>, so these tests cover the shape, the anchor rule
-   that produces it, and the set operators over it. *)
+   it IS a sorted vertex list, and <| v -> m |> is the density, so these tests cover
+   both shapes, the anchor rule that produces the density, and the set operators. *)
 
 (* ===== The shape ===== *)
 
-(* Keys is the support and Length the size: the two accessors the set head used to own *)
+(* Keys is a density's support and Length its size: the two accessors the set head used to own *)
 VerificationTest[
   { Keys @ <| 1 -> 1, 3 -> 1, 5 -> 1 |>, Length @ <| 1 -> 1, 3 -> 1, 5 -> 1 |> },
   { {1, 3, 5}, 3 },
@@ -31,17 +35,16 @@ VerificationTest[
   TestID -> "anchor-rule-reads-every-shape"
 ]
 
-(* a bundle marginalises to its support through infraVertexSet, the reader the
-   surviving wrappers still go through *)
+(* a set is already its support, and InfraUnion sorts it *)
 VerificationTest[
-  Sort @ Keys @ InfraUnion[ FindInfraBall[ PathGraph @ Range[7], 4, 2 ] ],
+  Sort @ InfraUnion[ FindInfraBall[ PathGraph @ Range[7], 4, 2 ] ],
   {2, 3, 4, 5, 6},
   TestID -> "set-from-InfraBall-support"
 ]
 
-(* the set operators return the multiset, so unions of unions stay one shape *)
+(* the set operators return the sorted List, so unions of unions stay one shape *)
 VerificationTest[
-  Sort @ Keys @ InfraUnion[ <| 1 -> 1, 2 -> 1 |>, <| 2 -> 1, 3 -> 1 |> ],
+  Sort @ InfraUnion[ <| 1 -> 1, 2 -> 1 |>, <| 2 -> 1, 3 -> 1 |> ],
   {1, 2, 3},
   TestID -> "InfraUnion-of-multisets"
 ]
@@ -51,13 +54,13 @@ VerificationTest[
 (* On a path 1-2-3-4-5 the inner boundary of {2,3,4} is {2,4} (each touches an
    outside neighbor) and the interior is the single shielded vertex {3}. *)
 VerificationTest[
-  Sort @ Keys @ InfraBoundary[ PathGraph @ Range[5], {2, 3, 4} ],
+  Sort @ InfraBoundary[ PathGraph @ Range[5], {2, 3, 4} ],
   {2, 4},
   TestID -> "InfraBoundary-path-inner"
 ]
 
 VerificationTest[
-  Sort @ Keys @ InfraInterior[ PathGraph @ Range[5], {2, 3, 4} ],
+  Sort @ InfraInterior[ PathGraph @ Range[5], {2, 3, 4} ],
   {3},
   TestID -> "InfraInterior-path-inner"
 ]
@@ -65,24 +68,24 @@ VerificationTest[
 (* Interior and inner boundary partition S: disjoint, and together reconstruct S. *)
 VerificationTest[
   With[ { g = GridGraph[ {3, 3} ], s = {2, 4, 5, 6, 8} },
-    { Union[ Keys @ InfraInterior[ g, s ], Keys @ InfraBoundary[ g, s ] ],
-      Intersection[ Keys @ InfraInterior[ g, s ], Keys @ InfraBoundary[ g, s ] ] } ],
+    { Union[ InfraInterior[ g, s ], InfraBoundary[ g, s ] ],
+      Intersection[ InfraInterior[ g, s ], InfraBoundary[ g, s ] ] } ],
   { {2, 4, 5, 6, 8}, {} },
   TestID -> "InfraBoundary-Interior-partition"
 ]
 
-(* Output is the multiset, and an Infra* wrapper input agrees with the equivalent set. *)
+(* Output is the sorted List, and the density over the same support agrees with it. *)
 VerificationTest[
   With[ { g = GridGraph[ {3, 3} ], ball = FindInfraBall[ GridGraph[ {3, 3} ], 5, 1 ] },
     { InfraBoundary[ g, ball ],
       InfraBoundary[ g, ball ] === InfraBoundary[ g, <| 2 -> 1, 4 -> 1, 5 -> 1, 6 -> 1, 8 -> 1 |> ] } ],
-  { <| 2 -> 1, 4 -> 1, 6 -> 1, 8 -> 1 |>, True },
-  TestID -> "InfraBoundary-returns-multiset-and-coerces"
+  { { 2, 4, 6, 8 }, True },
+  TestID -> "InfraBoundary-returns-set-and-coerces"
 ]
 
-(* Alexandrov method dispatches to the closed-r-ball topology and returns the multiset. *)
+(* Alexandrov method dispatches to the closed-r-ball topology and returns the set. *)
 VerificationTest[
-  AssociationQ @ InfraBoundary[ GridGraph[ {3, 3} ], {2, 4, 5, 6, 8},
+  ListQ @ InfraBoundary[ GridGraph[ {3, 3} ], {2, 4, 5, 6, 8},
     Method -> {"Alexandrov", "Radius" -> 1} ],
   True,
   TestID -> "InfraBoundary-Alexandrov-dispatch"
@@ -108,7 +111,7 @@ VerificationTest[
 
 (* A thin geodesic line (top row of a grid) is 1-D in a 2-D graph: empty interior. *)
 VerificationTest[
-  InfraVolume[ GridGraph[ {4, 4} ], InfraLine[ {{1, 2, 3, 4}} ], "Measure" -> "WithoutBoundary" ],
+  InfraVolume[ GridGraph[ {4, 4} ], geodesicGraph @ {1, 2, 3, 4}, "Measure" -> "WithoutBoundary" ],
   0,
   TestID -> "InfraVolume-thin-line-empty-interior"
 ]
@@ -119,9 +122,9 @@ VerificationTest[
   With[
     { g = GridGraph[ {4, 4} ],
       snake = Catenate @ Table[ With[ { row = Range[ 4 (i - 1) + 1, 4 i ] }, If[ OddQ[ i ], row, Reverse[ row ] ] ], { i, 4 } ] },
-    { InfraVolume[ g, InfraLine[ {snake} ], "Measure" -> "WithoutBoundary" ],
+    { InfraVolume[ g, geodesicGraph @ snake, "Measure" -> "WithoutBoundary" ],
       InfraVolume[ g, toDensity[ g, snake ], "Measure" -> "WithoutBoundary" ],
-      InfraVolume[ g, InfraLine[ {snake} ], "Measure" -> "FullCount" ]
+      InfraVolume[ g, geodesicGraph @ snake, "Measure" -> "FullCount" ]
         === InfraVolume[ g, toDensity[ g, snake ], "Measure" -> "FullCount" ] } ],
   { 2, 16, True },
   TestID -> "InfraVolume-line-vs-set-spanning-curve"
@@ -130,7 +133,7 @@ VerificationTest[
 (* The line graph is the union of the walks, NOT the induced subgraph: two parallel
    grid rows stay disconnected, so neither row gains interior from the other. *)
 VerificationTest[
-  InfraVolume[ GridGraph[ {4, 4} ], InfraLine[ {{1, 2, 3, 4}, {5, 6, 7, 8}} ], "Measure" -> "WithoutBoundary" ],
+  InfraVolume[ GridGraph[ {4, 4} ], geodesicGraph /@ {{1, 2, 3, 4}, {5, 6, 7, 8}}, "Measure" -> "WithoutBoundary" ],
   0,
   TestID -> "InfraVolume-line-union-not-induced"
 ]
@@ -140,7 +143,7 @@ VerificationTest[
 (* Every vertex of the equidistant set sees all anchors at one common distance. *)
 VerificationTest[
   With[ { g = GridGraph[ {5, 5} ] },
-    AllTrue[ Keys @ FindInfraEquidistantSet[ g, {1, 5, 21} ],
+    AllTrue[ FindInfraEquidistantSet[ g, {1, 5, 21} ],
       v |-> SameQ @@ ( GraphDistance[ g, #, v ] & /@ {1, 5, 21} ) ] ],
   True,
   TestID -> "FindInfraEquidistantSet-all-equidistant"
@@ -149,7 +152,7 @@ VerificationTest[
 (* E(p1, ..., pn) == intersection of the n-1 consecutive perpendicular bisectors. *)
 VerificationTest[
   Module[ { g = GridGraph[ {4, 4, 4} ], ps = {1, 5, 21} },
-    Sort @ Keys @ FindInfraEquidistantSet[ g, ps ] ===
+    Sort @ FindInfraEquidistantSet[ g, ps ] ===
       Sort[ Intersection @@ MapThread[
         {a, b} |-> Select[ VertexList[ g ], v |-> GraphDistance[ g, a, v ] == GraphDistance[ g, b, v ] ],
         { Most[ ps ], Rest[ ps ] } ] ] ],
@@ -160,31 +163,31 @@ VerificationTest[
 (* For n == 2 the strict set is the window {0, 0} perpendicular bisector. *)
 VerificationTest[
   With[ { g = GridGraph[ {5, 5} ] },
-    Sort @ Keys @ FindInfraEquidistantSet[ g, {1, 25} ] ===
-      Sort @ FindInfraBisectingHyperplane[ g, 1, 25, {0, 0}, All ][[ 1, 1 ]] ],
+    Sort @ FindInfraEquidistantSet[ g, {1, 25} ] ===
+      Sort @ First @ FindInfraBisectingHyperplane[ g, 1, 25, {0, 0}, All ] ],
   True,
   TestID -> "FindInfraEquidistantSet-n2-equals-bisector"
 ]
 
 (* Three corners of the square grid meet at the centre. *)
 VerificationTest[
-  Keys @ FindInfraEquidistantSet[ GridGraph[ {5, 5} ], {1, 5, 21} ],
+  FindInfraEquidistantSet[ GridGraph[ {5, 5} ], {1, 5, 21} ],
   {13},
   TestID -> "FindInfraEquidistantSet-three-corners-centre"
 ]
 
-(* Output is the multiset, all-ones on the equidistant set. *)
+(* Output is the sorted vertex list. *)
 VerificationTest[
   FindInfraEquidistantSet[ GridGraph[ {5, 5} ], {1, 5, 21} ],
-  <| 13 -> 1 |>,
+  { 13 },
   TestID -> "FindInfraEquidistantSet-shape"
 ]
 
 (* Widening the window can only grow the set (the strict set is a subset). *)
 VerificationTest[
   With[ { g = GridGraph[ {5, 5} ] },
-    SubsetQ[ Keys @ FindInfraEquidistantSet[ g, {1, 25}, {-1, 1} ],
-             Keys @ FindInfraEquidistantSet[ g, {1, 25} ] ] ],
+    SubsetQ[ FindInfraEquidistantSet[ g, {1, 25}, {-1, 1} ],
+             FindInfraEquidistantSet[ g, {1, 25} ] ] ],
   True,
   TestID -> "FindInfraEquidistantSet-window-monotone"
 ]
@@ -196,7 +199,7 @@ VerificationTest[
    to {2,3} then turns straight back to {1}, oscillating with no dwell -- never
    empties, unlike the metric sphere. *)
 VerificationTest[
-  Sort /@ ( Keys /@ FindAdvancingInfraFront[ CompleteGraph[ 3 ], 1, 5 ] ),
+  Sort /@ FindAdvancingInfraFront[ CompleteGraph[ 3 ], 1, 5 ],
   {{1}, {2, 3}, {1}, {2, 3}, {1}, {2, 3}},
   TestID -> "FindAdvancingInfraFront-triangle-bounces"
 ]
@@ -208,10 +211,10 @@ VerificationTest[
   TestID -> "FindAdvancingInfraFront-never-empties"
 ]
 
-(* steps + 1 fronts, each a multiset, the seed front S_0 = {origin}. *)
+(* steps + 1 fronts, each a sorted vertex list, the seed front S_0 = {origin}. *)
 VerificationTest[
   With[ { f = FindAdvancingInfraFront[ CycleGraph[ 9 ], 1, 4 ] },
-    Length[ f ] === 5 && AllTrue[ f, AssociationQ ] && First[ f ] === <| 1 -> 1 |> ],
+    Length[ f ] === 5 && AllTrue[ f, ListQ ] && First[ f ] === { 1 } ],
   True,
   TestID -> "FindAdvancingInfraFront-shape-and-seed"
 ]
@@ -220,7 +223,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ {5, 5} ] },
     AllTrue[
-      Partition[ Keys /@ FindAdvancingInfraFront[ g, 13, 6 ], 2, 1 ],
+      Partition[ FindAdvancingInfraFront[ g, 13, 6 ], 2, 1 ],
       SubsetQ[ Union[ #[[ 1 ]], Union @@ ( AdjacencyList[ g, # ] & /@ #[[ 1 ]] ) ], #[[ 2 ]] ] & ] ],
   True,
   TestID -> "FindAdvancingInfraFront-local-step"
@@ -229,21 +232,21 @@ VerificationTest[
 (* It bounces: from the centre of a path the wave runs to the ends, reflects, and
    refocuses back at the origin, so {5} recurs as a later front. *)
 VerificationTest[
-  MemberQ[ Rest[ Keys /@ FindAdvancingInfraFront[ PathGraph @ Range @ 9, 5, 12 ] ], {5} ],
+  MemberQ[ Rest @ FindAdvancingInfraFront[ PathGraph @ Range @ 9, 5, 12 ], {5} ],
   True,
   TestID -> "FindAdvancingInfraFront-refocuses-at-origin"
 ]
 
 (* Immediate bounce: no two consecutive fronts are equal (longest run is 1). *)
 VerificationTest[
-  Max[ Length /@ Split[ Sort /@ ( Keys /@ FindAdvancingInfraFront[ PathGraph @ Range @ 9, 5, 30 ] ) ] ],
+  Max[ Length /@ Split[ Sort /@ FindAdvancingInfraFront[ PathGraph @ Range @ 9, 5, 30 ] ] ],
   1,
   TestID -> "FindAdvancingInfraFront-immediate-bounce"
 ]
 
 (* a multiset origin seeds a multi-source front: S_0 is the source set. *)
 VerificationTest[
-  Keys @ First @ FindAdvancingInfraFront[ GridGraph[ {6, 6} ], <| 1 -> 1, 36 -> 1 |>, 5 ],
+  First @ FindAdvancingInfraFront[ GridGraph[ {6, 6} ], <| 1 -> 1, 36 -> 1 |>, 5 ],
   {1, 36},
   TestID -> "FindAdvancingInfraFront-multi-source-seed"
 ]
@@ -251,36 +254,39 @@ VerificationTest[
 
 (* ===== the two projections of a bundle: support and occupation ===== *)
 
-(* a set-like bundle projects two ways: the support, and the density, which for a set
-   is the all-ones measure on that same support and agrees with the engine's own
-   occupation count *)
+(* a set projects two ways: it IS its support, and its density is the all-ones
+   measure on that same support, which agrees with the occupation reader *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     With[ { ball = FindInfraBall[ g, 13, 2 ] },
-      { d = toDensity[ g, Keys @ InfraUnion @ ball ] },
-      { Keys @ d === Sort @ Keys @ InfraUnion @ ball,
+      { d = toDensity[ g, ball ] },
+      { Keys @ d === Sort @ ball,
         Values @ d === ConstantArray[ 1, Length @ d ],
-        d === KeySort @ ball[ "OccupationCount" ] } ]
+        d === KeySort @ infraVertexMultiset @ ball } ]
   ],
   { True, True, True },
   TestID -> "set-density-is-all-ones-on-the-support"
 ]
 
-(* a multiset is a legal anchor and spreads over its support *)
+(* a density and the List over the same support are both legal anchors, and both
+   spread: several sources give the List of interval DAGs, one per source *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
-    With[ { p = InfraUnion @ FindInfraShell[ g, 13, { 2, 2 } ] },
-      AssociationQ[ p ] && Head @ FindInfraSegment[ g, p, 13, All ] === InfraSegment ]
+    With[ { shell = FindInfraShell[ g, 13, { 2, 2 } ] },
+      { ListQ @ shell,
+        MatchQ[ FindInfraSegment[ g, toDensity[ g, shell ], 13, All ], { __Graph } ],
+        MatchQ[ FindInfraSegment[ g, shell, 13, All ], { __Graph } ] } ]
   ],
-  True,
+  { True, True, True },
   TestID -> "multiset-anchor-spreads"
 ]
 
-(* the shape is the kind: a vertex, a multiset and a bundle are three different reads *)
+(* the shape is the kind: a vertex, a multiset and a walk graph are three reads *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    { pointQ[ g, 7 ], multisetQ[ g, <| 3 -> 1, 4 -> 1 |> ], Head @ InfraShell[ 3, 2 ] } ],
-  { True, True, InfraShell },
+    { pointQ[ g, 7 ], multisetQ[ g, <| 3 -> 1, 4 -> 1 |> ],
+      walkQ[ g, geodesicGraph @ { 1, 2, 3 } ] } ],
+  { True, True, True },
   TestID -> "shapes-stay-distinct"
 ]
 
@@ -290,18 +296,18 @@ VerificationTest[
    metric interval -- read without enumerating the family. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    Sort @ Keys @ InfraUnion[ FindInfraSegment[g, 1, 16, All] ] === Sort @ MetricInterval[g, 1, 16]],
+    Sort @ InfraUnion[ FindInfraSegment[g, 1, 16, All] ] === Sort @ MetricInterval[g, 1, 16]],
   True,
   TestID -> "DAG-support-is-MetricInterval"
 ]
 
-(* A DAG sitting in a realisation slot contributes its vertices too. *)
+(* The DAG and the family it stands for have the same support. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    Sort @ Keys @ InfraUnion[ InfraSegment[{First @ FindInfraSegment[g, 1, 16, All]}] ] ===
-      Sort @ MetricInterval[g, 1, 16]],
+    With[{dag = FindInfraSegment[g, 1, 16, All]},
+      InfraUnion[ dag ] === InfraUnion @@ ( geodesicGraph /@ infraSpread @ dag )]],
   True,
-  TestID -> "DAG-inside-realisation-list"
+  TestID -> "DAG-support-equals-its-family's"
 ]
 
 (* ===== density canonical form ===== *)
@@ -311,9 +317,8 @@ VerificationTest[
    differ by association key order alone, which broke SameQ equality. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{seg = FindInfraSegment[g, 1, 16, All]},
-      toDensity[g, seg["OccupationCount"]] ===
-        toDensity[g, InfraSegment[seg["Realizations"]]["OccupationCount"]]]],
+    With[{dag = FindInfraSegment[g, 1, 16, All]},
+      toDensity[g, dag] === toDensity[g, geodesicGraph /@ infraSpread @ dag]]],
   True,
   TestID -> "density-DAG-and-enumerated-supports-are-SameQ"
 ]
@@ -322,8 +327,8 @@ VerificationTest[
    whole enumerated family, they agree with the DP on the DAG. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    {m = KeySort @ FindInfraSegment[g, 1, 16, All]["OccupationCount"]},
-    {paths = FindInfraSegment[g, 1, 16, All]["Realizations"]},
+    {m = toDensity[g, FindInfraSegment[g, 1, 16, All]]},
+    {paths = infraSpread @ FindInfraSegment[g, 1, 16, All]},
     AllTrue[Keys[m], m[#] == Count[paths, p_ /; MemberQ[p, #]] &]],
   True,
   TestID -> "density-DAG-weights-are-true-occupation"

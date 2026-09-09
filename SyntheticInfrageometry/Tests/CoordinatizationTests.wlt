@@ -5,6 +5,9 @@ BeginTestSection["Coordinatization"]
    but TestReport's parse may otherwise create them in Global` first. *)
 Needs["WolframInstitute`Infrageometry`"]
 
+geodesicGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+walkSequence  = WolframInstitute`SyntheticInfrageometry`PackageScope`walkSequence;
+
 (* ===== Radar Basis ===== *)
 
 VerificationTest[
@@ -84,7 +87,7 @@ VerificationTest[
     RadarCoordinates[g, b, 3] === RadarCoordinates[g, b, 3]
   ],
   True,
-  TestID -> "RadarCoordinates-InfraPoint-singleton-degenerates"
+  TestID -> "RadarCoordinates-density-singleton-degenerates"
 ]
 
 VerificationTest[
@@ -92,7 +95,7 @@ VerificationTest[
     RadarCoordinates[g, b, <| 2 -> 1, 4 -> 1 |>]
   ],
   {{1, 3}, {3, 1}},
-  TestID -> "RadarCoordinates-InfraPoint-multi-returns-list"
+  TestID -> "RadarCoordinates-density-multi-returns-list"
 ]
 
 VerificationTest[
@@ -100,7 +103,7 @@ VerificationTest[
     RadarCoordinates[g, b, 3]
   ],
   {2},
-  TestID -> "RadarCoordinates-InfraPoint-anchor-aggregation-Min"
+  TestID -> "RadarCoordinates-density-anchor-aggregation-Min"
 ]
 
 (* ===== OrthogonalCoordinates ===== *)
@@ -159,15 +162,15 @@ VerificationTest[
   TestID -> "OrthogonalCoordinates-dag-axis-outside-reach"
 ]
 
-(* InfraSegment wrappers: first realisation drives projection. *)
+(* Path-graph axes: the geodesic graph is read as one axis. *)
 VerificationTest[
   With[{g = GridGraph[{4, 4}],
-        xAxis = InfraSegment[{{1, 2, 3, 4}}],
-        yAxis = InfraSegment[{{1, 5, 9, 13}}]},
+        xAxis = geodesicGraph @ {1, 2, 3, 4},
+        yAxis = geodesicGraph @ {1, 5, 9, 13}},
     OrthogonalCoordinates[g, 1, {xAxis, yAxis}, 11]
   ],
   {2, 2},
-  TestID -> "OrthogonalCoordinates-InfraSegment-axes"
+  TestID -> "OrthogonalCoordinates-pathgraph-axes"
 ]
 
 (* ===== SelectCoordinate option (ties on a 4-cycle) ===== *)
@@ -318,7 +321,7 @@ VerificationTest[
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
     With[{axes = FindInfraOrthogonalFrame[g, 3, All]},
-      AllTrue[axes, MemberQ[#[[ 1, 1 ]], 3] &]
+      AllTrue[axes, MemberQ[walkSequence @ #, 3] &]
     ]
   ],
   True,
@@ -462,7 +465,7 @@ VerificationTest[
   TestID -> "OrthogonalCoordinates-positional-center-negative"
 ]
 
-(* ===== InfraPoint center ===== *)
+(* ===== density centre ===== *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
@@ -472,17 +475,17 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "OrthogonalCoordinates-InfraPoint-singleton-equals-vertex"
+  TestID -> "OrthogonalCoordinates-density-singleton-equals-vertex"
 ]
 
 VerificationTest[
   Module[{g = PathGraph[Range[5]],
-          canonicalize = Sort[First @ Sort[{#, Reverse @ #}] & /@ (#[[ 1, 1 ]] & /@ #)] &},
+          canonicalize = Sort[First @ Sort[{#, Reverse @ #}] & /@ (walkSequence /@ #)] &},
     canonicalize @ FindInfraOrthogonalFrame[g, 3, All] ===
       canonicalize @ FindInfraOrthogonalFrame[g, 3, All]
   ],
   True,
-  TestID -> "FindInfraOrthogonalFrame-InfraPoint-singleton-equals-vertex"
+  TestID -> "FindInfraOrthogonalFrame-density-singleton-equals-vertex"
 ]
 
 (* On PathGraph[5] with <| 2 -> 1, 4 -> 1 |>: any frame's axes pass through
@@ -491,21 +494,21 @@ VerificationTest[
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
     With[{axes = FindInfraOrthogonalFrame[g, <| 2 -> 1, 4 -> 1 |>, All]},
-      AllTrue[axes, MemberQ[#[[ 1, 1 ]], 2] || MemberQ[#[[ 1, 1 ]], 4] &]
+      AllTrue[axes, MemberQ[walkSequence @ #, 2] || MemberQ[walkSequence @ #, 4] &]
     ]
   ],
   True,
-  TestID -> "FindInfraOrthogonalFrame-InfraPoint-axes-contain-some-anchor"
+  TestID -> "FindInfraOrthogonalFrame-density-axes-contain-some-anchor"
 ]
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
     With[{axes = FindInfraOrthogonalFrame[g, <| 6 -> 1, 11 -> 1 |>, All]},
-      AllTrue[axes, MemberQ[#[[ 1, 1 ]], 6] || MemberQ[#[[ 1, 1 ]], 11] &]
+      AllTrue[axes, MemberQ[walkSequence @ #, 6] || MemberQ[walkSequence @ #, 11] &]
     ]
   ],
   True,
-  TestID -> "FindInfraOrthogonalFrame-InfraPoint-grid-anchor-on-each-axis"
+  TestID -> "FindInfraOrthogonalFrame-density-grid-anchor-on-each-axis"
 ]
 
 (* ===== Frame search semantics ===== *)
@@ -526,7 +529,7 @@ VerificationTest[
   With[{g = GridGraph[{3, 3}], c = 5},
     With[{axes = FindInfraOrthogonalFrame[g, c, All]},
       AllTrue[Range @ Length @ axes,
-        i |-> AllTrue[First @ First @ axes[[i]],
+        i |-> AllTrue[walkSequence @ axes[[i]],
           v |-> With[{coords = OrthogonalCoordinates[g, c, axes, v]},
             AllTrue[Range @ Length @ coords, j |-> j == i || coords[[j]] == 0]
           ]
@@ -543,7 +546,7 @@ VerificationTest[
 
 VerificationTest[
   With[{frame = FindInfraOrthogonalFrame[PathGraph[Range[7]], 4, All]},
-    Length[frame] === 1 && Length[First @ First @ frame[[1]]] === 7
+    Length[frame] === 1 && Length[walkSequence @ frame[[1]]] === 7
   ],
   True,
   TestID -> "FindInfraOrthogonalFrame-path-line-longest"
@@ -554,7 +557,7 @@ VerificationTest[
    strictly antipodal at 1 (d_g(3, 7) = 4 = depth(3) + depth(7)). *)
 
 VerificationTest[
-  Sort[First @ Sort[{#, Reverse @ #}] & /@ (#[[ 1, 1 ]] & /@ FindInfraOrthogonalFrame[GridGraph[{3, 3}], 1, All])],
+  Sort[First @ Sort[{#, Reverse @ #}] & /@ (walkSequence /@ FindInfraOrthogonalFrame[GridGraph[{3, 3}], 1, All])],
   Sort[First @ Sort[{#, Reverse @ #}] & /@ {{3, 2, 1, 4, 7}}],
   TestID -> "FindInfraOrthogonalFrame-3x3grid-corner-L-bent-line"
 ]
@@ -567,7 +570,7 @@ VerificationTest[
 
 VerificationTest[
   Sort[First @ Sort[{#, Reverse @ #}] & /@
-    (#[[ 1, 1 ]] & /@ FindInfraOrthogonalFrame[GridGraph[{5, 5}], 13, 2, "AxisCount" -> 2])],
+    (walkSequence /@ FindInfraOrthogonalFrame[GridGraph[{5, 5}], 13, 2, "AxisCount" -> 2])],
   Sort[First @ Sort[{#, Reverse @ #}] & /@ {{11, 12, 13, 14, 15}, {3, 8, 13, 18, 23}}],
   TestID -> "FindInfraOrthogonalFrame-5x5grid-centre-straight"
 ]
@@ -579,7 +582,7 @@ VerificationTest[
   With[{g = GridGraph[{5, 5}],
         frame = FindInfraOrthogonalFrame[GridGraph[{5, 5}], 13, 2, "AxisCount" -> 2]},
     AllTrue[frame,
-      axis |-> With[{path = axis[[1, 1]]},
+      axis |-> With[{path = walkSequence @ axis},
         GeodesicMultiplicity[g, First @ path, Last @ path] === 1]]
   ],
   True,
@@ -639,7 +642,7 @@ VerificationTest[
   With[{g = GridGraph[{3, 3}], c = 5},
     With[{axes = FindInfraOrthogonalFrame[g, c, All]},
       AllTrue[Range @ Length @ axes,
-        i |-> AllTrue[First @ First @ axes[[i]],
+        i |-> AllTrue[walkSequence @ axes[[i]],
           v |-> With[{coords = OrthogonalCoordinates[g, c, axes, v,
               "SelectCoordinate" -> "Centered"]},
             AllTrue[Range @ Length @ coords, j |-> j == i || coords[[j]] == 0]
@@ -675,7 +678,7 @@ VerificationTest[
     {Min, Max, Median, Mean, All},
     sel |-> MatchQ[
       FindInfraOrthogonalFrame[GridGraph[{3, 3}], 5, All, "SelectCoordinate" -> sel],
-      {__WolframInstitute`SyntheticInfrageometry`InfraSegment}
+      {__Graph}
     ]
   ],
   True,
@@ -779,21 +782,21 @@ VerificationTest[
 VerificationTest[
   Dimensions @ ResistanceCoordinates[PetersenGraph[], <| 1 -> 1, 2 -> 1, 3 -> 1 |>],
   {3, 9},
-  TestID -> "ResistanceCoordinates-InfraPoint-shape"
+  TestID -> "ResistanceCoordinates-density-shape"
 ]
 
 VerificationTest[
   ResistanceCoordinates[PetersenGraph[], <| 1 -> 1, 2 -> 1, 3 -> 1 |>][[1]] ==
     ResistanceCoordinates[PetersenGraph[], 1],
   True,
-  TestID -> "ResistanceCoordinates-InfraPoint-rows-match-singletons"
+  TestID -> "ResistanceCoordinates-density-rows-match-singletons"
 ]
 
 VerificationTest[
   ResistanceCoordinates[PetersenGraph[], 1] ==
     ResistanceCoordinates[PetersenGraph[], 1],
   True,
-  TestID -> "ResistanceCoordinates-InfraPoint-singleton-degenerates"
+  TestID -> "ResistanceCoordinates-density-singleton-degenerates"
 ]
 
 

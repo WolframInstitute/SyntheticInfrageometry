@@ -1,5 +1,8 @@
 BeginTestSection["InfraEquality"]
 
+geodesicGraph      = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+geodesicCycleGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicCycleGraph;
+
 (* ===== points: the four Method branches ===== *)
 
 VerificationTest[
@@ -57,12 +60,12 @@ VerificationTest[
   TestID -> "InfraEqualQ-repeated-vertex-collapses-to-the-same-multiset"
 ]
 
-(* ===== Cross-head: heads must match ===== *)
+(* ===== Cross-shape: shapes must match ===== *)
 
 VerificationTest[
-  InfraEqualQ[ PathGraph[ Range[ 5 ] ], 1, InfraSegment[ { { 1 } } ] ],
+  InfraEqualQ[ PathGraph[ Range[ 5 ] ], 1, geodesicGraph @ { 1 } ],
   False,
-  TestID -> "InfraEqualQ-head-mismatch-False"
+  TestID -> "InfraEqualQ-shape-mismatch-False"
 ]
 
 (* ===== Bad method ===== *)
@@ -78,8 +81,8 @@ VerificationTest[
 
 VerificationTest[
   InfraEqualQ[ GridGraph[ { 3, 3 } ],
-    InfraSegment[ { { 1, 2, 5 }, { 1, 4, 5 } } ],
-    InfraSegment[ { { 1, 4, 5 }, { 1, 2, 5 } } ],
+    geodesicGraph /@ { { 1, 2, 5 }, { 1, 4, 5 } },
+    geodesicGraph /@ { { 1, 4, 5 }, { 1, 2, 5 } },
     Method -> "Multiset" ],
   True,
   TestID -> "InfraEqualQ-Segment-permuted-realisations-Multiset"
@@ -116,7 +119,7 @@ VerificationTest[
 (* ===== Boundary case |A cap B| == |A delta B| (strict inequality) ===== *)
 
 VerificationTest[
-  InfraEqualQ[ PathGraph[ Range[ 7 ] ], InfraBall[ { { 2, 3, 4 } } ], InfraBall[ { { 3, 4, 5 } } ] ],
+  InfraEqualQ[ PathGraph[ Range[ 7 ] ], { 2, 3, 4 }, { 3, 4, 5 } ],
   False,
   TestID -> "InfraEqualQ-Ball-boundary-tie-Diffuse-False"
 ]
@@ -124,7 +127,7 @@ VerificationTest[
 (* ===== InfraShell, multisets ===== *)
 
 VerificationTest[
-  InfraEqualQ[ PathGraph[ Range[ 7 ] ], InfraShell[ { { 2, 4 } } ], InfraShell[ { { 2, 4 } } ] ],
+  InfraEqualQ[ PathGraph[ Range[ 7 ] ], { 2, 4 }, { 2, 4 } ],
   True,
   TestID -> "InfraEqualQ-Shell-identical"
 ]
@@ -135,23 +138,23 @@ VerificationTest[
   TestID -> "InfraEqualQ-Object-identical"
 ]
 
-(* ===== InfraCircle: open-cycle realisations are multiset-equal under rotation ===== *)
+(* ===== cycle graphs are multiset-equal under rotation ===== *)
 
 VerificationTest[
   InfraEqualQ[ CycleGraph[ 6 ],
-    InfraCircle[ { { 1, 2, 3, 4, 5, 6 } } ],
-    InfraCircle[ { { 2, 3, 4, 5, 6, 1 } } ],
+    geodesicCycleGraph @ { 1, 2, 3, 4, 5, 6 },
+    geodesicCycleGraph @ { 2, 3, 4, 5, 6, 1 },
     Method -> "Multiset" ],
   True,
   TestID -> "InfraEqualQ-Circle-rotation-Multiset"
 ]
 
-(* ===== InfraPolyline ===== *)
+(* ===== a polyline is its List of legs ===== *)
 
 VerificationTest[
   InfraEqualQ[ PathGraph[ Range[ 7 ] ],
-    InfraPolyline[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4, 5 } } ] } } ],
-    InfraPolyline[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4, 5 } } ] } } ] ],
+    geodesicGraph /@ { { 1, 2, 3 }, { 3, 4, 5 } },
+    geodesicGraph /@ { { 1, 2, 3 }, { 3, 4, 5 } } ],
   True,
   TestID -> "InfraEqualQ-Polyline-identical"
 ]
@@ -171,8 +174,8 @@ VerificationTest[
       check[ g, <| 3 -> 1, 4 -> 1 |>, <| 4 -> 1, 5 -> 1 |> ],
       check[ g, <| 3 -> 1, 4 -> 1, 5 -> 1 |>, <| 4 -> 1, 5 -> 1 |> ],
       check[ g, <| 3 -> 1, 4 -> 1 |>, <| 3 -> 1, 4 -> 1 |> ],
-      check[ g, InfraBall[ { { 2, 3, 4 } } ], InfraBall[ { { 3, 4, 5 } } ] ],
-      check[ g, InfraShell[ { { 1, 5 }, { 2, 4 } } ], InfraShell[ { { 1, 5 } } ] ]
+      check[ g, { 2, 3, 4 }, { 3, 4, 5 } ],
+      check[ g, { { 1, 5 }, { 2, 4 } }, { { 1, 5 } } ]
     }, # === True & ]
   ],
   True,

@@ -1,11 +1,13 @@
 (* InfraRevolution.wl tests *)
 
+geodesicGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+
 
 (* PathGraph cylinder, r = 0, Solid (default): result is the axis itself. *)
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 7, axis = { 2, 3, 4, 5, 6 } },
-    FindInfraCylinder[ g, axis, 0 ] // Keys ],
+    FindInfraCylinder[ g, axis, 0 ] ],
   { 2, 3, 4, 5, 6 },
   TestID -> "FindInfraCylinder-PathGraph-r0-default-Solid-is-axis"
 ]
@@ -17,7 +19,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 9, axis = { 3, 4, 5, 6, 7 } },
-    FindInfraCylinder[ g, axis, 1, "Form" -> "Solid" ] // Keys ],
+    FindInfraCylinder[ g, axis, 1, "Form" -> "Solid" ] ],
   { 2, 3, 4, 5, 6, 7, 8 },
   TestID -> "FindInfraCylinder-PathGraph-r1-tube"
 ]
@@ -28,8 +30,8 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ], axis = { 1, 2, 3, 4 } },
     With[ {
-        surf = FindInfraRevolution[ g, axis, 1, "Form" -> "Surface" ] // Keys,
-        sol  = FindInfraRevolution[ g, axis, 1, "Form" -> "Solid"   ] // Keys },
+        surf = FindInfraRevolution[ g, axis, 1, "Form" -> "Surface" ],
+        sol  = FindInfraRevolution[ g, axis, 1, "Form" -> "Solid"   ] },
       SubsetQ[ sol, surf ] ] ],
   True,
   TestID -> "FindInfraRevolution-Surface-subset-Solid"
@@ -41,9 +43,9 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ], axis = { 1, 2, 3, 4, 5 }, prof = { 0, 1, 2, 1, 0 } },
     With[ {
-        sol   = FindInfraRevolution[ g, axis, prof, "Form" -> "Solid" ] // Keys,
+        sol   = FindInfraRevolution[ g, axis, prof, "Form" -> "Solid" ],
         union = Sort[ Union @@ Table[
-          FindInfraRevolution[ g, axis, Min[ #, k ] & /@ prof, "Form" -> "Surface" ] // Keys,
+          FindInfraRevolution[ g, axis, Min[ #, k ] & /@ prof, "Form" -> "Surface" ],
           { k, 0, Max @ prof } ] ] },
       Sort @ sol === union ] ],
   True,
@@ -88,7 +90,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PetersenGraph[] },
-    Keys @ FindInfraRevolution[ g, { 1 }, 2, "Form" -> "Surface" ] ===
+    FindInfraRevolution[ g, { 1 }, 2, "Form" -> "Surface" ] ===
     Sort @ Select[ VertexList @ g, GraphDistance[ g, 1, # ] === 2 & ] ],
   True,
   TestID -> "FindInfraRevolution-singleton-axis-Surface-equals-FindInfraShell"
@@ -99,14 +101,14 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 5 },
-    Keys @ FindInfraRevolution[ g, { 3 }, 100, "Form" -> "Solid" ] === Sort @ VertexList @ g ],
+    FindInfraRevolution[ g, { 3 }, 100, "Form" -> "Solid" ] === Sort @ VertexList @ g ],
   True,
   TestID -> "FindInfraRevolution-large-radius-Solid-is-all"
 ]
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 5 },
-    FindInfraRevolution[ g, { 3 }, 100, "Form" -> "Surface" ] // Keys ],
+    FindInfraRevolution[ g, { 3 }, 100, "Form" -> "Surface" ] ],
   { },
   TestID -> "FindInfraRevolution-large-radius-Surface-is-empty"
 ]
@@ -118,7 +120,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 9, axis = { 3, 4, 5, 6, 7 } },
-    FindInfraCylinder[ g, axis, 1 ] // Keys ],
+    FindInfraCylinder[ g, axis, 1 ] ],
   { 2, 3, 4, 5, 6, 7, 8 },
   TestID -> "FindInfraCylinder-default-is-Solid"
 ]
@@ -130,7 +132,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = PathGraph @ Range @ 9, axis = { 3, 4, 5, 6, 7 } },
-    FindInfraCylinder[ g, axis, 1, Method -> "PerpendicularBisector" ] // Keys ],
+    FindInfraCylinder[ g, axis, 1, Method -> "PerpendicularBisector" ] ],
   { 3, 4, 5, 6, 7 },
   TestID -> "FindInfraCylinder-PerpendicularBisector-PathGraph"
 ]
@@ -140,7 +142,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ], axis = { 1, 2, 3, 4, 5 }, prof = { 0, 1, 2, 1, 0 } },
-    With[ { vs = FindInfraRevolution[ g, axis, prof, "Form" -> "Solid" ] // Keys },
+    With[ { vs = FindInfraRevolution[ g, axis, prof, "Form" -> "Solid" ] },
       InfraRevolutionQ[ g, vs, axis, prof, "Form" -> "Solid" ] ] ],
   True,
   TestID -> "InfraRevolutionQ-round-trip-Solid"
@@ -148,7 +150,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ], axis = { 1, 2, 3, 4, 5 }, prof = { 0, 1, 2, 1, 0 } },
-    With[ { vs = FindInfraRevolution[ g, axis, prof, "Form" -> "Surface" ] // Keys },
+    With[ { vs = FindInfraRevolution[ g, axis, prof, "Form" -> "Surface" ] },
       InfraRevolutionQ[ g, vs, axis, prof, "Form" -> "Surface" ] ] ],
   True,
   TestID -> "InfraRevolutionQ-round-trip-Surface"
@@ -173,8 +175,8 @@ VerificationTest[
 VerificationTest[
   With[ { g = CycleGraph[ 6 ] },
     FindInfraRevolution[ g,
-      InfraSegment[ { { 1, 2, 3, 4 }, { 1, 6, 5, 4 } } ],
-      { 0, 1, 0, 0 }, "Form" -> "Solid" ] // Keys ],
+      geodesicGraph /@ { { 1, 2, 3, 4 }, { 1, 6, 5, 4 } },
+      { 0, 1, 0, 0 }, "Form" -> "Solid" ] ],
   { 1, 2, 3, 4, 5, 6 },
   TestID -> "FindInfraRevolution-multi-axis-thick"
 ]
@@ -184,7 +186,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = CycleGraph[ 6 ] },
-    FindInfraRevolution[ g, { 1, 2, 3, 4 }, { 0, 1, 0, 0 }, "Form" -> "Solid" ] // Keys ],
+    FindInfraRevolution[ g, { 1, 2, 3, 4 }, { 0, 1, 0, 0 }, "Form" -> "Solid" ] ],
   { 1, 2, 3, 4 },
   TestID -> "FindInfraRevolution-single-axis-thinner"
 ]

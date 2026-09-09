@@ -7,9 +7,16 @@ BeginTestSection["MethodLadder"]
 classInvariantQ[ call_, canon_ : Identity ] :=
   SameQ @@ ( Sort[ canon /@ reps @ call[ # ] ] & /@ { "Exhaustive", "Greedy", "RandomGreedy" } )
 
-(* a walk family returns its realisations as a bare List of walk graphs; every other family still wraps them *)
-reps[ x_List ] := x
-reps[ x_ ]     := x[ "Realizations" ]
+(* the realisations of a returned class, read off its shape: a walk graph or a DAG
+   spreads into vertex sequences, a List of walk graphs into all of theirs, and a
+   List of sets or of leg-lists IS the list of realisations *)
+infraSpread = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
+
+reps[ { } ]                := { }
+reps[ x_Graph ]            := infraSpread @ x
+reps[ x : { __Graph } ]    := infraSpread @ x
+reps[ x_List ]             := x
+reps[ x_ ]                 := { x }
 sortReps[ x_ ] := Sort @ Replace[ reps @ x, l_List :> Sort @ l, { 1 } ]
 
 
@@ -61,7 +68,7 @@ VerificationTest[
 (* the corner polygon is the product of its sides' geodesic classes: the diagonal side 9 -> 1 of the 3 x 3 grid has six geodesics, the other two one each *)
 VerificationTest[
   With[ { call = m |-> FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All, Method -> m ] },
-    { classInvariantQ[ call ], Length @ call[ "Exhaustive" ][ "Realizations" ] } ],
+    { classInvariantQ[ call ], Length @ reps @ call[ "Exhaustive" ] } ],
   { True, 6 },
   TestID -> "FindInfraPolygon-class-invariant-under-Method"
 ]
@@ -74,7 +81,7 @@ VerificationTest[
 
 (* a bounded count streams n geodesics per side and reads the first members of their product: prefixes of length n multiply to at least Min[n, |class|] polygons, so a strict count is exact under every Method and a soft count past the class returns the class *)
 VerificationTest[
-  Table[ Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, n, Method -> m ][ "Realizations" ],
+  Table[ Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, n, Method -> m ],
     { m, { "Exhaustive", "Greedy", "RandomGreedy" } }, { n, { 1, 4, UpTo[ 10 ] } } ],
   ConstantArray[ { 1, 4, 6 }, 3 ],
   TestID -> "FindInfraPolygon-bounded-count-is-exact-under-Method"
@@ -82,8 +89,8 @@ VerificationTest[
 
 (* four diagonal sides of the 4 x 4 grid with twenty geodesics each, 160 000 polygons: a strict count streams that many distinct members without forming the product *)
 VerificationTest[
-  Table[ With[ { reps = FindInfraPolygon[ GridGraph[ { 4, 4 } ], { 1, 16, 4, 13 }, 50, Method -> m ][ "Realizations" ] },
-      { Length @ reps, DuplicateFreeQ @ reps, AllTrue[ reps, InfraPolygonQ[ GridGraph[ { 4, 4 } ], # ] & ] } ],
+  Table[ With[ { polys = FindInfraPolygon[ GridGraph[ { 4, 4 } ], { 1, 16, 4, 13 }, 50, Method -> m ] },
+      { Length @ polys, DuplicateFreeQ @ polys, AllTrue[ polys, InfraPolygonQ[ GridGraph[ { 4, 4 } ], # ] & ] } ],
     { m, { "Exhaustive", "Greedy", "RandomGreedy" } } ],
   ConstantArray[ { 50, True, True }, 3 ],
   TestID -> "FindInfraPolygon-strict-count-streams-off-the-product"
@@ -142,7 +149,7 @@ VerificationTest[
 VerificationTest[
   With[ { call = m |-> FindInfraBisectingHyperplane[ GridGraph[ { 4, 4 } ], 1, 4, { -1, 1 }, All,
       Properties -> { "Separating" }, Method -> m ] },
-    { classInvariantQ[ call, Sort ], Length @ call[ "Exhaustive" ][ "Realizations" ] } ],
+    { classInvariantQ[ call, Sort ], Length @ reps @ call[ "Exhaustive" ] } ],
   { True, 16 },
   TestID -> "FindInfraBisectingHyperplane-class-invariant-under-Method"
 ]
@@ -157,7 +164,7 @@ VerificationTest[
 (* the peel from the centre of the 5 x 5 grid: sixteen minimal separators, and the lazy peel reaches each subset once -- without its visited set this ran minutes *)
 VerificationTest[
   With[ { call = m |-> FindInfraShell[ GridGraph[ { 5, 5 } ], 13, { 1, 2 }, All, Properties -> { "Separating" }, Method -> m ] },
-    { classInvariantQ[ call, Sort ], Length @ call[ "Exhaustive" ][ "Realizations" ] } ],
+    { classInvariantQ[ call, Sort ], Length @ reps @ call[ "Exhaustive" ] } ],
   { True, 16 },
   TestID -> "FindInfraShell-5x5-class-invariant-under-Method"
 ]
@@ -168,7 +175,7 @@ VerificationTest[
 (* the band {2, 4} around the centre of the 9 x 9 grid: one pool atom carrying sixteen shortest separating circles, the class under every Method *)
 VerificationTest[
   With[ { call = m |-> FindInfraCircle[ GridGraph[ { 9, 9 } ], 41, { 2, 4 }, All, Method -> m ] },
-    { classInvariantQ[ call ], Length @ call[ "Exhaustive" ][ "Realizations" ] } ],
+    { classInvariantQ[ call ], Length @ reps @ call[ "Exhaustive" ] } ],
   { True, 16 },
   TestID -> "FindInfraCircle-pool-class-invariant-under-Method"
 ]
@@ -195,7 +202,7 @@ VerificationTest[
 (* off the "Shortest" tie the sweep runs every grade: six cycles in the level set of 2, 15 at c = 4 *)
 VerificationTest[
   With[ { call = m |-> FindInfraEllipse[ GridGraph[ { 4, 4 } ], { 2, 15 }, 4, All, Properties -> { }, Method -> m ] },
-    { classInvariantQ[ call ], Length @ call[ "Exhaustive" ][ "Realizations" ] } ],
+    { classInvariantQ[ call ], Length @ reps @ call[ "Exhaustive" ] } ],
   { True, 6 },
   TestID -> "FindInfraEllipse-sweep-class-invariant-under-Method"
 ]
@@ -206,7 +213,7 @@ VerificationTest[
 (* the sixteen unit squares of the 5 x 5 grid: the candidate sweep is not lazy, so Method only orders what the count takes *)
 VerificationTest[
   With[ { call = m |-> FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, Method -> m ] },
-    { classInvariantQ[ call ], Length @ call[ "Exhaustive" ][ "Realizations" ] } ],
+    { classInvariantQ[ call ], Length @ reps @ call[ "Exhaustive" ] } ],
   { True, 16 },
   TestID -> "FindInfraRegularPolygon-class-invariant-under-Method"
 ]

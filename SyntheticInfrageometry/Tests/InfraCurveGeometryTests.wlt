@@ -162,12 +162,22 @@ VerificationTest[
   TestID -> "TurningAngles-polyline-family"
 ]
 
-(* the polyline reading agrees with the knot sequence read bare *)
+(* the polyline reading agrees with the knot sequence read bare: at "MaxLength" -> 2
+   the subdivision of 1-2-3-6-9 knots at 3, so the two legs turn where {1, 3, 9} does *)
 VerificationTest[
-  TurningAngles[GridGraph[{3, 3}], FindInfraPolylineSubdivision[GridGraph[{3, 3}], {1, 2, 3, 6, 9}]] ===
+  TurningAngles[GridGraph[{3, 3}],
+      FindInfraPolylineSubdivision[GridGraph[{3, 3}], {1, 2, 3, 6, 9}, "MaxLength" -> 2]] ===
     TurningAngles[GridGraph[{3, 3}], {1, 3, 9}],
   True,
   TestID -> "TurningAngles-polyline-equals-knot-sequence"
+]
+
+(* the whole path is one geodesic, so the default subdivision is a single leg and
+   there is nothing to turn at *)
+VerificationTest[
+  TurningAngles[GridGraph[{3, 3}], FindInfraPolylineSubdivision[GridGraph[{3, 3}], {1, 2, 3, 6, 9}]],
+  {},
+  TestID -> "TurningAngles-polyline-default-subdivision-is-one-leg"
 ]
 
 EndTestSection[]
