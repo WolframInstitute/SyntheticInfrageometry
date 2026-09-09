@@ -308,7 +308,7 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
           coords    = AssociationThread[ VertexList @ graph -> GraphEmbedding @ graph ],
           edgeStyle = Association @ Cases[ edgeData, kv_Association :> kv[ "EdgeStyle" ] ]
         },
-        (* a walk is one stroke: HighlightGraph draws each edge separately with a butt cap and ignores a CapForm / JoinForm in the edge directive, so a bend leaves a wedge of background bitten out of the ribbon.  Each maximal run of equal-styled consecutive steps is redrawn as one joined Line, carried by the EdgeShapeFunction of its first unclaimed edge; each edge takes at most one rule, since Graph keeps only the first *)
+        (* a walk is one stroke: HighlightGraph draws each edge separately with a butt cap and ignores a CapForm / JoinForm in the edge directive, so a bend leaves a wedge of background bitten out of the ribbon.  A substrate path graph is ONE walk, so it is spelled out here by walkSequence -- cheap, no enumeration -- and gets its stroke and its end arrowhead like a position-spelled walk; a branching DAG stands for many walks with no single stroke, and stays the compact atom.  Each maximal run of equal-styled consecutive steps is redrawn as one joined Line, carried by the EdgeShapeFunction of its first unclaimed edge; each edge takes at most one rule, since Graph keeps only the first *)
         {
           strokes = Catenate @ Cases[ triples,
             { reps_, _, type : "Paths" | "Cycles", record_, _ } /; record[ "EdgeShapeFunction" ] === None :>
@@ -322,7 +322,9 @@ InfraSceneHighlight[ graph_Graph, multiObjects_List, opts : OptionsPattern[] ] :
                                 First[ position ] === Length[ runs ],
                                 record[ "Arrowheads" ] },
                     runs ] ],
-                Replace[ Cases[ reps, r_List /; Length[ r ] >= 2 && FreeQ[ r, _Graph ] ],
+                Replace[
+                  Cases[ Replace[ reps, w_Graph /; PathGraphQ[ w ] :> walkSequence @ w, { 1 } ],
+                    r_List /; Length[ r ] >= 2 && FreeQ[ r, _Graph ] ],
                   w_ :> If[ type === "Cycles" && Last[ w ] =!= First[ w ], Append[ w, First @ w ], w ], { 1 } ] ] ]
         },
         {

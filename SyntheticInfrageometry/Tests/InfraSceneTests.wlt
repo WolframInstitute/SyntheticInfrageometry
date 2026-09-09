@@ -1,5 +1,9 @@
 BeginTestSection["InfraScene"]
 
+geodesicGraph      = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+geodesicCycleGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicCycleGraph;
+infraSpread        = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
+
 (* ===== Scene Construction ===== *)
 
 VerificationTest[
@@ -434,25 +438,24 @@ VerificationTest[
   TestID -> "InfraDistance-InfraPoint-Mean"
 ]
 
-(* InfraSegment realisations are paths; Union flattens them to a vertex set.
-   Segment {1,2,3} to vertex 9 in GridGraph[{3,3}]: min over {d(1,9),
-   d(2,9), d(3,9)} = min(4, 3, 2) = 2. *)
+(* a walk graph's vertex set is what the distance is taken over.  Segment
+   {1,2,3} to vertex 9 in GridGraph[{3,3}]: min over {d(1,9), d(2,9), d(3,9)}
+   = min(4, 3, 2) = 2. *)
 VerificationTest[
-  InfraDistance[GridGraph[{3, 3}], InfraSegment[{{1, 2, 3}}], 9],
+  InfraDistance[GridGraph[{3, 3}], geodesicGraph @ {1, 2, 3}, 9],
   2,
-  TestID -> "InfraDistance-InfraSegment-bare"
+  TestID -> "InfraDistance-walk-graph"
 ]
 
-(* InfraShell with two set-realisations (different radius shells around 5):
-   distance from vertex 1 = min over the union of those sets. *)
+(* a set: the distance from vertex 1 is the min over its vertices. *)
 VerificationTest[
-  InfraDistance[GridGraph[{3, 3}], InfraShell[{{2, 4, 6, 8}}], 1],
+  InfraDistance[GridGraph[{3, 3}], {2, 4, 6, 8}, 1],
   1,
-  TestID -> "InfraDistance-InfraShell-bare"
+  TestID -> "InfraDistance-set"
 ]
 
-(* FindInfraPoint returns InfraPoint atoms; InfraDistance accepts one directly,
-   so callers never index into the wrapper. *)
+(* FindInfraPoint returns bare vertices; InfraDistance accepts one directly,
+   so callers never index into a wrapper. *)
 VerificationTest[
   With[{g = GridGraph[{3, 3}], fp = First @ FindInfraPoint[GridGraph[{3, 3}], 1]},
     InfraDistance[g, fp, 9] === GraphDistance[g, fp, 9]
@@ -461,36 +464,30 @@ VerificationTest[
   TestID -> "InfraDistance-FindInfraPoint-no-extraction"
 ]
 
-(* InfraPolyline (multi-leg) flattens via polylineToVertexSeqs.  On
-   PathGraph[Range[7]] the polyline 1-2-3 / 3-4-5 has vertex set {1..5};
-   nearest reach from vertex 7 is via 5, distance 2. *)
+(* a polyline is its List of legs.  On PathGraph[Range[7]] the polyline
+   1-2-3 / 3-4-5 has vertex set {1..5}; nearest reach from vertex 7 is via 5,
+   distance 2. *)
 VerificationTest[
-  InfraDistance[ PathGraph @ Range @ 7,
-    InfraPolyline[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4, 5 } } ] } } ],
-    7 ],
+  InfraDistance[ PathGraph @ Range @ 7, geodesicGraph /@ { { 1, 2, 3 }, { 3, 4, 5 } }, 7 ],
   2,
-  TestID -> "InfraDistance-InfraPolyline-bare"
+  TestID -> "InfraDistance-polyline-legs"
 ]
 
-(* InfraEllipse uses the same path-realisation flattening as InfraCircle.
-   On CycleGraph[6] the closed walk {2,3,4,2} has vertex set {2,3,4};
-   nearest distance to vertex 1 is d(1,2) = 1. *)
+(* a cycle graph reads through its closed walk.  On CycleGraph[6] the closed
+   walk {2,3,4,2} has vertex set {2,3,4}; nearest distance to vertex 1 is
+   d(1,2) = 1. *)
 VerificationTest[
-  InfraDistance[ CycleGraph[ 6 ],
-    InfraEllipse[ { { 2, 3, 4, 2 } } ],
-    1 ],
+  InfraDistance[ CycleGraph[ 6 ], geodesicCycleGraph @ { 2, 3, 4, 2 }, 1 ],
   1,
-  TestID -> "InfraDistance-InfraEllipse-bare"
+  TestID -> "InfraDistance-cycle-graph"
 ]
 
-(* InfraEllipticShell is set-shaped like InfraShell.  On PathGraph[Range[5]]
-   the shell vertex set {2,3,4} is at distance 1, 2, 3 from vertex 1; Min = 1. *)
+(* a set against a density.  On PathGraph[Range[5]] the set {2,3,4} is at
+   distance 1, 2, 3 from vertex 1; Min = 1. *)
 VerificationTest[
-  InfraDistance[ PathGraph @ Range @ 5,
-    InfraEllipticShell[ { { 2, 3, 4 } } ],
-    <| 1 -> 1 |> ],
+  InfraDistance[ PathGraph @ Range @ 5, { 2, 3, 4 }, <| 1 -> 1 |> ],
   1,
-  TestID -> "InfraDistance-InfraEllipticShell-multiset"
+  TestID -> "InfraDistance-set-against-a-density"
 ]
 
 (* two multisets.  On PathGraph[Range[5]]
@@ -519,37 +516,39 @@ VerificationTest[
 
 (* ===== InfraIntersection / InfraUnion (standalone) ===== *)
 
+(* the operators return the sorted vertex List, on every shape *)
+
 VerificationTest[
   InfraIntersection[
-    InfraSegment[ { { 1, 2, 3, 4 } } ],
-    InfraSegment[ { { 1, 5, 6, 3, 7 } } ] ],
-  <| 1 -> 1, 3 -> 1 |>,
-  TestID -> "InfraIntersection-two-segments-vertex-set"
+    geodesicGraph @ { 1, 2, 3, 4 },
+    geodesicGraph @ { 1, 5, 6, 3, 7 } ],
+  { 1, 3 },
+  TestID -> "InfraIntersection-two-walks-vertex-set"
 ]
 
 VerificationTest[
   InfraIntersection[
-    InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
-    InfraSegment[ { { 3, 5, 6 } } ] ],
-  <| 3 -> 1 |>,
-  TestID -> "InfraIntersection-multi-realisation-union-then-intersect"
+    geodesicGraph /@ { { 1, 2, 3 }, { 1, 4, 3 } },
+    geodesicGraph @ { 3, 5, 6 } ],
+  { 3 },
+  TestID -> "InfraIntersection-bundle-union-then-intersect"
 ]
 
 VerificationTest[
   InfraIntersection[
     <| 1 -> 1, 2 -> 1, 3 -> 1 |>,
-    InfraSegment[ { { 2, 3, 4 } } ],
-    InfraBall[ { { 3, 4, 5 } } ] ],
-  <| 3 -> 1 |>,
-  TestID -> "InfraIntersection-variadic-mixed-heads"
+    geodesicGraph @ { 2, 3, 4 },
+    { 3, 4, 5 } ],
+  { 3 },
+  TestID -> "InfraIntersection-variadic-mixed-shapes"
 ]
 
 VerificationTest[
   InfraUnion[
     <| 1 -> 1, 2 -> 1 |>,
-    InfraSegment[ { { 3, 4 } } ] ],
-  <| 1 -> 1, 2 -> 1, 3 -> 1, 4 -> 1 |>,
-  TestID -> "InfraUnion-mixed-heads"
+    geodesicGraph @ { 3, 4 } ],
+  { 1, 2, 3, 4 },
+  TestID -> "InfraUnion-mixed-shapes"
 ]
 
 (* Symbolic args stay inert so InfraScene hypotheses are not perturbed. *)
@@ -614,8 +613,8 @@ VerificationTest[
     Sort @ DeleteDuplicates[
       #[[ 1 ]][ ec ] & /@ Quiet[ FindInfraScene[ scene, g, <| ea -> 1, eb -> 7 |> ], FindInfraCircle::uncertified ] ] ===
     Sort @ Quiet @ Intersection[
-      Union @@ FindInfraCircle[ g, 1, 2, All ][ "Realizations" ],
-      Union @@ FindInfraCircle[ g, 7, 2, All ][ "Realizations" ] ]
+      Union @@ infraSpread @ FindInfraCircle[ g, 1, 2, All ],
+      Union @@ infraSpread @ FindInfraCircle[ g, 7, 2, All ] ]
   ],
   True,
   TestID -> "FindInfraScene-EuclidI1-agrees-with-FindInfraCircle"
@@ -666,19 +665,21 @@ VerificationTest[
 
 (* An exported symbol with no definitions of any kind can only be a scene token:
    an assertion head, a construction constructor, or the step container.  The
-   symbols below are exactly those (InfraWalk since walks became graphs, 2026-09-09);
-   one more means a symbol was exported with a usage message and no meaning, which
-   is how InfraPlaneQ hid. *)
+   symbols below are exactly those: since T5 every construction head is one, the
+   payload rules having gone with the payloads.  One more means a symbol was
+   exported with a usage message and no meaning, which is how InfraPlaneQ hid. *)
 VerificationTest[
   Select[ Names[ "WolframInstitute`SyntheticInfrageometry`*" ],
     n |-> AllTrue[
       { DownValues, UpValues, SubValues, OwnValues, FormatValues, NValues },
       f |-> ReleaseHold @ Map[ f, ToExpression[ n, InputForm, Hold ] ] === { } ] ],
-  { "InfraGeometricStep", "InfraIntersectQ", "InfraPoint", "InfraRevolution", "InfraWalk" },
+  { "InfraBall", "InfraCircle", "InfraEllipse", "InfraEllipticShell", "InfraGeometricStep",
+    "InfraIntersectQ", "InfraLine", "InfraPlane", "InfraPoint", "InfraPolygon", "InfraPolyline",
+    "InfraRay", "InfraRevolution", "InfraSegment", "InfraShell", "InfraTriangle", "InfraWalk" },
   TestID -> "InfraScene-valueless-exports-are-scene-tokens"
 ]
 
-(* And each of the three is a live token, not a leftover: the assertion head is
+(* And each is a live token, not a leftover: the assertion head is
    accepted by the guard, the constructor is dispatched into vertex sets, and the
    container carries a manual step. *)
 VerificationTest[

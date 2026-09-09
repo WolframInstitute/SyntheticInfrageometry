@@ -1,4 +1,7 @@
-toDensity = WolframInstitute`SyntheticInfrageometry`PackageScope`toDensity;
+toDensity          = WolframInstitute`SyntheticInfrageometry`PackageScope`toDensity;
+geodesicGraph      = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+geodesicCycleGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicCycleGraph;
+walkGraph          = WolframInstitute`SyntheticInfrageometry`PackageScope`walkGraph;
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
@@ -11,7 +14,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     Head @ InfraSceneHighlight[ g,
-      { InfraLine @ FindInfraLine[ g, 1, 9, All ] -> RGBColor[ 0.8, 0.2, 0.2 ] } ]
+      { FindInfraLine[ g, 1, 9, All ] -> RGBColor[ 0.8, 0.2, 0.2 ] } ]
   ],
   Graph,
   TestID -> "InfraSceneHighlight-explicit-color-rule"
@@ -53,7 +56,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Head @ InfraSceneHighlight[ g,
       { FindInfraSegment[ g, 1, 16, All ] -> Blue,
-        InfraCircle @ FindInfraCircle[ g, 1, 2, All ] -> Green } ]
+        FindInfraCircle[ g, 1, 2, All ] -> Green } ]
   ],
   Graph,
   TestID -> "InfraSceneHighlight-mixed-segment-and-circle"
@@ -79,63 +82,63 @@ VerificationTest[
   TestID -> "InfraSceneHighlight-multiset-vertices-only"
 ]
 
-(* InfraShell wrapper: each rep is a vertex set, edges are induced subgraph.
+(* a family of sets: edges are the induced subgraph's.
    On a 4x4 grid, the level set at radius {1, 2} from vertex 1 has four
    induced subgraph edges; verify they are highlighted. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { styles = EdgeStyle /. Options @ InfraSceneHighlight[ g,
-          { InfraShell @ FindInfraShell[ g, 1, { 1, 2 }, All ] -> Green } ] },
+          { FindInfraShell[ g, 1, { 1, 2 }, All ] -> Green } ] },
       Length @ Cases[ styles, _UndirectedEdge -> _, Infinity ] > 0
     ]
   ],
   True,
-  TestID -> "InfraSceneHighlight-InfraShell-induced-edges"
+  TestID -> "InfraSceneHighlight-set-family-induced-edges"
 ]
 
-(* InfraCircle wrapper: each rep is a cyclic vertex sequence, edges are
-   sequential pairs plus auto-closure (last, first).  On the 4-cycle
+(* a cycle graph: edges are its consecutive pairs, the wrap-around included.
+   On the 4-cycle
    { 1, 2, 6, 5 } in GridGraph[{4, 4}], expect 4 highlighted edges:
    {1,2}, {2,6}, {6,5}, {5,1}. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ], cyc = { 1, 2, 6, 5 } },
     With[ { styles = EdgeStyle /. Options @
-          InfraSceneHighlight[ g, { InfraCircle[ { cyc } ] -> Blue } ] },
+          InfraSceneHighlight[ g, { geodesicCycleGraph @ cyc -> Blue } ] },
       Length @ Cases[ styles, _UndirectedEdge -> _, Infinity ] == 4
     ]
   ],
   True,
-  TestID -> "InfraSceneHighlight-InfraCircle-auto-closure"
+  TestID -> "InfraSceneHighlight-cycle-graph-closure"
 ]
 
-(* InfraCircle idempotence on pre-closed input: passing
+(* geodesicCycleGraph is idempotent on pre-closed input: passing
    { 1, 2, 6, 5, 1 } produces the same edge set as { 1, 2, 6, 5 }. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ], open = { 1, 2, 6, 5 }, closed = { 1, 2, 6, 5, 1 } },
     With[ {
-        sOpen   = EdgeStyle /. Options @ InfraSceneHighlight[ g, { InfraCircle[ { open   } ] -> Blue } ],
-        sClosed = EdgeStyle /. Options @ InfraSceneHighlight[ g, { InfraCircle[ { closed } ] -> Blue } ] },
+        sOpen   = EdgeStyle /. Options @ InfraSceneHighlight[ g, { geodesicCycleGraph @ open   -> Blue } ],
+        sClosed = EdgeStyle /. Options @ InfraSceneHighlight[ g, { geodesicCycleGraph @ closed -> Blue } ] },
       Sort @ Cases[ sOpen,   ( e_UndirectedEdge -> _ ) :> e, Infinity ] ===
       Sort @ Cases[ sClosed, ( e_UndirectedEdge -> _ ) :> e, Infinity ] &&
       Length @ Cases[ sOpen, _UndirectedEdge -> _, Infinity ] == 4
     ]
   ],
   True,
-  TestID -> "InfraSceneHighlight-InfraCircle-idempotent-on-closed-input"
+  TestID -> "InfraSceneHighlight-cycle-graph-idempotent-on-closed-input"
 ]
 
-(* InfraSegment wrapper: sequential-edge semantics via Partition.  Verify
+(* a path graph: sequential-edge semantics.  Verify
    that for a path of length 4 the highlighted edges are exactly the 3
    sequential pairs. *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ], path = { 1, 2, 3, 4 } },
     With[ { styles = EdgeStyle /. Options @
-          InfraSceneHighlight[ g, { InfraSegment[ { path } ] -> Blue } ] },
+          InfraSceneHighlight[ g, { geodesicGraph @ path -> Blue } ] },
       Length @ Cases[ styles, _UndirectedEdge -> _, Infinity ] == 3
     ]
   ],
   True,
-  TestID -> "InfraSceneHighlight-InfraSegment-sequential-edges"
+  TestID -> "InfraSceneHighlight-path-graph-sequential-edges"
 ]
 
 (* Per-object style override via Rule -> Directive[...]: an explicit
@@ -171,7 +174,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { styles = EdgeStyle /. Options @ InfraSceneHighlight[ g,
-          { InfraSegment[ { { 1, 2, 3, 4 } } ] -> Directive[ Orange, AbsoluteThickness[ 8 ] ] } ] },
+          { geodesicGraph @ { 1, 2, 3, 4 } -> Directive[ Orange, AbsoluteThickness[ 8 ] ] } ] },
       ! FreeQ[ styles, AbsoluteThickness[ 8 ] ]
     ]
   ],
@@ -185,7 +188,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     With[ { styles = GraphHighlightStyle /. Options @ InfraSceneHighlight[ g,
-          { InfraSegment[ { { 1, 2, 3, 4 } } ] -> Directive[ Orange, Opacity[ 0.3 ] ] } ] },
+          { geodesicGraph @ { 1, 2, 3, 4 } -> Directive[ Orange, Opacity[ 0.3 ] ] } ] },
       ! FreeQ[ styles, Opacity[ 0.3 ] ] &&
       Cases[ styles, Opacity[ x_ ] /; x =!= 0.3, Infinity ] === { }
     ]
@@ -225,7 +228,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     With[ {
         opts = Options @ InfraSceneHighlight[ g, {
-          InfraSegment[ { { 1, 2, 3, 4, 5 } } ] -> {
+          geodesicGraph @ { 1, 2, 3, 4, 5 } -> {
             VertexStyle      -> Red,
             VertexSize       -> Large,
             EdgeStyle        -> Directive[ Blue, AbsoluteThickness[ 7 ] ],
@@ -245,7 +248,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     Cases[
       Options @ InfraSceneHighlight[ g,
-        { InfraSegment[ { { 1, 2, 3, 4, 5 } } ] -> { "PointSizeRange" -> { 8, 20 } } } ],
+        { geodesicGraph @ { 1, 2, 3, 4, 5 } -> { "PointSizeRange" -> { 8, 20 } } } ],
       HoldPattern[ VertexShapeFunction -> _ ], Infinity ] =!= { }
   ],
   True,
@@ -303,7 +306,7 @@ VerificationTest[
   With[ { g = PathGraph[ Range[ 4 ] ] },
     ! FreeQ[
       Options @ InfraSceneHighlight[ g,
-        { InfraSegment[ { { 1, 2, 3, 4 } } ] }, "ThicknessRange" -> 8 ],
+        { geodesicGraph @ { 1, 2, 3, 4 } }, "ThicknessRange" -> 8 ],
       AbsoluteThickness[ 8 ] ]
   ],
   True,
@@ -317,7 +320,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 7, 7 } ] },
     { (* a UNIFORM effective point (here a ball) is uniformly bright: its diffuseness
          is its extent, not a per-vertex fade *)
-      Union @ Cases[ Options @ InfraSceneHighlight[ g, { toDensity[ g, Keys @ InfraUnion @ FindInfraBall[ g, 25, 2 ] ] } ],
+      Union @ Cases[ Options @ InfraSceneHighlight[ g, { toDensity[ g, FindInfraBall[ g, 25, 2 ] ] } ],
         AbsolutePointSize[ s_ ] :> s, Infinity ],
       (* a NON-uniform effective point draws its heaviest vertex full and the rest smaller *)
       With[ { sizes = Cases[ Options @ InfraSceneHighlight[ g, { FindInfraMidpoint[ g, 1, 49 ] } ],
@@ -360,7 +363,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     Cases[
       Options @ InfraSceneHighlight[ g,
-        { InfraShell @ FindInfraShell[ g, 1, { 1, 2 }, All ] } ],
+        { FindInfraShell[ g, 1, { 1, 2 }, All ] } ],
       HoldPattern[ VertexShapeFunction -> _ ], Infinity ] === { }
   ],
   True,
@@ -467,7 +470,7 @@ VerificationTest[
 (* StrikeOutPalette: colour follows ADDITION ORDER, not object type. *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
-    With[ { a = FindInfraSegment[ g, 1, 25 ], b = InfraUnion @ FindInfraBall[ g, 13, 1 ] },
+    With[ { a = FindInfraSegment[ g, 1, 25 ], b = FindInfraBall[ g, 13, 1 ] },
       Module[ { c1, c2 },
         c1 = Cases[ ToBoxes @ InfraSceneHighlight[ g, { a, b } ], _RGBColor, Infinity ];
         c2 = Cases[ ToBoxes @ InfraSceneHighlight[ g, { b, a } ], _RGBColor, Infinity ];
