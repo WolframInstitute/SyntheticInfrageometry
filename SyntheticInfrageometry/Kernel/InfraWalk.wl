@@ -4,14 +4,14 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* ===================== InfraWalk wrapper ===================== *)
 
 
-InfraWalk[ args : ( _InfraPoint | { _InfraPoint } ) .. ] :=
+InfraWalk[ args : ( _Association | { _Association } ) .. ] :=
   InfraWalk[ Tuples @ Map[ Replace[ #, { x_ } :> x ][[ 1 ]]&, { args } ] ]
 
 InfraWalk[ reps_List ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
 (* multiplicity kept: the end-vertex multiset is the occupation measure of where the walks terminate, unlike InfraSegment's deduplicated geodesic ends *)
-InfraWalk[ reps_List ][ "Start" ] := columnInfraPoint[ reps, 1 ]
-InfraWalk[ reps_List ][ "End" ]   := columnInfraPoint[ reps, -1 ]
+InfraWalk[ reps_List ][ "Start" ] := columnDensity[ reps, 1 ]
+InfraWalk[ reps_List ][ "End" ]   := columnDensity[ reps, -1 ]
 
 
 (* ===================== FindInfraWalk ===================== *)
@@ -420,10 +420,10 @@ InfraWalkCrossingQ[ graph_Graph, walk_List, at_, r_Integer ] :=
   walkCrossingQ[ graph, walk, False, at, r ]
 
 
-(* the ambient point names the double visit; a vertex visited once or more than twice is no crossing.  A vertex label that is itself a pair of integers is written InfraPoint[v], the position pair winning the tie *)
+(* the ambient point names the double visit; a vertex visited once or more than twice is no crossing.  A vertex label that is itself a pair of integers is written <| v -> 1 |>, the position pair winning the tie *)
 
 walkCrossingQ[ graph_, core_List, closedQ_, at : Except[ { _Integer, _Integer } ], r_ ] :=
-  With[ { ps = Select[ Range @ Length @ core, core[[ # ]] === Replace[ at, InfraPoint[ v_ ] :> v ] & ] },
+  With[ { ps = Select[ Range @ Length @ core, core[[ # ]] === Replace[ at, fam_Association :> First @ Keys @ fam ] & ] },
     Length[ ps ] == 2 && walkCrossingQ[ graph, core, closedQ, ps, r ] ]
 
 walkCrossingQ[ graph_, core_List, closedQ_, { i_Integer, j_Integer }, r_ ] := With[

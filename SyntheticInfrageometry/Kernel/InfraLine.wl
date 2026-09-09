@@ -12,7 +12,7 @@ PackageScope[allCanonicalLines]
 
 InfraLine[ reps : Except[ { __Graph }, _List ] ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
-InfraLine /: Part[ InfraLine[ reps : Except[ { __Graph }, _List ] ], i_Integer ] := columnInfraPoint[ reps, i ]
+InfraLine /: Part[ InfraLine[ reps : Except[ { __Graph }, _List ] ], i_Integer ] := columnDensity[ reps, i ]
 
 
 (* ===== pool form: InfraLine[{dag_Graph, ...}] ===== *)
@@ -40,12 +40,12 @@ InfraLine[ dags : { __Graph } ][ "Realizations", spec_ ] :=
 
 (* column i = layer i - 1 of each atom, mass = geodesic occupation: exact, no enumeration *)
 InfraLine /: Part[ InfraLine[ dags : { __Graph } ], i_Integer ] :=
-  KeySort @ KeyMap[ InfraPoint, Merge[
+  KeySort @ Merge[
     Map[ dag |-> With[ { layers = dagLayers[ dag ] },
         { len = Max[ 0, Values @ layers ] },
         KeyTake[ GeodesicOccupation[ dag ], Keys @ Select[ layers, # === If[ i > 0, i - 1, len + 1 + i ] & ] ] ],
       dags ],
-    Total ] ]
+    Total ]
 
 
 (* ===================== FindInfraLine ===================== *)
@@ -415,7 +415,7 @@ perpendicularAtProjection[ g_Graph, seq1_List, seq2_List, p_, equality_, radius_
       perpendicularFeet[ localG, localSeq2, # ] & /@ Complement[ localSeq1, localCommon ] ];
     compare = If[ equality === "Subset",
       proj |-> SubsetQ[ localCommon, proj ],
-      proj |-> InfraEqualQ[ g, InfraSet[ proj ], InfraSet[ localCommon ], Method -> equality ] ];
+      proj |-> InfraEqualQ[ g, toDensity[ g, proj ], toDensity[ g, localCommon ], Method -> equality ] ];
     compare[ proj12 ] && compare[ proj21 ]
   ]
 
@@ -457,7 +457,7 @@ perpendicularAtCoordinate[ g_Graph, seq1_List, seq2_List, p_, zeroTest_, radius_
     i2     = FirstPosition[ s2, p, { 0 }, { 1 }, Heads -> False ][[ 1 ]];
     If[ i1 == 0 || i2 == 0, Return[ False, Module ] ];
     signedCoord[ seq_, pIdx_, v_ ] :=
-      With[ { feet = #[ "Vertex" ] & /@ FindClosestInfraPoint[ localG, seq, v, All ] },
+      With[ { feet = FindClosestInfraPoint[ localG, seq, v, All ] },
         Mean[ ( FirstPosition[ seq, #, { 0 }, { 1 }, Heads -> False ][[ 1 ]] - pIdx ) & /@ feet ]
       ];
     c12 = signedCoord[ s1, i1, # ] & /@ DeleteCases[ s2, p ];
@@ -495,17 +495,17 @@ FindLineHull[ graph_Graph, s : Except[ _Rule | _RuleDelayed ], OptionsPattern[] 
   With[ { lines = Replace[ OptionValue[ "LineStructure" ],
             { None -> allCanonicalLines @ graph, ls_InfraLineStructure :> ls[ "Lines" ] } ],
           S = hullVertices @ s },
-    InfraSet @ FixedPoint[
+    toDensity[ graph, FixedPoint[
       T |-> Union[ T, Catenate @ Select[ lines, Length @ Intersection[ #, T ] >= 2 & ] ],
       Union @ S
-    ]
+    ] ]
   ]
 
 
 Options[ LineHullQ ] = { "LineStructure" -> None };
 
 LineHullQ[ graph_Graph, s : Except[ _Rule | _RuleDelayed ], opts : OptionsPattern[] ] :=
-  With[ { vs = hullVertices @ s }, FindLineHull[ graph, vs, opts ][ "Vertices" ] === Union @ vs ]
+  With[ { vs = hullVertices @ s }, Keys @ FindLineHull[ graph, vs, opts ] === Union @ vs ]
 
 
 (* ===================== UniversalLineQ ===================== *)

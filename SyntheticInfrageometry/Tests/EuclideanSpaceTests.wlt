@@ -83,7 +83,7 @@ VerificationTest[
 
 VerificationTest[
   FindInfraLinearCombination[PathGraph[Range[10]], 1, {{2, 3}}],
-  { InfraPoint[5] },
+  { 5 },
   TestID -> "FindInfraLinearCombination-scale-metric-integer"
 ]
 
@@ -97,13 +97,13 @@ VerificationTest[
 
 VerificationTest[
   FindInfraLinearCombination[PathGraph[Range[10]], 1, {{1.7, 3}}, "ScaleMethod" -> "Line"],
-  { InfraPoint[4] },
+  { 4 },
   TestID -> "FindInfraLinearCombination-scale-line-real"
 ]
 
 VerificationTest[
   FindInfraLinearCombination[PathGraph[Range[10]], 1, {{2, 3}}, "ScaleMethod" -> "Line"],
-  { InfraPoint[5] },
+  { 5 },
   TestID -> "FindInfraLinearCombination-scale-line-integer"
 ]
 
@@ -111,13 +111,13 @@ VerificationTest[
 
 VerificationTest[
   FindInfraLinearCombination[PathGraph[Range[9]], 1, {{1/2, 5}}, "ScaleMethod" -> "Midpoint"],
-  { InfraPoint[3] },
+  { 3 },
   TestID -> "FindInfraLinearCombination-scale-midpoint-half"
 ]
 
 VerificationTest[
   FindInfraLinearCombination[PathGraph[Range[9]], 1, {{1/4, 5}}, "ScaleMethod" -> "Midpoint"],
-  { InfraPoint[2] },
+  { 2 },
   TestID -> "FindInfraLinearCombination-scale-midpoint-quarter"
 ]
 
@@ -125,13 +125,13 @@ VerificationTest[
 
 VerificationTest[
   FindInfraLinearCombination[PathGraph[Range[9]], 1, {{1/2, 5}}],
-  { InfraPoint[3] },
+  { 3 },
   TestID -> "FindInfraLinearCombination-scale-auto-dyadic"
 ]
 
 VerificationTest[
   FindInfraLinearCombination[PathGraph[Range[10]], 1, {{2, 3}}],
-  { InfraPoint[5] },
+  { 5 },
   TestID -> "FindInfraLinearCombination-scale-auto-integer"
 ]
 
@@ -139,18 +139,18 @@ VerificationTest[
 
 VerificationTest[
   FindInfraLinearCombination[GridGraph[{4, 4}], 1, {{1, 2}, {1, 5}}],
-  { InfraPoint[6] },
+  { 6 },
   TestID -> "FindInfraLinearCombination-sum-metric-grid-parallelogram"
 ]
 
 VerificationTest[
   FindInfraLinearCombination[CycleGraph[4], 1, {{1, 2}, {1, 4}}],
-  { InfraPoint[3] },
+  { 3 },
   TestID -> "FindInfraLinearCombination-sum-metric-C4-antipode"
 ]
 
 VerificationTest[
-  Sort[ #[ "Vertex" ] & /@ FindInfraLinearCombination[
+  Sort[ FindInfraLinearCombination[
     Graph[{1 <-> 2, 1 <-> 3, 2 <-> 4, 2 <-> 5, 3 <-> 6, 3 <-> 7}],
     1, {{1, 2}, {1, 3}}, All
   ] ],
@@ -162,7 +162,7 @@ VerificationTest[
 
 VerificationTest[
   MemberQ[
-    #[ "Vertex" ] & /@ FindInfraLinearCombination[GridGraph[{4, 4}], 1, {{1, 2}, {1, 5}}, All, "SumMethod" -> "Parallel"],
+    FindInfraLinearCombination[GridGraph[{4, 4}], 1, {{1, 2}, {1, 5}}, All, "SumMethod" -> "Parallel"],
     6
   ],
   True,
@@ -173,19 +173,19 @@ VerificationTest[
 
 VerificationTest[
   FindInfraLinearCombination[PathGraph[Range[10]], 5, {{-1, 8}}],
-  { InfraPoint[2] },
+  { 2 },
   TestID -> "FindInfraLinearCombination-reflection-by-minus-one"
 ]
 
 VerificationTest[
   FindInfraLinearCombination[PathGraph[Range[5]], 3, {}],
-  { InfraPoint[3] },
+  { 3 },
   TestID -> "FindInfraLinearCombination-empty-terms"
 ]
 
 VerificationTest[
   FindInfraLinearCombination[PathGraph[Range[5]], 3, {{0, 5}}],
-  { InfraPoint[3] },
+  { 3 },
   TestID -> "FindInfraLinearCombination-zero-coefficient"
 ]
 

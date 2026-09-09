@@ -13,26 +13,25 @@ InfraRadarBasisQ[ args___ ] := ResolvingSetQ[ args ]
 
 (* ===================== RadarCoordinates ===================== *)
 
-(* the distance vector (d(v, b1), ..., d(v, bk)); an InfraSet anchor contributes Min | Mean | Max over its realisations *)
+(* the distance vector (d(v, b1), ..., d(v, bk)); a multiset anchor contributes Min | Mean | Max over its support *)
 
 
-Options[ RadarCoordinates ] = { "InfraPointAggregation" -> Min }
+Options[ RadarCoordinates ] = { "AnchorAggregation" -> Min }
 
 (* more specific than the crisp Infrageometry pattern b_List, so this is tried first *)
-RadarCoordinates[ g_Graph, b : { ___, _InfraSet, ___ }, v : Except[ _Rule | _RuleDelayed | _InfraPoint | _InfraSet ], opts : OptionsPattern[] ] :=
-  With[ { agg = OptionValue[ "InfraPointAggregation" ] },
+RadarCoordinates[ g_Graph, b : { ___, _Association, ___ }, v : Except[ _Rule | _RuleDelayed | _Association ], opts : OptionsPattern[] ] :=
+  With[ { agg = OptionValue[ "AnchorAggregation" ] },
     infraAnchorDistance[ g, v, #, agg ] & /@ b
   ]
 
-RadarCoordinates[ g_Graph, b_List, InfraPoint[ v_ ], opts : OptionsPattern[] ] :=
-  RadarCoordinates[ g, b, v, opts ]
+RadarCoordinates[ g_Graph, b_List, fam_Association, opts : OptionsPattern[] ] /;
+  SubsetQ[ VertexList[ g ], Keys @ fam ] :=
+  If[ Length[ fam ] === 1,
+    RadarCoordinates[ g, b, First @ Keys @ fam, opts ],
+    RadarCoordinates[ g, b, #, opts ] & /@ Keys @ fam ]
 
-RadarCoordinates[ g_Graph, b_List, InfraSet[ vs_List ], opts : OptionsPattern[] ] /;
-  Length[ vs ] > 1 && SubsetQ[ VertexList[ g ], vs ] :=
-  RadarCoordinates[ g, b, #, opts ] & /@ vs
-
-(* the crisp Infrageometry definitions load first, so reorder DownValues to try the more specific InfraPoint / InfraSet rules first *)
-DownValues[ RadarCoordinates ] = SortBy[ DownValues[ RadarCoordinates ], FreeQ[ #, InfraPoint | InfraSet ] & ]
+(* the crisp Infrageometry definitions load first, so reorder DownValues to try the shape rules first *)
+DownValues[ RadarCoordinates ] = SortBy[ DownValues[ RadarCoordinates ], FreeQ[ #, Association ] & ]
 
 
 (* ===================== OrthogonalCoordinates ===================== *)
@@ -44,7 +43,7 @@ Options[ OrthogonalCoordinates ] = { "SelectCoordinate" -> "Centered" };
 OrthogonalCoordinates[ g_Graph, c_, axes_List, v_, opts : OptionsPattern[] ] /;
     MemberQ[ VertexList[ g ], v ] :=
   With[ {
-      centerVs  = Replace[ c, { InfraSet[ vs_List ] :> vs, InfraPoint[ p_ ] :> { p }, x_ :> { x } } ],
+      centerVs  = Replace[ c, { fam_Association :> Keys @ fam, x_ :> { x } } ],
       axisPaths = Replace[ #, InfraSegment[ reps_List ] :> First @ reps ] & /@ axes,
       sel       = OptionValue[ "SelectCoordinate" ]
     },
@@ -90,21 +89,18 @@ FindInfraOrthogonalFrame[ g_Graph, c_, axisLength : axisLengthPattern, n_Integer
   ]
 
 
-FindInfraOrthogonalFrame[ g_Graph, InfraPoint[ v_ ], rest___ ] :=
-  FindInfraOrthogonalFrame[ g, v, rest ]
-
-FindInfraOrthogonalFrame[ g_Graph, ip : InfraSet[ vs_List ], axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip_Association, axisLength : axisLengthPattern, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], Keys @ ip ] :=
   With[ { result = findOrthogonalFrameCore[ g, ip, axisLength, 1, { opts } ] },
     If[ result =!= { }, wrapFrame @ First @ result, $Failed ]
   ]
 
-FindInfraOrthogonalFrame[ g_Graph, ip : InfraSet[ vs_List ], axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip_Association, axisLength : axisLengthPattern, All, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], Keys @ ip ] :=
   wrapFrame /@ findOrthogonalFrameCore[ g, ip, axisLength, All, { opts } ]
 
-FindInfraOrthogonalFrame[ g_Graph, ip : InfraSet[ vs_List ], axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip_Association, axisLength : axisLengthPattern, UpTo[ n_Integer ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], Keys @ ip ] :=
   wrapFrame /@ Take[ findOrthogonalFrameCore[ g, ip, axisLength, n, { opts } ], UpTo[ n ] ]
 
-FindInfraOrthogonalFrame[ g_Graph, ip : InfraSet[ vs_List ], axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+FindInfraOrthogonalFrame[ g_Graph, ip_Association, axisLength : axisLengthPattern, n_Integer, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], Keys @ ip ] :=
   With[ { result = findOrthogonalFrameCore[ g, ip, axisLength, n, { opts } ] },
     If[ Length[ result ] >= n, wrapFrame /@ Take[ result, n ], $Failed ]
   ]
@@ -141,19 +137,16 @@ FindInfraSpanningAxes[ g_Graph, n_Integer : 1, opts : OptionsPattern[] ] :=
 
 (* Phi(v) = (phi_i(v) / Sqrt[lambda_i])_{i : lambda_i > 0}, so ||Phi(u) - Phi(v)||^2 == R(u, v) (Klein-Randic) *)
 
-(* the crisp embedding lives in the Infrageometry paclet; the InfraPoint query overloads stay here *)
+(* the crisp embedding lives in the Infrageometry paclet; the multiset query overload stays here *)
 
-ResistanceCoordinates[ g_Graph, InfraPoint[ v_ ], opts : OptionsPattern[] ] :=
-  ResistanceCoordinates[ g, v, opts ]
-
-ResistanceCoordinates[ g_Graph, InfraSet[ vs_List ], opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
-  With[ { all = ResistanceCoordinates[ g, opts ] }, all /@ vs ]
+ResistanceCoordinates[ g_Graph, fam_Association, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], Keys @ fam ] :=
+  With[ { all = ResistanceCoordinates[ g, opts ] }, all /@ Keys @ fam ]
 
 
 (* ===================== Helpers: anchor distance ===================== *)
 
-infraAnchorDistance[ g_, v_, InfraSet[ vs_List ], agg_ ] :=
-  agg[ GraphDistance[ g, v, # ] & /@ vs ]
+infraAnchorDistance[ g_, v_, fam_Association, agg_ ] :=
+  agg[ GraphDistance[ g, v, # ] & /@ Keys @ fam ]
 
 infraAnchorDistance[ g_, v_, u_, _ ] :=
   GraphDistance[ g, v, u ]
@@ -352,10 +345,10 @@ findOrthogonalFrameCore[ g_Graph, c_, axisLength_, count_, opts_List ] /; Member
     ]
   ]
 
-findOrthogonalFrameCore[ g_Graph, InfraSet[ vs_List ], axisLength_, count_, opts_List ] :=
+findOrthogonalFrameCore[ g_Graph, fam_Association, axisLength_, count_, opts_List ] :=
   With[ { method = methodName @ resolveSearchMethod[ opts ],
           axisMult = axisMultiplicityFn[ g ] },
-    { perSource = Map[ findOrthogonalFrameCore[ g, #, axisLength, All, opts ] &, vs ] },
+    { perSource = Map[ findOrthogonalFrameCore[ g, #, axisLength, All, opts ] &, Keys @ fam ] },
     { allFrames = DeleteDuplicatesBy[ Catenate @ perSource, canonicalFrame ] },
     { sortedFrames = If[ method === "Greedy", allFrames, SortBy[ allFrames, frameSortKey[ axisMult ] ] ],
       maxFrames    = If[ count === All, Infinity, count ] },

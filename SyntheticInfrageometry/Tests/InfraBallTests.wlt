@@ -45,21 +45,21 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], InfraSet[{1, 5}], 1],
+  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], <| 1 -> 1, 5 -> 1 |>, 1],
   {{1, 2}, {4, 5}},
   TestID -> "FindInfraBall-multi-anchor"
 ]
 
 VerificationTest[
-  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], {InfraPoint[1], InfraPoint[5]}, 1],
+  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], {1, 5}, 1],
   {{1, 2}, {4, 5}},
-  TestID -> "FindInfraBall-multi-anchor-list-of-unary"
+  TestID -> "FindInfraBall-multi-anchor-vertex-list"
 ]
 
 VerificationTest[
-  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], InfraPoint[3], 1],
+  Sort /@ First @ FindInfraBall[PathGraph[Range[5]], 3, 1],
   {{2, 3, 4}},
-  TestID -> "FindInfraBall-bare-unary-InfraPoint"
+  TestID -> "FindInfraBall-bare-vertex"
 ]
 
 (* ===== InfraBall wrapper auto-flatten ===== *)

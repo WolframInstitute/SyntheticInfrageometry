@@ -5,34 +5,34 @@ BeginTestSection["EuclideanConstructions"]
 (* Even distance -> single centre vertex. *)
 VerificationTest[
   FindInfraMidpoint[PathGraph[Range[5]], {1, 2, 3, 4, 5}],
-  <| InfraPoint[ 3 ] -> 1 |>,
+  <| 3 -> 1 |>,
   TestID -> "FindInfraMidpoint-segment-even-distance-single"
 ]
 
 (* Odd distance -> the two closest indices, a effective point (always non-empty). *)
 VerificationTest[
-  InfraSet[ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}] ][ "Vertices" ],
+  Keys @ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}],
   {2, 3},
   TestID -> "FindInfraMidpoint-segment-odd-distance-effective point"
 ]
 
 (* Tolerance widens the band beyond the closest offset (0.5 + 1 = 1.5). *)
 VerificationTest[
-  InfraSet[ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}, "Tolerance" -> 1] ][ "Vertices" ],
+  Keys @ FindInfraMidpoint[PathGraph[Range[4]], {1, 2, 3, 4}, "Tolerance" -> 1],
   {1, 2, 3, 4},
   TestID -> "FindInfraMidpoint-segment-tolerance-widens-band"
 ]
 
 VerificationTest[
   FindInfraMidpoint[PathGraph[Range[5]], 1, 5],
-  <| InfraPoint[ 3 ] -> 1 |>,
+  <| 3 -> 1 |>,
   TestID -> "FindInfraMidpoint-endpoints-single"
 ]
 
 (* Union over all geodesics matches the per-geodesic centre vertices. *)
 VerificationTest[
   With[{g = GridGraph[{3, 3}], d = GraphDistance[GridGraph[{3, 3}], 1, 9]},
-    InfraSet[ FindInfraMidpoint[g, 1, 9] ][ "Vertices" ] ===
+    Keys @ FindInfraMidpoint[g, 1, 9] ===
       Sort @ DeleteDuplicates[
         #[[ Ceiling[ Length[#] / 2 ] ]] & /@ FindPath[g, 1, 9, {d}, All]
       ]
@@ -45,14 +45,14 @@ VerificationTest[
 
 VerificationTest[
   FindInfraMidpoint[PathGraph[Range[5]], InfraSegment[{{1, 2, 3, 4, 5}}]],
-  <| InfraPoint[ 3 ] -> 1 |>,
+  <| 3 -> 1 |>,
   TestID -> "FindInfraMidpoint-InfraSegment-single-walk"
 ]
 
 (* Walks with different centres union into one effective point. *)
 VerificationTest[
-  InfraSet[ FindInfraMidpoint[ PathGraph[ Range[ 7 ] ],
-    InfraSegment[ { { 1, 2, 3, 4, 5, 6, 7 }, { 1, 2, 3, 4, 5 } } ] ] ][ "Vertices" ],
+  Keys @ FindInfraMidpoint[ PathGraph[ Range[ 7 ] ],
+    InfraSegment[ { { 1, 2, 3, 4, 5, 6, 7 }, { 1, 2, 3, 4, 5 } } ] ],
   { 3, 4 },
   TestID -> "FindInfraMidpoint-InfraSegment-multi-walk-union"
 ]
@@ -62,7 +62,7 @@ VerificationTest[
 VerificationTest[
   FindInfraMidpoint[ PathGraph[ Range[ 5 ] ],
     InfraSegment[ { { 1, 2, 3, 4, 5 }, { 5, 4, 3, 2, 1 } } ] ],
-  <| InfraPoint[ 3 ] -> 2 |>,
+  <| 3 -> 2 |>,
   TestID -> "FindInfraMidpoint-InfraSegment-mass-of-shared-middle"
 ]
 
@@ -133,30 +133,30 @@ VerificationTest[
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[13], All],
-  { InfraPoint[3] },
+    InfraSegment[{{1, 2, 3, 4, 5}}], 13, All],
+  { 3 },
   TestID -> "FindClosestInfraPoint-grid-InfraSegment"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraLine[{{1, 2, 3, 4, 5}}], InfraPoint[13], All],
-  { InfraPoint[3] },
+    InfraLine[{{1, 2, 3, 4, 5}}], 13, All],
+  { 3 },
   TestID -> "FindClosestInfraPoint-grid-InfraLine"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
     {1, 2, 3, 4, 5}, 13, All],
-  { InfraPoint[3] },
+  { 3 },
   TestID -> "FindClosestInfraPoint-bare-list-and-vertex"
 ]
 
 (* Point already on the segment: closest is itself. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[3], All],
-  { InfraPoint[3] },
+    InfraSegment[{{1, 2, 3, 4, 5}}], 3, All],
+  { 3 },
   TestID -> "FindClosestInfraPoint-point-on-line"
 ]
 
@@ -164,59 +164,59 @@ VerificationTest[
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
     InfraSegment[{{1, 2, 3, 4, 5}, {1, 6, 11, 16, 21}}],
-    InfraPoint[13], All],
-  { InfraPoint[3], InfraPoint[11] },
+    13, All],
+  { 3, 11 },
   TestID -> "FindClosestInfraPoint-multi-segment-Cartesian"
 ]
 
 (* Cartesian spread: one segment, two point realisations. *)
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraSet[{11, 15}], All],
-  { InfraPoint[1], InfraPoint[5] },
+    InfraSegment[{{1, 2, 3, 4, 5}}], <| 11 -> 1, 15 -> 1 |>, All],
+  { 1, 5 },
   TestID -> "FindClosestInfraPoint-multi-point-Cartesian"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[13]],
-  { InfraPoint[3] },
+    InfraSegment[{{1, 2, 3, 4, 5}}], 13],
+  { 3 },
   TestID -> "FindClosestInfraPoint-default-count-1"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[13], 5],
+    InfraSegment[{{1, 2, 3, 4, 5}}], 13, 5],
   $Failed,
   TestID -> "FindClosestInfraPoint-strict-count-too-large-fails"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraSegment[{{1, 2, 3, 4, 5}}], InfraPoint[13], UpTo[5]],
-  { InfraPoint[3] },
+    InfraSegment[{{1, 2, 3, 4, 5}}], 13, UpTo[5]],
+  { 3 },
   TestID -> "FindClosestInfraPoint-UpTo-caps"
 ]
 
 (* Tied minimisers (CycleGraph[5], point 1 to opposite arc {3, 4}: both at distance 2). *)
 VerificationTest[
   FindClosestInfraPoint[CycleGraph[5],
-    InfraSegment[{{3, 4}}], InfraPoint[1], All],
-  { InfraPoint[3], InfraPoint[4] },
+    InfraSegment[{{3, 4}}], 1, All],
+  { 3, 4 },
   TestID -> "FindClosestInfraPoint-ties-symmetric"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraWalk[{{1, 2, 3, 4, 5}}], InfraPoint[13], All],
-  { InfraPoint[3] },
+    InfraWalk[{{1, 2, 3, 4, 5}}], 13, All],
+  { 3 },
   TestID -> "FindClosestInfraPoint-InfraWalk"
 ]
 
 VerificationTest[
   FindClosestInfraPoint[GridGraph[{5, 5}],
-    InfraRay[{{1, 2, 3, 4, 5}}], InfraPoint[13], All],
-  { InfraPoint[3] },
+    InfraRay[{{1, 2, 3, 4, 5}}], 13, All],
+  { 3 },
   TestID -> "FindClosestInfraPoint-InfraRay"
 ]
 
@@ -232,7 +232,7 @@ VerificationTest[
 
 VerificationTest[
   FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, All],
-  FindInfraBisectingHyperplane[PathGraph[Range[5]], InfraPoint[1], InfraPoint[5], All],
+  FindInfraBisectingHyperplane[PathGraph[Range[5]], 1, 5, All],
   TestID -> "FindInfraBisectingHyperplane-list-form-equiv"
 ]
 
@@ -393,7 +393,7 @@ VerificationTest[
 (* ===== CompleteInfraEquilateralTriangle ===== *)
 
 VerificationTest[
-  Sort[ #[ "Vertex" ] & /@ CompleteInfraEquilateralTriangle[CycleGraph[6], 1, 3, All] ],
+  Sort[ CompleteInfraEquilateralTriangle[CycleGraph[6], 1, 3, All] ],
   {5},
   TestID -> "CompleteInfraEquilateralTriangle-cycle6"
 ]
@@ -406,7 +406,7 @@ VerificationTest[
 
 VerificationTest[
   CompleteInfraEquilateralTriangle[CompleteGraph[4], 1, 2, 1],
-  { InfraPoint[3] },
+  { 3 },
   TestID -> "CompleteInfraEquilateralTriangle-K4-strict-1"
 ]
 
@@ -423,8 +423,8 @@ VerificationTest[
 
 (* Embedding returns the single nearest-coordinate vertex, which lies in the metric union. *)
 VerificationTest[
-  MemberQ[ InfraSet[ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, Method -> "Metric" ] ][ "Vertices" ],
-           First @ First @ Keys @ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, Method -> "Embedding" ] ],
+  MemberQ[ Keys @ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, Method -> "Metric" ],
+           First @ Keys @ FindInfraMidpoint[ GridGraph[ { 5, 5 } ], 1, 25, Method -> "Embedding" ] ],
   True,
   TestID -> "FindInfraMidpoint-Embedding-in-metric-union"
 ]
@@ -452,19 +452,19 @@ VerificationTest[
 (* Closest index to the golden index 1 + 10/phi = 7.18 -> vertex 7, always a single point. *)
 VerificationTest[
   FindInfraGoldenSection[PathGraph[Range[11]], 1, 11],
-  <| InfraPoint[ 7 ] -> 1 |>,
+  <| 7 -> 1 |>,
   TestID -> "FindInfraGoldenSection-single-point-vertex-7"
 ]
 
 VerificationTest[
   FindInfraGoldenSection[PathGraph[Range[11]], 1, 11, "Tolerance" -> 0.5],
-  <| InfraPoint[ 7 ] -> 1 |>,
+  <| 7 -> 1 |>,
   TestID -> "FindInfraGoldenSection-tolerance"
 ]
 
 VerificationTest[
   FindInfraGoldenSection[PathGraph[Range[11]], InfraSegment[{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}}]],
-  <| InfraPoint[ 7 ] -> 1 |>,
+  <| 7 -> 1 |>,
   TestID -> "FindInfraGoldenSection-InfraSegment"
 ]
 

@@ -218,7 +218,7 @@ VerificationTest[
         m |-> FindInfraRay[ g, 6, 7, Method -> m ],
         m |-> FindInfraParallel[ g, Range[ 4 ], 10, Method -> m ],
         m |-> FindInfraWalk[ g, 1, 4, Method -> m ],
-        m |-> FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 }, Method -> m ],
+        m |-> FindInfraWalk[ g, 1, 16, { 6 }, Method -> m ],
         m |-> ExtendInfraWalk[ g, { 1, 2 }, 2, Method -> m ],
         m |-> FindInfraGeodesic[ g, 1, 2, 4, Method -> m ],
         m |-> ExtendInfraGeodesic[ g, { 6, 7 }, Infinity, 2, Method -> m ],

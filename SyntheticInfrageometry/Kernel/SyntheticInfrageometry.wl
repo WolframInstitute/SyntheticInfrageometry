@@ -3,7 +3,7 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 (* Tools.wl *)
 PackageExport[InfraMeasure]
 
-(* InfraPoint.wl *)
+(* InfraPoint.wl -- InfraPoint is a scene-language token only, never a payload wrapper *)
 PackageExport[InfraPoint]
 PackageExport[FindInfraPoint]
 PackageExport[FindInfraMidpoint]
@@ -175,14 +175,13 @@ PackageExport[SegmentHullQ]
 
 (* InfraSet.wl *)
 (* the Alexandrov-topology layer moved to the Infrageometry paclet; InfraBoundary / InfraInterior are the synthetic front-ends over it *)
-PackageExport[InfraSet]
 PackageExport[FindInfraEquidistantSet]
 PackageExport[FindAdvancingInfraFront]
 PackageExport[InfraBoundary]
 PackageExport[InfraInterior]
 PackageExport[InfraVolume]
 
-(* Coordinatization.wl -- RadarCoordinates / ResistanceCoordinates live in the Infrageometry paclet; the InfraPoint / InfraSet overloads and the deprecation aliases stay here *)
+(* Coordinatization.wl -- RadarCoordinates / ResistanceCoordinates live in the Infrageometry paclet; the multiset overloads and the deprecation aliases stay here *)
 PackageExport[FindInfraRadarBasis]
 PackageExport[InfraRadarBasisQ]
 PackageExport[OrthogonalCoordinates]

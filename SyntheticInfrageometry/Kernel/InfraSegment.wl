@@ -12,10 +12,11 @@ PackageScope[extensionPool]
 InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Length" ] := ( Length[ # ] - 1 ) & /@ reps
 
 (* the distinct first / last vertices across realisations, deduplicated rather than a measure: every geodesic of one family shares its endpoints *)
-InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Start" ] := InfraSet[ DeleteDuplicates[ First /@ reps ] ]
-InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "End" ]   := InfraSet[ DeleteDuplicates[ Last /@ reps ] ]
+(* the ends are a set-level fact -- every realisation of a family shares them -- so the multiset is all-ones on them, not the column count *)
+InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "Start" ] := KeySort @ AssociationMap[ 1 &, DeleteDuplicates[ First /@ reps ] ]
+InfraSegment[ reps : Except[ { __Graph }, _List ] ][ "End" ]   := KeySort @ AssociationMap[ 1 &, DeleteDuplicates[ Last /@ reps ] ]
 
-InfraSegment /: Part[ InfraSegment[ reps : Except[ { __Graph }, _List ] ], i_Integer ] := columnInfraPoint[ reps, i ]
+InfraSegment /: Part[ InfraSegment[ reps : Except[ { __Graph }, _List ] ], i_Integer ] := columnDensity[ reps, i ]
 
 
 (* ===== geodesic-DAG form: InfraSegment[dag_Graph] ===== *)
@@ -41,10 +42,10 @@ InfraSegment /: Part[ InfraSegment[ dag_Graph ], i_Integer ] :=
   With[ { layers = dagLayers[ dag ] },
     { len = Max[ 0, Values @ layers ] },
     { vs = Keys @ Select[ layers, # === If[ i > 0, i - 1, len + 1 + i ] & ] },
-    KeySort @ KeyMap[ InfraPoint, KeyTake[ GeodesicOccupation[ dag ], vs ] ] ]
+    KeySort @ KeyTake[ GeodesicOccupation[ dag ], vs ] ]
 
-InfraSegment[ dag_Graph ][ "Start" ] := InfraSet[ Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ]
-InfraSegment[ dag_Graph ][ "End" ]   := InfraSet[ Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] ]
+InfraSegment[ dag_Graph ][ "Start" ] := KeySort @ AssociationMap[ 1 &, Select[ VertexList[ dag ], VertexInDegree[ dag, # ] == 0 & ] ]
+InfraSegment[ dag_Graph ][ "End" ]   := KeySort @ AssociationMap[ 1 &, Select[ VertexList[ dag ], VertexOutDegree[ dag, # ] == 0 & ] ]
 
 
 (* ===================== FindInfraSegment ===================== *)
@@ -80,9 +81,9 @@ InfraSegment[ dags : { _Graph, __Graph } ][ "Realizations" ]       := Catenate[ 
 InfraSegment[ dags : { _Graph, __Graph } ][ "Paths" ]              := Catenate[ dagGeodesics /@ dags ]
 InfraSegment[ dags : { _Graph, __Graph } ][ "First" ]              := First @ dagGeodesics[ First @ dags, 1 ]
 InfraSegment[ dags : { _Graph, __Graph } ][ "Start" ] :=
-  InfraSet[ Union @@ Map[ dag |-> Select[ VertexList @ dag, VertexInDegree[ dag, # ] == 0 & ], dags ] ]
+  KeySort @ AssociationMap[ 1 &, Union @@ Map[ dag |-> Select[ VertexList @ dag, VertexInDegree[ dag, # ] == 0 & ], dags ] ]
 InfraSegment[ dags : { _Graph, __Graph } ][ "End" ]   :=
-  InfraSet[ Union @@ Map[ dag |-> Select[ VertexList @ dag, VertexOutDegree[ dag, # ] == 0 & ], dags ] ]
+  KeySort @ AssociationMap[ 1 &, Union @@ Map[ dag |-> Select[ VertexList @ dag, VertexOutDegree[ dag, # ] == 0 & ], dags ] ]
 
 (* lazy: atoms are consumed in order, each stopping at the residual budget *)
 InfraSegment[ dags : { _Graph, __Graph } ][ "Realizations", spec_ ] :=
@@ -97,12 +98,12 @@ InfraSegment[ dags : { _Graph, __Graph } ][ args___ ] :=
 
 (* column i = layer i - 1 of each atom, mass = geodesic occupation: exact, no enumeration *)
 InfraSegment /: Part[ InfraSegment[ dags : { _Graph, __Graph } ], i_Integer ] :=
-  KeySort @ KeyMap[ InfraPoint, Merge[
+  KeySort @ Merge[
     Map[ dag |-> With[ { layers = dagLayers[ dag ] },
         { len = Max[ 0, Values @ layers ] },
         KeyTake[ GeodesicOccupation[ dag ], Keys @ Select[ layers, # === If[ i > 0, i - 1, len + 1 + i ] & ] ] ],
       dags ],
-    Total ] ]
+    Total ]
 
 FindInfraSegment[ graph_Graph, p1_, p2_,
     count : ( _Integer | UpTo[ _Integer ] | All | Automatic ) : Automatic, opts : OptionsPattern[] ] :=
@@ -182,7 +183,7 @@ ExtendInfraSegment[ graph_Graph, a_, b_, c_, d : Except[ _Rule | _RuleDelayed ],
     { vs = If[ target === Infinity, { },
         Select[ VertexList[ graph ],
           x |-> BetweennessQ[ graph, a, b, x ] && GraphDistance[ graph, b, x ] === target ] ] },
-    bundleTake[ InfraPoint, vs, count ]
+    bundleTake[ Identity, vs, count ]
   ]
 
 

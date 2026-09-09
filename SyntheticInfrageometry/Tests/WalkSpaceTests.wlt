@@ -492,19 +492,19 @@ EndTestSection[]
 
 BeginTestSection["SelectInfraPoint"]
 VerificationTest[
-  SubsetQ[ Range[ 5 ], #["Vertex"]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Center" ] ],
+  SubsetQ[ Range[ 5 ], #& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Center" ] ],
   True,
   TestID -> "SelectInfraPoint-Center-pool-is-sublist"
 ]
 
 VerificationTest[
-  #["Vertex"]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Center" ],
+  #& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Center" ],
   { 3 },
   TestID -> "SelectInfraPoint-Center-on-PathGraph-picks-middle"
 ]
 
 VerificationTest[
-  Sort[ #["Vertex"]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Periphery" ] ],
+  Sort[ #& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> "Periphery" ] ],
   { 1, 5 },
   TestID -> "SelectInfraPoint-Periphery-on-PathGraph-picks-endpoints"
 ]
@@ -546,14 +546,13 @@ VerificationTest[
 ]
 
 VerificationTest[
-  { Head @ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], InfraSet[ Range[ 5 ] ], All ],
-    Head @ First @ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], InfraSet[ Range[ 5 ] ], All ] },
-  { List, InfraPoint },
-  TestID -> "SelectInfraPoint-returns-atom-list"
+  Sort @ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], <| 1 -> 1, 2 -> 1, 3 -> 1, 4 -> 1, 5 -> 1 |>, All ],
+  Range[ 5 ],
+  TestID -> "SelectInfraPoint-returns-vertex-list"
 ]
 
 VerificationTest[
-  Sort[ #["Vertex"]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], All, "From" -> "Periphery" ][ Range[ 5 ] ] ],
+  Sort[ #& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], All, "From" -> "Periphery" ][ Range[ 5 ] ] ],
   { 1, 5 },
   TestID -> "SelectInfraPoint-operator-form"
 ]
@@ -566,7 +565,7 @@ VerificationTest[
 
 VerificationTest[
   SubsetQ[ Range[ 5 ],
-    #["Vertex"]& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> ( 3 -> 2 ) ] ],
+    #& /@ SelectInfraPoint[ PathGraph[ Range[ 5 ] ], Range[ 5 ], All, "From" -> ( 3 -> 2 ) ] ],
   True,
   TestID -> "SelectInfraPoint-anchor-distance-pool-is-sublist"
 ]
@@ -635,7 +634,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     With[ { s1 = FindInfraSegment[ g, 1, 9 , All], s2 = FindInfraSegment[ g, 3, 7 , All] },
-      Sort[ #[ "Vertex" ] & /@ FindInfraCommonPoint[ g, { s1, s2 } ] ] ===
+      Sort[ FindInfraCommonPoint[ g, { s1, s2 } ] ] ===
         Sort @ Intersection[
           Union @@ FindInfraSegment[ g, 1, 9, All ][ "Realizations" ],
           Union @@ FindInfraSegment[ g, 3, 7, All ][ "Realizations" ] ] ]
@@ -644,14 +643,14 @@ VerificationTest[
   TestID -> "FindInfraCommonPoint-accepts-DAG-segments"
 ]
 
-(* an InfraPoint atom is the natural single source of a spray; an atom list
-   and an InfraSet are the multi-source forms *)
+(* a vertex is the natural single source of a spray; a vertex list and a
+   multiset are the multi-source forms *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    { GeodesicSprayGraph[ g, InfraPoint[ 1 ] ] === GeodesicSprayGraph[ g, 1 ],
-      GeodesicSprayGraph[ g, { InfraPoint[ 1 ], InfraPoint[ 4 ] } ] === GeodesicSprayGraph[ g, InfraSet[ { 1, 4 } ] ] } ],
+    { GeodesicSprayGraph[ g, 1 ] === GeodesicSprayGraph[ g, 1 ],
+      GeodesicSprayGraph[ g, { 1, 4 } ] === GeodesicSprayGraph[ g, <| 1 -> 1, 4 -> 1 |> ] } ],
   { True, True },
-  TestID -> "GeodesicSprayGraph-accepts-point-atoms"
+  TestID -> "GeodesicSprayGraph-accepts-vertices-and-multisets"
 ]
 (* ===== "From" validation ===== *)
 
@@ -703,7 +702,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     FreeQ[
       SelectInfraPoint[ g, Range[ 25 ], All, "From" -> # ] & /@
-        { All, "Random", "Center", "Periphery", 7, 3 -> 2, { 2, 3, 4 }, InfraSet[ { 2, 5, 7 } ] },
+        { All, "Random", "Center", "Periphery", 7, 3 -> 2, { 2, 3, 4 }, <| 2 -> 1, 5 -> 1, 7 -> 1 |> },
       $Failed ]
   ],
   True,
@@ -745,12 +744,12 @@ VerificationTest[
   TestID -> "GeodesicExtensionGraph-sinks-are-ray-ends"
 ]
 
-(* wrapper anchors spread to one DAG per anchor pair *)
+(* multiset anchors spread to one DAG per anchor pair *)
 VerificationTest[
-  GeodesicExtensionGraph[ GridGraph[ { 3, 3 } ], { InfraSet[ { 1, 3 } ], 5 } ],
+  GeodesicExtensionGraph[ GridGraph[ { 3, 3 } ], { <| 1 -> 1, 3 -> 1 |>, 5 } ],
   { GeodesicExtensionGraph[ GridGraph[ { 3, 3 } ], { 1, 5 } ],
     GeodesicExtensionGraph[ GridGraph[ { 3, 3 } ], { 3, 5 } ] },
-  TestID -> "GeodesicExtensionGraph-InfraSet-anchor-spreads"
+  TestID -> "GeodesicExtensionGraph-multiset-anchor-spreads"
 ]
 
 EndTestSection[]

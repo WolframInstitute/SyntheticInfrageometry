@@ -5,7 +5,7 @@ BeginTestSection["Hulls"]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ], s = { 1, 6 } },
-    SubsetQ[ FindLineHull[ g, s ][ "Vertices" ], Union @ s ] ],
+    SubsetQ[ Keys @ FindLineHull[ g, s ], Union @ s ] ],
   True,
   TestID -> "FindLineHull-extensive"
 ]
@@ -19,7 +19,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ], s = { 2, 8 } },
-    SubsetQ[ FindLineHull[ g, s ][ "Vertices" ], FindSegmentHull[ g, s ][ "Vertices" ] ] ],
+    SubsetQ[ Keys @ FindLineHull[ g, s ], Keys @ FindSegmentHull[ g, s ] ] ],
   True,
   TestID -> "segment-hull-subset-of-line-hull"
 ]
@@ -29,13 +29,13 @@ VerificationTest[
 
 VerificationTest[
   FindLineHull[ PathGraph @ Range[ 5 ], { 2, 4 } ],
-  InfraSet[ Range[ 5 ] ],
+  <| 1 -> 1, 2 -> 1, 3 -> 1, 4 -> 1, 5 -> 1 |>,
   TestID -> "FindLineHull-path-universal"
 ]
 
 VerificationTest[
   FindLineHull[ PathGraph @ Range[ 5 ], { 2, 3 } ],
-  InfraSet[ Range[ 5 ] ],
+  <| 1 -> 1, 2 -> 1, 3 -> 1, 4 -> 1, 5 -> 1 |>,
   TestID -> "FindLineHull-path-universal-adjacent"
 ]
 
@@ -43,7 +43,7 @@ VerificationTest[
 
 VerificationTest[
   FindLineHull[ CycleGraph[ 4 ], { 1, 3 } ],
-  InfraSet[ { 1, 2, 3, 4 } ],
+  <| 1 -> 1, 2 -> 1, 3 -> 1, 4 -> 1 |>,
   TestID -> "FindLineHull-C4-antipodal"
 ]
 
@@ -51,7 +51,7 @@ VerificationTest[
 
 VerificationTest[
   FindLineHull[ GridGraph[ { 3, 3 } ], { 5 } ],
-  InfraSet[ { 5 } ],
+  <| 5 -> 1 |>,
   TestID -> "FindLineHull-singleton"
 ]
 
@@ -103,7 +103,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] }, { ls = FindLineStructure[ g ] },
-    SubsetQ[ FindLineHull[ g, { 2, 8 } ][ "Vertices" ], FindLineHull[ g, { 2, 8 }, "LineStructure" -> ls ][ "Vertices" ] ] ],
+    SubsetQ[ Keys @ FindLineHull[ g, { 2, 8 } ], Keys @ FindLineHull[ g, { 2, 8 }, "LineStructure" -> ls ] ] ],
   True,
   TestID -> "FindLineHull-structure-subset-of-full"
 ]
@@ -112,7 +112,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     { ls = FindLineStructure[ g ], full = FindLineHull[ g, { 1, 2 } ] },
     { via = FindLineHull[ g, { 1, 2 }, "LineStructure" -> ls ] },
-    via =!= full && SubsetQ[ full[ "Vertices" ], via[ "Vertices" ] ] ],
+    via =!= full && SubsetQ[ Keys @ full, Keys @ via ] ],
   True,
   TestID -> "FindLineHull-structure-proper-subset"
 ]
@@ -135,7 +135,7 @@ VerificationTest[
 
 VerificationTest[
   FindLineHull[ CycleGraph[ 6 ], { 1, 4 }, "LineStructure" -> { { 1, 2, 3, 4 } } ],
-  InfraSet[ { 1, 2, 3, 4 } ],
+  <| 1 -> 1, 2 -> 1, 3 -> 1, 4 -> 1 |>,
   TestID -> "FindLineHull-bare-line-family"
 ]
 
@@ -146,15 +146,15 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] }, { ls = FindLineStructure[ g ] },
-    SubsetQ[ FindSegmentHull[ g, { 1, 9 } ][ "Vertices" ], FindSegmentHull[ g, { 1, 9 }, "LineStructure" -> ls ][ "Vertices" ] ] ],
+    SubsetQ[ Keys @ FindSegmentHull[ g, { 1, 9 } ], Keys @ FindSegmentHull[ g, { 1, 9 }, "LineStructure" -> ls ] ] ],
   True,
   TestID -> "FindSegmentHull-structure-subset-of-full"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] }, { ls = FindLineStructure[ g ] },
-    SubsetQ[ FindLineHull[ g, { 1, 9 }, "LineStructure" -> ls ][ "Vertices" ],
-             FindSegmentHull[ g, { 1, 9 }, "LineStructure" -> ls ][ "Vertices" ] ] ],
+    SubsetQ[ Keys @ FindLineHull[ g, { 1, 9 }, "LineStructure" -> ls ],
+             Keys @ FindSegmentHull[ g, { 1, 9 }, "LineStructure" -> ls ] ] ],
   True,
   TestID -> "FindSegmentHull-structure-subset-of-line-structure"
 ]
@@ -168,19 +168,19 @@ VerificationTest[
 ]
 
 (* Ball hull: the intersection of all closed balls containing S.  A closure
-   operator (extensive, idempotent), output an InfraSet, and equal by
+   operator (extensive, idempotent), output the multiset, and equal by
    definition to the intersection over every center of the smallest ball at
    that center enclosing S. *)
 
 VerificationTest[
-  Head @ FindBallHull[ GridGraph[ { 6, 4 } ], { 1, 6 } ],
-  InfraSet,
-  TestID -> "FindBallHull-returns-InfraSet"
+  AssociationQ @ FindBallHull[ GridGraph[ { 6, 4 } ], { 1, 6 } ],
+  True,
+  TestID -> "FindBallHull-returns-multiset"
 ]
 
 VerificationTest[
   With[ { g = GridGraph[ { 6, 4 } ], s = { 1, 6, 22 } },
-    SubsetQ[ FindBallHull[ g, s ][ "Vertices" ], s ] ],
+    SubsetQ[ Keys @ FindBallHull[ g, s ], s ] ],
   True,
   TestID -> "FindBallHull-extensive"
 ]
@@ -204,7 +204,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 6, 4 } ], s = { 1, 6, 22 } },
-    FindBallHull[ g, s ][ "Vertices" ] ===
+    Keys @ FindBallHull[ g, s ] ===
       Sort @ Fold[ Intersection, VertexList @ g,
         Table[ With[ { r = Max[ GraphDistance[ g, c, # ] & /@ s ] },
             Select[ VertexList @ g, GraphDistance[ g, c, # ] <= r & ] ], { c, VertexList @ g } ] ] ],
@@ -216,7 +216,7 @@ VerificationTest[
    generic mid-distance pair on a path is not. *)
 
 VerificationTest[
-  FindBallHull[ GridGraph[ { 4, 4 } ], { 6 } ][ "Vertices" ],
+  Keys @ FindBallHull[ GridGraph[ { 4, 4 } ], { 6 } ],
   { 6 },
   TestID -> "FindBallHull-singleton"
 ]
@@ -234,15 +234,15 @@ VerificationTest[
   TestID -> "BallHullQ-path-endpoints-open"
 ]
 
-(* Input-form invariance: bare vertex list, list of InfraPoint, and a single
-   multi-vertex InfraPoint all give the same ball hull. *)
+(* Input-form invariance: a bare vertex list and the multiset over it give the
+   same ball hull. *)
 
 VerificationTest[
   With[ { g = GridGraph[ { 6, 4 } ] },
     SameQ[
       FindBallHull[ g, { 1, 6, 22 } ],
-      FindBallHull[ g, { InfraPoint[1], InfraPoint[6], InfraPoint[22] } ],
-      FindBallHull[ g, InfraSet[ { 1, 6, 22 } ] ] ] ],
+      FindBallHull[ g, { 1, 6, 22 } ],
+      FindBallHull[ g, <| 1 -> 1, 6 -> 1, 22 -> 1 |> ] ] ],
   True,
   TestID -> "FindBallHull-input-form-invariance"
 ]

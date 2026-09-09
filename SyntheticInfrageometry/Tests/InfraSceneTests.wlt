@@ -402,25 +402,25 @@ VerificationTest[
   TestID -> "InfraDistance-bare-bare"
 ]
 
-(* Bare vertex paired with an InfraPoint singleton wrapper. *)
+(* Bare vertex paired with a singleton multiset. *)
 VerificationTest[
-  InfraDistance[GridGraph[{3, 3}], InfraPoint[1], 9],
+  InfraDistance[GridGraph[{3, 3}], <| 1 -> 1 |>, 9],
   4,
-  TestID -> "InfraDistance-bare-InfraPoint-singleton"
+  TestID -> "InfraDistance-bare-multiset-singleton"
 ]
 
 (* Two multi-vertex InfraPoints: default aggregation is Min over the
    cross-product of realisations.  d(1,9)=4, d(1,7)=2, d(3,9)=2, d(3,7)=4
    -> Min = 2. *)
 VerificationTest[
-  InfraDistance[GridGraph[{3, 3}], InfraSet[{1, 3}], InfraSet[{7, 9}]],
+  InfraDistance[GridGraph[{3, 3}], <| 1 -> 1, 3 -> 1 |>, <| 7 -> 1, 9 -> 1 |>],
   2,
   TestID -> "InfraDistance-InfraPoint-Min-default"
 ]
 
 (* Same arguments under "Aggregation" -> Max gives the diameter, 4. *)
 VerificationTest[
-  InfraDistance[GridGraph[{3, 3}], InfraSet[{1, 3}], InfraSet[{7, 9}],
+  InfraDistance[GridGraph[{3, 3}], <| 1 -> 1, 3 -> 1 |>, <| 7 -> 1, 9 -> 1 |>,
     "Aggregation" -> Max],
   4,
   TestID -> "InfraDistance-InfraPoint-Max"
@@ -428,7 +428,7 @@ VerificationTest[
 
 (* Mean over the four pair distances = 3. *)
 VerificationTest[
-  InfraDistance[GridGraph[{3, 3}], InfraSet[{1, 3}], InfraSet[{7, 9}],
+  InfraDistance[GridGraph[{3, 3}], <| 1 -> 1, 3 -> 1 |>, <| 7 -> 1, 9 -> 1 |>,
     "Aggregation" -> Mean],
   3,
   TestID -> "InfraDistance-InfraPoint-Mean"
@@ -455,7 +455,7 @@ VerificationTest[
    so callers never index into the wrapper. *)
 VerificationTest[
   With[{g = GridGraph[{3, 3}], fp = First @ FindInfraPoint[GridGraph[{3, 3}], 1]},
-    InfraDistance[g, fp, 9] === GraphDistance[g, fp["Vertex"], 9]
+    InfraDistance[g, fp, 9] === GraphDistance[g, fp, 9]
   ],
   True,
   TestID -> "InfraDistance-FindInfraPoint-no-extraction"
@@ -488,25 +488,25 @@ VerificationTest[
 VerificationTest[
   InfraDistance[ PathGraph @ Range @ 5,
     InfraEllipticShell[ { { 2, 3, 4 } } ],
-    InfraPoint[1] ],
+    <| 1 -> 1 |> ],
   1,
-  TestID -> "InfraDistance-InfraEllipticShell-InfraPoint"
+  TestID -> "InfraDistance-InfraEllipticShell-multiset"
 ]
 
-(* InfraSet is the bare-vertex-set alias of InfraSet.  On PathGraph[Range[5]]
+(* two multisets.  On PathGraph[Range[5]]
    the pair ({2,3}, {4,5}) has pairwise distances (2, 3, 1, 2); Min = 1. *)
 VerificationTest[
   InfraDistance[ PathGraph @ Range @ 5,
-    InfraSet[ { 2, 3 } ],
-    InfraSet[ { 4, 5 } ] ],
+    <| 2 -> 1, 3 -> 1 |>,
+    <| 4 -> 1, 5 -> 1 |> ],
   1,
-  TestID -> "InfraDistance-InfraSet-InfraSet"
+  TestID -> "InfraDistance-multiset-multiset"
 ]
 
 (* Symmetry: InfraDistance[g, p, q] == InfraDistance[g, q, p] for any two
    multi-realisation arguments under any aggregator over the pairwise matrix. *)
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], p = InfraSet[ { 1, 3 } ], q = InfraSet[ { 7, 9 } ] },
+  With[ { g = GridGraph[ { 3, 3 } ], p = <| 1 -> 1, 3 -> 1 |>, q = <| 7 -> 1, 9 -> 1 |> },
     And @@ Map[
       agg |-> InfraDistance[ g, p, q, "Aggregation" -> agg ] ===
               InfraDistance[ g, q, p, "Aggregation" -> agg ],
@@ -523,7 +523,7 @@ VerificationTest[
   InfraIntersection[
     InfraSegment[ { { 1, 2, 3, 4 } } ],
     InfraSegment[ { { 1, 5, 6, 3, 7 } } ] ],
-  InfraSet[ { 1, 3 } ],
+  <| 1 -> 1, 3 -> 1 |>,
   TestID -> "InfraIntersection-two-segments-vertex-set"
 ]
 
@@ -531,24 +531,24 @@ VerificationTest[
   InfraIntersection[
     InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
     InfraSegment[ { { 3, 5, 6 } } ] ],
-  InfraSet[ { 3 } ],
+  <| 3 -> 1 |>,
   TestID -> "InfraIntersection-multi-realisation-union-then-intersect"
 ]
 
 VerificationTest[
   InfraIntersection[
-    InfraSet[ { 1, 2, 3 } ],
+    <| 1 -> 1, 2 -> 1, 3 -> 1 |>,
     InfraSegment[ { { 2, 3, 4 } } ],
     InfraBall[ { { 3, 4, 5 } } ] ],
-  InfraSet[ { 3 } ],
+  <| 3 -> 1 |>,
   TestID -> "InfraIntersection-variadic-mixed-heads"
 ]
 
 VerificationTest[
   InfraUnion[
-    InfraSet[ { 1, 2 } ],
+    <| 1 -> 1, 2 -> 1 |>,
     InfraSegment[ { { 3, 4 } } ] ],
-  InfraSet[ { 1, 2, 3, 4 } ],
+  <| 1 -> 1, 2 -> 1, 3 -> 1, 4 -> 1 |>,
   TestID -> "InfraUnion-mixed-heads"
 ]
 
@@ -673,7 +673,7 @@ VerificationTest[
     n |-> AllTrue[
       { DownValues, UpValues, SubValues, OwnValues, FormatValues, NValues },
       f |-> ReleaseHold @ Map[ f, ToExpression[ n, InputForm, Hold ] ] === { } ] ],
-  { "InfraGeometricStep", "InfraIntersectQ", "InfraRevolution" },
+  { "InfraGeometricStep", "InfraIntersectQ", "InfraPoint", "InfraRevolution" },
   TestID -> "InfraScene-valueless-exports-are-scene-tokens"
 ]
 

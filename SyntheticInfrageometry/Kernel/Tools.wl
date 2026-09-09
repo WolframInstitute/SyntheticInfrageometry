@@ -34,8 +34,10 @@ PackageScope[infraRepSeqs]
 PackageScope[infraRepVerts]
 PackageScope[infraRepEdges]
 PackageScope[infraNumReps]
+PackageScope[pointQ]
+PackageScope[multisetQ]
+PackageScope[walkQ]
 PackageScope[toDensity]
-PackageScope[toFamily]
 PackageScope[linePointSet]
 PackageScope[cycleToVertexSequence]
 PackageScope[methodName]
@@ -52,6 +54,18 @@ methodName[ { m_String, ___ } ] := m
 
 methodOptions[ _String ]                := { }
 methodOptions[ { _String, opts___ } ]   := { opts }
+
+
+(* ===================== The shape reader ===================== *)
+
+(* THE SHAPE IS THE KIND -- nothing is wrapped.  A point is a vertex of the substrate carrying its label verbatim, a set / multiset / density is <| v -> m |> with a List the uniform case one Counts away, and a walk -- like every 1-d object -- is a Graph, a directed path being one walk and a DAG a bundle of them.
+   The substrate is an argument because a vertex label may itself be a List ({i, j} on a tessellation), and then only the graph separates the point row from the multiset row.  walkQ takes it for uniformity: the general walk family lives on {i, v} position pairs, whose vertices are not substrate vertices, so there is nothing graph-relative to check. *)
+
+pointQ[ graph_Graph, x_ ] := VertexQ[ graph, x ]
+
+multisetQ[ graph_Graph, x_ ] := AssociationQ[ x ] || ( ListQ[ x ] && ! VertexQ[ graph, x ] )
+
+walkQ[ _Graph, x_ ] := GraphQ[ x ]
 
 
 (* ===================== The method ladder ===================== *)
@@ -321,7 +335,7 @@ findAllMinimalAdmissible[ graph_Graph, set_List, admissible_, pruning_ ] :=
 
 (* ===================== Multi-realisation wrapper helpers ===================== *)
 
-(* a multi-object is a SET of realisations, canonical iff duplicate-free: realisations are alternative witnesses of one construction, all equally admissible, so no invariant distinguishes them and there is no mass channel here.  The vertex / edge measure of a bundle is a lossy PROJECTION off it (InfraMeasure), never stored state, and the one head whose projection is lossless is InfraPoint.
+(* a multi-object is a SET of realisations, canonical iff duplicate-free: realisations are alternative witnesses of one construction, all equally admissible, so no invariant distinguishes them and there is no mass channel here.  The vertex / edge measure of a bundle is a lossy PROJECTION off it (InfraMeasure), never stored state.
    A realisation slot holds either an explicit realisation or a compact atom (a geodesic-DAG Graph, InfraSegment only) standing for its whole family. *)
 
 (* the single source of truth for the canonicalisation rules and measure dispatch *)
@@ -351,17 +365,14 @@ Scan[ defineInfraBundleRules,
   List @@ $infraBundleHeads ]
 
 
-(* a multi-realisation wrapper or a list of unary wrappers spreads into its bare realisations -- an InfraPoint over its support, since the measure is not an anchor property but is reconstructed at the projection; anything else becomes a singleton *)
+(* a multi-realisation wrapper spreads into its bare realisations and a multiset over its support; anything else -- a bare vertex, and a walk still written as a vertex list -- is one anchor.  This is the REALISATION spread, not the anchor rule: a List here is a single realisation, and toDensity is where a List is read as a multiset *)
 
-infraSpread[ InfraPoint[ v_, ___ ] ] := { v }
-infraSpread[ list : { __InfraPoint } ] := #[[ 1 ]] & /@ list
 With[ { heads = $infraBundleHeads },
   infraSpread[ heads[ reps_List ] ] := reps;
   infraSpread[ list_List ] /; AllTrue[ list, MatchQ[ heads[ { _ } ] ] ] :=
     #[[ 1, 1 ]] & /@ list
 ]
-infraSpread[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := First /@ Keys @ fam
-infraSpread[ InfraSet[ vs_List, ___ ] ] := vs
+infraSpread[ fam_Association ] := Keys @ fam
 infraSpread[ InfraSegment[ dag_Graph ] ] := dagGeodesics[ dag ]
 infraSpread[ InfraSegment[ dags : { _Graph, __Graph } ] ] := Join @@ ( dagGeodesics /@ dags )
 infraSpread[ InfraCircle[ dags : { __Graph } ] ] := Catenate[ dagGeodesics /@ dags ]
@@ -370,12 +381,12 @@ infraSpread[ InfraRay[ dags : { __Graph } ] ]    := Catenate[ dagGeodesics /@ da
 infraSpread[ other_ ] := { other }
 
 
-(* support = the i-th vertices of the realisations long enough to have one, masses = their multiplicities: one of the projections at which a measure is constructed.  i may be negative *)
+(* support = the i-th vertices of the realisations long enough to have one, masses = their multiplicities: one of the projections at which a density is constructed.  i may be negative *)
 
-PackageScope[columnInfraPoint]
+PackageScope[columnDensity]
 
-columnInfraPoint[ reps_List, i_Integer ] :=
-  KeySort @ Counts[ InfraPoint[ #[[ i ]] ] & /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] ]
+columnDensity[ reps_List, i_Integer ] :=
+  KeySort @ Counts[ #[[ i ]] & /@ Select[ reps, Length[ # ] >= Abs[ i ] & ] ]
 
 
 (* all source -> sink directed paths, the one exponential step, materialised on demand; dagGeodesics[dag, limit] is the lazy form, a DFS stopping as soon as limit geodesics are collected *)
@@ -446,14 +457,7 @@ spreadFind[ wrapHead_, count_, core_, anchors__ ] :=
       bundleTake[ wrapHead, DeleteDuplicates @ Flatten[ results, 1 ], count ] ] ]
 
 
-(* the count contract on a realisation set: strict n fails on under-supply. *)
-
-(* the point family is a plain List of atoms, not a wrapper: the FindClique / FindInstance shape *)
-bundleTake[ InfraPoint, reps_, All ]               := InfraPoint /@ reps
-bundleTake[ InfraPoint, reps_, Automatic ]         := InfraPoint /@ Take[ reps, UpTo @ 1 ]
-bundleTake[ InfraPoint, reps_, UpTo[ n_Integer ] ] := InfraPoint /@ Take[ reps, UpTo @ n ]
-bundleTake[ InfraPoint, reps_, n_Integer ]         :=
-  If[ Length @ reps < n, $Failed, InfraPoint /@ Take[ reps, n ] ]
+(* the count contract on a realisation set: strict n fails on under-supply.  Points are not wrapped, so a point finder passes Identity as its head and the generic rules return the bare List of vertices *)
 
 bundleTake[ head_, reps_, All ]               := head[ reps ]
 bundleTake[ head_, reps_, Automatic ]         := head[ Take[ reps, UpTo @ 1 ] ]
@@ -462,11 +466,9 @@ bundleTake[ head_, reps_, n_Integer ]         :=
   If[ Length @ reps < n, $Failed, head[ Take[ reps, n ] ] ]
 
 
-(* the raw occupation count c(v) = total appearances across realisations, the association InfraMeasure normalises and InfraEqualQ compares.  For an InfraPoint the measure IS the point, for every other head a lossy projection; a compact geodesic-DAG atom contributes its whole family's occupation by DP, exactly as the enumerated family would *)
+(* the raw occupation count c(v) = total appearances across realisations, the association InfraMeasure normalises and InfraEqualQ compares.  For a density the multiset IS the object, for every head a lossy projection; a compact geodesic-DAG atom contributes its whole family's occupation by DP, exactly as the enumerated family would *)
 
-infraVertexMultiset[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := KeyMap[ First, fam ]
-infraVertexMultiset[ InfraPoint[ v_, ___ ] ] := <| v -> 1 |>
-infraVertexMultiset[ InfraSet[ vs_List, ___ ] ] := Counts @ vs
+infraVertexMultiset[ fam_Association ] := fam
 infraVertexMultiset[ InfraSegment[ dag_Graph ] ]   := GeodesicOccupation[ dag ]
 With[ { heads = $infraBundleHeads },
   infraVertexMultiset[ obj : ( head : heads )[ _List ] ] :=
@@ -509,23 +511,18 @@ infraEdgeMultiset[ g_, obj_ ] :=
 
 (* ===================== Instances, families, densities ===================== *)
 
-(* A FAMILY is a finitely supported measure on instances, <| instance -> weight |>, and carries no head: Counts, Merge, KeyMap, Total and KeySelect are its algebra.  A List is the family with uniform weight, one Counts away.
-   A DENSITY is the 0-d case, a family on InfraPoint keys -- the marginal of anything to the vertex set, with respect to the counting measure. *)
+(* A MULTISET is a finitely supported measure, <| atom -> weight |>, and carries no head: Counts, Merge, KeyMap, Total and KeySelect are its algebra, Keys its support.  A List is the multiset with uniform weight, one Counts away.  A DENSITY is the 0-d case, a multiset on bare vertices -- the marginal of anything to the vertex set, with respect to the counting measure.
 
-toFamily[ fam_Association ] := fam
-toFamily[ inst : ( InfraPoint | InfraWalk | InfraSet )[ __ ] ] := <| inst -> 1 |>
-toFamily[ list_List ] := Counts @ list
-toFamily[ x_ ] := <| x -> 1 |>
+   the ANCHOR RULE: every anchor argument of every construction is read through toDensity, so points, sets and objects all work in every construction under one coercion.  A vertex is the unit mass, a List its Counts, an Association itself, a graph its vertex occupation.  The branches are ordered rather than left to DownValue sorting, since a vertex label may itself be a List and only pointQ tells the two rows apart.
 
+   keys sorted, so densities built by different routes compare SameQ; this was the one guarantee the old measure head carried *)
 
-(* the ANCHOR RULE: every anchor argument of every construction is read as a 0-d density, so effective points, sets and objects all work in every construction under one coercion.  A bare vertex and an InfraPoint are the unit mass, an InfraSet is uniform on its vertices, a density is already one *)
-
-(* keys sorted, so densities built by different routes compare SameQ; this was the one guarantee the old measure head carried *)
-toDensity[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := KeySort @ fam
-toDensity[ InfraPoint[ v_, ___ ] ] := <| InfraPoint[ v ] -> 1 |>
-toDensity[ InfraSet[ vs_List, ___ ] ] := KeySort @ AssociationMap[ 1 &, InfraPoint /@ vs ]
-toDensity[ list : { __InfraPoint } ] := KeySort @ Counts[ InfraPoint[ First @ # ] & /@ list ]
-toDensity[ v_ ] := <| InfraPoint[ v ] -> 1 |>
+toDensity[ graph_Graph, x_ ] := Which[
+  pointQ[ graph, x ], <| x -> 1 |>,
+  AssociationQ[ x ],  KeySort @ x,
+  GraphQ[ x ],        KeySort @ GeodesicOccupation @ x,
+  ListQ[ x ],         KeySort @ Counts @ x,
+  True,               <| x -> 1 |> ]
 
 
 (* ===================== Visit measure ===================== *)
@@ -558,7 +555,6 @@ normalizeMeasure[ method_, counts_, obj_ ] := Switch[ method,
 
 (* the single source of truth shared with InfraSceneHighlight's repVerts / repEdges dispatch *)
 
-infraRepType[ InfraPoint ]         = "Points";
 infraRepType[ Association ]        = "Points";
 infraRepType[ InfraSegment ]       = "Paths";
 infraRepType[ InfraLine ]          = "Paths";
@@ -575,13 +571,10 @@ infraRepType[ InfraShell ]         = "Sets";
 infraRepType[ InfraBall ]          = "Sets";
 infraRepType[ InfraEllipticShell ] = "Sets";
 infraRepType[ InfraPlane ]         = "Sets";
-infraRepType[ InfraSet ]           = "Sets";
 
 
 infraRepSeqs[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] := polylineToVertexSeqs @ reps
-infraRepSeqs[ InfraSet[ vs_List, ___ ] ]                                     := { vs }
-infraRepSeqs[ InfraPoint[ v_, ___ ] ]                                        := { v }
-infraRepSeqs[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ]    := First /@ Keys @ fam
+infraRepSeqs[ fam_Association ]                                              := Keys @ fam
 infraRepSeqs[ head_[ reps_List, ___ ] ]                                      := reps
 
 (* a point realisation is a bare vertex (wrapped to a singleton), path / cycle / set realisations are vertex lists; edges are sorted lists {a, b}, which InfraMeasure remaps to UndirectedEdge *)
@@ -589,12 +582,10 @@ infraRepSeqs[ head_[ reps_List, ___ ] ]                                      := 
 infraRepVerts[ "Points", rep_ ] := { rep }
 infraRepVerts[ _, rep_ ]        := rep
 
-(* N = the number of realisations the marginal was summed over: a measured InfraPoint's total mass, a bundle's sum of per-slot family sizes (1 for an explicit realisation, the whole geodesic count for a compact DAG atom), 1 for a single set *)
+(* N = the number of realisations the marginal was summed over: a density's largest mass, a bundle's sum of per-slot family sizes (1 for an explicit realisation, the whole geodesic count for a compact DAG atom), 1 for a single set *)
 
-infraNumReps[ InfraPoint[ _, ___ ] ]                := 1
 (* a measure normalises by its HEAVIEST mass, not its total: the channel encodes RELATIVE mass within the object, so the modal vertex draws full and lighter ones fade.  Normalising by the total would render a uniform ball of n vertices at 1/n and make it vanish, and it is what separates ["Measure"] from ["ProbabilityMeasure"] *)
-infraNumReps[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := If[ Length @ fam === 0, 1, Max @ fam ]
-infraNumReps[ InfraSet[ _List, ___ ] ]              := 1
+infraNumReps[ fam_Association ]                     := If[ Length @ fam === 0, 1, Max @ fam ]
 infraNumReps[ InfraSegment[ dag_Graph ] ]           := atomFamilySize[ dag ]
 infraNumReps[ head_[ reps_List, ___ ] ]             := Max[ Total[ atomFamilySize /@ reps ], 1 ]
 

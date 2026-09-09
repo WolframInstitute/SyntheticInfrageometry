@@ -9,8 +9,8 @@ FindInfraQuadric[ graph_Graph, foci_List, c_ ] :=
   FindInfraQuadric[ graph, foci, c, ConstantArray[ 1, Length @ foci ] ]
 
 FindInfraQuadric[ graph_Graph, foci_List, c_, weights_List ] :=
-  InfraSet @ With[
-    { foci0 = Replace[ foci, { InfraPoint[ v_ ] :> v, InfraSet[ vs_List ] :> First[ vs ] }, { 1 } ] },
+  toDensity[ graph, With[
+    { foci0 = Replace[ foci, fam_Association :> First @ Keys @ fam, { 1 } ] },
     { dm   = GraphDistanceMatrix @ graph,
       idxs = VertexIndex[ graph, # ] & /@ foci0,
       vs   = VertexList @ graph },
@@ -19,4 +19,4 @@ FindInfraQuadric[ graph_Graph, foci_List, c_, weights_List ] :=
       Replace[ c,
         { { cMin_, cMax_ } :> Thread[ cMin <= sums <= cMax ],
           c0_ :> Thread[ sums <= c0 ] } ] ]
-  ]
+  ] ]

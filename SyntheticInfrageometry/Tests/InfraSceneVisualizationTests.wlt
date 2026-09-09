@@ -33,7 +33,7 @@ VerificationTest[
 
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    Head @ InfraSceneHighlight[ g, { InfraSet @ FindInfraPoint[ g, 5 ] } ]
+    Head @ InfraSceneHighlight[ g, { FindInfraPoint[ g, 5 ] } ]
   ],
   Graph,
   TestID -> "InfraSceneHighlight-vertex-singletons"
@@ -59,16 +59,16 @@ VerificationTest[
   TestID -> "InfraSceneHighlight-mixed-segment-and-circle"
 ]
 
-(* InfraPoint wrapper: each rep treated as a single vertex (no edges).
-   On a list-named-vertex graph, this is the case where auto-detection
-   could be ambiguous between "single list-vertex" and "list of vertices". *)
+(* a multiset of vertices: each key treated as a single vertex (no edges).
+   On a list-named-vertex graph, this is the case where the shape reader has to
+   separate "single list-vertex" from "multiset of vertices". *)
 VerificationTest[
   With[ { g = MeshConnectivityGraph @ DiscretizeRegion[
         Rectangle[], MaxCellMeasure -> 0.1 ] },
     With[ {
         pts  = Take[ VertexList @ g, 2 ],
         opts = Options @
-          InfraSceneHighlight[ g, { toDensity[ InfraSet[ Take[ VertexList @ g, 2 ] ] ] -> Red } ] },
+          InfraSceneHighlight[ g, { toDensity[ g, Take[ VertexList @ g, 2 ] ] -> Red } ] },
       Length @ Flatten @ Cases[ opts,
         HoldPattern[ VertexShapeFunction -> rules_ ] :>
           Cases[ rules, ( v_ -> _ ) /; MemberQ[ pts, v ] ], Infinity ] > 0 &&
@@ -76,7 +76,7 @@ VerificationTest[
     ]
   ],
   True,
-  TestID -> "InfraSceneHighlight-InfraPoint-vertices-only"
+  TestID -> "InfraSceneHighlight-multiset-vertices-only"
 ]
 
 (* InfraShell wrapper: each rep is a vertex set, edges are induced subgraph.
@@ -146,7 +146,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     ! FreeQ[
       Options @ InfraSceneHighlight[ g,
-        { InfraSet[ { 1, 6, 11 } ] -> Directive[ Blue, AbsolutePointSize[ 25 ] ] } ],
+        { <| 1 -> 1, 6 -> 1, 11 -> 1 |> -> Directive[ Blue, AbsolutePointSize[ 25 ] ] } ],
       AbsolutePointSize[ 25 ] ]
   ],
   True,
@@ -159,7 +159,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
     ! FreeQ[
       Options @ InfraSceneHighlight[ g,
-        { Style[ InfraSet[ { 1, 6 } ], Green, AbsolutePointSize[ 30 ] ] } ],
+        { Style[ <| 1 -> 1, 6 -> 1 |>, Green, AbsolutePointSize[ 30 ] ] } ],
       AbsolutePointSize[ 30 ] ]
   ],
   True,
@@ -258,7 +258,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     With[ { opts = Options @ InfraSceneHighlight[ g,
-          { InfraPoint[13] -> { VertexStyle -> Blue, VertexSize -> 12 } } ] },
+          { 13 -> { VertexStyle -> Blue, VertexSize -> 12 } } ] },
       Cases[ opts, HoldPattern[ VertexSize -> _ ], Infinity ] =!= { } &&
       FreeQ[ opts, AbsolutePointSize ]
     ]
@@ -273,7 +273,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     With[ { opts = Options @ InfraSceneHighlight[ g,
-          { InfraPoint[13] -> { Blue, AbsolutePointSize[ 12 ],
+          { 13 -> { Blue, AbsolutePointSize[ 12 ],
             "PointSizeRange" -> { 4, 30 } } } ] },
       Cases[ opts, HoldPattern[ VertexShapeFunction -> _ ], Infinity ] =!= { } &&
       ! FreeQ[ opts, AbsolutePointSize[ 12 ] ] &&
@@ -317,7 +317,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 7, 7 } ] },
     { (* a UNIFORM effective point (here a ball) is uniformly bright: its diffuseness
          is its extent, not a per-vertex fade *)
-      Union @ Cases[ Options @ InfraSceneHighlight[ g, { toDensity @ InfraSet @ FindInfraBall[ g, 25, 2 ] } ],
+      Union @ Cases[ Options @ InfraSceneHighlight[ g, { toDensity[ g, Keys @ InfraUnion @ FindInfraBall[ g, 25, 2 ] ] } ],
         AbsolutePointSize[ s_ ] :> s, Infinity ],
       (* a NON-uniform effective point draws its heaviest vertex full and the rest smaller *)
       With[ { sizes = Cases[ Options @ InfraSceneHighlight[ g, { FindInfraMidpoint[ g, 1, 49 ] } ],
@@ -373,7 +373,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
     Cases[
       Options @ InfraSceneHighlight[ g,
-        { InfraPoint[13] -> { VertexSize -> Large } } ],
+        { 13 -> { VertexSize -> Large } } ],
       HoldPattern[ VertexSize -> _ ], Infinity ] =!= { }
   ],
   True,
@@ -383,16 +383,16 @@ VerificationTest[
 
 (* ===== point-layer highlight objects ===== *)
 
-(* the point finders return a plain List of atoms; it must flow into the scene
+(* the point finders return a plain List of vertices; it must flow into the scene
    with no glue, and distribute the point-size measure like any bundle *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    { Cases[ Options @ InfraSceneHighlight[ g, { { InfraPoint[3], InfraPoint[9] } -> Red } ],
+    { Cases[ Options @ InfraSceneHighlight[ g, { { 3, 9 } -> Red } ],
         AbsolutePointSize[ s_ ] :> s, Infinity ],
-      Cases[ Options @ InfraSceneHighlight[ g, { InfraPoint[3] } ],
+      Cases[ Options @ InfraSceneHighlight[ g, { 3 } ],
         AbsolutePointSize[ s_ ] :> s, Infinity ] } ],
   { { 3, 3 }, { 6 } },
-  TestID -> "InfraSceneHighlight-atom-list-distributes-size"
+  TestID -> "InfraSceneHighlight-vertex-list-distributes-size"
 ]
 
 (* a bare vertex is a legal highlight object *)
@@ -406,7 +406,7 @@ VerificationTest[
 (* AbsoluteVertexSizes: a size class is one absolute value and never consults the graph.
    The three graphs are the ones the work item named as its acceptance test. *)
 VerificationTest[
-  DeleteDuplicates[ ( graph |-> Cases[ Options @ InfraSceneHighlight[ graph, { InfraPoint @ First @ VertexList @ graph } ],
+  DeleteDuplicates[ ( graph |-> Cases[ Options @ InfraSceneHighlight[ graph, { First @ VertexList @ graph } ],
     _AbsolutePointSize, Infinity ] ) /@ { PathGraph @ Range @ 5, GridGraph[ { 6, 6 } ], PetersenGraph[] } ],
   { { AbsolutePointSize[ 6 ] } },
   TestID -> "InfraSceneHighlight-vertex-size-is-graph-independent"
@@ -467,7 +467,7 @@ VerificationTest[
 (* StrikeOutPalette: colour follows ADDITION ORDER, not object type. *)
 VerificationTest[
   With[ { g = GridGraph[ { 5, 5 } ] },
-    With[ { a = FindInfraSegment[ g, 1, 25 ], b = InfraSet @ FindInfraBall[ g, 13, 1 ] },
+    With[ { a = FindInfraSegment[ g, 1, 25 ], b = InfraUnion @ FindInfraBall[ g, 13, 1 ] },
       Module[ { c1, c2 },
         c1 = Cases[ ToBoxes @ InfraSceneHighlight[ g, { a, b } ], _RGBColor, Infinity ];
         c2 = Cases[ ToBoxes @ InfraSceneHighlight[ g, { b, a } ], _RGBColor, Infinity ];

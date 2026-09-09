@@ -24,9 +24,9 @@ InfraScalarProduct[ graph_Graph, o_, u_, v_, OptionsPattern[] ] :=
         ]
       ],
     "Parallelogram",
-      With[ { plus  = #[ "Vertex" ] & /@ FindInfraLinearCombination[
+      With[ { plus  = FindInfraLinearCombination[
                 graph, o, { { 1, u }, {  1, v } }, All, "ScaleMethod" -> "Line" ],
-              minus = #[ "Vertex" ] & /@ FindInfraLinearCombination[
+              minus = FindInfraLinearCombination[
                 graph, o, { { 1, u }, { -1, v } }, All, "ScaleMethod" -> "Line" ] },
         If[ plus === { } || minus === { }, $Failed,
           With[ { vals = DeleteDuplicates @ Flatten @ Outer[
@@ -53,7 +53,7 @@ FindInfraLinearCombination[ graph_Graph, o_, terms_List,
     count : ( _Integer | UpTo[ _Integer ] | All ) : All, opts : OptionsPattern[] ] :=
   With[ { lambdas = terms[[ All, 1 ]], us = terms[[ All, 2 ]],
           scaleM = OptionValue[ "ScaleMethod" ], sumM = OptionValue[ "SumMethod" ] },
-    spreadFind[ InfraPoint, count,
+    spreadFind[ Identity, count,
       Function[ Null,
         With[ { thisO = #1, thisUs = { ##2 } },
           { scaled = MapThread[ findInfraScale[ graph, thisO, #2, #1, scaleM ] &,
@@ -84,8 +84,8 @@ InfraAngle::badmethod = "Method `1` is not supported by InfraAngle.";
 Options[ InfraAngle ] = { Method -> "Arclength" };
 
 InfraAngle[ graph_Graph, triple : { _, _, _ }, opts : OptionsPattern[] ] /;
-    ! FreeQ[ triple, _InfraPoint ] :=
-  InfraAngle[ graph, triple /. InfraPoint[ v_ ] :> v, opts ]
+    ! FreeQ[ triple, _Association ] :=
+  InfraAngle[ graph, triple /. fam_Association :> First @ Keys @ fam, opts ]
 
 InfraAngle[ graph_Graph, { q1_, p_, q2_ }, OptionsPattern[] ] :=
   Switch[ methodName @ OptionValue[ Method ],

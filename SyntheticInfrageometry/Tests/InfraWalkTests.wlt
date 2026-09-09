@@ -39,16 +39,16 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Sort @ FindInfraWalk[ PathGraph[ Range[ 5 ] ], InfraSet[ { 1, 2 } ], 3, All ][ "Realizations" ],
+  Sort @ FindInfraWalk[ PathGraph[ Range[ 5 ] ], <| 1 -> 1, 2 -> 1 |>, 3, All ][ "Realizations" ],
   Sort[ { { 1, 2, 3, 4 }, { 2, 1 }, { 2, 3, 4, 5 } } ],
   TestID -> "FindInfraWalk-pointed-multi-source-spread"
 ]
 
 (* the two-point form is sugar -- the walks ending at p2; a target matching
-   the kspec grammar is written InfraPoint[p2], since the pointed reading
+   the kspec grammar is written p2, since the pointed reading
    wins the positional tie *)
 VerificationTest[
-  FindInfraWalk[ PathGraph[ Range[ 5 ] ], 1, InfraPoint[ 5 ] ],
+  FindInfraWalk[ PathGraph[ Range[ 5 ] ], 1, 5 ],
   InfraWalk[ { { 1, 2, 3, 4, 5 } } ],
   TestID -> "FindInfraWalk-two-point-wrapped-target"
 ]
@@ -191,7 +191,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  FindInfraWalk[ PathGraph[ Range[ 5 ] ], 3, InfraPoint[ 3 ] ],
+  FindInfraWalk[ PathGraph[ Range[ 5 ] ], 3, <| 3 -> 1 |> ],
   InfraWalk[ { } ],
   TestID -> "FindInfraWalk-degenerate-same-endpoints"
 ]
@@ -200,7 +200,7 @@ VerificationTest[
 
 VerificationTest[
   Sort[ #[[ { 1, -1 } ]] & /@
-    FindInfraWalk[ PathGraph[ Range[ 5 ] ], InfraSet[ { 1, 2 } ], 5, Infinity, All ][ "Realizations" ] ],
+    FindInfraWalk[ PathGraph[ Range[ 5 ] ], <| 1 -> 1, 2 -> 1 |>, 5, Infinity, All ][ "Realizations" ] ],
   Sort[ { { 1, 5 }, { 2, 5 } } ],
   TestID -> "FindInfraWalk-multi-source-spread"
 ]
@@ -843,8 +843,8 @@ VerificationTest[
    occupation measure of where the walks terminate. *)
 VerificationTest[
   With[ { reps = { { 1, 2, 4 }, { 5, 6, 4 }, { 7, 8, 9 } } },
-    KeyMap[ First, InfraWalk[ reps ][ "End" ] ] === KeySort @ Counts[ Last /@ reps ] &&
-    KeyMap[ First, InfraWalk[ reps ][ "Start" ] ] === KeySort @ Counts[ First /@ reps ]
+    InfraWalk[ reps ][ "End" ] === KeySort @ Counts[ Last /@ reps ] &&
+    InfraWalk[ reps ][ "Start" ] === KeySort @ Counts[ First /@ reps ]
   ],
   True,
   TestID -> "InfraWalk-endpoint-accessors-keep-multiplicity"
@@ -972,9 +972,9 @@ VerificationTest[
    default witness is reproducible without a seed and is the explicit "Greedy" one *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    { FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ] === FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ],
-      FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 } ] ===
-        FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 }, Method -> "Greedy" ] } ],
+    { FindInfraWalk[ g, 1, 16, { 6 } ] === FindInfraWalk[ g, 1, 16, { 6 } ],
+      FindInfraWalk[ g, 1, 16, { 6 } ] ===
+        FindInfraWalk[ g, 1, 16, { 6 }, Method -> "Greedy" ] } ],
   { True, True },
   TestID -> "FindInfraWalk-Automatic-is-deterministic-Greedy"
 ]
@@ -983,12 +983,12 @@ VerificationTest[
    reproduces it, and the seeds disagree *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    { BlockRandom[ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 }, Method -> "RandomGreedy" ][ "Realizations" ],
+    { BlockRandom[ FindInfraWalk[ g, 1, 16, { 6 }, Method -> "RandomGreedy" ][ "Realizations" ],
         RandomSeeding -> 3 ] ===
-      BlockRandom[ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 }, Method -> "RandomGreedy" ][ "Realizations" ],
+      BlockRandom[ FindInfraWalk[ g, 1, 16, { 6 }, Method -> "RandomGreedy" ][ "Realizations" ],
         RandomSeeding -> 3 ],
       Length @ Union @ Table[
-        First @ FindInfraWalk[ g, 1, InfraPoint[ 16 ], { 6 }, Method -> "RandomGreedy" ][ "Realizations" ],
+        First @ FindInfraWalk[ g, 1, 16, { 6 }, Method -> "RandomGreedy" ][ "Realizations" ],
         { 30 } ] > 1 } ],
   { True, True },
   TestID -> "FindInfraWalk-RandomGreedy-witness-is-ambient-seeded"
@@ -998,9 +998,9 @@ VerificationTest[
    what "Greedy" means on this signature *)
 VerificationTest[
   With[ { g = GridGraph[ { 4, 4 } ] },
-    { w = First @ FindInfraWalk[ g, 1, InfraPoint[ 16 ] ][ "Realizations" ] },
+    { w = First @ FindInfraWalk[ g, 1, <| 16 -> 1 |> ][ "Realizations" ] },
     { Length[ w ] - 1 == GraphDistance[ g, 1, 16 ],
-      FindInfraWalk[ g, 1, InfraPoint[ 16 ] ] === FindInfraWalk[ g, 1, InfraPoint[ 16 ], Method -> "Greedy" ] } ],
+      FindInfraWalk[ g, 1, <| 16 -> 1 |> ] === FindInfraWalk[ g, 1, <| 16 -> 1 |>, Method -> "Greedy" ] } ],
   { True, True },
   TestID -> "FindInfraWalk-two-point-countless-default-is-Greedy-geodesic"
 ]
@@ -1335,11 +1335,11 @@ VerificationTest[
 
 (* straight through the centre of the 3-by-3 grid twice, once along each
    axis: the passes separate each other on the shell {1, 2}, a transverse
-   crossing at scale 1; the ambient point, InfraPoint and the position pair
+   crossing at scale 1; the ambient point, its multiset and the position pair
    all name it *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ], w = { 1, 4, 5, 6, 9, 8, 5, 2, 3 } },
-    { InfraWalkCrossingQ[ g, w, 5, 1 ], InfraWalkCrossingQ[ g, w, InfraPoint[ 5 ], 1 ],
+    { InfraWalkCrossingQ[ g, w, 5, 1 ], InfraWalkCrossingQ[ g, w, 5, 1 ],
       InfraWalkCrossingQ[ g, w, { 3, 7 }, 1 ] } ],
   { True, True, True },
   TestID -> "InfraWalkCrossingQ-straight-crossing-is-transverse"

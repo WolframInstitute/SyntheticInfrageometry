@@ -17,7 +17,7 @@ VerificationTest[
 
 VerificationTest[
   InfraPolygon[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4 } } ], InfraSegment[ { { 4, 1 } } ] } } ][ "Vertices" ],
-  { { InfraPoint[1], InfraPoint[3], InfraPoint[4] } },
+  { { 1, 3, 4 } },
   TestID -> "InfraPolygon-Vertices-single"
 ]
 
@@ -289,11 +289,11 @@ VerificationTest[
   TestID -> "FindInfraRegularPolygon-grid5-From-radius2-localized"
 ]
 
-(* "From" accepts InfraPoint[v] wrapper, unwrapping to a bare vertex. *)
+(* "From" accepts v wrapper, unwrapping to a bare vertex. *)
 
 VerificationTest[
   FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
-    "From" -> InfraPoint[13] ] ===
+    "From" -> 13 ] ===
   FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 ],
   True,
   TestID -> "FindInfraRegularPolygon-From-InfraPoint-unary"
@@ -310,12 +310,12 @@ VerificationTest[
   TestID -> "FindInfraRegularPolygon-From-FindInfraPoint-pipe"
 ]
 
-(* Multi-anchor InfraSet[{v1, v2}] in localization: NeighborhoodGraph
+(* Multi-anchor <| v1 -> 1, v2 -> 1 |> in localization: NeighborhoodGraph
    accepts a list, giving N_r(v1) union N_r(v2). *)
 
 VerificationTest[
   Sort @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
-    "From" -> InfraSet[ { 1, 25 } ] -> 1 ] ===
+    "From" -> <| 1 -> 1, 25 -> 1 |> -> 1 ] ===
   Sort @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
     "From" -> { 1, 25 } -> 1 ],
   True,
@@ -323,13 +323,13 @@ VerificationTest[
 ]
 
 (* Multi-anchor membership: cycles containing at least one of the listed
-   vertices.  In GridGraph[{5,5}], "From" -> InfraSet[{1, 25}] should
+   vertices.  In GridGraph[{5,5}], "From" -> <| 1 -> 1, 25 -> 1 |> should
    pick squares incident to corner 1 OR corner 25 = 2 squares total
    (one per corner). *)
 
 VerificationTest[
   Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
-    "From" -> InfraSet[ { 1, 25 } ] ][ "Realizations" ],
+    "From" -> <| 1 -> 1, 25 -> 1 |> ][ "Realizations" ],
   2,
   TestID -> "FindInfraRegularPolygon-From-InfraPoint-multi-membership"
 ]

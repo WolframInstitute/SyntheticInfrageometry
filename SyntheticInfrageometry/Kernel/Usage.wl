@@ -4,15 +4,15 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 
 (* ===================== InfraPoint ===================== *)
 
-InfraPoint::usage = "InfraPoint[v] is the point atom: one vertex of the substrate, carrying its label verbatim. InfraPoint[v, meta] carries a trailing metadata Association (\"Label\", \"Style\", \"Kind\"), read back by [\"Meta\"] and ignored by everything else. Accessors \"Vertex\", \"Vertices\", \"Mass\", \"Meta\", and graph-keyed invariants such as [\"BallVolumes\", g] and [\"Dimension\", g].";
-FindInfraPoint::usage = "FindInfraPoint[graph] draws a point from the candidate pool; a trailing n | UpTo[n] | All sets the count. Options \"From\", \"Distance\", \"MaxCliques\".";
-FindInfraMidpoint::usage = "FindInfraMidpoint[graph, p1, p2] gives the density <|InfraPoint[v] -> m, ...|> of the middle vertices of every geodesic from p1 to p2 (one vertex at even distance, two at odd). Option Method.";
-FindInfraGoldenSection::usage = "FindInfraGoldenSection[graph, p1, p2] gives the density <|InfraPoint[v] -> m, ...|> at the golden-ratio index along every geodesic from p1 to p2. Option Method.";
+InfraPoint::usage = "InfraPoint is the scene-language token for the point search -- FindInfraPoint minus the graph. InfraPoint[] draws from the whole vertex list, InfraPoint[v] names one vertex, InfraPoint[\"Center\"] / InfraPoint[\"Periphery\"] a pool, InfraPoint[origin, d] the vertices at distance d, InfraPoint[n, \"Distance\" -> spec] an n-tuple. It is not a wrapper: a point IS a vertex of the substrate, carrying its label verbatim.";
+FindInfraPoint::usage = "FindInfraPoint[graph] draws a vertex from the candidate pool; a trailing n | UpTo[n] | All sets the count and returns a List of vertices. Options \"From\", \"Distance\", \"MaxCliques\".";
+FindInfraMidpoint::usage = "FindInfraMidpoint[graph, p1, p2] gives the density <|v -> m, ...|> of the middle vertices of every geodesic from p1 to p2 (one vertex at even distance, two at odd). Option Method.";
+FindInfraGoldenSection::usage = "FindInfraGoldenSection[graph, p1, p2] gives the density <|v -> m, ...|> at the golden-ratio index along every geodesic from p1 to p2. Option Method.";
 FindInfraReflection::usage = "FindInfraReflection[graph, x, a] gives the reflections x' of x through a: the vertices with B(x, a, x') and d(a, x) == d(a, x').";
 CompleteInfraEquilateralTriangle::usage = "CompleteInfraEquilateralTriangle[graph, p1, p2] gives the apexes equidistant from p1 and p2 at distance d(p1, p2) (Euclid I.1).";
 FindInfraCommonPoint::usage = "FindInfraCommonPoint[graph, lines] gives the points lying on every listed line.";
-FindClosestInfraPoint::usage = "FindClosestInfraPoint[graph, line, point] gives the points of line at minimum graph distance from point.";
-SelectInfraPoint::usage = "SelectInfraPoint[graph, vertices] draws a point from a supplied bundle under graph distance; a trailing n | UpTo[n] | All sets the count. Options \"From\", \"Distance\", \"MaxCliques\".";
+FindClosestInfraPoint::usage = "FindClosestInfraPoint[graph, line, point] gives the vertices of line at minimum graph distance from point.";
+SelectInfraPoint::usage = "SelectInfraPoint[graph, vertices] draws a vertex from a supplied bundle under graph distance; a trailing n | UpTo[n] | All sets the count. Options \"From\", \"Distance\", \"MaxCliques\".";
 InfraReachableQ::usage = "InfraReachableQ[graph, p1, p2] tests whether p1 and p2 have realisations in the same connected component.";
 
 (* ===================== InfraSegment ===================== *)
@@ -53,7 +53,7 @@ InfraPerpendicularQ::usage = "InfraPerpendicularQ[graph, l1, l2] tests whether t
 PencilDirections::usage = "PencilDirections[graph, O] gives the pencil at O: every ray from O, as a list of vertex sequences.";
 PencilCardinality::usage = "PencilCardinality[graph, O] gives the number of rays from O, counted on the ray pools without enumeration.";
 LineCount::usage = "LineCount[graph] gives the number of distinct canonical maximal geodesics in graph.";
-FindLineHull::usage = "FindLineHull[graph, S] gives the smallest superset of S closed under the line operator. Option \"LineStructure\".";
+FindLineHull::usage = "FindLineHull[graph, S] gives, as the multiset <|v -> 1, ...|>, the smallest superset of S closed under the line operator. Option \"LineStructure\".";
 LineHullQ::usage = "LineHullQ[graph, S] tests whether S is closed under the line operator.";
 UniversalLineQ::usage = "UniversalLineQ[graph] tests whether some pair spans a line filling a whole connected component (Chen-Chvatal); UniversalLineQ[graph, {u, v}] tests one line.";
 
@@ -68,7 +68,7 @@ ConsistentPathSystemQ::usage = "ConsistentPathSystemQ[graph, obj] tests whether 
 InfraShell::usage = "InfraShell[{set1, ...}] is a bundle of metric shells -- level sets of the distance from a centre.";
 FindInfraShell::usage = "FindInfraShell[graph, c, r] gives the metric shell { v : d(c, v) == r }; r may be a band {rmin, rmax}. Options Properties, Method.";
 FindInfraOsculatingShell::usage = "FindInfraOsculatingShell[graph, path, i, k] gives the shells whose level set contains the k-vertex window of path centred at position i, one per osculating centre.";
-FindAdvancingInfraFront::usage = "FindAdvancingInfraFront[graph, origin, steps] gives the foliation by a bouncing wavefront: each front steps one geodesic step outward and reflects inward where it cannot.";
+FindAdvancingInfraFront::usage = "FindAdvancingInfraFront[graph, origin, steps] gives the foliation by a bouncing wavefront as a List of multisets <|v -> 1, ...|>: each front steps one geodesic step outward and reflects inward where it cannot.";
 FindInfraShellCenter::usage = "FindInfraShellCenter[graph, shell] recovers {center, radii} from a shell. Option Method.";
 InfraShellQ::usage = "InfraShellQ[graph, vertexSet] tests whether vertexSet is a metric shell { v : d(c, v) == r } for some centre c and radius r.";
 SeparatesQ::usage = "SeparatesQ[graph, vertexSet, u, v] tests whether deleting vertexSet disconnects u from v.";
@@ -78,7 +78,7 @@ SeparatesQ::usage = "SeparatesQ[graph, vertexSet, u, v] tests whether deleting v
 InfraBall::usage = "InfraBall[{ball1, ...}] is a bundle of closed metric balls.";
 FindInfraBall::usage = "FindInfraBall[graph, c, r] gives the closed ball { v : d(c, v) <= r }.";
 InfraBallQ::usage = "InfraBallQ[graph, vertexSet] tests whether vertexSet is a closed metric ball.";
-FindBallHull::usage = "FindBallHull[graph, S] gives the ball hull of S: the intersection of all closed balls containing S, the smallest ball-convex superset.";
+FindBallHull::usage = "FindBallHull[graph, S] gives, as the multiset <|v -> 1, ...|>, the ball hull of S: the intersection of all closed balls containing S, the smallest ball-convex superset.";
 BallHullQ::usage = "BallHullQ[graph, S] tests whether S is ball-convex, i.e. an intersection of closed balls.";
 
 (* ===================== InfraCircle ===================== *)
@@ -190,20 +190,20 @@ MetricInterval::usage = "MetricInterval[graph, u, v] gives { w : d(u, w) + d(w, 
 GeodesicMultiplicity::usage = "GeodesicMultiplicity[graph, u, v] gives the number of distinct geodesics from u to v.";
 GeodesicMultiplicityMatrix::usage = "GeodesicMultiplicityMatrix[graph] gives {D, M} with D the distance matrix and M the matrix of geodesic counts.";
 MedianVertices::usage = "MedianVertices[graph, vs] gives the vertices minimising the sum of distances to vs.";
-FindSegmentHull::usage = "FindSegmentHull[graph, S] gives the smallest superset of S closed under MetricInterval -- the geodesic convex hull. Option \"LineStructure\".";
+FindSegmentHull::usage = "FindSegmentHull[graph, S] gives, as the multiset <|v -> 1, ...|>, the smallest superset of S closed under MetricInterval -- the geodesic convex hull. Option \"LineStructure\".";
 SegmentHullQ::usage = "SegmentHullQ[graph, S] tests whether S is geodesically convex.";
 
 (* ===================== Visit measure ===================== *)
 
 InfraMeasure::usage = "InfraMeasure[obj] gives the occupation measure <|v -> appearances|> of an Infra* bundle; InfraMeasure[graph, obj] also unlocks the edge measure. Options \"On\", Method.";
 
-(* ===================== InfraSet ===================== *)
+(* ===================== Sets ===================== *)
 
-InfraSet::usage = "InfraSet[vs] is the set instance over a bare vertex list, coercing any Infra* wrapper or density to its underlying vertex set. InfraSet[vs, meta] carries a trailing metadata Association (\"Label\", \"Style\", \"Kind\"). set[[k]] is the k-th vertex as an InfraPoint. Accessors \"Vertices\", \"Length\", \"Meta\".";
-FindInfraEquidistantSet::usage = "FindInfraEquidistantSet[graph, {p1, ..., pn}] gives { v : d(p1, v) == ... == d(pn, v) }; a trailing {lo, hi} thickens each bisector to a slab.";
-InfraBoundary::usage = "InfraBoundary[graph, s] gives the boundary of a vertex set or Infra* object. Option Method (\"Combinatorial\", \"Alexandrov\").";
-InfraInterior::usage = "InfraInterior[graph, s] gives the interior of a vertex set or Infra* object. Option Method (\"Combinatorial\", \"Alexandrov\").";
-InfraVolume::usage = "InfraVolume[graph, s] gives the volume of a vertex set or Infra* object. Options \"Measure\" (\"FullCount\", \"WithoutBoundary\", \"HalfBoundary\", \"Boundary\"), Method.";
+(* a set is the multiset <| v -> m |> itself -- Keys is the support, Length the size -- so there is no head to document.  Unlike every other Infra head it names no construction, so it is not a scene token either: a literal vertex set is dispatched by shape *)
+FindInfraEquidistantSet::usage = "FindInfraEquidistantSet[graph, {p1, ..., pn}] gives { v : d(p1, v) == ... == d(pn, v) } as the multiset <|v -> 1, ...|>; a trailing {lo, hi} thickens each bisector to a slab.";
+InfraBoundary::usage = "InfraBoundary[graph, s] gives, as the multiset <|v -> 1, ...|>, the boundary of a vertex set, multiset or Infra* object. Option Method (\"Combinatorial\", \"Alexandrov\").";
+InfraInterior::usage = "InfraInterior[graph, s] gives, as the multiset <|v -> 1, ...|>, the interior of a vertex set, multiset or Infra* object. Option Method (\"Combinatorial\", \"Alexandrov\").";
+InfraVolume::usage = "InfraVolume[graph, s] gives the volume of a vertex set, multiset or Infra* object. Options \"Measure\" (\"FullCount\", \"WithoutBoundary\", \"HalfBoundary\", \"Boundary\"), Method.";
 
 (* ===================== Coordinatization ===================== *)
 
@@ -256,15 +256,15 @@ InfraScene::usage = "InfraScene[objects, hypotheses] builds a scene descriptor f
 FindInfraScene::usage = "FindInfraScene[scene, graph] solves a scene on a graph and gives the resulting InfraInstance bindings. Option \"PruneProbability\".";
 InfraInstance::usage = "InfraInstance[bindings] wraps a solved binding association; InfraInstance[bindings, sym] reads one object out of it.";
 InfraGeometricStep::usage = "InfraGeometricStep[{hyp1, ...}] groups hypotheses into one construction step of a scene; a second argument labels it.";
-InfraIntersection::usage = "InfraIntersection[obj1, obj2, ...] gives the vertex-set intersection of Infra* objects as an InfraSet.";
-InfraUnion::usage = "InfraUnion[obj1, obj2, ...] gives the vertex-set union of Infra* objects as an InfraSet.";
+InfraIntersection::usage = "InfraIntersection[obj1, obj2, ...] gives the vertex-set intersection of Infra* objects as the multiset <|v -> 1, ...|>.";
+InfraUnion::usage = "InfraUnion[obj1, obj2, ...] gives the vertex-set union of Infra* objects as the multiset <|v -> 1, ...|>.";
 InfraDistance::usage = "InfraDistance[graph, p, q] gives the graph distance between two Infra* objects, aggregated over their vertex sets. Option \"Aggregation\".";
 InfraPlaneQ::usage = "InfraPlaneQ[graph, h, p1, p2] tests whether h lies in the bisector slab of p1, p2 and separates them; a trailing window widens the slab. The graph-free InfraPlaneQ[h, p1, p2] is the inert InfraScene assertion.";
 InfraIntersectQ::usage = "InfraIntersectQ[s1, s2] asserts inside an InfraScene that two sets intersect; it stays inert until bindings resolve, which is why it exists rather than the built-in IntersectingQ.";
 
 (* ===================== Highlights / Viewers ===================== *)
 
-$InfraPointColor::usage   = "Default highlight color for InfraPoint objects.";
+$InfraPointColor::usage   = "Default highlight color for points.";
 $InfraSegmentColor::usage = "Default highlight color for InfraSegment objects.";
 $InfraLineColor::usage    = "Default highlight color for InfraLine objects.";
 $InfraShellColor::usage   = "Default highlight color for InfraShell objects.";

@@ -166,7 +166,7 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init : _Association : <||>, opt
       objStep = Association @@ Flatten[ MapIndexed[
         { syms, i } |-> ( ( # -> First[ i ] ) & /@ Flatten[ { syms } ] ), scene[ "Steps" ] ] ],
       wrap    = AssociationMap[
-        Switch[ Head @ Lookup[ scene[ "Constructions" ], #, InfraPoint ],
+        Switch[ Head @ Lookup[ scene[ "Constructions" ], #, None ],
           InfraSegment | InfraLine, InfraSegment,
           InfraShell,               InfraShell,
           InfraPlane,               InfraPlane,
@@ -174,7 +174,7 @@ InfraSceneViewer[ scene_InfraScene, graph_Graph, init : _Association : <||>, opt
           InfraPolygon,             InfraPolygon,
           InfraTriangle,            InfraTriangle,
           InfraPolyline,            InfraPolyline,
-          _,                        InfraPoint ] &,
+          _,                        ( KeySort @ Counts @ # & ) ] &,
         scene[ "Objects" ] ] },
     DynamicModule[ {
         step = 1, branch = 1, mode = "Branch",

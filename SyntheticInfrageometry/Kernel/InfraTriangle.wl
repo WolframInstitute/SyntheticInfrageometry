@@ -13,7 +13,7 @@ InfraTriangle[ reps_List ][ "Length" ] :=
     { 1 } ]
 
 InfraTriangle[ reps_List ][ "Vertices" ] :=
-  Map[ poly |-> ( InfraPoint /@ Most @ polylineToKnots[ poly ] ), reps ]
+  Map[ poly |-> Most @ polylineToKnots[ poly ], reps ]
 (* ===================== FindInfraTriangle ===================== *)
 
 

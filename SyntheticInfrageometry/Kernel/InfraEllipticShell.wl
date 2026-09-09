@@ -52,7 +52,7 @@ FindInfraEllipticShell[ graph_Graph, foci : { _, _ }, c_,
         ]
       ]
     ],
-    Replace[ foci, InfraPoint[ v_ ] :> v, { 1 } ], c ]
+    foci, c ]
 
 
 ellipticLevelSet[ verts_List, row1_List, row2_List, range_List ] :=
@@ -91,8 +91,10 @@ propertyPredicateEllipticShell[ _, _, _, other_ ] :=
 
 (* vs is an elliptic shell iff there are foci p1, p2 and a constant c with vs == { v : d(p1, v) + d(p2, v) == c } *)
 
-InfraEllipticShellQ[ graph_Graph, s : _InfraEllipticShell | _InfraSet ] :=
-  AllTrue[ If[ Head[ s ] === InfraSet, { s[ "Vertices" ] }, First @ s ], InfraEllipticShellQ[ graph, # ] & ]
+InfraEllipticShellQ[ graph_Graph, s_InfraEllipticShell ] :=
+  AllTrue[ First @ s, InfraEllipticShellQ[ graph, # ] & ]
+
+InfraEllipticShellQ[ graph_Graph, fam_Association ] := InfraEllipticShellQ[ graph, Keys @ fam ]
 
 InfraEllipticShellQ[ graph_Graph, vs_List ] :=
   Module[ { verts, idx, dm },

@@ -77,10 +77,7 @@ selectFromName[ name_String  ] := name
 (* ===================== InfraDistance ===================== *)
 
 
-infraVertexSet[ InfraPoint[ v_, ___ ] ] := { v }
-infraVertexSet[ list : { __InfraPoint } ] := DeleteDuplicates[ First /@ list ]
-infraVertexSet[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := First /@ Keys @ fam
-infraVertexSet[ InfraSet[ vs_List, ___ ] ] := vs
+infraVertexSet[ fam_Association ] := Keys @ fam
 infraVertexSet[ InfraLine[ dags : { __Graph } ] ] := Union @@ ( VertexList /@ dags )
 infraVertexSet[ ( InfraSegment | InfraWalk | InfraLoop | InfraString | InfraLine | InfraRay
                 | InfraCircle | InfraEllipse
@@ -91,9 +88,9 @@ infraVertexSet[ ( InfraPolyline | InfraPolygon | InfraTriangle )[ reps_List ] ] 
   Union @@ polylineToVertexSeqs[ reps ]
 infraVertexSet[ list_List ] /;
     list =!= { } && AllTrue[ list,
-      MatchQ[ ( InfraPoint | InfraSegment | InfraWalk | InfraLoop | InfraString | InfraLine | InfraRay |
+      MatchQ[ ( InfraSegment | InfraWalk | InfraLoop | InfraString | InfraLine | InfraRay |
                 InfraCircle | InfraEllipse | InfraShell | InfraEllipticShell | InfraPlane | InfraBall |
-                InfraPolyline | InfraPolygon | InfraTriangle | InfraSet )[ { _ } ] ] ] :=
+                InfraPolyline | InfraPolygon | InfraTriangle )[ { _ } ] ] ] :=
   infraVertexSet[ Head[ First @ list ] @ ( #[[ 1, 1 ]] & /@ list ) ]
 infraVertexSet[ v_ ] := { v }
 
@@ -108,20 +105,19 @@ InfraDistance[ g_Graph, p_, q_, OptionsPattern[] ] :=
 
 (* ===================== InfraIntersection / InfraUnion ===================== *)
 
-(* guarded on the realisation shape -- a single list payload -- not merely on the head: InfraCircle[c, r] is a scene constructor whose vertex set is unknown until dispatched, and matching it here collapsed scene hypotheses to InfraSet[{}] *)
+(* guarded on the realisation shape -- a single list payload -- not merely on the head: InfraCircle[c, r] is a scene constructor whose vertex set is unknown until dispatched, and matching it here collapsed scene hypotheses to the empty set *)
 
 $infraRealisationPattern =
-  ( InfraPoint | InfraSet | InfraSegment | InfraWalk | InfraLoop |
+  ( InfraSegment | InfraWalk | InfraLoop |
     InfraString | InfraLine | InfraRay | InfraCircle | InfraEllipse | InfraShell |
     InfraEllipticShell | InfraPlane | InfraBall | InfraPolyline | InfraPolygon |
-    InfraTriangle )[ _List ] | InfraSegment[ _Graph ] |
-  _Association ? ( MatchQ[ Keys @ #, { ___InfraPoint } ] & );
+    InfraTriangle )[ _List ] | InfraSegment[ _Graph ] | _Association;
 
 InfraIntersection[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
-  InfraSet[ Intersection @@ ( infraVertexSet /@ { args } ) ]
+  KeySort @ AssociationMap[ 1 &, Intersection @@ ( infraVertexSet /@ { args } ) ]
 
 InfraUnion[ args__ ] /; AllTrue[ { args }, MatchQ[ $infraRealisationPattern ] ] :=
-  InfraSet[ Union @@ ( infraVertexSet /@ { args } ) ]
+  KeySort @ AssociationMap[ 1 &, Union @@ ( infraVertexSet /@ { args } ) ]
 
 
 (* ===================== Scene ===================== *)

@@ -77,8 +77,8 @@ VerificationTest[
    membership relative to the heaviest mass (max 1, what the renderer draws),
    "Probability" is the distribution summing to 1 *)
 VerificationTest[
-  { Max @ Values @ InfraMeasure[ <| InfraPoint[ 1 ] -> 3, InfraPoint[ 2 ] -> 1 |> ],
-    Total @ Values @ InfraMeasure[ <| InfraPoint[ 1 ] -> 3, InfraPoint[ 2 ] -> 1 |>, Method -> "Probability" ] },
+  { Max @ Values @ InfraMeasure[ <| 1 -> 3, 2 -> 1 |> ],
+    Total @ Values @ InfraMeasure[ <| 1 -> 3, 2 -> 1 |>, Method -> "Probability" ] },
   { 1, 1 },
   TestID -> "InfraMeasure-density-two-normalisations"
 ]
@@ -88,16 +88,15 @@ VerificationTest[
   AllTrue[
     { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
       InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ],
-      InfraCircle[ { { 1, 2, 3 } } ],
-      InfraSet[ { 1, 2, 3 } ] },
+      InfraCircle[ { { 1, 2, 3 } } ] },
     w |-> w[ "Measure" ] === InfraMeasure[ w ] ],
   True,
   TestID -> "InfraMeasure-accessor-agrees-with-engine"
 ]
 
-(* a density carries no head, so it has no accessors: the engine measures it directly, unkeying the InfraPoint keys to bare vertices *)
+(* a density carries no head, so it has no accessors: the engine measures it directly, on the bare vertices that are its keys *)
 VerificationTest[
-  InfraMeasure[ <| InfraPoint[ 1 ] -> 3, InfraPoint[ 2 ] -> 1 |> ],
+  InfraMeasure[ <| 1 -> 3, 2 -> 1 |> ],
   <| 1 -> 1, 2 -> 1/3 |>,
   TestID -> "InfraMeasure-density-unkeys-to-vertices"
 ]
@@ -115,8 +114,7 @@ VerificationTest[
   AllTrue[
     { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ],
       InfraShell[ { { 1, 2, 3 }, { 2, 3, 4 } } ],
-      InfraCircle[ { { 1, 2, 3 } } ],
-      InfraSet[ { 1, 2, 3 } ] },
+      InfraCircle[ { { 1, 2, 3 } } ] },
     w |-> And[
       w[ "OccupationMeasure" ] === w[ "Measure" ],
       AllTrue[ Values @ w[ "OccupationCount" ], IntegerQ ],
@@ -128,10 +126,58 @@ VerificationTest[
 
 (* ===== instances, families and densities ===== *)
 
-(* the anchor rule and the family constructor are internal, so the tests reach them
-   by their PackageScope context *)
+(* the anchor rule is internal, so the tests reach it by its PackageScope context *)
 toDensity = WolframInstitute`SyntheticInfrageometry`PackageScope`toDensity;
-toFamily  = WolframInstitute`SyntheticInfrageometry`PackageScope`toFamily;
+pointQ    = WolframInstitute`SyntheticInfrageometry`PackageScope`pointQ;
+multisetQ = WolframInstitute`SyntheticInfrageometry`PackageScope`multisetQ;
+walkQ     = WolframInstitute`SyntheticInfrageometry`PackageScope`walkQ;
+
+
+(* ===== the shape reader ===== *)
+
+(* the three rows of the ontology, on a graph whose vertices are integers *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ], w = PathGraph[ { 1, 2, 3 }, DirectedEdges -> True ] },
+    { pointQ[ g, 5 ], multisetQ[ g, 5 ], walkQ[ g, 5 ],
+      pointQ[ g, { 1, 2 } ], multisetQ[ g, { 1, 2 } ], walkQ[ g, { 1, 2 } ],
+      pointQ[ g, <| 1 -> 2 |> ], multisetQ[ g, <| 1 -> 2 |> ], walkQ[ g, <| 1 -> 2 |> ],
+      pointQ[ g, w ], multisetQ[ g, w ], walkQ[ g, w ] } ],
+  { True, False, False,
+    False, True, False,
+    False, True, False,
+    False, False, True },
+  TestID -> "shape-reader-three-rows"
+]
+
+(* the substrate is not decoration: on a graph whose vertex labels are themselves
+   lists, only the graph separates a point from a two-element multiset *)
+VerificationTest[
+  With[ { t = Graph[ { { 1, 1 }, { 2, 1 } }, { { 1, 1 } <-> { 2, 1 } } ],
+          g = GridGraph[ { 3, 3 } ] },
+    { pointQ[ t, { 1, 1 } ], multisetQ[ t, { 1, 1 } ],
+      pointQ[ g, { 1, 1 } ], multisetQ[ g, { 1, 1 } ] } ],
+  { True, False, False, True },
+  TestID -> "shape-reader-is-graph-relative"
+]
+
+(* a vertex a graph does not have is neither a point nor -- being an atom -- a multiset *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    { pointQ[ g, 99 ], multisetQ[ g, 99 ], toDensity[ g, 99 ] } ],
+  { False, False, <| 99 -> 1 |> },
+  TestID -> "shape-reader-off-substrate-vertex"
+]
+
+(* a walk anchor reads as its vertex occupation, so a DAG contributes the geodesic
+   count at each vertex rather than a unit mass *)
+VerificationTest[
+  With[ { g = GridGraph[ { 3, 3 } ] },
+    toDensity[ g, First @ FindInfraSegment[ g, 1, 9, All ] ] ===
+      KeySort @ FindInfraSegment[ g, 1, 9, All ][ "OccupationCount" ] ],
+  True,
+  TestID -> "walk-anchor-reads-as-occupation"
+]
+
 
 (* ===== bundles are sets of realisations ===== *)
 
@@ -153,43 +199,43 @@ VerificationTest[
   TestID -> "Bundle-has-no-mass-channel"
 ]
 
-(* the family layer is a headless <| instance -> weight |> Association: repetition in
-   an instance list reads as mass, and the all-ones family stays a family (layers
-   never cross silently -- taking the support is the explicit InfraSet step) *)
+(* the multiset layer is a headless <| atom -> weight |> Association: repetition in
+   a list reads as mass, and Keys is the step down to the support *)
 VerificationTest[
-  { Counts[ { InfraPoint[1], InfraPoint[1], InfraPoint[2] } ],
-    toFamily[ { InfraPoint[1], InfraPoint[1], InfraPoint[2] } ],
-    toFamily[ InfraWalk[ { { 1, 2 } } ] ],
-    InfraSet[ { 1, 1, 2 } ] },
-  { <| InfraPoint[ 1 ] -> 2, InfraPoint[ 2 ] -> 1 |>,
-    <| InfraPoint[ 1 ] -> 2, InfraPoint[ 2 ] -> 1 |>,
-    <| InfraWalk[ { { 1, 2 } } ] -> 1 |>,
-    InfraSet[ { 1, 2 } ] },
-  TestID -> "family-layer-is-a-headless-association"
+  With[ { g = PathGraph @ Range[ 4 ] },
+    { Counts[ { 1, 1, 2 } ],
+      toDensity[ g, { 1, 1, 2 } ],
+      Keys @ toDensity[ g, { 1, 1, 2 } ] } ],
+  { <| 1 -> 2, 2 -> 1 |>,
+    <| 1 -> 2, 2 -> 1 |>,
+    { 1, 2 } },
+  TestID -> "multiset-layer-is-a-headless-association"
 ]
 
-(* the ANCHOR RULE: a vertex, a point, a set, a point list and a density all coerce
-   to one 0-d density on InfraPoint keys, so every construction reads its anchors
+(* the ANCHOR RULE: a vertex, a vertex list, a density and a walk graph all coerce
+   to one 0-d density on bare vertices, so every construction reads its anchors
    through a single step *)
 VerificationTest[
-  { toDensity[ 1 ], toDensity[ InfraPoint[ 1 ] ], toDensity[ InfraPoint[ 1, <| "Label" -> "p" |> ] ],
-    toDensity[ InfraSet[ { 1, 2 } ] ], toDensity[ { InfraPoint[1], InfraPoint[1], InfraPoint[2] } ],
-    toDensity[ <| InfraPoint[ 1 ] -> 3 |> ] },
-  { <| InfraPoint[ 1 ] -> 1 |>, <| InfraPoint[ 1 ] -> 1 |>, <| InfraPoint[ 1 ] -> 1 |>,
-    <| InfraPoint[ 1 ] -> 1, InfraPoint[ 2 ] -> 1 |>,
-    <| InfraPoint[ 1 ] -> 2, InfraPoint[ 2 ] -> 1 |>,
-    <| InfraPoint[ 1 ] -> 3 |> },
+  With[ { g = PathGraph @ Range[ 4 ] },
+    { toDensity[ g, 1 ],
+      toDensity[ g, <| 1 -> 1, 2 -> 1 |> ], toDensity[ g, { 1, 1, 2 } ],
+      toDensity[ g, <| 1 -> 3 |> ], toDensity[ g, PathGraph[ { 1, 2, 3 }, DirectedEdges -> True ] ] } ],
+  { <| 1 -> 1 |>,
+    <| 1 -> 1, 2 -> 1 |>,
+    <| 1 -> 2, 2 -> 1 |>,
+    <| 1 -> 3 |>,
+    <| 1 -> 1, 2 -> 1, 3 -> 1 |> },
   TestID -> "anchor-rule-coerces-everything-to-a-density"
 ]
 
 (* the family algebra is the Association's own; the measures come off the engine *)
 VerificationTest[
-  With[ { p = <| InfraPoint[ 1 ] -> 3, InfraPoint[ 2 ] -> 1 |> },
-    { InfraSet @ p, Values @ p, Total @ p,
+  With[ { p = <| 1 -> 3, 2 -> 1 |> },
+    { Keys @ p, Values @ p, Total @ p,
       InfraMeasure[ p, Method -> "Probability" ], InfraMeasure @ p } ],
   (* InfraMeasure is membership relative to the heaviest mass;
      Method -> "Probability" is the distribution summing to 1 *)
-  { InfraSet[ { 1, 2 } ], { 3, 1 }, 4, <| 1 -> 3/4, 2 -> 1/4 |>, <| 1 -> 1, 2 -> 1/3 |> },
+  { { 1, 2 }, { 3, 1 }, 4, <| 1 -> 3/4, 2 -> 1/4 |>, <| 1 -> 1, 2 -> 1/3 |> },
   TestID -> "density-algebra-and-measures"
 ]
 
@@ -199,19 +245,19 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ], s = FindInfraSegment[ GridGraph[ { 3, 3 } ], 1, 9 , All] },
     { s[[ 2 ]], s[ "Start" ], FindInfraMidpoint[ g, s ] } ],
-  (* ["Start"] is a set-level fact (every geodesic of a family shares it), so it
-     is an InfraSet; the position and midpoint projections are measures *)
-  { <| InfraPoint[ 2 ] -> 3, InfraPoint[ 4 ] -> 3 |>, InfraSet[ { 1 } ],
-    <| InfraPoint[ 3 ] -> 1, InfraPoint[ 5 ] -> 4, InfraPoint[ 7 ] -> 1 |> },
+  (* ["Start"] is a set-level fact (every geodesic of a family shares it), so its
+     masses are all one; the position and midpoint projections are measures *)
+  { <| 2 -> 3, 4 -> 3 |>, <| 1 -> 1 |>,
+    <| 3 -> 1, 5 -> 4, 7 -> 1 |> },
   TestID -> "Measure-constructed-at-projection"
 ]
 
-(* anchor masses do NOT propagate: a construction sees an InfraPoint's support,
+(* anchor masses do NOT propagate: a construction sees a density's support,
    so the family (and its measure) is the same weighted or not *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    KeySort @ InfraMeasure @ FindInfraSegment[ g, <| InfraPoint[ 1 ] -> 2, InfraPoint[ 3 ] -> 1 |>, 9 , All] ===
-    KeySort @ InfraMeasure @ FindInfraSegment[ g, InfraSet[ { 1, 3 } ], 9 , All] ],
+    KeySort @ InfraMeasure @ FindInfraSegment[ g, <| 1 -> 2, 3 -> 1 |>, 9 , All] ===
+    KeySort @ InfraMeasure @ FindInfraSegment[ g, <| 1 -> 1, 3 -> 1 |>, 9 , All] ],
   True,
   TestID -> "Anchor-masses-do-not-propagate"
 ]
@@ -220,7 +266,7 @@ VerificationTest[
 
 (* the compact multi-atom set and the enumerated bundle carry the same measure *)
 VerificationTest[
-  With[ { g = GridGraph[ { 3, 3 } ], p = InfraSet[ { 1, 3 } ] },
+  With[ { g = GridGraph[ { 3, 3 } ], p = <| 1 -> 1, 3 -> 1 |> },
     KeySort @ InfraMeasure[ FindInfraSegment[ g, p, 9 , All] ] ===
     KeySort @ InfraMeasure[ FindInfraSegment[ g, p, 9, All ] ] ],
   True,
@@ -231,7 +277,7 @@ VerificationTest[
    occupation is the sum, normalised by the summed family sizes *)
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
-    KeySort @ FindInfraSegment[ g, InfraSet[ { 1, 3 } ], 9 , All][ "OccupationCount" ] ===
+    KeySort @ FindInfraSegment[ g, <| 1 -> 1, 3 -> 1 |>, 9 , All][ "OccupationCount" ] ===
     KeySort @ Merge[ { FindInfraSegment[ g, 1, 9 , All][ "OccupationCount" ],
                        FindInfraSegment[ g, 3, 9 , All][ "OccupationCount" ] }, Total ] ],
   True,

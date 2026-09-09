@@ -1,12 +1,9 @@
+toDensity = WolframInstitute`SyntheticInfrageometry`PackageScope`toDensity;
+
 (* Wrapper-head behaviour: only auto-flatten survives.  String accessors and
    Part upvalue rules were removed -- wrappers are raw data, callers use
-   First / Length / Part on the inner list directly. *)
-
-VerificationTest[
-  InfraSet[ { InfraSet[ { 1, 2 } ], InfraSet[ { 3, 4 } ] } ],
-  InfraSet[ { 1, 2, 3, 4 } ],
-  TestID -> "InfraSet-auto-flatten"
-]
+   First / Length / Part on the inner list directly.  Points and sets carry no
+   head at all: the shape is the kind. *)
 
 VerificationTest[
   InfraSegment[ { InfraSegment[ { { 1, 2 }, { 1, 3 } } ], InfraSegment[ { { 2, 3 } } ] } ],
@@ -14,95 +11,72 @@ VerificationTest[
   TestID -> "InfraSegment-auto-flatten"
 ]
 
-(* Round-trip: a List of unary wrappers wrapped under the same head collapses
-   to the multi-realisation form (the canonical idiom for constructing multi
-   from a Find* result). *)
+(* ----- the multiset layer: <| atom -> weight |> ----- *)
 
+(* a List is one Counts away from the multiset; repetition becomes mass *)
 VerificationTest[
-  InfraSet @ { InfraPoint[1], InfraPoint[2], InfraPoint[3] },
-  InfraSet[ { 1, 2, 3 } ],
-  TestID -> "InfraSet-from-atom-list"
+  { toDensity[ PathGraph @ Range[ 3 ], { 1, 1, 2 } ], Counts[ { a, a, b } ] },
+  { <| 1 -> 2, 2 -> 1 |>, <| a -> 2, b -> 1 |> },
+  TestID -> "list-reads-as-multiset-counts"
 ]
 
-
-(* ----- the family layer: <| instance -> weight |> ----- *)
-
-(* a set deduplicates; repetition becomes mass only in the family, and a List is one Counts away *)
+(* the all-ones density is still a density: nothing collapses it to its support, and
+   Keys is the explicit step down, which drops the masses *)
 VerificationTest[
-  { InfraSet[ { a, a, b } ], Counts[ { InfraPoint[a], InfraPoint[a], InfraPoint[b] } ] },
-  { InfraSet[ { a, b } ], <| InfraPoint[ a ] -> 2, InfraPoint[ b ] -> 1 |> },
-  TestID -> "set-dedups-family-counts"
-]
-
-(* the all-ones density is still a density: nothing collapses it to its support, and taking the support is the explicit InfraSet step, which drops the masses *)
-VerificationTest[
-  With[ { fam = <| InfraPoint[ a ] -> 1, InfraPoint[ b ] -> 1 |> },
-    { Head @ fam, InfraSet @ fam } ],
-  { Association, InfraSet[ { a, b } ] },
+  With[ { fam = <| a -> 1, b -> 1 |> },
+    { Head @ fam, Keys @ fam } ],
+  { Association, { a, b } },
   TestID -> "all-ones-density-stays-a-density"
 ]
 
-(* the family algebra is the Association's own: Keys, Values, Total *)
+(* the multiset algebra is the Association's own: Keys, Values, Total, Length *)
 VerificationTest[
-  With[ { fam = <| InfraPoint[ a ] -> 2, InfraPoint[ b ] -> 1 |> },
-    { InfraSet @ fam, Values @ fam, Total @ fam, InfraSet[ { a, b } ][ "Weights" ] } ],
-  { InfraSet[ { a, b } ], { 2, 1 }, 3, { 1, 1 } },
-  TestID -> "family-weight-algebra-is-the-association"
+  With[ { fam = <| a -> 2, b -> 1 |> },
+    { Keys @ fam, Values @ fam, Total @ fam, Length @ fam } ],
+  { { a, b }, { 2, 1 }, 3, 2 },
+  TestID -> "multiset-weight-algebra-is-the-association"
 ]
 
 
-(* ----- synthetic-invariant accessors (delegate to Infrageometry over the support) ----- *)
+(* ----- synthetic invariants are read off the primitives, not off a wrapper ----- *)
 
-(* one ball-volume row per support vertex: on a path B_r(end) = r + 1 *)
-(* the atom returns the bare per-radius row; the set returns one row per vertex *)
+(* on a path B_r(end) = r + 1; a multiset gives one row per support vertex *)
 VerificationTest[
-  { InfraPoint[1][ "BallVolumes", PathGraph @ Range[ 7 ], { 0, 3 } ],
-    InfraSet[ { 1 } ][ "BallVolumes", PathGraph @ Range[ 7 ], { 0, 3 } ] },
+  { BallVolumes[ PathGraph @ Range[ 7 ], 1, { 0, 3 } ],
+    BallVolumes[ PathGraph @ Range[ 7 ], Keys @ <| 1 -> 1 |>, { 0, 3 } ] },
   { { 1, 2, 3, 4 }, { { 1, 2, 3, 4 } } },
-  TestID -> "point-layer-BallVolumes-accessor"
+  TestID -> "point-layer-BallVolumes"
 ]
 
-(* the tube accessor: the pair form thickens the metric interval, and a set is its own core --
-   a one-vertex set gives the ball *)
+(* the tube of a pair thickens the metric interval, so it is never smaller than it *)
 VerificationTest[
-  With[ { g = GridGraph[ { 5, 5 } ], p = InfraPoint[13] },
-    { p[ "TubeVolumes", g, 25, 1 ] === TubeVolumes[ g, 13, 25, 1 ],
-      InfraSet[ { 13 } ][ "TubeVolumes", g ] === p[ "BallVolumes", g ] } ],
-  { True, True },
-  TestID -> "InfraPoint-TubeVolumes-accessor"
-]
-
-(* the interval accessor at slack 0 counts the metric interval *)
-VerificationTest[
-  InfraPoint[1][ "IntervalVolumes", PathGraph @ Range[ 7 ], 4, 0 ],
-  4,
-  TestID -> "InfraPoint-IntervalVolumes-accessor"
-]
-
-(* dimension readout projects VolumeGrowthObservables["BallDimension"]: one numeric per support *)
-VerificationTest[
-  MatchQ[ InfraPoint[25][ "Dimension", GridGraph[ { 7, 7 } ] ], _?NumericQ ],
+  With[ { g = GridGraph[ { 5, 5 } ] },
+    AllTrue[ TubeVolumes[ g, 13, 25, 1 ], # >= Length @ MetricInterval[ g, 13, 25 ] & ] ],
   True,
-  TestID -> "InfraPoint-Dimension-accessor-numeric"
+  TestID -> "point-layer-TubeVolumes"
 ]
 
-(* [[k]] never leaves the ontology: the k-th element of a set is a point instance, a non-integer spec keeps the set head *)
+(* the interval count at slack 0 counts the metric interval *)
 VerificationTest[
-  { InfraSet[ { a, b, c } ][[ 2 ]], First @ InfraSet[ { a, b, c } ],
-    InfraSet[ { a, b, c } ][[ ;; 2 ]], InfraPoint[a][ "Vertex" ] },
-  { InfraPoint[ b ], InfraPoint[ a ], InfraSet[ { a, b } ], a },
-  TestID -> "InfraSet-Part-is-a-point-instance"
+  IntervalVolumes[ PathGraph @ Range[ 7 ], 1, 4, 0 ],
+  4,
+  TestID -> "point-layer-IntervalVolumes"
 ]
 
-(* the metadata slot is inert: it rides along and every accessor ignores it *)
+(* dimension readout projects VolumeGrowthObservables["BallDimension"] *)
 VerificationTest[
-  With[ { p = InfraPoint[ a, <| "Label" -> "P" |> ],
-          s = InfraSet[ { b, a }, <| "Style" -> Red |> ] },
-    { p[ "Vertex" ], p[ "Meta" ], InfraPoint[ a ][ "Meta" ],
-      s[ "Vertices" ], s[ "Length" ], s[ "Meta" ], s[[ 1 ]] } ],
-  { a, <| "Label" -> "P" |>, <| |>,
-    { a, b }, 2, <| "Style" -> Red |>, InfraPoint[ a ] },
-  TestID -> "instance-metadata-slot-is-inert"
+  MatchQ[ VolumeGrowthObservables[ GridGraph[ { 7, 7 } ], 25 ][ "BallDimension" ], _?NumericQ ],
+  True,
+  TestID -> "point-layer-Dimension-numeric"
+]
+
+(* the k-th element of a multiset is read with the Association's own Part / Keys:
+   [[k]] is the k-th MASS, Keys[[k]] the k-th vertex *)
+VerificationTest[
+  With[ { s = <| a -> 1, b -> 1, c -> 1 |> },
+    { Keys[ s ][[ 2 ]], First @ Keys @ s, Keys @ s[[ ;; 2 ]] } ],
+  { b, a, { a, b } },
+  TestID -> "multiset-Part-through-Keys"
 ]
 
 
@@ -110,19 +84,19 @@ VerificationTest[
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ 1 ]],
-  <| InfraPoint[ 1 ] -> 2 |>,
+  <| 1 -> 2 |>,
   TestID -> "InfraSegment-column-start-weighted"
 ]
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ -1 ]],
-  <| InfraPoint[ 3 ] -> 2 |>,
+  <| 3 -> 2 |>,
   TestID -> "InfraSegment-column-end-weighted"
 ]
 
 VerificationTest[
   InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][[ 2 ]],
-  <| InfraPoint[ 2 ] -> 1, InfraPoint[ 4 ] -> 1 |>,
+  <| 2 -> 1, 4 -> 1 |>,
   TestID -> "InfraSegment-column-middle-spread"
 ]
 
@@ -134,7 +108,7 @@ VerificationTest[
 
 VerificationTest[
   InfraLine[ { { 1, 2, 3 }, { 1, 2, 5 } } ][[ 2 ]],
-  <| InfraPoint[ 2 ] -> 2 |>,
+  <| 2 -> 2 |>,
   TestID -> "InfraLine-column-weighted"
 ]
 
@@ -185,20 +159,20 @@ VerificationTest[
   TestID -> "InfraSegment-Length-edge-count"
 ]
 
-(* single-realisation InfraPoint endpoints collapse to the same geodesic DAG as
-   bare vertices -- FindInfraPoint output composes into FindInfraSegment directly *)
+(* FindInfraPoint output is a bare vertex list, so it composes into FindInfraSegment
+   directly -- with no unwrapping step *)
 VerificationTest[
-  With[ { g = GridGraph[ { 5, 5 } ] },
-    FindInfraSegment[ g, InfraPoint[1], InfraPoint[25] , All] === FindInfraSegment[ g, 1, 25 , All] ],
+  With[ { g = GridGraph[ { 5, 5 } ], ends = { 1, 25 } },
+    FindInfraSegment[ g, ends[[ 1 ]], ends[[ 2 ]], All ] === FindInfraSegment[ g, 1, 25, All ] ],
   True,
-  TestID -> "FindInfraSegment-InfraPoint-endpoints-give-DAG"
+  TestID -> "FindInfraSegment-vertex-endpoints-give-DAG"
 ]
 
-(* the DAG "Start" / "End" are the source / sink InfraSets (in/out-degree-0) *)
+(* the DAG "Start" / "End" are the source / sink multisets (in/out-degree-0) *)
 VerificationTest[
   With[ { seg = FindInfraSegment[ GridGraph[ { 5, 5 } ], 1, 25 , All] },
     { seg[ "Start" ], seg[ "End" ] } ],
-  { InfraSet[ { 1 } ], InfraSet[ { 25 } ] },
+  { <| 1 -> 1 |>, <| 25 -> 1 |> },
   TestID -> "InfraSegment-DAG-Start-End-source-sink"
 ]
 
@@ -206,7 +180,7 @@ VerificationTest[
 VerificationTest[
   { InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][ "Start" ],
     InfraSegment[ { { 1, 2, 3 }, { 1, 4, 3 } } ][ "End" ] },
-  { InfraSet[ { 1 } ], InfraSet[ { 3 } ] },
+  { <| 1 -> 1 |>, <| 3 -> 1 |> },
   TestID -> "InfraSegment-reps-Start-End"
 ]
 
@@ -264,11 +238,11 @@ VerificationTest[
   TestID -> "InfraEllipticShell-Volume-vertex-count"
 ]
 
-(* a set is one instance, so its size is the instance accessor "Length", not the per-realisation "Volume" of the bundle heads *)
+(* a set is one multiset, so its size is Length, not the per-realisation "Volume" of the bundle heads *)
 VerificationTest[
-  InfraSet[ { 1, 2, 3, 4 } ][ "Length" ],
+  Length @ <| 1 -> 1, 2 -> 1, 3 -> 1, 4 -> 1 |>,
   4,
-  TestID -> "InfraSet-Length-vertex-count"
+  TestID -> "multiset-Length-vertex-count"
 ]
 
 
@@ -284,9 +258,9 @@ VerificationTest[
 VerificationTest[
   FindInfraPolylineSubdivision[ GridGraph[ { 4, 4 } ],
     { 1, 2, 6, 5, 9, 13, 14, 15, 16 }, "MaxLength" -> 2 ][ "Knots" ],
-  { { InfraPoint[1], InfraPoint[6], InfraPoint[9],
-      InfraPoint[14], InfraPoint[16] } },
-  TestID -> "InfraPolyline-Knots-as-InfraPoints"
+  { { 1, 6, 9,
+      14, 16 } },
+  TestID -> "InfraPolyline-Knots-are-vertices"
 ]
 
 VerificationTest[

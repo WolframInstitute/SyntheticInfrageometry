@@ -17,7 +17,7 @@ InfraPolygon[ reps_List ][ "Length" ] :=
     { 1 } ]
 
 InfraPolygon[ reps_List ][ "Vertices" ] :=
-  Map[ poly |-> ( InfraPoint /@ Most @ polylineToKnots[ poly ] ), reps ]
+  Map[ poly |-> Most @ polylineToKnots[ poly ], reps ]
 
 
 (* ===================== FindInfraPolygon ===================== *)
@@ -74,7 +74,6 @@ polygonRetracesQ[ tuple_List ] :=
     ! DuplicateFreeQ[ Sort /@ Partition[ closed, 2, 1 ] ]
   ]
 
-polygonCorner[ InfraPoint[ v_ ] ] := v
 polygonCorner[ v_ ]                   := v
 
 
@@ -163,9 +162,8 @@ parseFromSpec[ anchor_ ] /; ! MatchQ[ anchor, _Rule ] :=
   { normalizeAnchor @ anchor, All }
 
 
-normalizeAnchor[ InfraPoint[ v_ ] ]                                  := v
-normalizeAnchor[ InfraSet[ vs_List ] ]                               := vs
-normalizeAnchor[ list_List ] /; AllTrue[ list, MatchQ[ _InfraPoint ] ] :=
+normalizeAnchor[ fam_Association ]                                   := Keys @ fam
+normalizeAnchor[ list_List ] /; AllTrue[ list, MatchQ[ _Association ] ] :=
   list[[ All, 1, 1 ]]
 normalizeAnchor[ v_ ]                                                := v
 

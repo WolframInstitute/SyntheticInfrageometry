@@ -10,17 +10,20 @@ InfraBall[ reps_List ][ "Volume" ] := Length /@ reps
 (* ===================== FindInfraBall ===================== *)
 
 
+(* the centre goes through the anchor rule, so a vertex, a vertex list and a density all spread *)
 FindInfraBall[ graph_Graph, c_, r_ ] :=
   InfraBall[ ( center |-> Select[ VertexList[ graph ], GraphDistance[ graph, center, # ] <= r & ] ) /@
-    infraSpread[ c ] ]
+    Keys @ toDensity[ graph, c ] ]
 
 
 (* ===================== InfraBallQ ===================== *)
 
 (* vs is a closed ball iff some c in vs has { v : d(c, v) <= max_{w in vs} d(c, w) } == vs *)
 
-InfraBallQ[ graph_Graph, b : _InfraBall | _InfraSet ] :=
-  AllTrue[ If[ Head[ b ] === InfraSet, { b[ "Vertices" ] }, First @ b ], InfraBallQ[ graph, # ] & ]
+InfraBallQ[ graph_Graph, b_InfraBall ] :=
+  AllTrue[ First @ b, InfraBallQ[ graph, # ] & ]
+
+InfraBallQ[ graph_Graph, fam_Association ] := InfraBallQ[ graph, Keys @ fam ]
 
 InfraBallQ[ graph_Graph, vs_List ] :=
   vs =!= { } &&
@@ -36,7 +39,7 @@ InfraBallQ[ graph_Graph, vs_List ] :=
 (* the intersection of all closed balls containing S: the smallest ball-convex (Mazur) superset *)
 
 FindBallHull[ graph_Graph, s_ ] :=
-  InfraSet @ Sort @ BallHull[ graph, hullVertices @ s ]
+  toDensity[ graph, BallHull[ graph, hullVertices @ s ] ]
 
 (* S is ball-convex: it equals its own ball hull (an intersection of balls). *)
 

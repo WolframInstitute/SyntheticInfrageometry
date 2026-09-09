@@ -16,7 +16,7 @@ InfraPolyline[ reps_List ][ "Length" ] :=
     { 1 } ]
 
 InfraPolyline[ reps_List ][ "Knots" ] :=
-  Map[ poly |-> ( InfraPoint /@ polylineToKnots[ poly ] ), reps ]
+  Map[ poly |-> polylineToKnots[ poly ], reps ]
 (* ===================== FindInfraPolylineSubdivision ===================== *)
 
 (* the fewest geodesic legs with knots on the walk, each leg a shortest path of length <= MaxLength *)

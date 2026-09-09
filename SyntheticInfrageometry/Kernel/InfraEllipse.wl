@@ -29,7 +29,7 @@ FindInfraEllipse[ graph_Graph, foci : { _, _ }, c_,
             pruning = "Pruning" /. propertiesSubOpts[ methodSpec ] /. "Pruning" -> Infinity },
       spreadFind[ InfraEllipse, count,
         findEllipseSweep[ graph, ##, properties, count, branch, pruning ] &,
-        Replace[ foci, InfraPoint[ v_ ] :> v, { 1 } ], c ] ]
+        foci, c ] ]
   ]
 
 

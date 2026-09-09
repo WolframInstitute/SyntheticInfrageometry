@@ -262,7 +262,7 @@ FindEmbeddingClosestPath[ graph_Graph, curve_ ] :=
 
 (* ===================== GeodesicSprayGraph ===================== *)
 
-(* [g, c]: the BFS DAG of all geodesics from c -- edge u -> v whenever d(c, v) = d(c, u) + 1 and u-v is a g-edge.  [g, InfraSet[vs]]: the same with d_c replaced by min_i d(ci, v).  [g, pairs]: the union of geodesics between the listed pairs *)
+(* [g, c]: the BFS DAG of all geodesics from c -- edge u -> v whenever d(c, v) = d(c, u) + 1 and u-v is a g-edge.  [g, <| v -> m |>]: the same with d_c replaced by min_i d(ci, v).  [g, pairs]: the union of geodesics between the listed pairs *)
 
 Options[ GeodesicSprayGraph ] = {
   "AxisLength"    -> All,
@@ -274,16 +274,13 @@ GeodesicSprayGraph[ g_Graph, c_, OptionsPattern[] ] /; MemberQ[ VertexList[ g ],
   geodesicSprayFromDistances[ g, AssociationThread[ VertexList[ g ], GraphDistance[ g, c ] ],
     OptionValue[ "AxisLength" ], OptionValue[ "Directed" ] ]
 
-GeodesicSprayGraph[ g_Graph, InfraPoint[ v_ ], opts : OptionsPattern[] ] /; MemberQ[ VertexList[ g ], v ] :=
-  GeodesicSprayGraph[ g, v, opts ]
+GeodesicSprayGraph[ g_Graph, sources_List, opts : OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], sources ] :=
+  GeodesicSprayGraph[ g, KeySort @ AssociationMap[ 1 &, sources ], opts ]
 
-GeodesicSprayGraph[ g_Graph, list : { __InfraPoint }, opts : OptionsPattern[] ] :=
-  GeodesicSprayGraph[ g, InfraSet[ #[[ 1 ]] & /@ list ], opts ]
-
-GeodesicSprayGraph[ g_Graph, InfraSet[ vs_List ], OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], vs ] :=
+GeodesicSprayGraph[ g_Graph, fam_Association, OptionsPattern[] ] /; SubsetQ[ VertexList[ g ], Keys @ fam ] :=
   geodesicSprayFromDistances[ g,
     AssociationThread[ VertexList[ g ],
-      Min /@ Transpose[ GraphDistance[ g, # ] & /@ vs ] ],
+      Min /@ Transpose[ GraphDistance[ g, # ] & /@ Keys @ fam ] ],
     OptionValue[ "AxisLength" ], OptionValue[ "Directed" ] ]
 
 GeodesicSprayGraph[ g_Graph, pairs : { { _, _ } .. }, OptionsPattern[] ] :=

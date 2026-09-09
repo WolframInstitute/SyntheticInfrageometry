@@ -3,64 +3,8 @@ Package["WolframInstitute`SyntheticInfrageometry`"]
 PackageImport["WolframInstitute`Infrageometry`"]
 
 
-(* ===================== InfraSet ===================== *)
-
-
-(* the payload is bare vertices; a trailing meta_Association carries "Label" / "Style" / "Kind" and nothing mathematical, so every rule here ignores it *)
-
-InfraSet[ inner_InfraSet ] := inner
-InfraSet[ InfraSet[ vs_List, ___ ], meta_Association ] := InfraSet[ vs, meta ]
-
-(* canonical form: sorted and duplicate-free.  The FreeQ guard keeps DownValues from rewriting a rule-author's pattern, which would silently bind the wrong element *)
-InfraSet[ vs_List, meta___ ] /;
-    FreeQ[ vs, _Blank | _BlankSequence | _BlankNullSequence | _Pattern ] &&
-    ! MemberQ[ vs, _InfraPoint | _InfraSet ] &&
-    ( ! DuplicateFreeQ[ vs ] || vs =!= Sort[ vs ] ) :=
-  InfraSet[ Sort @ DeleteDuplicates @ vs, meta ]
-
-InfraSet[ vs_List, meta___ ] /; MemberQ[ vs, _InfraSet ] :=
-  InfraSet[ Union @@ Replace[ vs, s_InfraSet :> s[ "Vertices" ], {1} ], meta ]
-
-(* an atom IS a vertex (possibly a list label like {i, j}), so no flattening applies; a density contributes its support and loses its masses *)
-InfraSet[ InfraPoint[ v_, ___ ] ] := InfraSet[ { v } ]
-InfraSet[ list : { __InfraPoint }, meta___ ] := InfraSet[ Sort @ DeleteDuplicates[ First /@ list ], meta ]
-InfraSet[ fam_Association ] /; MatchQ[ Keys @ fam, { ___InfraPoint } ] := InfraSet[ Sort[ First /@ Keys @ fam ] ]
-
-(* read the vertices off the DAG (VertexList == MetricInterval), never by enumerating the geodesic family, which is exponential in general *)
-InfraSet[ InfraSegment[ dag_Graph ] ] := InfraSet[ VertexList @ dag ]
-
-(* the k-th element of a set is a point instance, so [[k]] never leaves the ontology; a non-integer spec keeps the set head *)
-InfraSet /: Part[ InfraSet[ vs_List, ___ ], k_Integer ] := InfraPoint[ vs[[ k ]] ]
-InfraSet /: Part[ InfraSet[ vs_List, ___ ], spec : Except[ _Integer ] ] := InfraSet[ vs[[ spec ]] ]
-InfraSet /: First[ InfraSet[ vs_List, ___ ] ] := InfraPoint[ First @ vs ]
-InfraSet /: Last[ InfraSet[ vs_List, ___ ] ]  := InfraPoint[ Last @ vs ]
-
-InfraSet[ wrapper_Symbol[ rs_List ] ] /;
-    wrapper =!= InfraSet && StringStartsQ[ SymbolName @ wrapper, "Infra" ] :=
-  InfraSet[ Sort @ DeleteDuplicates @ Flatten[ Replace[ rs, d_Graph :> VertexList[ d ], { 1 } ], 1 ] ]
-
-InfraSet[ vs_List, ___ ][ "Vertices" ] := vs
-InfraSet[ vs_List, ___ ][ "Weights" ]  := ConstantArray[ 1, Length @ vs ]
-InfraSet[ vs_List, ___ ][ "Length" ]   := Length[ vs ]
-InfraSet[ _List ][ "Meta" ]            := <| |>
-InfraSet[ _List, meta_Association ][ "Meta" ] := meta
-
-InfraSet[ vs_List, ___ ][ "BallVolumes", g_, rest___ ]            := BallVolumes[ g, vs, rest ]
-InfraSet[ vs_List, ___ ][ "TubeVolumes", g_, rest___ ]            := TubeVolumes[ g, vs, rest ]
-InfraSet[ vs_List, ___ ][ "LogDifferenceQuotients", g_, rest___ ] := LogDifferenceQuotients /@ BallVolumes[ g, vs, rest ]
-InfraSet[ vs_List, ___ ][ "GrowthObservables", g_, rest___ ]      := VolumeGrowthObservables[ g, vs, rest ]
-InfraSet[ vs_List, ___ ][ "Dimension", g_, rest___ ]              := ( #[ "BallDimension" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
-InfraSet[ vs_List, ___ ][ "ScalarCurvature", g_, rest___ ]        := ( #[ "BallScalarCurvature" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
-InfraSet[ vs_List, ___ ][ "CurvatureByRadius", g_, rest___ ]      := ( #[ "BallCurvatureByRadius" ] & ) /@ VolumeGrowthObservables[ g, vs, rest ]
-
-InfraSet /: BallVolumes[ g_, s_InfraSet, rest___ ]             := BallVolumes[ g, s[ "Vertices" ], rest ]
-InfraSet /: TubeVolumes[ g_, s_InfraSet, rest___ ]             := TubeVolumes[ g, s[ "Vertices" ], rest ]
-InfraSet /: VolumeGrowthObservables[ g_, s_InfraSet, rest___ ] := VolumeGrowthObservables[ g, s[ "Vertices" ], rest ]
-
-InfraSet[ vs_List, ___ ][ "OccupationCount" ] := infraVertexMultiset[ InfraSet[ vs ] ]
-InfraSet[ vs_List, ___ ][ "OccupationMeasure" ] := InfraMeasure[ InfraSet[ vs ] ]
-InfraSet[ vs_List, ___ ][ "Measure" ] := InfraMeasure[ InfraSet[ vs ] ]
-InfraSet[ vs_List, ___ ][ "ProbabilityMeasure" ] := InfraMeasure[ InfraSet[ vs ], Method -> "Probability" ]
+(* the set instance is gone: a set IS the multiset <| v -> m |>, key-sorted so two built by different routes compare SameQ, with a List its uniform-weight sugar.  Keys is the support, Length the size, and Merge / KeyMap / KeySelect the algebra.  Everything below returns one.
+   The head is gone outright, scene language included: every other Infra head names a construction and survives as its token, but a literal vertex set is dispatched by shape *)
 
 
 (* ===================== FindInfraEquidistantSet ===================== *)
@@ -74,11 +18,11 @@ FindInfraEquidistantSet[ graph_Graph, pts_List, { lo_Integer, hi_Integer } ] /; 
   With[
     { rows  = GraphDistance[ graph, # ] & /@ pts },
     { diffs = Transpose @ MapThread[ Subtract, { Most[ rows ], Rest[ rows ] } ] },
-    InfraSet @ Pick[ VertexList[ graph ], AllTrue[ #, lo <= # <= hi & ] & /@ diffs ]
+    toDensity[ graph, Pick[ VertexList[ graph ], AllTrue[ #, lo <= # <= hi & ] & /@ diffs ] ]
   ]
 
 FindInfraEquidistantSet[ graph_Graph, pts_List /; Length[ pts ] <= 1, { _Integer, _Integer } ] :=
-  InfraSet @ VertexList[ graph ]
+  toDensity[ graph, VertexList[ graph ] ]
 
 
 (* ===================== FindAdvancingInfraFront ===================== *)
@@ -89,7 +33,7 @@ FindInfraEquidistantSet[ graph_Graph, pts_List /; Length[ pts ] <= 1, { _Integer
 FindAdvancingInfraFront[ graph_Graph, origin_, steps_Integer ] :=
   With[
     { vl  = VertexList[ graph ],
-      src = infraPointVertices @ origin },
+      src = infraPointVertices[ graph, origin ] },
     { adj  = AssociationMap[ AdjacencyList[ graph, # ] &, vl ],
       vidx = AssociationThread[ vl, Range[ Length @ vl ] ],
       dm   = GraphDistanceMatrix[ graph ] },
@@ -101,7 +45,7 @@ FindAdvancingInfraFront[ graph_Graph, origin_, steps_Integer ] :=
               { out = Select[ adj @ u, dp[ # ] == dp[ u ] + 1 & ],
                 in  = Select[ adj @ u, dp[ # ] == dp[ u ] - 1 & ] },
               Which[ out =!= { }, out, in =!= { }, in, True, { u } ] ] ) /@ cur ] } ] },
-    InfraSet /@ NestList[ step, { src, src }, steps ][[ All, 2 ]]
+    toDensity[ graph, # ] & /@ NestList[ step, { src, src }, steps ][[ All, 2 ]]
   ]
 
 
@@ -115,24 +59,30 @@ Options[ InfraBoundary ] = { Method -> "Combinatorial" };
 Options[ InfraInterior ] = { Method -> "Combinatorial" };
 
 InfraBoundary[ g_Graph, s_, OptionsPattern[] ] :=
-  With[ { vs = infraVertexSet @ If[ ListQ[ s ], InfraSet[ s ], s ] },
+  With[ { vs = infraSetVertices[ g, s ] },
     Switch[ methodName @ OptionValue[ Method ],
-      "Combinatorial", InfraSet @ GraphBoundary[ g, vs ],
-      "Alexandrov",    InfraSet @ TopologicalBoundary[
-        BallTopology[ g, Lookup[ methodOptions @ OptionValue[ Method ], "Radius", 1 ] ], vs ],
+      "Combinatorial", toDensity[ g, GraphBoundary[ g, vs ] ],
+      "Alexandrov",    toDensity[ g, TopologicalBoundary[
+        BallTopology[ g, Lookup[ methodOptions @ OptionValue[ Method ], "Radius", 1 ] ], vs ] ],
       _, Message[ InfraBoundary::badmethod, OptionValue[ Method ] ]; $Failed
     ]
   ]
 
 InfraInterior[ g_Graph, s_, OptionsPattern[] ] :=
-  With[ { vs = infraVertexSet @ If[ ListQ[ s ], InfraSet[ s ], s ] },
+  With[ { vs = infraSetVertices[ g, s ] },
     Switch[ methodName @ OptionValue[ Method ],
-      "Combinatorial", InfraSet @ GraphInterior[ g, vs ],
-      "Alexandrov",    InfraSet @ TopologicalInterior[
-        BallTopology[ g, Lookup[ methodOptions @ OptionValue[ Method ], "Radius", 1 ] ], vs ],
+      "Combinatorial", toDensity[ g, GraphInterior[ g, vs ] ],
+      "Alexandrov",    toDensity[ g, TopologicalInterior[
+        BallTopology[ g, Lookup[ methodOptions @ OptionValue[ Method ], "Radius", 1 ] ], vs ] ],
       _, Message[ InfraInterior::badmethod, OptionValue[ Method ] ]; $Failed
     ]
   ]
+
+
+(* a bare vertex list is the uniform multiset, so it is its own support; every other shape and every surviving wrapper goes through infraVertexSet *)
+
+infraSetVertices[ g_Graph, s_ ] :=
+  Which[ pointQ[ g, s ], { s }, ListQ[ s ], s, True, infraVertexSet @ s ]
 
 
 (* ===================== InfraVolume ===================== *)
@@ -159,12 +109,13 @@ InfraVolume[ g_Graph, (InfraLine | InfraSegment | InfraWalk | InfraRay)[ walks_L
   ]
 
 InfraVolume[ g_Graph, s_, opts : OptionsPattern[] ] :=
-  With[ { vs = infraVertexSet @ If[ ListQ[ s ], InfraSet[ s ], s ] },
+  With[ { vs = infraSetVertices[ g, s ] },
     Switch[ OptionValue[ "Measure" ],
       "FullCount",       Length[ vs ],
-      "WithoutBoundary", Length[ InfraInterior[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
-      "HalfBoundary",    Length[ vs ] - Length[ InfraBoundary[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ] / 2,
-      "Boundary",        Length[ InfraBoundary[ g, InfraSet[ vs ], Method -> OptionValue[ Method ] ][ "Vertices" ] ],
+      "WithoutBoundary", Length[ InfraInterior[ g, vs, Method -> OptionValue[ Method ] ] ],
+      "HalfBoundary",    Length[ vs ] - Length[ InfraBoundary[ g, vs, Method -> OptionValue[ Method ] ] ] / 2,
+      "Boundary",        Length[ InfraBoundary[ g, vs, Method -> OptionValue[ Method ] ] ],
       _, Message[ InfraVolume::badmeasure, OptionValue[ "Measure" ] ]; $Failed
     ]
   ]
+

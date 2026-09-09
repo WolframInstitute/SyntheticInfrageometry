@@ -123,7 +123,7 @@ VerificationTest[
 
 (* From 2 the ray through 4 runs on to 5: d(2, 5) == 3 == d(2, 4) + 1, and 6 is no farther. *)
 VerificationTest[
-  Sort @ FindInfraRay[CycleGraph[6], InfraSet[{1, 2}], 4, All]["Realizations"],
+  Sort @ FindInfraRay[CycleGraph[6], <| 1 -> 1, 2 -> 1 |>, 4, All]["Realizations"],
   {{1, 2, 3, 4}, {1, 6, 5, 4}, {2, 3, 4, 5}},
   TestID -> "FindInfraRay-multi-anchor-spreads-over-origins"
 ]

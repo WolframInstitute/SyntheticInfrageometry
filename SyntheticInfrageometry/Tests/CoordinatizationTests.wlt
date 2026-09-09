@@ -81,7 +81,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]], b = {1, 5}},
-    RadarCoordinates[g, b, InfraPoint[3]] === RadarCoordinates[g, b, 3]
+    RadarCoordinates[g, b, 3] === RadarCoordinates[g, b, 3]
   ],
   True,
   TestID -> "RadarCoordinates-InfraPoint-singleton-degenerates"
@@ -89,14 +89,14 @@ VerificationTest[
 
 VerificationTest[
   With[{g = PathGraph[Range[5]], b = {1, 5}},
-    RadarCoordinates[g, b, InfraSet[{2, 4}]]
+    RadarCoordinates[g, b, <| 2 -> 1, 4 -> 1 |>]
   ],
   {{1, 3}, {3, 1}},
   TestID -> "RadarCoordinates-InfraPoint-multi-returns-list"
 ]
 
 VerificationTest[
-  With[{g = PathGraph[Range[5]], b = {InfraSet[{1, 5}]}},
+  With[{g = PathGraph[Range[5]], b = {<| 1 -> 1, 5 -> 1 |>}},
     RadarCoordinates[g, b, 3]
   ],
   {2},
@@ -467,7 +467,7 @@ VerificationTest[
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
     With[{axes = FindInfraOrthogonalFrame[g, 3, All]},
-      OrthogonalCoordinates[g, InfraPoint[3], axes, 3] ==
+      OrthogonalCoordinates[g, 3, axes, 3] ==
         OrthogonalCoordinates[g, 3, axes, 3]
     ]
   ],
@@ -478,19 +478,19 @@ VerificationTest[
 VerificationTest[
   Module[{g = PathGraph[Range[5]],
           canonicalize = Sort[First @ Sort[{#, Reverse @ #}] & /@ (#[[ 1, 1 ]] & /@ #)] &},
-    canonicalize @ FindInfraOrthogonalFrame[g, InfraPoint[3], All] ===
+    canonicalize @ FindInfraOrthogonalFrame[g, 3, All] ===
       canonicalize @ FindInfraOrthogonalFrame[g, 3, All]
   ],
   True,
   TestID -> "FindInfraOrthogonalFrame-InfraPoint-singleton-equals-vertex"
 ]
 
-(* On PathGraph[5] with InfraSet[{2, 4}]: any frame's axes pass through
+(* On PathGraph[5] with <| 2 -> 1, 4 -> 1 |>: any frame's axes pass through
    one of the listed vertices. *)
 
 VerificationTest[
   With[{g = PathGraph[Range[5]]},
-    With[{axes = FindInfraOrthogonalFrame[g, InfraSet[{2, 4}], All]},
+    With[{axes = FindInfraOrthogonalFrame[g, <| 2 -> 1, 4 -> 1 |>, All]},
       AllTrue[axes, MemberQ[#[[ 1, 1 ]], 2] || MemberQ[#[[ 1, 1 ]], 4] &]
     ]
   ],
@@ -500,7 +500,7 @@ VerificationTest[
 
 VerificationTest[
   With[{g = GridGraph[{4, 4}]},
-    With[{axes = FindInfraOrthogonalFrame[g, InfraSet[{6, 11}], All]},
+    With[{axes = FindInfraOrthogonalFrame[g, <| 6 -> 1, 11 -> 1 |>, All]},
       AllTrue[axes, MemberQ[#[[ 1, 1 ]], 6] || MemberQ[#[[ 1, 1 ]], 11] &]
     ]
   ],
@@ -777,20 +777,20 @@ VerificationTest[
 
 
 VerificationTest[
-  Dimensions @ ResistanceCoordinates[PetersenGraph[], InfraSet[{1, 2, 3}]],
+  Dimensions @ ResistanceCoordinates[PetersenGraph[], <| 1 -> 1, 2 -> 1, 3 -> 1 |>],
   {3, 9},
   TestID -> "ResistanceCoordinates-InfraPoint-shape"
 ]
 
 VerificationTest[
-  ResistanceCoordinates[PetersenGraph[], InfraSet[{1, 2, 3}]][[1]] ==
+  ResistanceCoordinates[PetersenGraph[], <| 1 -> 1, 2 -> 1, 3 -> 1 |>][[1]] ==
     ResistanceCoordinates[PetersenGraph[], 1],
   True,
   TestID -> "ResistanceCoordinates-InfraPoint-rows-match-singletons"
 ]
 
 VerificationTest[
-  ResistanceCoordinates[PetersenGraph[], InfraPoint[1]] ==
+  ResistanceCoordinates[PetersenGraph[], 1] ==
     ResistanceCoordinates[PetersenGraph[], 1],
   True,
   TestID -> "ResistanceCoordinates-InfraPoint-singleton-degenerates"
