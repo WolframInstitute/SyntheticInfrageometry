@@ -2,7 +2,10 @@ BeginTestSection["Homotopy"]
 
 walkGraph       = WolframInstitute`SyntheticInfrageometry`PackageScope`walkGraph;
 closedWalkGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`closedWalkGraph;
+geodesicCycleGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicCycleGraph;
+infraSpread        = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
 walkSeq[ w_Graph ] := Last /@ VertexList[ w ]
+walkSeqs[ w_Graph ] := { walkSeq @ w }
 walkSeqs[ ws_List ] := walkSeq /@ ws
 
 (* ===== Wrapper auto-flatten ===== *)
@@ -141,7 +144,7 @@ VerificationTest[
 
 VerificationTest[
   Module[{grid23 = GridGraph[{2, 3}], paths},
-    paths = walkGraph /@ FindInfraSegment[grid23, 1, 6, All]["Realizations"];
+    paths = walkGraph /@ infraSpread @ FindInfraSegment[grid23, 1, 6, All];
     Length @ FindInfraHomotopy[grid23, paths, paths, All, "NullHomotopicCycles" -> {3, 4}]["Realizations"]
   ],
   9,
@@ -150,7 +153,7 @@ VerificationTest[
 
 VerificationTest[
   Module[{grid23 = GridGraph[{2, 3}], paths},
-    paths = walkGraph /@ FindInfraSegment[grid23, 1, 6, All]["Realizations"];
+    paths = walkGraph /@ infraSpread @ FindInfraSegment[grid23, 1, 6, All];
     HomotopicQ[grid23, paths, paths, "NullHomotopicCycles" -> {3, 4}]
   ],
   True,
@@ -395,18 +398,21 @@ VerificationTest[
   TestID -> "Open-walk-returning-to-start-is-not-a-loop"
 ]
 
-(* ===================== InfraCircle coercion: the circle is the free loop ===================== *)
+(* ===================== a circle is a cycle graph like any other ===================== *)
 
+(* the free loop reduces to each basepoint; "FreeHomotopy" is what asks for it, no
+   longer a special case on a circle head *)
 VerificationTest[
-  Sort @ walkSeqs @ FindInfraHomotopyRepresentative[CycleGraph[4], InfraCircle[{{1, 2, 3, 4}}], "NullHomotopicCycles" -> {4}],
+  Sort @ walkSeqs @ FindInfraHomotopyRepresentative[CycleGraph[4], geodesicCycleGraph @ {1, 2, 3, 4},
+    "FreeHomotopy" -> True, "NullHomotopicCycles" -> {4}],
   {{1}, {2}, {3}, {4}},
-  TestID -> "InfraCircle-coerces-to-free-loop"
+  TestID -> "cycle-graph-as-free-loop"
 ]
 
 VerificationTest[
-  NullHomotopicQ[CycleGraph[4], InfraCircle[{{1, 2, 3, 4}}], "NullHomotopicCycles" -> {4}],
+  NullHomotopicQ[CycleGraph[4], geodesicCycleGraph @ {1, 2, 3, 4}, "NullHomotopicCycles" -> {4}],
   True,
-  TestID -> "NullHomotopicQ-on-InfraCircle"
+  TestID -> "NullHomotopicQ-on-a-cycle-graph"
 ]
 
 EndTestSection[]

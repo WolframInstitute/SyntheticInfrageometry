@@ -2,7 +2,11 @@ BeginTestSection["InfraWalk"]
 
 walkGraph       = WolframInstitute`SyntheticInfrageometry`PackageScope`walkGraph;
 closedWalkGraph = WolframInstitute`SyntheticInfrageometry`PackageScope`closedWalkGraph;
+infraSpread      = WolframInstitute`SyntheticInfrageometry`PackageScope`infraSpread;
 walkSeq[ w_Graph ] := Last /@ VertexList[ w ]
+(* count-less returns ONE walk graph and a bounded count a List of them, so the
+   sequence reader takes either shape *)
+walkSeqs[ w_Graph ] := { walkSeq @ w }
 walkSeqs[ ws_List ] := walkSeq /@ ws
 
 (* ===================== The walk shape ===================== *)
@@ -300,7 +304,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     Sort @ walkSeqs @ FindInfraGeodesic[ g, 1, 9, Infinity, Infinity, All ] ===
-      Sort @ FindInfraSegment[ g, 1, 9, All ][ "Realizations" ]
+      Sort @ infraSpread @ FindInfraSegment[ g, 1, 9, All ]
   ],
   True,
   TestID -> "FindInfraGeodesic-scale-Infinity-is-the-segment-class"
@@ -332,7 +336,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     SubsetQ[
-      Sort @ FindInfraSegment[ g, 1, 9, All ][ "Realizations" ],
+      Sort @ infraSpread @ FindInfraSegment[ g, 1, 9, All ],
       Sort @ walkSeqs @ FindInfraGeodesic[ g, 1, 9, Infinity, Infinity, All,
         Properties -> { "Minimizing", "Straightest" } ] ]
   ],
@@ -345,7 +349,7 @@ VerificationTest[
   With[ { g = GridGraph[ { 3, 3 } ] },
     Sort @ walkSeqs @ FindInfraGeodesic[ g, 1, 9, Infinity, Infinity, All,
       Properties -> { "Minimizing", { "Maximal", 1 & } } ] ===
-      Sort @ FindInfraSegment[ g, 1, 9, All ][ "Realizations" ]
+      Sort @ infraSpread @ FindInfraSegment[ g, 1, 9, All ]
   ],
   True,
   TestID -> "FindInfraGeodesic-constant-selector-is-vacuous"
@@ -717,7 +721,7 @@ VerificationTest[
 VerificationTest[
   With[ { g = TorusGraph[ { 4, 5 } ], unoriented = w |-> Sort[ { w, Reverse @ w } ] },
     Sort[ unoriented /@ walkSeqs @ ExtendInfraGeodesic[ g, { 1, 2 }, Infinity, Infinity, All ] ] ===
-    Sort[ unoriented /@ ExtendInfraSegment[ g, { 1, 2 }, Infinity, All ][ "Realizations" ] ] ],
+    Sort[ unoriented /@ infraSpread @ ExtendInfraSegment[ g, { 1, 2 }, Infinity, All ] ] ],
   True,
   TestID -> "ExtendInfraGeodesic-BothSides-agrees-with-segment-pool"
 ]

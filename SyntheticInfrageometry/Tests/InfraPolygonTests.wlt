@@ -1,30 +1,34 @@
 BeginTestSection["InfraPolygon"]
 
-(* ===================== InfraPolygon wrapper ===================== *)
+geodesicGraph   = WolframInstitute`SyntheticInfrageometry`PackageScope`geodesicGraph;
+walkSequence    = WolframInstitute`SyntheticInfrageometry`PackageScope`walkSequence;
+polylineToKnots = WolframInstitute`SyntheticInfrageometry`PackageScope`polylineToKnots;
+
+(* ===================== a polygon is its List of geodesic legs ===================== *)
+
+(* the length is the total edge count over the legs, the corners its knots *)
 
 VerificationTest[
-  InfraPolygon[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4 } } ], InfraSegment[ { { 4, 1 } } ] } } ][ "Length" ],
-  { 4 },
-  TestID -> "InfraPolygon-Length-single"
+  With[ { sides = geodesicGraph /@ { { 1, 2, 3 }, { 3, 4 }, { 4, 1 } } },
+    Total[ EdgeCount /@ sides ] ],
+  4,
+  TestID -> "polygon-length-is-total-edge-count"
 ]
 
 VerificationTest[
-  InfraPolygon[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 1 } } ] },
-                  { InfraSegment[ { { 1, 2 } } ], InfraSegment[ { { 2, 3 } } ], InfraSegment[ { { 3, 1 } } ] } } ][ "Length" ],
+  Total[ EdgeCount /@ # ] & /@ {
+    geodesicGraph /@ { { 1, 2, 3 }, { 3, 1 } },
+    geodesicGraph /@ { { 1, 2 }, { 2, 3 }, { 3, 1 } } },
   { 3, 3 },
-  TestID -> "InfraPolygon-Length-multi"
+  TestID -> "polygon-length-per-member-of-a-family"
 ]
 
+(* the knots close (first repeated at the end), so Most is the corner set *)
 VerificationTest[
-  InfraPolygon[ { { InfraSegment[ { { 1, 2, 3 } } ], InfraSegment[ { { 3, 4 } } ], InfraSegment[ { { 4, 1 } } ] } } ][ "Vertices" ],
-  { { 1, 3, 4 } },
-  TestID -> "InfraPolygon-Vertices-single"
-]
-
-VerificationTest[
-  InfraPolygon[ { InfraPolygon[ { { 1, 2, 3 } } ], InfraPolygon[ { { 4, 5, 6 } } ] } ],
-  InfraPolygon[ { { 1, 2, 3 }, { 4, 5, 6 } } ],
-  TestID -> "InfraPolygon-auto-flatten"
+  With[ { sides = geodesicGraph /@ { { 1, 2, 3 }, { 3, 4 }, { 4, 1 } } },
+    { polylineToKnots @ sides, Most @ polylineToKnots @ sides } ],
+  { { 1, 3, 4, 1 }, { 1, 3, 4 } },
+  TestID -> "polygon-corners-are-its-knots"
 ]
 
 
@@ -35,20 +39,20 @@ VerificationTest[
 
 VerificationTest[
   With[ { res = FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6 ] },
-    Head[ res ] === InfraPolygon && Length[ res[ "Realizations" ][[ 1 ]] ] == 6
+    MatchQ[ res, { __Graph } ] && Length[ res ] == 6
   ],
   True,
   TestID -> "FindInfraRegularPolygon-cycle6-equilateral"
 ]
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6, All ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6, All ],
   1,
   TestID -> "FindInfraRegularPolygon-cycle6-count-All"
 ]
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6, UpTo[ 5 ] ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6, UpTo[ 5 ] ],
   1,
   TestID -> "FindInfraRegularPolygon-cycle6-count-UpTo"
 ]
@@ -60,7 +64,7 @@ VerificationTest[
    2-diagonals at distance 2, 3-diagonals (antipodes) at distance 3. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1, 2, 3 }, 6, All ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1, 2, 3 }, 6, All ],
   1,
   TestID -> "FindInfraRegularPolygon-cycle6-full-profile"
 ]
@@ -80,7 +84,7 @@ VerificationTest[
 (* Unit squares in a 3x3 grid: 4 of them. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1 }, 4, All ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1 }, 4, All ],
   4,
   TestID -> "FindInfraRegularPolygon-grid3x3-unit-squares"
 ]
@@ -89,7 +93,7 @@ VerificationTest[
 (* ===================== PetersenGraph: 12 pentagons ===================== *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { 1 }, 5, All ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { 1 }, 5, All ],
   12,
   TestID -> "FindInfraRegularPolygon-petersen-12-pentagons"
 ]
@@ -105,7 +109,7 @@ VerificationTest[
 
 VerificationTest[
   FindInfraRegularPolygon[ PathGraph[ Range[ 5 ] ], { 1 }, 4, All ],
-  InfraPolygon[ { } ],
+  { },
   TestID -> "FindInfraRegularPolygon-pathgraph-no-4-cycle-All"
 ]
 
@@ -125,7 +129,7 @@ VerificationTest[
    ({1,3,5,7} and {2,4,6,8}), so 2 square cycles. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ CycleGraph[ 8 ], { 2 }, 4, All ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ CycleGraph[ 8 ], { 2 }, 4, All ],
   2,
   TestID -> "FindInfraRegularPolygon-cycle8-distance2-squares"
 ]
@@ -194,13 +198,13 @@ VerificationTest[
    both find them; {1, {3, 3}} finds none. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, Automatic }, 4, All ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, Automatic }, 4, All ],
   4,
   TestID -> "FindInfraRegularPolygon-grid-Automatic-2diagonal"
 ]
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, { 2, 2 } }, 4, All ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 3, 3 } ], { 1, { 2, 2 } }, 4, All ],
   4,
   TestID -> "FindInfraRegularPolygon-grid-range-2diagonal"
 ]
@@ -215,7 +219,7 @@ VerificationTest[
    distance-1 5-cycles, so {Automatic} finds the same 12 as {1}. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { Automatic }, 5, All ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { Automatic }, 5, All ],
   12,
   TestID -> "FindInfraRegularPolygon-petersen-Automatic-equilateral"
 ]
@@ -224,7 +228,7 @@ VerificationTest[
    every 2-diagonal in a 5-cycle is at distance 2, so all 12 pass. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { Automatic, Automatic }, 5, All ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ PetersenGraph[ ], { Automatic, Automatic }, 5, All ],
   12,
   TestID -> "FindInfraRegularPolygon-petersen-Automatic-pair"
 ]
@@ -261,13 +265,13 @@ VerificationTest[
    {12, 13, 18, 17}, {13, 14, 19, 18}. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All ],
   16,
   TestID -> "FindInfraRegularPolygon-grid5-default-From-All"
 ]
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 ][ "Realizations" ],
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 ],
   4,
   TestID -> "FindInfraRegularPolygon-grid5-From-center-membership"
 ]
@@ -277,29 +281,29 @@ VerificationTest[
 
 VerificationTest[
   FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 -> 1 ],
-  InfraPolygon[ { } ],
+  { },
   TestID -> "FindInfraRegularPolygon-grid5-From-radius1-empty"
 ]
 
 (* "From" -> v -> 2: N_2(13) is large enough for unit squares around 13 to fit. *)
 
 VerificationTest[
-  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 -> 2 ][ "Realizations" ] >= 4,
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 -> 2 ] >= 4,
   True,
   TestID -> "FindInfraRegularPolygon-grid5-From-radius2-localized"
 ]
 
-(* "From" accepts v wrapper, unwrapping to a bare vertex. *)
+(* "From" accepts a bare vertex. *)
 
 VerificationTest[
   FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
     "From" -> 13 ] ===
   FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All, "From" -> 13 ],
   True,
-  TestID -> "FindInfraRegularPolygon-From-InfraPoint-unary"
+  TestID -> "FindInfraRegularPolygon-From-bare-vertex"
 ]
 
-(* "From" accepts the list-of-unaries shape returned by FindInfraPoint. *)
+(* "From" accepts the vertex list returned by FindInfraPoint. *)
 
 VerificationTest[
   FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
@@ -310,7 +314,7 @@ VerificationTest[
   TestID -> "FindInfraRegularPolygon-From-FindInfraPoint-pipe"
 ]
 
-(* Multi-anchor <| v1 -> 1, v2 -> 1 |> in localization: NeighborhoodGraph
+(* Multi-anchor density in localization: NeighborhoodGraph
    accepts a list, giving N_r(v1) union N_r(v2). *)
 
 VerificationTest[
@@ -319,7 +323,7 @@ VerificationTest[
   Sort @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
     "From" -> { 1, 25 } -> 1 ],
   True,
-  TestID -> "FindInfraRegularPolygon-From-InfraPoint-multi-radius"
+  TestID -> "FindInfraRegularPolygon-From-density-multi-radius"
 ]
 
 (* Multi-anchor membership: cycles containing at least one of the listed
@@ -329,9 +333,9 @@ VerificationTest[
 
 VerificationTest[
   Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All,
-    "From" -> <| 1 -> 1, 25 -> 1 |> ][ "Realizations" ],
+    "From" -> <| 1 -> 1, 25 -> 1 |> ],
   2,
-  TestID -> "FindInfraRegularPolygon-From-InfraPoint-multi-membership"
+  TestID -> "FindInfraRegularPolygon-From-density-multi-membership"
 ]
 
 
@@ -339,16 +343,14 @@ VerificationTest[
 
 VerificationTest[
   With[ { res = FindInfraPolygon[ GridGraph[ { 4, 4 } ], { 1, 4, 16, 13 } ] },
-    Head[ res ] === InfraPolygon &&
-    Length[ res[ "Sides" ][[ 1 ]] ] == 4 &&
-    res[ "Length" ] === { 12 }
+    { MatchQ[ res, { __Graph } ], Length @ res, Total[ EdgeCount /@ res ] }
   ],
-  True,
+  { True, 4, 12 },
   TestID -> "FindInfraPolygon-grid4x4-square"
 ]
 
 VerificationTest[
-  Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, 1 ][ "Realizations" ],
+  Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, 1 ],
   1,
   TestID -> "FindInfraPolygon-default-one"
 ]
@@ -356,13 +358,13 @@ VerificationTest[
 (* All enumerates the Cartesian product of per-side geodesics; the diagonal
    side 9 -> 1 of GridGraph[{3,3}] has 6 geodesics, the other two are unique. *)
 VerificationTest[
-  Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ][ "Realizations" ],
+  Length @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ],
   6,
   TestID -> "FindInfraPolygon-grid3x3-cartesian"
 ]
 
 VerificationTest[
-  AllTrue[ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ][ "Realizations" ],
+  AllTrue[ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ],
     InfraPolygonQ[ GridGraph[ { 3, 3 } ], # ] & ],
   True,
   TestID -> "FindInfraPolygon-all-valid"
@@ -377,8 +379,7 @@ VerificationTest[
 
 (* InfraPolygonQ rejects an open (non-closed) leg chain. *)
 VerificationTest[
-  InfraPolygonQ[ PathGraph[ Range[ 4 ] ],
-    { InfraSegment[ { { 1, 2 } } ], InfraSegment[ { { 2, 3 } } ] } ],
+  InfraPolygonQ[ PathGraph[ Range[ 4 ] ], geodesicGraph /@ { { 1, 2 }, { 2, 3 } } ],
   False,
   TestID -> "InfraPolygonQ-open-chain-False"
 ]
@@ -387,7 +388,7 @@ VerificationTest[
    valid InfraPolygon. *)
 VerificationTest[
   With[ { res = FindInfraRegularPolygon[ CycleGraph[ 6 ], { 1 }, 6 ] },
-    InfraPolygonQ[ CycleGraph[ 6 ], res[ "Realizations" ][[ 1 ]] ]
+    InfraPolygonQ[ CycleGraph[ 6 ], res ]
   ],
   True,
   TestID -> "FindInfraRegularPolygon-segment-sides-valid"
@@ -400,28 +401,28 @@ VerificationTest[
    9-6-3-2-1, walking every edge of the other two sides a second time.  The witness skips
    it: its closed vertex sequence repeats no edge. *)
 
-polygonClosed[ poly_ ] :=
-  With[ { paths = First @ First @ # & /@ poly },
+polygonClosed[ sides_ ] :=
+  With[ { paths = walkSequence /@ sides },
     Join @@ Prepend[ Rest /@ Rest @ paths, First @ paths ] ]
 
-polygonRetraces[ poly_ ] :=
-  ! DuplicateFreeQ[ Sort /@ Partition[ polygonClosed @ poly, 2, 1 ] ]
+polygonRetraces[ sides_ ] :=
+  ! DuplicateFreeQ[ Sort /@ Partition[ polygonClosed @ sides, 2, 1 ] ]
 
 VerificationTest[
-  polygonRetraces @ First @ First @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 } ],
+  polygonRetraces @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 } ],
   False,
   TestID -> "FindInfraPolygon-witness-does-not-retrace-a-side"
 ]
 
 VerificationTest[
-  polygonRetraces @ First @ First @ FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 } ],
+  polygonRetraces @ FindInfraTriangle[ GridGraph[ { 3, 3 } ], { 1, 3, 9 } ],
   False,
   TestID -> "FindInfraTriangle-witness-does-not-retrace-a-side"
 ]
 
 (* the class is unchanged: All still holds the four degenerate members *)
 VerificationTest[
-  With[ { all = First @ FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ] },
+  With[ { all = FindInfraPolygon[ GridGraph[ { 3, 3 } ], { 1, 3, 9 }, All ] },
     { Length @ all, Count[ polygonRetraces /@ all, True ] } ],
   { 6, 4 },
   TestID -> "FindInfraPolygon-class-keeps-the-degenerate-members"
@@ -430,15 +431,16 @@ VerificationTest[
 
 (* ===== FindInfraRegularPolygon on the Method ladder ===== *)
 
-(* a count-less call is one witness, as on every ladder symbol *)
+(* a count-less call is one witness -- one List of legs, not a List of them *)
 VerificationTest[
-  Length @ First @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4 ],
-  1,
+  With[ { res = FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4 ] },
+    { MatchQ[ res, { __Graph } ], Length @ res } ],
+  { True, 4 },
   TestID -> "FindInfraRegularPolygon-countless-is-one-witness"
 ]
 
 VerificationTest[
-  Length @ First @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All ],
+  Length @ FindInfraRegularPolygon[ GridGraph[ { 5, 5 } ], { 1 }, 4, All ],
   16,
   TestID -> "FindInfraRegularPolygon-All-is-the-whole-class"
 ]
