@@ -6,7 +6,7 @@ ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/FindInfraPoint
 Keywords: [point, atom, candidate pool, centre, periphery]
-SeeAlso: [InfraPoint, InfraSet, InfraEffectivePoint, SelectInfraPoint, FindInfraMidpoint, FindClosestInfraPoint]
+SeeAlso: [InfraPoint, InfraDensity, SelectInfraPoint, FindInfraMidpoint, FindClosestInfraPoint]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 

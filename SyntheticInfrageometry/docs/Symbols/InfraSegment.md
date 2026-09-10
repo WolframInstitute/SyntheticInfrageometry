@@ -6,7 +6,7 @@ ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/InfraSegment
 Keywords: [segment, geodesic bundle, interval DAG, multiplicity, wrapper]
-SeeAlso: [FindInfraSegment, ExtendInfraSegment, InfraPoint, InfraLine, InfraMeasure, MetricInterval]
+SeeAlso: [FindInfraSegment, ExtendInfraSegment, InfraPoint, InfraLine, InfraDensity, MetricInterval]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 
@@ -48,7 +48,7 @@ DAG accessors:
 
 On the pool the accessors are sized by the atoms, never by the family: `["Length"]` is one number per DAG, `["Start"]` and `["End"]` are the [InfraSet]() of sources and of sinks, `["Multiplicity"]` and `["Measure"]` sum the per-atom counts, `["Realizations", n]` enumerates lazily atom by atom, and `seg[[i]]` is the *i*-th layer of every atom weighted by occupation. A 20 × 20 grid edge has about 9 × 10⁹ lines through it in two atoms, so nothing here enumerates by default.
 
-Endpoints are deduplicated. Every geodesic of a family shares them. [InfraPath]() keeps endpoint multiplicity instead, because walks can end anywhere.
+Endpoints are deduplicated. Every geodesic of a family shares them. A walk keeps endpoint multiplicity instead, because walks can end anywhere.
 
 Inside an [InfraScene](), `InfraSegment[p, q]` names a segment to be solved for.
 

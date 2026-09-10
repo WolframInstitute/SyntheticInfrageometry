@@ -6,7 +6,7 @@ ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/PencilCardinality
 Keywords: [pencil, ray, direction, count]
-SeeAlso: [PencilDirections, FindInfraRay, InfraRay, LineCount, UniquePencilQ]
+SeeAlso: [PencilDirections, FindInfraRay, InfraRay, LineCount, UniqueCollinearQ]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 

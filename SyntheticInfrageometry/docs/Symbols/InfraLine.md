@@ -6,7 +6,7 @@ ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/InfraLine
 Keywords: [line, inextensible geodesic, pool, wrapper, geodesic DAG]
-SeeAlso: [FindInfraLine, InfraLineQ, InfraSegment, InfraRay, InfraEffectivePoint, InfraMeasure]
+SeeAlso: [FindInfraLine, InfraLineQ, InfraSegment, InfraRay, InfraDensity]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 

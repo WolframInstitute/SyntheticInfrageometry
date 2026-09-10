@@ -6,7 +6,7 @@ ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/GeodesicExtensionGraph
 Keywords: [geodesic extension, DAG, spray, line pool, ray pool, distance matrix]
-SeeAlso: [GeodesicSprayGraph, FindInfraLine, FindInfraRay, ExtendInfraSegment, FindInfraSegment, InfraSet]
+SeeAlso: [GeodesicSprayGraph, FindInfraLine, FindInfraRay, ExtendInfraSegment, FindInfraSegment, InfraDensity]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 
@@ -24,7 +24,7 @@ This is the shared engine of the distance-matrix family. The ray pool of [FindIn
 
 With *p1* = *p2* the condition is empty and the result is the whole spray, <code>[GeodesicSprayGraph]()[*g*, *p1*]</code>.
 
-Anchors may be wrappers — [InfraSet](), [InfraPoint](), a bundle — and spread to one DAG per pair of anchor vertices, returned as a list.
+A density anchor `<|v -> m|>` spreads to one DAG per pair of anchor vertices, returned as a list. A bare vertex list is one anchor, not a family.
 
 The graph keeps the embedding coordinates of *g*, so it draws in place.
 

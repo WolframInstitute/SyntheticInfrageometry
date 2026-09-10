@@ -6,7 +6,7 @@ ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/InfraCircle
 Keywords: [circle, cycle, level surface, wrapper, closure]
-SeeAlso: [FindInfraCircle, InfraShell, InfraEllipse, InfraPolygon, InfraString]
+SeeAlso: [FindInfraCircle, InfraShell, InfraEllipse, InfraPolygon, HomotopicQ]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 
@@ -30,7 +30,7 @@ A cycle is always connected. This is why `"Connected"` is not an admissible prop
 
 [InfraSceneHighlight]() draws the multi form with sequential edges and closes it automatically. Passing an already-closed sequence is harmless: the closure is not doubled.
 
-For homotopy the wrapper coerces to [InfraString](), a closed walk taken modulo rotation, since a circle has no base point.
+For homotopy a circle is read as a free loop — a closed walk taken modulo rotation — since it has no base point.
 
 Inside an [InfraScene](), `InfraCircle[center, radius]` names a circle to be solved for.
 

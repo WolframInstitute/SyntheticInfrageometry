@@ -6,7 +6,7 @@ ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/InfraSceneHighlight
 Keywords: [visualization, diffuse rendering, multiplicity, highlight, palette]
-SeeAlso: [InfraSceneViewer, InfraScene, $InfraPalette, InfraMeasure, InfraPoint]
+SeeAlso: [InfraSceneViewer, InfraScene, $InfraPalette, InfraDensity, InfraPoint]
 RelatedGuides: [VisualizationGuide]
 ---
 

@@ -6,7 +6,7 @@ ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/InfraPoint
 Keywords: [point, atom, vertex, ontology, wrapper]
-SeeAlso: [FindInfraPoint, InfraSet, InfraEffectivePoint, InfraMeasure, InfraSegment]
+SeeAlso: [FindInfraPoint, InfraDensity, InfraSegment]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 
@@ -18,7 +18,7 @@ RelatedGuides: [EuclideanGeometryGuide]
 
 Definition: an infra-point is one vertex of the substrate, wrapped so that it carries geometry.
 
-`InfraPoint` is the **atom** of the point ontology. A construction on a graph rarely has one answer, but the multiplicity does not live in this head: a family of candidate points is a `List` of atoms or an [InfraSet](), and a measure on vertices is an [InfraEffectivePoint]().
+`InfraPoint` is the **atom** of the point ontology. A construction on a graph rarely has one answer, but the multiplicity does not live in this head: a family of candidate points is a vertex `List`, and a measure on vertices is a density `<|v -> m|>`.
 
 | you have | use |
 |---|---|

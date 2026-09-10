@@ -6,7 +6,7 @@ ContextPath: [WolframInstitute`Infrageometry`]
 Paclet: WolframInstitute/SyntheticInfrageometry
 URI: WolframInstitute/SyntheticInfrageometry/ref/PencilDirections
 Keywords: [pencil, ray, direction, unit tangent sphere]
-SeeAlso: [PencilCardinality, FindInfraRay, InfraRayQ, LineCount, SameDirectionQ, UniquePencilQ]
+SeeAlso: [PencilCardinality, FindInfraRay, InfraRayQ, LineCount, SameDirectionQ, UniqueCollinearQ]
 RelatedGuides: [EuclideanGeometryGuide]
 ---
 

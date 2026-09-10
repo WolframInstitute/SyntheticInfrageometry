@@ -24,7 +24,7 @@ Rays are how direction is expressed without a vector space. There is no tangent 
 
 The pool is a single DAG with source *O*: the geodesic bundle from *O* to *v* glued at *v* to <code>[GeodesicExtensionGraph]()[*g*, {*O*, *v*}]</code>. The extension set is closed under a farther step, so the sinks of that DAG are exactly the inextensible ends and every path from *O* to a sink is a ray. There is no compatibility condition on one side, so the finder agrees with [InfraRayQ]() by construction. `All` returns <code>[InfraRay]()[{*dag*}]</code>; its `["Multiplicity"]` is the path count and `["Length"]` lists one length per ray, since rays to different sinks differ in length. A bounded count streams rays off the DAG.
 
-<code>[FindInfraRay]()[*g*, *O*, *O*, All]</code> is every ray from *O* — the pencil. Wrapper anchors such as [InfraSet]() spread to one DAG per pair.
+<code>[FindInfraRay]()[*g*, *O*, *O*, All]</code> is every ray from *O* — the pencil. A density anchor `<|v -> m|>` spreads to one DAG per pair.
 
 The longest rays are a selection on the result, `SelectInfraWalk[g, rays, All, "From" -> "MaxLength"]`.
 
