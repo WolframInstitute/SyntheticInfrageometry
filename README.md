@@ -1,3 +1,5 @@
+> 📜 **Historical snapshot.** SyntheticInfrageometry 0.13.31 as of 2026-09-10, before the paclet split and the rename. Development continues in [WolframInstitute/InfraGeometry](https://github.com/WolframInstitute/InfraGeometry) and [WolframInstitute/DiscreteGeometry](https://github.com/WolframInstitute/DiscreteGeometry).
+
 > ⚠️ **Actively developed, experimental research code.** It undergoes frequent cleanings and refactors, and the API may change without notice.
 
 # 📐 SyntheticInfrageometry
